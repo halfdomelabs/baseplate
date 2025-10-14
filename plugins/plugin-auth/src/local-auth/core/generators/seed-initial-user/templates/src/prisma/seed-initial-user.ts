@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import type { AuthRole } from '%authRolesImports';
-import type { User } from '@prisma/client';
+import type { User } from '%prismaGeneratedImports';
 
 import { createUserWithEmailAndPassword } from '%authEmailPasswordImports';
 import { prisma } from '%prismaImports';

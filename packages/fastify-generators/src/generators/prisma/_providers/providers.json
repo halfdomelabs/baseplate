@@ -1,0 +1,14 @@
+{
+  "prisma-generated-imports.ts": {
+    "prismaGeneratedImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "prismaGeneratedImportsProvider",
+      "schemaExport": "prismaGeneratedImportsSchema",
+      "projectExports": {
+        "PrismaClient": {},
+        "Prisma": {},
+        "*": {}
+      }
+    }
+  }
+}

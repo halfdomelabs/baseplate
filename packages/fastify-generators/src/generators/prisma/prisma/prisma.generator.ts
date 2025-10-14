@@ -4,6 +4,7 @@ import type { formatSchema } from '@prisma/internals';
 import {
   eslintConfigProvider,
   extractPackageVersions,
+  nodeGitIgnoreProvider,
   nodeProvider,
   normalizeTsPathToJsPath,
   packageInfoProvider,
@@ -19,7 +20,7 @@ import {
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
-import { quot } from '@baseplate-dev/utils';
+import { doubleQuot, quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
@@ -42,6 +43,7 @@ import {
   PrismaSchemaFile,
 } from '#src/writers/prisma-schema/schema.js';
 
+import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import { PRISMA_PRISMA_GENERATED } from './generated/index.js';
 import { prismaImportsProvider } from './generated/ts-import-providers.js';
 
@@ -193,6 +195,27 @@ export const prismaGenerator = createGenerator({
         };
       },
     }),
+    gitignore: createGeneratorTask({
+      dependencies: {
+        nodeGitIgnore: nodeGitIgnoreProvider,
+      },
+      run({ nodeGitIgnore }) {
+        return {
+          build: (builder) => {
+            nodeGitIgnore.exclusions.set(
+              'prisma',
+              [
+                '# Prisma generated files',
+                'src/generated/prisma/*',
+                builder.metadataOptions.includeTemplateMetadata
+                  ? '!src/generated/prisma/.templates-info.json'
+                  : '',
+              ].filter(Boolean),
+            );
+          },
+        };
+      },
+    }),
     configService: createGeneratorTask({
       dependencies: {
         configService: configServiceProvider,
@@ -219,6 +242,7 @@ export const prismaGenerator = createGenerator({
       run({ renderers }) {
         return {
           build: async (builder) => {
+            await builder.apply(renderers.generatedGroup.render({}));
             await builder.apply(renderers.service.render({}));
           },
         };
@@ -242,17 +266,21 @@ export const prismaGenerator = createGenerator({
     schema: createGeneratorTask({
       dependencies: {
         prismaImports: prismaImportsProvider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
         paths: PRISMA_PRISMA_GENERATED.paths.provider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(packageScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(packageScope) },
-      run({ prismaImports, paths }) {
+      run({ prismaImports, paths, prismaGeneratedImports }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
           createPrismaSchemaGeneratorBlock({
             name: 'client',
-            provider: 'prisma-client-js',
+            provider: 'prisma-client',
+            additionalOptions: {
+              output: doubleQuot('../src/generated/prisma'),
+            },
           }),
         );
 
@@ -318,7 +346,7 @@ export const prismaGenerator = createGenerator({
                     values: block.values,
                     expression: TsCodeUtils.importFragment(
                       block.name,
-                      '@prisma/client',
+                      prismaGeneratedImports['*'].moduleSpecifier,
                     ),
                   };
                 },
@@ -329,7 +357,10 @@ export const prismaGenerator = createGenerator({
                   return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
                 },
                 getModelTypeFragment: (modelName) =>
-                  TsCodeUtils.typeImportFragment(modelName, '@prisma/client'),
+                  TsCodeUtils.typeImportFragment(
+                    modelName,
+                    prismaGeneratedImports['*'].moduleSpecifier,
+                  ),
               },
             };
           },

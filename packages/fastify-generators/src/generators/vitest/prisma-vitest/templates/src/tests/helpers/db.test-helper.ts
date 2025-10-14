@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '%prismaGeneratedImports';
 import { nanoid } from 'nanoid';
 import { execSync } from 'node:child_process';
 import path from 'node:path';

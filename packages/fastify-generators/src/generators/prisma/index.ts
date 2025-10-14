@@ -1,3 +1,4 @@
+export * from './_providers/index.js';
 export * from './embedded-relation-transformer/index.js';
 export * from './prisma-crud-create/index.js';
 export * from './prisma-crud-delete/index.js';

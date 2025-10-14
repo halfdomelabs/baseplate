@@ -5,6 +5,7 @@ import {
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
+  prismaGeneratedImportsProvider,
   prismaImportsProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
@@ -112,6 +113,7 @@ const userRolesService = createTsTemplateFile({
   group: 'module',
   importMapProviders: {
     authRolesImports: authRolesImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
   name: 'user-roles-service',

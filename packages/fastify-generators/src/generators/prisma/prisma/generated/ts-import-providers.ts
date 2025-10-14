@@ -10,6 +10,11 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
+import {
+  prismaGeneratedImportsProvider,
+  prismaGeneratedImportsSchema,
+} from '#src/generators/prisma/_providers/prisma-generated-imports.js';
+
 import { PRISMA_PRISMA_PATHS } from './template-paths.js';
 
 const prismaImportsSchema = createTsImportMapSchema({ prisma: {} });
@@ -25,10 +30,21 @@ const prismaPrismaImportsTask = createGeneratorTask({
   dependencies: {
     paths: PRISMA_PRISMA_PATHS.provider,
   },
-  exports: { prismaImports: prismaImportsProvider.export(packageScope) },
+  exports: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider.export(packageScope),
+    prismaImports: prismaImportsProvider.export(packageScope),
+  },
   run({ paths }) {
     return {
       providers: {
+        prismaGeneratedImports: createTsImportMap(
+          prismaGeneratedImportsSchema,
+          {
+            '*': paths.client,
+            Prisma: paths.client,
+            PrismaClient: paths.client,
+          },
+        ),
         prismaImports: createTsImportMap(prismaImportsSchema, {
           prisma: paths.service,
         }),

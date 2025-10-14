@@ -1,6 +1,18 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+const client = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'generated',
+  name: 'client',
+  projectExports: { '*': {}, Prisma: { isTypeOnly: true }, PrismaClient: {} },
+  projectExportsOnly: true,
+  source: { contents: '' },
+  variables: {},
+});
+
+export const generatedGroup = { client };
+
 const prismaConfig = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
@@ -30,10 +42,16 @@ const service = createTsTemplateFile({
   importMapProviders: {},
   name: 'service',
   projectExports: { prisma: {} },
+  referencedGeneratorTemplates: { client: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/services/prisma.ts'),
   },
   variables: {},
 });
 
-export const PRISMA_PRISMA_TEMPLATES = { prismaConfig, seed, service };
+export const PRISMA_PRISMA_TEMPLATES = {
+  generatedGroup,
+  prismaConfig,
+  seed,
+  service,
+};

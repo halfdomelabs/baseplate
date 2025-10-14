@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   authRolesImportsProvider,
+  prismaGeneratedImportsProvider,
   prismaImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
@@ -12,6 +13,7 @@ const seedInitialUser = createTsTemplateFile({
   importMapProviders: {
     authEmailPasswordImports: authEmailPasswordImportsProvider,
     authRolesImports: authRolesImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
   name: 'seed-initial-user',

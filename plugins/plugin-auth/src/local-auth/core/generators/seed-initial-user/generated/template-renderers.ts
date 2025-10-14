@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   authRolesImportsProvider,
+  prismaGeneratedImportsProvider,
   prismaImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -36,6 +37,7 @@ const localAuthCoreSeedInitialUserRenderersTask = createGeneratorTask({
     authEmailPasswordImports: authEmailPasswordImportsProvider,
     authRolesImports: authRolesImportsProvider,
     paths: LOCAL_AUTH_CORE_SEED_INITIAL_USER_PATHS.provider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
@@ -47,6 +49,7 @@ const localAuthCoreSeedInitialUserRenderersTask = createGeneratorTask({
     authEmailPasswordImports,
     authRolesImports,
     paths,
+    prismaGeneratedImports,
     prismaImports,
     typescriptFile,
   }) {
@@ -62,6 +65,7 @@ const localAuthCoreSeedInitialUserRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authEmailPasswordImports,
                   authRolesImports,
+                  prismaGeneratedImports,
                   prismaImports,
                 },
                 ...options,
