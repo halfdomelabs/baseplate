@@ -6,7 +6,7 @@ generator client {
 
 generator pothos {
   provider     = "pnpm prisma-pothos-types"
-  clientOutput = "@src/generated/prisma/client.js"
+  clientOutput = "./client.js"
   output       = "../src/generated/prisma/pothos-prisma-types.ts"
 }
 

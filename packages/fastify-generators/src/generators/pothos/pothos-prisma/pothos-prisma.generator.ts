@@ -96,7 +96,7 @@ export const pothosPrismaGenerator = createGenerator({
             name: 'pothos',
             provider: 'pnpm prisma-pothos-types',
             additionalOptions: {
-              clientOutput: doubleQuot('@src/generated/prisma/client.js'),
+              clientOutput: doubleQuot('./client.js'),
               output: doubleQuot(
                 '../src/generated/prisma/pothos-prisma-types.ts',
               ),
