@@ -1,3 +1,4 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { nanoid } from 'nanoid';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
@@ -21,7 +22,7 @@ export function replaceDatabase(
 
 export function getTestPrisma(databaseUrl: string): PrismaClient {
   return new PrismaClient({
-    datasources: { db: { url: databaseUrl } },
+    adapter: new PrismaPg({ connectionString: databaseUrl }),
   });
 }
 

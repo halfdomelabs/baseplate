@@ -4,7 +4,7 @@ const pothosPrismaTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   name: 'pothos-prisma-types',
   projectExports: {
-    getDatamodel: { isTypeOnly: false },
+    getDatamodel: {},
     PrismaTypes: { isTypeOnly: true, exportedAs: 'default' },
   },
   projectExportsOnly: true,
