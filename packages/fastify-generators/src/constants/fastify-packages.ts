@@ -24,10 +24,10 @@ export const FASTIFY_PACKAGES = {
   'fastify-raw-body': '5.0.0',
 
   // Pothos
-  '@pothos/core': '4.8.1',
+  '@pothos/core': '4.10.0',
   '@pothos/plugin-simple-objects': '4.1.3',
   '@pothos/plugin-relay': '4.6.2',
-  '@pothos/plugin-prisma': '4.10.0',
+  '@pothos/plugin-prisma': '4.12.0',
   'graphql-scalars': '1.23.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',
@@ -38,8 +38,9 @@ export const FASTIFY_PACKAGES = {
   '@bull-board/fastify': '6.5.3',
 
   // Prisma
-  '@prisma/client': '6.16.2',
-  prisma: '6.16.2',
+  '@prisma/client': '6.17.1',
+  prisma: '6.17.1',
+  '@prisma/adapter-pg': '6.17.1',
 
   // Utils
   ms: '2.1.3',

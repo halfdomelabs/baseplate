@@ -1,11 +1,14 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
 const dbTestHelper = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
   name: 'db-test-helper',
   projectExports: {
     createTestDatabase: {},
@@ -25,7 +28,10 @@ const dbTestHelper = createTsTemplateFile({
 
 const prismaTestHelper = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { prismaImports: prismaImportsProvider },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
   name: 'prisma-test-helper',
   projectExports: { prismaMock: {} },
   source: {

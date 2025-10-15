@@ -1,8 +1,7 @@
-import type { Prisma } from '@prisma/client';
-
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
+import type { Prisma } from '@src/generated/prisma/client.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { BadRequestError, ForbiddenError } from '@src/utils/http-errors.js';

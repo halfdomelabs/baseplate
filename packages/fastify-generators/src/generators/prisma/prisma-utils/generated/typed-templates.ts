@@ -5,6 +5,7 @@ import {
 import path from 'node:path';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
 const crudServiceTypes = createTsTemplateFile({
@@ -30,6 +31,7 @@ const dataPipes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'utils',
   importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     tsUtilsImports: tsUtilsImportsProvider,
   },
@@ -75,7 +77,10 @@ const embeddedOneToMany = createTsTemplateFile({
 const embeddedOneToOne = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'utils',
-  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
   name: 'embedded-one-to-one',
   projectExports: {
     createOneToOneCreateData: {},

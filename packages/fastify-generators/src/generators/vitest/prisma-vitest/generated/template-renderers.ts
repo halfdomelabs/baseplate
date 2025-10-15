@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
 import { VITEST_PRISMA_VITEST_PATHS } from './template-paths.js';
@@ -40,13 +41,14 @@ const vitestPrismaVitestRenderers =
 const vitestPrismaVitestRenderersTask = createGeneratorTask({
   dependencies: {
     paths: VITEST_PRISMA_VITEST_PATHS.provider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     vitestPrismaVitestRenderers: vitestPrismaVitestRenderers.export(),
   },
-  run({ paths, prismaImports, typescriptFile }) {
+  run({ paths, prismaGeneratedImports, prismaImports, typescriptFile }) {
     return {
       providers: {
         vitestPrismaVitestRenderers: {
@@ -55,6 +57,9 @@ const vitestPrismaVitestRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: VITEST_PRISMA_VITEST_TEMPLATES.dbTestHelper,
                 destination: paths.dbTestHelper,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                },
                 ...options,
               }),
           },
@@ -64,6 +69,7 @@ const vitestPrismaVitestRenderersTask = createGeneratorTask({
                 template: VITEST_PRISMA_VITEST_TEMPLATES.prismaTestHelper,
                 destination: paths.prismaTestHelper,
                 importMapProviders: {
+                  prismaGeneratedImports,
                   prismaImports,
                 },
                 ...options,

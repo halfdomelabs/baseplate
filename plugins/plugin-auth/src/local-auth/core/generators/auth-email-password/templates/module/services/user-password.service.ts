@@ -1,8 +1,8 @@
 // @ts-nocheck
 
+import type { User } from '%prismaGeneratedImports';
 import type { RequestServiceContext } from '%requestServiceContextImports';
 import type { UserSessionPayload } from '%userSessionTypesImports';
-import type { User } from '@prisma/client';
 
 import { PASSWORD_MIN_LENGTH } from '$constantsPassword';
 import {

@@ -31,3 +31,6 @@ baseplate/build
 /.*.env
 
 /dist
+
+# Prisma generated files
+src/generated/prisma/*

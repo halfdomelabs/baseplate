@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '%prismaGeneratedImports';
 import type { DeepMockProxy } from 'vitest-mock-extended';
 
 import { prisma } from '%prismaImports';

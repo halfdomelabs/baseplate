@@ -8,6 +8,7 @@ import {
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
 import { PRISMA_PRISMA_UTILS_PATHS } from './template-paths.js';
@@ -34,6 +35,7 @@ const prismaPrismaUtilsRenderers =
 const prismaPrismaUtilsRenderersTask = createGeneratorTask({
   dependencies: {
     paths: PRISMA_PRISMA_UTILS_PATHS.provider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
     tsUtilsImports: tsUtilsImportsProvider,
@@ -42,6 +44,7 @@ const prismaPrismaUtilsRenderersTask = createGeneratorTask({
   exports: { prismaPrismaUtilsRenderers: prismaPrismaUtilsRenderers.export() },
   run({
     paths,
+    prismaGeneratedImports,
     prismaImports,
     serviceContextImports,
     tsUtilsImports,
@@ -56,6 +59,7 @@ const prismaPrismaUtilsRenderersTask = createGeneratorTask({
                 group: PRISMA_PRISMA_UTILS_TEMPLATES.utilsGroup,
                 paths,
                 importMapProviders: {
+                  prismaGeneratedImports,
                   prismaImports,
                   serviceContextImports,
                   tsUtilsImports,

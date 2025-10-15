@@ -31,3 +31,8 @@ baseplate/build
 /.*.env
 
 /dist
+
+# Prisma generated files
+src/generated/prisma/*
+!src/generated/prisma/client.ts
+!src/generated/prisma/.templates-info.json

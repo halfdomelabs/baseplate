@@ -1,5 +1,4 @@
-import type { Prisma, User } from '@prisma/client';
-
+import type { Prisma, User } from '@src/generated/prisma/client.js';
 import type {
   CreateServiceInput,
   DeleteServiceInput,

@@ -3,6 +3,7 @@ import {
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
   pothosImportsProvider,
+  prismaGeneratedImportsProvider,
   prismaImportsProvider,
   requestServiceContextImportsProvider,
   userSessionServiceImportsProvider,
@@ -51,6 +52,7 @@ const servicesUserPassword = createTsTemplateFile({
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     userSessionServiceImports: userSessionServiceImportsProvider,

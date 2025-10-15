@@ -31,6 +31,7 @@ export const prismaVitestGenerator = createGenerator({
     }),
     paths: VITEST_PRISMA_VITEST_GENERATED.paths.task,
     imports: VITEST_PRISMA_VITEST_GENERATED.imports.task,
+    renderers: VITEST_PRISMA_VITEST_GENERATED.renderers.task,
     vitestConfig: createGeneratorTask({
       dependencies: {
         vitestConfig: vitestConfigProvider,
@@ -70,14 +71,13 @@ if (TEST_MODE !== 'unit') {
         prismaImports: prismaImportsProvider,
         packageInfo: packageInfoProvider,
         paths: VITEST_PRISMA_VITEST_GENERATED.paths.provider,
+        renderers: VITEST_PRISMA_VITEST_GENERATED.renderers.provider,
       },
-      run({ packageInfo, typescriptFile, prismaImports, paths }) {
+      run({ packageInfo, typescriptFile, prismaImports, paths, renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: VITEST_PRISMA_VITEST_GENERATED.templates.dbTestHelper,
-                destination: paths.dbTestHelper,
+              renderers.dbTestHelper.render({
                 variables: {
                   TPL_TEST_DB: quot(
                     `${packageInfo.getPackageName().replaceAll('-', '_')}_test`,
@@ -87,13 +87,7 @@ if (TEST_MODE !== 'unit') {
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  VITEST_PRISMA_VITEST_GENERATED.templates.prismaTestHelper,
-                destination: paths.prismaTestHelper,
-                importMapProviders: {
-                  prismaImports,
-                },
+              renderers.prismaTestHelper.render({
                 variables: {
                   TPL_PRISMA_PATH: quot(
                     typescriptFile.resolveModuleSpecifier(

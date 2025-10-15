@@ -1,7 +1,6 @@
-import type { User } from '@prisma/client';
-
 import z from 'zod';
 
+import type { User } from '@src/generated/prisma/client.js';
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
 import { prisma } from '@src/services/prisma.js';

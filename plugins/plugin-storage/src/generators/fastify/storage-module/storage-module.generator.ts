@@ -7,7 +7,6 @@ import {
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
@@ -17,6 +16,7 @@ import {
   pothosConfigProvider,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
+  prismaGeneratedImportsProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -190,6 +190,7 @@ export const storageModuleGenerator = createGenerator({
         renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
         storageModuleImports: storageModuleImportsProvider,
         storageModuleConfigValues: storageModuleConfigValuesProvider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       run({
         prismaOutput,
@@ -197,6 +198,7 @@ export const storageModuleGenerator = createGenerator({
         renderers,
         storageModuleImports,
         storageModuleConfigValues,
+        prismaGeneratedImports,
       }) {
         return {
           build: async (builder) => {
@@ -230,13 +232,13 @@ export const storageModuleGenerator = createGenerator({
                   typesFileCategory: {
                     TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
                       `Prisma.${STORAGE_MODELS.file}CountOutputType`,
-                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+                      prismaGeneratedImports.Prisma.typeDeclaration(),
                     ),
                   },
                   utilsValidateFileUploadOptions: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
                       `Prisma.${STORAGE_MODELS.file}CreateInput`,
-                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+                      prismaGeneratedImports.Prisma.typeDeclaration(),
                     ),
                   },
                 },

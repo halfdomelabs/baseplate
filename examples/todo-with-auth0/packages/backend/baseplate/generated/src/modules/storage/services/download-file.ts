@@ -1,6 +1,6 @@
-import type { File } from '@prisma/client';
 import type { Readable } from 'node:stream';
 
+import type { File } from '@src/generated/prisma/client.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';

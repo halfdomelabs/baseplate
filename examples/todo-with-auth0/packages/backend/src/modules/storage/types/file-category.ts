@@ -1,5 +1,4 @@
-import type { File, Prisma } from '@prisma/client';
-
+import type { File, Prisma } from '@src/generated/prisma/client.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import type { StorageAdapterKey } from '../config/adapters.config.js';

@@ -1,5 +1,3 @@
-import type PrismaTypes from '@pothos/plugin-prisma/generated';
-
 import SchemaBuilder from '@pothos/core';
 import PrismaPlugin from '@pothos/plugin-prisma';
 import RelayPlugin from '@pothos/plugin-relay';
@@ -7,9 +5,11 @@ import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
 
+import type PrismaTypes from '@src/generated/prisma/pothos-prisma-types.js';
 import type { AuthRole } from '@src/modules/accounts/constants/auth-roles.constants.js';
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
+import { getDatamodel } from '@src/generated/prisma/pothos-prisma-types.js';
 import { prisma } from '@src/services/prisma.js';
 
 import { pothosAuthorizeByRolesPlugin } from './FieldAuthorizePlugin/index.js';
@@ -59,6 +59,7 @@ export const builder = new SchemaBuilder<{
     ],
     prisma: {
       client: prisma,
+      dmmf: getDatamodel(),
       exposeDescriptions: false,
       filterConnectionTotalCount: true,
     },
