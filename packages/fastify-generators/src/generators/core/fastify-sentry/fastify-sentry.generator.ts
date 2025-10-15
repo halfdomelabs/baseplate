@@ -83,7 +83,7 @@ export const fastifySentryGenerator = createGenerator({
               targetEnvironment: 'dev',
             },
             ['instrument-prod']: {
-              flag: '--import ./dist/instrument.ts',
+              flag: '--import ./dist/instrument.js',
               useCase: 'instrument',
               targetEnvironment: 'prod',
             },

@@ -2,7 +2,7 @@
 
 import * as Sentry from '@sentry/node';
 
-import { getSentryTestkit } from './sentry.test-kit.test-helper';
+import { getSentryTestkit } from './sentry.test-kit.test-helper.js';
 
 // initialize your Sentry instance with sentryTransport
 Sentry.init({

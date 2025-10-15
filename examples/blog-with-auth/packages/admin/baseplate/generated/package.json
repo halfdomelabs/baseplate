@@ -41,7 +41,7 @@
     "date-fns": "4.1.0",
     "graphql": "16.11.0",
     "loglevel": "1.9.1",
-    "nanoid": "3.3.8",
+    "nanoid": "5.1.6",
     "radix-ui": "1.4.2",
     "react": "19.1.0",
     "react-day-picker": "9.7.0",

@@ -100,7 +100,7 @@ export const fastifyGenerator = createGenerator({
         nodeConfig: nodeConfigProvider,
       },
       run({ nodeConfig }) {
-        nodeConfig.isEsm.set(false);
+        nodeConfig.isEsm.set(true);
         return {};
       },
     }),

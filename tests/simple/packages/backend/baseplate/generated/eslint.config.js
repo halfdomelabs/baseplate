@@ -36,7 +36,7 @@ const IGNORE_FILES = [
 // This is useful for certain files outside the src directory, e.g. config files
 const TS_DEFAULT_PROJECT_FILES = [
   'prisma.config.mts',
-  'vitest.config.mts',
+  'vitest.config.ts',
   'vitest.config.ts',
 ];
 

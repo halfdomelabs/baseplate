@@ -2,13 +2,13 @@ import './sentry.instrument.test-helper';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type * as configModule from '@src/services/config';
+import type * as configModule from '@src/services/config.js';
 
-import { buildServer } from '@src/server';
-import { BadRequestError } from '@src/utils/http-errors';
+import { buildServer } from '@src/server.js';
+import { BadRequestError } from '@src/utils/http-errors.js';
 
-import { logErrorToSentry } from './sentry';
-import { getSentryTestkit } from './sentry.test-kit.test-helper';
+import { logErrorToSentry } from './sentry.js';
+import { getSentryTestkit } from './sentry.test-kit.test-helper.js';
 
 vi.mock('@src/services/logger', () => ({
   logger: {

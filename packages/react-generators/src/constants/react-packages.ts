@@ -50,7 +50,7 @@ export const REACT_PACKAGES = {
   '@parcel/watcher': '2.5.1',
 
   // Utils
-  nanoid: '3.3.8',
+  nanoid: '5.1.6',
   'use-subscription': '^1.5.1',
   '@types/use-subscription': '^1.0.0',
 

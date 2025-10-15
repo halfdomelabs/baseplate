@@ -3,7 +3,7 @@ export const FASTIFY_PACKAGES = {
   fastify: '5.3.2',
   '@fastify/helmet': '13.0.0',
   'fastify-plugin': '5.0.1',
-  nanoid: '3.3.8',
+  nanoid: '5.1.6',
 
   pino: '9.5.0',
   'pino-pretty': '13.0.0',
@@ -47,20 +47,18 @@ export const FASTIFY_PACKAGES = {
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
   'es-toolkit': '1.31.0',
-  uuid: '9.0.0',
-  '@types/uuid': '9.0.1',
 
   // Environment
   'cross-env': '7.0.3',
 
   // Compilation
   'tsc-alias': '1.8.10',
-  tsx: '4.19.3',
+  tsx: '4.20.6',
   '@types/node': `^22.0.0`,
 
   // Redis
-  ioredis: '5.3.2',
-  'ioredis-mock': '8.7.0',
+  ioredis: '5.8.1',
+  'ioredis-mock': '8.13.0',
 
   // Sentry
   '@sentry/core': '9.17.0',
@@ -73,7 +71,7 @@ export const FASTIFY_PACKAGES = {
   zod: '3.25.76',
 
   // Testing
-  'vitest-mock-extended': '1.3.2',
+  'vitest-mock-extended': '3.1.0',
   'pg-connection-string': '2.6.4',
 
   // Auth
