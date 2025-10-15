@@ -28,7 +28,9 @@ export async function uploadFile(
     await /* TPL_FILE_MODEL:START */ prisma.file /* TPL_FILE_MODEL:END */
       .create({ data: fileCreateInput });
 
-  await adapter.uploadFile(file.storagePath, contents);
+  await adapter.uploadFile(file.storagePath, contents, {
+    contentType: options.contentType,
+  });
 
   return file;
 }

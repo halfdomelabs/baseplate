@@ -5,9 +5,9 @@ import {
   DeleteObjectsCommand,
   GetObjectCommand,
   HeadObjectCommand,
-  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -16,6 +16,7 @@ import type {
   FileMetadata,
   PresignedUploadUrl,
   StorageAdapter,
+  UploadFileOptions,
 } from '../types/adapter.js';
 
 /** Options for the S3 adapter. */
@@ -88,9 +89,9 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     });
   }
 
-  function getPublicUrl(path: string): string | null {
+  function getPublicUrl(path: string): string | undefined {
     if (!publicUrl) {
-      return null;
+      return undefined;
     }
     return `${publicUrl.replace(/\/$/, '')}/${path}`;
   }
@@ -190,15 +191,20 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
   async function uploadFile(
     path: string,
     contents: Buffer | Readable,
+    options?: UploadFileOptions,
   ): Promise<FileMetadata> {
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: path,
-      Body: contents,
-      ServerSideEncryption: 'AES256',
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: bucket,
+        Key: path,
+        Body: contents,
+        ContentType: options?.contentType,
+        ServerSideEncryption: 'AES256',
+      },
     });
 
-    await client.send(command);
+    await upload.done();
 
     // Get metadata after upload to return accurate information
     const metadata = await getFileMetadata(path);

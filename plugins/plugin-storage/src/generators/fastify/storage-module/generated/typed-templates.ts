@@ -340,7 +340,7 @@ const schemaPublicUrl = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-public-url',
   projectExports: {},
-  referencedGeneratorTemplates: { configAdapters: {} },
+  referencedGeneratorTemplates: { servicesGetPublicUrl: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -357,9 +357,26 @@ export const schemaGroup = {
   schemaPublicUrl,
 };
 
+const servicesGetPublicUrl = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
+  name: 'services-get-public-url',
+  referencedGeneratorTemplates: { configAdapters: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/get-public-url.ts',
+    ),
+  },
+  variables: { TPL_FILE_MODEL: {} },
+});
+
 export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   configAdapters,
   configCategories,
   mainGroup,
   schemaGroup,
+  servicesGetPublicUrl,
 };

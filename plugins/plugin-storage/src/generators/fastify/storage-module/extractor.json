@@ -113,7 +113,7 @@
       },
       "pathRootRelativePath": "{module-root}/schema/public-url.field.ts",
       "projectExports": {},
-      "referencedGeneratorTemplates": ["config-adapters"],
+      "referencedGeneratorTemplates": ["services-get-public-url"],
       "sourceFile": "module/schema/public-url.field.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
@@ -179,6 +179,20 @@
       "projectExports": { "downloadFile": {} },
       "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
       "sourceFile": "module/services/download-file.ts",
+      "variables": { "TPL_FILE_MODEL": {} }
+    },
+    "services-get-public-url": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/get-public-url.ts",
+      "referencedGeneratorTemplates": ["config-adapters"],
+      "sourceFile": "module/services/get-public-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
     "services-upload-file": {
