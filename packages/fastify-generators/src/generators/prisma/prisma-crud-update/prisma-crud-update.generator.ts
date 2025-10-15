@@ -1,9 +1,6 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import {
-  TsCodeUtils,
-  tsTypeImportBuilder,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { notEmpty, NUMBER_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -20,6 +17,7 @@ import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
 
+import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import {
   getDataInputTypeBlock,
   getDataMethodContextRequired,
@@ -82,7 +80,8 @@ function getMethodDefinition(
 }
 
 function getMethodBlock(options: PrismaDataMethodOptions): TsCodeFragment {
-  const { name, modelName, prismaOutput, prismaUtils } = options;
+  const { name, modelName, prismaOutput, prismaUtils, prismaGeneratedImports } =
+    options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
 
@@ -135,7 +134,7 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
     },
     [
       prismaUtils.UpdateServiceInput.typeDeclaration(),
-      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+      prismaGeneratedImports.Prisma.typeDeclaration(),
     ],
     {
       hoistedFragments: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
@@ -157,6 +156,7 @@ export const prismaCrudUpdateGenerator = createGenerator({
         crudPrismaService: prismaCrudServiceProvider,
         serviceContextImports: serviceContextImportsProvider,
         prismaUtilsImports: prismaUtilsImportsProvider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       run({
         prismaOutput,
@@ -164,6 +164,7 @@ export const prismaCrudUpdateGenerator = createGenerator({
         crudPrismaService,
         serviceContextImports,
         prismaUtilsImports,
+        prismaGeneratedImports,
       }) {
         const { name, modelName, prismaFields, transformerNames } = descriptor;
         const methodName = `${name}${modelName}`;
@@ -196,6 +197,7 @@ export const prismaCrudUpdateGenerator = createGenerator({
               transformers,
               serviceContextImports,
               prismaUtils: prismaUtilsImports,
+              prismaGeneratedImports,
               operationType: 'update',
               whereUniqueExpression: primaryKey.whereClause,
             };

@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@src/generated/prisma/client.js';
 
 import type { DataPipeOutput } from '../data-pipes.js';
 import type { ServiceContext } from '../service-context.js';

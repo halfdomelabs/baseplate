@@ -6,3 +6,4 @@
 /node_modules
 /schema.graphql
 pnpm-lock.yaml
+src/generated/prisma/**/*.ts

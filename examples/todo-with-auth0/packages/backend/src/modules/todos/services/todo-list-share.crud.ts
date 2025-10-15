@@ -1,5 +1,4 @@
-import type { Prisma, TodoListShare } from '@prisma/client';
-
+import type { Prisma, TodoListShare } from '@src/generated/prisma/client.js';
 import type {
   CreateServiceInput,
   DeleteServiceInput,

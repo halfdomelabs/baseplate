@@ -2,6 +2,7 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
+  prismaGeneratedImportsProvider,
   prismaUtilsImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
@@ -113,6 +114,7 @@ const servicesDownloadFile = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'services-download-file',
@@ -189,7 +191,10 @@ const typesAdapter = createTsTemplateFile({
 const typesFileCategory = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
   name: 'types-file-category',
   projectExports: { FileCategory: { isTypeOnly: true } },
   referencedGeneratorTemplates: { configAdapters: {} },

@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/index.js';
 
+import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '../prisma/index.js';
 import { PRISMA_PRISMA_UTILS_GENERATED } from './generated/index.js';
 
@@ -26,6 +27,7 @@ export const prismaUtilsGenerator = createGenerator({
         tsUtilsImports: tsUtilsImportsProvider,
         prismaImports: prismaImportsProvider,
         paths: PRISMA_PRISMA_UTILS_GENERATED.paths.provider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       run({
         typescriptFile,
@@ -33,6 +35,7 @@ export const prismaUtilsGenerator = createGenerator({
         tsUtilsImports,
         prismaImports,
         paths,
+        prismaGeneratedImports,
       }) {
         return {
           build: (builder) => {
@@ -45,6 +48,7 @@ export const prismaUtilsGenerator = createGenerator({
                 serviceContextImports,
                 tsUtilsImports,
                 prismaImports,
+                prismaGeneratedImports,
               },
             });
           },

@@ -8,7 +8,6 @@ import {
   TsCodeUtils,
   tsHoistedFragment,
   tsTemplate,
-  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { notEmpty, quot } from '@baseplate-dev/utils';
@@ -31,6 +30,7 @@ import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method
 import type { PrismaUtilsImportsProvider } from '../prisma-utils/index.js';
 import type { PrismaOutputProvider } from '../prisma/index.js';
 
+import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import {
   getDataInputTypeBlock,
   getDataMethodDataExpressions,
@@ -206,6 +206,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
           .optionalReference(foreignModelName),
         serviceContextImports: serviceContextImportsProvider,
         prismaUtilsImports: prismaUtilsImportsProvider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       run({
         prismaOutput,
@@ -213,6 +214,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
         foreignCrudService,
         serviceContextImports,
         prismaUtilsImports,
+        prismaGeneratedImports,
       }) {
         function buildTransformer({
           operationType,
@@ -304,6 +306,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
             )
               ? getForeignRelationParentField()
               : undefined,
+            prismaGeneratedImports,
           };
 
           const foreignModelName = upperCaseFirst(foreignModel.name);
@@ -417,7 +420,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
               `Prisma.${upperCaseFirst(
                 foreignModel.name,
               )}WhereUniqueInput | undefined`,
-              tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+              prismaGeneratedImports.Prisma.typeDeclaration(),
             );
 
             // convert primary keys to where unique

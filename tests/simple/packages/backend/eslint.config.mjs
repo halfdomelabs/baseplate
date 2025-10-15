@@ -29,6 +29,7 @@ const IGNORE_FILES = [
   'dist',
   'node_modules',
   'src/generated/graphql.tsx',
+  'src/generated/prisma/**/*.ts',
 ];
 
 // Specifies which files should use the default tsconfig.json project

@@ -1,6 +1,22 @@
 {
   "name": "prisma/prisma",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:prismaGeneratedImportsProvider"
+      ]
+    }
+  },
   "templates": {
+    "client": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "generated",
+      "pathRootRelativePath": "{src-root}/generated/prisma/client.ts",
+      "projectExports": { "*": {}, "Prisma": {}, "PrismaClient": {} },
+      "projectExportsOnly": true,
+      "sourceFile": "src/generated/prisma/client.ts"
+    },
     "prisma-config": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -23,9 +39,15 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/services/prisma.ts",
       "projectExports": { "prisma": {} },
+      "referencedGeneratorTemplates": ["client"],
       "sourceFile": "src/services/prisma.ts",
       "variables": {}
     }

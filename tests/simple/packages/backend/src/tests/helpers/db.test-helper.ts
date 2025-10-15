@@ -1,8 +1,10 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { nanoid } from 'nanoid';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { parse } from 'pg-connection-string';
+
+import { Prisma, PrismaClient } from '@src/generated/prisma/client.js';
 
 const TEST_DATABASE_NAME = 'simple_backend_test';
 
@@ -19,7 +21,7 @@ export function replaceDatabase(
 
 export function getTestPrisma(databaseUrl: string): PrismaClient {
   return new PrismaClient({
-    datasources: { db: { url: databaseUrl } },
+    adapter: new PrismaPg({ connectionString: databaseUrl }),
   });
 }
 

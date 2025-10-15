@@ -1,9 +1,6 @@
 import type { TsHoistedFragment } from '@baseplate-dev/core-generators';
 
-import {
-  tsHoistedFragment,
-  tsTypeImportBuilder,
-} from '@baseplate-dev/core-generators';
+import { tsHoistedFragment } from '@baseplate-dev/core-generators';
 import { quot } from '@baseplate-dev/utils';
 
 import type { PrismaOutputModel } from '#src/types/prisma-output.js';
@@ -118,7 +115,6 @@ export function getPrimaryKeyExpressions(
   const headerTypeBlock = tsHoistedFragment(
     `input-type:${primaryKeyInputName}`,
     `export type ${primaryKeyInputName} = Pick<${model.name}, ${idFields.map(quot).join(' | ')}>`,
-    tsTypeImportBuilder([model.name]).from('@prisma/client'),
   );
 
   return {

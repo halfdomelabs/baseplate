@@ -2,8 +2,8 @@
 
 import type { DataPipeOutput } from '$dataPipes';
 import type { UpsertPayload } from '$embeddedTypes';
+import type { Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
-import type { Prisma } from '@prisma/client';
 
 // Create Helpers
 

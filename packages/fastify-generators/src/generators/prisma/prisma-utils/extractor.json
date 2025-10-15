@@ -27,6 +27,10 @@
       "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
       "group": "utils",
       "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
@@ -77,6 +81,10 @@
       "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
       "group": "utils",
       "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"

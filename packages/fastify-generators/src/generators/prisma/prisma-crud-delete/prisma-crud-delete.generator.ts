@@ -1,9 +1,6 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import {
-  TsCodeUtils,
-  tsTypeImportBuilder,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { NUMBER_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -13,9 +10,11 @@ import type { ServiceOutputMethod } from '#src/types/service-output.js';
 import { serviceFileProvider } from '#src/generators/core/service-file/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
+import type { PrismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import type { PrismaUtilsImportsProvider } from '../prisma-utils/index.js';
 import type { PrismaOutputProvider } from '../prisma/index.js';
 
+import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
@@ -35,6 +34,7 @@ interface PrismaDeleteMethodOptions {
   prismaOutput: PrismaOutputProvider;
   serviceMethodReference: TsCodeFragment;
   prismaUtils: PrismaUtilsImportsProvider;
+  prismaGeneratedImports: PrismaGeneratedImportsProvider;
 }
 
 function getMethodDefinition({
@@ -69,6 +69,7 @@ function getMethodBlock({
   descriptor: { modelName },
   prismaOutput,
   prismaUtils,
+  prismaGeneratedImports,
 }: PrismaDeleteMethodOptions): TsCodeFragment {
   const modelType = prismaOutput.getModelTypeFragment(modelName);
 
@@ -95,7 +96,7 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
     },
     [
       prismaUtils.DeleteServiceInput.typeDeclaration(),
-      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+      prismaGeneratedImports.Prisma.typeDeclaration(),
     ],
     {
       hoistedFragments: primaryKey.headerTypeBlock && [
@@ -115,8 +116,14 @@ export const prismaCrudDeleteGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider,
         prismaUtilsImports: prismaUtilsImportsProvider,
+        prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
-      run({ prismaOutput, serviceFile, prismaUtilsImports }) {
+      run({
+        prismaOutput,
+        serviceFile,
+        prismaUtilsImports,
+        prismaGeneratedImports,
+      }) {
         const { name, modelName } = descriptor;
 
         const methodName = `${name}${modelName}`;
@@ -132,6 +139,7 @@ export const prismaCrudDeleteGenerator = createGenerator({
           prismaOutput,
           serviceMethodReference,
           prismaUtils: prismaUtilsImports,
+          prismaGeneratedImports,
         };
 
         serviceFile.registerMethod({

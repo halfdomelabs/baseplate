@@ -1,5 +1,4 @@
-import type { Prisma, UserImage } from '@prisma/client';
-
+import type { Prisma, UserImage } from '@src/generated/prisma/client.js';
 import type { DeleteServiceInput } from '@src/utils/crud-service-types.js';
 
 import { prisma } from '@src/services/prisma.js';

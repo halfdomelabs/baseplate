@@ -8,7 +8,6 @@ import {
   TsCodeUtils,
   tsHoistedFragment,
   tsTemplate,
-  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import { notEmpty, safeMergeAllWithOptions } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
@@ -23,6 +22,7 @@ import type { ServiceOutputDto } from '#src/types/service-output.js';
 
 import { upperCaseFirst } from '#src/utils/case.js';
 
+import type { PrismaGeneratedImportsProvider } from '../../_providers/prisma-generated-imports.js';
 import type { PrismaUtilsImportsProvider } from '../../prisma-utils/index.js';
 import type { PrismaOutputProvider } from '../../prisma/index.js';
 
@@ -40,6 +40,7 @@ export interface PrismaDataMethodOptions {
   transformers: PrismaDataTransformer[];
   serviceContextImports: ServiceContextImportsProvider;
   prismaUtils: PrismaUtilsImportsProvider;
+  prismaGeneratedImports: PrismaGeneratedImportsProvider;
 }
 
 export function getDataMethodContextRequired({
@@ -119,6 +120,7 @@ export function getDataInputTypeBlock(
     prismaFieldNames,
     operationName,
     transformers,
+    prismaGeneratedImports,
   }: Omit<PrismaDataMethodOptions, 'name'>,
 ): TsHoistedFragment {
   const prismaFieldSelection = prismaFieldNames
@@ -131,7 +133,7 @@ export function getDataInputTypeBlock(
 
   let prismaDataInput = tsCodeFragment(
     `Prisma.${modelName}UncheckedCreateInput`,
-    tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+    prismaGeneratedImports.Prisma.typeDeclaration(),
   );
   prismaDataInput =
     operationName === 'create'
