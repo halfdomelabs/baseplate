@@ -203,19 +203,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
         ContentType: options?.contentType,
         ServerSideEncryption: 'AES256',
       },
-      partSize: options?.partSize,
-      queueSize: options?.queueSize,
     });
-
-    // Track progress if callback provided
-    if (options?.onProgress) {
-      upload.on('httpUploadProgress', (progress) => {
-        const { loaded, total } = progress;
-        const percentage =
-          loaded && total ? Math.round((loaded / total) * 100) : undefined;
-        options.onProgress?.({ loaded: loaded ?? 0, total, percentage });
-      });
-    }
 
     await upload.done();
 

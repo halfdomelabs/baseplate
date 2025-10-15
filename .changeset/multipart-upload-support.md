@@ -2,9 +2,9 @@
 '@baseplate-dev/plugin-storage': patch
 ---
 
-Add multipart upload support with progress tracking using @aws-sdk/lib-storage
+Add automatic multipart upload support using @aws-sdk/lib-storage
 
 - Added @aws-sdk/lib-storage dependency for improved file upload handling
-- Updated UploadFileOptions interface to support progress callbacks, partSize, and queueSize configuration
-- Replaced PutObjectCommand with Upload class in S3 adapter for automatic optimization between single-part and multipart uploads
-- Added UploadProgress interface for tracking upload progress with loaded bytes, total bytes, and percentage
+- Replaced PutObjectCommand with Upload class in S3 adapter
+- The Upload class automatically optimizes between single-part and multipart uploads based on file size
+- No configuration changes required - existing upload code continues to work without modifications

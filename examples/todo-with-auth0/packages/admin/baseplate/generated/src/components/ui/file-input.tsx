@@ -119,7 +119,9 @@ export function FileInput({
   const handleRemove = (): void => {
     if (onChange) onChange(null);
     cancelUpload();
-    inputRef.current.value = '';
+    if (inputRef.current as HTMLInputElement | undefined) {
+      inputRef.current.value = '';
+    }
   };
 
   const handleCancel = (): void => {

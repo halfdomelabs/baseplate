@@ -43,29 +43,11 @@ export interface PresignedUploadUrl {
 }
 
 /**
- * Progress information for multipart uploads
- */
-export interface UploadProgress {
-  /** Number of bytes uploaded so far */
-  loaded: number;
-  /** Total number of bytes to upload (if known) */
-  total?: number;
-  /** Upload percentage (0-100) */
-  percentage?: number;
-}
-
-/**
  * Options for uploading a file
  */
 export interface UploadFileOptions {
   /** MIME type of the file (e.g., 'image/jpeg', 'application/pdf') */
   contentType?: string;
-  /** Callback for tracking upload progress (multipart uploads only) */
-  onProgress?: (progress: UploadProgress) => void;
-  /** Part size in bytes for multipart uploads (default: 5MB, min: 5MB, max: 5GB) */
-  partSize?: number;
-  /** Number of concurrent part uploads (default: 4) */
-  queueSize?: number;
 }
 
 /**
