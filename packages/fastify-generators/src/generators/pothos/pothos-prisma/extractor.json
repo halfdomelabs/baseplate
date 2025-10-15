@@ -1,0 +1,16 @@
+{
+  "name": "pothos/pothos-prisma",
+  "templates": {
+    "pothos-prisma-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/generated/prisma/pothos-prisma-types.ts",
+      "projectExports": {
+        "getDatamodel": {},
+        "PrismaTypes": { "exportedAs": "default", "isTypeOnly": true }
+      },
+      "projectExportsOnly": true,
+      "sourceFile": "src/generated/prisma/pothos-prisma-types.ts"
+    }
+  }
+}

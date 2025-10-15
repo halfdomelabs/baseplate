@@ -39,7 +39,12 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/services/prisma.ts",
       "projectExports": { "prisma": {} },
       "referencedGeneratorTemplates": ["client"],

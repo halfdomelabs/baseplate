@@ -73,6 +73,7 @@
   "@baseplate-dev/fastify-generators#pothos/pothos-auth:field-authorize-plugin": "src/plugins/graphql/FieldAuthorizePlugin/index.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-auth:field-authorize-types": "src/plugins/graphql/FieldAuthorizePlugin/types.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-enums-file:feature:5yQn3gjSzKEB-enums": "src/modules/todos/schema/enums.ts",
+  "@baseplate-dev/fastify-generators#pothos/pothos-prisma:pothos-prisma-types": "src/generated/prisma/pothos-prisma-types.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:date": "src/modules/graphql/scalars/date.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:date-time": "src/modules/graphql/scalars/date-time.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:json": "src/modules/graphql/scalars/json.ts",

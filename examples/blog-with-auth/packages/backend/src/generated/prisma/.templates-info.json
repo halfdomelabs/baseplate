@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
     "instanceData": {},
     "template": "client"
+  },
+  "pothos-prisma-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-prisma",
+    "instanceData": {},
+    "template": "pothos-prisma-types"
   }
 }

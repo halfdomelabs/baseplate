@@ -11,6 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
+import { doubleQuot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
@@ -21,6 +22,8 @@ import {
 import { createPrismaSchemaGeneratorBlock } from '#src/writers/prisma-schema/index.js';
 
 import { pothosConfigProvider } from '../pothos/index.js';
+import { POTHOS_POTHOS_PRISMA_GENERATED } from './generated/index.js';
+import { pothosPrismaImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -34,6 +37,9 @@ export const pothosPrismaGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: POTHOS_POTHOS_PRISMA_GENERATED.paths.task,
+    imports: POTHOS_POTHOS_PRISMA_GENERATED.imports.task,
+    renderers: POTHOS_POTHOS_PRISMA_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@pothos/plugin-prisma']),
     }),
@@ -41,16 +47,18 @@ export const pothosPrismaGenerator = createGenerator({
       dependencies: {
         pothosConfig: pothosConfigProvider,
         prismaImports: prismaImportsProvider,
+        pothosPrismaImports: pothosPrismaImportsProvider,
+        renderers: POTHOS_POTHOS_PRISMA_GENERATED.renderers.provider,
       },
       exports: {
         pothosPrisma: pothosPrismaProvider.export(packageScope),
       },
-      run({ pothosConfig, prismaImports }) {
+      run({ pothosConfig, prismaImports, pothosPrismaImports, renderers }) {
         return {
           providers: {
             pothosPrisma: {},
           },
-          build: () => {
+          build: async (builder) => {
             pothosConfig.pothosPlugins.set(
               'PrismaPlugin',
               tsCodeFragment(
@@ -62,22 +70,18 @@ export const pothosPrismaGenerator = createGenerator({
             );
             pothosConfig.schemaTypeOptions.set(
               'PrismaTypes',
-              tsCodeFragment(
-                'PrismaTypes',
-                tsImportBuilder()
-                  .default('PrismaTypes')
-                  .typeOnly()
-                  .from('@pothos/plugin-prisma/generated'),
-              ),
+              pothosPrismaImports.PrismaTypes.typeFragment(),
             );
             pothosConfig.schemaBuilderOptions.set(
               'prisma',
               tsTemplate`{
                 client: ${prismaImports.prisma.fragment()},
+                dmmf: ${pothosPrismaImports.getDatamodel.fragment()}(),
                 exposeDescriptions: false,
                 filterConnectionTotalCount: true,
               }`,
             );
+            await builder.apply(renderers.pothosPrismaTypes.render({}));
           },
         };
       },
@@ -91,6 +95,12 @@ export const pothosPrismaGenerator = createGenerator({
           createPrismaSchemaGeneratorBlock({
             name: 'pothos',
             provider: 'pnpm prisma-pothos-types',
+            additionalOptions: {
+              clientOutput: doubleQuot('@src/generated/prisma/client.js'),
+              output: doubleQuot(
+                '../src/generated/prisma/pothos-prisma-types.ts',
+              ),
+            },
           }),
         );
         return {};

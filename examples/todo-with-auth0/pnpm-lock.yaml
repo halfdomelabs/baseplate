@@ -238,23 +238,23 @@ importers:
         specifier: 6.0.1
         version: 6.0.1
       '@pothos/core':
-        specifier: 4.8.1
-        version: 4.8.1(graphql@16.11.0)
-      '@pothos/plugin-prisma':
         specifier: 4.10.0
-        version: 4.10.0(@pothos/core@4.8.1(graphql@16.11.0))(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)
+        version: 4.10.0(graphql@16.11.0)
+      '@pothos/plugin-prisma':
+        specifier: 4.12.0
+        version: 4.12.0(@pothos/core@4.10.0(graphql@16.11.0))(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)
       '@pothos/plugin-relay':
         specifier: 4.6.2
-        version: 4.6.2(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)
+        version: 4.6.2(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)
       '@pothos/plugin-simple-objects':
         specifier: 4.1.3
-        version: 4.1.3(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)
+        version: 4.1.3(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)
       '@pothos/plugin-tracing':
         specifier: 1.1.0
-        version: 1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)
+        version: 1.1.0(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)
       '@pothos/tracing-sentry':
         specifier: 1.1.1
-        version: 1.1.1(@pothos/core@4.8.1(graphql@16.11.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0))(@sentry/node@9.17.0)(graphql@16.11.0)
+        version: 1.1.1(@pothos/core@4.10.0(graphql@16.11.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0))(@sentry/node@9.17.0)(graphql@16.11.0)
       '@prisma/adapter-pg':
         specifier: 6.17.1
         version: 6.17.1
@@ -2126,13 +2126,13 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@pothos/core@4.8.1':
-    resolution: {integrity: sha512-C8ZVIm+ZD1WQmL90VvJtgkOmfCmrDrFyTXJeLtTgs6btS9ZbJGALBAYuc09UVab4/psCoCA7Ov7EJjmzJ0lzxw==}
+  '@pothos/core@4.10.0':
+    resolution: {integrity: sha512-spC7v6N80GfDKqt6ZSGELLu7EFDZsuQBb/oCqAtDwAe+HIL5T0STjv220IumLeC8lIAMgTaZMa/WnMNKkawbFg==}
     peerDependencies:
       graphql: ^16.10.0
 
-  '@pothos/plugin-prisma@4.10.0':
-    resolution: {integrity: sha512-uchgp8vSVdCZrNj7Iqp2mgIMRdjB0uPZdproK2Ubd/vI3mt6cHrSFcY5QcQxVvm3+jOK5K+eFIk9Ehg7lIPNrg==}
+  '@pothos/plugin-prisma@4.12.0':
+    resolution: {integrity: sha512-4q9fa5t1vj7pVKEqNlprcONjVh522+KNTEU4/1sI3NHR+dD4uW9XUFlVsXlC9AaAjo6KGgMO6pGFuCMivG1zCQ==}
     hasBin: true
     peerDependencies:
       '@pothos/core': '*'
@@ -2184,14 +2184,11 @@ packages:
   '@prisma/config@6.17.1':
     resolution: {integrity: sha512-fs8wY6DsvOCzuiyWVckrVs1LOcbY4LZNz8ki4uUIQ28jCCzojTGqdLhN2Jl5lDnC1yI8/gNIKpsWDM8pLhOdwA==}
 
-  '@prisma/debug@6.14.0':
-    resolution: {integrity: sha512-j4Lf+y+5QIJgQD4sJWSbkOD7geKx9CakaLp/TyTy/UDu9Wo0awvWCBH/BAxTHUaCpIl9USA5VS/KJhDqKJSwug==}
-
   '@prisma/debug@6.17.1':
     resolution: {integrity: sha512-Vf7Tt5Wh9XcndpbmeotuqOMLWPTjEKCsgojxXP2oxE1/xYe7PtnP76hsouG9vis6fctX+TxgmwxTuYi/+xc7dQ==}
 
-  '@prisma/dmmf@6.14.0':
-    resolution: {integrity: sha512-YOoRDb8A8fj0Pp0q0UjKAsuBVpzb2z+rnDaMBZgSkczqRhubBQ1USgTEMM7jYaAN7ym7iK4K5V8mtREcpX/p9Q==}
+  '@prisma/dmmf@6.17.1':
+    resolution: {integrity: sha512-ILf+sYTvoZRJIn1KjW8ZBn9N3fK+4ZxreJT0EXuLxbZWbXuz7Eums0/PEscS8+fzktg1zbxZvjHVFMppqfFz3g==}
 
   '@prisma/driver-adapter-utils@6.17.1':
     resolution: {integrity: sha512-GT4QbVUyJa5sXj5vjrBPnZ68v1P/FoKBCSIkrFrCPrOi6OSzk+567XDZyBtWIECKxruuMTa7fU4wwNmtMQylrg==}
@@ -2205,11 +2202,11 @@ packages:
   '@prisma/fetch-engine@6.17.1':
     resolution: {integrity: sha512-AYZiHOs184qkDMiTeshyJCtyL4yERkjfTkJiSJdYuSfc24m94lTNL5+GFinZ6vVz+ktX4NJzHKn1zIFzGTWrWg==}
 
-  '@prisma/generator-helper@6.14.0':
-    resolution: {integrity: sha512-qQRwDknQIl/XecMYpw9e4huBFn8HjXKpZk9yF5i1oiMl1ppKAm2/YmFHDgLxsKfx713z47riYvngoKZehLTeFw==}
+  '@prisma/generator-helper@6.17.1':
+    resolution: {integrity: sha512-ONuUTGXCTUK9K//ronFg4xOEARv+tZKOo5uVSJg6tj2y90gpXQunPYyvR17gEoAQrZT17kC0ie60ecv8nulWyQ==}
 
-  '@prisma/generator@6.14.0':
-    resolution: {integrity: sha512-9eXnfVUi8q+qNgSHegepoljdZ6RNb2AA+WzeAVhsdjDDKBhJYTveL+QvslGw9yk5DpeppktwqkMgbrYujM9UBg==}
+  '@prisma/generator@6.17.1':
+    resolution: {integrity: sha512-R4SIlAtMHlxwXYYHiyWtN+MLRGFF3Jy+LvqcfInbCiaZkoqyhU5kj8/aOu2OV2ydNkkN+Q8ft9Tnv5a/b4pqPg==}
 
   '@prisma/get-platform@6.17.1':
     resolution: {integrity: sha512-AKEn6fsfz0r482S5KRDFlIGEaq9wLNcgalD1adL+fPcFFblIKs1sD81kY/utrHdqKuVC6E1XSRpegDK3ZLL4Qg==}
@@ -9598,37 +9595,37 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@pothos/core@4.8.1(graphql@16.11.0)':
+  '@pothos/core@4.10.0(graphql@16.11.0)':
     dependencies:
       graphql: 16.11.0
 
-  '@pothos/plugin-prisma@4.10.0(@pothos/core@4.8.1(graphql@16.11.0))(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)':
+  '@pothos/plugin-prisma@4.12.0(@pothos/core@4.10.0(graphql@16.11.0))(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)':
     dependencies:
-      '@pothos/core': 4.8.1(graphql@16.11.0)
+      '@pothos/core': 4.10.0(graphql@16.11.0)
       '@prisma/client': 6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3)
-      '@prisma/generator-helper': 6.14.0
+      '@prisma/generator-helper': 6.17.1
       graphql: 16.11.0
       typescript: 5.8.3
 
-  '@pothos/plugin-relay@4.6.2(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)':
+  '@pothos/plugin-relay@4.6.2(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)':
     dependencies:
-      '@pothos/core': 4.8.1(graphql@16.11.0)
+      '@pothos/core': 4.10.0(graphql@16.11.0)
       graphql: 16.11.0
 
-  '@pothos/plugin-simple-objects@4.1.3(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)':
+  '@pothos/plugin-simple-objects@4.1.3(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)':
     dependencies:
-      '@pothos/core': 4.8.1(graphql@16.11.0)
+      '@pothos/core': 4.10.0(graphql@16.11.0)
       graphql: 16.11.0
 
-  '@pothos/plugin-tracing@1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)':
+  '@pothos/plugin-tracing@1.1.0(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)':
     dependencies:
-      '@pothos/core': 4.8.1(graphql@16.11.0)
+      '@pothos/core': 4.10.0(graphql@16.11.0)
       graphql: 16.11.0
 
-  '@pothos/tracing-sentry@1.1.1(@pothos/core@4.8.1(graphql@16.11.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0))(@sentry/node@9.17.0)(graphql@16.11.0)':
+  '@pothos/tracing-sentry@1.1.1(@pothos/core@4.10.0(graphql@16.11.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0))(@sentry/node@9.17.0)(graphql@16.11.0)':
     dependencies:
-      '@pothos/core': 4.8.1(graphql@16.11.0)
-      '@pothos/plugin-tracing': 1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0)
+      '@pothos/core': 4.10.0(graphql@16.11.0)
+      '@pothos/plugin-tracing': 1.1.0(@pothos/core@4.10.0(graphql@16.11.0))(graphql@16.11.0)
       '@sentry/node': 9.17.0
       graphql: 16.11.0
 
@@ -9654,11 +9651,9 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@prisma/debug@6.14.0': {}
-
   '@prisma/debug@6.17.1': {}
 
-  '@prisma/dmmf@6.14.0': {}
+  '@prisma/dmmf@6.17.1': {}
 
   '@prisma/driver-adapter-utils@6.17.1':
     dependencies:
@@ -9679,13 +9674,13 @@ snapshots:
       '@prisma/engines-version': 6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac
       '@prisma/get-platform': 6.17.1
 
-  '@prisma/generator-helper@6.14.0':
+  '@prisma/generator-helper@6.17.1':
     dependencies:
-      '@prisma/debug': 6.14.0
-      '@prisma/dmmf': 6.14.0
-      '@prisma/generator': 6.14.0
+      '@prisma/debug': 6.17.1
+      '@prisma/dmmf': 6.17.1
+      '@prisma/generator': 6.17.1
 
-  '@prisma/generator@6.14.0': {}
+  '@prisma/generator@6.17.1': {}
 
   '@prisma/get-platform@6.17.1':
     dependencies:

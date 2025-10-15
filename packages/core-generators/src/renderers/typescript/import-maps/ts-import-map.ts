@@ -55,6 +55,9 @@ export function createTsImportMap<
         };
       };
 
+      // if the exportedAs is default, use the key instead of the name
+      const fragmentName = value.exportedAs === 'default' ? key : name;
+
       return [
         key,
         {
@@ -63,9 +66,9 @@ export function createTsImportMap<
           isTypeOnly: value.isTypeOnly,
           declaration: (alias) => makeDeclaration(alias),
           typeDeclaration: (alias) => makeDeclaration(alias, true),
-          fragment: () => tsCodeFragment(name, makeDeclaration()),
+          fragment: () => tsCodeFragment(fragmentName, makeDeclaration()),
           typeFragment: () =>
-            tsCodeFragment(name, makeDeclaration(undefined, true)),
+            tsCodeFragment(fragmentName, makeDeclaration(undefined, true)),
         },
       ];
     }),

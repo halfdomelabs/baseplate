@@ -1,6 +1,8 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
+
 const client = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'generated',
@@ -39,7 +41,7 @@ const seed = createTsTemplateFile({
 
 const service = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'service',
   projectExports: { prisma: {} },
   referencedGeneratorTemplates: { client: {} },
