@@ -3,7 +3,7 @@ import type React from 'react';
 
 import { useState } from 'react';
 
-import { Button } from '../index.js';
+import { Button, ComboboxField } from '../index.js';
 import {
   Dialog,
   DialogClose,
@@ -42,6 +42,26 @@ function DialogContainer(
           </DialogDescription>
         </DialogHeader>
         <p>This is the body content</p>
+        <ComboboxField
+          label="Select a file"
+          options={[
+            { label: 'File 1', value: 'file1' },
+            { label: 'File 2', value: 'file2' },
+            { label: 'File 3', value: 'file3' },
+            { label: 'File 3', value: 'file4' },
+            { label: 'File 3', value: 'file5' },
+            { label: 'File 3', value: 'file6' },
+            { label: 'File 3', value: 'file7' },
+            { label: 'File 3', value: 'file8' },
+            { label: 'File 3', value: 'file9' },
+            { label: 'File 3', value: 'file10' },
+            { label: 'File 3', value: 'file11' },
+            { label: 'File 3', value: 'file12' },
+            { label: 'File 3', value: 'file13' },
+            { label: 'File 3', value: 'file14' },
+          ]}
+          getOptionLabel={(option) => option.label}
+        />
         <DialogFooter className="flex gap-4">
           <DialogClose asChild>
             <Button variant="secondary">Cancel</Button>
