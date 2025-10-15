@@ -105,10 +105,10 @@ describe('generateBaseplateProject', () => {
       devDependencies: {
         '@baseplate-dev/project-builder-cli': cliVersion,
       },
-      packageManager: 'pnpm@10.16.1',
+      packageManager: 'pnpm@10.18.3',
       engines: {
         node: '^22.0.0',
-        pnpm: '^10.16.1',
+        pnpm: '^10.18.3',
       },
       volta: {
         node: '22.18.0',
