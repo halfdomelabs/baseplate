@@ -8,106 +8,106 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root';
-import { Route as AuthRouteRouteImport } from './routes/auth_/route';
-import { Route as AdminRouteRouteImport } from './routes/admin/route';
-import { Route as IndexRouteImport } from './routes/index';
-import { Route as AdminIndexRouteImport } from './routes/admin/index';
-import { Route as AuthRegisterRouteImport } from './routes/auth_/register';
-import { Route as AuthLoginRouteImport } from './routes/auth_/login';
-import { Route as AdminAccountsUsersRouteRouteImport } from './routes/admin/accounts/users/route';
-import { Route as AdminAccountsUsersIndexRouteImport } from './routes/admin/accounts/users/index';
-import { Route as AdminAccountsUsersNewRouteImport } from './routes/admin/accounts/users/new';
-import { Route as AdminAccountsUsersIdRouteImport } from './routes/admin/accounts/users/$id';
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteRouteImport } from './routes/auth_/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AuthRegisterRouteImport } from './routes/auth_/register'
+import { Route as AuthLoginRouteImport } from './routes/auth_/login'
+import { Route as AdminAccountsUsersRouteRouteImport } from './routes/admin/accounts/users/route'
+import { Route as AdminAccountsUsersIndexRouteImport } from './routes/admin/accounts/users/index'
+import { Route as AdminAccountsUsersNewRouteImport } from './routes/admin/accounts/users/new'
+import { Route as AdminAccountsUsersIdRouteImport } from './routes/admin/accounts/users/$id'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth_',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
-} as any);
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => AuthRouteRoute,
-} as any);
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
-} as any);
+} as any)
 const AdminAccountsUsersRouteRoute = AdminAccountsUsersRouteRouteImport.update({
   id: '/accounts/users',
   path: '/accounts/users',
   getParentRoute: () => AdminRouteRoute,
-} as any);
+} as any)
 const AdminAccountsUsersIndexRoute = AdminAccountsUsersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminAccountsUsersRouteRoute,
-} as any);
+} as any)
 const AdminAccountsUsersNewRoute = AdminAccountsUsersNewRouteImport.update({
   id: '/new',
   path: '/new',
   getParentRoute: () => AdminAccountsUsersRouteRoute,
-} as any);
+} as any)
 const AdminAccountsUsersIdRoute = AdminAccountsUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AdminAccountsUsersRouteRoute,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute;
-  '/admin': typeof AdminRouteRouteWithChildren;
-  '/auth': typeof AuthRouteRouteWithChildren;
-  '/auth/login': typeof AuthLoginRoute;
-  '/auth/register': typeof AuthRegisterRoute;
-  '/admin/': typeof AdminIndexRoute;
-  '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren;
-  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute;
-  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute;
-  '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute;
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren
+  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
+  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
+  '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute;
-  '/auth': typeof AuthRouteRouteWithChildren;
-  '/auth/login': typeof AuthLoginRoute;
-  '/auth/register': typeof AuthRegisterRoute;
-  '/admin': typeof AdminIndexRoute;
-  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute;
-  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute;
-  '/admin/accounts/users': typeof AdminAccountsUsersIndexRoute;
+  '/': typeof IndexRoute
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
+  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
+  '/admin/accounts/users': typeof AdminAccountsUsersIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  '/': typeof IndexRoute;
-  '/admin': typeof AdminRouteRouteWithChildren;
-  '/auth_': typeof AuthRouteRouteWithChildren;
-  '/auth_/login': typeof AuthLoginRoute;
-  '/auth_/register': typeof AuthRegisterRoute;
-  '/admin/': typeof AdminIndexRoute;
-  '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren;
-  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute;
-  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute;
-  '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/auth_': typeof AuthRouteRouteWithChildren
+  '/auth_/login': typeof AuthLoginRoute
+  '/auth_/register': typeof AuthRegisterRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/accounts/users': typeof AdminAccountsUsersRouteRouteWithChildren
+  '/admin/accounts/users/$id': typeof AdminAccountsUsersIdRoute
+  '/admin/accounts/users/new': typeof AdminAccountsUsersNewRoute
+  '/admin/accounts/users/': typeof AdminAccountsUsersIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
@@ -118,8 +118,8 @@ export interface FileRouteTypes {
     | '/admin/accounts/users'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
-    | '/admin/accounts/users/';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/admin/accounts/users/'
+  fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
@@ -128,7 +128,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
-    | '/admin/accounts/users';
+    | '/admin/accounts/users'
   id:
     | '__root__'
     | '/'
@@ -140,94 +140,94 @@ export interface FileRouteTypes {
     | '/admin/accounts/users'
     | '/admin/accounts/users/$id'
     | '/admin/accounts/users/new'
-    | '/admin/accounts/users/';
-  fileRoutesById: FileRoutesById;
+    | '/admin/accounts/users/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AdminRouteRoute: typeof AdminRouteRouteWithChildren;
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
+  IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/auth_': {
-      id: '/auth_';
-      path: '/auth';
-      fullPath: '/auth';
-      preLoaderRoute: typeof AuthRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/auth_'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
-      id: '/admin';
-      path: '/admin';
-      fullPath: '/admin';
-      preLoaderRoute: typeof AdminRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
-      id: '/';
-      path: '/';
-      fullPath: '/';
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
-      id: '/admin/';
-      path: '/';
-      fullPath: '/admin/';
-      preLoaderRoute: typeof AdminIndexRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/auth_/register': {
-      id: '/auth_/register';
-      path: '/register';
-      fullPath: '/auth/register';
-      preLoaderRoute: typeof AuthRegisterRouteImport;
-      parentRoute: typeof AuthRouteRoute;
-    };
+      id: '/auth_/register'
+      path: '/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/auth_/login': {
-      id: '/auth_/login';
-      path: '/login';
-      fullPath: '/auth/login';
-      preLoaderRoute: typeof AuthLoginRouteImport;
-      parentRoute: typeof AuthRouteRoute;
-    };
+      id: '/auth_/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/admin/accounts/users': {
-      id: '/admin/accounts/users';
-      path: '/accounts/users';
-      fullPath: '/admin/accounts/users';
-      preLoaderRoute: typeof AdminAccountsUsersRouteRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/accounts/users'
+      path: '/accounts/users'
+      fullPath: '/admin/accounts/users'
+      preLoaderRoute: typeof AdminAccountsUsersRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/accounts/users/': {
-      id: '/admin/accounts/users/';
-      path: '/';
-      fullPath: '/admin/accounts/users/';
-      preLoaderRoute: typeof AdminAccountsUsersIndexRouteImport;
-      parentRoute: typeof AdminAccountsUsersRouteRoute;
-    };
+      id: '/admin/accounts/users/'
+      path: '/'
+      fullPath: '/admin/accounts/users/'
+      preLoaderRoute: typeof AdminAccountsUsersIndexRouteImport
+      parentRoute: typeof AdminAccountsUsersRouteRoute
+    }
     '/admin/accounts/users/new': {
-      id: '/admin/accounts/users/new';
-      path: '/new';
-      fullPath: '/admin/accounts/users/new';
-      preLoaderRoute: typeof AdminAccountsUsersNewRouteImport;
-      parentRoute: typeof AdminAccountsUsersRouteRoute;
-    };
+      id: '/admin/accounts/users/new'
+      path: '/new'
+      fullPath: '/admin/accounts/users/new'
+      preLoaderRoute: typeof AdminAccountsUsersNewRouteImport
+      parentRoute: typeof AdminAccountsUsersRouteRoute
+    }
     '/admin/accounts/users/$id': {
-      id: '/admin/accounts/users/$id';
-      path: '/$id';
-      fullPath: '/admin/accounts/users/$id';
-      preLoaderRoute: typeof AdminAccountsUsersIdRouteImport;
-      parentRoute: typeof AdminAccountsUsersRouteRoute;
-    };
+      id: '/admin/accounts/users/$id'
+      path: '/$id'
+      fullPath: '/admin/accounts/users/$id'
+      preLoaderRoute: typeof AdminAccountsUsersIdRouteImport
+      parentRoute: typeof AdminAccountsUsersRouteRoute
+    }
   }
 }
 
 interface AdminAccountsUsersRouteRouteChildren {
-  AdminAccountsUsersIdRoute: typeof AdminAccountsUsersIdRoute;
-  AdminAccountsUsersNewRoute: typeof AdminAccountsUsersNewRoute;
-  AdminAccountsUsersIndexRoute: typeof AdminAccountsUsersIndexRoute;
+  AdminAccountsUsersIdRoute: typeof AdminAccountsUsersIdRoute
+  AdminAccountsUsersNewRoute: typeof AdminAccountsUsersNewRoute
+  AdminAccountsUsersIndexRoute: typeof AdminAccountsUsersIndexRoute
 }
 
 const AdminAccountsUsersRouteRouteChildren: AdminAccountsUsersRouteRouteChildren =
@@ -235,46 +235,46 @@ const AdminAccountsUsersRouteRouteChildren: AdminAccountsUsersRouteRouteChildren
     AdminAccountsUsersIdRoute: AdminAccountsUsersIdRoute,
     AdminAccountsUsersNewRoute: AdminAccountsUsersNewRoute,
     AdminAccountsUsersIndexRoute: AdminAccountsUsersIndexRoute,
-  };
+  }
 
 const AdminAccountsUsersRouteRouteWithChildren =
   AdminAccountsUsersRouteRoute._addFileChildren(
     AdminAccountsUsersRouteRouteChildren,
-  );
+  )
 
 interface AdminRouteRouteChildren {
-  AdminIndexRoute: typeof AdminIndexRoute;
-  AdminAccountsUsersRouteRoute: typeof AdminAccountsUsersRouteRouteWithChildren;
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminAccountsUsersRouteRoute: typeof AdminAccountsUsersRouteRouteWithChildren
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminAccountsUsersRouteRoute: AdminAccountsUsersRouteRouteWithChildren,
-};
+}
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
-);
+)
 
 interface AuthRouteRouteChildren {
-  AuthLoginRoute: typeof AuthLoginRoute;
-  AuthRegisterRoute: typeof AuthRegisterRoute;
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
-};
+}
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
-);
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
