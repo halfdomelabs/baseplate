@@ -1,2 +1,2 @@
 export const NODE_VERSION = '22.18.0';
-export const PNPM_VERSION = '10.16.1';
+export const PNPM_VERSION = '10.18.3';
