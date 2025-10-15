@@ -1,5 +1,3 @@
-import './instrument.js';
-
 import { buildServer } from './server.js';
 import { config } from './services/config.js';
 import { logError } from './services/error-logger.js';

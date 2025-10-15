@@ -6,7 +6,7 @@
     },
     "template": "readme"
   },
-  "eslint.config.mjs": {
+  "eslint.config.js": {
     "generator": "@baseplate-dev/core-generators#node/eslint",
     "instanceData": {},
     "template": "eslint-config"
@@ -16,7 +16,7 @@
     "instanceData": {},
     "template": "prisma-config"
   },
-  "vitest.config.mts": {
+  "vitest.config.ts": {
     "generator": "@baseplate-dev/core-generators#node/vitest",
     "instanceData": {},
     "template": "vitest-config"
