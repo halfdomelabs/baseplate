@@ -1,4 +1,4 @@
-import type { File } from '@prisma/client';
+import type { File } from '@src/generated/prisma/client.js';
 
 import { prisma } from '@src/services/prisma.js';
 

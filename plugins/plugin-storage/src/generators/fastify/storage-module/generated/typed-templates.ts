@@ -359,7 +359,9 @@ export const schemaGroup = {
 
 const servicesGetPublicUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
   name: 'services-get-public-url',
   referencedGeneratorTemplates: { configAdapters: {} },
   source: {

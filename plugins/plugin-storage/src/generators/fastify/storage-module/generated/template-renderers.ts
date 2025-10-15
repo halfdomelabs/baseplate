@@ -149,6 +149,9 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: FASTIFY_STORAGE_MODULE_TEMPLATES.servicesGetPublicUrl,
                 destination: paths.servicesGetPublicUrl,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                },
                 generatorPaths: paths,
                 ...options,
               }),

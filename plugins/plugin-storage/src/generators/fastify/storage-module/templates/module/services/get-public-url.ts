@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { File } from '@prisma/client';
+import type { File } from '%prismaGeneratedImports';
 
 import { STORAGE_ADAPTERS } from '$configAdapters';
 

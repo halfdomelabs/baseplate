@@ -184,7 +184,12 @@
     "services-get-public-url": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        }
+      },
       "pathRootRelativePath": "{module-root}/services/get-public-url.ts",
       "referencedGeneratorTemplates": ["config-adapters"],
       "sourceFile": "module/services/get-public-url.ts",
