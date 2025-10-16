@@ -12,6 +12,7 @@ import { cn } from '@src/utils/cn';
  *
  * ShadCN changes:
  * - Added custom width property to specify the width of the dialog.
+ * - Added max-h-[90vh] overflow-y-auto to ensure the dialog is scrollable.
  * - Wrap dialog content in an overlay to allow scrolling within other components e.g. combobox. (https://github.com/radix-ui/primitives/issues/3353#issuecomment-2664085003)
  *
  * https://ui.shadcn.com/docs/components/dialog

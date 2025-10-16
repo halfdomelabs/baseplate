@@ -21,6 +21,10 @@ export function addDiffCommand(program: Command): void {
     .option('--compact', 'Show compact diff format instead of unified diff')
     .option('--package <packages...>', 'Filter by specific package names')
     .option('--include <patterns...>', 'Filter files by glob patterns')
+    .option(
+      '--fail-on-differences',
+      'Fail the command if differences are found',
+    )
     .action(
       async (
         project: string | undefined,
@@ -28,12 +32,13 @@ export function addDiffCommand(program: Command): void {
           compact?: boolean;
           packages?: string[];
           include?: string[];
+          failOnDifferences?: boolean;
         },
       ) => {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
-        await invokeServiceActionAsCli(
+        const result = await invokeServiceActionAsCli(
           diffProjectAction,
           {
             project: resolvedProject.name,
@@ -41,6 +46,12 @@ export function addDiffCommand(program: Command): void {
           },
           context,
         );
+
+        if (result.hasDifferences && options.failOnDifferences) {
+          throw new Error(
+            'Differences found between generated output and project',
+          );
+        }
       },
     );
 }
