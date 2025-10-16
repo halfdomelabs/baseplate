@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.4.0
+
+### Patch Changes
+
+- [#681](https://github.com/halfdomelabs/baseplate/pull/681) [`d324059`](https://github.com/halfdomelabs/baseplate/commit/d3240594e1c2bc2348eb1a7e8938f97ea5f55d22) Thanks [@kingston](https://github.com/kingston)! - Add option to diff to fail when diff shows any differences
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.4.0
+  - @baseplate-dev/project-builder-common@0.4.0
+  - @baseplate-dev/project-builder-lib@0.4.0
+  - @baseplate-dev/project-builder-web@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes
