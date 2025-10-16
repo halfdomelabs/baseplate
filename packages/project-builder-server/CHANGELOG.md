@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-server
 
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies [[`e68624e`](https://github.com/halfdomelabs/baseplate/commit/e68624e9372480da767d220cae60d45d9ed3c636), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b), [`852c3a5`](https://github.com/halfdomelabs/baseplate/commit/852c3a5ff3a185e60efaeb2cbb90eed59a95ec2b), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b)]:
+  - @baseplate-dev/fastify-generators@0.4.0
+  - @baseplate-dev/core-generators@0.4.0
+  - @baseplate-dev/react-generators@0.4.0
+  - @baseplate-dev/project-builder-lib@0.4.0
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes
