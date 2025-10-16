@@ -8,15 +8,15 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'examples/**'
-      - 'packages/**'
-      - 'plugins/**'
+      - "examples/**"
+      - "packages/**"
+      - "plugins/**"
   push:
     branches: [main]
     paths:
-      - 'examples/**'
-      - 'packages/**'
-      - 'plugins/**'
+      - "examples/**"
+      - "packages/**"
+      - "plugins/**"
 
 jobs:
   discover:
@@ -88,6 +88,10 @@ jobs:
       - name: Build affected packages
         run: pnpm build --filter=@baseplate-dev/project-builder-cli
 
+      - name: Install dependencies in example project
+        working-directory: examples/${{ matrix.example }}
+        run: pnpm install --frozen-lockfile
+
       - name: Run sync diff for example
         run: |
           echo "Verifying that example '${{ matrix.example }}' has no uncommitted generated code differences..."
@@ -99,7 +103,7 @@ jobs:
           cd packages/project-builder-cli
 
           # Use the built CLI to check for differences
-          pnpm start diff ${{ matrix.example }} --compact
+          pnpm start diff ${{ matrix.example }} --compact --fail-on-differences
 
           if [ $? -eq 0 ]; then
             echo "✅ Example '${{ matrix.example }}' is in sync with generators"
