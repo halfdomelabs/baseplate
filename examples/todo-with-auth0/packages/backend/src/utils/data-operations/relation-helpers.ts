@@ -11,7 +11,7 @@ type HasUndefinedOrNullValues<T extends Record<string, unknown>> =
  * Returns undefined if any value in the data object is null or undefined,
  * allowing optional relations in create operations.
  *
- * @template UniqueWhere - Object containing the unique identifier(s) for the relation
+ * @template TUniqueWhere - Object containing the unique identifier(s) for the relation
  * @param data - Object with exactly one key-value pair representing the unique identifier
  * @returns Prisma connect object or undefined if the value is null/undefined
  * @throws Error if data doesn't contain exactly one field
@@ -25,23 +25,23 @@ type HasUndefinedOrNullValues<T extends Record<string, unknown>> =
  * assignee: relationHelpers.connectCreate({ id: assigneeId })
  */
 function connectCreate<
-  UniqueWhere extends Record<string, string | undefined | null>,
+  TUniqueWhere extends Record<string, string | undefined | null>,
 >(
-  data: UniqueWhere,
+  data: TUniqueWhere,
 ):
-  | (HasUndefinedOrNullValues<UniqueWhere> extends true ? undefined : never)
-  | { connect: { [K in keyof UniqueWhere]: string } } {
+  | (HasUndefinedOrNullValues<TUniqueWhere> extends true ? undefined : never)
+  | { connect: { [K in keyof TUniqueWhere]: string } } {
   const values = Object.values(data);
   if (values.length !== 1) {
     throw new Error('Exactly one ID value is required in connectCreate');
   }
   if (values[0] === undefined || values[0] === null) {
-    return undefined as HasUndefinedOrNullValues<UniqueWhere> extends true
+    return undefined as HasUndefinedOrNullValues<TUniqueWhere> extends true
       ? undefined
       : never;
   }
   return {
-    connect: data as { [K in keyof UniqueWhere]: string },
+    connect: data as { [K in keyof TUniqueWhere]: string },
   };
 }
 
@@ -53,7 +53,7 @@ function connectCreate<
  * - null: returns { disconnect: true } to remove the relation
  * - undefined: returns undefined to leave the relation unchanged
  *
- * @template UniqueWhere - Object containing the unique identifier(s) for the relation
+ * @template TUniqueWhere - Object containing the unique identifier(s) for the relation
  * @param data - Object with exactly one key-value pair representing the unique identifier
  * @returns Prisma connect/disconnect object, or undefined if no change
  * @throws Error if data doesn't contain exactly one field
@@ -71,14 +71,14 @@ function connectCreate<
  * assignee: relationHelpers.connectUpdate({ id: undefined })
  */
 function connectUpdate<
-  UniqueWhere extends Record<string, string | undefined | null>,
+  TUniqueWhere extends Record<string, string | undefined | null>,
 >(
-  data: UniqueWhere,
+  data: TUniqueWhere,
 ):
-  | (HasUndefinedOrNullValues<UniqueWhere> extends true
+  | (HasUndefinedOrNullValues<TUniqueWhere> extends true
       ? undefined | { disconnect: true }
       : never)
-  | { connect: { [K in keyof UniqueWhere]: string } } {
+  | { connect: { [K in keyof TUniqueWhere]: string } } {
   const values = Object.values(data);
   if (values.length !== 1) {
     throw new Error('Exactly one ID value is required in connectUpdate');
@@ -86,11 +86,11 @@ function connectUpdate<
   if (values[0] === undefined || values[0] === null) {
     return (
       values[0] === undefined ? undefined : { disconnect: true }
-    ) as HasUndefinedOrNullValues<UniqueWhere> extends true
+    ) as HasUndefinedOrNullValues<TUniqueWhere> extends true
       ? undefined | { disconnect: true }
       : never;
   }
-  return { connect: data as { [K in keyof UniqueWhere]: string } };
+  return { connect: data as { [K in keyof TUniqueWhere]: string } };
 }
 
 /**
