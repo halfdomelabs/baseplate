@@ -1,5 +1,3 @@
-import type { Args, Result } from '@prisma/client/runtime/client';
-
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { type Prisma } from '@src/generated/prisma/client.js';
@@ -9,9 +7,9 @@ import type {
   AnyFieldDefinition,
   AnyOperationHooks,
   DataOperationType,
-  InferFieldsAsyncCreateOutput,
-  InferFieldsAsyncUpdateOutput,
+  InferFieldOutput,
   InferFieldsCreateOutput,
+  InferFieldsOutput,
   InferFieldsUpdateOutput,
   InferInput,
   OperationContext,
@@ -19,13 +17,22 @@ import type {
   PrismaTransaction,
   TransactionalOperationContext,
 } from './types.js';
+import type {
+  CreateInput,
+  GetPayload,
+  ModelPropName,
+  ModelQuery,
+  UpdateInput,
+  WhereUniqueInput,
+} from './utility-types.js';
 
 import { NotFoundError } from '../http-errors.js';
+import { mergePrismaQueries, type PrismaInclude } from './prisma-utils.js';
 
 /**
  * Helper to invoke an array of hooks with a given context
  */
-async function invokeHooks<TContext>(
+export async function invokeHooks<TContext>(
   hooks: ((ctx: TContext) => Promise<void>)[] | undefined,
   context: TContext,
 ): Promise<void> {
@@ -33,10 +40,14 @@ async function invokeHooks<TContext>(
   await Promise.all(hooks.map((hook) => hook(context)));
 }
 
+type FieldDataOrFunction<TField extends AnyFieldDefinition> =
+  | InferFieldOutput<TField>
+  | ((tx: PrismaTransaction) => Promise<InferFieldOutput<TField>>);
+
 /**
  * Transform field definitions into Prisma create/update data
  */
-async function transformFields<
+export async function transformFields<
   TFields extends Record<string, AnyFieldDefinition>,
 >(
   fields: TFields,
@@ -50,21 +61,23 @@ async function transformFields<
     serviceContext: ServiceContext;
     operation: DataOperationType;
     allowOptionalFields: boolean;
-    loadExisting?: () => Promise<Record<string, unknown>>;
+    loadExisting: () => Promise<object | undefined>;
   },
 ): Promise<{
-  createData: InferFieldsAsyncCreateOutput<TFields>;
-  updateData: InferFieldsAsyncUpdateOutput<TFields>;
+  data:
+    | InferFieldsOutput<TFields>
+    | ((tx: PrismaTransaction) => Promise<InferFieldsOutput<TFields>>);
   hooks: AnyOperationHooks;
 }> {
-  const hooks: AnyOperationHooks = {
+  const hooks: Required<AnyOperationHooks> = {
     beforeExecute: [],
     afterExecute: [],
     afterCommit: [],
   };
 
-  const createData = {} as InferFieldsAsyncCreateOutput<TFields>;
-  const updateData = {} as InferFieldsAsyncUpdateOutput<TFields>;
+  const data = {} as {
+    [K in keyof TFields]: FieldDataOrFunction<TFields[K]>;
+  };
 
   for (const [key, field] of Object.entries(fields)) {
     const fieldKey = key as keyof typeof input;
@@ -76,68 +89,77 @@ async function transformFields<
       operation,
       serviceContext,
       fieldName: fieldKey as string,
-      loadExisting: loadExisting
-        ? async () => {
-            const existingItem = await loadExisting();
-            return existingItem[fieldKey as keyof typeof existingItem];
-          }
-        : undefined,
+      loadExisting,
     });
 
     if (result.data) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- we don't know the type
-      createData[fieldKey] = result.data.create;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- we don't know the type
-      updateData[fieldKey] = result.data.update;
+      data[fieldKey] = result.data as FieldDataOrFunction<
+        TFields[keyof TFields]
+      >;
     }
 
     if (result.hooks) {
-      if (result.hooks.beforeExecute) {
-        const beforeHook = result.hooks.beforeExecute;
-        hooks.beforeExecute?.push((ctx) => beforeHook(ctx));
-      }
-      if (result.hooks.afterExecute) {
-        const afterHook = result.hooks.afterExecute;
-        hooks.afterExecute?.push((ctx) => afterHook(ctx));
-      }
-      if (result.hooks.afterCommit) {
-        const commitHook = result.hooks.afterCommit;
-        hooks.afterCommit?.push((ctx) => commitHook(ctx));
-      }
+      hooks.beforeExecute.push(...(result.hooks.beforeExecute ?? []));
+      hooks.afterExecute.push(...(result.hooks.afterExecute ?? []));
+      hooks.afterCommit.push(...(result.hooks.afterCommit ?? []));
     }
   }
 
-  return { createData, updateData, hooks };
+  function splitCreateUpdateData(data: {
+    [K in keyof TFields]: InferFieldOutput<TFields[K]>;
+  }): {
+    create: InferFieldsCreateOutput<TFields>;
+    update: InferFieldsUpdateOutput<TFields>;
+  } {
+    const create = {} as InferFieldsCreateOutput<TFields>;
+    const update = {} as InferFieldsUpdateOutput<TFields>;
+    for (const [key, value] of Object.entries<
+      InferFieldOutput<TFields[keyof TFields]>
+    >(data)) {
+      if (value.create !== undefined) {
+        create[key as keyof TFields] =
+          value.create as InferFieldsCreateOutput<TFields>[keyof TFields];
+      }
+      if (value.update) {
+        update[key as keyof TFields] =
+          value.update as InferFieldsUpdateOutput<TFields>[keyof TFields];
+      }
+    }
+    return { create, update };
+  }
+
+  const transformedData = Object.values(data).some(
+    (value) => typeof value === 'function',
+  )
+    ? async (tx: PrismaTransaction) => {
+        const awaitedData = Object.fromEntries(
+          await Promise.all(
+            Object.entries(data).map(
+              async ([key, value]: [
+                keyof TFields,
+                FieldDataOrFunction<TFields[keyof TFields]>,
+              ]): Promise<
+                [keyof TFields, InferFieldOutput<TFields[keyof TFields]>]
+              > => [key, typeof value === 'function' ? await value(tx) : value],
+            ),
+          ),
+        ) as {
+          [K in keyof TFields]: InferFieldOutput<TFields[K]>;
+        };
+        return splitCreateUpdateData(awaitedData);
+      }
+    : splitCreateUpdateData(
+        data as { [K in keyof TFields]: InferFieldOutput<TFields[K]> },
+      );
+
+  return { data: transformedData, hooks };
 }
-
-type ModelPropName = Prisma.TypeMap['meta']['modelProps'];
-
-/** Get the payload type for a given model */
-type GetPayload<
-  TModelName extends ModelPropName,
-  TQueryArgs = undefined,
-> = Result<(typeof prisma)[TModelName], TQueryArgs, 'findUnique'>;
-
-type ModelQuery<TModelName extends ModelPropName> = Pick<
-  Args<(typeof prisma)[TModelName], 'findUnique'>,
-  'select' | 'include'
->;
-
-type WhereUniqueInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'findUnique'
->['where'];
 
 /**
  * =========================================
  * Create Operation
  * =========================================
  */
-
-type CreateInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'create'
->['data'];
 
 /**
  * Configuration for create operation
@@ -162,10 +184,7 @@ export interface CreateOperationConfig<
    */
   authorize?: (
     data: InferInput<TFields>,
-    ctx: OperationContext<
-      GetPayload<TModelName>,
-      { hasExisting: false; hasNew: false }
-    >,
+    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
   ) => Promise<void>;
 
   /**
@@ -173,10 +192,7 @@ export interface CreateOperationConfig<
    */
   prepareComputedFields?: (
     data: InferInput<TFields>,
-    ctx: OperationContext<
-      GetPayload<TModelName>,
-      { hasExisting: false; hasNew: false }
-    >,
+    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
   ) => TPrepareResult | Promise<TPrepareResult>;
 
   /**
@@ -187,11 +203,11 @@ export interface CreateOperationConfig<
     data: InferFieldsCreateOutput<TFields> & TPrepareResult,
     ctx: TransactionalOperationContext<
       GetPayload<TModelName>,
-      { hasExisting: false; hasNew: false }
+      { hasResult: false }
     >,
   ) => CreateInput<TModelName> | Promise<CreateInput<TModelName>>;
 
-  hooks?: OperationHooks<GetPayload<TModelName>, { hasExisting: false }>;
+  hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
 export interface CreateOperationInput<
@@ -223,12 +239,12 @@ export function defineCreateOperation<
   }: CreateOperationInput<TModelName, TFields, TQueryArgs>) => {
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
-      { hasExisting: false; hasNew: false }
+      { hasResult: false }
     > = {
       operation: 'create' as const,
       serviceContext: context,
-      loadExisting: undefined,
-      new: undefined,
+      loadExisting: () => Promise.resolve(undefined),
+      result: undefined,
     };
 
     // Authorization
@@ -237,13 +253,13 @@ export function defineCreateOperation<
     }
 
     // Step 1: Transform fields (OUTSIDE TRANSACTION)
-    const [{ createData: asyncCreateData, hooks: fieldHooks }, preparedData] =
+    const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
         transformFields(config.fields, data, {
           operation: 'create',
           serviceContext: context,
           allowOptionalFields: false,
-          loadExisting: undefined,
+          loadExisting: () => Promise.resolve(undefined),
         }),
         config.prepareComputedFields
           ? config.prepareComputedFields(data, baseOperationContext)
@@ -253,15 +269,15 @@ export function defineCreateOperation<
     const allHooks: AnyOperationHooks = {
       beforeExecute: [
         ...(config.hooks?.beforeExecute ?? []),
-        ...(fieldHooks.beforeExecute ?? []),
+        ...(fieldsHooks.beforeExecute ?? []),
       ],
       afterExecute: [
         ...(config.hooks?.afterExecute ?? []),
-        ...(fieldHooks.afterExecute ?? []),
+        ...(fieldsHooks.afterExecute ?? []),
       ],
       afterCommit: [
         ...(config.hooks?.afterCommit ?? []),
-        ...(fieldHooks.afterCommit ?? []),
+        ...(fieldsHooks.afterCommit ?? []),
       ],
     };
 
@@ -270,7 +286,7 @@ export function defineCreateOperation<
       .$transaction(async (tx) => {
         const txContext: TransactionalOperationContext<
           GetPayload<TModelName>,
-          { hasExisting: false; hasNew: false }
+          { hasResult: false }
         > = {
           ...baseOperationContext,
           tx,
@@ -280,25 +296,12 @@ export function defineCreateOperation<
         await invokeHooks(allHooks.beforeExecute, txContext);
 
         // Run all async create data transformations
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- we don't know the type
-        const createData: InferFieldsCreateOutput<TFields> = Object.fromEntries(
-          await Promise.all(
-            Object.entries(asyncCreateData).map(
-              async ([key, data]: [string, unknown]) => [
-                key,
-                typeof data === 'function'
-                  ? await (data as (tx: PrismaTransaction) => Promise<unknown>)(
-                      tx,
-                    )
-                  : data,
-              ],
-            ),
-          ),
-        );
+        const awaitedFieldsData =
+          typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
 
         // Build data
         const builtData = await config.buildData(
-          { ...createData, ...preparedData },
+          { ...awaitedFieldsData.create, ...preparedData },
           txContext,
         );
 
@@ -337,11 +340,6 @@ export function defineCreateOperation<
  * =========================================
  */
 
-type UpdateInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'update'
->['data'];
-
 /**
  * Configuration for update operation
  */
@@ -365,10 +363,7 @@ export interface UpdateOperationConfig<
    */
   authorize?: (
     data: Partial<InferInput<TFields>>,
-    ctx: OperationContext<
-      GetPayload<TModelName>,
-      { hasExisting: true; hasNew: false }
-    >,
+    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
   ) => Promise<void>;
 
   /**
@@ -377,10 +372,7 @@ export interface UpdateOperationConfig<
    */
   prepare?: (
     data: Partial<InferInput<TFields>>,
-    ctx: OperationContext<
-      GetPayload<TModelName>,
-      { hasExisting: true; hasNew: false }
-    >,
+    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
   ) => Promise<TPrepareResult>;
 
   /**
@@ -390,17 +382,14 @@ export interface UpdateOperationConfig<
     data: InferFieldsUpdateOutput<TFields> & TPrepareResult,
     ctx: TransactionalOperationContext<
       GetPayload<TModelName>,
-      { hasExisting: true; hasNew: false }
+      { hasResult: false }
     >,
   ) => UpdateInput<TModelName> | Promise<UpdateInput<TModelName>>;
 
   /**
    * Optional hooks for the operation
    */
-  hooks?: OperationHooks<
-    GetPayload<TModelName> | undefined,
-    { hasExisting: true }
-  >;
+  hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
 export interface UpdateOperationInput<
@@ -436,9 +425,16 @@ export function defineUpdateOperation<
     context,
   }: UpdateOperationInput<TModelName, TFields, TQueryArgs>) => {
     let existingItem: GetPayload<TModelName> | undefined;
+
+    // Collect existing model include fields
+    const existingModelIncludes = Object.entries(config.fields)
+      .map(([key, field]) => field.existingModelInclude?.(key))
+      .filter((value) => value !== undefined);
+    const existingModelInclude = mergePrismaQueries(existingModelIncludes);
+
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
-      { hasExisting: true; hasNew: false }
+      { hasResult: false }
     > = {
       operation: 'update' as const,
       serviceContext: context,
@@ -447,13 +443,17 @@ export function defineUpdateOperation<
         const findUniqueOrThrow = prisma[config.model]
           .findUnique as unknown as (args: {
           where: WhereUniqueInput<TModelName>;
+          include?: PrismaInclude;
         }) => Promise<GetPayload<TModelName> | null>;
-        const result = await findUniqueOrThrow({ where });
+        const result = await findUniqueOrThrow({
+          where,
+          include: existingModelInclude,
+        });
         if (!result) throw new NotFoundError(`${config.model} not found`);
         existingItem = result;
         return result;
       },
-      new: undefined,
+      result: undefined,
     };
     // Authorization
     if (config.authorize) {
@@ -466,7 +466,7 @@ export function defineUpdateOperation<
       Object.entries(config.fields).filter(([key]) => key in inputData),
     ) as TFields;
 
-    const [{ updateData: asyncUpdateData, hooks: fieldHooks }, preparedData] =
+    const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
         transformFields(fieldsToTransform, inputData as InferInput<TFields>, {
           operation: 'update',
@@ -485,15 +485,15 @@ export function defineUpdateOperation<
     const allHooks: AnyOperationHooks = {
       beforeExecute: [
         ...(config.hooks?.beforeExecute ?? []),
-        ...(fieldHooks.beforeExecute ?? []),
+        ...(fieldsHooks.beforeExecute ?? []),
       ],
       afterExecute: [
         ...(config.hooks?.afterExecute ?? []),
-        ...(fieldHooks.afterExecute ?? []),
+        ...(fieldsHooks.afterExecute ?? []),
       ],
       afterCommit: [
         ...(config.hooks?.afterCommit ?? []),
-        ...(fieldHooks.afterCommit ?? []),
+        ...(fieldsHooks.afterCommit ?? []),
       ],
     };
 
@@ -502,7 +502,7 @@ export function defineUpdateOperation<
       .$transaction(async (tx) => {
         const txContext: TransactionalOperationContext<
           GetPayload<TModelName>,
-          { hasExisting: true; hasNew: false }
+          { hasResult: false }
         > = {
           ...baseOperationContext,
           tx,
@@ -512,21 +512,9 @@ export function defineUpdateOperation<
         await invokeHooks(allHooks.beforeExecute, txContext);
 
         // Run all async update data transformations
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- we don't know the type
-        const updateData: InferFieldsUpdateOutput<TFields> = Object.fromEntries(
-          await Promise.all(
-            Object.entries(asyncUpdateData).map(
-              async ([key, data]: [string, unknown]) => [
-                key,
-                typeof data === 'function'
-                  ? await (data as (tx: PrismaTransaction) => Promise<unknown>)(
-                      tx,
-                    )
-                  : data,
-              ],
-            ),
-          ),
-        );
+        const awaitedFieldsData =
+          typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
+        const updateData = { ...awaitedFieldsData.update, ...preparedData };
 
         // Build data
         const builtData = await config.buildData(
@@ -581,14 +569,14 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
   authorize?: (
     ctx: OperationContext<
       GetPayload<TModelName> | undefined,
-      { hasExisting: true; hasNew: false }
+      { hasResult: false }
     >,
   ) => Promise<void>;
 
   /**
    * Optional hooks for the operation
    */
-  hooks?: OperationHooks<GetPayload<TModelName>, { hasExisting: true }>;
+  hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
 export interface DeleteOperationInput<
@@ -616,7 +604,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
     let existingItem: GetPayload<TModelName> | undefined;
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
-      { hasExisting: true; hasNew: false }
+      { hasResult: false }
     > = {
       operation: 'delete' as const,
       serviceContext: context,
@@ -631,7 +619,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
         existingItem = result;
         return result;
       },
-      new: undefined,
+      result: undefined,
     };
 
     // Authorization
@@ -650,7 +638,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
       .$transaction(async (tx) => {
         const txContext: TransactionalOperationContext<
           GetPayload<TModelName>,
-          { hasExisting: true; hasNew: false }
+          { hasResult: false }
         > = {
           ...baseOperationContext,
           tx,
