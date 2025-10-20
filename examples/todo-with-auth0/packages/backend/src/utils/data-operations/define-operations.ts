@@ -27,7 +27,7 @@ import type {
 } from './utility-types.js';
 
 import { NotFoundError } from '../http-errors.js';
-import { mergePrismaQueries, type PrismaInclude } from './prisma-utils.js';
+import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**
  * Helper to invoke an array of hooks with a given context
@@ -426,11 +426,7 @@ export function defineUpdateOperation<
   }: UpdateOperationInput<TModelName, TFields, TQueryArgs>) => {
     let existingItem: GetPayload<TModelName> | undefined;
 
-    // Collect existing model include fields
-    const existingModelIncludes = Object.entries(config.fields)
-      .map(([key, field]) => field.existingModelInclude?.(key))
-      .filter((value) => value !== undefined);
-    const existingModelInclude = mergePrismaQueries(existingModelIncludes);
+    const delegate = makeGenericPrismaDelegate(prisma, config.model);
 
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
@@ -440,14 +436,8 @@ export function defineUpdateOperation<
       serviceContext: context,
       loadExisting: async () => {
         if (existingItem) return existingItem;
-        const findUniqueOrThrow = prisma[config.model]
-          .findUnique as unknown as (args: {
-          where: WhereUniqueInput<TModelName>;
-          include?: PrismaInclude;
-        }) => Promise<GetPayload<TModelName> | null>;
-        const result = await findUniqueOrThrow({
+        const result = await delegate.findUnique({
           where,
-          include: existingModelInclude,
         });
         if (!result) throw new NotFoundError(`${config.model} not found`);
         existingItem = result;

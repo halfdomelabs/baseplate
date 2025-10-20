@@ -3,8 +3,6 @@ import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import type { PrismaClient } from '@src/generated/prisma/client.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
-import type { PrismaInclude } from './prisma-utils.js';
-
 /** Prisma transaction type for data operations */
 export type PrismaTransaction = Omit<PrismaClient, ITXClientDenyList>;
 
@@ -99,8 +97,6 @@ export interface FieldDefinition<
   TCreateOutput extends object | undefined,
   TUpdateOutput extends object | undefined,
 > {
-  /** Fields to include in the existing model query */
-  existingModelInclude?: (fieldName: string) => PrismaInclude;
   processInput: (
     value: TInput,
     ctx: FieldContext,
