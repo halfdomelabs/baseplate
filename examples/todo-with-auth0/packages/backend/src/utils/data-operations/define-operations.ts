@@ -93,7 +93,7 @@ export async function transformFields<
     });
 
     if (result.data) {
-      data[fieldKey] = result.data as FieldDataOrFunction<
+      data[fieldKey as keyof TFields] = result.data as FieldDataOrFunction<
         TFields[keyof TFields]
       >;
     }
@@ -319,7 +319,7 @@ export function defineCreateOperation<
         // Run afterExecute hooks
         await invokeHooks(allHooks.afterExecute, {
           ...txContext,
-          new: result,
+          result,
         });
 
         return result;
@@ -328,7 +328,7 @@ export function defineCreateOperation<
         // Run afterCommit hooks (outside transaction)
         await invokeHooks(allHooks.afterCommit, {
           ...baseOperationContext,
-          new: result,
+          result,
         });
         return result as GetPayload<TModelName, TQueryArgs>;
       });

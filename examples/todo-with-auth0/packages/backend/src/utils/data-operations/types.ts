@@ -67,19 +67,13 @@ export interface FieldContext {
   loadExisting: () => Promise<object | undefined>;
 }
 
-export interface FieldTransformData<
-  TCreateOutput extends object | undefined,
-  TUpdateOutput extends object | undefined,
-> {
+export interface FieldTransformData<TCreateOutput, TUpdateOutput> {
   create?: TCreateOutput;
   update?: TUpdateOutput;
 }
 
 /** Result of field transformation with optional hooks */
-export interface FieldTransformResult<
-  TCreateOutput extends object | undefined,
-  TUpdateOutput extends object | undefined,
-> {
+export interface FieldTransformResult<TCreateOutput, TUpdateOutput> {
   data?:
     | FieldTransformData<TCreateOutput, TUpdateOutput>
     | ((
@@ -92,11 +86,7 @@ export interface FieldTransformResult<
 /**
  * Field definition with validation and optional transformation
  */
-export interface FieldDefinition<
-  TInput,
-  TCreateOutput extends object | undefined,
-  TUpdateOutput extends object | undefined,
-> {
+export interface FieldDefinition<TInput, TCreateOutput, TUpdateOutput> {
   processInput: (
     value: TInput,
     ctx: FieldContext,
@@ -107,18 +97,32 @@ export interface FieldDefinition<
 
 export type AnyFieldDefinition = FieldDefinition<any, any, any>;
 
+type RequiredKeys<T> = {
+  [P in keyof T]: T[P] extends Exclude<T[P], undefined> ? P : never;
+}[keyof T];
+type OptionalForUndefinedKeys<T> = Partial<T> & Pick<T, RequiredKeys<T>>;
+
+type Identity<T> = T extends object
+  ? {} & {
+      [P in keyof T]: T[P];
+    }
+  : T;
+
 /**
  * Infer input types from field definitions
  */
-export type InferInput<TFields extends Record<string, AnyFieldDefinition>> = {
-  [K in keyof TFields]: TFields[K] extends FieldDefinition<
-    infer TInput,
-    any,
-    any
-  >
-    ? TInput
-    : never;
-};
+export type InferInput<TFields extends Record<string, AnyFieldDefinition>> =
+  Identity<
+    OptionalForUndefinedKeys<{
+      [K in keyof TFields]: TFields[K] extends FieldDefinition<
+        infer TInput,
+        any,
+        any
+      >
+        ? TInput
+        : never;
+    }>
+  >;
 
 /**
  * Infer create output types from field definitions
@@ -126,25 +130,25 @@ export type InferInput<TFields extends Record<string, AnyFieldDefinition>> = {
 export type InferFieldOutput<TField extends FieldDefinition<any, any, any>> =
   TField extends FieldDefinition<any, infer TCreateOutput, infer TUpdateOutput>
     ? {
-        create: TCreateOutput | undefined;
-        update: TUpdateOutput | undefined;
+        create: TCreateOutput;
+        update: TUpdateOutput;
       }
     : never;
 
 export type InferFieldsCreateOutput<
   TFields extends Record<string, AnyFieldDefinition>,
-> = {
+> = Identity<{
   [K in keyof TFields]: InferFieldOutput<TFields[K]>['create'];
-};
+}>;
 
 /**
  * Infer update output types from field definitions
  */
 export type InferFieldsUpdateOutput<
   TFields extends Record<string, AnyFieldDefinition>,
-> = {
-  [K in keyof TFields]: InferFieldOutput<TFields[K]>['update'];
-};
+> = Identity<{
+  [K in keyof TFields]: InferFieldOutput<TFields[K]>['update'] | undefined;
+}>;
 
 export interface InferFieldsOutput<
   TFields extends Record<string, AnyFieldDefinition>,

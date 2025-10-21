@@ -107,8 +107,10 @@ export interface NestedOneToOneFieldConfig<
    * Transform validated field data into final Prisma structure
    */
   buildData: (
-    createData: InferFieldsCreateOutput<TFields>,
-    updateData: InferFieldsUpdateOutput<TFields>,
+    data: {
+      create: InferFieldsCreateOutput<TFields>;
+      update: InferFieldsUpdateOutput<TFields>;
+    },
     parentModel: GetPayload<TParentModelName>,
     ctx: TransactionalOperationContext<
       GetPayload<TModelName>,
@@ -226,8 +228,7 @@ export function nestedOneToOneField<
                 ctx.result as GetPayload<TParentModelName>,
               );
               const builtData = await config.buildData(
-                awaitedData.create,
-                awaitedData.update,
+                awaitedData,
                 ctx.result as GetPayload<TParentModelName>,
                 {
                   ...ctx,
@@ -292,12 +293,6 @@ export interface NestedOneToManyFieldConfig<
   fields: TFields;
 
   /**
-   * The name of the relation field on the child model that points to the parent.
-   * E.g. if a User has many Posts, and Post has a `user` field, this would be 'user'.
-   */
-  parentRelationField: string;
-
-  /**
    * Function to extract a unique where clause from the input data for a child item and
    * the parent model.
    * If it returns undefined, the item is considered a new item to be created.
@@ -312,8 +307,8 @@ export interface NestedOneToManyFieldConfig<
    * @param parentModel - The parent model to get the where clause from.
    * @returns The where clause to use for the parent model.
    */
-  getWhereFromOriginalModel: (
-    originalModel: GetPayload<TParentModelName>,
+  getWhereFromParentModel: (
+    parentModel: GetPayload<TParentModelName>,
   ) => WhereInput<TModelName>;
 
   /**
@@ -325,14 +320,20 @@ export interface NestedOneToManyFieldConfig<
       create: InferFieldsCreateOutput<TFields>;
       update: InferFieldsUpdateOutput<TFields>;
     },
+    parentModel: GetPayload<TParentModelName>,
     ctx: TransactionalOperationContext<
       GetPayload<TModelName> | undefined,
       { hasResult: false }
     >,
-  ) => Promise<{
-    create: CreateInput<TModelName>;
-    update: UpdateInput<TModelName>;
-  }>;
+  ) =>
+    | Promise<{
+        create: CreateInput<TModelName>;
+        update: UpdateInput<TModelName>;
+      }>
+    | {
+        create: CreateInput<TModelName>;
+        update: UpdateInput<TModelName>;
+      };
 }
 
 /**
@@ -389,7 +390,7 @@ export function nestedOneToManyField<
 >(
   config: NestedOneToManyFieldConfig<TParentModelName, TModelName, TFields>,
 ): FieldDefinition<
-  InferInput<TFields>[],
+  InferInput<TFields>[] | undefined,
   undefined,
   undefined | { deleteMany: Record<never, never> }
 > {
@@ -397,11 +398,15 @@ export function nestedOneToManyField<
     processInput: async (value, processCtx) => {
       const { serviceContext, loadExisting } = processCtx;
 
+      if (value === undefined) {
+        return { data: { create: undefined, update: undefined } };
+      }
+
       const existingModel = (await loadExisting()) as
         | GetPayload<TParentModelName>
         | undefined;
       const whereFromOriginalModel =
-        existingModel && config.getWhereFromOriginalModel(existingModel);
+        existingModel && config.getWhereFromParentModel(existingModel);
 
       // Handle list of items
       const delegate = makeGenericPrismaDelegate(prisma, config.model);
@@ -498,7 +503,7 @@ export function nestedOneToManyField<
                 ? await item.data(ctx.tx)
                 : item.data;
 
-            const builtData = await config.buildData(awaitedData, {
+            const builtData = await config.buildData(awaitedData, ctx.result, {
               ...ctx,
               operation: item.whereUnique ? 'update' : 'create',
               loadExisting: cachedLoadExisting[idx],
