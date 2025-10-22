@@ -99,7 +99,9 @@ playground
 
 .turbo
 
+# AI tools
 .claude/settings.local.json
+.gemini
 
 # Baseplate settings
 /.baseplate
