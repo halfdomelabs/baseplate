@@ -26,7 +26,7 @@ const userFields = {
     fields: {
       stripeCustomerId: scalarField(z.string().min(1)),
     },
-    getWhereUniqueFromParent: (parentModel) => ({
+    getWhereUnique: (parentModel) => ({
       id: parentModel.id,
     }),
     buildData: ({ create, update }, parentModel) => ({
@@ -48,7 +48,7 @@ const userFields = {
         fileIdFieldName: 'avatarId',
       }),
     },
-    getWhereUniqueFromParent: (parentModel) => ({
+    getWhereUnique: (parentModel) => ({
       userId: parentModel.id,
     }),
     buildData: ({ create, update }, result) => ({

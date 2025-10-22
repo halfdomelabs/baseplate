@@ -99,7 +99,7 @@ export interface NestedOneToOneFieldConfig<
   /**
    * Extract where unique from parent model
    */
-  getWhereUniqueFromParent: (
+  getWhereUnique: (
     parentModel: GetPayload<TParentModelName>,
   ) => WhereUniqueInput<TModelName>;
 
@@ -193,7 +193,7 @@ export function nestedOneToOneField<
         if (cachedExisting) return cachedExisting;
         const existingParent = await processCtx.loadExisting();
         if (!existingParent) return undefined;
-        const whereUnique = config.getWhereUniqueFromParent(
+        const whereUnique = config.getWhereUnique(
           existingParent as GetPayload<TParentModelName>,
         );
         const prismaDelegate = makeGenericPrismaDelegate(prisma, config.model);
@@ -224,7 +224,7 @@ export function nestedOneToOneField<
             async (ctx) => {
               const awaitedData =
                 typeof data === 'function' ? await data(ctx.tx) : data;
-              const whereUnique = config.getWhereUniqueFromParent(
+              const whereUnique = config.getWhereUnique(
                 ctx.result as GetPayload<TParentModelName>,
               );
               const builtData = await config.buildData(

@@ -13,8 +13,10 @@ vi.mock('@src/modules/storage/config/adapters.config.js', () => ({
       getFileMetadata: vi.fn().mockImplementation((path: string) => {
         // Extract filename from path to determine size
         if (path.includes('avatar.png')) return Promise.resolve({ size: 1024 });
-        if (path.includes('avatar1.png')) return Promise.resolve({ size: 1024 });
-        if (path.includes('avatar2.png')) return Promise.resolve({ size: 2048 });
+        if (path.includes('avatar1.png'))
+          return Promise.resolve({ size: 1024 });
+        if (path.includes('avatar2.png'))
+          return Promise.resolve({ size: 2048 });
         if (path.includes('image1.png')) return Promise.resolve({ size: 2048 });
         if (path.includes('image2.png')) return Promise.resolve({ size: 3072 });
         if (path.includes('image3.png')) return Promise.resolve({ size: 4096 });
@@ -255,9 +257,7 @@ describe('updateUser', () => {
       email: 'jane@example.com',
     });
   });
-
 });
-
 
 describe('deleteUser', () => {
   beforeEach(async () => {
