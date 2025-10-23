@@ -24,7 +24,6 @@ test('can sync a minimal project', async ({ page, addProject }) => {
         name: 'test-app',
         id: appId,
         type: 'backend',
-        packageLocation: 'packages/backend',
       },
     ],
     features: [

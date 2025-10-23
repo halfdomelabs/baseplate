@@ -41,7 +41,7 @@ function ErrorDisplay({
     >
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <MdOutlineErrorOutline className="text-muted-foreground size-20" />
+          <MdOutlineErrorOutline className="size-20 text-muted-foreground" />
         </div>
         <h1>{header ?? 'Sorry, something went wrong'}</h1>
         <p>

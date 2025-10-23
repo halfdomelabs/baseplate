@@ -122,7 +122,7 @@ export function UserTable(
                     </Badge>
                   ))}
                   {item.roles.length === 0 && (
-                    <span className="text-muted-foreground text-sm">
+                    <span className="text-sm text-muted-foreground">
                       No roles
                     </span>
                   )}

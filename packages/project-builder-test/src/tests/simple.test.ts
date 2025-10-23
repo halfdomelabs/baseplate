@@ -7,18 +7,16 @@ export default {
   async setupEnvironment(context, helpers) {
     // disable frozen lockfile to test migrations
     await helpers.runCommand('pnpm install --no-frozen-lockfile');
-    await helpers.startDockerCompose(
-      'packages/backend/docker/docker-compose.yml',
-    );
+    await helpers.startDockerCompose('apps/backend/docker/docker-compose.yml');
     await (context.streamCommandOutput
       ? helpers.runCommand('pnpm prisma migrate dev', {
-          cwd: 'packages/backend',
+          cwd: 'apps/backend',
         })
       : helpers.runCommand('pnpm prisma migrate deploy', {
-          cwd: 'packages/backend',
+          cwd: 'apps/backend',
         }));
     await helpers.runCommand('pnpm prisma db seed', {
-      cwd: 'packages/backend',
+      cwd: 'apps/backend',
     });
     await helpers.startBackgroundCommand('pnpm dev', {
       waitForURL: {

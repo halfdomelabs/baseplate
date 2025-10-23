@@ -135,7 +135,7 @@ export function FileInput({
         if (value) {
           return (
             <div
-              className="bg-background flex h-12 w-full max-w-md items-center justify-between rounded-md border px-3 py-2 shadow-sm"
+              className="flex h-12 w-full max-w-md items-center justify-between rounded-md border bg-background px-3 py-2 shadow-sm"
               role="group"
               aria-label={`Uploaded file: ${value.filename}`}
             >
@@ -150,7 +150,7 @@ export function FileInput({
                   >
                     <img
                       src={value.publicUrl}
-                      className="bg-muted mr-4 h-8 w-8 rounded-lg object-cover"
+                      className="mr-4 h-8 w-8 rounded-lg bg-muted object-cover"
                       alt={`Preview of ${value.filename}`}
                     />
                   </a>
@@ -172,7 +172,7 @@ export function FileInput({
               </div>
               <Button variant="ghost" size="icon" onClick={handleRemove}>
                 <MdOutlineClear
-                  className="text-muted-foreground hover:text-foreground h-5 w-5"
+                  className="h-5 w-5 text-muted-foreground hover:text-foreground"
                   aria-hidden="true"
                 />
               </Button>

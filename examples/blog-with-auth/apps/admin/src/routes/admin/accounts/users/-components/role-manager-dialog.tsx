@@ -117,7 +117,7 @@ export function RoleManagerDialog({
               renderItemLabel={(option) => (
                 <div className="flex flex-col">
                   <span>{option.label}</span>
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-xs text-muted-foreground">
                     {option.description}
                   </span>
                 </div>
