@@ -408,6 +408,15 @@ export function nestedOneToManyField<
       const whereFromOriginalModel =
         existingModel && config.getWhereFromParentModel(existingModel);
 
+      if (
+        whereFromOriginalModel &&
+        Object.values(whereFromOriginalModel).every(
+          (value) => value === undefined,
+        )
+      ) {
+        throw new Error('Where from original model is empty');
+      }
+
       // Handle list of items
       const delegate = makeGenericPrismaDelegate(prisma, config.model);
 
