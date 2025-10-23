@@ -89,7 +89,7 @@
     "tw-animate-css": "1.2.9",
     "typescript": "5.8.3",
     "typescript-eslint": "8.38.0",
-    "vite": "7.1.5",
+    "vite": "7.1.11",
     "vite-plugin-svgr": "4.5.0",
     "vite-tsconfig-paths": "5.1.4"
   },
