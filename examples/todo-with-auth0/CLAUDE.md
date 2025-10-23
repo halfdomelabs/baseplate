@@ -16,19 +16,19 @@ This PNPM workspace monorepo contains two main packages:
 
 ### Packages Overview
 
-1. **`/packages/admin`** - React-based web admin interface
+1. **`/apps/admin`** - React-based web admin interface
    - **Purpose**: Frontend admin panel for the todo platform
    - **Tech Stack**: React 19, TypeScript, Vite, Apollo Client, TailwindCSS
    - **Key Features**: Authentication UI, Apollo GraphQL client, reusable components, routing
 
-2. **`/packages/backend`** - Node.js GraphQL API server
+2. **`/apps/backend`** - Node.js GraphQL API server
    - **Purpose**: Backend API server with GraphQL endpoint
    - **Tech Stack**: Fastify, GraphQL Yoga, Pothos, Prisma, PostgreSQL
    - **Key Features**: Modular architecture, authentication system, todo management
 
 ### Directory Structure
 
-**Admin Package (`/packages/admin/src/`):**
+**Admin Package (`/apps/admin/src/`):**
 
 ```
 src/
@@ -42,7 +42,7 @@ src/
 └── generated/    # Auto-generated GraphQL types
 ```
 
-**Backend Package (`/packages/backend/src/`):**
+**Backend Package (`/apps/backend/src/`):**
 
 ```
 src/
@@ -144,7 +144,7 @@ pnpm prettier:write
 pnpm build
 
 # Database commands (from backend package)
-cd packages/backend
+cd apps/backend
 pnpm db:migrate      # Run migrations
 pnpm db:seed        # Seed database
 pnpm db:reset       # Reset database

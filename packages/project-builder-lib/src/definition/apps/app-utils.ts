@@ -36,9 +36,7 @@ function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
  * @returns The directory of the app
  */
 function getAppDirectory(appConfig: BaseAppConfig): string {
-  return appConfig.packageLocation
-    ? appConfig.packageLocation
-    : `packages/${appConfig.name}`;
+  return `apps/${appConfig.name}`;
 }
 
 export function getBackendRelativePath(

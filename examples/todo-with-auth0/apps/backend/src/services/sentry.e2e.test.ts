@@ -1,4 +1,4 @@
-import './sentry.instrument.test-helper';
+import './sentry.instrument.test-helper.js';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
