@@ -68,12 +68,6 @@ function BackendAppEditPage(): React.JSX.Element {
           </SectionListSectionHeader>
           <SectionListSectionContent className="space-y-6">
             <InputFieldController label="Name" control={control} name="name" />
-            <InputFieldController
-              label="Package Location (optional)"
-              placeholder="e.g. packages/backend"
-              control={control}
-              name="packageLocation"
-            />
           </SectionListSectionContent>
         </SectionListSection>
 

@@ -1,5 +1,5 @@
 packages:
-  - packages/*
+  - apps/*
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'

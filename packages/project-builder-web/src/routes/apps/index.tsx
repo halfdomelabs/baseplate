@@ -51,9 +51,6 @@ function AppsListPage(): React.JSX.Element {
               <h3>
                 {app.name} ({app.type})
               </h3>
-              <p className="text-xs text-muted-foreground">
-                {app.packageLocation}
-              </p>
             </div>
             <Link
               to="/apps/edit/$key"

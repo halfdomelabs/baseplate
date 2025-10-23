@@ -59,12 +59,6 @@ function WebAppGeneralForm(): React.JSX.Element {
           <SectionListSectionContent className="space-y-6">
             <InputFieldController label="Name" control={control} name="name" />
             <InputFieldController
-              label="Package Location (optional)"
-              placeholder="e.g. packages/web"
-              control={control}
-              name="packageLocation"
-            />
-            <InputFieldController
               label="Page Title"
               control={control}
               name="title"
