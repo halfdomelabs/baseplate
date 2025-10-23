@@ -1,5 +1,5 @@
 ---
-'@baseplate-dev/project-builder-lib': patch
+'@baseplate-dev/project-builder-lib': minor
 ---
 
 BREAKING: Remove `packageLocation` field and standardize app locations to `apps/{appName}`
