@@ -1,5 +1,24 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.4.0
+
+### Minor Changes
+
+- [#684](https://github.com/halfdomelabs/baseplate/pull/684) [`9f22eef`](https://github.com/halfdomelabs/baseplate/commit/9f22eef139c8db2dde679f6424eb23e024e37d19) Thanks [@kingston](https://github.com/kingston)! - BREAKING: Remove `packageLocation` field and standardize app locations to `apps/{appName}`
+
+  The `packageLocation` field has been removed from app configurations. All apps now use a standardized location pattern: `apps/{appName}`.
+
+  **Migration required for existing projects:**
+  1. Move your app folders from `packages/` to `apps/`
+  2. Update `pnpm-workspace.yaml` to use `apps/*` instead of `packages/*`
+
+### Patch Changes
+
+- Updated dependencies [[`d324059`](https://github.com/halfdomelabs/baseplate/commit/d3240594e1c2bc2348eb1a7e8938f97ea5f55d22)]:
+  - @baseplate-dev/ui-components@0.4.0
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes
