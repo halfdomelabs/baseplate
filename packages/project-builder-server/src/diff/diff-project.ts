@@ -9,7 +9,7 @@ import path from 'node:path';
 
 import type { ServiceActionContext } from '#src/actions/types.js';
 
-import { compileApplications } from '#src/compiler/index.js';
+import { compilePackages } from '#src/compiler/index.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
 
@@ -101,7 +101,7 @@ export async function diffProject(
     parserContext,
   );
 
-  const apps = compileApplications(projectJson, parserContext);
+  const apps = compilePackages(projectJson, parserContext);
 
   // Filter apps if specified
   const filteredApps = packageFilter?.length
