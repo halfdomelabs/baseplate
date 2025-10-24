@@ -8,7 +8,7 @@ import type {
   PalettesConfig,
   ThemeColorsConfig,
   ThemeConfig,
-} from '#src/schema/features/theme.js';
+} from '#src/schema/settings/theme.js';
 
 import { COLOR_PALETTES } from '#src/constants/colors.js';
 import { THEME_COLORS } from '#src/constants/theme-colors.js';

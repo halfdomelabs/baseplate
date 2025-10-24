@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import type { GeneratorOperations } from '#src/sync/types.js';
 
-import { compileApplications } from '#src/compiler/index.js';
+import { compilePackages } from '#src/compiler/index.js';
 import { getSingleAppDirectoryForProject } from '#src/project-definition/get-single-app-directory-for-project.js';
 import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
@@ -55,7 +55,7 @@ export async function addFilesToSnapshot(
       projectDirectory,
       context,
     );
-    const compiledApps = compileApplications(definition, context);
+    const compiledApps = compilePackages(definition, context);
     const compiledApp = compiledApps.find((a) => a.name === appName);
     if (!compiledApp) {
       throw new Error(`App ${appName} not found`);

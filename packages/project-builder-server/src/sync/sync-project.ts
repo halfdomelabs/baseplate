@@ -8,7 +8,7 @@ import { stripVTControlCharacters } from 'node:util';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { compileApplications } from '#src/compiler/index.js';
+import { compilePackages } from '#src/compiler/index.js';
 import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
 
 import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
@@ -109,7 +109,7 @@ export async function syncProject({
       directory,
       context,
     );
-    const apps = compileApplications(projectJson, context);
+    const apps = compilePackages(projectJson, context);
 
     await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
