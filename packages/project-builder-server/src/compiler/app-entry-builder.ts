@@ -55,10 +55,11 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
    * Builds an AppEntry from the root bundle
    */
   buildProjectEntry(rootBundle: GeneratorBundle): AppEntry {
+    const monorepoSettings = this.projectDefinition.settings.monorepo;
     return {
       id: this.appConfig.id,
       name: this.appConfig.name,
-      appDirectory: AppUtils.getAppDirectory(this.appConfig),
+      appDirectory: AppUtils.getAppDirectory(this.appConfig, monorepoSettings),
       generatorBundle: rootBundle,
     };
   }

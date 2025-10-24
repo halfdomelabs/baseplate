@@ -1,8 +1,13 @@
 import type React from 'react';
 
-import { appEntityType } from '@baseplate-dev/project-builder-lib';
+import { appEntityType, AppUtils } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import { Button, Card, EmptyDisplay } from '@baseplate-dev/ui-components';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyDisplay,
+} from '@baseplate-dev/ui-components';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdApps } from 'react-icons/md';
@@ -17,6 +22,7 @@ function AppsListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
   const { apps } = definition;
+  const monorepoSettings = definition.settings.monorepo;
   const sortedApps = sortBy(apps, [(app) => app.name]);
 
   if (sortedApps.length === 0) {
@@ -45,22 +51,29 @@ function AppsListPage(): React.JSX.Element {
         <Button>New App</Button>
       </NewAppDialog>
       <div className="max-w-xl space-y-4">
-        {sortedApps.map((app) => (
-          <Card key={app.id} className="flex justify-between space-x-4 p-4">
-            <div>
-              <h3>
-                {app.name} ({app.type})
-              </h3>
-            </div>
-            <Link
-              to="/apps/edit/$key"
-              params={{ key: appEntityType.keyFromId(app.id) }}
-              className="inline-block"
-            >
-              <Button variant="secondary">Edit</Button>
-            </Link>
-          </Card>
-        ))}
+        {sortedApps.map((app) => {
+          const appDirectory = AppUtils.getAppDirectory(app, monorepoSettings);
+          return (
+            <Card key={app.id} className="flex justify-between space-x-4 p-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3>{app.name}</h3>
+                  <Badge variant="secondary">{app.type}</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Location: {appDirectory}
+                </p>
+              </div>
+              <Link
+                to="/apps/edit/$key"
+                params={{ key: appEntityType.keyFromId(app.id) }}
+                className="inline-block"
+              >
+                <Button variant="secondary">Edit</Button>
+              </Link>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
