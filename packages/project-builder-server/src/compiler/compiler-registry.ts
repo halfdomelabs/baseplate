@@ -1,5 +1,5 @@
-import { backendPackageCompiler } from './backend/backend-compiler.js';
-import { webPackageCompiler } from './web/web-compiler.js';
+import { backendPackageCompiler } from './backend/index.js';
+import { webPackageCompiler } from './web/index.js';
 
 /**
  * Registry of package compilers
