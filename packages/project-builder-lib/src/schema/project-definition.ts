@@ -10,7 +10,7 @@ import { createFeaturesSchema } from './features/index.js';
 import { createEnumSchema } from './models/enums.js';
 import { createModelSchema } from './models/index.js';
 import { createPluginsSchema } from './plugins/index.js';
-import { createSettingsSchema } from './settings.js';
+import { createSettingsSchema } from './settings/index.js';
 
 export const createAppSchema = definitionSchema((ctx) =>
   ctx.withRefBuilder(
