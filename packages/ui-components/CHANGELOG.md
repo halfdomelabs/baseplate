@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.4.0
+
+### Patch Changes
+
+- [#681](https://github.com/halfdomelabs/baseplate/pull/681) [`d324059`](https://github.com/halfdomelabs/baseplate/commit/d3240594e1c2bc2348eb1a7e8938f97ea5f55d22) Thanks [@kingston](https://github.com/kingston)! - Wrap dialog content in an overlay to allow scrolling within other components e.g. combobox.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes
