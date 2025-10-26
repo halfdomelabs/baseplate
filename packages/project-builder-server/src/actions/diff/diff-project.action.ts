@@ -67,7 +67,7 @@ export const diffProjectAction = createServiceAction({
 
     const result = await diffProject(
       {
-        projectDirectory: project.directory,
+        project,
         packageFilter: packages,
         include,
       },

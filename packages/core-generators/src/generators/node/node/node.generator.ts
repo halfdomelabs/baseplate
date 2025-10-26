@@ -38,6 +38,12 @@ const descriptorSchema = z.object({
   nodeVersion: z.string().default(NODE_VERSION),
   pnpmVersion: z.string().default(PNPM_VERSION),
   rootPackage: z.boolean().default(false),
+  additionalPackages: z
+    .object({
+      prod: z.record(z.string()).default({}),
+      dev: z.record(z.string()).default({}),
+    })
+    .default({}),
 });
 
 const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
@@ -174,6 +180,9 @@ export const nodeGenerator = createGenerator({
 
         // Add scripts to the packageJsonFields
         packageJsonFields.scripts.mergeObj(descriptor.scripts, 'descriptor');
+
+        // Add additional packages to the packageJsonFields
+        packageJsonFields.packages.addPackages(descriptor.additionalPackages);
 
         return {
           providers: {

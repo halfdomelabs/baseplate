@@ -1,20 +1,11 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
+import type {
+  PluginMetadataWithPaths,
+  ProjectInfo,
+} from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 import type { z } from 'zod';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
-
-/**
- * A project available to the project builder.
- */
-export interface ServiceActionProject {
-  /** A deterministic ID for the project based off the directory. */
-  id: string;
-  /** The name of the project. */
-  name: string;
-  /** The directory of the project. */
-  directory: string;
-}
 
 /**
  * The context provided to a service action.
@@ -23,13 +14,15 @@ export interface ServiceActionProject {
  */
 export interface ServiceActionContext {
   /** The projects available to the project builder. */
-  projects: ServiceActionProject[];
+  projects: ProjectInfo[];
   /** The user config for the project builder. */
   userConfig: BaseplateUserConfig;
   /** The plugins available to the project builder. */
   plugins: PluginMetadataWithPaths[];
   /** The logger to write to when executing the service action. */
   logger: Logger;
+  /** The version of @baseplate-dev/project-builder-cli. */
+  cliVersion: string;
 }
 
 /**

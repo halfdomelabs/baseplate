@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import type { ProjectInfo } from '../utils/project-resolver.js';
+import type { DiscoveredProjectInfo } from '../utils/project-resolver.js';
 
 import { resolveProjects } from '../utils/project-resolver.js';
 
@@ -53,7 +53,7 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
       const projects = [...projectMap.values()].map((project) => ({
         name: project.name,
         path: project.path,
-        isExample: project.isExample,
+        isInternalExample: project.isInternalExample,
         description: project.packageJson.description ?? null,
         version: project.packageJson.version ?? null,
       }));
@@ -63,11 +63,11 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
       console.info(`Found ${projectMap.size} project(s):\n`);
 
       // Group projects by type
-      const examples: ProjectInfo[] = [];
-      const regular: ProjectInfo[] = [];
+      const examples: DiscoveredProjectInfo[] = [];
+      const regular: DiscoveredProjectInfo[] = [];
 
       for (const project of projectMap.values()) {
-        if (project.isExample) {
+        if (project.isInternalExample) {
           examples.push(project);
         } else {
           regular.push(project);

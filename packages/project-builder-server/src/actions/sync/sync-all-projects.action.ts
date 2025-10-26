@@ -44,7 +44,7 @@ export const syncAllProjectsAction = createServiceAction({
   outputSchema: syncAllProjectsOutputSchema,
   handler: async (input, context) => {
     const { overwrite, skipCommands } = input;
-    const { projects, logger, plugins, userConfig } = context;
+    const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     logger.info(`Starting sync for ${projects.length} projects`);
 
@@ -65,9 +65,10 @@ export const syncAllProjectsAction = createServiceAction({
       try {
         // Create schema parser context
         const schemaParserContext = await createNodeSchemaParserContext(
-          project.directory,
+          project,
           logger,
           plugins,
+          cliVersion,
         );
 
         // Create sync metadata controller

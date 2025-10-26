@@ -37,6 +37,10 @@
       "type": "npm",
       "script": "watch",
       "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "close": true
+      },
       "problemMatcher": {
         "base": "$tsc-watch",
         "owner": "typescript",

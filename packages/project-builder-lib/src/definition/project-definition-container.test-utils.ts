@@ -54,7 +54,16 @@ export function createTestProjectDefinitionContainer(
   );
   return new ProjectDefinitionContainer(
     resolvedRefPayload,
-    { pluginStore },
+    {
+      pluginStore,
+      cliVersion: '0.1.0',
+      project: {
+        id: 'test-project',
+        name: 'test-project',
+        directory: '/test-project',
+        isInternalExample: false,
+      },
+    },
     pluginImplementationStore,
   );
 }

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { addFilesToSnapshot } from '#src/diff/snapshot/snapshot-management.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
@@ -47,7 +46,7 @@ export const snapshotAddAction = createServiceAction({
       deleted = false,
       snapshotDirectory = '.baseplate-snapshot',
     } = input;
-    const { projects, logger, plugins } = context;
+    const { projects, logger, plugins, cliVersion } = context;
 
     try {
       // Find the project by name or ID
@@ -59,9 +58,14 @@ export const snapshotAddAction = createServiceAction({
 
       // Create schema parser context
       const schemaContext = await createNodeSchemaParserContext(
-        project.directory,
+        project,
         logger,
         plugins,
+        cliVersion,
+      );
+
+      const { addFilesToSnapshot } = await import(
+        '#src/diff/snapshot/snapshot-management.js'
       );
 
       await addFilesToSnapshot(files, deleted, {

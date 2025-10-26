@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { createSnapshotForProject } from '#src/diff/snapshot/create-snapshot-for-project.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
@@ -44,7 +43,7 @@ export const snapshotSaveAction = createServiceAction({
       snapshotDirectory = '.baseplate-snapshot',
       force = false,
     } = input;
-    const { projects, logger, plugins, userConfig } = context;
+    const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     try {
       // Find the project by name or ID
@@ -54,9 +53,10 @@ export const snapshotSaveAction = createServiceAction({
 
       // Create schema parser context
       const schemaContext = await createNodeSchemaParserContext(
-        project.directory,
+        project,
         logger,
         plugins,
+        cliVersion,
       );
 
       if (!force) {
@@ -70,6 +70,10 @@ export const snapshotSaveAction = createServiceAction({
           'Use force: true to skip this warning when calling via MCP.',
         );
       }
+
+      const { createSnapshotForProject } = await import(
+        '#src/diff/snapshot/create-snapshot-for-project.js'
+      );
 
       await createSnapshotForProject({
         projectDirectory: project.directory,

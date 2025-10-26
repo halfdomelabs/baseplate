@@ -1,3 +1,4 @@
+import { isExampleProject } from '@baseplate-dev/project-builder-server/actions';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -7,15 +8,15 @@ import { expandPathWithTilde } from './path.js';
 /**
  * Information about a discovered project
  */
-export interface ProjectInfo {
+export interface DiscoveredProjectInfo {
   /** Project name from package.json */
   name: string;
   /** Absolute path to the project directory */
   path: string;
   /** Parsed package.json content */
   packageJson: Record<string, unknown>;
-  /** Whether this project is from the examples directory */
-  isExample: boolean;
+  /** Whether this project is an internal example project */
+  isInternalExample: boolean;
 }
 
 /**
@@ -34,12 +35,12 @@ interface ResolveProjectsOptions {
  * Resolves all available projects based on the provided options.
  *
  * @param options - Configuration for project resolution
- * @returns Map of project name to ProjectInfo
+ * @returns Map of project name to DiscoveredProjectInfo
  * @throws Error if duplicate project names are found or if project loading fails
  */
 export async function resolveProjects(
   options: ResolveProjectsOptions = {},
-): Promise<Map<string, ProjectInfo>> {
+): Promise<Map<string, DiscoveredProjectInfo>> {
   const {
     includeExamples = process.env.INCLUDE_EXAMPLES === 'true',
     directories = [],
@@ -74,7 +75,7 @@ export async function resolveProjects(
     allDirectories.add(process.cwd());
   }
 
-  const projectMap = new Map<string, ProjectInfo>();
+  const projectMap = new Map<string, DiscoveredProjectInfo>();
   const nameConflicts: string[] = [];
 
   // Load project info for each directory
@@ -113,7 +114,9 @@ export async function resolveProjects(
  * @returns ProjectInfo for the resolved project
  * @throws Error if project cannot be resolved or loaded
  */
-export async function resolveProject(nameOrPath: string): Promise<ProjectInfo> {
+export async function resolveProject(
+  nameOrPath: string,
+): Promise<DiscoveredProjectInfo> {
   // If it looks like a path (contains separators), treat as path
   if (nameOrPath.includes('/') || nameOrPath.includes('\\')) {
     const resolvedPath = expandPathWithTilde(nameOrPath);
@@ -145,7 +148,9 @@ export async function resolveProject(nameOrPath: string): Promise<ProjectInfo> {
  * @returns ProjectInfo for the project
  * @throws Error if directory doesn't exist or package.json is invalid
  */
-async function loadProjectInfo(directory: string): Promise<ProjectInfo> {
+async function loadProjectInfo(
+  directory: string,
+): Promise<DiscoveredProjectInfo> {
   const packageJsonPath = path.join(directory, 'package.json');
 
   try {
@@ -160,15 +165,13 @@ async function loadProjectInfo(directory: string): Promise<ProjectInfo> {
       throw new Error('package.json must have a valid "name" field');
     }
 
-    // Determine if this is an example project by checking if it's in examples directory
-    const isExample =
-      directory.includes('/examples/') || directory.includes('\\examples\\');
+    const isInternalExample = await isExampleProject(directory);
 
     return {
       name,
       path: directory,
       packageJson,
-      isExample,
+      isInternalExample,
     };
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
@@ -185,7 +188,7 @@ async function loadProjectInfo(directory: string): Promise<ProjectInfo> {
  * @returns Array of absolute directory paths
  */
 export function getProjectDirectories(
-  projectMap: Map<string, ProjectInfo>,
+  projectMap: Map<string, DiscoveredProjectInfo>,
 ): string[] {
   return [...projectMap.values()].map((project) => project.path);
 }
@@ -197,7 +200,7 @@ export function getProjectDirectories(
  * @returns Array of project names
  */
 export function getProjectNames(
-  projectMap: Map<string, ProjectInfo>,
+  projectMap: Map<string, DiscoveredProjectInfo>,
 ): string[] {
   return [...projectMap.keys()].sort();
 }

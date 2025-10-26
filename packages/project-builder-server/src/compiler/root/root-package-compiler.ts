@@ -8,6 +8,7 @@ import {
   prettierGenerator,
 } from '@baseplate-dev/core-generators';
 
+import type { PackageCompiler } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
 /**
@@ -32,6 +33,8 @@ export const rootPackageCompiler = {
     const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
     const workspacePackages = [`${appsFolder}/*`];
 
+    const { cliVersion } = definitionContainer.parserContext;
+
     const rootBundle = nodeGenerator({
       name: generalSettings.name,
       packageName: generalSettings.packageScope
@@ -43,6 +46,16 @@ export const rootPackageCompiler = {
       scripts: {
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
+      },
+      additionalPackages: {
+        dev: {
+          // only include the project-builder-cli package if the project is not an internal example
+          ...(definitionContainer.parserContext.project.isInternalExample
+            ? {}
+            : {
+                '@baseplate-dev/project-builder-cli': cliVersion,
+              }),
+        },
       },
       children: {
         gitIgnore: nodeGitIgnoreGenerator({}),
@@ -61,4 +74,4 @@ export const rootPackageCompiler = {
       generatorBundle: rootBundle,
     };
   },
-};
+} satisfies PackageCompiler;

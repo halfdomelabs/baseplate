@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ProjectInfo } from './project-resolver.js';
+import type { DiscoveredProjectInfo } from './project-resolver.js';
 
 import {
   getProjectDirectories,
@@ -56,13 +56,13 @@ describe('project-resolver', () => {
         name: 'test-project-1',
         path: '/project1',
         packageJson: { name: 'test-project-1', version: '1.0.0' },
-        isExample: false,
+        isInternalExample: false,
       });
       expect(result.get('test-project-2')).toEqual({
         name: 'test-project-2',
         path: '/project2',
         packageJson: { name: 'test-project-2', version: '2.0.0' },
-        isExample: false,
+        isInternalExample: false,
       });
     });
 
@@ -98,13 +98,13 @@ describe('project-resolver', () => {
         name: 'blog-with-auth',
         path: '/examples/blog-with-auth',
         packageJson: { name: 'blog-with-auth', version: '0.1.0' },
-        isExample: true,
+        isInternalExample: true,
       });
       expect(result.get('todo-app')).toEqual({
         name: 'todo-app',
         path: '/examples/todo-app',
         packageJson: { name: 'todo-app', version: '0.1.0' },
-        isExample: true,
+        isInternalExample: true,
       });
     });
 
@@ -158,7 +158,7 @@ describe('project-resolver', () => {
         name: 'test-example',
         path: '/examples/test-example',
         packageJson: { name: 'test-example', version: '0.1.0' },
-        isExample: true,
+        isInternalExample: true,
       });
     });
 
@@ -188,7 +188,7 @@ describe('project-resolver', () => {
         name: 'current-project',
         path: '/current',
         packageJson: { name: 'current-project', version: '1.0.0' },
-        isExample: false,
+        isInternalExample: false,
       });
     });
 
@@ -271,7 +271,7 @@ describe('project-resolver', () => {
         name: 'path-project',
         path: '/absolute/path',
         packageJson: { name: 'path-project', version: '1.0.0' },
-        isExample: false,
+        isInternalExample: false,
       });
     });
 
@@ -319,7 +319,7 @@ describe('project-resolver', () => {
         name: 'named-project',
         path: '/project1',
         packageJson: { name: 'named-project', version: '1.0.0' },
-        isExample: false,
+        isInternalExample: false,
       });
     });
 
@@ -393,14 +393,14 @@ describe('project-resolver', () => {
   describe('getProjectDirectories', () => {
     it('returns array of project paths', () => {
       // Arrange
-      const projectMap = new Map<string, ProjectInfo>([
+      const projectMap = new Map<string, DiscoveredProjectInfo>([
         [
           'project1',
           {
             name: 'project1',
             path: '/path1',
             packageJson: {},
-            isExample: false,
+            isInternalExample: false,
           },
         ],
         [
@@ -409,7 +409,7 @@ describe('project-resolver', () => {
             name: 'project2',
             path: '/path2',
             packageJson: {},
-            isExample: true,
+            isInternalExample: true,
           },
         ],
       ]);
@@ -423,7 +423,7 @@ describe('project-resolver', () => {
 
     it('returns empty array for empty map', () => {
       // Arrange
-      const projectMap = new Map<string, ProjectInfo>();
+      const projectMap = new Map<string, DiscoveredProjectInfo>();
 
       // Act
       const result = getProjectDirectories(projectMap);
@@ -436,14 +436,14 @@ describe('project-resolver', () => {
   describe('getProjectNames', () => {
     it('returns sorted array of project names', () => {
       // Arrange
-      const projectMap = new Map<string, ProjectInfo>([
+      const projectMap = new Map<string, DiscoveredProjectInfo>([
         [
           'zebra-project',
           {
             name: 'zebra-project',
             path: '/zebra',
             packageJson: {},
-            isExample: false,
+            isInternalExample: false,
           },
         ],
         [
@@ -452,7 +452,7 @@ describe('project-resolver', () => {
             name: 'alpha-project',
             path: '/alpha',
             packageJson: {},
-            isExample: true,
+            isInternalExample: true,
           },
         ],
         [
@@ -461,7 +461,7 @@ describe('project-resolver', () => {
             name: 'beta-project',
             path: '/beta',
             packageJson: {},
-            isExample: false,
+            isInternalExample: false,
           },
         ],
       ]);
@@ -479,7 +479,7 @@ describe('project-resolver', () => {
 
     it('returns empty array for empty map', () => {
       // Arrange
-      const projectMap = new Map<string, ProjectInfo>();
+      const projectMap = new Map<string, DiscoveredProjectInfo>();
 
       // Act
       const result = getProjectNames(projectMap);
@@ -511,8 +511,8 @@ describe('project-resolver', () => {
       const regularProject = await resolveProject('/regular/project');
 
       // Assert
-      expect(exampleProject.isExample).toBe(true);
-      expect(regularProject.isExample).toBe(false);
+      expect(exampleProject.isInternalExample).toBe(true);
+      expect(regularProject.isInternalExample).toBe(false);
     });
 
     it('handles Windows-style paths for example detection', async () => {
@@ -531,7 +531,7 @@ describe('project-resolver', () => {
       const result = await resolveProject('/examples/test-project');
 
       // Assert
-      expect(result.isExample).toBe(true);
+      expect(result.isInternalExample).toBe(true);
     });
   });
 

@@ -13,9 +13,15 @@ export async function generateProject(
 ): Promise<SyncProjectResult> {
   const defaultPlugins = await getDefaultPlugins(logger);
   const nodeSchemaParserContext = await createNodeSchemaParserContext(
-    projectDirectory,
+    {
+      id: 'test-project',
+      name: 'Test Project',
+      directory: projectDirectory,
+      isInternalExample: true,
+    },
     logger,
     defaultPlugins,
+    '0.1.0',
   );
   try {
     return await syncProject({

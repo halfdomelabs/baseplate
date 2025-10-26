@@ -24,12 +24,12 @@ export interface PackageCompiler<
    * Compile a package configuration into a PackageEntry with generator bundle
    *
    * @param definitionContainer - The project definition container with full context
-   * @param appConfig - The package configuration to compile
+   * @param packageConfig - The package configuration to compile
    * @returns PackageEntry with generated bundle ready for sync
    */
   compile(
     definitionContainer: ProjectDefinitionContainer,
-    appConfig: TConfig,
+    packageConfig: TConfig,
   ): PackageEntry;
 }
 
@@ -40,7 +40,7 @@ export interface PackageCompiler<
  * Otherwise, creates prefixed package: project-name
  *
  * @param generalSettings - Project general settings
- * @param appName - The app/package name
+ * @param packageName - The app/package name
  * @returns Formatted package name
  *
  * @example
@@ -54,11 +54,11 @@ export interface PackageCompiler<
  */
 export function buildPackageName(
   generalSettings: { name: string; packageScope: string },
-  appName: string,
+  packageName: string,
 ): string {
   return generalSettings.packageScope
-    ? `@${generalSettings.packageScope}/${appName}`
-    : `${generalSettings.name}-${appName}`;
+    ? `@${generalSettings.packageScope}/${packageName}`
+    : `${generalSettings.name}-${packageName}`;
 }
 
 /**
