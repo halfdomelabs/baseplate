@@ -40,6 +40,11 @@ export const rootPackageCompiler = {
         : `${generalSettings.name}-root`,
       description: `Monorepo root for ${generalSettings.name}`,
       private: true,
+      rootPackage: true,
+      scripts: {
+        'baseplate:serve': 'baseplate serve',
+        'baseplate:generate': 'baseplate generate',
+      },
       children: {
         gitIgnore: nodeGitIgnoreGenerator({}),
         prettier: prettierGenerator({}),

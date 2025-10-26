@@ -37,6 +37,7 @@ const descriptorSchema = z.object({
   scripts: z.record(z.string(), z.string()).default({}),
   nodeVersion: z.string().default(NODE_VERSION),
   pnpmVersion: z.string().default(PNPM_VERSION),
+  rootPackage: z.boolean().default(false),
 });
 
 const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
@@ -205,6 +206,9 @@ export const nodeGenerator = createGenerator({
                 node: descriptor.nodeVersion,
               },
               type: isEsm ? 'module' : 'commonjs',
+              packageManager: descriptor.rootPackage
+                ? `pnpm@${descriptor.pnpmVersion}`
+                : undefined,
             };
 
             writeJsonToBuilder(builder, {
