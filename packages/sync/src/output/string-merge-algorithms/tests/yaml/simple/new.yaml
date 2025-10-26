@@ -1,0 +1,8 @@
+# New file with updated comments
+a: 1
+# Updated field b comment
+b: b
+c:
+  d: 3
+  # New field f
+  f: 5
