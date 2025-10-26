@@ -1,7 +1,4 @@
-import type {
-  AppEntry,
-  ProjectDefinitionContainer,
-} from '@baseplate-dev/project-builder-lib';
+import type { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 
 import {
   nodeGenerator,
@@ -10,6 +7,8 @@ import {
   pnpmWorkspaceGenerator,
   prettierGenerator,
 } from '@baseplate-dev/core-generators';
+
+import type { PackageEntry } from '../package-entry.js';
 
 /**
  * Compiler for monorepo root package
@@ -24,7 +23,7 @@ import {
  * - Vitest (no tests in root)
  */
 export const rootPackageCompiler = {
-  compile(definitionContainer: ProjectDefinitionContainer): AppEntry {
+  compile(definitionContainer: ProjectDefinitionContainer): PackageEntry {
     const projectDefinition = definitionContainer.definition;
     const generalSettings = projectDefinition.settings.general;
     const monorepoSettings = projectDefinition.settings.monorepo;
@@ -58,7 +57,7 @@ export const rootPackageCompiler = {
     return {
       id: 'root',
       name: 'root',
-      appDirectory: '.', // Root of the monorepo
+      packageDirectory: '.', // Root of the monorepo
       generatorBundle: rootBundle,
     };
   },

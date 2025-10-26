@@ -125,7 +125,7 @@ export async function syncProject({
           app.id,
           {
             name: app.name,
-            path: path.join(directory, app.appDirectory),
+            path: path.join(directory, app.packageDirectory),
             status: 'not-synced',
             statusMessage: undefined,
             order: index,

@@ -1,4 +1,3 @@
-import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorEntry } from '@baseplate-dev/sync';
 import type { MockedObject } from 'vitest';
 
@@ -9,6 +8,8 @@ import {
 import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type { PackageEntry } from '#src/compiler/package-entry.js';
 
 import type { GeneratorOperations } from './types.js';
 
@@ -57,10 +58,10 @@ describe('generateForDirectory', () => {
 
     // Create test data
     const testLogger = createTestLogger();
-    const testAppEntry: AppEntry = {
+    const testAppEntry: PackageEntry = {
       id: 'test-app-id',
       name: 'test-app',
-      appDirectory: 'test-app',
+      packageDirectory: 'test-app',
       generatorBundle: {
         name: 'test-generator',
         directory: '/test',
@@ -170,10 +171,10 @@ describe('generateForDirectory', () => {
 
     // Create test data
     const testLogger = createTestLogger();
-    const testAppEntry: AppEntry = {
+    const testAppEntry: PackageEntry = {
       id: 'test-app-id',
       name: 'test-app',
-      appDirectory: 'test-app',
+      packageDirectory: 'test-app',
       generatorBundle: {
         name: 'test-generator',
         directory: '/test',
@@ -282,10 +283,10 @@ describe('generateForDirectory', () => {
 
     // Create test data
     const testLogger = createTestLogger();
-    const testAppEntry: AppEntry = {
+    const testAppEntry: PackageEntry = {
       id: 'test-app-id',
       name: 'test-app',
-      appDirectory: 'test-app',
+      packageDirectory: 'test-app',
       generatorBundle: {
         name: 'test-generator',
         directory: '/test',

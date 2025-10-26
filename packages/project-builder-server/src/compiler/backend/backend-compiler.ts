@@ -1,5 +1,4 @@
 import type {
-  AppEntry,
   BackendAppConfig,
   ProjectDefinition,
   ProjectDefinitionContainer,
@@ -14,6 +13,7 @@ import {
 import { backendAppEntryType } from '@baseplate-dev/project-builder-lib';
 
 import type { PackageCompiler } from '../package-compiler.js';
+import type { PackageEntry } from '../package-entry.js';
 
 import {
   buildPackageName,
@@ -52,7 +52,7 @@ export const backendPackageCompiler: PackageCompiler<BackendAppConfig> = {
   compile(
     definitionContainer: ProjectDefinitionContainer,
     appConfig: BackendAppConfig,
-  ): AppEntry {
+  ): PackageEntry {
     const appBuilder = createAppEntryBuilderForPackage(
       definitionContainer,
       appConfig,

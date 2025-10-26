@@ -126,9 +126,9 @@ export async function diffProject(
 
   for (const app of filteredApps) {
     try {
-      const appDirectory = path.join(projectDirectory, app.appDirectory);
+      const appDirectory = path.join(projectDirectory, app.packageDirectory);
 
-      logger.info(`Building package: ${app.name} (${app.appDirectory})...`);
+      logger.info(`Building package: ${app.name} (${app.packageDirectory})...`);
 
       // Generate the output without writing files
       const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
@@ -177,7 +177,7 @@ export async function diffProject(
 
       appResults.push({
         name: app.name,
-        packageDirectory: app.appDirectory,
+        packageDirectory: app.packageDirectory,
         diffSummary,
         hasDifferences,
       });

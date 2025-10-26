@@ -1,5 +1,4 @@
 import type {
-  AppEntry,
   ProjectDefinitionContainer,
   WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
@@ -35,6 +34,7 @@ import { titleizeCamel } from '#src/utils/case.js';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
 import type { PackageCompiler } from '../package-compiler.js';
+import type { PackageEntry } from '../package-entry.js';
 
 import {
   buildPackageName,
@@ -198,7 +198,7 @@ export const webPackageCompiler: PackageCompiler<WebAppConfig> = {
   compile(
     definitionContainer: ProjectDefinitionContainer,
     appConfig: WebAppConfig,
-  ): AppEntry {
+  ): PackageEntry {
     const appBuilder = createAppEntryBuilderForPackage(
       definitionContainer,
       appConfig,

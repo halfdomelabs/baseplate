@@ -1,12 +1,10 @@
-import type {
-  AppEntry,
-  SchemaParserContext,
-} from '@baseplate-dev/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
 import type { PackageCompiler } from './package-compiler.js';
+import type { PackageEntry } from './package-entry.js';
 
 import { PACKAGE_COMPILER_REGISTRY } from './compiler-registry.js';
 import { rootPackageCompiler } from './root/index.js';
@@ -19,12 +17,12 @@ import { rootPackageCompiler } from './root/index.js';
  *
  * @param projectJson - Serialized project definition JSON
  * @param context - Schema parser context
- * @returns Array of compiled app entries with generator bundles (root first, then apps)
+ * @returns Array of compiled package entries with generator bundles (root first, then apps)
  */
 export function compilePackages(
   projectJson: unknown,
   context: SchemaParserContext,
-): AppEntry[] {
+): PackageEntry[] {
   const definitionContainer = ProjectDefinitionContainer.fromSerializedConfig(
     projectJson,
     context,
@@ -39,7 +37,7 @@ export function compilePackages(
     (a) => a.name,
   ]);
 
-  const apps: AppEntry[] = appConfigs.map((app) =>
+  const apps: PackageEntry[] = appConfigs.map((app) =>
     (PACKAGE_COMPILER_REGISTRY[app.type] as PackageCompiler).compile(
       definitionContainer,
       app,
