@@ -1,3 +1,4 @@
+import type { Payload } from '@prisma/client/runtime/client';
 import type { z } from 'zod';
 
 import { prisma } from '@src/services/prisma.js';
@@ -68,6 +69,29 @@ export function scalarField<TSchema extends z.ZodSchema>(
  * =========================================
  */
 
+export interface ParentModelConfig<TModelName extends ModelPropName> {
+  model: TModelName;
+  getWhereUnique: (
+    parentModel: GetPayload<TModelName>,
+  ) => WhereUniqueInput<TModelName>;
+}
+
+export function createParentModelConfig<TModelName extends ModelPropName>(
+  model: TModelName,
+  getWhereUnique: (
+    parentModel: GetPayload<TModelName>,
+  ) => WhereUniqueInput<TModelName>,
+): ParentModelConfig<TModelName> {
+  return {
+    model,
+    getWhereUnique,
+  };
+}
+
+type RelationName<TModelName extends ModelPropName> = keyof Payload<
+  (typeof prisma)[TModelName]
+>['objects'];
+
 interface PrismaFieldData<TModelName extends ModelPropName> {
   create: CreateInput<TModelName>;
   update: UpdateInput<TModelName>;
@@ -79,17 +103,23 @@ interface PrismaFieldData<TModelName extends ModelPropName> {
 export interface NestedOneToOneFieldConfig<
   TParentModelName extends ModelPropName,
   TModelName extends ModelPropName,
+  TRelationName extends RelationName<TModelName>,
   TFields extends Record<string, AnyFieldDefinition>,
 > {
   /**
    * Prisma model name of parent model
    */
-  parentModel: TParentModelName;
+  parentModel: ParentModelConfig<TParentModelName>;
 
   /**
    * Prisma model name of the child model
    */
   model: TModelName;
+
+  /**
+   * Relation name of the parent model from the child model
+   */
+  relationName: TRelationName;
 
   /**
    * Field definitions for the nested entity
@@ -108,7 +138,8 @@ export interface NestedOneToOneFieldConfig<
    */
   buildData: (
     data: {
-      create: InferFieldsCreateOutput<TFields>;
+      create: InferFieldsCreateOutput<TFields> &
+        Record<TRelationName, { connect: WhereUniqueInput<TParentModelName> }>;
       update: InferFieldsUpdateOutput<TFields>;
     },
     parentModel: GetPayload<TParentModelName>,
@@ -161,9 +192,15 @@ export interface NestedOneToOneFieldConfig<
 export function nestedOneToOneField<
   TParentModelName extends ModelPropName,
   TModelName extends ModelPropName,
+  TRelationName extends RelationName<TModelName>,
   TFields extends Record<string, AnyFieldDefinition>,
 >(
-  config: NestedOneToOneFieldConfig<TParentModelName, TModelName, TFields>,
+  config: NestedOneToOneFieldConfig<
+    TParentModelName,
+    TModelName,
+    TRelationName,
+    TFields
+  >,
 ): FieldDefinition<
   InferInput<TFields> | null | undefined,
   undefined,
@@ -227,8 +264,22 @@ export function nestedOneToOneField<
               const whereUnique = config.getWhereUnique(
                 ctx.result as GetPayload<TParentModelName>,
               );
+              const parentWhereUnique = config.parentModel.getWhereUnique(
+                ctx.result as GetPayload<TParentModelName>,
+              );
               const builtData = await config.buildData(
-                awaitedData,
+                {
+                  create: {
+                    ...awaitedData.create,
+                    ...({
+                      [config.relationName]: { connect: parentWhereUnique },
+                    } as Record<
+                      TRelationName,
+                      { connect: WhereUniqueInput<TParentModelName> }
+                    >),
+                  },
+                  update: awaitedData.update,
+                },
                 ctx.result as GetPayload<TParentModelName>,
                 {
                   ...ctx,
@@ -275,17 +326,23 @@ export function nestedOneToOneField<
 export interface NestedOneToManyFieldConfig<
   TParentModelName extends ModelPropName,
   TModelName extends ModelPropName,
+  TRelationName extends RelationName<TModelName>,
   TFields extends Record<string, AnyFieldDefinition>,
 > {
   /**
    * Prisma model name of parent model
    */
-  parentModel: TParentModelName;
+  parentModel: ParentModelConfig<TParentModelName>;
 
   /**
    * Prisma model name of the child model
    */
   model: TModelName;
+
+  /**
+   * Relation name of the parent model from the child model
+   */
+  relationName: TRelationName;
 
   /**
    * Field definitions for the nested entity
@@ -303,21 +360,13 @@ export interface NestedOneToManyFieldConfig<
   ) => WhereUniqueInput<TModelName> | undefined;
 
   /**
-   * Function to extract a where clause from the parent model.
-   * @param parentModel - The parent model to get the where clause from.
-   * @returns The where clause to use for the parent model.
-   */
-  getWhereFromParentModel: (
-    parentModel: GetPayload<TParentModelName>,
-  ) => WhereInput<TModelName>;
-
-  /**
    * Transform validated field data into final Prisma structure for a single item.
    * The returned payload should not include the parent relation field, as it will be added automatically.
    */
   buildData: (
     data: {
-      create: InferFieldsCreateOutput<TFields>;
+      create: InferFieldsCreateOutput<TFields> &
+        Record<TRelationName, { connect: WhereUniqueInput<TParentModelName> }>;
       update: InferFieldsUpdateOutput<TFields>;
     },
     parentModel: GetPayload<TParentModelName>,
@@ -386,9 +435,15 @@ function expandWhereUnique<TModelName extends ModelPropName>(
 export function nestedOneToManyField<
   TParentModelName extends ModelPropName,
   TModelName extends ModelPropName,
+  TRelationName extends RelationName<TModelName>,
   TFields extends Record<string, AnyFieldDefinition>,
 >(
-  config: NestedOneToManyFieldConfig<TParentModelName, TModelName, TFields>,
+  config: NestedOneToManyFieldConfig<
+    TParentModelName,
+    TModelName,
+    TRelationName,
+    TFields
+  >,
 ): FieldDefinition<
   InferInput<TFields>[] | undefined,
   undefined,
@@ -405,18 +460,13 @@ export function nestedOneToManyField<
       const existingModel = (await loadExisting()) as
         | GetPayload<TParentModelName>
         | undefined;
-      const whereFromOriginalModel =
-        existingModel && config.getWhereFromParentModel(existingModel);
 
-      if (
-        whereFromOriginalModel &&
-        Object.values(whereFromOriginalModel).every(
-          (value) => value === undefined,
-        )
-      ) {
-        throw new Error('Where from original model is empty');
-      }
-
+      // Filter objects that relate to parent model only
+      const whereFromOriginalModel = existingModel && {
+        [config.relationName]: expandWhereUnique(
+          config.parentModel.getWhereUnique(existingModel),
+        ),
+      };
       // Handle list of items
       const delegate = makeGenericPrismaDelegate(prisma, config.model);
 
@@ -512,12 +562,31 @@ export function nestedOneToManyField<
                 ? await item.data(ctx.tx)
                 : item.data;
 
-            const builtData = await config.buildData(awaitedData, ctx.result, {
-              ...ctx,
-              operation: item.whereUnique ? 'update' : 'create',
-              loadExisting: cachedLoadExisting[idx],
-              result: undefined,
-            });
+            const parentWhereUnique = config.parentModel.getWhereUnique(
+              ctx.result,
+            );
+
+            const builtData = await config.buildData(
+              {
+                create: {
+                  ...awaitedData.create,
+                  ...({
+                    [config.relationName]: { connect: parentWhereUnique },
+                  } as Record<
+                    TRelationName,
+                    { connect: WhereUniqueInput<TParentModelName> }
+                  >),
+                },
+                update: awaitedData.update,
+              },
+              ctx.result,
+              {
+                ...ctx,
+                operation: item.whereUnique ? 'update' : 'create',
+                loadExisting: cachedLoadExisting[idx],
+                result: undefined,
+              },
+            );
 
             results[idx] = item.whereUnique
               ? await prismaDelegate.update({

@@ -7,6 +7,7 @@ import {
   defineUpdateOperation,
 } from '@src/utils/data-operations/define-operations.js';
 import {
+  createParentModelConfig,
   nestedOneToManyField,
   nestedOneToOneField,
   scalarField,
@@ -17,29 +18,29 @@ import {
   userProfileAvatarFileCategory,
 } from '../constants/file-categories.js';
 
+const parentModel = createParentModelConfig('user', (parentModel) => ({
+  id: parentModel.id,
+}));
+
 const userFields = {
   name: scalarField(z.string().min(1)),
   email: scalarField(z.string().email()),
   customer: nestedOneToOneField({
-    parentModel: 'user',
+    parentModel,
     model: 'customer',
+    relationName: 'user',
     fields: {
       stripeCustomerId: scalarField(z.string().min(1)),
     },
     getWhereUnique: (parentModel) => ({
       id: parentModel.id,
     }),
-    buildData: ({ create, update }, parentModel) => ({
-      create: {
-        ...create,
-        user: { connect: { id: parentModel.id } },
-      },
-      update: { ...update },
-    }),
+    buildData: (data) => data,
   }),
   userProfile: nestedOneToOneField({
-    parentModel: 'user',
+    parentModel,
     model: 'userProfile',
+    relationName: 'user',
     fields: {
       bio: scalarField(z.string().min(1)),
       birthDay: scalarField(z.string().nullish()),
@@ -51,17 +52,12 @@ const userFields = {
     getWhereUnique: (parentModel) => ({
       userId: parentModel.id,
     }),
-    buildData: ({ create, update }, result) => ({
-      create: {
-        ...create,
-        user: { connect: { id: result.id } },
-      },
-      update,
-    }),
+    buildData: (data) => data,
   }),
   images: nestedOneToManyField({
-    parentModel: 'user',
+    parentModel,
     model: 'userImage',
+    relationName: 'user',
     fields: {
       id: scalarField(z.string()),
       caption: scalarField(z.string().min(1)),
@@ -70,19 +66,10 @@ const userFields = {
         fileIdFieldName: 'fileId',
       }),
     },
-    getWhereFromParentModel: (parentModel) => ({
-      userId: parentModel.id,
-    }),
     getWhereUnique: (input) => ({
       id: input.id,
     }),
-    buildData: ({ create, update }, result) => ({
-      create: {
-        ...create,
-        user: { connect: { id: result.id } },
-      },
-      update,
-    }),
+    buildData: (data) => data,
   }),
 };
 
