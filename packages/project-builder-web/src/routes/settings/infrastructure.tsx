@@ -76,7 +76,7 @@ function InfrastructureSettingsPage(): React.JSX.Element {
               <SwitchFieldController
                 name="redis.enabled"
                 label="Enable Redis"
-                description="Redis is used for caching, sessions, and queue management. Port is calculated as portOffset + 379 (e.g., 3000 → 3379). Required for Bull Queue. Password uses sensible defaults."
+                description="Redis is used for caching, sessions, and queue management."
                 control={control}
               />
             </SectionListSectionContent>

@@ -88,7 +88,6 @@
       "enableAxios": false,
       "enableBullQueue": false,
       "enablePostmark": false,
-      "enableRedis": false,
       "enableStripe": false,
       "enableSubscriptions": false,
       "id": "app:acqRWBqOc6tx",
@@ -763,13 +762,14 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 19,
+  "schemaVersion": 20,
   "settings": {
     "general": {
       "name": "blog-with-auth",
       "packageScope": "",
       "portOffset": 3000
     },
+    "infrastructure": { "redis": { "enabled": false } },
     "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }
   }
 }

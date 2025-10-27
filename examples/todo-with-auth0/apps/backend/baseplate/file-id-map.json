@@ -1,7 +1,4 @@
 {
-  "@baseplate-dev/core-generators#docker/docker-compose:docker-compose": "docker/docker-compose.yml",
-  "@baseplate-dev/core-generators#docker/docker-compose:docker-env": "docker/.env",
-  "@baseplate-dev/core-generators#docker/docker-compose:docker-env-example": "docker/.env.example",
   "@baseplate-dev/core-generators#metadata/path-roots:path-roots": ".paths-metadata.json",
   "@baseplate-dev/core-generators#node/eslint:eslint-config": "eslint.config.js",
   "@baseplate-dev/core-generators#node/node-git-ignore:gitignore": ".gitignore",
