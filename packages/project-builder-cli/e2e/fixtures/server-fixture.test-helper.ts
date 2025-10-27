@@ -215,7 +215,12 @@ export const test = base.extend<
         }
 
         // Add service to the server
-        const service = server.builderServiceManager.addService(tempDir);
+        const service = server.builderServiceManager.addService({
+          id: 'test-project',
+          directory: tempDir,
+          name: 'test-project',
+          isInternalExample: false,
+        });
 
         return {
           id: service.id,
