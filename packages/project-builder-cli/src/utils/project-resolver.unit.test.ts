@@ -33,13 +33,11 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'test-project-1',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'test-project-1' } },
           }),
-          '/project2/package.json': JSON.stringify({
-            name: 'test-project-2',
-            version: '2.0.0',
+          '/project2/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'test-project-2' } },
           }),
         },
         '/',
@@ -55,13 +53,11 @@ describe('project-resolver', () => {
       expect(result.get('test-project-1')).toEqual({
         name: 'test-project-1',
         path: '/project1',
-        packageJson: { name: 'test-project-1', version: '1.0.0' },
         isInternalExample: false,
       });
       expect(result.get('test-project-2')).toEqual({
         name: 'test-project-2',
         path: '/project2',
-        packageJson: { name: 'test-project-2', version: '2.0.0' },
         isInternalExample: false,
       });
     });
@@ -70,14 +66,17 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/examples/blog-with-auth/package.json': JSON.stringify({
-            name: 'blog-with-auth',
-            version: '0.1.0',
+          '/examples/package.json': JSON.stringify({
+            name: '@baseplate-dev/root',
           }),
-          '/examples/todo-app/package.json': JSON.stringify({
-            name: 'todo-app',
-            version: '0.1.0',
-          }),
+          '/examples/blog-with-auth/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'blog-with-auth' } },
+            }),
+          '/examples/todo-app/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'todo-app' } },
+            }),
         },
         '/',
       );
@@ -97,13 +96,11 @@ describe('project-resolver', () => {
       expect(result.get('blog-with-auth')).toEqual({
         name: 'blog-with-auth',
         path: '/examples/blog-with-auth',
-        packageJson: { name: 'blog-with-auth', version: '0.1.0' },
         isInternalExample: true,
       });
       expect(result.get('todo-app')).toEqual({
         name: 'todo-app',
         path: '/examples/todo-app',
-        packageJson: { name: 'todo-app', version: '0.1.0' },
         isInternalExample: true,
       });
     });
@@ -113,13 +110,11 @@ describe('project-resolver', () => {
       process.env.PROJECT_DIRECTORIES = '/project1,/project2';
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'env-project-1',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'env-project-1' } },
           }),
-          '/project2/package.json': JSON.stringify({
-            name: 'env-project-2',
-            version: '2.0.0',
+          '/project2/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'env-project-2' } },
           }),
         },
         '/',
@@ -139,10 +134,13 @@ describe('project-resolver', () => {
       process.env.INCLUDE_EXAMPLES = 'true';
       vol.fromJSON(
         {
-          '/examples/test-example/package.json': JSON.stringify({
-            name: 'test-example',
-            version: '0.1.0',
+          '/examples/package.json': JSON.stringify({
+            name: '@baseplate-dev/root',
           }),
+          '/examples/test-example/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'test-example' } },
+            }),
         },
         '/',
       );
@@ -157,7 +155,6 @@ describe('project-resolver', () => {
       expect(result.get('test-example')).toEqual({
         name: 'test-example',
         path: '/examples/test-example',
-        packageJson: { name: 'test-example', version: '0.1.0' },
         isInternalExample: true,
       });
     });
@@ -166,9 +163,8 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/current/package.json': JSON.stringify({
-            name: 'current-project',
-            version: '1.0.0',
+          '/current/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'current-project' } },
           }),
         },
         '/',
@@ -187,7 +183,6 @@ describe('project-resolver', () => {
       expect(result.get('current-project')).toEqual({
         name: 'current-project',
         path: '/current',
-        packageJson: { name: 'current-project', version: '1.0.0' },
         isInternalExample: false,
       });
     });
@@ -196,13 +191,11 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'duplicate-name',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'duplicate-name' } },
           }),
-          '/project2/package.json': JSON.stringify({
-            name: 'duplicate-name',
-            version: '2.0.0',
+          '/project2/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'duplicate-name' } },
           }),
         },
         '/',
@@ -225,11 +218,10 @@ describe('project-resolver', () => {
       });
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'valid-project',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'valid-project' } },
           }),
-          '/project2/other-file.txt': 'not a package.json',
+          '/project2/other-file.txt': 'not a project-definition.json',
         },
         '/',
       );
@@ -255,9 +247,8 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/absolute/path/package.json': JSON.stringify({
-            name: 'path-project',
-            version: '1.0.0',
+          '/absolute/path/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'path-project' } },
           }),
         },
         '/',
@@ -270,7 +261,6 @@ describe('project-resolver', () => {
       expect(result).toEqual({
         name: 'path-project',
         path: '/absolute/path',
-        packageJson: { name: 'path-project', version: '1.0.0' },
         isInternalExample: false,
       });
     });
@@ -281,10 +271,11 @@ describe('project-resolver', () => {
       const relativePath = `${currentDir}/relative/path`;
       vol.fromJSON(
         {
-          [`${relativePath}/package.json`]: JSON.stringify({
-            name: 'relative-project',
-            version: '1.0.0',
-          }),
+          [`${relativePath}/baseplate/project-definition.json`]: JSON.stringify(
+            {
+              settings: { general: { name: 'relative-project' } },
+            },
+          ),
         },
         '/',
       );
@@ -301,9 +292,8 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'named-project',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'named-project' } },
           }),
         },
         '/',
@@ -318,7 +308,6 @@ describe('project-resolver', () => {
       expect(result).toEqual({
         name: 'named-project',
         path: '/project1',
-        packageJson: { name: 'named-project', version: '1.0.0' },
         isInternalExample: false,
       });
     });
@@ -327,9 +316,8 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project1/package.json': JSON.stringify({
-            name: 'existing-project',
-            version: '1.0.0',
+          '/project1/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'existing-project' } },
           }),
         },
         '/',
@@ -353,12 +341,12 @@ describe('project-resolver', () => {
       );
     });
 
-    it('throws error when package.json has no name field', async () => {
+    it('throws error when project definition has no name field', async () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project/package.json': JSON.stringify({
-            version: '1.0.0',
+          '/project/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: {} },
             // Missing name field
           }),
         },
@@ -367,17 +355,16 @@ describe('project-resolver', () => {
 
       // Act & Assert
       await expect(resolveProject('/project')).rejects.toThrow(
-        'package.json must have a valid "name" field',
+        'Validation failed',
       );
     });
 
-    it('throws error when package.json has invalid name field', async () => {
+    it('throws error when project definition has invalid name field', async () => {
       // Arrange
       vol.fromJSON(
         {
-          '/project/package.json': JSON.stringify({
-            name: null,
-            version: '1.0.0',
+          '/project/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: null } },
           }),
         },
         '/',
@@ -385,7 +372,7 @@ describe('project-resolver', () => {
 
       // Act & Assert
       await expect(resolveProject('/project')).rejects.toThrow(
-        'package.json must have a valid "name" field',
+        'Validation failed',
       );
     });
   });
@@ -489,13 +476,15 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/examples/test-project/package.json': JSON.stringify({
-            name: 'test-project',
-            version: '1.0.0',
+          '/examples/package.json': JSON.stringify({
+            name: '@baseplate-dev/root',
           }),
-          '/regular/project/package.json': JSON.stringify({
-            name: 'regular-project',
-            version: '1.0.0',
+          '/examples/test-project/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'test-project' } },
+            }),
+          '/regular/project/baseplate/project-definition.json': JSON.stringify({
+            settings: { general: { name: 'regular-project' } },
           }),
         },
         '/',
@@ -514,10 +503,13 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/examples/test-project/package.json': JSON.stringify({
-            name: 'test-project',
-            version: '1.0.0',
+          '/examples/package.json': JSON.stringify({
+            name: '@baseplate-dev/root',
           }),
+          '/examples/test-project/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'test-project' } },
+            }),
         },
         '/',
       );
@@ -535,10 +527,10 @@ describe('project-resolver', () => {
       // Arrange
       vol.fromJSON(
         {
-          '/home/user/project/package.json': JSON.stringify({
-            name: 'home-project',
-            version: '1.0.0',
-          }),
+          '/home/user/project/baseplate/project-definition.json':
+            JSON.stringify({
+              settings: { general: { name: 'home-project' } },
+            }),
         },
         '/',
       );
