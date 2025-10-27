@@ -1,11 +1,11 @@
 import type { AnyGeneratorTask } from '@baseplate-dev/sync';
 
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { packageScope } from '#src/providers/scopes.js';
-import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import { nodeProvider } from '../node/node.generator.js';
 
@@ -94,10 +94,10 @@ export const turboGenerator = createGenerator({
               tasks,
             };
 
-            writeJsonToBuilder(builder, {
+            builder.writeFile({
               id: 'turbo-config',
               destination: 'turbo.json',
-              contents: turboConfig,
+              contents: stringifyPrettyStable(turboConfig),
             });
           },
         };

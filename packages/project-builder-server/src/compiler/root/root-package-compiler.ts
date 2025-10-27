@@ -89,9 +89,9 @@ export class RootPackageCompiler extends PackageCompiler {
         lint: `turbo run lint`,
         'lint:affected': `turbo run lint --affected`,
         test: `turbo run test`,
-        'prettier:check': `turbo run prettier:check prettier:check:root`,
-        'prettier:check:affected': `turbo run prettier:check prettier:check:root --affected`,
-        'prettier:write': `turbo run prettier:write prettier:write:root`,
+        'prettier:check': `turbo run prettier:check && pnpm run prettier:check:root`,
+        'prettier:check:affected': `turbo run prettier:check --affected`,
+        'prettier:write': `turbo run prettier:write && pnpm run prettier:write:root`,
         dev: `turbo run ${devTasks}`,
         watch: `turbo run ${watchTasks}`,
         'baseplate:serve': 'baseplate serve',
@@ -113,7 +113,7 @@ export class RootPackageCompiler extends PackageCompiler {
         gitIgnore: nodeGitIgnoreGenerator({}),
         prettier: prettierGenerator({
           disableDefaultScripts: true,
-          additionalIgnorePaths: [`/${appsFolder}/**/*`],
+          additionalIgnorePaths: [`/${appsFolder}/**`, '.turbo/**'],
         }),
         workspacePackages: pnpmWorkspaceGenerator({
           packages: workspacePackages,

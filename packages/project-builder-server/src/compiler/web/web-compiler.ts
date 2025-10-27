@@ -216,7 +216,7 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
   getTasks(): PackageTasks {
     return {
       build: ['build'],
-      dev: ['dev'],
+      dev: ['dev', 'watch:gql'],
       watch: ['watch:gql'],
     };
   }
