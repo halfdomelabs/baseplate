@@ -1,6 +1,8 @@
 /**
- * Type helper to check if a record type has any undefined or null values
- * Used for conditional return types in relation helpers
+ * Type helper to check if a record type has any undefined or null values.
+ * Used for conditional return types in relation helpers.
+ *
+ * @template T - Record type to check
  */
 type HasUndefinedOrNullValues<T extends Record<string, unknown>> =
   undefined extends T[keyof T] ? true : null extends T[keyof T] ? true : false;

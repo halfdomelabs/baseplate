@@ -4,6 +4,14 @@ import { type Prisma } from '@src/generated/prisma/client.js';
 import { prisma } from '@src/services/prisma.js';
 
 import type {
+  CreateInput,
+  GetPayload,
+  ModelPropName,
+  ModelQuery,
+  UpdateInput,
+  WhereUniqueInput,
+} from './prisma-types.js';
+import type {
   AnyFieldDefinition,
   AnyOperationHooks,
   DataOperationType,
@@ -17,20 +25,29 @@ import type {
   PrismaTransaction,
   TransactionalOperationContext,
 } from './types.js';
-import type {
-  CreateInput,
-  GetPayload,
-  ModelPropName,
-  ModelQuery,
-  UpdateInput,
-  WhereUniqueInput,
-} from './utility-types.js';
 
 import { NotFoundError } from '../http-errors.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**
- * Helper to invoke an array of hooks with a given context
+ * Invokes an array of hooks with the provided context.
+ *
+ * All hooks are executed in parallel using `Promise.all`. If no hooks are provided
+ * or the array is empty, this function returns immediately.
+ *
+ * @template TContext - The context type passed to each hook
+ * @param hooks - Optional array of async hook functions to invoke
+ * @param context - The context object passed to each hook
+ * @returns Promise that resolves when all hooks have completed
+ *
+ * @example
+ * ```typescript
+ * await invokeHooks(config.hooks?.beforeExecute, {
+ *   operation: 'create',
+ *   serviceContext: ctx,
+ *   tx: transaction,
+ * });
+ * ```
  */
 export async function invokeHooks<TContext>(
   hooks: ((ctx: TContext) => Promise<void>)[] | undefined,
@@ -45,7 +62,40 @@ type FieldDataOrFunction<TField extends AnyFieldDefinition> =
   | ((tx: PrismaTransaction) => Promise<InferFieldOutput<TField>>);
 
 /**
- * Transform field definitions into Prisma create/update data
+ * Transforms field definitions into Prisma create/update data structures.
+ *
+ * This function processes each field definition by:
+ * 1. Validating the input value against the field's schema
+ * 2. Transforming the value into Prisma-compatible create/update data
+ * 3. Collecting hooks from each field for execution during the operation lifecycle
+ *
+ * The function supports both synchronous and asynchronous field transformations.
+ * If any field returns an async transformation function, the entire data object
+ * becomes async and will be resolved inside the transaction.
+ *
+ * @template TFields - Record of field definitions
+ * @param fields - Field definitions to process
+ * @param input - Input data to validate and transform
+ * @param options - Transformation options
+ * @param options.serviceContext - Service context with user, request info
+ * @param options.operation - Type of operation (create, update, upsert, delete)
+ * @param options.allowOptionalFields - Whether to allow undefined field values
+ * @param options.loadExisting - Function to load existing model data
+ * @returns Object containing transformed data and collected hooks
+ *
+ * @example
+ * ```typescript
+ * const { data, hooks } = await transformFields(
+ *   { name: scalarField(z.string()), email: scalarField(z.string().email()) },
+ *   { name: 'John', email: 'john@example.com' },
+ *   {
+ *     serviceContext: ctx,
+ *     operation: 'create',
+ *     allowOptionalFields: false,
+ *     loadExisting: () => Promise.resolve(undefined),
+ *   },
+ * );
+ * ```
  */
 export async function transformFields<
   TFields extends Record<string, AnyFieldDefinition>,
@@ -162,7 +212,18 @@ export async function transformFields<
  */
 
 /**
- * Configuration for create operation
+ * Configuration for defining a create operation.
+ *
+ * Create operations insert new records into the database with support for:
+ * - Field-level validation and transformation
+ * - Authorization checks before creation
+ * - Computed fields based on raw input
+ * - Transaction management with lifecycle hooks
+ * - Nested relation creation
+ *
+ * @template TModelName - Prisma model name (e.g., 'user', 'post')
+ * @template TFields - Record of field definitions
+ * @template TPrepareResult - Type of data returned by prepareComputedFields
  */
 export interface CreateOperationConfig<
   TModelName extends ModelPropName,
@@ -210,18 +271,65 @@ export interface CreateOperationConfig<
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
+/**
+ * Input parameters for executing a create operation.
+ *
+ * @template TModelName - Prisma model name
+ * @template TFields - Record of field definitions
+ * @template TQueryArgs - Prisma query arguments (select/include)
+ */
 export interface CreateOperationInput<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
   TQueryArgs extends ModelQuery<TModelName>,
 > {
+  /** Data to create the new record with */
   data: InferInput<TFields>;
+  /** Optional Prisma query arguments to shape the returned data */
   query?: TQueryArgs;
+  /** Service context containing user info, request details, etc. */
   context: ServiceContext;
 }
 
 /**
- * Define a create operation
+ * Defines a type-safe create operation for a Prisma model.
+ *
+ * Creates a reusable function for inserting new records with built-in:
+ * - Input validation via field definitions
+ * - Authorization checks
+ * - Computed field preparation
+ * - Transaction management
+ * - Hook execution at each lifecycle phase
+ *
+ * @template TModelName - Prisma model name
+ * @template TFields - Record of field definitions
+ * @template TPrepareResult - Type of prepared computed fields
+ * @param config - Operation configuration
+ * @returns Async function that executes the create operation
+ *
+ * @example
+ * ```typescript
+ * const createUser = defineCreateOperation({
+ *   model: 'user',
+ *   fields: {
+ *     name: scalarField(z.string()),
+ *     email: scalarField(z.string().email()),
+ *   },
+ *   authorize: async (data, ctx) => {
+ *     // Check if user has permission to create
+ *   },
+ *   buildData: (data) => ({
+ *     name: data.name,
+ *     email: data.email,
+ *   }),
+ * });
+ *
+ * // Usage
+ * const user = await createUser({
+ *   data: { name: 'John', email: 'john@example.com' },
+ *   context: serviceContext,
+ * });
+ * ```
  */
 export function defineCreateOperation<
   TModelName extends Prisma.TypeMap['meta']['modelProps'],
@@ -335,13 +443,25 @@ export function defineCreateOperation<
   };
 }
 
-/** =========================================
+/**
+ * =========================================
  * Update Operation
  * =========================================
  */
 
 /**
- * Configuration for update operation
+ * Configuration for defining an update operation.
+ *
+ * Update operations modify existing database records with support for:
+ * - Partial updates (only specified fields are updated)
+ * - Authorization checks before modification
+ * - Pre-transaction preparation step for heavy I/O
+ * - Field-level validation and transformation
+ * - Transaction management with lifecycle hooks
+ *
+ * @template TModelName - Prisma model name (e.g., 'user', 'post')
+ * @template TFields - Record of field definitions
+ * @template TPrepareResult - Type of data returned by prepare function
  */
 export interface UpdateOperationConfig<
   TModelName extends ModelPropName,
@@ -392,19 +512,67 @@ export interface UpdateOperationConfig<
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
+/**
+ * Input parameters for executing an update operation.
+ *
+ * @template TModelName - Prisma model name
+ * @template TFields - Record of field definitions
+ * @template TQueryArgs - Prisma query arguments (select/include)
+ */
 export interface UpdateOperationInput<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
   TQueryArgs extends ModelQuery<TModelName>,
 > {
+  /** Unique identifier to locate the record to update */
   where: WhereUniqueInput<TModelName>;
+  /** Partial data containing only the fields to update */
   data: Partial<InferInput<TFields>>;
+  /** Optional Prisma query arguments to shape the returned data */
   query?: TQueryArgs;
+  /** Service context containing user info, request details, etc. */
   context: ServiceContext;
 }
 
 /**
- * Define an update operation
+ * Defines a type-safe update operation for a Prisma model.
+ *
+ * Creates a reusable function for modifying existing records with built-in:
+ * - Partial input validation (only specified fields are processed)
+ * - Authorization checks with access to existing data
+ * - Pre-transaction preparation for heavy I/O
+ * - Transaction management
+ * - Hook execution at each lifecycle phase
+ *
+ * @template TModelName - Prisma model name
+ * @template TFields - Record of field definitions
+ * @template TPrepareResult - Type of prepared data
+ * @param config - Operation configuration
+ * @returns Async function that executes the update operation
+ * @throws {NotFoundError} If the record to update doesn't exist
+ *
+ * @example
+ * ```typescript
+ * const updateUser = defineUpdateOperation({
+ *   model: 'user',
+ *   fields: {
+ *     name: scalarField(z.string()),
+ *     email: scalarField(z.string().email()),
+ *   },
+ *   authorize: async (data, ctx) => {
+ *     const existing = await ctx.loadExisting();
+ *     // Check if user owns this record
+ *   },
+ *   buildData: (data) => data,
+ * });
+ *
+ * // Usage
+ * const user = await updateUser({
+ *   where: { id: userId },
+ *   data: { name: 'Jane' }, // Only update name
+ *   context: serviceContext,
+ * });
+ * ```
  */
 export function defineUpdateOperation<
   TModelName extends ModelPropName,
@@ -545,7 +713,15 @@ export function defineUpdateOperation<
 }
 
 /**
- * Configuration for delete operation
+ * Configuration for defining a delete operation.
+ *
+ * Delete operations remove records from the database with support for:
+ * - Authorization checks before deletion
+ * - Transaction management
+ * - Lifecycle hooks for cleanup operations
+ * - Access to the record being deleted
+ *
+ * @template TModelName - Prisma model name (e.g., 'user', 'post')
  */
 export interface DeleteOperationConfig<TModelName extends ModelPropName> {
   /**
@@ -569,17 +745,62 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
+/**
+ * Input parameters for executing a delete operation.
+ *
+ * @template TModelName - Prisma model name
+ * @template TQueryArgs - Prisma query arguments (select/include)
+ */
 export interface DeleteOperationInput<
   TModelName extends ModelPropName,
   TQueryArgs extends ModelQuery<TModelName>,
 > {
+  /** Unique identifier to locate the record to delete */
   where: WhereUniqueInput<TModelName>;
+  /** Optional Prisma query arguments to shape the returned data */
   query?: TQueryArgs;
+  /** Service context containing user info, request details, etc. */
   context: ServiceContext;
 }
 
 /**
- * Define a delete operation
+ * Defines a type-safe delete operation for a Prisma model.
+ *
+ * Creates a reusable function for removing records with built-in:
+ * - Authorization checks with access to the record being deleted
+ * - Transaction management
+ * - Hook execution for cleanup operations (e.g., deleting associated files)
+ * - Returns the deleted record
+ *
+ * @template TModelName - Prisma model name
+ * @param config - Operation configuration
+ * @returns Async function that executes the delete operation
+ * @throws {NotFoundError} If the record to delete doesn't exist
+ *
+ * @example
+ * ```typescript
+ * const deleteUser = defineDeleteOperation({
+ *   model: 'user',
+ *   authorize: async (ctx) => {
+ *     const existing = await ctx.loadExisting();
+ *     // Check if user has permission to delete
+ *   },
+ *   hooks: {
+ *     afterCommit: [
+ *       async (ctx) => {
+ *         // Clean up user's files, sessions, etc.
+ *         await cleanupUserResources(ctx.result.id);
+ *       },
+ *     ],
+ *   },
+ * });
+ *
+ * // Usage
+ * const deletedUser = await deleteUser({
+ *   where: { id: userId },
+ *   context: serviceContext,
+ * });
+ * ```
  */
 export function defineDeleteOperation<TModelName extends ModelPropName>(
   config: DeleteOperationConfig<TModelName>,

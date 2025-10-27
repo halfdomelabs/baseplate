@@ -4,6 +4,14 @@ import type { z } from 'zod';
 import { prisma } from '@src/services/prisma.js';
 
 import type {
+  CreateInput,
+  GetPayload,
+  ModelPropName,
+  UpdateInput,
+  WhereInput,
+  WhereUniqueInput,
+} from './prisma-types.js';
+import type {
   AnyFieldDefinition,
   FieldDefinition,
   InferFieldsCreateOutput,
@@ -12,14 +20,6 @@ import type {
   OperationContext,
   TransactionalOperationContext,
 } from './types.js';
-import type {
-  CreateInput,
-  GetPayload,
-  ModelPropName,
-  UpdateInput,
-  WhereInput,
-  WhereUniqueInput,
-} from './utility-types.js';
 
 import { invokeHooks, transformFields } from './define-operations.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
@@ -69,13 +69,38 @@ export function scalarField<TSchema extends z.ZodSchema>(
  * =========================================
  */
 
+/**
+ * Configuration for a parent model in nested field definitions.
+ *
+ * Used to establish the relationship between a parent and child model
+ * in nested one-to-one and one-to-many field handlers.
+ *
+ * @template TModelName - Prisma model name
+ */
 export interface ParentModelConfig<TModelName extends ModelPropName> {
+  /** Prisma model name of the parent */
   model: TModelName;
+  /** Function to extract unique identifier from parent model instance */
   getWhereUnique: (
     parentModel: GetPayload<TModelName>,
   ) => WhereUniqueInput<TModelName>;
 }
 
+/**
+ * Creates a parent model configuration for use in nested field definitions.
+ *
+ * @template TModelName - Prisma model name
+ * @param model - Prisma model name
+ * @param getWhereUnique - Function to extract unique identifier from parent model
+ * @returns Parent model configuration object
+ *
+ * @example
+ * ```typescript
+ * const parentModel = createParentModelConfig('user', (user) => ({
+ *   id: user.id,
+ * }));
+ * ```
+ */
 export function createParentModelConfig<TModelName extends ModelPropName>(
   model: TModelName,
   getWhereUnique: (
@@ -98,7 +123,16 @@ interface PrismaFieldData<TModelName extends ModelPropName> {
 }
 
 /**
- * Configuration for nested one-to-one field handler
+ * Configuration for defining a nested one-to-one relationship field.
+ *
+ * One-to-one fields represent a single related entity that can be created,
+ * updated, or deleted along with the parent entity. The field handler manages
+ * the lifecycle of the nested entity automatically.
+ *
+ * @template TParentModelName - Parent model name
+ * @template TModelName - Child model name
+ * @template TRelationName - Relation field name on the child model
+ * @template TFields - Field definitions for the nested entity
  */
 export interface NestedOneToOneFieldConfig<
   TParentModelName extends ModelPropName,
@@ -321,7 +355,18 @@ export function nestedOneToOneField<
 }
 
 /**
- * Configuration for nested one-to-many field handler
+ * Configuration for defining a nested one-to-many relationship field.
+ *
+ * One-to-many fields represent a collection of related entities that are synchronized
+ * with the input array. The handler automatically:
+ * - Creates new items without unique identifiers
+ * - Updates existing items with unique identifiers
+ * - Deletes items not present in the input array
+ *
+ * @template TParentModelName - Parent model name
+ * @template TModelName - Child model name
+ * @template TRelationName - Relation field name on the child model
+ * @template TFields - Field definitions for each item in the collection
  */
 export interface NestedOneToManyFieldConfig<
   TParentModelName extends ModelPropName,
@@ -386,14 +431,18 @@ export interface NestedOneToManyFieldConfig<
 }
 
 /**
- * Convert a Prisma `WhereUniqueInput` (with scalar or compound keys) into a plain `WhereInput`.
+ * Converts a Prisma `WhereUniqueInput` into a plain `WhereInput`.
  *
- * Compound uniques arrive as synthetic keys (e.g. `userId_role: { userId, role }`), while the
- * generic `where` filter needs the flattened field structure. Normalizing lets us compose the
- * unique constraint with parent-level filters when constructing delete conditions.
+ * Compound unique constraints arrive as synthetic keys (e.g., `userId_role: { userId, role }`),
+ * while generic `where` filters need the flattened field structure. This normalization allows
+ * composing unique constraints with parent-level filters when constructing delete conditions
+ * in one-to-many relationships.
  *
- * @param whereUnique Unique filter returned by `getWhereUnique`, or undefined when the item is new.
- * @returns A normalized where filter or undefined if no usable fields exist.
+ * @template TModelName - Prisma model name
+ * @param whereUnique - Unique filter returned by `getWhereUnique`, or undefined for new items
+ * @returns Normalized where filter or undefined if no usable fields exist
+ *
+ * @internal This function is used internally by nestedOneToManyField
  */
 function expandWhereUnique<TModelName extends ModelPropName>(
   whereUnique: WhereUniqueInput<TModelName> | undefined,
@@ -416,21 +465,69 @@ function expandWhereUnique<TModelName extends ModelPropName>(
 }
 
 /**
- * Create a nested one-to-many relationship field handler
+ * Creates a nested one-to-many relationship field handler.
  *
- * This helper creates a field definition for managing one-to-many nested relationships.
- * It synchronizes a list of child entities based on the input array.
+ * This helper manages collections of child entities by synchronizing them with the input array.
+ * The synchronization logic:
+ * - **Update**: Items with unique identifiers (from `getWhereUnique`) are updated
+ * - **Create**: Items without unique identifiers are created as new records
+ * - **Delete**: Existing items not present in the input array are removed
+ * - **No Change**: Passing `undefined` leaves the collection unchanged
  *
- * - **Updating**: If an item in the input array has a unique identifier (from `getWhereUnique`), it's updated.
- * - **Creating**: If an item lacks a unique identifier, it's created.
- * - **Deleting**: Any existing child items not present in the input array are deleted.
- * - **Delete All**: Passing `null` as input will delete all associated child items.
- * - **No Change**: Passing `undefined` leaves the collection unchanged.
+ * All operations are performed atomically within the parent operation's transaction,
+ * ensuring data consistency even if the operation fails.
  *
- * All database operations are performed atomically within the parent operation's transaction.
+ * @template TParentModelName - Parent model name
+ * @template TModelName - Child model name
+ * @template TRelationName - Relation field name on child model
+ * @template TFields - Field definitions for each child item
+ * @param config - Configuration object for the one-to-many relationship
+ * @returns Field definition for use in `defineCreateOperation` or `defineUpdateOperation`
  *
- * @param config - Configuration object for the one-to-many relationship.
- * @returns A field definition that can be used in `defineCreateOperation` or `defineUpdateOperation`.
+ * @example
+ * ```typescript
+ * const fields = {
+ *   images: nestedOneToManyField({
+ *     parentModel: createParentModelConfig('user', (user) => ({ id: user.id })),
+ *     model: 'userImage',
+ *     relationName: 'user',
+ *     fields: {
+ *       id: scalarField(z.string()),
+ *       caption: scalarField(z.string()),
+ *     },
+ *     getWhereUnique: (input) => input.id ? { id: input.id } : undefined,
+ *     buildData: (data) => ({
+ *       create: { caption: data.caption },
+ *       update: { caption: data.caption },
+ *     }),
+ *   }),
+ * };
+ *
+ * // Create user with images
+ * await createUser({
+ *   data: {
+ *     name: 'John',
+ *     images: [
+ *       { caption: 'First image' },
+ *       { caption: 'Second image' },
+ *     ],
+ *   },
+ *   context: ctx,
+ * });
+ *
+ * // Update user images (creates new, updates existing, deletes removed)
+ * await updateUser({
+ *   where: { id: userId },
+ *   data: {
+ *     images: [
+ *       { id: 'img-1', caption: 'Updated caption' }, // Updates existing
+ *       { caption: 'New image' }, // Creates new
+ *       // img-2 not in array, will be deleted
+ *     ],
+ *   },
+ *   context: ctx,
+ * });
+ * ```
  */
 export function nestedOneToManyField<
   TParentModelName extends ModelPropName,

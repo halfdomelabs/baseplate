@@ -1,4 +1,3 @@
-import type { PrismaTransaction } from './types.js';
 import type {
   CreateInput,
   GetPayload,
@@ -6,8 +5,20 @@ import type {
   UpdateInput,
   WhereInput,
   WhereUniqueInput,
-} from './utility-types.js';
+} from './prisma-types.js';
+import type { PrismaTransaction } from './types.js';
 
+/**
+ * Generic interface for Prisma model delegates.
+ *
+ * Provides a type-safe way to interact with any Prisma model through
+ * a common set of operations. Used internally by the data operations
+ * system to perform database operations on models determined at runtime.
+ *
+ * @template TModelName - The Prisma model name
+ *
+ * @internal This interface is used internally by the data operations system
+ */
 interface GenericPrismaDelegate<TModelName extends ModelPropName> {
   findUnique: (args: {
     where: WhereUniqueInput<TModelName>;
@@ -36,10 +47,28 @@ interface GenericPrismaDelegate<TModelName extends ModelPropName> {
 }
 
 /**
- * Creates a generic Prisma delegate for a given model name.
+ * Creates a type-safe generic delegate for a Prisma model.
  *
- * @param modelName - The name of the model to create a delegate for
- * @returns A generic Prisma delegate for the given model name
+ * This function allows accessing Prisma model operations (findUnique, create, update, etc.)
+ * in a type-safe way when the model name is only known at runtime. It's used internally
+ * by nested field handlers and other generic operations.
+ *
+ * @template TModelName - The Prisma model name
+ * @param tx - Prisma transaction client
+ * @param modelName - The name of the model to create a delegate for (e.g., 'user', 'post')
+ * @returns A generic delegate providing type-safe access to model operations
+ *
+ * @example
+ * ```typescript
+ * const delegate = makeGenericPrismaDelegate(tx, 'user');
+ *
+ * // Type-safe operations
+ * const user = await delegate.findUnique({ where: { id: userId } });
+ * const users = await delegate.findMany({ where: { isActive: true } });
+ * const newUser = await delegate.create({ data: { name: 'John', email: 'john@example.com' } });
+ * ```
+ *
+ * @internal This function is used internally by nested field handlers
  */
 export function makeGenericPrismaDelegate<TModelName extends ModelPropName>(
   tx: PrismaTransaction,
