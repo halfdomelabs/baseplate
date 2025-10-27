@@ -1,0 +1,10 @@
+{
+  "@baseplate-dev/core-generators#metadata/path-roots:path-roots": ".paths-metadata.json",
+  "@baseplate-dev/core-generators#node/node-git-ignore:gitignore": ".gitignore",
+  "@baseplate-dev/core-generators#node/node:package-json": "package.json",
+  "@baseplate-dev/core-generators#node/pnpm-workspace:pnpm-workspace": "pnpm-workspace.yaml",
+  "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
+  "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
+  "@baseplate-dev/core-generators#node/root-readme:readme": "README.md",
+  "@baseplate-dev/core-generators#node/turbo:turbo-config": "turbo.json"
+}

@@ -1,0 +1,7 @@
+{
+  "README.md": {
+    "generator": "@baseplate-dev/core-generators#node/root-readme",
+    "instanceData": { "variables": { "TPL_PROJECT": "blog-with-auth" } },
+    "template": "readme"
+  }
+}
