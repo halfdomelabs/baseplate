@@ -528,7 +528,7 @@ export function defineUpdateOperation<
         // Run afterExecute hooks
         await invokeHooks(allHooks.afterExecute, {
           ...txContext,
-          new: result,
+          result,
         });
 
         return result;
@@ -537,7 +537,7 @@ export function defineUpdateOperation<
         // Run afterCommit hooks (outside transaction)
         await invokeHooks(allHooks.afterCommit, {
           ...baseOperationContext,
-          new: result,
+          result,
         });
         return result as GetPayload<TModelName, TQueryArgs>;
       });
