@@ -1,7 +1,6 @@
 import type {
   BackendAppConfig,
   ProjectDefinition,
-  ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -12,9 +11,10 @@ import {
 } from '@baseplate-dev/core-generators';
 import { backendAppEntryType } from '@baseplate-dev/project-builder-lib';
 
-import type { PackageCompiler } from '../package-compiler.js';
+import type { PackageTasks } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
+import { AppCompiler } from '../app-compiler.js';
 import {
   buildPackageName,
   createAppEntryBuilderForPackage,
@@ -48,34 +48,39 @@ function buildDocker(
  * - Vitest testing setup
  * - Plugin-contributed generators (auth, storage, etc.)
  */
-export const backendPackageCompiler: PackageCompiler<BackendAppConfig> = {
-  compile(
-    definitionContainer: ProjectDefinitionContainer,
-    appConfig: BackendAppConfig,
-  ): PackageEntry {
+export class BackendPackageCompiler extends AppCompiler<BackendAppConfig> {
+  compile(): PackageEntry {
     const appBuilder = createAppEntryBuilderForPackage(
-      definitionContainer,
-      appConfig,
+      this.definitionContainer,
+      this.appConfig,
       backendAppEntryType,
     );
 
     const { projectDefinition } = appBuilder;
     const generalSettings = projectDefinition.settings.general;
 
-    const packageName = buildPackageName(generalSettings, appConfig.name);
+    const packageName = buildPackageName(generalSettings, this.appConfig.name);
 
     const rootBundle = composeNodeGenerator({
-      name: `${generalSettings.name}-${appConfig.name}`,
+      name: `${generalSettings.name}-${this.appConfig.name}`,
       packageName,
       description: `Backend app for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
-        docker: buildDocker(projectDefinition, appConfig),
-        fastify: buildFastify(appBuilder, appConfig),
+        docker: buildDocker(projectDefinition, this.appConfig),
+        fastify: buildFastify(appBuilder, this.appConfig),
         vitest: vitestGenerator({}),
       },
     });
 
-    return appBuilder.buildProjectEntry(rootBundle);
-  },
-};
+    return appBuilder.buildProjectEntry(rootBundle, this.getPackageDirectory());
+  }
+
+  getTasks(): PackageTasks {
+    return {
+      build: ['build'],
+      dev: ['dev'],
+      watch: [],
+    };
+  }
+}

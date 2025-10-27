@@ -1,1 +1,1 @@
-export { webPackageCompiler } from './web-compiler.js';
+export { WebPackageCompiler } from './web-compiler.js';

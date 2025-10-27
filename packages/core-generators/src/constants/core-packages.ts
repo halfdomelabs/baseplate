@@ -27,4 +27,7 @@ export const CORE_PACKAGES = {
 
   // Utils
   axios: '1.12.0',
+
+  // Monorepo
+  turbo: '2.5.0',
 } as const;

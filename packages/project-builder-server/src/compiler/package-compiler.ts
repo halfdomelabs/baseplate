@@ -8,29 +8,64 @@ import type { PackageEntry } from './package-entry.js';
 
 import { AppEntryBuilder } from './app-entry-builder.js';
 
+export interface PackageTasks {
+  build: string[];
+  dev: string[];
+  watch: string[];
+}
+
+export interface PackageCompilerContext {
+  compilers: PackageCompiler[];
+}
+
 /**
- * Interface for package type compilers
+ * Abstract base class for package type compilers
  *
- * Each package type (backend, web, library, etc.) implements this interface
+ * Each package type (backend, web, library, etc.) extends this class
  * to define how it should be compiled into a PackageEntry with generator bundles.
  *
- * Package compilers are created via factory functions that return objects
- * implementing this interface.
+ * Each child class defines its own constructor requirements based on what
+ * information it needs (e.g., app config, definition container).
  */
-export interface PackageCompiler<
-  TConfig extends BaseAppConfig = BaseAppConfig,
-> {
+export abstract class PackageCompiler {
+  protected readonly definitionContainer: ProjectDefinitionContainer;
+
+  constructor(definitionContainer: ProjectDefinitionContainer) {
+    this.definitionContainer = definitionContainer;
+  }
   /**
    * Compile a package configuration into a PackageEntry with generator bundle
    *
-   * @param definitionContainer - The project definition container with full context
-   * @param packageConfig - The package configuration to compile
    * @returns PackageEntry with generated bundle ready for sync
    */
-  compile(
-    definitionContainer: ProjectDefinitionContainer,
-    packageConfig: TConfig,
-  ): PackageEntry;
+  abstract compile(context: PackageCompilerContext): PackageEntry;
+
+  /**
+   * Get the formatted package name (e.g., '@scope/backend' or 'project-backend')
+   *
+   * @returns Formatted package name
+   */
+  abstract getPackageName(): string;
+
+  /**
+   * Get the package directory path relative to monorepo root
+   *
+   * @returns Package directory path (e.g., 'apps/backend', '.')
+   */
+  abstract getPackageDirectory(): string;
+
+  /**
+   * Get the tasks for a package used in turbo configuration
+   *
+   * @returns Object with build, dev, and watch tasks
+   */
+  getTasks(): PackageTasks {
+    return {
+      build: [],
+      dev: [],
+      watch: [],
+    };
+  }
 }
 
 /**

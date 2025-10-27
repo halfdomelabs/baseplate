@@ -11,7 +11,6 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appCompilerSpec,
-  AppUtils,
   createAppCompiler,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -55,15 +54,14 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   /**
    * Builds a PackageEntry from the root bundle
    */
-  buildProjectEntry(rootBundle: GeneratorBundle): PackageEntry {
-    const monorepoSettings = this.projectDefinition.settings.monorepo;
+  buildProjectEntry(
+    rootBundle: GeneratorBundle,
+    packageDirectory: string,
+  ): PackageEntry {
     return {
       id: this.appConfig.id,
       name: this.appConfig.name,
-      packageDirectory: AppUtils.getAppDirectory(
-        this.appConfig,
-        monorepoSettings,
-      ),
+      packageDirectory,
       generatorBundle: rootBundle,
     };
   }

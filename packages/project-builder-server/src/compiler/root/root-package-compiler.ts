@@ -1,15 +1,17 @@
-import type { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
-
 import {
   nodeGenerator,
   nodeGitIgnoreGenerator,
   pathRootsGenerator,
   pnpmWorkspaceGenerator,
   prettierGenerator,
+  turboGenerator,
 } from '@baseplate-dev/core-generators';
+import { uniq } from 'es-toolkit';
 
-import type { PackageCompiler } from '../package-compiler.js';
+import type { PackageCompilerContext } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
+
+import { buildPackageName, PackageCompiler } from '../package-compiler.js';
 
 /**
  * Compiler for monorepo root package
@@ -21,11 +23,12 @@ import type { PackageEntry } from '../package-entry.js';
  *
  * Does NOT include:
  * - TypeScript/tsconfig (no code in root)
+ * - ESLint
  * - Vitest (no tests in root)
  */
-export const rootPackageCompiler = {
-  compile(definitionContainer: ProjectDefinitionContainer): PackageEntry {
-    const projectDefinition = definitionContainer.definition;
+export class RootPackageCompiler extends PackageCompiler {
+  compile(context: PackageCompilerContext): PackageEntry {
+    const projectDefinition = this.definitionContainer.definition;
     const generalSettings = projectDefinition.settings.general;
     const monorepoSettings = projectDefinition.settings.monorepo;
 
@@ -33,7 +36,43 @@ export const rootPackageCompiler = {
     const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
     const workspacePackages = [`${appsFolder}/*`];
 
-    const { cliVersion } = definitionContainer.parserContext;
+    const tasks = context.compilers.map((compiler) => compiler.getTasks());
+    const mergedTasks = {
+      dev: uniq(tasks.flatMap((task) => task.dev)),
+      build: uniq(tasks.flatMap((task) => task.build)),
+      watch: uniq(tasks.flatMap((task) => task.watch)),
+    };
+    const turboTasks = [
+      ...mergedTasks.dev.map((task) => ({
+        name: task,
+        persistent: true,
+        cache: false,
+      })),
+      ...mergedTasks.build.map((task) => ({
+        inputs: ['$TURBO_DEFAULT$', '!README.md', '!**/*.test.ts'],
+        outputs: ['build/**', 'dist/**', '.next/**', '!.next/cache/**'],
+        name: task,
+        persistent: false,
+      })),
+      ...mergedTasks.watch.map((task) => ({
+        name: task,
+        persistent: true,
+        cache: false,
+      })),
+      { name: 'typecheck' },
+      { name: 'lint', dependsOn: ['^build'], outputLogs: 'new-only' },
+      { name: 'test', dependsOn: ['^build'], outputLogs: 'errors-only' },
+      { name: 'prettier:check' },
+      { name: 'prettier:check:root' },
+      { name: 'prettier:write', cache: false },
+      { name: 'prettier:write:root', cache: false },
+    ];
+
+    const devTasks = mergedTasks.dev.join(' ');
+    const buildTasks = mergedTasks.build.join(' ');
+    const watchTasks = mergedTasks.watch.join(' ');
+
+    const { cliVersion } = this.definitionContainer.parserContext;
 
     const rootBundle = nodeGenerator({
       name: generalSettings.name,
@@ -44,13 +83,26 @@ export const rootPackageCompiler = {
       private: true,
       rootPackage: true,
       scripts: {
+        build: `turbo run ${buildTasks}`,
+        'build:affected': `turbo run ${buildTasks} --affected`,
+        typecheck: `turbo run typecheck`,
+        lint: `turbo run lint`,
+        'lint:affected': `turbo run lint --affected`,
+        test: `turbo run test`,
+        'prettier:check': `turbo run prettier:check prettier:check:root`,
+        'prettier:check:affected': `turbo run prettier:check prettier:check:root --affected`,
+        'prettier:write': `turbo run prettier:write prettier:write:root`,
+        dev: `turbo run ${devTasks}`,
+        watch: `turbo run ${watchTasks}`,
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
+        'prettier:check:root': 'prettier --check .',
+        'prettier:write:root': 'prettier --write .',
       },
       additionalPackages: {
         dev: {
           // only include the project-builder-cli package if the project is not an internal example
-          ...(definitionContainer.parserContext.project.isInternalExample
+          ...(this.definitionContainer.parserContext.project.isInternalExample
             ? {}
             : {
                 '@baseplate-dev/project-builder-cli': cliVersion,
@@ -59,19 +111,35 @@ export const rootPackageCompiler = {
       },
       children: {
         gitIgnore: nodeGitIgnoreGenerator({}),
-        prettier: prettierGenerator({}),
+        prettier: prettierGenerator({
+          disableDefaultScripts: true,
+          additionalIgnorePaths: [`/${appsFolder}/**/*`],
+        }),
         workspacePackages: pnpmWorkspaceGenerator({
           packages: workspacePackages,
         }),
         pathRoots: pathRootsGenerator({}),
+        turbo: turboGenerator({
+          tasks: turboTasks,
+        }),
       },
     });
 
     return {
       id: 'root',
       name: 'root',
-      packageDirectory: '.', // Root of the monorepo
+      packageDirectory: this.getPackageDirectory(), // Root of the monorepo
       generatorBundle: rootBundle,
     };
-  },
-} satisfies PackageCompiler;
+  }
+
+  getPackageName(): string {
+    const generalSettings =
+      this.definitionContainer.definition.settings.general;
+    return buildPackageName(generalSettings, 'root');
+  }
+
+  getPackageDirectory(): string {
+    return '.';
+  }
+}
