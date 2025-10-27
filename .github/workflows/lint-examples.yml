@@ -94,7 +94,7 @@ jobs:
 
       - name: Run Docker setup
         run: docker compose up -d
-        working-directory: examples/${{ matrix.example }}/apps/backend/docker
+        working-directory: examples/${{ matrix.example }}/docker
 
       - name: Run prettier check
         run: pnpm prettier:check
