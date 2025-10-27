@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
+import { loadIgnorePatterns } from '#src/utils/ignore-patterns.js';
+
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
@@ -56,7 +58,11 @@ export async function runTemplateFileExtractors(
   logger: Logger,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
-  const templateMetadataFiles = await readTemplateInfoFiles(outputDirectory);
+  const ignorePatterns = await loadIgnorePatterns(outputDirectory);
+  const templateMetadataFiles = await readTemplateInfoFiles(
+    outputDirectory,
+    ignorePatterns,
+  );
 
   const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();

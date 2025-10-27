@@ -21,6 +21,7 @@ import { Route as AppsIndexRouteImport } from './routes/apps/index'
 import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
 import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
 import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
+import { Route as SettingsInfrastructureRouteImport } from './routes/settings/infrastructure'
 import { Route as SettingsHierarchyRouteImport } from './routes/settings/hierarchy'
 import { Route as DataModelsRouteRouteImport } from './routes/data/models/route'
 import { Route as DataEnumsRouteRouteImport } from './routes/data/enums/route'
@@ -102,6 +103,11 @@ const SettingsTemplateExtractorRoute =
 const SettingsMonorepoRoute = SettingsMonorepoRouteImport.update({
   id: '/monorepo',
   path: '/monorepo',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsInfrastructureRoute = SettingsInfrastructureRouteImport.update({
+  id: '/infrastructure',
+  path: '/infrastructure',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 const SettingsHierarchyRoute = SettingsHierarchyRouteImport.update({
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/data/enums': typeof DataEnumsRouteRouteWithChildren
   '/data/models': typeof DataModelsRouteRouteWithChildren
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/infrastructure': typeof SettingsInfrastructureRoute
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/infrastructure': typeof SettingsInfrastructureRoute
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/data/enums': typeof DataEnumsRouteRouteWithChildren
   '/data/models': typeof DataModelsRouteRouteWithChildren
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/infrastructure': typeof SettingsInfrastructureRoute
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/data/enums'
     | '/data/models'
     | '/settings/hierarchy'
+    | '/settings/infrastructure'
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/settings/hierarchy'
+    | '/settings/infrastructure'
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/data/enums'
     | '/data/models'
     | '/settings/hierarchy'
+    | '/settings/infrastructure'
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
@@ -500,6 +512,13 @@ declare module '@tanstack/react-router' {
       path: '/monorepo'
       fullPath: '/settings/monorepo'
       preLoaderRoute: typeof SettingsMonorepoRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/infrastructure': {
+      id: '/settings/infrastructure'
+      path: '/infrastructure'
+      fullPath: '/settings/infrastructure'
+      preLoaderRoute: typeof SettingsInfrastructureRouteImport
       parentRoute: typeof SettingsRouteRoute
     }
     '/settings/hierarchy': {
@@ -785,6 +804,7 @@ const PluginsRouteRouteWithChildren = PluginsRouteRoute._addFileChildren(
 
 interface SettingsRouteRouteChildren {
   SettingsHierarchyRoute: typeof SettingsHierarchyRoute
+  SettingsInfrastructureRoute: typeof SettingsInfrastructureRoute
   SettingsMonorepoRoute: typeof SettingsMonorepoRoute
   SettingsTemplateExtractorRoute: typeof SettingsTemplateExtractorRoute
   SettingsThemeBuilderRoute: typeof SettingsThemeBuilderRoute
@@ -793,6 +813,7 @@ interface SettingsRouteRouteChildren {
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsHierarchyRoute: SettingsHierarchyRoute,
+  SettingsInfrastructureRoute: SettingsInfrastructureRoute,
   SettingsMonorepoRoute: SettingsMonorepoRoute,
   SettingsTemplateExtractorRoute: SettingsTemplateExtractorRoute,
   SettingsThemeBuilderRoute: SettingsThemeBuilderRoute,

@@ -22,15 +22,25 @@ For detailed setup instructions and documentation specific to each application, 
 pnpm install
 ```
 
-### 2. Configure Environment Variables
+### 2. Start Infrastructure Services
+
+Start Docker services (database, cache, etc.):
+
+```bash
+cd docker && docker compose up
+```
+
+This starts all required infrastructure services like PostgreSQL and Redis (if enabled).
+
+### 3. Configure Environment Variables
 
 Each application may require its own environment configuration. See the individual app READMEs in `apps/*/README.md` for specific setup instructions.
 
-### 3. Additional Setup
+### 4. Additional Setup
 
 Some applications may require additional setup steps (database migrations, seeding, etc.). Refer to the individual app READMEs for details.
 
-### 4. Start Development Servers
+### 5. Start Development Servers
 
 From the root directory:
 
@@ -45,6 +55,10 @@ This will start all applications concurrently.
 Run these from the repository root:
 
 ```bash
+# Infrastructure
+cd docker && docker compose up    # Start infrastructure services (database, etc.)
+cd docker && docker compose down  # Stop infrastructure services
+
 # Development
 pnpm dev              # Start all apps in development mode
 

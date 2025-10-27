@@ -1,3 +1,5 @@
+import type ignore from 'ignore';
+
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
@@ -9,6 +11,7 @@ import path from 'node:path';
 
 import type { TemplateInfo } from './metadata.js';
 
+import { shouldIncludeFile } from '../../utils/ignore-patterns.js';
 import { TEMPLATES_INFO_FILENAME } from '../constants.js';
 import { templatesInfoFileSchema } from './metadata.js';
 
@@ -22,13 +25,15 @@ export interface TemplateMetadataFileEntry {
  * Reads all templates info files in the output directory and returns an array of template metadata file entries.
  *
  * @param outputDirectory - The directory to read templates info files from.
+ * @param ignoreInstance - Optional ignore instance to filter out ignored paths
  * @returns An array of template metadata file entries.
  */
 export async function readTemplateInfoFiles(
   outputDirectory: string,
+  ignoreInstance?: ignore.Ignore,
 ): Promise<TemplateMetadataFileEntry[]> {
   const templateInfoFiles = await globby(
-    [path.join('**', TEMPLATES_INFO_FILENAME), '!apps/**', '!packages/**'],
+    [path.join('**', TEMPLATES_INFO_FILENAME)],
     {
       absolute: true,
       onlyFiles: true,
@@ -38,8 +43,16 @@ export async function readTemplateInfoFiles(
     },
   );
 
+  // Filter out ignored paths
+  const filteredTemplateInfoFiles = ignoreInstance
+    ? templateInfoFiles.filter((filePath) => {
+        const relativePath = path.relative(outputDirectory, filePath);
+        return shouldIncludeFile(relativePath, ignoreInstance);
+      })
+    : templateInfoFiles;
+
   const templateFileArrays = await Promise.all(
-    templateInfoFiles.flatMap(async (infoFile) => {
+    filteredTemplateInfoFiles.flatMap(async (infoFile) => {
       const infoFileContents = await readJsonWithSchema(
         infoFile,
         templatesInfoFileSchema,

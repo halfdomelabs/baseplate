@@ -338,17 +338,6 @@ export async function prepareGeneratorFile({
     context,
   );
 
-  // if the file should never overwrite and there is a previous relative path,
-  // we use the working file version
-  if (options?.shouldNeverOverwrite && previousRelativePath) {
-    return {
-      relativePath,
-      mergedContents: undefined,
-      generatedContents: normalizeBufferString(formattedContents),
-      previousRelativePath,
-    };
-  }
-
   // If force overwrite is enabled, bypass all merge logic and use generated content directly
   if (
     context.overwriteOptions?.enabled &&
@@ -389,6 +378,17 @@ export async function prepareGeneratorFile({
         previousRelativePath,
       };
     }
+  }
+
+  // if the file should never overwrite and there is a previous relative path,
+  // we use the working file version
+  if (options?.shouldNeverOverwrite && previousRelativePath) {
+    return {
+      relativePath,
+      mergedContents: undefined,
+      generatedContents: normalizeBufferString(formattedContents),
+      previousRelativePath,
+    };
   }
 
   // If we haven't modified the generated version of the file,

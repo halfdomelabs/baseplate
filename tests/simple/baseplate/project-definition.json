@@ -73,7 +73,10 @@
       "name": "BlogPost"
     }
   ],
-  "schemaVersion": 19,
-  "settings": { "general": { "name": "simple", "portOffset": 3000 } },
+  "schemaVersion": 20,
+  "settings": {
+    "general": { "name": "simple", "portOffset": 3000 },
+    "infrastructure": { "redis": { "enabled": false } }
+  },
   "version": "0.1.0"
 }

@@ -598,31 +598,6 @@ describe('prepareGeneratorFile', () => {
       });
     });
 
-    it('should respect other options like shouldNeverOverwrite even with overwrite enabled', async () => {
-      const workingFiles = new Map([
-        ['existing-file.txt', Buffer.from('existing content')],
-      ]);
-
-      const result = await prepareGeneratorFile({
-        relativePath: 'existing-file.txt',
-        data: createMockFileData({
-          contents: 'new content',
-          options: { shouldNeverOverwrite: true },
-        }),
-        context: createMockContext({
-          overwriteOptions: { enabled: true },
-          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
-        }),
-      });
-
-      expect(result).toEqual({
-        relativePath: 'existing-file.txt',
-        previousRelativePath: 'existing-file.txt',
-        mergedContents: undefined,
-        generatedContents: Buffer.from('new content'),
-      });
-    });
-
     it('should use applyDiff when provided in overwriteOptions', async () => {
       const workingFiles = new Map([
         ['file.txt', Buffer.from('working content')],

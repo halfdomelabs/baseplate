@@ -169,7 +169,6 @@
       "enableAxios": true,
       "enableBullQueue": true,
       "enablePostmark": true,
-      "enableRedis": true,
       "enableStripe": true,
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
@@ -1450,13 +1449,14 @@
       "version": "1.0.0"
     }
   ],
-  "schemaVersion": 19,
+  "schemaVersion": 20,
   "settings": {
     "general": {
       "name": "todo-with-auth0",
       "packageScope": "prisma-crud",
       "portOffset": 6000
     },
+    "infrastructure": { "redis": { "enabled": true } },
     "templateExtractor": {
       "fileIdRegexWhitelist": ".*",
       "writeMetadata": true
