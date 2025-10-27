@@ -4,3 +4,4 @@ export * from './git-merge-driver.js';
 export * from './json.js';
 export * from './simple-diff.js';
 export type * from './types.js';
+export * from './yaml.js';

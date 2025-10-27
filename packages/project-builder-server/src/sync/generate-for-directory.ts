@@ -1,4 +1,3 @@
-import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type {
   FileWithConflict,
   Logger,
@@ -12,6 +11,7 @@ import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 
+import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { applySnapshotToFileContents } from '#src/diff/index.js';
@@ -27,7 +27,7 @@ import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
 interface GenerateForDirectoryOptions {
   baseDirectory: string;
-  appEntry: AppEntry;
+  appEntry: PackageEntry;
   logger: Logger;
   writeTemplateMetadataOptions?: TemplateMetadataOptions;
   userConfig: BaseplateUserConfig;
@@ -52,9 +52,9 @@ export async function generateForDirectory({
   overwrite,
   snapshotDirectory,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
-  const { appDirectory, name, generatorBundle } = appEntry;
+  const { packageDirectory, name, generatorBundle } = appEntry;
 
-  const projectDirectory = path.join(baseDirectory, appDirectory);
+  const projectDirectory = path.join(baseDirectory, packageDirectory);
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
@@ -83,7 +83,7 @@ export async function generateForDirectory({
 
   const generatedTemporaryDirectory = path.join(
     projectDirectory,
-    'baseplate/build/generated_tmp',
+    'baseplate/.build/generated_tmp',
   );
 
   await mkdir(generatedTemporaryDirectory, { recursive: true });

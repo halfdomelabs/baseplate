@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import type { ProjectInfo } from '../utils/project-resolver.js';
+import type { DiscoveredProjectInfo } from '../utils/project-resolver.js';
 
 import { resolveProjects } from '../utils/project-resolver.js';
 
@@ -53,9 +53,7 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
       const projects = [...projectMap.values()].map((project) => ({
         name: project.name,
         path: project.path,
-        isExample: project.isExample,
-        description: project.packageJson.description ?? null,
-        version: project.packageJson.version ?? null,
+        isInternalExample: project.isInternalExample,
       }));
 
       console.info(JSON.stringify(projects, null, 2));
@@ -63,11 +61,11 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
       console.info(`Found ${projectMap.size} project(s):\n`);
 
       // Group projects by type
-      const examples: ProjectInfo[] = [];
-      const regular: ProjectInfo[] = [];
+      const examples: DiscoveredProjectInfo[] = [];
+      const regular: DiscoveredProjectInfo[] = [];
 
       for (const project of projectMap.values()) {
-        if (project.isExample) {
+        if (project.isInternalExample) {
           examples.push(project);
         } else {
           regular.push(project);
@@ -79,9 +77,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
         console.info('📦 Projects:');
         for (const project of regular) {
           console.info(`   ${project.name}`);
-          if (typeof project.packageJson.description === 'string') {
-            console.info(`     ${project.packageJson.description}`);
-          }
           console.info(`     Path: ${project.path}`);
           console.info();
         }
@@ -92,9 +87,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
         console.info('📚 Examples:');
         for (const project of examples) {
           console.info(`   ${project.name}`);
-          if (typeof project.packageJson.description === 'string') {
-            console.info(`     ${project.packageJson.description}`);
-          }
           console.info(`     Path: ${project.path}`);
           console.info();
         }

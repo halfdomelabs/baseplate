@@ -75,7 +75,7 @@ export const paletteSchema = z
      */
     shades: z.record(z.enum(PALETTE_SHADES), oklchColor),
   })
-  .refine((data) => data.paletteName !== 'custom' || !!data.paletteName, {
+  .refine((data) => data.paletteName !== 'custom' || !!data.customBase, {
     message: 'A custom base color is required if using a custom base palette',
     path: ['customBase'],
   });

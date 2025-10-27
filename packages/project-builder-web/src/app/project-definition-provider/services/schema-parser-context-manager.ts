@@ -1,5 +1,6 @@
 import type {
   PluginMetadataWithPaths,
+  ProjectInfo,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -9,20 +10,22 @@ import { resetPluginModuleSeed } from '#src/services/module-federation.js';
 import { createWebSchemaParserContext } from '#src/services/schema-parser-context.js';
 
 export class SchemaParserContextManager {
-  public readonly projectId: string;
-
+  public readonly project: ProjectInfo;
+  public readonly cliVersion: string;
   protected _pluginsMetadata: PluginMetadataWithPaths[] | undefined;
   protected _schemaParserContext: SchemaParserContext | undefined;
 
-  constructor(projectId: string) {
-    this.projectId = projectId;
+  constructor(project: ProjectInfo, cliVersion: string) {
+    this.project = project;
+    this.cliVersion = cliVersion;
   }
 
   async loadSchemaParserContext(): Promise<SchemaParserContext> {
-    this._pluginsMetadata ??= await getPluginsMetadata(this.projectId);
+    this._pluginsMetadata ??= await getPluginsMetadata(this.project.id);
     resetPluginModuleSeed();
     this._schemaParserContext = await createWebSchemaParserContext(
-      this.projectId,
+      this.project,
+      this.cliVersion,
       this._pluginsMetadata,
     );
     return this._schemaParserContext;

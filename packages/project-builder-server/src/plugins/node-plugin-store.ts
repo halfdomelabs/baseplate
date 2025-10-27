@@ -2,6 +2,7 @@ import type {
   PluginMetadataWithPaths,
   PluginPlatformModule,
   PluginStore,
+  ProjectInfo,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
@@ -69,15 +70,18 @@ export async function createNodePluginStoreFromDirectory(
 }
 
 export async function createNodeSchemaParserContext(
-  projectDirectory: string,
+  project: ProjectInfo,
   logger: Logger,
   builtinPlugins: PluginMetadataWithPaths[],
+  cliVersion: string,
 ): Promise<SchemaParserContext> {
   return {
+    project,
     pluginStore: await createNodePluginStoreFromDirectory(
-      projectDirectory,
+      project.directory,
       logger,
       builtinPlugins,
     ),
+    cliVersion,
   };
 }

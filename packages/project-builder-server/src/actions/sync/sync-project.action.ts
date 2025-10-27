@@ -45,7 +45,7 @@ export const syncProjectAction = createServiceAction({
       skipCommands,
       snapshotDirectory,
     } = input;
-    const { projects, logger, plugins, userConfig } = context;
+    const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     // Find the project by name or ID
     const project = getProjectByNameOrId(projects, projectId);
@@ -55,9 +55,10 @@ export const syncProjectAction = createServiceAction({
     try {
       // Create schema parser context
       const schemaParserContext = await createNodeSchemaParserContext(
-        project.directory,
+        project,
         logger,
         plugins,
+        cliVersion,
       );
 
       // Create sync metadata controller

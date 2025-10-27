@@ -1,1 +1,1 @@
-export { backendPackageCompiler } from './backend-compiler.js';
+export { BackendPackageCompiler } from './backend-compiler.js';

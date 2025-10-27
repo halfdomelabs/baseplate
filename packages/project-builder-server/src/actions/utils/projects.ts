@@ -1,4 +1,4 @@
-import type { ServiceActionProject } from '../types.js';
+import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
 
 /**
  * Get a project by name or ID.
@@ -7,9 +7,9 @@ import type { ServiceActionProject } from '../types.js';
  * @returns The project if found, otherwise throws an error.
  */
 export function getProjectByNameOrId(
-  projects: ServiceActionProject[],
+  projects: ProjectInfo[],
   projectNameOrId: string,
-): ServiceActionProject {
+): ProjectInfo {
   const project = projects.find(
     (project) =>
       project.name === projectNameOrId ||

@@ -26,6 +26,9 @@ export async function loadIgnorePatterns(
     'prisma/migrations/**/*',
     'prisma/migrations_file.txt',
     'schema.graphql',
+    '/apps/**/*',
+    '/packages/**/*',
+    'pnpm-lock.yaml',
   ]);
 
   try {

@@ -1,11 +1,15 @@
 import type { Command } from 'commander';
 
+import {
+  invokeServiceActionAsCli,
+  snapshotAddAction,
+  snapshotRemoveAction,
+  snapshotSaveAction,
+  snapshotShowAction,
+} from '@baseplate-dev/project-builder-server/actions';
 import { confirm } from '@inquirer/prompts';
 
-import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
-import { getUserConfig } from '#src/services/user-config.js';
-import { expandPathWithTilde } from '#src/utils/path.js';
-import { resolveProject } from '#src/utils/project-resolver.js';
+import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
 import { logger } from '../services/logger.js';
 
@@ -41,32 +45,18 @@ export function addSnapshotCommand(program: Command): void {
         },
       ) => {
         try {
-          const { addFilesToSnapshot } = await import(
-            '@baseplate-dev/project-builder-server'
-          );
+          const context = await createServiceActionContext();
 
-          let resolvedDirectory: string;
-          if (project.includes('/') || project.includes('\\')) {
-            // It's a path, expand it
-            resolvedDirectory = expandPathWithTilde(project);
-          } else {
-            // It's a project name, resolve it
-            const projectInfo = await resolveProject(project);
-            resolvedDirectory = projectInfo.path;
-            logger.info(
-              `Running snapshot add for project: ${projectInfo.name}`,
-            );
-          }
-
-          const context = await createSchemaParserContext(resolvedDirectory);
-
-          await addFilesToSnapshot(files, !!options.deleted, {
-            projectDirectory: resolvedDirectory,
-            snapshotDirectory: options.snapshotDir,
-            appName: app,
+          await invokeServiceActionAsCli(
+            snapshotAddAction,
+            {
+              project,
+              app,
+              files,
+              deleted: options.deleted,
+            },
             context,
-            logger,
-          });
+          );
         } catch (error) {
           logger.error('Failed to add files to snapshot:', error);
           throw error;
@@ -93,32 +83,18 @@ export function addSnapshotCommand(program: Command): void {
         },
       ) => {
         try {
-          const { removeFilesFromSnapshot } = await import(
-            '@baseplate-dev/project-builder-server'
-          );
+          const context = await createServiceActionContext();
 
-          let resolvedDirectory: string;
-          if (project.includes('/') || project.includes('\\')) {
-            // It's a path, expand it
-            resolvedDirectory = expandPathWithTilde(project);
-          } else {
-            // It's a project name, resolve it
-            const projectInfo = await resolveProject(project);
-            resolvedDirectory = projectInfo.path;
-            logger.info(
-              `Running snapshot remove for project: ${projectInfo.name}`,
-            );
-          }
-
-          const context = await createSchemaParserContext(resolvedDirectory);
-
-          await removeFilesFromSnapshot(files, {
-            projectDirectory: resolvedDirectory,
-            snapshotDirectory: options.snapshotDir,
-            appName: app,
+          await invokeServiceActionAsCli(
+            snapshotRemoveAction,
+            {
+              project,
+              app,
+              files,
+              snapshotDirectory: options.snapshotDir,
+            },
             context,
-            logger,
-          });
+          );
         } catch (error) {
           logger.error('Failed to remove files from snapshot:', error);
           throw error;
@@ -145,58 +121,33 @@ export function addSnapshotCommand(program: Command): void {
           snapshotDir?: string;
         },
       ) => {
-        try {
-          const { createSnapshotForProject } = await import(
-            '@baseplate-dev/project-builder-server'
-          );
-
-          let resolvedDirectory: string;
-          if (project.includes('/') || project.includes('\\')) {
-            // It's a path, expand it
-            resolvedDirectory = expandPathWithTilde(project);
-          } else {
-            // It's a project name, resolve it
-            const projectInfo = await resolveProject(project);
-            resolvedDirectory = projectInfo.path;
-            logger.info(
-              `Running snapshot save for project: ${projectInfo.name}`,
-            );
-          }
-
-          const context = await createSchemaParserContext(resolvedDirectory);
-          const userConfig = await getUserConfig();
-
-          // Confirm with user before overwriting existing snapshot
-          console.warn(
-            '⚠️  This will overwrite any existing snapshot for this app.',
-          );
-          console.info(
-            'Use granular commands (snapshot add/remove) for safer updates.',
-          );
-          const proceed: boolean = await confirm({
-            message:
-              'Are you sure you want to overwrite the existing snapshot?',
-            default: false,
-          });
-          if (!proceed) {
-            logger.info('Aborted snapshot save.');
-            return;
-          }
-
-          await createSnapshotForProject({
-            projectDirectory: resolvedDirectory,
-            app,
-            logger,
-            context,
-            userConfig,
-            snapshotDir: options.snapshotDir,
-          });
-
-          logger.info('✅ Snapshot saved successfully');
-        } catch (error) {
-          logger.error('Failed to save snapshot:', error);
-          throw error;
+        // Confirm with user before overwriting existing snapshot
+        console.warn(
+          '⚠️  This will overwrite any existing snapshot for this app.',
+        );
+        console.info(
+          'Use granular commands (snapshot add/remove) for safer updates.',
+        );
+        const proceed: boolean = await confirm({
+          message: 'Are you sure you want to overwrite the existing snapshot?',
+          default: false,
+        });
+        if (!proceed) {
+          logger.info('Aborted snapshot save.');
+          return;
         }
+
+        const context = await createServiceActionContext();
+
+        await invokeServiceActionAsCli(
+          snapshotSaveAction,
+          {
+            project,
+            app,
+            snapshotDirectory: options.snapshotDir,
+          },
+          context,
+        );
       },
     );
 
@@ -217,37 +168,17 @@ export function addSnapshotCommand(program: Command): void {
           snapshotDir?: string;
         },
       ) => {
-        try {
-          const { listSnapshotContents } = await import(
-            '@baseplate-dev/project-builder-server'
-          );
+        const context = await createServiceActionContext();
 
-          let resolvedDirectory: string;
-          if (project.includes('/') || project.includes('\\')) {
-            // It's a path, expand it
-            resolvedDirectory = expandPathWithTilde(project);
-          } else {
-            // It's a project name, resolve it
-            const projectInfo = await resolveProject(project);
-            resolvedDirectory = projectInfo.path;
-            logger.info(
-              `Running snapshot show for project: ${projectInfo.name}`,
-            );
-          }
-
-          const context = await createSchemaParserContext(resolvedDirectory);
-
-          await listSnapshotContents({
-            projectDirectory: resolvedDirectory,
-            appName: app,
+        await invokeServiceActionAsCli(
+          snapshotShowAction,
+          {
+            project,
+            app,
             snapshotDirectory: options.snapshotDir,
-            context,
-            logger,
-          });
-        } catch (error) {
-          logger.error('Failed to show snapshot contents:', error);
-          throw error;
-        }
+          },
+          context,
+        );
       },
     );
 }

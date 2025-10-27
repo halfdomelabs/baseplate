@@ -1,6 +1,7 @@
 import type {
   PluginMetadataWithPaths,
   ProjectDefinitionInput,
+  ProjectInfo,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 import type { EventedLogger } from '@baseplate-dev/sync';
@@ -73,8 +74,7 @@ export interface CommandConsoleEmittedPayload {
 }
 
 interface ProjectBuilderServiceOptions {
-  directory: string;
-  id: string;
+  project: ProjectInfo;
   cliVersion: string;
   skipCommands?: boolean;
   cliFilePath?: string;
@@ -106,13 +106,9 @@ interface ProjectBuilderServiceEvents {
 }
 
 export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServiceEvents> {
-  public readonly directory: string;
-
   private projectJsonPath: string;
 
   private watcher: FSWatcher | undefined;
-
-  public readonly id: string;
 
   private abortController: AbortController | undefined;
 
@@ -140,9 +136,14 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private cliFilePath: string | undefined;
 
+  public readonly project: ProjectInfo;
+
+  public readonly id: string;
+
+  public readonly directory: string;
+
   constructor({
-    directory,
-    id,
+    project,
     cliVersion,
     serviceActionContext,
     skipCommands,
@@ -150,12 +151,13 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   }: ProjectBuilderServiceOptions) {
     super();
 
-    this.directory = directory;
+    this.project = project;
+    this.directory = project.directory;
+    this.id = project.id;
     this.projectJsonPath = path.join(
-      directory,
+      this.directory,
       'baseplate/project-definition.json',
     );
-    this.id = id;
     this.cliVersion = cliVersion;
     this.userConfig = serviceActionContext.userConfig;
     this.logger = createEventedLogger();
@@ -416,9 +418,10 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   public async getSchemaParserContext(): Promise<SchemaParserContext> {
     this.schemaParserContext ??= await createNodeSchemaParserContext(
-      this.directory,
+      this.project,
       this.logger,
       this.builtInPlugins,
+      this.cliVersion,
     );
     return this.schemaParserContext;
   }

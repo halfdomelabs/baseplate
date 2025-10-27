@@ -93,6 +93,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     plugins: builtInPlugins,
     logger: pinoLogger,
     userConfig: {},
+    cliVersion,
   };
 
   const serviceManager = new BuilderServiceManager({

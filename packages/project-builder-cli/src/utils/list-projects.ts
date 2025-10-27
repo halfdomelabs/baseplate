@@ -1,4 +1,4 @@
-import type { ServiceActionProject } from '@baseplate-dev/project-builder-server/actions';
+import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
 
 import {
   discoverProjects,
@@ -82,7 +82,7 @@ export async function listProjects({
   additionalDirectories,
 }: {
   additionalDirectories?: string[];
-}): Promise<ServiceActionProject[]> {
+}): Promise<ProjectInfo[]> {
   const searchDirectories = await getSearchDirectories({
     additionalDirectories,
     includeExamples: config.INCLUDE_EXAMPLES ?? false,
@@ -122,7 +122,7 @@ export async function listProjects({
  */
 export async function resolveProject(
   projectNameOrDirectory: string | undefined = process.cwd(),
-): Promise<ServiceActionProject> {
+): Promise<ProjectInfo> {
   if (
     projectNameOrDirectory.startsWith('.') ||
     path.isAbsolute(projectNameOrDirectory) ||
@@ -158,7 +158,7 @@ export async function resolveProject(
  * const exampleProjects = await getExampleProjects();
  * ```
  */
-export async function getExampleProjects(): Promise<ServiceActionProject[]> {
+export async function getExampleProjects(): Promise<ProjectInfo[]> {
   const exampleDirs = await findExamplesDirectories();
   return discoverProjects(exampleDirs, logger);
 }

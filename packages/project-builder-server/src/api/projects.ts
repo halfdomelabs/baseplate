@@ -2,58 +2,11 @@ import { z } from 'zod';
 
 import { privateProcedure, router } from './trpc.js';
 
-export interface ProjectInfo {
-  id: string;
-  name: string;
-  directory: string;
-}
-
-const simpleProjectDefinitionSchema = z.object({
-  // handle old placement of name
-  name: z.string().optional(),
-  settings: z
-    .object({
-      general: z.object({
-        name: z.string(),
-      }),
-    })
-    .optional(),
-});
+export type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
 
 export const projectsRouter = router({
-  list: privateProcedure.query(async ({ ctx }) =>
-    Promise.all(
-      ctx.serviceManager
-        .getServices()
-        .map(async (service): Promise<ProjectInfo> => {
-          const { contents } = await service.readDefinition();
-          const parseResult = simpleProjectDefinitionSchema.safeParse(
-            JSON.parse(contents) as unknown,
-          );
-
-          if (!parseResult.success) {
-            throw new Error(
-              `Invalid project definition for ${service.directory}: ${parseResult.error.message}`,
-            );
-          }
-
-          const parsedContents = parseResult.data;
-
-          const name =
-            parsedContents.name ?? parsedContents.settings?.general.name;
-          if (!name) {
-            throw new Error(
-              `Invalid project definition for ${service.directory}: name is required`,
-            );
-          }
-
-          return {
-            id: service.id,
-            name,
-            directory: service.directory,
-          };
-        }),
-    ),
+  list: privateProcedure.query(({ ctx }) =>
+    ctx.serviceManager.getServices().map((service) => service.project),
   ),
 
   readDefinition: privateProcedure

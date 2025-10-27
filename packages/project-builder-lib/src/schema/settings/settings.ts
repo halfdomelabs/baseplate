@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { generalSettingsSchema } from './general.js';
+import { monorepoSettingsSchema } from './monorepo.js';
 import { createTemplateExtractorSchema } from './template-extractor.js';
 import { createThemeSchema } from './theme.js';
 
@@ -11,6 +12,7 @@ import { createThemeSchema } from './theme.js';
  *
  * Combines all settings categories:
  * - general: Project name, scope, and port configuration
+ * - monorepo: Monorepo folder configuration (optional)
  * - templateExtractor: Template extraction configuration (optional)
  * - theme: UI theme and color palette configuration (optional)
  */
@@ -20,6 +22,14 @@ export const createSettingsSchema = definitionSchema((ctx) =>
      * General project settings (required)
      */
     general: generalSettingsSchema,
+
+    /**
+     * Monorepo configuration (optional)
+     *
+     * Configures the folder structure for monorepo packages.
+     * When omitted, uses default folder structure (apps/*).
+     */
+    monorepo: monorepoSettingsSchema.optional(),
 
     /**
      * Template extractor configuration (optional)

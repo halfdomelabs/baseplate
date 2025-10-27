@@ -61,7 +61,10 @@ export async function addFilesToSnapshot(
       throw new Error(`App ${appName} not found`);
     }
 
-    const appDirectory = path.join(projectDirectory, compiledApp.appDirectory);
+    const appDirectory = path.join(
+      projectDirectory,
+      compiledApp.packageDirectory,
+    );
 
     const snapshotDirectories = resolveSnapshotDirectory(appDirectory, {
       snapshotDir: snapshotDirectory,

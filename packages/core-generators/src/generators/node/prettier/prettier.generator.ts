@@ -31,6 +31,8 @@ const descriptorSchema = z.object({
   singleQuote: z.boolean().default(true),
   trailingComma: z.string().default('all'),
   semi: z.boolean().default(true),
+  disableDefaultScripts: z.boolean().default(false),
+  additionalIgnorePaths: z.array(z.string()).optional(),
 });
 
 export interface PrettierPluginConfig {
@@ -145,6 +147,9 @@ export const prettierGenerator = createGenerator({
           '/baseplate',
           'pnpm-lock.yaml',
         ];
+        if (descriptor.additionalIgnorePaths) {
+          prettierIgnore.push(...descriptor.additionalIgnorePaths);
+        }
         return {
           providers: {
             prettier: {
@@ -260,10 +265,12 @@ export const prettierGenerator = createGenerator({
               ),
             });
 
-            node.scripts.mergeObj({
-              'prettier:check': 'prettier --check .',
-              'prettier:write': 'prettier -w .',
-            });
+            if (!descriptor.disableDefaultScripts) {
+              node.scripts.mergeObj({
+                'prettier:check': 'prettier --check .',
+                'prettier:write': 'prettier -w .',
+              });
+            }
 
             writeJsonToBuilder(builder, {
               id: 'prettier-config',

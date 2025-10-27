@@ -63,7 +63,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
           '.eslintcache',
           '',
           '# Baseplate build artifacts',
-          'baseplate/build',
+          'baseplate/.build',
         ];
         if (exclusions.size > 0) {
           const sortedExclusions = [...exclusions.entries()].sort((a, b) =>

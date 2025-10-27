@@ -1,8 +1,4 @@
-import type {
-  AppEntry,
-  ProjectDefinitionContainer,
-  WebAppConfig,
-} from '@baseplate-dev/project-builder-lib';
+import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
 import type { AdminLayoutLinkItem } from '@baseplate-dev/react-generators';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -34,12 +30,11 @@ import { kebabCase } from 'es-toolkit';
 import { titleizeCamel } from '#src/utils/case.js';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
-import type { PackageCompiler } from '../package-compiler.js';
+import type { PackageTasks } from '../package-compiler.js';
+import type { PackageEntry } from '../package-entry.js';
 
-import {
-  buildPackageName,
-  createAppEntryBuilderForPackage,
-} from '../package-compiler.js';
+import { AppCompiler } from '../app-compiler.js';
+import { createAppEntryBuilderForPackage } from '../package-compiler.js';
 import { compileAdminSections } from './admin/index.js';
 import { compileWebFeatures } from './features.js';
 
@@ -194,25 +189,20 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
  * - Optional admin panel with CRUD sections
  * - Plugin-contributed generators (auth, storage, etc.)
  */
-export const webPackageCompiler: PackageCompiler<WebAppConfig> = {
-  compile(
-    definitionContainer: ProjectDefinitionContainer,
-    appConfig: WebAppConfig,
-  ): AppEntry {
+export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
+  compile(): PackageEntry {
     const appBuilder = createAppEntryBuilderForPackage(
-      definitionContainer,
-      appConfig,
+      this.definitionContainer,
+      this.appConfig,
       webAppEntryType,
     );
 
     const { projectDefinition } = appBuilder;
     const generalSettings = projectDefinition.settings.general;
 
-    const packageName = buildPackageName(generalSettings, appConfig.name);
-
     const nodeBundle = composeNodeGenerator({
-      name: `${generalSettings.name}-${appConfig.name}`,
-      packageName,
+      name: `${generalSettings.name}-${this.appConfig.name}`,
+      packageName: this.getPackageName(),
       description: `Web app for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
@@ -220,6 +210,14 @@ export const webPackageCompiler: PackageCompiler<WebAppConfig> = {
       },
     });
 
-    return appBuilder.buildProjectEntry(nodeBundle);
-  },
-};
+    return appBuilder.buildProjectEntry(nodeBundle, this.getPackageDirectory());
+  }
+
+  getTasks(): PackageTasks {
+    return {
+      build: ['build'],
+      dev: ['dev', 'watch:gql'],
+      watch: ['watch:gql'],
+    };
+  }
+}

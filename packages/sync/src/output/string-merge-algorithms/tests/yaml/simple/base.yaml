@@ -1,0 +1,7 @@
+# Base file with comments
+a: 1
+# This is field b
+b: 2
+c:
+  # Nested field comment
+  d: 3

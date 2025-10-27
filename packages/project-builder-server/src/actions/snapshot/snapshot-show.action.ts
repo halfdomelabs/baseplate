@@ -55,7 +55,7 @@ export const snapshotShowAction = createServiceAction({
       app,
       snapshotDirectory = '.baseplate-snapshot',
     } = input;
-    const { projects, logger, plugins } = context;
+    const { projects, logger, plugins, cliVersion } = context;
 
     try {
       // Find the project by name or ID
@@ -67,9 +67,10 @@ export const snapshotShowAction = createServiceAction({
 
       // Create schema parser context
       const schemaContext = await createNodeSchemaParserContext(
-        project.directory,
+        project,
         logger,
         plugins,
+        cliVersion,
       );
 
       // We need to capture the output instead of just logging it

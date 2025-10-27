@@ -115,7 +115,3 @@ jobs:
       - name: Run tests
         run: pnpm test
         working-directory: examples/${{ matrix.example }}
-
-      - name: Check versions consistency
-        run: pnpm versions:check
-        working-directory: examples/${{ matrix.example }}

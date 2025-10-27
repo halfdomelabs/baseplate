@@ -1,35 +1,71 @@
 import type {
-  AppEntry,
   AppEntryType,
   BaseAppConfig,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
+import type { PackageEntry } from './package-entry.js';
+
 import { AppEntryBuilder } from './app-entry-builder.js';
 
+export interface PackageTasks {
+  build: string[];
+  dev: string[];
+  watch: string[];
+}
+
+export interface PackageCompilerContext {
+  compilers: PackageCompiler[];
+}
+
 /**
- * Interface for package type compilers
+ * Abstract base class for package type compilers
  *
- * Each package type (backend, web, library, etc.) implements this interface
- * to define how it should be compiled into an AppEntry with generator bundles.
+ * Each package type (backend, web, library, etc.) extends this class
+ * to define how it should be compiled into a PackageEntry with generator bundles.
  *
- * Package compilers are created via factory functions that return objects
- * implementing this interface.
+ * Each child class defines its own constructor requirements based on what
+ * information it needs (e.g., app config, definition container).
  */
-export interface PackageCompiler<
-  TConfig extends BaseAppConfig = BaseAppConfig,
-> {
+export abstract class PackageCompiler {
+  protected readonly definitionContainer: ProjectDefinitionContainer;
+
+  constructor(definitionContainer: ProjectDefinitionContainer) {
+    this.definitionContainer = definitionContainer;
+  }
   /**
-   * Compile a package configuration into an AppEntry with generator bundle
+   * Compile a package configuration into a PackageEntry with generator bundle
    *
-   * @param definitionContainer - The project definition container with full context
-   * @param appConfig - The package configuration to compile
-   * @returns AppEntry with generated bundle ready for sync
+   * @returns PackageEntry with generated bundle ready for sync
    */
-  compile(
-    definitionContainer: ProjectDefinitionContainer,
-    appConfig: TConfig,
-  ): AppEntry;
+  abstract compile(context: PackageCompilerContext): PackageEntry;
+
+  /**
+   * Get the formatted package name (e.g., '@scope/backend' or 'project-backend')
+   *
+   * @returns Formatted package name
+   */
+  abstract getPackageName(): string;
+
+  /**
+   * Get the package directory path relative to monorepo root
+   *
+   * @returns Package directory path (e.g., 'apps/backend', '.')
+   */
+  abstract getPackageDirectory(): string;
+
+  /**
+   * Get the tasks for a package used in turbo configuration
+   *
+   * @returns Object with build, dev, and watch tasks
+   */
+  getTasks(): PackageTasks {
+    return {
+      build: [],
+      dev: [],
+      watch: [],
+    };
+  }
 }
 
 /**
@@ -39,7 +75,7 @@ export interface PackageCompiler<
  * Otherwise, creates prefixed package: project-name
  *
  * @param generalSettings - Project general settings
- * @param appName - The app/package name
+ * @param packageName - The app/package name
  * @returns Formatted package name
  *
  * @example
@@ -53,11 +89,11 @@ export interface PackageCompiler<
  */
 export function buildPackageName(
   generalSettings: { name: string; packageScope: string },
-  appName: string,
+  packageName: string,
 ): string {
   return generalSettings.packageScope
-    ? `@${generalSettings.packageScope}/${appName}`
-    : `${generalSettings.name}-${appName}`;
+    ? `@${generalSettings.packageScope}/${packageName}`
+    : `${generalSettings.name}-${packageName}`;
 }
 
 /**

@@ -85,9 +85,11 @@ export async function createSnapshotForProject(
       );
     }
 
-    const appDirectory = path.join(directory, app.appDirectory);
+    const appDirectory = path.join(directory, app.packageDirectory);
 
-    logger.info(`Creating snapshot for app: ${app.name} (${app.appDirectory})`);
+    logger.info(
+      `Creating snapshot for app: ${app.name} (${app.packageDirectory})`,
+    );
 
     // Load ignore patterns for this app directory
     const ignoreInstance = useIgnoreFile

@@ -1,0 +1,8 @@
+# User modified file with custom comments
+a: a
+b: 2
+c:
+  # Custom comment for field d
+  d: 3
+  # User added field e
+  e: 4
