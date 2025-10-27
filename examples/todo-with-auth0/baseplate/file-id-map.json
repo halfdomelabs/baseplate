@@ -5,5 +5,6 @@
   "@baseplate-dev/core-generators#node/pnpm-workspace:pnpm-workspace": "pnpm-workspace.yaml",
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
+  "@baseplate-dev/core-generators#node/root-readme:readme": "README.md",
   "@baseplate-dev/core-generators#node/turbo:turbo-config": "turbo.json"
 }

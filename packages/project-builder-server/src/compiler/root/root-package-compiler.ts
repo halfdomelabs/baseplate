@@ -4,6 +4,7 @@ import {
   pathRootsGenerator,
   pnpmWorkspaceGenerator,
   prettierGenerator,
+  rootReadmeGenerator,
   turboGenerator,
 } from '@baseplate-dev/core-generators';
 import { uniq } from 'es-toolkit';
@@ -121,6 +122,9 @@ export class RootPackageCompiler extends PackageCompiler {
         pathRoots: pathRootsGenerator({}),
         turbo: turboGenerator({
           tasks: turboTasks,
+        }),
+        rootReadme: rootReadmeGenerator({
+          projectName: generalSettings.name,
         }),
       },
     });

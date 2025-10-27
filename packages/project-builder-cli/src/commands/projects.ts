@@ -54,8 +54,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
         name: project.name,
         path: project.path,
         isInternalExample: project.isInternalExample,
-        description: project.packageJson.description ?? null,
-        version: project.packageJson.version ?? null,
       }));
 
       console.info(JSON.stringify(projects, null, 2));
@@ -79,9 +77,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
         console.info('📦 Projects:');
         for (const project of regular) {
           console.info(`   ${project.name}`);
-          if (typeof project.packageJson.description === 'string') {
-            console.info(`     ${project.packageJson.description}`);
-          }
           console.info(`     Path: ${project.path}`);
           console.info();
         }
@@ -92,9 +87,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
         console.info('📚 Examples:');
         for (const project of examples) {
           console.info(`   ${project.name}`);
-          if (typeof project.packageJson.description === 'string') {
-            console.info(`     ${project.packageJson.description}`);
-          }
           console.info(`     Path: ${project.path}`);
           console.info();
         }

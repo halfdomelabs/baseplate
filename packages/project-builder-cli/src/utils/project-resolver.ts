@@ -1,6 +1,7 @@
 import { isExampleProject } from '@baseplate-dev/project-builder-server/actions';
-import fs from 'node:fs/promises';
+import { readJsonWithSchema } from '@baseplate-dev/utils/node';
 import path from 'node:path';
+import z from 'zod';
 
 import { findExamplesDirectories } from './find-examples-directories.js';
 import { expandPathWithTilde } from './path.js';
@@ -13,8 +14,6 @@ export interface DiscoveredProjectInfo {
   name: string;
   /** Absolute path to the project directory */
   path: string;
-  /** Parsed package.json content */
-  packageJson: Record<string, unknown>;
   /** Whether this project is an internal example project */
   isInternalExample: boolean;
 }
@@ -151,18 +150,30 @@ export async function resolveProject(
 async function loadProjectInfo(
   directory: string,
 ): Promise<DiscoveredProjectInfo> {
-  const packageJsonPath = path.join(directory, 'package.json');
+  const definitionPath = path.join(
+    directory,
+    'baseplate',
+    'project-definition.json',
+  );
 
   try {
-    const packageJsonContent = await fs.readFile(packageJsonPath, 'utf-8');
-    const packageJson = JSON.parse(packageJsonContent) as Record<
-      string,
-      unknown
-    >;
+    const definition = await readJsonWithSchema(
+      definitionPath,
+      z.object({
+        settings: z.object({
+          general: z.object({
+            name: z.string(),
+          }),
+        }),
+      }),
+    );
 
-    const name = packageJson.name as string;
-    if (!name || typeof name !== 'string') {
-      throw new Error('package.json must have a valid "name" field');
+    const { name } = definition.settings.general;
+
+    if (!name) {
+      throw new Error(
+        'Project definition must have a valid name in settings.general.name',
+      );
     }
 
     const isInternalExample = await isExampleProject(directory);
@@ -170,7 +181,6 @@ async function loadProjectInfo(
     return {
       name,
       path: directory,
-      packageJson,
       isInternalExample,
     };
   } catch (error) {

@@ -148,7 +148,7 @@ describe('generateForDirectory', () => {
       expect.objectContaining({
         previousGeneratedPayload: expect.any(Object) as unknown,
         generatedContentsDirectory:
-          '/test-base/test-app/baseplate/build/generated_tmp',
+          '/test-base/test-app/baseplate/.build/generated_tmp',
       }),
     );
     expect(mockOperations.writeMetadata).toHaveBeenCalled();

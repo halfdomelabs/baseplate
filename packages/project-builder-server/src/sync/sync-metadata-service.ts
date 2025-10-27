@@ -15,7 +15,7 @@ import { INITIAL_SYNC_METADATA, syncMetadataSchema } from './sync-metadata.js';
  */
 export const SYNC_METADATA_PATH = path.join(
   'baseplate',
-  'build',
+  '.build',
   'sync_result.json',
 );
 

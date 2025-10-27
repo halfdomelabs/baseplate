@@ -83,7 +83,7 @@ export async function generateForDirectory({
 
   const generatedTemporaryDirectory = path.join(
     projectDirectory,
-    'baseplate/build/generated_tmp',
+    'baseplate/.build/generated_tmp',
   );
 
   await mkdir(generatedTemporaryDirectory, { recursive: true });

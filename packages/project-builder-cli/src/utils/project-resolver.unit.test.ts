@@ -399,7 +399,6 @@ describe('project-resolver', () => {
           {
             name: 'project1',
             path: '/path1',
-            packageJson: {},
             isInternalExample: false,
           },
         ],
@@ -408,7 +407,6 @@ describe('project-resolver', () => {
           {
             name: 'project2',
             path: '/path2',
-            packageJson: {},
             isInternalExample: true,
           },
         ],
@@ -442,7 +440,6 @@ describe('project-resolver', () => {
           {
             name: 'zebra-project',
             path: '/zebra',
-            packageJson: {},
             isInternalExample: false,
           },
         ],
@@ -451,7 +448,6 @@ describe('project-resolver', () => {
           {
             name: 'alpha-project',
             path: '/alpha',
-            packageJson: {},
             isInternalExample: true,
           },
         ],
@@ -460,7 +456,6 @@ describe('project-resolver', () => {
           {
             name: 'beta-project',
             path: '/beta',
-            packageJson: {},
             isInternalExample: false,
           },
         ],

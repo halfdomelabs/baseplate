@@ -8,7 +8,7 @@ export async function writeGeneratorSteps(
   outputDirectory: string,
 ): Promise<void> {
   await fs.writeFile(
-    path.join(outputDirectory, 'baseplate/build/generator-steps.json'),
+    path.join(outputDirectory, 'baseplate/.build/generator-steps.json'),
     JSON.stringify(metadata, null, 2),
   );
 }
