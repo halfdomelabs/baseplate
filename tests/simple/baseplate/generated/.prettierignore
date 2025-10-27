@@ -1,0 +1,9 @@
+.turbo/**
+/apps/**
+/baseplate
+/build
+/coverage
+/dist
+/lib
+/node_modules
+pnpm-lock.yaml
