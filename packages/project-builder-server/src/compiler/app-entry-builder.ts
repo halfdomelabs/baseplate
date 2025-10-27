@@ -1,6 +1,5 @@
 import type {
   AppCompiler,
-  AppEntry,
   AppEntryType,
   BackendAppConfig,
   BaseAppConfig,
@@ -12,9 +11,10 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appCompilerSpec,
-  AppUtils,
   createAppCompiler,
 } from '@baseplate-dev/project-builder-lib';
+
+import type { PackageEntry } from './package-entry.js';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectDefinition: ProjectDefinition;
@@ -52,13 +52,16 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   }
 
   /**
-   * Builds an AppEntry from the root bundle
+   * Builds a PackageEntry from the root bundle
    */
-  buildProjectEntry(rootBundle: GeneratorBundle): AppEntry {
+  buildProjectEntry(
+    rootBundle: GeneratorBundle,
+    packageDirectory: string,
+  ): PackageEntry {
     return {
       id: this.appConfig.id,
       name: this.appConfig.name,
-      appDirectory: AppUtils.getAppDirectory(this.appConfig),
+      packageDirectory,
       generatorBundle: rootBundle,
     };
   }

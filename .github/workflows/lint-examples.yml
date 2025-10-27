@@ -8,11 +8,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'examples/**'
+      - "examples/**"
   push:
     branches: [main]
     paths:
-      - 'examples/**'
+      - "examples/**"
 
 jobs:
   discover:
@@ -60,8 +60,8 @@ jobs:
           fetch-depth: 0
       - name: Copy backend/.env secrets
         run: |
-          echo "$BLOG_WITH_AUTH_BACKEND_ENV" > ./examples/blog-with-auth/packages/backend/.env
-          echo "$TODO_WITH_AUTH0_BACKEND_ENV" > ./examples/todo-with-auth0/packages/backend/.env
+          echo "$BLOG_WITH_AUTH_BACKEND_ENV" > ./examples/blog-with-auth/apps/backend/.env
+          echo "$TODO_WITH_AUTH0_BACKEND_ENV" > ./examples/todo-with-auth0/apps/backend/.env
         env:
           BLOG_WITH_AUTH_BACKEND_ENV: ${{secrets.BLOG_WITH_AUTH_BACKEND_ENV}}
           TODO_WITH_AUTH0_BACKEND_ENV: ${{secrets.TODO_WITH_AUTH0_BACKEND_ENV}}
@@ -94,7 +94,7 @@ jobs:
 
       - name: Run Docker setup
         run: docker compose up -d
-        working-directory: examples/${{ matrix.example }}/packages/backend/docker
+        working-directory: examples/${{ matrix.example }}/apps/backend/docker
 
       - name: Run prettier check
         run: pnpm prettier:check
@@ -114,8 +114,4 @@ jobs:
 
       - name: Run tests
         run: pnpm test
-        working-directory: examples/${{ matrix.example }}
-
-      - name: Check versions consistency
-        run: pnpm versions:check
         working-directory: examples/${{ matrix.example }}

@@ -32,6 +32,9 @@ function SettingsLayout(): React.JSX.Element {
               <Link to={`/settings/hierarchy`}>Hierarchy</Link>
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
+              <Link to={`/settings/monorepo`}>Monorepo</Link>
+            </NavigationMenuLink>
+            <NavigationMenuLink asChild>
               <Link to={`/settings/theme-builder`}>Theme builder</Link>
             </NavigationMenuLink>
             {ENABLE_TEMPLATE_EXTRACTOR && (

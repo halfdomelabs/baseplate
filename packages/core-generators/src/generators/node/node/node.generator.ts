@@ -34,9 +34,16 @@ const descriptorSchema = z.object({
   license: z.string().default('UNLICENSED'),
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
-  path: z.string().default(''),
+  scripts: z.record(z.string(), z.string()).default({}),
   nodeVersion: z.string().default(NODE_VERSION),
   pnpmVersion: z.string().default(PNPM_VERSION),
+  rootPackage: z.boolean().default(false),
+  additionalPackages: z
+    .object({
+      prod: z.record(z.string()).default({}),
+      dev: z.record(z.string()).default({}),
+    })
+    .default({}),
 });
 
 const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
@@ -78,7 +85,7 @@ export function createTestNodeProvider(): {
   return {
     nodeProvider: {
       nodeVersion: NODE_VERSION,
-      isEsm: false,
+      isEsm: true,
       ...configProvider,
     },
     nodeFieldMap: configProvider,
@@ -120,7 +127,7 @@ export function createNodePackagesTask(
 }
 
 const [configTask, nodeConfigProvider, nodeConfigValuesProvider] =
-  createConfigProviderTask((t) => ({ isEsm: t.boolean(false) }), {
+  createConfigProviderTask((t) => ({ isEsm: t.boolean(true) }), {
     prefix: 'node',
     configScope: packageScope,
   });
@@ -171,6 +178,12 @@ export const nodeGenerator = createGenerator({
           nodePackageJsonFieldsSchema,
         );
 
+        // Add scripts to the packageJsonFields
+        packageJsonFields.scripts.mergeObj(descriptor.scripts, 'descriptor');
+
+        // Add additional packages to the packageJsonFields
+        packageJsonFields.packages.addPackages(descriptor.additionalPackages);
+
         return {
           providers: {
             node: {
@@ -202,6 +215,9 @@ export const nodeGenerator = createGenerator({
                 node: descriptor.nodeVersion,
               },
               type: isEsm ? 'module' : 'commonjs',
+              packageManager: descriptor.rootPackage
+                ? `pnpm@${descriptor.pnpmVersion}`
+                : undefined,
             };
 
             writeJsonToBuilder(builder, {

@@ -24,5 +24,9 @@ export function getSingleAppDirectoryForProject(
     );
   }
 
-  return path.join(projectDirectory, AppUtils.getAppDirectory(matchedApps));
+  const monorepoSettings = projectDefinition.settings.monorepo;
+  return path.join(
+    projectDirectory,
+    AppUtils.getAppDirectory(matchedApps, monorepoSettings),
+  );
 }

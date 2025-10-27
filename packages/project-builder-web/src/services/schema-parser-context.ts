@@ -1,5 +1,6 @@
 import type {
   PluginMetadataWithPaths,
+  ProjectInfo,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -14,14 +15,17 @@ import {
 import { loadPluginModule } from './module-federation.js';
 
 export async function createWebSchemaParserContext(
-  projectId: string,
+  project: ProjectInfo,
+  cliVersion: string,
   plugins: PluginMetadataWithPaths[],
 ): Promise<SchemaParserContext> {
   return {
+    project,
+    cliVersion,
     pluginStore: {
       availablePlugins: await Promise.all(
         plugins.map(async (plugin) => {
-          const modules = await loadPluginModule(projectId, plugin);
+          const modules = await loadPluginModule(project.id, plugin);
           return {
             metadata: plugin,
             modules,

@@ -1,6 +1,7 @@
+import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
+
 import type { ServiceActionContext } from '#src/actions/types.js';
 
-import { generateProjectId } from '#src/actions/utils/project-id.js';
 import { ProjectBuilderService } from '#src/service/builder-service.js';
 
 export class BuilderServiceManager {
@@ -23,25 +24,21 @@ export class BuilderServiceManager {
       serviceActionContext: ServiceActionContext;
     },
   ) {
-    for (const directory of this.options.serviceActionContext.projects.map(
-      (project) => project.directory,
-    )) {
-      this.addService(directory);
+    for (const project of this.options.serviceActionContext.projects) {
+      this.addService(project);
     }
   }
 
-  addService(directory: string): ProjectBuilderService {
-    const id = generateProjectId(directory);
+  addService(project: ProjectInfo): ProjectBuilderService {
     const service = new ProjectBuilderService({
-      directory,
-      id,
+      project,
       cliVersion: this.options.cliVersion,
       skipCommands: this.options.skipCommands,
       cliFilePath: this.options.cliFilePath,
       serviceActionContext: this.options.serviceActionContext,
     });
     service.init();
-    this.services.set(id, service);
+    this.services.set(project.id, service);
     return service;
   }
 

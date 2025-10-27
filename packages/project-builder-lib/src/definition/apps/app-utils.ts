@@ -2,6 +2,7 @@ import type {
   AppConfig,
   BackendAppConfig,
   BaseAppConfig,
+  MonorepoSettingsDefinition,
   ProjectDefinition,
 } from '#src/schema/index.js';
 
@@ -33,21 +34,25 @@ function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
  * Given an app config, get the relative directory of the app
  *
  * @param appConfig The app config
+ * @param monorepoSettings Optional monorepo settings to determine apps folder location
  * @returns The directory of the app
  */
-function getAppDirectory(appConfig: BaseAppConfig): string {
-  return appConfig.packageLocation
-    ? appConfig.packageLocation
-    : `packages/${appConfig.name}`;
+function getAppDirectory(
+  appConfig: BaseAppConfig,
+  monorepoSettings?: MonorepoSettingsDefinition,
+): string {
+  const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
+  return `${appsFolder}/${appConfig.name}`;
 }
 
 export function getBackendRelativePath(
   appConfig: AppConfig,
   backendApp: BackendAppConfig,
+  monorepoSettings?: MonorepoSettingsDefinition,
 ): string {
   const backendRelativePath = computeRelativePath(
-    getAppDirectory(appConfig),
-    getAppDirectory(backendApp),
+    getAppDirectory(appConfig, monorepoSettings),
+    getAppDirectory(backendApp, monorepoSettings),
   );
 
   return backendRelativePath;

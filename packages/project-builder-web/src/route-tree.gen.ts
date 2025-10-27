@@ -20,6 +20,7 @@ import { Route as DataIndexRouteImport } from './routes/data/index'
 import { Route as AppsIndexRouteImport } from './routes/apps/index'
 import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
 import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
+import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
 import { Route as SettingsHierarchyRouteImport } from './routes/settings/hierarchy'
 import { Route as DataModelsRouteRouteImport } from './routes/data/models/route'
 import { Route as DataEnumsRouteRouteImport } from './routes/data/enums/route'
@@ -98,6 +99,11 @@ const SettingsTemplateExtractorRoute =
     path: '/template-extractor',
     getParentRoute: () => SettingsRouteRoute,
   } as any)
+const SettingsMonorepoRoute = SettingsMonorepoRouteImport.update({
+  id: '/monorepo',
+  path: '/monorepo',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
 const SettingsHierarchyRoute = SettingsHierarchyRouteImport.update({
   id: '/hierarchy',
   path: '/hierarchy',
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/data/enums': typeof DataEnumsRouteRouteWithChildren
   '/data/models': typeof DataModelsRouteRouteWithChildren
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
   '/apps/': typeof AppsIndexRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
   '/apps': typeof AppsIndexRoute
@@ -277,6 +285,7 @@ export interface FileRoutesById {
   '/data/enums': typeof DataEnumsRouteRouteWithChildren
   '/data/models': typeof DataModelsRouteRouteWithChildren
   '/settings/hierarchy': typeof SettingsHierarchyRoute
+  '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
   '/apps/': typeof AppsIndexRoute
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/data/enums'
     | '/data/models'
     | '/settings/hierarchy'
+    | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
     | '/apps/'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/settings/hierarchy'
+    | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
     | '/apps'
@@ -370,6 +381,7 @@ export interface FileRouteTypes {
     | '/data/enums'
     | '/data/models'
     | '/settings/hierarchy'
+    | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
     | '/apps/'
@@ -481,6 +493,13 @@ declare module '@tanstack/react-router' {
       path: '/template-extractor'
       fullPath: '/settings/template-extractor'
       preLoaderRoute: typeof SettingsTemplateExtractorRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/monorepo': {
+      id: '/settings/monorepo'
+      path: '/monorepo'
+      fullPath: '/settings/monorepo'
+      preLoaderRoute: typeof SettingsMonorepoRouteImport
       parentRoute: typeof SettingsRouteRoute
     }
     '/settings/hierarchy': {
@@ -766,6 +785,7 @@ const PluginsRouteRouteWithChildren = PluginsRouteRoute._addFileChildren(
 
 interface SettingsRouteRouteChildren {
   SettingsHierarchyRoute: typeof SettingsHierarchyRoute
+  SettingsMonorepoRoute: typeof SettingsMonorepoRoute
   SettingsTemplateExtractorRoute: typeof SettingsTemplateExtractorRoute
   SettingsThemeBuilderRoute: typeof SettingsThemeBuilderRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
@@ -773,6 +793,7 @@ interface SettingsRouteRouteChildren {
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsHierarchyRoute: SettingsHierarchyRoute,
+  SettingsMonorepoRoute: SettingsMonorepoRoute,
   SettingsTemplateExtractorRoute: SettingsTemplateExtractorRoute,
   SettingsThemeBuilderRoute: SettingsThemeBuilderRoute,
   SettingsIndexRoute: SettingsIndexRoute,

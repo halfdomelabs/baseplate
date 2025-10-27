@@ -1,15 +1,7 @@
 packages:
-  - packages/*
-
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - '@tailwindcss/oxide'
-  - unrs-resolver
-
-onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
-  - '@sentry-internal/node-cpu-profiler'
-  - '@sentry/profiling-node'
-  - esbuild
-  - prisma
+  - apps/*
+publishBranch: main
+savePrefix: ''
+linkWorkspacePackages: true
+saveWorkspaceProtocol: rolling
+minimumReleaseAge: 1440

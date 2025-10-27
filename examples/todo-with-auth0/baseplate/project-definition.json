@@ -162,7 +162,6 @@
       "description": "admin",
       "id": "app:NmEolDU3Iggt",
       "name": "admin",
-      "packageLocation": "packages/admin",
       "title": "Admin Page",
       "type": "web"
     },
@@ -175,7 +174,6 @@
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
-      "packageLocation": "packages/backend",
       "type": "backend"
     },
     {
@@ -184,7 +182,6 @@
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
-      "packageLocation": "packages/web",
       "title": "Todoer App",
       "type": "web"
     }

@@ -11,7 +11,7 @@ import path from 'node:path';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { compileApplications } from '#src/compiler/index.js';
+import { compilePackages } from '#src/compiler/index.js';
 import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 
@@ -74,7 +74,7 @@ export async function createSnapshotForProject(
     );
 
     logger.info('Compiling applications...');
-    const apps = compileApplications(projectJson, context);
+    const apps = compilePackages(projectJson, context);
 
     // Filter apps if specified
     const app = apps.find((app) => appName === app.name);
@@ -85,9 +85,11 @@ export async function createSnapshotForProject(
       );
     }
 
-    const appDirectory = path.join(directory, app.appDirectory);
+    const appDirectory = path.join(directory, app.packageDirectory);
 
-    logger.info(`Creating snapshot for app: ${app.name} (${app.appDirectory})`);
+    logger.info(
+      `Creating snapshot for app: ${app.name} (${app.packageDirectory})`,
+    );
 
     // Load ignore patterns for this app directory
     const ignoreInstance = useIgnoreFile

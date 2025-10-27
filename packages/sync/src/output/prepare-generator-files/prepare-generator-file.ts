@@ -16,6 +16,7 @@ import {
   gitMergeDriverAlgorithmGenerator,
   jsonMergeAlgorithm,
   simpleDiffAlgorithm,
+  yamlMergeAlgorithm,
 } from '../string-merge-algorithms/index.js';
 
 /**
@@ -184,6 +185,7 @@ async function mergeStringContents({
   const mergeAlgorithm = buildCompositeMergeAlgorithm([
     ...(options.mergeAlgorithms ?? []),
     ...(relativePath.endsWith('.json') ? [jsonMergeAlgorithm] : []),
+    ...(relativePath.endsWith('.yaml') ? [yamlMergeAlgorithm] : []),
     ...(context.mergeDriver
       ? [gitMergeDriverAlgorithmGenerator(context.mergeDriver)]
       : []),

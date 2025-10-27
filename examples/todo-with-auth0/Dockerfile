@@ -15,15 +15,15 @@ ENV COREPACK_DEFAULT_TO_LATEST=0
 RUN corepack enable
 
 # Copy only necessary files for dependency installation
-COPY packages/backend/package.json ./packages/backend/package.json
-COPY packages/backend/prisma/schema.prisma ./packages/backend/prisma/schema.prisma
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY apps/backend/prisma/schema.prisma ./apps/backend/prisma/schema.prisma
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
 
 # Install dependencies for backend
 RUN pnpm install --frozen-lockfile --filter=@prisma-crud/backend...
 
 # Copy application source code
-COPY packages/backend ./packages/backend
+COPY apps/backend ./apps/backend
 
 # Build the project
 RUN pnpm turbo run @prisma-crud/backend#build

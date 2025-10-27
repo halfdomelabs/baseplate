@@ -1,4 +1,7 @@
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  ProjectDefinition,
+  ProjectInfo,
+} from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
@@ -6,8 +9,7 @@ import { fileExists } from '@baseplate-dev/utils/node';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { ServiceActionProject } from '../types.js';
-
+import { isExampleProject } from './is-example-project.js';
 import { generateProjectId } from './project-id.js';
 
 /**
@@ -27,12 +29,12 @@ export async function isBaseplateProject(directory: string): Promise<boolean> {
 /**
  * Loads project information from a directory containing a Baseplate project.
  * @param directory - The absolute path to the project directory.
- * @returns ServiceActionProject for the project.
+ * @returns ProjectInfo for the project.
  * @throws Error if directory doesn't contain a valid Baseplate project or loading fails.
  */
 export async function loadProjectFromDirectory(
   directory: string,
-): Promise<ServiceActionProject> {
+): Promise<ProjectInfo> {
   const projectDefPath = path.join(
     directory,
     'baseplate',
@@ -54,10 +56,13 @@ export async function loadProjectFromDirectory(
       );
     }
 
+    const isInternalExample = await isExampleProject(directory);
+
     return {
       id: generateProjectId(directory),
       name,
       directory,
+      isInternalExample,
     };
   } catch (error) {
     throw enhanceErrorWithContext(
@@ -70,13 +75,13 @@ export async function loadProjectFromDirectory(
 /**
  * Discovers Baseplate projects from a list of directories.
  * @param directories - Array of directory paths to search.
- * @returns Array of ServiceActionProject for discovered projects.
+ * @returns Array of ProjectInfo for discovered projects.
  */
 export async function discoverProjects(
   directories: string[],
   logger: Logger,
-): Promise<ServiceActionProject[]> {
-  const projects: ServiceActionProject[] = [];
+): Promise<ProjectInfo[]> {
+  const projects: ProjectInfo[] = [];
   const seenNames = new Set<string>();
   const conflicts: string[] = [];
 

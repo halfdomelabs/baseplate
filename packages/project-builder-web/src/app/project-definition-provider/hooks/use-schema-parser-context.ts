@@ -3,6 +3,7 @@ import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import { toast } from '@baseplate-dev/ui-components';
 import { useEffect, useState } from 'react';
 
+import { useClientVersion } from '#src/hooks/use-client-version.js';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
@@ -19,19 +20,27 @@ interface UseSchemaParserContextResult {
  * @returns The schema parser context.
  */
 export function useSchemaParserContext(): UseSchemaParserContextResult {
-  const { currentProjectId, projectsLoaded } = useProjects();
+  const { currentProjectId, projectsLoaded, projects } = useProjects();
   const [schemaParserContext, setSchemaParserContext] = useState<
     SchemaParserContext | undefined
   >(undefined);
   const [error, setError] = useState<unknown>();
+  const cliVersion = useClientVersion();
 
   useEffect(() => {
     setSchemaParserContext(undefined);
     setError(undefined);
     if (!currentProjectId || !projectsLoaded) return;
 
+    const project = projects.find((project) => project.id === currentProjectId);
+    if (!project) {
+      setError(new Error(`Project with id ${currentProjectId} not found`));
+      return;
+    }
+
     const schemaParserContextManager = new SchemaParserContextManager(
-      currentProjectId,
+      project,
+      cliVersion.version,
     );
 
     schemaParserContextManager
@@ -52,7 +61,7 @@ export function useSchemaParserContext(): UseSchemaParserContextResult {
         toast.error(logAndFormatError(error));
       },
     );
-  }, [currentProjectId, projectsLoaded]);
+  }, [currentProjectId, projectsLoaded, projects, cliVersion]);
 
   return { schemaParserContext, error };
 }

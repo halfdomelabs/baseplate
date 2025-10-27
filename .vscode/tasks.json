@@ -37,10 +37,14 @@
       "type": "npm",
       "script": "watch",
       "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "close": true
+      },
       "problemMatcher": {
         "base": "$tsc-watch",
         "owner": "typescript",
-        "applyTo": "closedDocuments",
+        "applyTo": "allDocuments",
         "pattern": {
           "regexp": "^//:watch:tsc:root: (.+):(\\d+):(\\d+) - (error|warning|info) TS(\\d+): (.*)$",
           "file": 1,
@@ -52,8 +56,12 @@
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "\\/\\/:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(Starting compilation in watch mode|File change detected\\. Starting incremental compilation)\\.\\.\\.",
-          "endsPattern": "^\\/\\/:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(?:Compilation complete\\.|Found \\d+ errors?\\.) Watching for file changes\\."
+          "beginsPattern": {
+            "regexp": "^//:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(Starting compilation in watch mode|File change detected\\. Starting incremental compilation)\\.\\.\\."
+          },
+          "endsPattern": {
+            "regexp": "^//:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(?:Compilation complete\\.|Found \\d+ errors?\\.) Watching for file changes\\."
+          }
         }
       }
     },
