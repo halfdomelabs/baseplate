@@ -39,6 +39,33 @@
         }
       },
       "pathRootRelativePath": "{src-root}/utils/data-operations/field-definitions.ts",
+      "projectExports": {
+        "createParentModelConfig": {
+          "isTypeOnly": false,
+          "name": "createParentModelConfig"
+        },
+        "nestedOneToManyField": {
+          "isTypeOnly": false,
+          "name": "nestedOneToManyField"
+        },
+        "NestedOneToManyFieldConfig": {
+          "isTypeOnly": true,
+          "name": "NestedOneToManyFieldConfig"
+        },
+        "nestedOneToOneField": {
+          "isTypeOnly": false,
+          "name": "nestedOneToOneField"
+        },
+        "NestedOneToOneFieldConfig": {
+          "isTypeOnly": true,
+          "name": "NestedOneToOneFieldConfig"
+        },
+        "ParentModelConfig": {
+          "isTypeOnly": true,
+          "name": "ParentModelConfig"
+        },
+        "scalarField": { "isTypeOnly": false, "name": "scalarField" }
+      },
       "referencedGeneratorTemplates": [
         "define-operations",
         "prisma-types",
@@ -91,6 +118,9 @@
       "group": "data-operations",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/data-operations/relation-helpers.ts",
+      "projectExports": {
+        "relationHelpers": { "isTypeOnly": false, "name": "relationHelpers" }
+      },
       "sourceFile": "src/utils/data-operations/relation-helpers.ts",
       "variables": {}
     },
@@ -109,6 +139,45 @@
         }
       },
       "pathRootRelativePath": "{src-root}/utils/data-operations/types.ts",
+      "projectExports": {
+        "AnyFieldDefinition": {
+          "isTypeOnly": true,
+          "name": "AnyFieldDefinition"
+        },
+        "AnyOperationHooks": {
+          "isTypeOnly": true,
+          "name": "AnyOperationHooks"
+        },
+        "DataOperationType": {
+          "isTypeOnly": true,
+          "name": "DataOperationType"
+        },
+        "FieldContext": { "isTypeOnly": true, "name": "FieldContext" },
+        "FieldDefinition": { "isTypeOnly": true, "name": "FieldDefinition" },
+        "FieldTransformData": {
+          "isTypeOnly": true,
+          "name": "FieldTransformData"
+        },
+        "FieldTransformResult": {
+          "isTypeOnly": true,
+          "name": "FieldTransformResult"
+        },
+        "InferFieldsOutput": {
+          "isTypeOnly": true,
+          "name": "InferFieldsOutput"
+        },
+        "InferInput": { "isTypeOnly": true, "name": "InferInput" },
+        "OperationContext": { "isTypeOnly": true, "name": "OperationContext" },
+        "OperationHooks": { "isTypeOnly": true, "name": "OperationHooks" },
+        "PrismaTransaction": {
+          "isTypeOnly": true,
+          "name": "PrismaTransaction"
+        },
+        "TransactionalOperationContext": {
+          "isTypeOnly": true,
+          "name": "TransactionalOperationContext"
+        }
+      },
       "sourceFile": "src/utils/data-operations/types.ts",
       "variables": {}
     }

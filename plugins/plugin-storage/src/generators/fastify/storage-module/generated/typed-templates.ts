@@ -1,8 +1,10 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  dataUtilsImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
+  prismaImportsProvider,
   prismaUtilsImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
@@ -127,6 +129,30 @@ const servicesDownloadFile = createTsTemplateFile({
     ),
   },
   variables: { TPL_FILE_MODEL: {} },
+});
+
+const servicesFileField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    dataUtilsImports: dataUtilsImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-file-field',
+  projectExports: {
+    fileField: { isTypeOnly: false },
+    FileInput: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/file-field.ts',
+    ),
+  },
+  variables: {},
 });
 
 const servicesUploadFile = createTsTemplateFile({
@@ -274,6 +300,7 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
+  servicesFileField,
   servicesUploadFile,
   servicesValidateFileInput,
   typesAdapter,

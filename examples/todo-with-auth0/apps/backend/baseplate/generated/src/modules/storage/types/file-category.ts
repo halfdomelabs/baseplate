@@ -7,11 +7,7 @@ import type { StorageAdapterKey } from '../config/adapters.config.js';
  * Configuration for a file category that specifies how files for a
  * particular model relation to File model should be handled.
  */
-export interface FileCategory<
-  TName extends string = string,
-  TReferencedByRelation extends
-    keyof Prisma.FileCountOutputType = keyof Prisma.FileCountOutputType,
-> {
+export interface FileCategory<TName extends string = string> {
   /** Name of category (must be CONSTANT_CASE) */
   readonly name: TName;
 
@@ -52,5 +48,5 @@ export interface FileCategory<
   /**
    * The relation that references this file category.
    */
-  readonly referencedByRelation: TReferencedByRelation;
+  readonly referencedByRelation: keyof /* TPL_FILE_COUNT_OUTPUT_TYPE:START */ Prisma.FileCountOutputType /* TPL_FILE_COUNT_OUTPUT_TYPE:END */;
 }

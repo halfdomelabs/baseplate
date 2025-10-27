@@ -31,6 +31,15 @@ const fieldDefinitions = createTsTemplateFile({
   group: 'data-operations',
   importMapProviders: { prismaImports: prismaImportsProvider },
   name: 'field-definitions',
+  projectExports: {
+    createParentModelConfig: { isTypeOnly: false },
+    nestedOneToManyField: { isTypeOnly: false },
+    NestedOneToManyFieldConfig: { isTypeOnly: true },
+    nestedOneToOneField: { isTypeOnly: false },
+    NestedOneToOneFieldConfig: { isTypeOnly: true },
+    ParentModelConfig: { isTypeOnly: true },
+    scalarField: { isTypeOnly: false },
+  },
   referencedGeneratorTemplates: {
     defineOperations: {},
     prismaTypes: {},
@@ -97,6 +106,7 @@ const relationHelpers = createTsTemplateFile({
   group: 'data-operations',
   importMapProviders: {},
   name: 'relation-helpers',
+  projectExports: { relationHelpers: { isTypeOnly: false } },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -114,6 +124,21 @@ const types = createTsTemplateFile({
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'types',
+  projectExports: {
+    AnyFieldDefinition: { isTypeOnly: true },
+    AnyOperationHooks: { isTypeOnly: true },
+    DataOperationType: { isTypeOnly: true },
+    FieldContext: { isTypeOnly: true },
+    FieldDefinition: { isTypeOnly: true },
+    FieldTransformData: { isTypeOnly: true },
+    FieldTransformResult: { isTypeOnly: true },
+    InferFieldsOutput: { isTypeOnly: true },
+    InferInput: { isTypeOnly: true },
+    OperationContext: { isTypeOnly: true },
+    OperationHooks: { isTypeOnly: true },
+    PrismaTransaction: { isTypeOnly: true },
+    TransactionalOperationContext: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,

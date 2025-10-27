@@ -181,6 +181,40 @@
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
+    "services-file-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "dataUtilsImportsProvider": {
+          "importName": "dataUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/file-field.ts",
+      "projectExports": {
+        "fileField": { "isTypeOnly": false, "name": "fileField" },
+        "FileInput": { "isTypeOnly": true, "name": "FileInput" }
+      },
+      "referencedGeneratorTemplates": [
+        "config-adapters",
+        "types-file-category"
+      ],
+      "sourceFile": "module/services/file-field.ts",
+      "variables": {}
+    },
     "services-get-public-url": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
