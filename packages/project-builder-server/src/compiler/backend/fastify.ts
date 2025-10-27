@@ -6,6 +6,7 @@ import {
   axiosGenerator,
   bullMqGenerator,
   composeFastifyApplication,
+  dataUtilsGenerator,
   fastifyBullBoardGenerator,
   fastifyPostmarkGenerator,
   fastifyRedisGenerator,
@@ -80,6 +81,7 @@ export function buildFastify(
         }),
         prismaVitest: prismaVitestGenerator({}),
         prismaUtils: prismaUtilsGenerator({}),
+        dataUtils: dataUtilsGenerator({}),
         yoga: yogaPluginGenerator({
           enableSubscriptions: app.enableSubscriptions,
         }),

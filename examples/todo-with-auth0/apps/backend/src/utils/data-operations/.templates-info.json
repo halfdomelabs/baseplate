@@ -1,0 +1,37 @@
+{
+  "define-operations.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "define-operations"
+  },
+  "field-definitions.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "field-definitions"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "index"
+  },
+  "prisma-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "prisma-types"
+  },
+  "prisma-utils.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "prisma-utils"
+  },
+  "relation-helpers.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "relation-helpers"
+  },
+  "types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
+    "instanceData": {},
+    "template": "types"
+  }
+}
