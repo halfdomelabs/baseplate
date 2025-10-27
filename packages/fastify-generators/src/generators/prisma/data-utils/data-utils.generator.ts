@@ -15,6 +15,7 @@ export const dataUtilsGenerator = createGenerator({
   buildTasks: () => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
+    imports: GENERATED_TEMPLATES.imports.task,
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
