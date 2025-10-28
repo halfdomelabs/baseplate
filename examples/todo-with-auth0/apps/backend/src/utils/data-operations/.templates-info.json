@@ -9,11 +9,6 @@
     "instanceData": {},
     "template": "field-definitions"
   },
-  "index.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
-    "instanceData": {},
-    "template": "index"
-  },
   "prisma-types.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},

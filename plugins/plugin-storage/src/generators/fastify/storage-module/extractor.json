@@ -308,13 +308,18 @@
       "projectExports": { "FileCategory": { "isTypeOnly": true } },
       "referencedGeneratorTemplates": ["config-adapters"],
       "sourceFile": "module/types/file-category.ts",
-      "variables": { "TPL_FILE_COUNT_OUTPUT_TYPE": {} }
+      "variables": {}
     },
     "utils-create-file-category": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        }
+      },
       "pathRootRelativePath": "{module-root}/utils/create-file-category.ts",
       "projectExports": {
         "createFileCategory": {},

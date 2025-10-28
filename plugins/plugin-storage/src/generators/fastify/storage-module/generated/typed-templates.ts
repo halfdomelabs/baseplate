@@ -230,13 +230,15 @@ const typesFileCategory = createTsTemplateFile({
       '../templates/module/types/file-category.ts',
     ),
   },
-  variables: { TPL_FILE_COUNT_OUTPUT_TYPE: {} },
+  variables: {},
 });
 
 const utilsCreateFileCategory = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
   name: 'utils-create-file-category',
   projectExports: { createFileCategory: {}, FileSize: {}, MimeTypes: {} },
   referencedGeneratorTemplates: { typesFileCategory: {} },
