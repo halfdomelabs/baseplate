@@ -1,5 +1,50 @@
 # @baseplate-dev/fastify-generators
 
+## 0.4.0
+
+### Minor Changes
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Switch backend to ESM instead of CommonJS. This may break some packages but
+  most packages at this point are now ESM compatible.
+
+### Patch Changes
+
+- [#676](https://github.com/halfdomelabs/baseplate/pull/676) [`e68624e`](https://github.com/halfdomelabs/baseplate/commit/e68624e9372480da767d220cae60d45d9ed3c636) Thanks [@kingston](https://github.com/kingston)! - Allow prisma.config.mts to gracefully handle missing .env files by checking file existence before calling loadEnvFile(), enabling pnpm prisma generate to run successfully in environments without .env files
+
+- [#677](https://github.com/halfdomelabs/baseplate/pull/677) [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 6.17.1 and adopt the new Prisma generator architecture:
+  - Updated to Prisma 6.17.1 for improved performance and features
+  - Migrated Prisma generated client location from `node_modules/.prisma/client` to `@src/generated/prisma/client.js` for better control and type safety
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Upgrade TSX to 4.20.6
+
+- [#673](https://github.com/halfdomelabs/baseplate/pull/673) [`852c3a5`](https://github.com/halfdomelabs/baseplate/commit/852c3a5ff3a185e60efaeb2cbb90eed59a95ec2b) Thanks [@kingston](https://github.com/kingston)! - Replace custom Date/DateTime/UUID scalars with graphql-scalars package and add JSON/JSONObject scalar support
+
+  This change migrates from custom scalar implementations to the well-maintained graphql-scalars package, providing:
+  - **Reduced maintenance burden**: No custom scalar code to maintain
+  - **Battle-tested implementations**: Comprehensive edge case handling from widely-used library
+  - **Standards compliance**: RFC 3339 compliant Date/DateTime handling
+  - **Better error messages**: Detailed validation error messages out of the box
+  - **Additional scalars**: JSON and JSONObject scalars now available
+
+  **Breaking Changes:**
+  - Date scalar now uses RFC 3339 format (stricter than previous YYYY-MM-DD regex)
+  - DateTime scalar automatically shifts non-UTC timezones to UTC
+  - UUID scalar has more comprehensive validation
+
+  **New Features:**
+  - JSON scalar for any valid JSON value (objects, arrays, primitives, null)
+  - JSONObject scalar for JSON objects only (rejects arrays and primitives)
+
+  **Dependencies:**
+  - Added graphql-scalars@1.23.0 to generated backend packages
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Upgrade ioredis to 5.8.1 and ioredis-mock to 8.13.0-
+
+- Updated dependencies [[`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5)]:
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/core-generators@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes
