@@ -28,10 +28,8 @@ const DELETE_AFTER_DAYS = /* TPL_DELETE_AFTER_DAYS:START */ 7; /* TPL_DELETE_AFT
  */
 export async function initializePgBoss({
   disableMaintenance = false,
-  pollingIntervalSeconds = 2,
 }: {
   disableMaintenance?: boolean;
-  pollingIntervalSeconds?: number;
 } = {}): Promise<void> {
   if (pgBoss) {
     return;
@@ -39,8 +37,6 @@ export async function initializePgBoss({
 
   pgBoss = new PgBoss({
     connectionString: config.DATABASE_URL,
-    pollingIntervalSeconds,
-    deleteAfterDays: DELETE_AFTER_DAYS,
     // Disable maintenance in API mode
     ...(disableMaintenance && {
       supervise: false,
@@ -177,7 +173,9 @@ export class PgBossQueue<T> implements Queue<T> {
     }
 
     const boss = getPgBoss();
-    await boss.createQueue(this.name);
+    await boss.createQueue(this.name, {
+      deleteAfterSeconds: DELETE_AFTER_DAYS * 24 * 60 * 60,
+    });
     this.hasCreatedQueue = true;
   }
 

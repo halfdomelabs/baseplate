@@ -265,8 +265,8 @@ importers:
         specifier: 5.1.6
         version: 5.1.6
       pg-boss:
-        specifier: 10.3.2
-        version: 10.3.2
+        specifier: 11.1.1
+        version: 11.1.1
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -3578,9 +3578,9 @@ packages:
       typescript:
         optional: true
 
-  cron-parser@4.9.0:
-    resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
-    engines: {node: '>=12.0.0'}
+  cron-parser@5.4.0:
+    resolution: {integrity: sha512-HxYB8vTvnQFx4dLsZpGRa0uHp6X3qIzS3ZJgJ9v6l/5TJMgeWQbLkR5yiJ5hOxGbc9+jCADDnydIe15ReLZnJA==}
+    engines: {node: '>=18'}
 
   cross-env@7.0.3:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
@@ -5031,9 +5031,9 @@ packages:
   perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
 
-  pg-boss@10.3.2:
-    resolution: {integrity: sha512-yy96jwKekgUW4DVvve5xjvLZlNqVCRayl1wJvBxQeDNhIrblgEG0YnqbcNth4wsehkYWVJND9TeWbqb+cfxJKQ==}
-    engines: {node: '>=20'}
+  pg-boss@11.1.1:
+    resolution: {integrity: sha512-SGb53nY4tQCmPN6qNfSHCF6zRRmNTDOd6eARKkTEj99gdGsL4SW+F02679oAaSBnc16VAD8JghhLwc4hiT5oCg==}
+    engines: {node: '>=22'}
 
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
@@ -9872,7 +9872,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.3
 
-  cron-parser@4.9.0:
+  cron-parser@5.4.0:
     dependencies:
       luxon: 3.7.1
 
@@ -11442,9 +11442,9 @@ snapshots:
 
   perfect-debounce@1.0.0: {}
 
-  pg-boss@10.3.2:
+  pg-boss@11.1.1:
     dependencies:
-      cron-parser: 4.9.0
+      cron-parser: 5.4.0
       pg: 8.16.3
       serialize-error: 8.1.0
     transitivePeerDependencies:

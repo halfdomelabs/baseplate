@@ -48,9 +48,7 @@ const sleep = (ms: number): Promise<void> =>
 describe('pg-boss service integration tests', () => {
   beforeAll(async () => {
     // Initialize pg-boss in test mode with maintenance enabled
-    await initializePgBoss({
-      pollingIntervalSeconds: 0.5,
-    });
+    await initializePgBoss();
   });
 
   afterAll(async () => {
