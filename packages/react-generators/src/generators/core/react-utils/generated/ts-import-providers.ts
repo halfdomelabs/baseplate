@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_UTILS_PATHS } from './template-paths.js';
 
-const reactUtilsImportsSchema = createTsImportMapSchema({
+export const reactUtilsImportsSchema = createTsImportMapSchema({
   getSafeLocalStorage: {},
 });
 

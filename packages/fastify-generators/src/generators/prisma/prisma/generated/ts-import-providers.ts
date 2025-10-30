@@ -17,7 +17,7 @@ import {
 
 import { PRISMA_PRISMA_PATHS } from './template-paths.js';
 
-const prismaImportsSchema = createTsImportMapSchema({ prisma: {} });
+export const prismaImportsSchema = createTsImportMapSchema({ prisma: {} });
 
 export type PrismaImportsProvider = TsImportMapProviderFromSchema<
   typeof prismaImportsSchema

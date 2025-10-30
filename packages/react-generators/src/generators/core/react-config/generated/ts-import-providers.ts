@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_CONFIG_PATHS } from './template-paths.js';
 
-const reactConfigImportsSchema = createTsImportMapSchema({ config: {} });
+export const reactConfigImportsSchema = createTsImportMapSchema({ config: {} });
 
 export type ReactConfigImportsProvider = TsImportMapProviderFromSchema<
   typeof reactConfigImportsSchema

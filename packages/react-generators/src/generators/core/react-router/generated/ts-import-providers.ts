@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_ROUTER_PATHS } from './template-paths.js';
 
-const reactRouterImportsSchema = createTsImportMapSchema({
+export const reactRouterImportsSchema = createTsImportMapSchema({
   AppRoutes: {},
   router: {},
 });

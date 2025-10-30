@@ -12,7 +12,7 @@ import {
 
 import { ADMIN_ADMIN_COMPONENTS_PATHS } from './template-paths.js';
 
-const adminComponentsImportsSchema = createTsImportMapSchema({
+export const adminComponentsImportsSchema = createTsImportMapSchema({
   EmbeddedListField: {},
   EmbeddedListFieldController: {},
   EmbeddedListFieldProps: { isTypeOnly: true },

@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_COMPONENTS_PATHS } from './template-paths.js';
 
-const reactComponentsImportsSchema = createTsImportMapSchema({
+export const reactComponentsImportsSchema = createTsImportMapSchema({
   AddOptionRequiredFields: { isTypeOnly: true },
   Alert: {},
   AlertDescription: {},

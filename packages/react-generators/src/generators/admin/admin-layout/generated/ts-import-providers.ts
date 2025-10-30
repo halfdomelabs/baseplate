@@ -12,7 +12,7 @@ import {
 
 import { ADMIN_ADMIN_LAYOUT_PATHS } from './template-paths.js';
 
-const adminLayoutImportsSchema = createTsImportMapSchema({ Route: {} });
+export const adminLayoutImportsSchema = createTsImportMapSchema({ Route: {} });
 
 export type AdminLayoutImportsProvider = TsImportMapProviderFromSchema<
   typeof adminLayoutImportsSchema

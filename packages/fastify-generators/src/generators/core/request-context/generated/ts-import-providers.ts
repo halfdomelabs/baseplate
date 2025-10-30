@@ -12,7 +12,7 @@ import {
 
 import { CORE_REQUEST_CONTEXT_PATHS } from './template-paths.js';
 
-const requestContextImportsSchema = createTsImportMapSchema({
+export const requestContextImportsSchema = createTsImportMapSchema({
   RequestInfo: { isTypeOnly: true },
 });
 

@@ -12,7 +12,7 @@ import {
 
 import { AUTH_AUTH_ROLES_PATHS } from './template-paths.js';
 
-const authRolesImportsSchema = createTsImportMapSchema({
+export const authRolesImportsSchema = createTsImportMapSchema({
   AUTH_ROLE_CONFIG: {},
   AuthRole: { isTypeOnly: true },
   DEFAULT_PUBLIC_ROLES: {},

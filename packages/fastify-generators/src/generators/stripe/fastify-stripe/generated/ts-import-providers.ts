@@ -12,7 +12,7 @@ import {
 
 import { STRIPE_FASTIFY_STRIPE_PATHS } from './template-paths.js';
 
-const fastifyStripeImportsSchema = createTsImportMapSchema({
+export const fastifyStripeImportsSchema = createTsImportMapSchema({
   stripe: {},
   StripeEventHandler: { isTypeOnly: true },
   stripeEventService: {},

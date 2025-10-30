@@ -12,7 +12,7 @@ import {
 
 import { CORE_FASTIFY_SENTRY_PATHS } from './template-paths.js';
 
-const fastifySentryImportsSchema = createTsImportMapSchema({
+export const fastifySentryImportsSchema = createTsImportMapSchema({
   isSentryEnabled: {},
   logErrorToSentry: {},
   registerSentryEventProcessor: {},

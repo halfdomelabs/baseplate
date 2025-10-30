@@ -16,7 +16,7 @@ import {
 
 import { LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
 
-const localAuthHooksImportsSchema = createTsImportMapSchema({
+export const localAuthHooksImportsSchema = createTsImportMapSchema({
   AuthSessionContext: {},
 });
 

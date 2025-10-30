@@ -12,7 +12,7 @@ import {
 
 import { PRISMA_PRISMA_UTILS_PATHS } from './template-paths.js';
 
-const prismaUtilsImportsSchema = createTsImportMapSchema({
+export const prismaUtilsImportsSchema = createTsImportMapSchema({
   applyDataPipeOutput: {},
   applyDataPipeOutputToOperations: {},
   applyDataPipeOutputWithoutOperation: {},

@@ -12,7 +12,7 @@ import {
 
 import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
 
-const storageModuleImportsSchema = createTsImportMapSchema({
+export const storageModuleImportsSchema = createTsImportMapSchema({
   createFileCategory: {},
   createPresignedDownloadUrl: {},
   CreatePresignedUploadOptions: { isTypeOnly: true },

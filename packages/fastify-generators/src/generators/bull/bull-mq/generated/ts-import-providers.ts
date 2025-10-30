@@ -12,7 +12,7 @@ import {
 
 import { BULL_BULL_MQ_PATHS } from './template-paths.js';
 
-const bullMqImportsSchema = createTsImportMapSchema({
+export const bullMqImportsSchema = createTsImportMapSchema({
   createWorker: {},
   getOrCreateManagedQueue: {},
   ManagedRepeatableJobConfig: { isTypeOnly: true },

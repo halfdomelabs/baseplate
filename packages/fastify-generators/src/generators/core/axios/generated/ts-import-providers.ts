@@ -12,7 +12,9 @@ import {
 
 import { CORE_AXIOS_PATHS } from './template-paths.js';
 
-const axiosImportsSchema = createTsImportMapSchema({ getAxiosErrorInfo: {} });
+export const axiosImportsSchema = createTsImportMapSchema({
+  getAxiosErrorInfo: {},
+});
 
 export type AxiosImportsProvider = TsImportMapProviderFromSchema<
   typeof axiosImportsSchema

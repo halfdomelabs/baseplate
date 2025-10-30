@@ -12,7 +12,7 @@ import {
 
 import { CORE_ERROR_HANDLER_SERVICE_PATHS } from './template-paths.js';
 
-const errorHandlerServiceImportsSchema = createTsImportMapSchema({
+export const errorHandlerServiceImportsSchema = createTsImportMapSchema({
   BadRequestError: {},
   ForbiddenError: {},
   handleZodRequestValidationError: {},

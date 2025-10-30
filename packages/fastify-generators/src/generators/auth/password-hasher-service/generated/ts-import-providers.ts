@@ -12,7 +12,7 @@ import {
 
 import { AUTH_PASSWORD_HASHER_SERVICE_PATHS } from './template-paths.js';
 
-const passwordHasherServiceImportsSchema = createTsImportMapSchema({
+export const passwordHasherServiceImportsSchema = createTsImportMapSchema({
   createPasswordHash: {},
   verifyPasswordHash: {},
 });

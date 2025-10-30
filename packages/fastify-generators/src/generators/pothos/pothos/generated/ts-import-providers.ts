@@ -12,7 +12,7 @@ import {
 
 import { POTHOS_POTHOS_PATHS } from './template-paths.js';
 
-const pothosImportsSchema = createTsImportMapSchema({ builder: {} });
+export const pothosImportsSchema = createTsImportMapSchema({ builder: {} });
 
 export type PothosImportsProvider = TsImportMapProviderFromSchema<
   typeof pothosImportsSchema

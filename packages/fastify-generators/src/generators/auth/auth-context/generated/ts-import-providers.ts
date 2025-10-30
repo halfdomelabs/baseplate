@@ -12,7 +12,7 @@ import {
 
 import { AUTH_AUTH_CONTEXT_PATHS } from './template-paths.js';
 
-const authContextImportsSchema = createTsImportMapSchema({
+export const authContextImportsSchema = createTsImportMapSchema({
   AuthContext: { isTypeOnly: true },
   AuthSessionInfo: { isTypeOnly: true },
   AuthUserSessionInfo: { isTypeOnly: true },

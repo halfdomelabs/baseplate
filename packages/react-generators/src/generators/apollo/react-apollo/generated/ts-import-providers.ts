@@ -17,7 +17,7 @@ import {
 
 import { APOLLO_REACT_APOLLO_PATHS } from './template-paths.js';
 
-const reactApolloImportsSchema = createTsImportMapSchema({
+export const reactApolloImportsSchema = createTsImportMapSchema({
   config: {},
   createApolloCache: {},
   createApolloClient: {},

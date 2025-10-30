@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_SENTRY_PATHS } from './template-paths.js';
 
-const reactSentryImportsSchema = createTsImportMapSchema({
+export const reactSentryImportsSchema = createTsImportMapSchema({
   logBreadcrumbToSentry: {},
   logErrorToSentry: {},
 });

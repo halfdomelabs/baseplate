@@ -12,7 +12,7 @@ import {
 
 import { QUEUE_CORE_QUEUES_PATHS } from './template-paths.js';
 
-const queuesImportsSchema = createTsImportMapSchema({
+export const queuesImportsSchema = createTsImportMapSchema({
   EnqueueOptions: { isTypeOnly: true },
   Queue: { isTypeOnly: true },
   QUEUE_REGISTRY: {},

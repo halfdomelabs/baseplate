@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_ERROR_PATHS } from './template-paths.js';
 
-const reactErrorImportsSchema = createTsImportMapSchema({
+export const reactErrorImportsSchema = createTsImportMapSchema({
   formatError: {},
   logAndFormatError: {},
   logError: {},

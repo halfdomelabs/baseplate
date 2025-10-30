@@ -16,7 +16,7 @@ import {
 
 import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
 
-const authModuleImportsSchema = createTsImportMapSchema({
+export const authModuleImportsSchema = createTsImportMapSchema({
   userSessionPayload: {},
 });
 

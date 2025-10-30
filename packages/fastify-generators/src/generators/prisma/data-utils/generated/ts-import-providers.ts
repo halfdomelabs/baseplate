@@ -12,7 +12,7 @@ import {
 
 import { PRISMA_DATA_UTILS_PATHS } from './template-paths.js';
 
-const dataUtilsImportsSchema = createTsImportMapSchema({
+export const dataUtilsImportsSchema = createTsImportMapSchema({
   AnyFieldDefinition: { isTypeOnly: true },
   AnyOperationHooks: { isTypeOnly: true },
   createParentModelConfig: {},
