@@ -55,20 +55,6 @@ const fieldDefinitions = createTsTemplateFile({
   variables: {},
 });
 
-const index = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'data-operations',
-  importMapProviders: {},
-  name: 'index',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/utils/data-operations/index.ts',
-    ),
-  },
-  variables: {},
-});
-
 const prismaTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
@@ -151,7 +137,6 @@ const types = createTsTemplateFile({
 export const dataOperationsGroup = {
   defineOperations,
   fieldDefinitions,
-  index,
   prismaTypes,
   prismaUtils,
   relationHelpers,

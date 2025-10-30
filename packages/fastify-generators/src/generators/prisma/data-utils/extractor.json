@@ -75,15 +75,6 @@
       "sourceFile": "src/utils/data-operations/field-definitions.ts",
       "variables": {}
     },
-    "index": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "data-operations",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/utils/data-operations/index.ts",
-      "sourceFile": "src/utils/data-operations/index.ts",
-      "variables": {}
-    },
     "prisma-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

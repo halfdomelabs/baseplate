@@ -21,7 +21,11 @@ export function createNodeVitestConfig(dirname) {
         },
       },
       mockReset: true,
-      exclude: [...defaultExclude, '**/e2e/**'],
+      exclude: [
+        ...defaultExclude,
+        '**/e2e/**',
+        '**/generators/*/*/templates/**',
+      ],
     },
   });
 }
