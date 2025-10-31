@@ -12,6 +12,8 @@ import {
   prismaCrudDeleteGenerator,
   prismaCrudServiceGenerator,
   prismaCrudUpdateGenerator,
+  prismaDataCreateGenerator,
+  prismaDataServiceGenerator,
   prismaPasswordTransformerGenerator,
   serviceFileGenerator,
 } from '@baseplate-dev/fastify-generators';
@@ -153,6 +155,45 @@ function buildServiceForModel(
   });
 }
 
+function buildDataServiceForModel(
+  appBuilder: BackendAppEntryBuilder,
+  model: ModelConfig,
+): GeneratorBundle | undefined {
+  if (!ModelUtils.hasService(model)) {
+    return undefined;
+  }
+
+  const createFields = model.service.create.enabled
+    ? (model.service.create.fields?.map((f) => appBuilder.nameFromId(f)) ?? [])
+    : [];
+  const updateFields = model.service.update.enabled
+    ? (model.service.update.fields?.map((f) => appBuilder.nameFromId(f)) ?? [])
+    : [];
+  const allFields = [...new Set([...createFields, ...updateFields])];
+
+  return serviceFileGenerator({
+    name: `${model.name}DataService`,
+    id: `prisma-data-service:${model.name}`,
+    fileName: `${kebabCase(model.name)}.data-service`,
+    children: {
+      $data: prismaDataServiceGenerator({
+        modelName: model.name,
+        modelFieldNames: allFields,
+        children: {
+          $create:
+            createFields.length > 0
+              ? prismaDataCreateGenerator({
+                  name: 'create',
+                  modelName: model.name,
+                  fields: createFields,
+                })
+              : undefined,
+        },
+      }),
+    },
+  });
+}
+
 export function buildServicesForFeature(
   appBuilder: BackendAppEntryBuilder,
   featureId: string,
@@ -167,7 +208,12 @@ export function buildServicesForFeature(
       !!m.service.delete.enabled ||
       m.service.transformers.length > 0,
   );
-  return models
-    .map((model) => buildServiceForModel(appBuilder, model))
-    .filter(notEmpty);
+  return [
+    ...models
+      .map((model) => buildServiceForModel(appBuilder, model))
+      .filter(notEmpty),
+    ...models
+      .map((model) => buildDataServiceForModel(appBuilder, model))
+      .filter(notEmpty),
+  ];
 }

@@ -24,6 +24,20 @@
         }
       },
       "pathRootRelativePath": "{src-root}/utils/data-operations/define-operations.ts",
+      "projectExports": {
+        "defineCreateOperation": {
+          "isTypeOnly": false,
+          "name": "defineCreateOperation"
+        },
+        "defineDeleteOperation": {
+          "isTypeOnly": false,
+          "name": "defineDeleteOperation"
+        },
+        "defineUpdateOperation": {
+          "isTypeOnly": false,
+          "name": "defineUpdateOperation"
+        }
+      },
       "referencedGeneratorTemplates": ["prisma-types", "prisma-utils", "types"],
       "sourceFile": "src/utils/data-operations/define-operations.ts",
       "variables": {}

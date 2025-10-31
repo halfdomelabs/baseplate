@@ -7,15 +7,20 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { NamedArrayFieldContainer } from '@baseplate-dev/utils';
+import {
+  lowercaseFirstChar,
+  NamedArrayFieldContainer,
+} from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
 
+import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
+
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
-import { generateScalarField } from '../_shared/field-definition-generators/generate-scalar-field.js';
+import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
@@ -24,18 +29,13 @@ const descriptorSchema = z.object({
   modelFieldNames: z.array(z.string()),
 });
 
-export interface ExtendedInputFieldConfig {
-  name: string;
-  value: TsCodeFragment;
-}
-
 const [
   createPrismaDataServiceTask,
   prismaDataServiceSetupProvider,
   prismaDataServiceValuesProvider,
 ] = createConfigProviderTaskWithInfo(
   (t) => ({
-    extendedInputFields: t.namedArray<ExtendedInputFieldConfig>([]),
+    extendedInputFields: t.namedArray<InputFieldDefinitionOutput>([]),
   }),
   {
     prefix: 'prisma-data-service',
@@ -55,7 +55,8 @@ interface PrismaDataServiceMethod {
 }
 
 export interface PrismaDataServiceProvider {
-  getFieldNames(): string[];
+  getFields(): InputFieldDefinitionOutput[];
+  getFieldsVariableName(): string;
   registerMethod(method: PrismaDataServiceMethod): void;
 }
 
@@ -111,10 +112,6 @@ export const prismaDataServiceGenerator = createGenerator({
           return field;
         });
         const { extendedInputFields } = configValues;
-        const fieldNames = [
-          ...modelFields.map((field) => field.name),
-          ...extendedInputFields.map((field) => field.name),
-        ];
 
         const methods = new NamedArrayFieldContainer<PrismaDataServiceMethod>();
 
@@ -130,32 +127,38 @@ export const prismaDataServiceGenerator = createGenerator({
           );
         }
 
-        const inputFieldsObject = TsCodeUtils.mergeFragmentsAsObject({
-          ...Object.fromEntries(
-            modelFields.map((field) => [
-              field.name,
-              generateScalarField({
-                enumName: field.enumType,
-                isOptional: field.isOptional,
-                scalarType: field.scalarType,
-                dataUtilsImports,
-                prismaGeneratedImports,
-              }),
-            ]),
+        const inputFields = [
+          ...modelFields.map((field) =>
+            generateScalarInputField({
+              fieldName: field.name,
+              scalarField: field,
+              dataUtilsImports,
+              prismaGeneratedImports,
+              lookupEnum: (name) => prismaOutput.getServiceEnum(name),
+            }),
           ),
-          ...Object.fromEntries(
-            extendedInputFields.map((field) => [field.name, field.value]),
+          ...extendedInputFields,
+        ];
+
+        const inputFieldsObject = TsCodeUtils.mergeFragmentsAsObject(
+          Object.fromEntries(
+            inputFields.map((field) => [field.name, field.fragment]),
           ),
-        });
+        );
+
+        const fieldsVariableName = `${lowercaseFirstChar(modelName)}InputFields`;
 
         const inputFieldsFragment = tsTemplate`
-          export const ${modelName}InputFields = ${inputFieldsObject};`;
+          export const ${fieldsVariableName} = ${inputFieldsObject};`;
 
         return {
           providers: {
             prismaDataService: {
-              getFieldNames() {
-                return fieldNames;
+              getFields() {
+                return inputFields;
+              },
+              getFieldsVariableName() {
+                return fieldsVariableName;
               },
               registerMethod(method) {
                 methods.add(method);

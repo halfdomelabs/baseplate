@@ -7,7 +7,7 @@ const client = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'generated',
   name: 'client',
-  projectExports: { '*': {}, Prisma: {}, PrismaClient: {}, $Enums: {} },
+  projectExports: { '*': {}, $Enums: {}, Prisma: {}, PrismaClient: {} },
   projectExportsOnly: true,
   source: { contents: '' },
   variables: {},

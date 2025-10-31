@@ -5,6 +5,7 @@ export * from './prisma-crud-create/index.js';
 export * from './prisma-crud-delete/index.js';
 export * from './prisma-crud-service/index.js';
 export * from './prisma-crud-update/index.js';
+export * from './prisma-data-create/index.js';
 export * from './prisma-data-service/index.js';
 export * from './prisma-enum/index.js';
 export * from './prisma-field/index.js';

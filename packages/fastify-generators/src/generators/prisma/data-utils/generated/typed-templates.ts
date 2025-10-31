@@ -16,6 +16,11 @@ const defineOperations = createTsTemplateFile({
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'define-operations',
+  projectExports: {
+    defineCreateOperation: { isTypeOnly: false },
+    defineDeleteOperation: { isTypeOnly: false },
+    defineUpdateOperation: { isTypeOnly: false },
+  },
   referencedGeneratorTemplates: { prismaTypes: {}, prismaUtils: {}, types: {} },
   source: {
     path: path.join(
