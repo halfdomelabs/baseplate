@@ -334,7 +334,10 @@ export interface CreateOperationInput<
 export function defineCreateOperation<
   TModelName extends Prisma.TypeMap['meta']['modelProps'],
   TFields extends Record<string, AnyFieldDefinition>,
-  TPrepareResult extends Record<string, unknown> | undefined = undefined,
+  TPrepareResult extends Record<string, unknown> | undefined = Record<
+    string,
+    never
+  >,
 >(
   config: CreateOperationConfig<TModelName, TFields, TPrepareResult>,
 ): <TQueryArgs extends ModelQuery<TModelName>>(
@@ -490,10 +493,10 @@ export interface UpdateOperationConfig<
    * Optional prepare step - runs BEFORE transaction
    * For heavy I/O, validation, data enrichment
    */
-  prepare?: (
+  prepareComputedFields?: (
     data: Partial<InferInput<TFields>>,
     ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
-  ) => Promise<TPrepareResult>;
+  ) => TPrepareResult | Promise<TPrepareResult>;
 
   /**
    * Build data for the update operation
@@ -634,8 +637,8 @@ export function defineUpdateOperation<
             Record<string, unknown>
           >,
         }),
-        config.prepare
-          ? config.prepare(inputData, baseOperationContext)
+        config.prepareComputedFields
+          ? config.prepareComputedFields(inputData, baseOperationContext)
           : Promise.resolve(undefined as TPrepareResult),
       ]);
 
