@@ -1,6 +1,8 @@
 import { createTestTsImportMap } from '@baseplate-dev/core-generators/test-helpers';
 import { describe, expect, it } from 'vitest';
 
+import type { ServiceOutputEnum } from '#src/types/service-output.js';
+
 import { prismaGeneratedImportsSchema } from '../../_providers/prisma-generated-imports.js';
 import { dataUtilsImportsSchema } from '../../data-utils/generated/ts-import-providers.js';
 import { generateScalarInputField } from './generate-scalar-input-field.js';
@@ -26,7 +28,7 @@ describe('generateScalarInputField', () => {
     order: 0,
   };
 
-  const lookupEnum = (name: string) => ({
+  const lookupEnum: (name: string) => ServiceOutputEnum = (name) => ({
     name,
     values: [],
     expression: prismaGeneratedImports.$Enums.fragment(),
