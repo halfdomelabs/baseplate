@@ -15,6 +15,7 @@ import { z } from 'zod';
 import { serviceFileProvider } from '#src/generators/core/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
+import { generateRelationBuildData } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -59,11 +60,19 @@ export const prismaDataCreateGenerator = createGenerator({
                     tsImportBuilder(['pick']).from('es-toolkit'),
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}])`;
 
+            // Generate buildData function that transforms FK fields into relations
+            const relationBuildData = generateRelationBuildData({
+              prismaModel: prismaOutput.getPrismaModel(modelName),
+              inputFieldNames: fields,
+              operationType: 'create',
+              dataUtilsImports,
+            });
+
             const createOperation = tsTemplate`
               export const ${name} = ${dataUtilsImports.defineCreateOperation.fragment()}({
                 model: ${quot(lowercaseFirstChar(modelName))},
                 fields: ${fieldsFragment},
-                buildData: (data) => data,
+                buildData: ${relationBuildData.buildDataFunctionFragment},
               })
             `;
             serviceFile.getServicePath();

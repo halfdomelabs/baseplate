@@ -22,7 +22,7 @@ import {
   ModelUtils,
   undefinedIfEmpty,
 } from '@baseplate-dev/project-builder-lib';
-import { notEmpty } from '@baseplate-dev/utils';
+import { notEmpty, uppercaseFirstChar } from '@baseplate-dev/utils';
 import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
@@ -183,7 +183,7 @@ function buildDataServiceForModel(
           $create:
             createFields.length > 0
               ? prismaDataCreateGenerator({
-                  name: 'create',
+                  name: `create${uppercaseFirstChar(model.name)}`,
                   modelName: model.name,
                   fields: createFields,
                 })

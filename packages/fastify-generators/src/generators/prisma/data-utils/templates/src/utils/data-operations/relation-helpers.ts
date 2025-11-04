@@ -16,17 +16,24 @@ type HasUndefinedOrNullValues<T extends Record<string, unknown>> =
  * allowing optional relations in create operations.
  *
  * @template TUniqueWhere - Object containing the unique identifier(s) for the relation
- * @param data - Object with exactly one key-value pair representing the unique identifier
- * @returns Prisma connect object or undefined if the value is null/undefined
- * @throws Error if data doesn't contain exactly one field
+ * @param data - Object with one or more key-value pairs representing the unique identifier(s)
+ * @returns Prisma connect object or undefined if any value is null/undefined
  *
  * @example
- * // Required relation - value must be present
+ * // Single field - required relation
  * todoList: relationHelpers.connectCreate({ id: todoListId })
  *
  * @example
- * // Optional relation - returns undefined if assigneeId is null/undefined
+ * // Single field - optional relation (returns undefined if assigneeId is null/undefined)
  * assignee: relationHelpers.connectCreate({ id: assigneeId })
+ *
+ * @example
+ * // Composite key - required relation
+ * owner: relationHelpers.connectCreate({ userId, tenantId })
+ *
+ * @example
+ * // Composite key - optional relation (returns undefined if any field is null/undefined)
+ * assignee: relationHelpers.connectCreate({ userId, organizationId })
  */
 function connectCreate<
   TUniqueWhere extends Record<string, string | undefined | null>,
@@ -36,10 +43,8 @@ function connectCreate<
   | (HasUndefinedOrNullValues<TUniqueWhere> extends true ? undefined : never)
   | { connect: { [K in keyof TUniqueWhere]: string } } {
   const values = Object.values(data);
-  if (values.length !== 1) {
-    throw new Error('Exactly one ID value is required in connectCreate');
-  }
-  if (values[0] === undefined || values[0] === null) {
+  // Return undefined if any value is null or undefined (for optional relations)
+  if (values.some((value) => value === undefined || value === null)) {
     return undefined as HasUndefinedOrNullValues<TUniqueWhere> extends true
       ? undefined
       : never;
@@ -53,26 +58,37 @@ function connectCreate<
  * Creates a Prisma connect/disconnect object for update operations
  *
  * Handles three cases:
- * - Value present: returns connect object to update the relation
- * - null: returns { disconnect: true } to remove the relation
- * - undefined: returns undefined to leave the relation unchanged
+ * - All values present: returns connect object to update the relation
+ * - Any value is null: returns { disconnect: true } to remove the relation
+ * - Any value is undefined: returns undefined to leave the relation unchanged
  *
  * @template TUniqueWhere - Object containing the unique identifier(s) for the relation
- * @param data - Object with exactly one key-value pair representing the unique identifier
+ * @param data - Object with one or more key-value pairs representing the unique identifier(s)
  * @returns Prisma connect/disconnect object, or undefined if no change
- * @throws Error if data doesn't contain exactly one field
  *
  * @example
- * // Update to a new assignee
+ * // Single field - update to a new assignee
  * assignee: relationHelpers.connectUpdate({ id: 'user-2' })
  *
  * @example
- * // Disconnect the assignee (set to null)
+ * // Single field - disconnect the assignee (set to null)
  * assignee: relationHelpers.connectUpdate({ id: null })
  *
  * @example
- * // Leave the assignee unchanged (not in update data)
+ * // Single field - leave the assignee unchanged
  * assignee: relationHelpers.connectUpdate({ id: undefined })
+ *
+ * @example
+ * // Composite key - update to a new relation
+ * owner: relationHelpers.connectUpdate({ userId: 'user-2', tenantId: 'tenant-1' })
+ *
+ * @example
+ * // Composite key - disconnect (if any field is null)
+ * owner: relationHelpers.connectUpdate({ userId: null, tenantId: 'tenant-1' })
+ *
+ * @example
+ * // Composite key - no change (if any field is undefined)
+ * owner: relationHelpers.connectUpdate({ userId: undefined, tenantId: 'tenant-1' })
  */
 function connectUpdate<
   TUniqueWhere extends Record<string, string | undefined | null>,
@@ -84,16 +100,26 @@ function connectUpdate<
       : never)
   | { connect: { [K in keyof TUniqueWhere]: string } } {
   const values = Object.values(data);
-  if (values.length !== 1) {
-    throw new Error('Exactly one ID value is required in connectUpdate');
-  }
-  if (values[0] === undefined || values[0] === null) {
-    return (
-      values[0] === undefined ? undefined : { disconnect: true }
-    ) as HasUndefinedOrNullValues<TUniqueWhere> extends true
-      ? undefined | { disconnect: true }
+  const hasUndefined = values.some((value) => value === undefined);
+  const hasNull = values.some((value) => value === null);
+
+  // If any value is undefined, leave relation unchanged
+  if (hasUndefined) {
+    return undefined as HasUndefinedOrNullValues<TUniqueWhere> extends true
+      ? undefined
       : never;
   }
+
+  // If any value is null, disconnect the relation
+  if (hasNull) {
+    return {
+      disconnect: true,
+    } as HasUndefinedOrNullValues<TUniqueWhere> extends true
+      ? { disconnect: true }
+      : never;
+  }
+
+  // All values are present, connect to the new relation
   return { connect: data as { [K in keyof TUniqueWhere]: string } };
 }
 
@@ -101,10 +127,11 @@ function connectUpdate<
  * Relation helpers for transforming scalar IDs into Prisma relation objects
  *
  * These helpers provide type-safe ways to connect and disconnect relations
- * in Prisma operations, with proper handling of optional relations.
+ * in Prisma operations, with proper handling of optional relations and
+ * support for both single-field and composite key relations.
  *
  * @example
- * // In a create operation
+ * // In a create operation with single field relations
  * buildData: ({ todoListId, assigneeId, ...rest }) => ({
  *   todoList: relationHelpers.connectCreate({ id: todoListId }),
  *   assignee: relationHelpers.connectCreate({ id: assigneeId }), // undefined if assigneeId is null
@@ -112,9 +139,23 @@ function connectUpdate<
  * })
  *
  * @example
- * // In an update operation
+ * // In a create operation with composite key relation
+ * buildData: ({ userId, tenantId, ...rest }) => ({
+ *   owner: relationHelpers.connectCreate({ userId, tenantId }), // undefined if any field is null
+ *   ...rest,
+ * })
+ *
+ * @example
+ * // In an update operation with single field
  * buildData: ({ assigneeId, ...rest }) => ({
  *   assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+ *   ...rest,
+ * })
+ *
+ * @example
+ * // In an update operation with composite key
+ * buildData: ({ userId, tenantId, ...rest }) => ({
+ *   owner: relationHelpers.connectUpdate({ userId, tenantId }),
  *   ...rest,
  * })
  */
