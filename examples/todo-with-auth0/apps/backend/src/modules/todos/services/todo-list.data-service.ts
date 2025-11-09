@@ -6,10 +6,10 @@ import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 export const todoListInputFields = {
-  createdAt: scalarField(z.date()),
-  name: scalarField(z.string()),
   ownerId: scalarField(z.string().uuid()),
   position: scalarField(z.number().int()),
+  name: scalarField(z.string()),
+  createdAt: scalarField(z.date()),
   status: scalarField(z.nativeEnum($Enums.TodoListStatus).nullish()),
 };
 

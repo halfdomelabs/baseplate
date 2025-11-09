@@ -145,7 +145,7 @@ export const serviceFileGenerator = createGenerator({
               .getValue()
               .sort((a, b) => a.order - b.order);
 
-            if (orderedMethods.length > 0) {
+            if (orderedMethods.length > 0 || orderedHeaders.length > 0) {
               const mergedMethods = mergeFragmentsWithHoistedFragmentsPresorted(
                 [
                   ...orderedHeaders.map((h) => h.fragment),

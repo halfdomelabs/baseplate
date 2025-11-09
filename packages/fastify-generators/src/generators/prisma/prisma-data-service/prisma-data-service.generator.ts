@@ -17,6 +17,7 @@ import {
 } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import type { PrismaOutputScalarField } from '#src/types/prisma-output.js';
 import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
@@ -116,30 +117,29 @@ export const prismaDataServiceGenerator = createGenerator({
         const { modelName, modelFieldNames } = descriptor;
         const model = prismaOutput.getPrismaModel(modelName);
         const { virtualInputFields, additionalModelFieldNames } = configValues;
-        const modelFields = [
-          ...new Set([...modelFieldNames, ...additionalModelFieldNames]),
-        ].map((fieldName) => {
-          const field = model.fields.find((field) => field.name === fieldName);
-          if (!field) {
-            throw new Error(
-              `Field ${fieldName} not found in model ${modelName}`,
-            );
-          }
-          if (field.type !== 'scalar') {
-            throw new Error(
-              `Field ${fieldName} is not a scalar field in model ${modelName}`,
-            );
-          }
-          return field;
-        });
+        const modelScalarFields = model.fields.filter(
+          (f): f is PrismaOutputScalarField => f.type === 'scalar',
+        );
+
+        const modelScalarFieldNames = new Set([
+          ...modelFieldNames,
+          ...additionalModelFieldNames,
+        ]);
+
+        const invalidModelFieldNames = modelFieldNames.filter(
+          (fieldName) => !modelScalarFieldNames.has(fieldName),
+        );
+        if (invalidModelFieldNames.length > 0) {
+          throw new Error(
+            `Fields ${invalidModelFieldNames.join(', ')} are not scalar fields in model ${modelName}`,
+          );
+        }
 
         const methods = new NamedArrayFieldContainer<PrismaDataServiceMethod>();
 
         // Check if modelFields and virtual input fields overlap
-        const overlappingFields = modelFields.filter((field) =>
-          virtualInputFields.some(
-            (extendedField) => extendedField.name === field.name,
-          ),
+        const overlappingFields = virtualInputFields.filter((field) =>
+          modelScalarFieldNames.has(field.name),
         );
         if (overlappingFields.length > 0) {
           throw new Error(
@@ -148,22 +148,28 @@ export const prismaDataServiceGenerator = createGenerator({
         }
 
         const inputFields = [
-          ...modelFields.map((field) =>
-            generateScalarInputField({
-              fieldName: field.name,
-              scalarField: field,
-              dataUtilsImports,
-              prismaGeneratedImports,
-              lookupEnum: (name) => prismaOutput.getServiceEnum(name),
-            }),
+          // preserve order of model fields
+          ...modelScalarFields
+            .filter((f) => modelScalarFieldNames.has(f.name))
+            .map((field) =>
+              generateScalarInputField({
+                fieldName: field.name,
+                scalarField: field,
+                dataUtilsImports,
+                prismaGeneratedImports,
+                lookupEnum: (name) => prismaOutput.getServiceEnum(name),
+              }),
+            ),
+          ...virtualInputFields.toSorted((a, b) =>
+            a.name.localeCompare(b.name),
           ),
-          ...virtualInputFields,
         ];
 
         const inputFieldsObject = TsCodeUtils.mergeFragmentsAsObject(
           Object.fromEntries(
             inputFields.map((field) => [field.name, field.fragment]),
           ),
+          { disableSort: true },
         );
 
         const fieldsVariableName = `${lowercaseFirstChar(modelName)}InputFields`;

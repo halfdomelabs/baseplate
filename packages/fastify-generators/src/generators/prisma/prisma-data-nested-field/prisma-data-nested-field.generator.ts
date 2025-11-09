@@ -1,5 +1,11 @@
+import {
+  createNodePackagesTask,
+  extractPackageVersions,
+} from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
@@ -31,6 +37,9 @@ export const prismaDataNestedFieldGenerator = createGenerator({
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.relationName,
   buildTasks: ({ modelName, relationName, nestedModelName, fieldNames }) => ({
+    deps: createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['es-toolkit']),
+    }),
     nestedPrismaDataServiceSetup: createGeneratorTask({
       dependencies: {
         prismaDataServiceSetup: prismaDataServiceSetupProvider

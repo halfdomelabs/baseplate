@@ -5,10 +5,10 @@ import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 export const todoListShareInputFields = {
-  createdAt: scalarField(z.date()),
   todoListId: scalarField(z.string().uuid()),
-  updatedAt: scalarField(z.date()),
   userId: scalarField(z.string().uuid()),
+  updatedAt: scalarField(z.date()),
+  createdAt: scalarField(z.date()),
 };
 
 export const createTodoListShare = defineCreateOperation({

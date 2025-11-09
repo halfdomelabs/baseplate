@@ -6,7 +6,11 @@ import {
   tsTemplate,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
-import { quot, uppercaseFirstChar } from '@baseplate-dev/utils';
+import {
+  lowercaseFirstChar,
+  quot,
+  uppercaseFirstChar,
+} from '@baseplate-dev/utils';
 
 import type {
   PrismaOutputModel,
@@ -191,7 +195,7 @@ export function writeParentModelConfigFragment({
 }: WritePrismaDataNestedFieldInput): TsCodeFragment {
   const whereUniqueFunction = createPrismaWhereUniqueFunction(parentModel);
 
-  return tsTemplate`const parentModel = ${dataUtilsImports.createParentModelConfig.fragment()}(${quot(parentModel.name)}, ${whereUniqueFunction})`;
+  return tsTemplate`const parentModel = ${dataUtilsImports.createParentModelConfig.fragment()}(${quot(lowercaseFirstChar(parentModel.name))}, ${whereUniqueFunction})`;
 }
 
 export function writePrismaDataNestedField(
@@ -214,7 +218,7 @@ export function writePrismaDataNestedField(
   const nestedFieldNames = nestedFields.map((f) => f.name);
   const pickedFieldsFragment = dataServiceFieldsFragment
     ? tsTemplateWithImports([
-        tsImportBuilder(['pick']).from('es-tookit'),
+        tsImportBuilder(['pick']).from('es-toolkit'),
       ])`pick(${dataServiceFieldsFragment}, ${JSON.stringify(nestedFieldNames)})`
     : TsCodeUtils.mergeFragmentsAsObject(
         Object.fromEntries(nestedFields.map((f) => [f.name, f.fragment])),
@@ -248,8 +252,8 @@ export function writePrismaDataNestedField(
 
   const fieldOptions = TsCodeUtils.mergeFragmentsAsObject({
     parentModel: 'parentModel',
-    model: nestedModel.name,
-    relationName: relation.name,
+    model: quot(lowercaseFirstChar(nestedModel.name)),
+    relationName: quot(reverseRelation.name),
     fields: pickedFieldsFragment,
     getWhereUnique: getWhereUniqueFragment,
     buildData: generateRelationBuildData({
