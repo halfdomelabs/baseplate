@@ -22,8 +22,7 @@ export interface ModelTransformerCompiler<
       model: ModelConfig;
     },
   ) => GeneratorBundle;
-  // TODO: Turn into required field
-  compileField?: (
+  compileField: (
     definition: T,
     {
       definitionContainer,
