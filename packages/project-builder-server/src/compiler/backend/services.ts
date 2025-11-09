@@ -82,8 +82,11 @@ const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRela
           definition.foreignRelationRef,
         ),
         nestedModelName: nestedRelation.model.name,
-        fieldNames: definition.embeddedFieldNames.map((e) =>
+        scalarFieldNames: definition.embeddedFieldNames.map((e) =>
           definitionContainer.nameFromId(e),
+        ),
+        virtualInputFieldNames: definition.embeddedTransformerNames?.map((t) =>
+          definitionContainer.nameFromId(t),
         ),
       });
     },

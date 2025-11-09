@@ -23,7 +23,12 @@ export const todoItemInputFields = {
   assigneeId: scalarField(z.string().uuid().nullish()),
   attachments: nestedOneToManyField({
     buildData: (data) => data,
-    fields: pick(todoItemAttachmentInputFields, ['position', 'url', 'id']),
+    fields: pick(todoItemAttachmentInputFields, [
+      'position',
+      'url',
+      'id',
+      'tags',
+    ]),
     getWhereUnique: (input) => ({ id: input.id }),
     model: 'todoItemAttachment',
     parentModel,

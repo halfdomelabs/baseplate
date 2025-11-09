@@ -29,7 +29,7 @@ export const userInputFields = {
   }),
   images: nestedOneToManyField({
     buildData: (data) => data,
-    fields: pick(userImageInputFields, ['id', 'caption']),
+    fields: pick(userImageInputFields, ['id', 'caption', 'file']),
     getWhereUnique: (input) => ({ id: input.id }),
     model: 'userImage',
     parentModel,
@@ -47,7 +47,7 @@ export const userInputFields = {
   }),
   userProfile: nestedOneToOneField({
     buildData: (data) => data,
-    fields: pick(userProfileInputFields, ['id', 'bio', 'birthDay']),
+    fields: pick(userProfileInputFields, ['id', 'bio', 'birthDay', 'avatar']),
     getWhereUnique: (parentModel) => ({ userId: parentModel.id }),
     model: 'userProfile',
     parentModel,

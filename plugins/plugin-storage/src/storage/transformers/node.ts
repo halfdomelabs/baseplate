@@ -5,7 +5,10 @@ import {
   modelTransformerCompilerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { prismaFileTransformerGenerator } from '#src/generators/fastify/index.js';
+import {
+  fileDataFieldGenerator,
+  prismaFileTransformerGenerator,
+} from '#src/generators/fastify/index.js';
 
 import type { FileTransformerDefinition } from './schema/file-transformer.schema.js';
 
@@ -28,6 +31,26 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
       return prismaFileTransformerGenerator({
         category: category.name,
         name: foreignRelation.name,
+        featureId: model.featureRef,
+      });
+    },
+    compileField(definition, { model }) {
+      const { fileRelationRef, category } = definition;
+
+      const foreignRelation = model.model.relations?.find(
+        (relation) => relation.id === fileRelationRef,
+      );
+
+      if (!foreignRelation) {
+        throw new Error(
+          `Could not find relation ${fileRelationRef} for file field`,
+        );
+      }
+
+      return fileDataFieldGenerator({
+        modelName: model.name,
+        relationName: foreignRelation.name,
+        category: category.name,
         featureId: model.featureRef,
       });
     },

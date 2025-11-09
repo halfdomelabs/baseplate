@@ -25,7 +25,9 @@ const descriptorSchema = z.object({
   /** Name of the nested model */
   nestedModelName: z.string().min(1),
   /** Fields on the nested model to use */
-  fieldNames: z.array(z.string().min(1)).min(1),
+  scalarFieldNames: z.array(z.string().min(1)).min(1),
+  /** Fields on the nested model to use as virtual input fields */
+  virtualInputFieldNames: z.array(z.string().min(1)).optional(),
 });
 
 /**
@@ -36,7 +38,13 @@ export const prismaDataNestedFieldGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.relationName,
-  buildTasks: ({ modelName, relationName, nestedModelName, fieldNames }) => ({
+  buildTasks: ({
+    modelName,
+    relationName,
+    nestedModelName,
+    scalarFieldNames,
+    virtualInputFieldNames,
+  }) => ({
     deps: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['es-toolkit']),
     }),
@@ -51,7 +59,7 @@ export const prismaDataNestedFieldGenerator = createGenerator({
           build: () => {
             // Make sure that if we have a nested data service, we add the field names to the service.
             prismaDataServiceSetup?.additionalModelFieldNames.push(
-              ...fieldNames,
+              ...scalarFieldNames,
             );
           },
         };
@@ -93,6 +101,10 @@ export const prismaDataNestedFieldGenerator = createGenerator({
         }
 
         const dataServiceFields = nestedPrismaDataService?.getFields();
+        const fieldNames = [
+          ...scalarFieldNames,
+          ...(virtualInputFieldNames ?? []),
+        ];
         const nestedFields = (() => {
           if (dataServiceFields) {
             return fieldNames.map((name) => {
