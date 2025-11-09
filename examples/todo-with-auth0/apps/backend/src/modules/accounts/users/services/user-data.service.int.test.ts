@@ -129,7 +129,7 @@ describe('createUser', () => {
         avatar: {
           id: file.id,
           filename: 'avatar.png',
-          referencedAt: expect.any(Date),
+          referencedAt: expect.any(Date) as Date,
           size: 1024,
         },
       },
@@ -211,7 +211,7 @@ describe('createUser', () => {
           file: {
             id: file1.id,
             filename: 'image1.png',
-            referencedAt: expect.any(Date),
+            referencedAt: expect.any(Date) as Date,
             size: 2048,
           },
         },
@@ -221,7 +221,7 @@ describe('createUser', () => {
           file: {
             id: file2.id,
             filename: 'image2.png',
-            referencedAt: expect.any(Date),
+            referencedAt: expect.any(Date) as Date,
             size: 3072,
           },
         },
