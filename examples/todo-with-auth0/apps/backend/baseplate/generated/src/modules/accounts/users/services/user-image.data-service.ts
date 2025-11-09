@@ -7,7 +7,7 @@ import { fileField } from '../../../storage/services/file-field.js';
 import { userImageFileFileCategory } from '../constants/file-categories.js';
 
 export const userImageInputFields = {
-  id: scalarField(z.string().uuid()),
+  id: scalarField(z.string().uuid().optional()),
   caption: scalarField(z.string()),
   file: fileField({
     category: userImageFileFileCategory,

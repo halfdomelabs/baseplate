@@ -11,7 +11,7 @@ const parentModel = createParentModelConfig('todoItemAttachment', (value) => ({
 }));
 
 export const todoItemAttachmentInputFields = {
-  id: scalarField(z.string().uuid()),
+  id: scalarField(z.string().uuid().optional()),
   position: scalarField(z.number().int()),
   url: scalarField(z.string()),
   tags: nestedOneToManyField({

@@ -17,7 +17,7 @@ export const todoListInputFields = {
   ownerId: scalarField(z.string().uuid()),
   position: scalarField(z.number().int()),
   name: scalarField(z.string()),
-  createdAt: scalarField(z.date()),
+  createdAt: scalarField(z.date().optional()),
   status: scalarField(z.nativeEnum($Enums.TodoListStatus).nullish()),
   coverPhoto: fileField({
     category: todoListCoverPhotoFileCategory,

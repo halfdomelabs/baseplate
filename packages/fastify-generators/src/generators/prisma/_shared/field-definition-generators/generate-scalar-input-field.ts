@@ -46,18 +46,26 @@ function generateValidator({
   scalarField,
   prismaGeneratedImports,
 }: GenerateScalarFieldConfig): TsCodeFragment {
-  const { scalarType, enumType, isOptional } = scalarField;
+  const { scalarType, enumType, isOptional, hasDefault } = scalarField;
   const zFrag = TsCodeUtils.importFragment('z', 'zod');
+
+  // Determine the modifier: optional => nullish(), hasDefault => optional(), else => none
+  let modifier = '';
+  if (isOptional) {
+    modifier = '.nullish()';
+  } else if (hasDefault) {
+    modifier = '.optional()';
+  }
 
   if (scalarType === 'enum') {
     if (!enumType) {
       throw new Error('Enum name is required for enum scalar type');
     }
     const enumFrag = prismaGeneratedImports.$Enums.fragment();
-    return tsTemplate`${zFrag}.nativeEnum(${enumFrag}.${enumType})${isOptional ? '.nullish()' : ''}`;
+    return tsTemplate`${zFrag}.nativeEnum(${enumFrag}.${enumType})${modifier}`;
   }
 
-  return tsTemplate`${zFrag}.${SCALAR_TYPE_TO_ZOD_TYPE[scalarType]}${isOptional ? '.nullish()' : ''}`;
+  return tsTemplate`${zFrag}.${SCALAR_TYPE_TO_ZOD_TYPE[scalarType]}${modifier}`;
 }
 
 /**

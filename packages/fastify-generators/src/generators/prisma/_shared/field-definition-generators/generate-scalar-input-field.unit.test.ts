@@ -226,6 +226,86 @@ describe('generateScalarInputField', () => {
     });
   });
 
+  describe('fields with defaults', () => {
+    it('generates scalarField with optional for string with default', () => {
+      const result = generateScalarInputField({
+        fieldName: 'name',
+        scalarField: {
+          ...baseScalarField,
+          name: 'name',
+          scalarType: 'string',
+          hasDefault: true,
+        },
+        dataUtilsImports,
+        prismaGeneratedImports,
+        lookupEnum,
+      });
+
+      expect(result.fragment.contents).toBe(
+        'scalarField(z.string().optional())',
+      );
+    });
+
+    it('generates scalarField with optional for int with default', () => {
+      const result = generateScalarInputField({
+        fieldName: 'age',
+        scalarField: {
+          ...baseScalarField,
+          name: 'age',
+          scalarType: 'int',
+          hasDefault: true,
+        },
+        dataUtilsImports,
+        prismaGeneratedImports,
+        lookupEnum,
+      });
+
+      expect(result.fragment.contents).toBe(
+        'scalarField(z.number().int().optional())',
+      );
+    });
+
+    it('generates scalarField with optional for enum with default', () => {
+      const result = generateScalarInputField({
+        fieldName: 'status',
+        scalarField: {
+          ...baseScalarField,
+          name: 'status',
+          scalarType: 'enum',
+          enumType: 'Status',
+          hasDefault: true,
+        },
+        dataUtilsImports,
+        prismaGeneratedImports,
+        lookupEnum,
+      });
+
+      expect(result.fragment.contents).toBe(
+        'scalarField(z.nativeEnum($Enums.Status).optional())',
+      );
+    });
+
+    it('prioritizes nullish over optional when both isOptional and hasDefault are true', () => {
+      const result = generateScalarInputField({
+        fieldName: 'name',
+        scalarField: {
+          ...baseScalarField,
+          name: 'name',
+          scalarType: 'string',
+          isOptional: true,
+          hasDefault: true,
+        },
+        dataUtilsImports,
+        prismaGeneratedImports,
+        lookupEnum,
+      });
+
+      expect(result.fragment.contents).toBe(
+        'scalarField(z.string().nullish())',
+      );
+    });
+  });
+
   describe('enum type', () => {
     it('generates scalarField with nativeEnum for enum type', () => {
       const result = generateScalarInputField({

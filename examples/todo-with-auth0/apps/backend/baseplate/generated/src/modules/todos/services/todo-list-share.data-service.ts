@@ -11,8 +11,8 @@ import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js'
 export const todoListShareInputFields = {
   todoListId: scalarField(z.string().uuid()),
   userId: scalarField(z.string().uuid()),
-  updatedAt: scalarField(z.date()),
-  createdAt: scalarField(z.date()),
+  updatedAt: scalarField(z.date().optional()),
+  createdAt: scalarField(z.date().optional()),
 };
 
 export const createTodoListShare = defineCreateOperation({

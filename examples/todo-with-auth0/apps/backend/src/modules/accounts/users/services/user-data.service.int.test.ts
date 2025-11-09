@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
-import { createUser, deleteUser, updateUser } from './user-data.service.js';
+import { createUser, deleteUser, updateUser } from './user.data-service.js';
 
 // Mock storage adapters to return successful metadata
 // The mock returns dynamic size based on the path
