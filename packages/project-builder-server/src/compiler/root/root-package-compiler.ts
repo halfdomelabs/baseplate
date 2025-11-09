@@ -1,4 +1,8 @@
+import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
+
 import {
+  dockerComposeGenerator,
   nodeGenerator,
   nodeGitIgnoreGenerator,
   pathRootsGenerator,
@@ -12,7 +16,29 @@ import { uniq } from 'es-toolkit';
 import type { PackageCompilerContext } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
+import {
+  getPostgresSettings,
+  getRedisSettings,
+  isRedisEnabled,
+} from '../infrastructure-utils.js';
 import { buildPackageName, PackageCompiler } from '../package-compiler.js';
+
+/**
+ * Build Docker Compose configuration at root level
+ *
+ * Always includes Postgres, optionally includes Redis if enabled in infrastructure settings
+ *
+ * @param projectDefinition - The project definition containing infrastructure settings
+ * @returns Generator bundle for Docker Compose
+ */
+function buildDocker(projectDefinition: ProjectDefinition): GeneratorBundle {
+  return dockerComposeGenerator({
+    postgres: getPostgresSettings(projectDefinition).config,
+    ...(isRedisEnabled(projectDefinition)
+      ? { redis: getRedisSettings(projectDefinition).config }
+      : {}),
+  });
+}
 
 /**
  * Compiler for monorepo root package
@@ -20,6 +46,7 @@ import { buildPackageName, PackageCompiler } from '../package-compiler.js';
  * Generates:
  * - package.json with workspace scripts
  * - pnpm-workspace.yaml with workspace patterns
+ * - Docker Compose configuration (Postgres, optional Redis)
  * - Basic tooling (prettier, gitignore)
  *
  * Does NOT include:
@@ -111,6 +138,7 @@ export class RootPackageCompiler extends PackageCompiler {
         },
       },
       children: {
+        docker: buildDocker(projectDefinition),
         gitIgnore: nodeGitIgnoreGenerator({}),
         prettier: prettierGenerator({
           disableDefaultScripts: true,

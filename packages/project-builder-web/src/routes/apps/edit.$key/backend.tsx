@@ -95,15 +95,9 @@ function BackendAppEditPage(): React.JSX.Element {
               />
               <SwitchFieldController
                 control={control}
-                name="enableRedis"
-                label="Redis"
-                description="Enable Redis for caching and session storage"
-              />
-              <SwitchFieldController
-                control={control}
                 name="enableBullQueue"
                 label="Bull Queue"
-                description="Enable Bull Queue for background job processing"
+                description="Enable Bull Queue for background job processing (requires Redis to be enabled in infrastructure settings)"
               />
               <SwitchFieldController
                 control={control}

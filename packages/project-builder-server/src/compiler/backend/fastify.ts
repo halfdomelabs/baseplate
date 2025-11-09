@@ -28,8 +28,12 @@ import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
+import {
+  getPostgresSettings,
+  getRedisSettings,
+  isRedisEnabled,
+} from '../infrastructure-utils.js';
 import { buildFeature } from './feature.js';
-import { getPostgresSettings, getRedisSettings } from './utils.js';
 
 export function buildFastify(
   builder: BackendAppEntryBuilder,
@@ -63,7 +67,7 @@ export function buildFastify(
           projectName: `${projectDefinition.settings.general.name} backend`,
         }),
         sentry: fastifySentryGenerator({}),
-        redis: app.enableRedis
+        redis: isRedisEnabled(projectDefinition)
           ? fastifyRedisGenerator({
               defaultUrl: getRedisSettings(projectDefinition).url,
             })

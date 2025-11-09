@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { generalSettingsSchema } from './general.js';
+import { infrastructureSettingsSchema } from './infrastructure.js';
 import { monorepoSettingsSchema } from './monorepo.js';
 import { createTemplateExtractorSchema } from './template-extractor.js';
 import { createThemeSchema } from './theme.js';
@@ -12,6 +13,7 @@ import { createThemeSchema } from './theme.js';
  *
  * Combines all settings categories:
  * - general: Project name, scope, and port configuration
+ * - infrastructure: Infrastructure services (Postgres, Redis)
  * - monorepo: Monorepo folder configuration (optional)
  * - templateExtractor: Template extraction configuration (optional)
  * - theme: UI theme and color palette configuration (optional)
@@ -22,6 +24,14 @@ export const createSettingsSchema = definitionSchema((ctx) =>
      * General project settings (required)
      */
     general: generalSettingsSchema,
+
+    /**
+     * Infrastructure settings (optional)
+     *
+     * Configures infrastructure services like Postgres and Redis.
+     * When omitted, uses default configuration (Postgres enabled, Redis disabled).
+     */
+    infrastructure: infrastructureSettingsSchema.optional(),
 
     /**
      * Monorepo configuration (optional)

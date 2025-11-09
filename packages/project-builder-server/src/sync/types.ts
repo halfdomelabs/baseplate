@@ -4,6 +4,7 @@ import {
   buildGeneratorEntry,
   deleteMetadataFiles,
   executeGeneratorEntry,
+  loadIgnorePatterns,
   writeGeneratorOutput,
   writeTemplateInfoFiles,
 } from '@baseplate-dev/sync';
@@ -30,7 +31,8 @@ export const DEFAULT_GENERATOR_OPERATIONS: GeneratorOperations = {
   getPreviousGeneratedPayload,
   writeGeneratorOutput,
   writeMetadata: async (_project, output, projectDirectory) => {
-    await deleteMetadataFiles(projectDirectory);
+    const ignorePatterns = await loadIgnorePatterns(projectDirectory);
+    await deleteMetadataFiles(projectDirectory, ignorePatterns);
     await writeTemplateInfoFiles(output.files, projectDirectory);
   },
   writeGeneratorSteps,
