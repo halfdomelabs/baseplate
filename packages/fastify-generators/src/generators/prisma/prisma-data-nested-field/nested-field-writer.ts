@@ -65,13 +65,11 @@ function createPrismaWhereUniqueFunction(
  * For example, UserProfile.userId unique references User.id:
  * Generates: (parentModel) => ({ userId: parentModel.id })
  *
- * @param parentModel - The parent Prisma model
  * @param relation - The relation field from nested model to parent
  * @param nestedModel - The nested Prisma model
  * @returns TypeScript code fragment for the where unique function
  */
 function createOneToOneWhereUniqueFunction(
-  parentModel: PrismaOutputModel,
   relation: PrismaOutputRelationField,
   nestedModel: PrismaOutputModel,
 ): TsCodeFragment {
@@ -244,11 +242,7 @@ export function writePrismaDataNestedField(
         reverseRelation,
         nestedFieldNames,
       )
-    : createOneToOneWhereUniqueFunction(
-        parentModel,
-        reverseRelation,
-        nestedModel,
-      );
+    : createOneToOneWhereUniqueFunction(reverseRelation, nestedModel);
 
   const fieldOptions = TsCodeUtils.mergeFragmentsAsObject({
     parentModel: 'parentModel',
@@ -279,8 +273,11 @@ export function writePrismaDataNestedField(
       name: relation.name,
       type: 'nested',
       isPrismaType: false,
+      isOptional: true,
+      isNullable: false,
+      isList: relation.isList,
       nestedType: {
-        name: `${uppercaseFirstChar(parentModel.name)}${uppercaseFirstChar(relation.name)}Input`,
+        name: `${uppercaseFirstChar(parentModel.name)}${uppercaseFirstChar(relation.name)}NestedInput`,
         fields: nestedFields.map((f) => f.outputDtoField),
       },
     },

@@ -37,9 +37,9 @@ const descriptorSchema = z.object({
    */
   modelName: z.string().min(1),
   /**
-   * The type of the mutation.
+   * The name of the mutation.
    */
-  type: z.enum(['create', 'update', 'delete']),
+  name: z.string().min(1),
   /**
    * The reference to the crud service.
    */
@@ -61,7 +61,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
   scopes: [pothosFieldScope],
   buildTasks: ({
     modelName,
-    type,
+    name,
     crudServiceRef,
     order,
     hasPrimaryKeyInputType,
@@ -96,13 +96,11 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
         pothosObjectType,
         pothosPrimaryKeyInputType,
       }) {
-        const serviceOutput = serviceFileOutput.getServiceMethod(type);
+        const serviceOutput = serviceFileOutput.getServiceMethod(name);
         const typeReferences = [
           pothosObjectType.getTypeReference(),
           pothosPrimaryKeyInputType?.getTypeReference(),
         ].filter((x) => x !== undefined);
-
-        const mutationName = `${type}${modelName}`;
 
         const customFields = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
@@ -223,7 +221,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
           );`,
               {
                 BUILDER: pothosTypesFile.getBuilderFragment(),
-                NAME: quot(mutationName),
+                NAME: quot(name),
                 OPTIONS: TsCodeUtils.mergeFragmentsAsObject(fieldOptions, {
                   disableSort: true,
                 }),
@@ -231,7 +229,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
             );
 
             pothosTypesFile.typeDefinitions.add({
-              name: mutationName,
+              name,
               fragment: mutationFragment,
               order,
             });

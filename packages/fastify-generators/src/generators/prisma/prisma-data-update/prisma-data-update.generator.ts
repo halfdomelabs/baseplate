@@ -108,9 +108,10 @@ export const prismaDataUpdateGenerator = createGenerator({
                           type: 'nested',
                           nestedType: {
                             name: `${uppercaseFirstChar(name)}Data`,
-                            fields: usedFields.map(
-                              (field) => field.outputDtoField,
-                            ),
+                            fields: usedFields.map((field) => ({
+                              ...field.outputDtoField,
+                              isOptional: true,
+                            })),
                           },
                         },
                       ],

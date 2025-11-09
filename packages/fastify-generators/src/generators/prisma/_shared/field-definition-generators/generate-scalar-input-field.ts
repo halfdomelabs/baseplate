@@ -6,7 +6,7 @@ import type { ScalarFieldType } from '#src/types/field-types.js';
 import type { PrismaOutputScalarField } from '#src/types/prisma-output.js';
 import type { ServiceOutputEnum } from '#src/types/service-output.js';
 
-import { scalarPrismaFieldToServiceField } from '#src/types/service-output.js';
+import { scalarPrismaFieldToServiceInputField } from '#src/types/service-output.js';
 
 import type { PrismaGeneratedImportsProvider } from '../../_providers/prisma-generated-imports.js';
 import type { DataUtilsImportsProvider } from '../../data-utils/index.js';
@@ -78,7 +78,7 @@ export function generateScalarInputField(
   return {
     name: config.fieldName,
     fragment: tsTemplate`${config.dataUtilsImports.scalarField.fragment()}(${validator})`,
-    outputDtoField: scalarPrismaFieldToServiceField(
+    outputDtoField: scalarPrismaFieldToServiceInputField(
       config.scalarField,
       config.lookupEnum,
     ),
