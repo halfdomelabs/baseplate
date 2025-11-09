@@ -1,7 +1,11 @@
 import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
-import { defineCreateOperation } from '@src/utils/data-operations/define-operations.js';
+import {
+  defineCreateOperation,
+  defineDeleteOperation,
+  defineUpdateOperation,
+} from '@src/utils/data-operations/define-operations.js';
 import {
   createParentModelConfig,
   nestedOneToManyField,
@@ -50,4 +54,24 @@ export const createTodoItem = defineCreateOperation({
     assignee: relationHelpers.connectCreate({ id: assigneeId }),
     todoList: relationHelpers.connectCreate({ id: todoListId }),
   }),
+});
+
+export const updateTodoItem = defineUpdateOperation({
+  model: 'todoItem',
+  fields: pick(todoItemInputFields, [
+    'position',
+    'text',
+    'done',
+    'assigneeId',
+    'todoListId',
+  ]),
+  buildData: ({ assigneeId, todoListId, ...data }) => ({
+    ...data,
+    assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+    todoList: relationHelpers.connectUpdate({ id: todoListId }),
+  }),
+});
+
+export const deleteTodoItem = defineDeleteOperation({
+  model: 'todoItem',
 });

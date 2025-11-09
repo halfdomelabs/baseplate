@@ -1,13 +1,34 @@
 // @ts-nocheck
 
 /**
+ * Type helper to check if a record type has any undefined values.
+ *
+ * @template T - Record type to check
+ */
+type HasUndefinedValues<T extends Record<string, unknown>> =
+  undefined extends T[keyof T] ? true : false;
+
+/**
+ * Type helper to check if a record type has any null values.
+ *
+ * @template T - Record type to check
+ */
+type HasNullValues<T extends Record<string, unknown>> = null extends T[keyof T]
+  ? true
+  : false;
+
+/**
  * Type helper to check if a record type has any undefined or null values.
  * Used for conditional return types in relation helpers.
  *
  * @template T - Record type to check
  */
 type HasUndefinedOrNullValues<T extends Record<string, unknown>> =
-  undefined extends T[keyof T] ? true : null extends T[keyof T] ? true : false;
+  HasUndefinedValues<T> extends true
+    ? true
+    : HasNullValues<T> extends true
+      ? true
+      : false;
 
 /**
  * Creates a Prisma connect object for create operations
@@ -95,17 +116,16 @@ function connectUpdate<
 >(
   data: TUniqueWhere,
 ):
-  | (HasUndefinedOrNullValues<TUniqueWhere> extends true
-      ? undefined | { disconnect: true }
-      : never)
+  | (HasUndefinedValues<TUniqueWhere> extends true ? undefined : never)
+  | (HasNullValues<TUniqueWhere> extends true ? { disconnect: true } : never)
   | { connect: { [K in keyof TUniqueWhere]: string } } {
   const values = Object.values(data);
-  const hasUndefined = values.some((value) => value === undefined);
-  const hasNull = values.some((value) => value === null);
+  const hasUndefined = values.includes(undefined);
+  const hasNull = values.includes(null);
 
   // If any value is undefined, leave relation unchanged
   if (hasUndefined) {
-    return undefined as HasUndefinedOrNullValues<TUniqueWhere> extends true
+    return undefined as HasUndefinedValues<TUniqueWhere> extends true
       ? undefined
       : never;
   }
@@ -114,7 +134,7 @@ function connectUpdate<
   if (hasNull) {
     return {
       disconnect: true,
-    } as HasUndefinedOrNullValues<TUniqueWhere> extends true
+    } as HasNullValues<TUniqueWhere> extends true
       ? { disconnect: true }
       : never;
   }

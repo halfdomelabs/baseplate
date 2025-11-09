@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { defineCreateOperation } from '@src/utils/data-operations/define-operations.js';
+import {
+  defineCreateOperation,
+  defineDeleteOperation,
+  defineUpdateOperation,
+} from '@src/utils/data-operations/define-operations.js';
 import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
@@ -19,4 +23,18 @@ export const createTodoListShare = defineCreateOperation({
     todoList: relationHelpers.connectCreate({ id: todoListId }),
     user: relationHelpers.connectCreate({ id: userId }),
   }),
+});
+
+export const updateTodoListShare = defineUpdateOperation({
+  model: 'todoListShare',
+  fields: todoListShareInputFields,
+  buildData: ({ todoListId, userId, ...data }) => ({
+    ...data,
+    todoList: relationHelpers.connectUpdate({ id: todoListId }),
+    user: relationHelpers.connectUpdate({ id: userId }),
+  }),
+});
+
+export const deleteTodoListShare = defineDeleteOperation({
+  model: 'todoListShare',
 });

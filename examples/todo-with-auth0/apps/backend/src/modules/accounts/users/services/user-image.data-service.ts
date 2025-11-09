@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { defineDeleteOperation } from '@src/utils/data-operations/define-operations.js';
 import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 
 import { fileField } from '../../../storage/services/file-field.js';
@@ -13,3 +14,7 @@ export const userImageInputFields = {
     fileIdFieldName: 'fileId',
   }),
 };
+
+export const deleteUserImage = defineDeleteOperation({
+  model: 'userImage',
+});

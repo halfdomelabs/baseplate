@@ -13,8 +13,10 @@ import {
   prismaCrudServiceGenerator,
   prismaCrudUpdateGenerator,
   prismaDataCreateGenerator,
+  prismaDataDeleteGenerator,
   prismaDataNestedFieldGenerator,
   prismaDataServiceGenerator,
+  prismaDataUpdateGenerator,
   prismaPasswordTransformerGenerator,
   serviceFileGenerator,
 } from '@baseplate-dev/fastify-generators';
@@ -246,6 +248,20 @@ function buildDataServiceForModel(
                   fields: createFields,
                 })
               : undefined,
+          $update:
+            updateFields.length > 0
+              ? prismaDataUpdateGenerator({
+                  name: `update${uppercaseFirstChar(model.name)}`,
+                  modelName: model.name,
+                  fields: updateFields,
+                })
+              : undefined,
+          $delete: model.service.delete.enabled
+            ? prismaDataDeleteGenerator({
+                name: `delete${uppercaseFirstChar(model.name)}`,
+                modelName: model.name,
+              })
+            : undefined,
         },
       }),
     },

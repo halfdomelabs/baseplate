@@ -1,7 +1,11 @@
 import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
-import { defineCreateOperation } from '@src/utils/data-operations/define-operations.js';
+import {
+  defineCreateOperation,
+  defineDeleteOperation,
+  defineUpdateOperation,
+} from '@src/utils/data-operations/define-operations.js';
 import {
   createParentModelConfig,
   nestedOneToManyField,
@@ -59,4 +63,14 @@ export const createUser = defineCreateOperation({
   model: 'user',
   fields: pick(userInputFields, ['name', 'email']),
   buildData: (data) => data,
+});
+
+export const updateUser = defineUpdateOperation({
+  model: 'user',
+  fields: pick(userInputFields, ['name', 'email']),
+  buildData: (data) => data,
+});
+
+export const deleteUser = defineDeleteOperation({
+  model: 'user',
 });

@@ -2,7 +2,11 @@ import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import { $Enums } from '@src/generated/prisma/client.js';
-import { defineCreateOperation } from '@src/utils/data-operations/define-operations.js';
+import {
+  defineCreateOperation,
+  defineDeleteOperation,
+  defineUpdateOperation,
+} from '@src/utils/data-operations/define-operations.js';
 import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
@@ -35,4 +39,23 @@ export const createTodoList = defineCreateOperation({
     ...data,
     owner: relationHelpers.connectCreate({ id: ownerId }),
   }),
+});
+
+export const updateTodoList = defineUpdateOperation({
+  model: 'todoList',
+  fields: pick(todoListInputFields, [
+    'position',
+    'name',
+    'ownerId',
+    'status',
+    'createdAt',
+  ]),
+  buildData: ({ ownerId, ...data }) => ({
+    ...data,
+    owner: relationHelpers.connectUpdate({ id: ownerId }),
+  }),
+});
+
+export const deleteTodoList = defineDeleteOperation({
+  model: 'todoList',
 });
