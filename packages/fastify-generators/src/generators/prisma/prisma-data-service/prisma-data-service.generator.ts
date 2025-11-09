@@ -1,6 +1,10 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
+import {
+  packageScope,
+  TsCodeUtils,
+  tsTemplate,
+} from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTaskWithInfo,
   createGenerator,
@@ -29,17 +33,24 @@ const descriptorSchema = z.object({
   modelFieldNames: z.array(z.string()),
 });
 
+type Descriptor = z.infer<typeof descriptorSchema>;
+
 const [
   createPrismaDataServiceTask,
   prismaDataServiceSetupProvider,
   prismaDataServiceValuesProvider,
 ] = createConfigProviderTaskWithInfo(
   (t) => ({
-    extendedInputFields: t.namedArray<InputFieldDefinitionOutput>([]),
+    /** Additional model field names to add to the data service */
+    additionalModelFieldNames: t.array<string>([]),
+    /** Virtual input fields to add to the data service */
+    virtualInputFields: t.namedArray<InputFieldDefinitionOutput>([]),
   }),
   {
     prefix: 'prisma-data-service',
-    infoFromDescriptor: (descriptor) => ({
+    configScope: (provider, descriptor) =>
+      provider.export().andExport(packageScope, descriptor.modelName),
+    infoFromDescriptor: (descriptor: Descriptor) => ({
       modelName: descriptor.modelName,
     }),
   },
@@ -57,6 +68,10 @@ interface PrismaDataServiceMethod {
 export interface PrismaDataServiceProvider {
   getFields(): InputFieldDefinitionOutput[];
   getFieldsVariableName(): string;
+  /**
+   * Gets the fragment with the fields imported in.
+   */
+  getFieldsFragment(): TsCodeFragment;
   registerMethod(method: PrismaDataServiceMethod): void;
 }
 
@@ -76,8 +91,8 @@ export const prismaDataServiceGenerator = createGenerator({
   name: 'prisma/prisma-data-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ modelName, modelFieldNames }) => ({
-    config: createPrismaDataServiceTask({ modelName }),
+  buildTasks: (descriptor) => ({
+    config: createPrismaDataServiceTask(descriptor),
     main: createGeneratorTask({
       dependencies: {
         configValues: prismaDataServiceValuesProvider,
@@ -87,7 +102,9 @@ export const prismaDataServiceGenerator = createGenerator({
         prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       exports: {
-        prismaDataService: prismaDataServiceProvider.export(),
+        prismaDataService: prismaDataServiceProvider
+          .export()
+          .andExport(packageScope, descriptor.modelName),
       },
       run({
         configValues,
@@ -96,8 +113,12 @@ export const prismaDataServiceGenerator = createGenerator({
         dataUtilsImports,
         prismaGeneratedImports,
       }) {
+        const { modelName, modelFieldNames } = descriptor;
         const model = prismaOutput.getPrismaModel(modelName);
-        const modelFields = modelFieldNames.map((fieldName) => {
+        const { virtualInputFields, additionalModelFieldNames } = configValues;
+        const modelFields = [
+          ...new Set([...modelFieldNames, ...additionalModelFieldNames]),
+        ].map((fieldName) => {
           const field = model.fields.find((field) => field.name === fieldName);
           if (!field) {
             throw new Error(
@@ -111,13 +132,12 @@ export const prismaDataServiceGenerator = createGenerator({
           }
           return field;
         });
-        const { extendedInputFields } = configValues;
 
         const methods = new NamedArrayFieldContainer<PrismaDataServiceMethod>();
 
-        // Check if modelFields and additionalFields overlap
+        // Check if modelFields and virtual input fields overlap
         const overlappingFields = modelFields.filter((field) =>
-          extendedInputFields.some(
+          virtualInputFields.some(
             (extendedField) => extendedField.name === field.name,
           ),
         );
@@ -137,7 +157,7 @@ export const prismaDataServiceGenerator = createGenerator({
               lookupEnum: (name) => prismaOutput.getServiceEnum(name),
             }),
           ),
-          ...extendedInputFields,
+          ...virtualInputFields,
         ];
 
         const inputFieldsObject = TsCodeUtils.mergeFragmentsAsObject(
@@ -159,6 +179,12 @@ export const prismaDataServiceGenerator = createGenerator({
               },
               getFieldsVariableName() {
                 return fieldsVariableName;
+              },
+              getFieldsFragment() {
+                return TsCodeUtils.importFragment(
+                  fieldsVariableName,
+                  serviceFile.getServicePath(),
+                );
               },
               registerMethod(method) {
                 methods.add(method);

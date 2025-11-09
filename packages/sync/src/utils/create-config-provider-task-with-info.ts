@@ -8,7 +8,7 @@ import { createFieldMap } from '@baseplate-dev/utils';
 
 import type { GeneratorTask } from '#src/generators/generators.js';
 import type { ProviderExportScope } from '#src/providers/export-scopes.js';
-import type { ProviderType } from '#src/providers/providers.js';
+import type { ProviderExport, ProviderType } from '#src/providers/providers.js';
 
 import { createGeneratorTask } from '#src/generators/generators.js';
 import {
@@ -19,10 +19,7 @@ import {
 /**
  * Options for creating a configuration provider task with additional info
  */
-interface ConfigProviderTaskWithInfoOptions<
-  Descriptor extends Record<string, unknown>,
-  InfoFromDescriptor extends Record<string, unknown>,
-> {
+interface ConfigProviderTaskWithInfoOptions<Descriptor, InfoFromDescriptor> {
   /**
    * The prefix for the providers
    */
@@ -36,11 +33,15 @@ interface ConfigProviderTaskWithInfoOptions<
   /**
    * The scope for the config provider
    */
-  configScope?: ProviderExportScope;
+  configScope?:
+    | ProviderExportScope
+    | ((provider: ProviderType, descriptor: Descriptor) => ProviderExport);
   /**
    * The scope for the config values provider
    */
-  configValuesScope?: ProviderExportScope;
+  configValuesScope?:
+    | ProviderExportScope
+    | ((provider: ProviderType, descriptor: Descriptor) => ProviderExport);
   /**
    * Function to extract additional info from the descriptor
    */
@@ -116,9 +117,17 @@ export function createConfigProviderTaskWithInfo<
   return [
     (descriptor) =>
       createGeneratorTask({
-        exports: { config: configProvider.export(configScope) },
+        exports: {
+          config:
+            typeof configScope === 'function'
+              ? configScope(configProvider, descriptor)
+              : configProvider.export(configScope),
+        },
         outputs: {
-          configValues: configValuesProvider.export(configValuesScope),
+          configValues:
+            typeof configValuesScope === 'function'
+              ? configValuesScope(configValuesProvider, descriptor)
+              : configValuesProvider.export(configValuesScope),
         },
         run() {
           const config = createFieldMap(schemaBuilder);

@@ -468,6 +468,7 @@ export const TsCodeUtils = {
 
   templateWithImports(
     imports?: TsImportDeclaration[] | TsImportDeclaration,
+    { hoistedFragments }: { hoistedFragments?: TsHoistedFragment[] } = {},
   ): (
     strings: TemplateStringsArray,
     ...expressions: (TsCodeFragment | string)[]
@@ -476,6 +477,7 @@ export const TsCodeUtils = {
       this.template(strings, ...expressions, {
         contents: '',
         imports: Array.isArray(imports) ? imports : imports ? [imports] : [],
+        hoistedFragments,
       });
   },
 

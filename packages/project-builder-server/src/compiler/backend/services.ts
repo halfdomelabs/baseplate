@@ -13,6 +13,7 @@ import {
   prismaCrudServiceGenerator,
   prismaCrudUpdateGenerator,
   prismaDataCreateGenerator,
+  prismaDataNestedFieldGenerator,
   prismaDataServiceGenerator,
   prismaPasswordTransformerGenerator,
   serviceFileGenerator,
@@ -60,6 +61,32 @@ const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRela
           : undefined,
       });
     },
+    compileField(definition, { definitionContainer, model }) {
+      // find foreign relation
+      const nestedRelation = ModelUtils.getRelationsToModel(
+        definitionContainer.definition,
+        model.id,
+      ).find(
+        ({ relation }) => relation.foreignId === definition.foreignRelationRef,
+      );
+
+      if (!nestedRelation) {
+        throw new Error(
+          `Could not find relation ${definition.foreignRelationRef} for nested relation field`,
+        );
+      }
+
+      return prismaDataNestedFieldGenerator({
+        modelName: model.name,
+        relationName: definitionContainer.nameFromId(
+          definition.foreignRelationRef,
+        ),
+        nestedModelName: nestedRelation.model.name,
+        fieldNames: definition.embeddedFieldNames.map((e) =>
+          definitionContainer.nameFromId(e),
+        ),
+      });
+    },
   };
 
 const passwordTransformerCompiler: ModelTransformerCompiler = {
@@ -85,6 +112,29 @@ function buildTransformer(
   );
 
   return compiler.compileTransformer(transformer, {
+    definitionContainer: appBuilder.definitionContainer,
+    model,
+  });
+}
+
+function buildVirtualInputField(
+  appBuilder: BackendAppEntryBuilder,
+  transformer: TransformerConfig,
+  model: ModelConfig,
+): GeneratorBundle | undefined {
+  const { pluginStore } = appBuilder;
+  const compilerImplementation = pluginStore.getPluginSpec(
+    modelTransformerCompilerSpec,
+  );
+
+  const compiler = compilerImplementation.getModelTransformerCompiler(
+    transformer.type,
+    [embeddedRelationTransformerCompiler, passwordTransformerCompiler],
+  );
+
+  if (!compiler.compileField) return undefined;
+
+  return compiler.compileField(transformer, {
     definitionContainer: appBuilder.definitionContainer,
     model,
   });
@@ -180,6 +230,11 @@ function buildDataServiceForModel(
         modelName: model.name,
         modelFieldNames: allFields,
         children: {
+          $fields: model.service.transformers
+            .map((transfomer) =>
+              buildVirtualInputField(appBuilder, transfomer, model),
+            )
+            .filter(notEmpty),
           $create:
             createFields.length > 0
               ? prismaDataCreateGenerator({

@@ -32,7 +32,7 @@ export interface GenerateRelationBuildDataConfig {
   /** Field names that are included in the input (to determine which relations to include) */
   inputFieldNames: string[];
   /** Operation type - determines whether to use connectCreate or connectUpdate */
-  operationType: 'create' | 'update';
+  operationType: 'create' | 'update' | 'upsert';
   /** Data utils imports provider for accessing relationHelpers fragments */
   dataUtilsImports: DataUtilsImportsProvider;
 }
@@ -164,11 +164,17 @@ function generateBuildDataBody(
   dataUtilsImports: DataUtilsImportsProvider,
   relevantRelations: PrismaOutputRelationField[],
   allInputFieldNames?: string[],
-): { argumentFragment: TsCodeFragment; returnFragment: TsCodeFragment } {
+  dataName = 'data',
+): {
+  argumentFragment: TsCodeFragment;
+  returnFragment: TsCodeFragment;
+  passthrough: boolean;
+} {
   if (relevantRelations.length === 0) {
     return {
-      argumentFragment: tsTemplate`data`,
-      returnFragment: tsTemplate`data`,
+      argumentFragment: tsTemplate`${dataName}`,
+      returnFragment: tsTemplate`${dataName}`,
+      passthrough: true,
     };
   }
 
@@ -192,14 +198,14 @@ function generateBuildDataBody(
   // Build function parameter: ({ fk1, fk2, ...data }) or ({ fk1, fk2 })
   const paramPattern = allFieldsAreForeignKeys
     ? `{ ${sortedForeignKeyFields.join(', ')} }`
-    : `{ ${sortedForeignKeyFields.join(', ')}, ...data }`;
+    : `{ ${sortedForeignKeyFields.join(', ')}, ...${dataName} }`;
 
   // Build return object using mergeFragmentsAsObject
   const returnObjectFragments: Record<string, TsCodeFragment> = {};
 
   // Add spread for remaining data if not all fields are foreign keys
   if (!allFieldsAreForeignKeys) {
-    returnObjectFragments['...data'] = tsTemplate`data`;
+    returnObjectFragments[`...${dataName}`] = tsTemplate`${dataName}`;
   }
 
   // Add relation fragments
@@ -217,6 +223,7 @@ function generateBuildDataBody(
   return {
     argumentFragment: tsTemplate`${paramPattern}`,
     returnFragment: returnObject,
+    passthrough: false,
   };
 }
 
@@ -282,17 +289,47 @@ export function generateRelationBuildData(
   // Extract all foreign key field names
   const foreignKeyFieldNames = extractForeignKeyFields(relevantRelations);
 
-  // Generate relation helper call fragments
   // Generate the complete buildData function
-  const buildDataBody = generateBuildDataBody(
-    foreignKeyFieldNames,
-    operationType,
-    dataUtilsImports,
-    relevantRelations,
-    inputFieldNames,
-  );
+  if (operationType === 'upsert') {
+    const createDataBody = generateBuildDataBody(
+      foreignKeyFieldNames,
+      'create',
+      dataUtilsImports,
+      relevantRelations,
+      inputFieldNames,
+      'createData',
+    );
+    const updateDataBody = generateBuildDataBody(
+      foreignKeyFieldNames,
+      'create',
+      dataUtilsImports,
+      relevantRelations,
+      inputFieldNames,
+      'updateData',
+    );
 
-  return {
-    buildDataFunctionFragment: tsTemplate`(${buildDataBody.argumentFragment}) => (${buildDataBody.returnFragment})`,
-  };
+    if (createDataBody.passthrough && updateDataBody.passthrough) {
+      return {
+        buildDataFunctionFragment: tsTemplate`(data) => data`,
+      };
+    }
+
+    return {
+      buildDataFunctionFragment: tsTemplate`
+      ({ create: ${createDataBody.argumentFragment}, update: ${updateDataBody.argumentFragment}}) =>
+       ({ create: ${createDataBody.returnFragment}, update: ${updateDataBody.returnFragment} })`,
+    };
+  } else {
+    const buildDataBody = generateBuildDataBody(
+      foreignKeyFieldNames,
+      operationType,
+      dataUtilsImports,
+      relevantRelations,
+      inputFieldNames,
+    );
+
+    return {
+      buildDataFunctionFragment: tsTemplate`(${buildDataBody.argumentFragment}) => (${buildDataBody.returnFragment})`,
+    };
+  }
 }
