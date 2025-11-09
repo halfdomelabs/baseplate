@@ -13,24 +13,6 @@ import {
 } from '../types.js';
 import { baseTransformerFields, createModelTransformerType } from './types.js';
 
-export const createPasswordTransformerSchema = definitionSchema((ctx) =>
-  ctx.withEnt(
-    z.object({
-      ...baseTransformerFields,
-      type: z.literal('password'),
-    }),
-    {
-      type: modelTransformerEntityType,
-      parentPath: { context: 'model' },
-      getNameResolver: () => 'password',
-    },
-  ),
-);
-
-export type PasswordTransformerConfig = def.InferOutput<
-  typeof createPasswordTransformerSchema
->;
-
 export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
   ctx.withRefBuilder(
     ctx.withEnt(
@@ -84,11 +66,6 @@ export type EmbeddedRelationTransformerConfig = def.InferOutput<
 >;
 
 export const BUILT_IN_TRANSFORMERS = [
-  createModelTransformerType({
-    name: 'password',
-    createSchema: createPasswordTransformerSchema,
-    getName: () => 'Password',
-  }),
   createModelTransformerType({
     name: 'embeddedRelation',
     createSchema: createEmbeddedRelationTransformerSchema,

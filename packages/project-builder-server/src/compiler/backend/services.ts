@@ -17,7 +17,6 @@ import {
   prismaDataNestedFieldGenerator,
   prismaDataServiceGenerator,
   prismaDataUpdateGenerator,
-  prismaPasswordTransformerGenerator,
   serviceFileGenerator,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -94,13 +93,6 @@ const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRela
     },
   };
 
-const passwordTransformerCompiler: ModelTransformerCompiler = {
-  name: 'password',
-  compileTransformer() {
-    return prismaPasswordTransformerGenerator({});
-  },
-};
-
 function buildTransformer(
   appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
@@ -113,7 +105,7 @@ function buildTransformer(
 
   const compiler = compilerImplementation.getModelTransformerCompiler(
     transformer.type,
-    [embeddedRelationTransformerCompiler, passwordTransformerCompiler],
+    [embeddedRelationTransformerCompiler],
   );
 
   return compiler.compileTransformer(transformer, {
@@ -134,7 +126,7 @@ function buildVirtualInputField(
 
   const compiler = compilerImplementation.getModelTransformerCompiler(
     transformer.type,
-    [embeddedRelationTransformerCompiler, passwordTransformerCompiler],
+    [embeddedRelationTransformerCompiler],
   );
 
   if (!compiler.compileField) return undefined;
