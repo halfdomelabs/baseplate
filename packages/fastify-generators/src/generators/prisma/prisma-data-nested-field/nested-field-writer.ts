@@ -219,7 +219,7 @@ export function writePrismaDataNestedField(
   const pickedFieldsFragment = dataServiceFieldsFragment
     ? tsTemplateWithImports([
         tsImportBuilder(['pick']).from('es-toolkit'),
-      ])`pick(${dataServiceFieldsFragment}, ${JSON.stringify(nestedFieldNames)})`
+      ])`pick(${dataServiceFieldsFragment}, ${JSON.stringify(nestedFieldNames)} as const)`
     : TsCodeUtils.mergeFragmentsAsObject(
         Object.fromEntries(nestedFields.map((f) => [f.name, f.fragment])),
       );

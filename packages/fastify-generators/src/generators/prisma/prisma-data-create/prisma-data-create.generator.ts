@@ -58,7 +58,7 @@ export const prismaDataCreateGenerator = createGenerator({
                 ? prismaDataService.getFieldsVariableName()
                 : tsTemplateWithImports([
                     tsImportBuilder(['pick']).from('es-toolkit'),
-                  ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}])`;
+                  ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
             // Generate buildData function that transforms FK fields into relations
             const relationBuildData = generateRelationBuildData({

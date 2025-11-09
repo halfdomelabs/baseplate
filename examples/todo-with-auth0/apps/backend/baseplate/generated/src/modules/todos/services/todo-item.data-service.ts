@@ -32,7 +32,7 @@ export const todoItemInputFields = {
       'url',
       'id',
       'tags',
-    ]),
+    ] as const),
     getWhereUnique: (input) => ({ id: input.id }),
     model: 'todoItemAttachment',
     parentModel,
@@ -42,13 +42,7 @@ export const todoItemInputFields = {
 
 export const createTodoItem = defineCreateOperation({
   model: 'todoItem',
-  fields: pick(todoItemInputFields, [
-    'todoListId',
-    'position',
-    'text',
-    'done',
-    'assigneeId',
-  ]),
+  fields: todoItemInputFields,
   buildData: ({ assigneeId, todoListId, ...data }) => ({
     ...data,
     assignee: relationHelpers.connectCreate({ id: assigneeId }),
@@ -58,13 +52,7 @@ export const createTodoItem = defineCreateOperation({
 
 export const updateTodoItem = defineUpdateOperation({
   model: 'todoItem',
-  fields: pick(todoItemInputFields, [
-    'position',
-    'text',
-    'done',
-    'assigneeId',
-    'todoListId',
-  ]),
+  fields: todoItemInputFields,
   buildData: ({ assigneeId, todoListId, ...data }) => ({
     ...data,
     assignee: relationHelpers.connectUpdate({ id: assigneeId }),

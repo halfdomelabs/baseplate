@@ -33,7 +33,7 @@ export const userInputFields = {
   }),
   images: nestedOneToManyField({
     buildData: (data) => data,
-    fields: pick(userImageInputFields, ['id', 'caption', 'file']),
+    fields: pick(userImageInputFields, ['id', 'caption', 'file'] as const),
     getWhereUnique: (input) => ({ id: input.id }),
     model: 'userImage',
     parentModel,
@@ -51,7 +51,12 @@ export const userInputFields = {
   }),
   userProfile: nestedOneToOneField({
     buildData: (data) => data,
-    fields: pick(userProfileInputFields, ['id', 'bio', 'birthDay', 'avatar']),
+    fields: pick(userProfileInputFields, [
+      'id',
+      'bio',
+      'birthDay',
+      'avatar',
+    ] as const),
     getWhereUnique: (parentModel) => ({ userId: parentModel.id }),
     model: 'userProfile',
     parentModel,
@@ -61,13 +66,13 @@ export const userInputFields = {
 
 export const createUser = defineCreateOperation({
   model: 'user',
-  fields: pick(userInputFields, ['name', 'email']),
+  fields: userInputFields,
   buildData: (data) => data,
 });
 
 export const updateUser = defineUpdateOperation({
   model: 'user',
-  fields: pick(userInputFields, ['name', 'email']),
+  fields: userInputFields,
   buildData: (data) => data,
 });
 

@@ -245,7 +245,12 @@ function buildDataServiceForModel(
               ? prismaDataCreateGenerator({
                   name: `create${uppercaseFirstChar(model.name)}`,
                   modelName: model.name,
-                  fields: createFields,
+                  fields: [
+                    ...createFields,
+                    ...(model.service.create.transformerNames?.map((t) =>
+                      appBuilder.nameFromId(t),
+                    ) ?? []),
+                  ],
                 })
               : undefined,
           $update:
@@ -253,7 +258,12 @@ function buildDataServiceForModel(
               ? prismaDataUpdateGenerator({
                   name: `update${uppercaseFirstChar(model.name)}`,
                   modelName: model.name,
-                  fields: updateFields,
+                  fields: [
+                    ...updateFields,
+                    ...(model.service.update.transformerNames?.map((t) =>
+                      appBuilder.nameFromId(t),
+                    ) ?? []),
+                  ],
                 })
               : undefined,
           $delete: model.service.delete.enabled

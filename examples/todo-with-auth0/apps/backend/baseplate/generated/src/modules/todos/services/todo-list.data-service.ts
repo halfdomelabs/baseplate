@@ -1,4 +1,3 @@
-import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import { $Enums } from '@src/generated/prisma/client.js';
@@ -28,13 +27,7 @@ export const todoListInputFields = {
 
 export const createTodoList = defineCreateOperation({
   model: 'todoList',
-  fields: pick(todoListInputFields, [
-    'position',
-    'name',
-    'ownerId',
-    'status',
-    'createdAt',
-  ]),
+  fields: todoListInputFields,
   buildData: ({ ownerId, ...data }) => ({
     ...data,
     owner: relationHelpers.connectCreate({ id: ownerId }),
@@ -43,13 +36,7 @@ export const createTodoList = defineCreateOperation({
 
 export const updateTodoList = defineUpdateOperation({
   model: 'todoList',
-  fields: pick(todoListInputFields, [
-    'position',
-    'name',
-    'ownerId',
-    'status',
-    'createdAt',
-  ]),
+  fields: todoListInputFields,
   buildData: ({ ownerId, ...data }) => ({
     ...data,
     owner: relationHelpers.connectUpdate({ id: ownerId }),
