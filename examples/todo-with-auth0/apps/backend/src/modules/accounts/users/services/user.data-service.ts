@@ -34,7 +34,7 @@ export const userInputFields = {
   images: nestedOneToManyField({
     buildData: (data) => data,
     fields: pick(userImageInputFields, ['id', 'caption', 'file'] as const),
-    getWhereUnique: (input) => ({ id: input.id }),
+    getWhereUnique: (input) => (input.id ? { id: input.id } : undefined),
     model: 'userImage',
     parentModel,
     relationName: 'user',
@@ -42,9 +42,10 @@ export const userInputFields = {
   roles: nestedOneToManyField({
     buildData: (data) => data,
     fields: { role: scalarField(z.string()) },
-    getWhereUnique: (input, parentModel) => ({
-      userId_role: { role: input.role, userId: parentModel.id },
-    }),
+    getWhereUnique: (input, parentModel) =>
+      input.role
+        ? { userId_role: { role: input.role, userId: parentModel.id } }
+        : undefined,
     model: 'userRole',
     parentModel,
     relationName: 'user',

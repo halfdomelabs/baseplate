@@ -546,6 +546,19 @@ export function nestedOneToManyField<
   undefined,
   undefined | { deleteMany: Record<never, never> }
 > {
+  const getWhereUnique = (
+    input: InferInput<TFields>,
+    originalModel: GetPayload<TParentModelName>,
+  ): WhereUniqueInput<TModelName> | undefined => {
+    const whereUnique = config.getWhereUnique(input, originalModel);
+    if (whereUnique && Object.values(whereUnique).includes(undefined)) {
+      throw new Error(
+        'getWhereUnique cannot return any undefined values in the object',
+      );
+    }
+    return whereUnique;
+  };
+
   return {
     processInput: async (value, processCtx) => {
       const { serviceContext, loadExisting } = processCtx;
@@ -570,7 +583,8 @@ export function nestedOneToManyField<
       const cachedLoadExisting = value.map((itemInput) => {
         let cachedExisting: GetPayload<TModelName> | undefined;
         const whereUnique =
-          existingModel && config.getWhereUnique(itemInput, existingModel);
+          existingModel && getWhereUnique(itemInput, existingModel);
+
         return async (): Promise<GetPayload<TModelName> | undefined> => {
           if (cachedExisting) return cachedExisting;
           if (!whereUnique) return undefined;
@@ -686,9 +700,10 @@ export function nestedOneToManyField<
             );
 
             results[idx] = item.whereUnique
-              ? await prismaDelegate.update({
+              ? await prismaDelegate.upsert({
                   where: item.whereUnique,
-                  data: builtData.update,
+                  create: builtData.create,
+                  update: builtData.update,
                 })
               : await prismaDelegate.create({
                   data: builtData.create,

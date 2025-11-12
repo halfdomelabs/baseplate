@@ -156,15 +156,20 @@ function createOneToManyWhereUniqueFunction(
     }
   }
 
+  const inputIdFields = idFields.filter((f) => inputFieldNames.includes(f));
+
   // Check if all fields come from input (no parent dependency)
-  const allFromInput = idFields.every((field) =>
-    inputFieldNames.includes(field),
-  );
+  const allFromInput = idFields.length === inputIdFields.length;
 
   // Generate the where unique object
   const whereUniqueObj = TsCodeUtils.mergeFragmentsAsObject(whereFields, {
     wrapWithParenthesis: true,
   });
+
+  // Create a conditional for whether the input field sugggests the object has a prior value
+  const hasExistingConditional = inputIdFields
+    .map((field) => `input.${field}`)
+    .join('&&');
 
   // For composite keys, wrap in composite key syntax
   if (idFields.length > 1) {
@@ -176,15 +181,19 @@ function createOneToManyWhereUniqueFunction(
       { wrapWithParenthesis: true },
     );
 
+    const conditionalWhereUnique = tsTemplate`${hasExistingConditional} ? ${compositeWhereUnique} : undefined`;
+
     return allFromInput
-      ? tsTemplate`(input) => ${compositeWhereUnique}`
-      : tsTemplate`(input, parentModel) => ${compositeWhereUnique}`;
+      ? tsTemplate`(input) => ${conditionalWhereUnique}`
+      : tsTemplate`(input, parentModel) => ${conditionalWhereUnique}`;
   }
+
+  const conditionalWhereUniqueObj = tsTemplate`${hasExistingConditional} ? ${whereUniqueObj} : undefined`;
 
   // For single field, just return the field mapping
   return allFromInput
-    ? tsTemplate`(input) => ${whereUniqueObj}`
-    : tsTemplate`(input, parentModel) => ${whereUniqueObj}`;
+    ? tsTemplate`(input) => ${conditionalWhereUniqueObj}`
+    : tsTemplate`(input, parentModel) => ${conditionalWhereUniqueObj}`;
 }
 
 export function writeParentModelConfigFragment({

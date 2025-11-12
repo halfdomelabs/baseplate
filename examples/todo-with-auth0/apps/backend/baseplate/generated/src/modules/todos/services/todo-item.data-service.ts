@@ -33,7 +33,7 @@ export const todoItemInputFields = {
       'id',
       'tags',
     ] as const),
-    getWhereUnique: (input) => ({ id: input.id }),
+    getWhereUnique: (input) => (input.id ? { id: input.id } : undefined),
     model: 'todoItemAttachment',
     parentModel,
     relationName: 'todoItem',

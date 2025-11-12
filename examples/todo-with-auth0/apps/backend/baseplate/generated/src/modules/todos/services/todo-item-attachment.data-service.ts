@@ -17,12 +17,15 @@ export const todoItemAttachmentInputFields = {
   tags: nestedOneToManyField({
     buildData: (data) => data,
     fields: { tag: scalarField(z.string()) },
-    getWhereUnique: (input, parentModel) => ({
-      todoItemAttachmentId_tag: {
-        tag: input.tag,
-        todoItemAttachmentId: parentModel.id,
-      },
-    }),
+    getWhereUnique: (input, parentModel) =>
+      input.tag
+        ? {
+            todoItemAttachmentId_tag: {
+              tag: input.tag,
+              todoItemAttachmentId: parentModel.id,
+            },
+          }
+        : undefined,
     model: 'todoItemAttachmentTag',
     parentModel,
     relationName: 'todoItemAttachment',
