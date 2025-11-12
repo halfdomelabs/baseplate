@@ -54,9 +54,15 @@ export type ChangePasswordPayload = {
   user: User;
 };
 
+export type CreateUserData = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Input type for createUser mutation */
 export type CreateUserInput = {
-  data: UserCreateData;
+  data: CreateUserData;
 };
 
 /** Payload type for createUser mutation */
@@ -192,9 +198,15 @@ export type ResetUserPasswordPayload = {
   user: User;
 };
 
+export type UpdateUserData = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Input type for updateUser mutation */
 export type UpdateUserInput = {
-  data: UserUpdateData;
+  data: UpdateUserData;
   id: Scalars['Uuid']['input'];
 };
 
@@ -225,12 +237,6 @@ export type User = {
   roles: Array<UserRole>;
 };
 
-export type UserCreateData = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UserRole = {
   __typename?: 'UserRole';
   role: Scalars['String']['output'];
@@ -243,12 +249,6 @@ export type UserSessionPayload = {
   roles: Array<AuthRole>;
   user: User;
   userId: Scalars['Uuid']['output'];
-};
-
-export type UserUpdateData = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GetCurrentUserSessionQueryVariables = Exact<{ [key: string]: never; }>;

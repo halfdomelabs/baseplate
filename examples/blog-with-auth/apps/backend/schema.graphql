@@ -29,9 +29,15 @@ type ChangePasswordPayload {
   user: User!
 }
 
+input CreateUserData {
+  email: String
+  emailVerified: Boolean
+  name: String
+}
+
 """Input type for createUser mutation"""
 input CreateUserInput {
-  data: UserCreateData!
+  data: CreateUserData!
 }
 
 """Payload type for createUser mutation"""
@@ -130,9 +136,15 @@ type ResetUserPasswordPayload {
   user: User!
 }
 
+input UpdateUserData {
+  email: String
+  emailVerified: Boolean
+  name: String
+}
+
 """Input type for updateUser mutation"""
 input UpdateUserInput {
-  data: UserUpdateData!
+  data: UpdateUserData!
   id: Uuid!
 }
 
@@ -160,12 +172,6 @@ type User {
   roles: [UserRole!]!
 }
 
-input UserCreateData {
-  email: String
-  emailVerified: Boolean
-  name: String
-}
-
 type UserRole {
   role: String!
   userId: Uuid!
@@ -176,12 +182,6 @@ type UserSessionPayload {
   roles: [AuthRole!]!
   user: User!
   userId: Uuid!
-}
-
-input UserUpdateData {
-  email: String
-  emailVerified: Boolean
-  name: String
 }
 
 """
