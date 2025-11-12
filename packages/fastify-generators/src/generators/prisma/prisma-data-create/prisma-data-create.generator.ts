@@ -13,7 +13,11 @@ import {
 import { z } from 'zod';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
-import { prismaToServiceOutputDto } from '#src/types/service-output.js';
+import { contextKind, prismaQueryKind } from '#src/types/service-dto-kinds.js';
+import {
+  createServiceOutputDtoInjectedArg,
+  prismaToServiceOutputDto,
+} from '#src/types/service-output.js';
 
 import { generateRelationBuildData } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
@@ -89,26 +93,24 @@ export const prismaDataCreateGenerator = createGenerator({
                 ),
                 arguments: [
                   {
+                    name: 'data',
                     type: 'nested',
-                    name: 'input',
                     nestedType: {
-                      name: `${uppercaseFirstChar(name)}Input`,
-                      fields: [
-                        {
-                          name: 'data',
-                          type: 'nested',
-                          nestedType: {
-                            name: `${uppercaseFirstChar(name)}Data`,
-                            fields: usedFields.map(
-                              (field) => field.outputDtoField,
-                            ),
-                          },
-                        },
-                      ],
+                      name: `${uppercaseFirstChar(name)}Data`,
+                      fields: usedFields.map((field) => field.outputDtoField),
                     },
                   },
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'context',
+                    kind: contextKind,
+                  }),
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'query',
+                    kind: prismaQueryKind,
+                  }),
                 ],
-                requiresContext: true,
                 returnType: prismaToServiceOutputDto(
                   prismaOutput.getPrismaModel(modelName),
                   (enumName) => prismaOutput.getServiceEnum(enumName),

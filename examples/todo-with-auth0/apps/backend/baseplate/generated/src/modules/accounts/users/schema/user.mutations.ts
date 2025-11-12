@@ -101,14 +101,14 @@ const updateUserDataInputType = builder.inputType('UpdateUserData', {
 builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
     input: {
-      where: t.input.field({ required: true, type: 'Uuid' }),
+      id: t.input.field({ required: true, type: 'Uuid' }),
       data: t.input.field({ required: true, type: updateUserDataInputType }),
     },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
-    resolve: async (root, { input: { where, data } }, context, info) => {
+    resolve: async (root, { input: { id, data } }, context, info) => {
       const user = await updateUser({
-        where,
+        where: { id },
         data: restrictObjectNulls(
           {
             ...data,
@@ -130,12 +130,12 @@ builder.mutationField('updateUser', (t) =>
 
 builder.mutationField('deleteUser', (t) =>
   t.fieldWithInputPayload({
-    input: { where: t.input.field({ required: true, type: 'Uuid' }) },
+    input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
-    resolve: async (root, { input: { where } }, context, info) => {
+    resolve: async (root, { input: { id } }, context, info) => {
       const user = await deleteUser({
-        where,
+        where: { id },
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
       });

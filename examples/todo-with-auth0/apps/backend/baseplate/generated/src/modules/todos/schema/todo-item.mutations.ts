@@ -83,7 +83,7 @@ const updateTodoItemDataInputType = builder.inputType('UpdateTodoItemData', {
 builder.mutationField('updateTodoItem', (t) =>
   t.fieldWithInputPayload({
     input: {
-      where: t.input.field({ required: true, type: 'Uuid' }),
+      id: t.input.field({ required: true, type: 'Uuid' }),
       data: t.input.field({
         required: true,
         type: updateTodoItemDataInputType,
@@ -91,9 +91,9 @@ builder.mutationField('updateTodoItem', (t) =>
     },
     payload: { todoItem: t.payload.field({ type: todoItemObjectType }) },
     authorize: ['user'],
-    resolve: async (root, { input: { where, data } }, context, info) => {
+    resolve: async (root, { input: { id, data } }, context, info) => {
       const todoItem = await updateTodoItem({
-        where,
+        where: { id },
         data: restrictObjectNulls(
           {
             ...data,
@@ -113,12 +113,12 @@ builder.mutationField('updateTodoItem', (t) =>
 
 builder.mutationField('deleteTodoItem', (t) =>
   t.fieldWithInputPayload({
-    input: { where: t.input.field({ required: true, type: 'Uuid' }) },
+    input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: { todoItem: t.payload.field({ type: todoItemObjectType }) },
     authorize: ['user'],
-    resolve: async (root, { input: { where } }, context, info) => {
+    resolve: async (root, { input: { id } }, context, info) => {
       const todoItem = await deleteTodoItem({
-        where,
+        where: { id },
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
       });

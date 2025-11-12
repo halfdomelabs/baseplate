@@ -63,7 +63,7 @@ const updateTodoListShareDataInputType = builder.inputType(
 builder.mutationField('updateTodoListShare', (t) =>
   t.fieldWithInputPayload({
     input: {
-      where: t.input.field({
+      id: t.input.field({
         required: true,
         type: todoListSharePrimaryKeyInputType,
       }),
@@ -76,9 +76,9 @@ builder.mutationField('updateTodoListShare', (t) =>
       todoListShare: t.payload.field({ type: todoListShareObjectType }),
     },
     authorize: ['user'],
-    resolve: async (root, { input: { where, data } }, context, info) => {
+    resolve: async (root, { input: { id, data } }, context, info) => {
       const todoListShare = await updateTodoListShare({
-        where,
+        where: { todoListId_userId: id },
         data: restrictObjectNulls(data, [
           'todoListId',
           'userId',
@@ -96,7 +96,7 @@ builder.mutationField('updateTodoListShare', (t) =>
 builder.mutationField('deleteTodoListShare', (t) =>
   t.fieldWithInputPayload({
     input: {
-      where: t.input.field({
+      id: t.input.field({
         required: true,
         type: todoListSharePrimaryKeyInputType,
       }),
@@ -105,9 +105,9 @@ builder.mutationField('deleteTodoListShare', (t) =>
       todoListShare: t.payload.field({ type: todoListShareObjectType }),
     },
     authorize: ['user'],
-    resolve: async (root, { input: { where } }, context, info) => {
+    resolve: async (root, { input: { id } }, context, info) => {
       const todoListShare = await deleteTodoListShare({
-        where,
+        where: { todoListId_userId: id },
         context,
         query: queryFromInfo({ context, info, path: ['todoListShare'] }),
       });

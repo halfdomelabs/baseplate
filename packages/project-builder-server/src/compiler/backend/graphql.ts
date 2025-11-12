@@ -154,7 +154,6 @@ function buildMutationsFileForModel(
   const sharedMutationConfig = {
     modelName: model.name,
     crudServiceRef: `prisma-data-service:${model.name}`,
-    hasPrimaryKeyInputType: ModelUtils.getModelIdFields(model).length > 1,
   };
 
   return pothosTypesFileGenerator({

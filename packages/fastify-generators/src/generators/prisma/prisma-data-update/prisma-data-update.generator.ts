@@ -13,8 +13,15 @@ import {
 import { z } from 'zod';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
-import { getPrimaryKeyDefinition } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
-import { prismaToServiceOutputDto } from '#src/types/service-output.js';
+import {
+  contextKind,
+  prismaQueryKind,
+  prismaWhereUniqueInputKind,
+} from '#src/types/service-dto-kinds.js';
+import {
+  createServiceOutputDtoInjectedArg,
+  prismaToServiceOutputDto,
+} from '#src/types/service-output.js';
 
 import { generateRelationBuildData } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
@@ -79,11 +86,6 @@ export const prismaDataUpdateGenerator = createGenerator({
             serviceFile.getServicePath();
 
             const prismaModel = prismaOutput.getPrismaModel(modelName);
-            const idArgument = getPrimaryKeyDefinition(prismaModel);
-            const whereField = {
-              ...idArgument,
-              name: 'where',
-            };
 
             prismaDataService.registerMethod({
               name,
@@ -96,29 +98,36 @@ export const prismaDataUpdateGenerator = createGenerator({
                   serviceFile.getServicePath(),
                 ),
                 arguments: [
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'where',
+                    kind: prismaWhereUniqueInputKind,
+                    metadata: {
+                      idFields: prismaModel.idFields ?? [],
+                    },
+                  }),
                   {
+                    name: 'data',
                     type: 'nested',
-                    name: 'input',
                     nestedType: {
-                      name: `${uppercaseFirstChar(name)}Input`,
-                      fields: [
-                        whereField,
-                        {
-                          name: 'data',
-                          type: 'nested',
-                          nestedType: {
-                            name: `${uppercaseFirstChar(name)}Data`,
-                            fields: usedFields.map((field) => ({
-                              ...field.outputDtoField,
-                              isOptional: true,
-                            })),
-                          },
-                        },
-                      ],
+                      name: `${uppercaseFirstChar(name)}Data`,
+                      fields: usedFields.map((field) => ({
+                        ...field.outputDtoField,
+                        isOptional: true,
+                      })),
                     },
                   },
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'context',
+                    kind: contextKind,
+                  }),
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'query',
+                    kind: prismaQueryKind,
+                  }),
                 ],
-                requiresContext: true,
                 returnType: prismaToServiceOutputDto(prismaModel, (enumName) =>
                   prismaOutput.getServiceEnum(enumName),
                 ),
