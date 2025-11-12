@@ -29,9 +29,18 @@ type CreatePresignedUploadUrlPayload {
   url: String!
 }
 
+input CreateTodoItemData {
+  assigneeId: Uuid
+  attachments: [TodoItemAttachmentsNestedInput!]
+  done: Boolean!
+  position: Int!
+  text: String!
+  todoListId: Uuid!
+}
+
 """Input type for createTodoItem mutation"""
 input CreateTodoItemInput {
-  data: TodoItemCreateData!
+  data: CreateTodoItemData!
 }
 
 """Payload type for createTodoItem mutation"""
@@ -39,9 +48,18 @@ type CreateTodoItemPayload {
   todoItem: TodoItem!
 }
 
+input CreateTodoListData {
+  coverPhoto: FileInput
+  createdAt: DateTime
+  name: String!
+  ownerId: Uuid!
+  position: Int!
+  status: TodoListStatus
+}
+
 """Input type for createTodoList mutation"""
 input CreateTodoListInput {
-  data: TodoListCreateData!
+  data: CreateTodoListData!
 }
 
 """Payload type for createTodoList mutation"""
@@ -49,9 +67,16 @@ type CreateTodoListPayload {
   todoList: TodoList!
 }
 
+input CreateTodoListShareData {
+  createdAt: DateTime
+  todoListId: Uuid!
+  updatedAt: DateTime
+  userId: Uuid!
+}
+
 """Input type for createTodoListShare mutation"""
 input CreateTodoListShareInput {
-  data: TodoListShareCreateData!
+  data: CreateTodoListShareData!
 }
 
 """Payload type for createTodoListShare mutation"""
@@ -59,9 +84,18 @@ type CreateTodoListSharePayload {
   todoListShare: TodoListShare!
 }
 
+input CreateUserData {
+  customer: UserCustomerNestedInput
+  email: String!
+  images: [UserImagesNestedInput!]
+  name: String
+  roles: [UserRolesNestedInput!]
+  userProfile: UserUserProfileNestedInput
+}
+
 """Input type for createUser mutation"""
 input CreateUserInput {
-  data: UserCreateData!
+  data: CreateUserData!
 }
 
 """Payload type for createUser mutation"""
@@ -223,39 +257,21 @@ type TodoItemAttachment {
   url: String!
 }
 
-input TodoItemAttachmentEmbeddedTagsData {
-  tag: String!
-}
-
 type TodoItemAttachmentTag {
   tag: String!
   todoItemAttachment: TodoItemAttachment!
   todoItemAttachmentId: Uuid!
 }
 
-input TodoItemCreateData {
-  assigneeId: Uuid
-  attachments: [TodoItemEmbeddedAttachmentsData!]
-  done: Boolean!
-  position: Int!
-  text: String!
-  todoListId: Uuid!
+input TodoItemAttachmentTagsNestedInput {
+  tag: String!
 }
 
-input TodoItemEmbeddedAttachmentsData {
-  id: Uuid
+input TodoItemAttachmentsNestedInput {
+  id: ID
   position: Int!
-  tags: [TodoItemAttachmentEmbeddedTagsData!]
+  tags: [TodoItemAttachmentTagsNestedInput!]
   url: String!
-}
-
-input TodoItemUpdateData {
-  assigneeId: Uuid
-  attachments: [TodoItemEmbeddedAttachmentsData!]
-  done: Boolean
-  position: Int
-  text: String
-  todoListId: Uuid
 }
 
 type TodoList {
@@ -270,15 +286,6 @@ type TodoList {
   updatedAt: DateTime!
 }
 
-input TodoListCreateData {
-  coverPhoto: FileInput
-  createdAt: DateTime
-  name: String!
-  ownerId: Uuid!
-  position: Int!
-  status: TodoListStatus
-}
-
 type TodoListShare {
   createdAt: DateTime!
   todoList: TodoList!
@@ -288,23 +295,9 @@ type TodoListShare {
   userId: Uuid!
 }
 
-input TodoListShareCreateData {
-  createdAt: DateTime
-  todoListId: Uuid!
-  updatedAt: DateTime
-  userId: Uuid!
-}
-
 input TodoListSharePrimaryKey {
   todoListId: Uuid!
   userId: Uuid!
-}
-
-input TodoListShareUpdateData {
-  createdAt: DateTime
-  todoListId: Uuid
-  updatedAt: DateTime
-  userId: Uuid
 }
 
 enum TodoListStatus {
@@ -312,18 +305,18 @@ enum TodoListStatus {
   INACTIVE
 }
 
-input TodoListUpdateData {
-  coverPhoto: FileInput
-  createdAt: DateTime
-  name: String
-  ownerId: Uuid
+input UpdateTodoItemData {
+  assigneeId: Uuid
+  attachments: [TodoItemAttachmentsNestedInput!]
+  done: Boolean
   position: Int
-  status: TodoListStatus
+  text: String
+  todoListId: Uuid
 }
 
 """Input type for updateTodoItem mutation"""
 input UpdateTodoItemInput {
-  data: TodoItemUpdateData!
+  data: UpdateTodoItemData!
   id: Uuid!
 }
 
@@ -332,9 +325,18 @@ type UpdateTodoItemPayload {
   todoItem: TodoItem!
 }
 
+input UpdateTodoListData {
+  coverPhoto: FileInput
+  createdAt: DateTime
+  name: String
+  ownerId: Uuid
+  position: Int
+  status: TodoListStatus
+}
+
 """Input type for updateTodoList mutation"""
 input UpdateTodoListInput {
-  data: TodoListUpdateData!
+  data: UpdateTodoListData!
   id: Uuid!
 }
 
@@ -343,9 +345,16 @@ type UpdateTodoListPayload {
   todoList: TodoList!
 }
 
+input UpdateTodoListShareData {
+  createdAt: DateTime
+  todoListId: Uuid
+  updatedAt: DateTime
+  userId: Uuid
+}
+
 """Input type for updateTodoListShare mutation"""
 input UpdateTodoListShareInput {
-  data: TodoListShareUpdateData!
+  data: UpdateTodoListShareData!
   id: TodoListSharePrimaryKey!
 }
 
@@ -354,9 +363,18 @@ type UpdateTodoListSharePayload {
   todoListShare: TodoListShare!
 }
 
+input UpdateUserData {
+  customer: UserCustomerNestedInput
+  email: String
+  images: [UserImagesNestedInput!]
+  name: String
+  roles: [UserRolesNestedInput!]
+  userProfile: UserUserProfileNestedInput
+}
+
 """Input type for updateUser mutation"""
 input UpdateUserInput {
-  data: UserUpdateData!
+  data: UpdateUserData!
   id: Uuid!
 }
 
@@ -377,34 +395,8 @@ type User {
   userProfile: UserProfile
 }
 
-input UserCreateData {
-  customer: UserEmbeddedCustomerData
-  email: String!
-  images: [UserEmbeddedImagesData!]
-  name: String
-  roles: [UserEmbeddedRolesData!]
-  userProfile: UserEmbeddedUserProfileData
-}
-
-input UserEmbeddedCustomerData {
+input UserCustomerNestedInput {
   stripeCustomerId: String!
-}
-
-input UserEmbeddedImagesData {
-  caption: String!
-  file: FileInput!
-  id: Uuid
-}
-
-input UserEmbeddedRolesData {
-  role: String!
-}
-
-input UserEmbeddedUserProfileData {
-  avatar: FileInput
-  bio: String
-  birthDay: Date
-  id: Uuid
 }
 
 type UserImage {
@@ -412,6 +404,12 @@ type UserImage {
   fileId: Uuid!
   id: ID!
   userId: Uuid!
+}
+
+input UserImagesNestedInput {
+  caption: String!
+  file: FileInput!
+  id: ID
 }
 
 type UserProfile {
@@ -433,13 +431,15 @@ type UserRole {
   userId: Uuid!
 }
 
-input UserUpdateData {
-  customer: UserEmbeddedCustomerData
-  email: String
-  images: [UserEmbeddedImagesData!]
-  name: String
-  roles: [UserEmbeddedRolesData!]
-  userProfile: UserEmbeddedUserProfileData
+input UserRolesNestedInput {
+  role: String!
+}
+
+input UserUserProfileNestedInput {
+  avatar: FileInput
+  bio: String
+  birthDay: Date
+  id: ID
 }
 
 """
