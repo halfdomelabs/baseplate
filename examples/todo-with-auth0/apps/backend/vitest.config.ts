@@ -7,6 +7,7 @@ export default defineConfig(
     test: {
       clearMocks: true,
       globalSetup: './tests/scripts/global-setup.ts',
+      maxWorkers: 1,
       passWithNoTests: true,
       root: './src',
       setupFiles: ['tests/scripts/mock-redis.ts'],

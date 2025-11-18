@@ -130,6 +130,7 @@ export const vitestGenerator = createGenerator({
                 : undefined,
               setupFiles:
                 setupFiles.length > 0 ? setupFiles.toSorted() : undefined,
+              maxWorkers: 1,
             };
 
             const plugins = TsCodeUtils.mergeFragmentsAsArray({
