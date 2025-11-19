@@ -449,7 +449,7 @@ function expandWhereUnique<TModelName extends ModelPropName>(
 ): WhereInput<TModelName> | undefined {
   if (!whereUnique) return undefined;
 
-  const entries = Object.entries(whereUnique).filter(
+  const entries = Object.entries(whereUnique as Record<string, unknown>).filter(
     ([, value]) => value !== undefined && value !== null,
   );
 

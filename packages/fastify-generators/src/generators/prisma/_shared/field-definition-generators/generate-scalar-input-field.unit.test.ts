@@ -170,7 +170,9 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.record(unknown()))');
+      expect(result.fragment.contents).toBe(
+        'scalarField(z.record(z.unknown()))',
+      );
     });
 
     it('generates scalarField call for uuid type', () => {
