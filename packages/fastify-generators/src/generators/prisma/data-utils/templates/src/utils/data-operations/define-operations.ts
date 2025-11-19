@@ -914,7 +914,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
         // Run afterExecute hooks
         await invokeHooks(allHooks.afterExecute, {
           ...txContext,
-          new: result,
+          result,
         });
 
         return result;
@@ -923,7 +923,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
         // Run afterCommit hooks (outside transaction)
         await invokeHooks(allHooks.afterCommit, {
           ...baseOperationContext,
-          new: result,
+          result,
         });
         return result as GetPayload<TModelName, TQueryArgs>;
       });
