@@ -174,7 +174,7 @@ function buildTaskDependencyMap(
       generatorIdToScopesMap[parentEntryId]?.providers.get(providerId);
 
     if (!resolvedTask) {
-      if (!optional || exportName) {
+      if (!optional) {
         throw new Error(
           `Could not resolve dependency ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorInfo.name})`,
         );

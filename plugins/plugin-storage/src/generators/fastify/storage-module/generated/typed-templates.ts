@@ -1,9 +1,10 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  dataUtilsImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
-  prismaUtilsImportsProvider,
+  prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
@@ -129,6 +130,30 @@ const servicesDownloadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
+const servicesFileField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    dataUtilsImports: dataUtilsImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-file-field',
+  projectExports: {
+    fileField: { isTypeOnly: false },
+    FileInput: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/file-field.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -143,29 +168,6 @@ const servicesUploadFile = createTsTemplateFile({
     ),
   },
   variables: { TPL_FILE_MODEL: {}, TPL_FILE_MODEL_TYPE: {} },
-});
-
-const servicesValidateFileInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaUtilsImports: prismaUtilsImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
-  },
-  name: 'services-validate-file-input',
-  projectExports: {
-    FileUploadInput: { isTypeOnly: true },
-    validateFileInput: {},
-  },
-  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/validate-file-input.ts',
-    ),
-  },
-  variables: { TPL_FILE_MODEL: {} },
 });
 
 const typesAdapter = createTsTemplateFile({
@@ -204,13 +206,15 @@ const typesFileCategory = createTsTemplateFile({
       '../templates/module/types/file-category.ts',
     ),
   },
-  variables: { TPL_FILE_COUNT_OUTPUT_TYPE: {} },
+  variables: {},
 });
 
 const utilsCreateFileCategory = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
   name: 'utils-create-file-category',
   projectExports: { createFileCategory: {}, FileSize: {}, MimeTypes: {} },
   referencedGeneratorTemplates: { typesFileCategory: {} },
@@ -274,8 +278,8 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
+  servicesFileField,
   servicesUploadFile,
-  servicesValidateFileInput,
   typesAdapter,
   typesFileCategory,
   utilsCreateFileCategory,

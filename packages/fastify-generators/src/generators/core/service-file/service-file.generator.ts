@@ -75,6 +75,10 @@ export interface ServiceFileProvider {
    * Register a method with the service file.
    */
   registerMethod(method: ServiceMethod): void;
+  /**
+   * Register a header typescript code fragment.
+   */
+  registerHeader(header: { name: string; fragment: TsCodeFragment }): void;
 }
 
 export const serviceFileProvider =
@@ -106,6 +110,10 @@ export const serviceFileGenerator = createGenerator({
       },
       run({ appModule, typescriptFile }) {
         const methodsContainer = new NamedArrayFieldContainer<ServiceMethod>();
+        const headersContainer = new NamedArrayFieldContainer<{
+          name: string;
+          fragment: TsCodeFragment;
+        }>();
         const servicesFolder = path.join(
           appModule.getModuleFolder(),
           'services',
@@ -124,16 +132,25 @@ export const serviceFileGenerator = createGenerator({
               registerMethod(method) {
                 methodsContainer.add(method);
               },
+              registerHeader(header) {
+                headersContainer.add(header);
+              },
             },
           },
           build: async (builder) => {
+            const orderedHeaders = headersContainer
+              .getValue()
+              .sort((a, b) => a.name.localeCompare(b.name));
             const orderedMethods = methodsContainer
               .getValue()
               .sort((a, b) => a.order - b.order);
 
-            if (orderedMethods.length > 0) {
+            if (orderedMethods.length > 0 || orderedHeaders.length > 0) {
               const mergedMethods = mergeFragmentsWithHoistedFragmentsPresorted(
-                orderedMethods.map((m) => m.fragment),
+                [
+                  ...orderedHeaders.map((h) => h.fragment),
+                  ...orderedMethods.map((m) => m.fragment),
+                ],
               );
               await builder.apply(
                 typescriptFile.renderTemplateFragment({

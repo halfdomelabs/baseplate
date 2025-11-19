@@ -1,3 +1,4 @@
+export * from './case.js';
 export * from './convert-case-with-prefix.js';
 export * from './find-closest-match.js';
 export * from './quot.js';

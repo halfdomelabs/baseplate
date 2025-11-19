@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
+  tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
   tsUtilsImportsProvider,
@@ -13,11 +14,20 @@ import {
 import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import type { ServiceOutputDtoInjectedArg } from '#src/types/service-output.js';
+
 import { serviceFileOutputProvider } from '#src/generators/core/service-file/index.js';
 import {
   pothosFieldProvider,
   pothosTypeOutputProvider,
 } from '#src/generators/pothos/_providers/index.js';
+import { getPrimaryKeyDefinition } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
+import { prismaOutputProvider } from '#src/generators/prisma/index.js';
+import {
+  contextKind,
+  prismaQueryKind,
+  prismaWhereUniqueInputKind,
+} from '#src/types/service-dto-kinds.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   writePothosInputFieldsFromDtoFields,
@@ -37,9 +47,9 @@ const descriptorSchema = z.object({
    */
   modelName: z.string().min(1),
   /**
-   * The type of the mutation.
+   * The name of the mutation.
    */
-  type: z.enum(['create', 'update', 'delete']),
+  name: z.string().min(1),
   /**
    * The reference to the crud service.
    */
@@ -48,28 +58,72 @@ const descriptorSchema = z.object({
    * The order of the type in the types file.
    */
   order: z.number(),
-  /**
-   * Whether the mutation has a primary key input type.
-   */
-  hasPrimaryKeyInputType: z.boolean(),
 });
+
+type InjectedArgRequirements = 'context' | 'info' | 'id';
+
+/**
+ * Handles injected service arguments by generating the appropriate code fragments.
+ * Injected arguments are provided by the framework (context, query, where/id mapping).
+ */
+function handleInjectedArg(
+  arg: ServiceOutputDtoInjectedArg,
+  context: { returnFieldName: string },
+): { fragment: TsCodeFragment; requirements: InjectedArgRequirements[] } {
+  switch (arg.kind) {
+    case contextKind: {
+      // expect context
+      return { fragment: tsCodeFragment('context'), requirements: ['context'] };
+    }
+
+    case prismaQueryKind: {
+      // expect context and info
+      return {
+        fragment: TsCodeUtils.formatFragment(
+          'queryFromInfo({ context, info, path: PATH })',
+          { PATH: `[${quot(context.returnFieldName)}]` },
+          tsImportBuilder(['queryFromInfo']).from('@pothos/plugin-prisma'),
+        ),
+        requirements: ['context', 'info'],
+      };
+    }
+
+    case prismaWhereUniqueInputKind: {
+      // expect id
+      const typedArg = arg as ServiceOutputDtoInjectedArg<
+        typeof prismaWhereUniqueInputKind
+      >;
+      const { idFields } = typedArg.metadata;
+      return {
+        fragment:
+          idFields.length === 1
+            ? TsCodeUtils.mergeFragmentsAsObject({
+                [idFields[0]]: 'id',
+              })
+            : TsCodeUtils.mergeFragmentsAsObject({
+                [idFields.join('_')]: 'id',
+              }),
+        requirements: ['id'],
+      };
+    }
+
+    default: {
+      throw new Error(`Unknown injected argument kind: ${arg.kind.name}`);
+    }
+  }
+}
 
 export const pothosPrismaCrudMutationGenerator = createGenerator({
   name: 'pothos/pothos-prisma-crud-mutation',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({
-    modelName,
-    type,
-    crudServiceRef,
-    order,
-    hasPrimaryKeyInputType,
-  }) => ({
+  buildTasks: ({ modelName, name, crudServiceRef, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
         pothosTypesFile: pothosTypesFileProvider,
+        prismaOutput: prismaOutputProvider,
         serviceFileOutput: serviceFileOutputProvider
           .dependency()
           .reference(crudServiceRef),
@@ -80,9 +134,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
         pothosPrimaryKeyInputType: pothosTypeOutputProvider
           .dependency()
           .optionalReference(
-            hasPrimaryKeyInputType
-              ? getPothosPrismaPrimaryKeyTypeOutputName(modelName)
-              : undefined,
+            getPothosPrismaPrimaryKeyTypeOutputName(modelName),
           ),
       },
       exports: {
@@ -95,54 +147,43 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
         tsUtilsImports,
         pothosObjectType,
         pothosPrimaryKeyInputType,
+        prismaOutput,
       }) {
-        const serviceOutput = serviceFileOutput.getServiceMethod(type);
+        const serviceOutput = serviceFileOutput.getServiceMethod(name);
+        const prismaModel = prismaOutput.getPrismaModel(modelName);
         const typeReferences = [
           pothosObjectType.getTypeReference(),
           pothosPrimaryKeyInputType?.getTypeReference(),
         ].filter((x) => x !== undefined);
 
-        const mutationName = `${type}${modelName}`;
-
         const customFields = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({});
+        const returnFieldName = lowerCaseFirst(modelName);
 
-        // unwrap input object arguments
-        const unwrappedArguments = serviceOutput.arguments.flatMap((arg) => {
-          if (
-            arg.name === 'input' &&
-            arg.type === 'nested' &&
-            !arg.isPrismaType
-          ) {
-            return arg.nestedType.fields;
-          }
-          return [arg];
-        });
-
-        const inputArgument =
-          serviceOutput.arguments.length > 0
-            ? serviceOutput.arguments[0]
-            : undefined;
-
-        if (
-          !inputArgument ||
-          inputArgument.name !== 'input' ||
-          inputArgument.type !== 'nested' ||
-          inputArgument.isPrismaType
-        ) {
-          throw new Error('Expected input argument to be a nested object');
-        }
-
-        const inputFields = writePothosInputFieldsFromDtoFields(
-          inputArgument.nestedType.fields,
-          {
-            pothosSchemaBaseTypes,
-            typeReferences,
-            schemaBuilder: pothosTypesFile.getBuilderFragment(),
-            fieldBuilder: 't.input',
-          },
+        const serviceArgs = serviceOutput.arguments;
+        const injectedArgs = serviceArgs
+          .filter((arg) => arg.type === 'injected')
+          .map((arg) => handleInjectedArg(arg, { returnFieldName }));
+        const argRequirements = new Set(
+          injectedArgs.flatMap((arg) => arg.requirements),
         );
+        const nonInjectedArgs = serviceArgs.filter(
+          (arg) => arg.type === 'scalar' || arg.type === 'nested',
+        );
+
+        const inputArgs = [
+          argRequirements.has('id')
+            ? getPrimaryKeyDefinition(prismaModel)
+            : undefined,
+          ...nonInjectedArgs,
+        ].filter((x) => x !== undefined);
+        const inputFields = writePothosInputFieldsFromDtoFields(inputArgs, {
+          pothosSchemaBaseTypes,
+          typeReferences,
+          schemaBuilder: pothosTypesFile.getBuilderFragment(),
+          fieldBuilder: 't.input',
+        });
 
         return {
           providers: {
@@ -153,8 +194,6 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
             },
           },
           build: () => {
-            const returnFieldName = lowerCaseFirst(modelName);
-
             const payloadFields = writePothosSimpleObjectFieldsFromDtoFields(
               [
                 {
@@ -172,39 +211,37 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
               },
             );
 
-            const argNames = inputArgument.nestedType.fields.map(
-              (arg) => arg.name,
-            );
+            const argNames = inputArgs.map((arg) => arg.name);
+
+            const resolveFunctionArgs = [
+              'root',
+              `{ input: { ${argNames.join(', ')} } }`,
+              argRequirements.has('context') || argRequirements.has('info')
+                ? 'context'
+                : undefined,
+              argRequirements.has('info') ? 'info' : undefined,
+            ]
+              .filter((x) => x !== undefined)
+              .join(', ');
 
             const resolveFunction = TsCodeUtils.formatFragment(
-              `async (root, { input: INPUT_PARTS }, context, info) => {
+              `async (ARGS) => {
               const RETURN_FIELD_NAME = await SERVICE_CALL(SERVICE_ARGUMENTS);
               return { RETURN_FIELD_NAME };
             }`,
               {
-                INPUT_PARTS: `{ ${argNames.join(', ')} }`,
-                CONTEXT: serviceOutput.requiresContext ? 'context' : '',
+                ARGS: resolveFunctionArgs,
                 RETURN_FIELD_NAME: returnFieldName,
                 SERVICE_CALL: serviceOutput.referenceFragment,
                 SERVICE_ARGUMENTS: TsCodeUtils.mergeFragmentsAsObject(
-                  {
-                    ...Object.fromEntries(
-                      unwrappedArguments.map((arg) => [
-                        arg.name,
-                        writeValueFromPothosArg(arg, tsUtilsImports),
-                      ]),
-                    ),
-                    context: 'context',
-                    query: TsCodeUtils.formatFragment(
-                      'queryFromInfo({ context, info, path: PATH })',
-                      {
-                        PATH: `[${quot(returnFieldName)}]`,
-                      },
-                      tsImportBuilder(['queryFromInfo']).from(
-                        '@pothos/plugin-prisma',
-                      ),
-                    ),
-                  },
+                  Object.fromEntries(
+                    serviceArgs.map((arg) => [
+                      arg.name,
+                      arg.type === 'injected'
+                        ? handleInjectedArg(arg, { returnFieldName }).fragment
+                        : writeValueFromPothosArg(arg, tsUtilsImports),
+                    ]),
+                  ),
                   { disableSort: true },
                 ),
               },
@@ -223,7 +260,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
           );`,
               {
                 BUILDER: pothosTypesFile.getBuilderFragment(),
-                NAME: quot(mutationName),
+                NAME: quot(name),
                 OPTIONS: TsCodeUtils.mergeFragmentsAsObject(fieldOptions, {
                   disableSort: true,
                 }),
@@ -231,7 +268,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
             );
 
             pothosTypesFile.typeDefinitions.add({
-              name: mutationName,
+              name,
               fragment: mutationFragment,
               order,
             });

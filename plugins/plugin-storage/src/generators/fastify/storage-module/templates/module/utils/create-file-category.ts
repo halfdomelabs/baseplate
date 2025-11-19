@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type { FileCategory } from '$typesFileCategory';
+import type { Prisma } from '%prismaGeneratedImports';
 
 // Helper for common file size constraints
 export const FileSize = {
@@ -19,9 +20,13 @@ export const MimeTypes = {
   ],
 } as const;
 
-export function createFileCategory<TName extends string>(
-  config: FileCategory<TName>,
-): FileCategory<TName> {
+export function createFileCategory<
+  TName extends string,
+  TReferencedByRelation extends
+    keyof Prisma.FileCountOutputType = keyof Prisma.FileCountOutputType,
+>(
+  config: FileCategory<TName, TReferencedByRelation>,
+): FileCategory<TName, TReferencedByRelation> {
   if (!/^[A-Z][A-Z0-9_]*$/.test(config.name)) {
     throw new Error(
       'File category name must be CONSTANT_CASE (e.g., USER_AVATAR, POST_IMAGE)',

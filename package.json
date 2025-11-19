@@ -61,7 +61,7 @@
     "es-toolkit": "1.31.0",
     "eslint": "catalog:",
     "husky": "9.1.7",
-    "knip": "5.59.0",
+    "knip": "5.70.0",
     "lint-staged": "16.1.0",
     "prettier": "catalog:",
     "turbo": "2.5.0",

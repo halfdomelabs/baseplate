@@ -1,14 +1,18 @@
 // @ts-nocheck
 
 import type { StorageAdapterKey } from '$configAdapters';
-import type { File } from '%prismaGeneratedImports';
+import type { File, Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 
 /**
  * Configuration for a file category that specifies how files for a
  * particular model relation to File model should be handled.
  */
-export interface FileCategory<TName extends string = string> {
+export interface FileCategory<
+  TName extends string = string,
+  TReferencedByRelation extends
+    keyof Prisma.FileCountOutputType = keyof Prisma.FileCountOutputType,
+> {
   /** Name of category (must be CONSTANT_CASE) */
   readonly name: TName;
 
@@ -49,5 +53,5 @@ export interface FileCategory<TName extends string = string> {
   /**
    * The relation that references this file category.
    */
-  readonly referencedByRelation: keyof TPL_FILE_COUNT_OUTPUT_TYPE;
+  readonly referencedByRelation: TReferencedByRelation;
 }

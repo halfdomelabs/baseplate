@@ -12,7 +12,7 @@ import {
 
 import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
 
-const storageModuleImportsSchema = createTsImportMapSchema({
+export const storageModuleImportsSchema = createTsImportMapSchema({
   createFileCategory: {},
   createPresignedDownloadUrl: {},
   CreatePresignedUploadOptions: { isTypeOnly: true },
@@ -23,10 +23,11 @@ const storageModuleImportsSchema = createTsImportMapSchema({
   FILE_CATEGORIES: {},
   FileCategory: { isTypeOnly: true },
   FileCategoryName: { isTypeOnly: true },
+  fileField: {},
+  FileInput: { isTypeOnly: true },
   fileInputInputType: {},
   FileMetadata: { isTypeOnly: true },
   FileSize: {},
-  FileUploadInput: { isTypeOnly: true },
   FileUploadOptions: { isTypeOnly: true },
   getCategoryByName: {},
   getCategoryByNameOrThrow: {},
@@ -39,7 +40,6 @@ const storageModuleImportsSchema = createTsImportMapSchema({
   StorageAdapter: { isTypeOnly: true },
   StorageAdapterKey: { isTypeOnly: true },
   validateFileExtensionWithMimeType: {},
-  validateFileInput: {},
   validateFileUploadOptions: {},
 });
 
@@ -73,10 +73,11 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           FILE_CATEGORIES: paths.configCategories,
           FileCategory: paths.typesFileCategory,
           FileCategoryName: paths.configCategories,
+          fileField: paths.servicesFileField,
+          FileInput: paths.servicesFileField,
           fileInputInputType: paths.schemaFileInput,
           FileMetadata: paths.typesAdapter,
           FileSize: paths.utilsCreateFileCategory,
-          FileUploadInput: paths.servicesValidateFileInput,
           FileUploadOptions: paths.utilsValidateFileUploadOptions,
           getCategoryByName: paths.configCategories,
           getCategoryByNameOrThrow: paths.configCategories,
@@ -89,7 +90,6 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           StorageAdapter: paths.typesAdapter,
           StorageAdapterKey: paths.configAdapters,
           validateFileExtensionWithMimeType: paths.utilsMime,
-          validateFileInput: paths.servicesValidateFileInput,
           validateFileUploadOptions: paths.utilsValidateFileUploadOptions,
         }),
       },

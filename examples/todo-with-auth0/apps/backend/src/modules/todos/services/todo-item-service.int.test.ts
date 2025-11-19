@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
-import { createTodoItem, updateTodoItem } from './todo-item.crud.js';
+import { createTodoItem, updateTodoItem } from './todo-item.data-service.js';
 
 const context = createTestServiceContext();
 
@@ -66,7 +66,7 @@ describe('create', () => {
     });
 
     await updateTodoItem({
-      id: createdItem.id,
+      where: { id: createdItem.id },
       data: {
         todoListId: todoList.id,
         position: 1,

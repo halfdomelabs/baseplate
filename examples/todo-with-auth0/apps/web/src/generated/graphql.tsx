@@ -59,9 +59,18 @@ export type CreatePresignedUploadUrlPayload = {
   url: Scalars['String']['output'];
 };
 
+export type CreateTodoItemData = {
+  assigneeId?: InputMaybe<Scalars['Uuid']['input']>;
+  attachments?: InputMaybe<Array<TodoItemAttachmentsNestedInput>>;
+  done: Scalars['Boolean']['input'];
+  position: Scalars['Int']['input'];
+  text: Scalars['String']['input'];
+  todoListId: Scalars['Uuid']['input'];
+};
+
 /** Input type for createTodoItem mutation */
 export type CreateTodoItemInput = {
-  data: TodoItemCreateData;
+  data: CreateTodoItemData;
 };
 
 /** Payload type for createTodoItem mutation */
@@ -70,9 +79,18 @@ export type CreateTodoItemPayload = {
   todoItem: TodoItem;
 };
 
+export type CreateTodoListData = {
+  coverPhoto?: InputMaybe<FileInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  name: Scalars['String']['input'];
+  ownerId: Scalars['Uuid']['input'];
+  position: Scalars['Int']['input'];
+  status?: InputMaybe<TodoListStatus>;
+};
+
 /** Input type for createTodoList mutation */
 export type CreateTodoListInput = {
-  data: TodoListCreateData;
+  data: CreateTodoListData;
 };
 
 /** Payload type for createTodoList mutation */
@@ -81,9 +99,16 @@ export type CreateTodoListPayload = {
   todoList: TodoList;
 };
 
+export type CreateTodoListShareData = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  todoListId: Scalars['Uuid']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['Uuid']['input'];
+};
+
 /** Input type for createTodoListShare mutation */
 export type CreateTodoListShareInput = {
-  data: TodoListShareCreateData;
+  data: CreateTodoListShareData;
 };
 
 /** Payload type for createTodoListShare mutation */
@@ -92,9 +117,18 @@ export type CreateTodoListSharePayload = {
   todoListShare: TodoListShare;
 };
 
+export type CreateUserData = {
+  customer?: InputMaybe<UserCustomerNestedInput>;
+  email: Scalars['String']['input'];
+  images?: InputMaybe<Array<UserImagesNestedInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<UserRolesNestedInput>>;
+  userProfile?: InputMaybe<UserUserProfileNestedInput>;
+};
+
 /** Input type for createUser mutation */
 export type CreateUserInput = {
-  data: UserCreateData;
+  data: CreateUserData;
 };
 
 /** Payload type for createUser mutation */
@@ -338,10 +372,6 @@ export type TodoItemAttachment = {
   url: Scalars['String']['output'];
 };
 
-export type TodoItemAttachmentEmbeddedTagsData = {
-  tag: Scalars['String']['input'];
-};
-
 export type TodoItemAttachmentTag = {
   __typename?: 'TodoItemAttachmentTag';
   tag: Scalars['String']['output'];
@@ -349,29 +379,15 @@ export type TodoItemAttachmentTag = {
   todoItemAttachmentId: Scalars['Uuid']['output'];
 };
 
-export type TodoItemCreateData = {
-  assigneeId?: InputMaybe<Scalars['Uuid']['input']>;
-  attachments?: InputMaybe<Array<TodoItemEmbeddedAttachmentsData>>;
-  done: Scalars['Boolean']['input'];
-  position: Scalars['Int']['input'];
-  text: Scalars['String']['input'];
-  todoListId: Scalars['Uuid']['input'];
+export type TodoItemAttachmentTagsNestedInput = {
+  tag: Scalars['String']['input'];
 };
 
-export type TodoItemEmbeddedAttachmentsData = {
-  id?: InputMaybe<Scalars['Uuid']['input']>;
+export type TodoItemAttachmentsNestedInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   position: Scalars['Int']['input'];
-  tags?: InputMaybe<Array<TodoItemAttachmentEmbeddedTagsData>>;
+  tags?: InputMaybe<Array<TodoItemAttachmentTagsNestedInput>>;
   url: Scalars['String']['input'];
-};
-
-export type TodoItemUpdateData = {
-  assigneeId?: InputMaybe<Scalars['Uuid']['input']>;
-  attachments?: InputMaybe<Array<TodoItemEmbeddedAttachmentsData>>;
-  done?: InputMaybe<Scalars['Boolean']['input']>;
-  position?: InputMaybe<Scalars['Int']['input']>;
-  text?: InputMaybe<Scalars['String']['input']>;
-  todoListId?: InputMaybe<Scalars['Uuid']['input']>;
 };
 
 export type TodoList = {
@@ -387,15 +403,6 @@ export type TodoList = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type TodoListCreateData = {
-  coverPhoto?: InputMaybe<FileInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  name: Scalars['String']['input'];
-  ownerId: Scalars['Uuid']['input'];
-  position: Scalars['Int']['input'];
-  status?: InputMaybe<TodoListStatus>;
-};
-
 export type TodoListShare = {
   __typename?: 'TodoListShare';
   createdAt: Scalars['DateTime']['output'];
@@ -406,41 +413,27 @@ export type TodoListShare = {
   userId: Scalars['Uuid']['output'];
 };
 
-export type TodoListShareCreateData = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  todoListId: Scalars['Uuid']['input'];
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  userId: Scalars['Uuid']['input'];
-};
-
 export type TodoListSharePrimaryKey = {
   todoListId: Scalars['Uuid']['input'];
   userId: Scalars['Uuid']['input'];
-};
-
-export type TodoListShareUpdateData = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  todoListId?: InputMaybe<Scalars['Uuid']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  userId?: InputMaybe<Scalars['Uuid']['input']>;
 };
 
 export type TodoListStatus =
   | 'ACTIVE'
   | 'INACTIVE';
 
-export type TodoListUpdateData = {
-  coverPhoto?: InputMaybe<FileInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  ownerId?: InputMaybe<Scalars['Uuid']['input']>;
+export type UpdateTodoItemData = {
+  assigneeId?: InputMaybe<Scalars['Uuid']['input']>;
+  attachments?: InputMaybe<Array<TodoItemAttachmentsNestedInput>>;
+  done?: InputMaybe<Scalars['Boolean']['input']>;
   position?: InputMaybe<Scalars['Int']['input']>;
-  status?: InputMaybe<TodoListStatus>;
+  text?: InputMaybe<Scalars['String']['input']>;
+  todoListId?: InputMaybe<Scalars['Uuid']['input']>;
 };
 
 /** Input type for updateTodoItem mutation */
 export type UpdateTodoItemInput = {
-  data: TodoItemUpdateData;
+  data: UpdateTodoItemData;
   id: Scalars['Uuid']['input'];
 };
 
@@ -450,9 +443,18 @@ export type UpdateTodoItemPayload = {
   todoItem: TodoItem;
 };
 
+export type UpdateTodoListData = {
+  coverPhoto?: InputMaybe<FileInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  ownerId?: InputMaybe<Scalars['Uuid']['input']>;
+  position?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<TodoListStatus>;
+};
+
 /** Input type for updateTodoList mutation */
 export type UpdateTodoListInput = {
-  data: TodoListUpdateData;
+  data: UpdateTodoListData;
   id: Scalars['Uuid']['input'];
 };
 
@@ -462,9 +464,16 @@ export type UpdateTodoListPayload = {
   todoList: TodoList;
 };
 
+export type UpdateTodoListShareData = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  todoListId?: InputMaybe<Scalars['Uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId?: InputMaybe<Scalars['Uuid']['input']>;
+};
+
 /** Input type for updateTodoListShare mutation */
 export type UpdateTodoListShareInput = {
-  data: TodoListShareUpdateData;
+  data: UpdateTodoListShareData;
   id: TodoListSharePrimaryKey;
 };
 
@@ -474,9 +483,18 @@ export type UpdateTodoListSharePayload = {
   todoListShare: TodoListShare;
 };
 
+export type UpdateUserData = {
+  customer?: InputMaybe<UserCustomerNestedInput>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  images?: InputMaybe<Array<UserImagesNestedInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<UserRolesNestedInput>>;
+  userProfile?: InputMaybe<UserUserProfileNestedInput>;
+};
+
 /** Input type for updateUser mutation */
 export type UpdateUserInput = {
-  data: UserUpdateData;
+  data: UpdateUserData;
   id: Scalars['Uuid']['input'];
 };
 
@@ -499,34 +517,8 @@ export type User = {
   userProfile?: Maybe<UserProfile>;
 };
 
-export type UserCreateData = {
-  customer?: InputMaybe<UserEmbeddedCustomerData>;
-  email: Scalars['String']['input'];
-  images?: InputMaybe<Array<UserEmbeddedImagesData>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  roles?: InputMaybe<Array<UserEmbeddedRolesData>>;
-  userProfile?: InputMaybe<UserEmbeddedUserProfileData>;
-};
-
-export type UserEmbeddedCustomerData = {
+export type UserCustomerNestedInput = {
   stripeCustomerId: Scalars['String']['input'];
-};
-
-export type UserEmbeddedImagesData = {
-  caption: Scalars['String']['input'];
-  file: FileInput;
-  id?: InputMaybe<Scalars['Uuid']['input']>;
-};
-
-export type UserEmbeddedRolesData = {
-  role: Scalars['String']['input'];
-};
-
-export type UserEmbeddedUserProfileData = {
-  avatar?: InputMaybe<FileInput>;
-  bio?: InputMaybe<Scalars['String']['input']>;
-  birthDay?: InputMaybe<Scalars['Date']['input']>;
-  id?: InputMaybe<Scalars['Uuid']['input']>;
 };
 
 export type UserImage = {
@@ -535,6 +527,12 @@ export type UserImage = {
   fileId: Scalars['Uuid']['output'];
   id: Scalars['ID']['output'];
   userId: Scalars['Uuid']['output'];
+};
+
+export type UserImagesNestedInput = {
+  caption: Scalars['String']['input'];
+  file: FileInput;
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UserProfile = {
@@ -558,13 +556,15 @@ export type UserRole = {
   userId: Scalars['Uuid']['output'];
 };
 
-export type UserUpdateData = {
-  customer?: InputMaybe<UserEmbeddedCustomerData>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  images?: InputMaybe<Array<UserEmbeddedImagesData>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  roles?: InputMaybe<Array<UserEmbeddedRolesData>>;
-  userProfile?: InputMaybe<UserEmbeddedUserProfileData>;
+export type UserRolesNestedInput = {
+  role: Scalars['String']['input'];
+};
+
+export type UserUserProfileNestedInput = {
+  avatar?: InputMaybe<FileInput>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  birthDay?: InputMaybe<Scalars['Date']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type CurrentUserFragment = { __typename?: 'User', id: string, email: string };

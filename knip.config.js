@@ -35,6 +35,9 @@ export default {
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-web': {
       entry: ['src/main.{ts,tsx}'],
@@ -118,13 +121,9 @@ export default {
     },
     'packages/tools': {
       project: 'src/**/*.{ts,tsx}',
-      ignoreDependencies: [
-        // automatically imported by eslint-plugin-import-x
-        'eslint-import-resolver-typescript',
-      ],
     },
     'packages/create-project': {
-      entry: ['src/index.{ts,tsx}'],
+      entry: ['src/create-baseplate-project.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       paths: {
         '#src/*': ['./src/*'],

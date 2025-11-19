@@ -12,7 +12,7 @@ import {
 
 import { AUTH_AUTH_ERRORS_PATHS } from './template-paths.js';
 
-const authErrorsImportsSchema = createTsImportMapSchema({
+export const authErrorsImportsSchema = createTsImportMapSchema({
   InvalidRoleError: {},
 });
 

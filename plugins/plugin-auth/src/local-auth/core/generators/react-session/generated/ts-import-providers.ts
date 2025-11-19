@@ -12,7 +12,7 @@ import {
 
 import { LOCAL_AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
 
-const reactSessionImportsSchema = createTsImportMapSchema({
+export const reactSessionImportsSchema = createTsImportMapSchema({
   userSessionClient: {},
   UserSessionClient: {},
 });

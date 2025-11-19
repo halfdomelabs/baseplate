@@ -12,7 +12,7 @@ import {
 
 import { CORE_SERVICE_CONTEXT_PATHS } from './template-paths.js';
 
-const serviceContextImportsSchema = createTsImportMapSchema({
+export const serviceContextImportsSchema = createTsImportMapSchema({
   createServiceContext: {},
   createSystemServiceContext: {},
   createTestServiceContext: {},

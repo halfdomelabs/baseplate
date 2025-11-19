@@ -2,6 +2,7 @@
   "files": {
     "added": [
       "src/modules/accounts/users/services/user.crud.int.test.ts",
+      "src/modules/accounts/users/services/user.data-service.int.test.ts",
       "src/modules/storage/queues/clean-unused-files.ts",
       "src/modules/storage/services/clean-unused-files.ts",
       "src/modules/storage/utils/mime.unit.test.ts",

@@ -12,7 +12,7 @@ import {
 
 import { CORE_REACT_LOGGER_PATHS } from './template-paths.js';
 
-const reactLoggerImportsSchema = createTsImportMapSchema({ logger: {} });
+export const reactLoggerImportsSchema = createTsImportMapSchema({ logger: {} });
 
 export type ReactLoggerImportsProvider = TsImportMapProviderFromSchema<
   typeof reactLoggerImportsSchema

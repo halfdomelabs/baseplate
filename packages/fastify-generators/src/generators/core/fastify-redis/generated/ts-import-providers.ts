@@ -12,7 +12,7 @@ import {
 
 import { CORE_FASTIFY_REDIS_PATHS } from './template-paths.js';
 
-const fastifyRedisImportsSchema = createTsImportMapSchema({
+export const fastifyRedisImportsSchema = createTsImportMapSchema({
   createRedisClient: {},
   getRedisClient: {},
 });

@@ -226,15 +226,6 @@ export const storageModuleGenerator = createGenerator({
                     TPL_FILE_MODEL: model,
                     TPL_FILE_MODEL_TYPE: modelType,
                   },
-                  servicesValidateFileInput: {
-                    TPL_FILE_MODEL: model,
-                  },
-                  typesFileCategory: {
-                    TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
-                      `Prisma.${STORAGE_MODELS.file}CountOutputType`,
-                      prismaGeneratedImports.Prisma.typeDeclaration(),
-                    ),
-                  },
                   utilsValidateFileUploadOptions: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
                       `Prisma.${STORAGE_MODELS.file}CreateInput`,

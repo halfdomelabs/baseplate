@@ -7,6 +7,7 @@ export const prismaGeneratedImportsSchema = createTsImportMapSchema({
   PrismaClient: {},
   Prisma: {},
   '*': {},
+  $Enums: {},
 });
 
 export type PrismaGeneratedImportsProvider = TsImportMapProviderFromSchema<

@@ -12,7 +12,9 @@ import {
 
 import { CORE_LOGGER_SERVICE_PATHS } from './template-paths.js';
 
-const loggerServiceImportsSchema = createTsImportMapSchema({ logger: {} });
+export const loggerServiceImportsSchema = createTsImportMapSchema({
+  logger: {},
+});
 
 export type LoggerServiceImportsProvider = TsImportMapProviderFromSchema<
   typeof loggerServiceImportsSchema

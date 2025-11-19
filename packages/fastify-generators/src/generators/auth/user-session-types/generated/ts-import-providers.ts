@@ -12,7 +12,7 @@ import {
 
 import { AUTH_USER_SESSION_TYPES_PATHS } from './template-paths.js';
 
-const userSessionTypesImportsSchema = createTsImportMapSchema({
+export const userSessionTypesImportsSchema = createTsImportMapSchema({
   UserSessionPayload: { isTypeOnly: true },
   UserSessionService: { isTypeOnly: true },
 });

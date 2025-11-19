@@ -12,7 +12,7 @@ export interface ModelTransformerCompiler<
   T extends TransformerConfig = TransformerConfig,
 > {
   name: string;
-  compileTransformer: (
+  compileField: (
     definition: T,
     {
       definitionContainer,

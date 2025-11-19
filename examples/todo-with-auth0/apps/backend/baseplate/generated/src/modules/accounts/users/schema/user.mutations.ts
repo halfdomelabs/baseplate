@@ -4,39 +4,43 @@ import { builder } from '@src/plugins/graphql/builder.js';
 import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import { fileInputInputType } from '../../../storage/schema/file-input.input-type.js';
-import { createUser, deleteUser, updateUser } from '../services/user.crud.js';
+import {
+  createUser,
+  deleteUser,
+  updateUser,
+} from '../services/user.data-service.js';
 import { userObjectType } from './user.object-type.js';
 
-const userEmbeddedCustomerDataInputType = builder.inputType(
-  'UserEmbeddedCustomerData',
+const userCustomerNestedInputInputType = builder.inputType(
+  'UserCustomerNestedInput',
   {
     fields: (t) => ({ stripeCustomerId: t.string({ required: true }) }),
   },
 );
 
-const userEmbeddedImagesDataInputType = builder.inputType(
-  'UserEmbeddedImagesData',
+const userImagesNestedInputInputType = builder.inputType(
+  'UserImagesNestedInput',
   {
     fields: (t) => ({
-      id: t.field({ type: 'Uuid' }),
+      id: t.id(),
       caption: t.string({ required: true }),
       file: t.field({ required: true, type: fileInputInputType }),
     }),
   },
 );
 
-const userEmbeddedRolesDataInputType = builder.inputType(
-  'UserEmbeddedRolesData',
+const userRolesNestedInputInputType = builder.inputType(
+  'UserRolesNestedInput',
   {
     fields: (t) => ({ role: t.string({ required: true }) }),
   },
 );
 
-const userEmbeddedUserProfileDataInputType = builder.inputType(
-  'UserEmbeddedUserProfileData',
+const userUserProfileNestedInputInputType = builder.inputType(
+  'UserUserProfileNestedInput',
   {
     fields: (t) => ({
-      id: t.field({ type: 'Uuid' }),
+      id: t.id(),
       bio: t.string(),
       birthDay: t.field({ type: 'Date' }),
       avatar: t.field({ type: fileInputInputType }),
@@ -44,21 +48,21 @@ const userEmbeddedUserProfileDataInputType = builder.inputType(
   },
 );
 
-const userCreateDataInputType = builder.inputType('UserCreateData', {
+const createUserDataInputType = builder.inputType('CreateUserData', {
   fields: (t) => ({
     name: t.string(),
     email: t.string({ required: true }),
-    roles: t.field({ type: [userEmbeddedRolesDataInputType] }),
-    customer: t.field({ type: userEmbeddedCustomerDataInputType }),
-    userProfile: t.field({ type: userEmbeddedUserProfileDataInputType }),
-    images: t.field({ type: [userEmbeddedImagesDataInputType] }),
+    customer: t.field({ type: userCustomerNestedInputInputType }),
+    images: t.field({ type: [userImagesNestedInputInputType] }),
+    roles: t.field({ type: [userRolesNestedInputInputType] }),
+    userProfile: t.field({ type: userUserProfileNestedInputInputType }),
   }),
 });
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
     input: {
-      data: t.input.field({ required: true, type: userCreateDataInputType }),
+      data: t.input.field({ required: true, type: createUserDataInputType }),
     },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
@@ -67,13 +71,13 @@ builder.mutationField('createUser', (t) =>
         data: restrictObjectNulls(
           {
             ...data,
-            userProfile:
-              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
             images: data.images?.map((image) =>
               restrictObjectNulls(image, ['id']),
             ),
+            userProfile:
+              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
           },
-          ['roles', 'customer', 'userProfile', 'images'],
+          ['customer', 'images', 'roles', 'userProfile'],
         ),
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
@@ -83,14 +87,14 @@ builder.mutationField('createUser', (t) =>
   }),
 );
 
-const userUpdateDataInputType = builder.inputType('UserUpdateData', {
+const updateUserDataInputType = builder.inputType('UpdateUserData', {
   fields: (t) => ({
     name: t.string(),
     email: t.string(),
-    roles: t.field({ type: [userEmbeddedRolesDataInputType] }),
-    customer: t.field({ type: userEmbeddedCustomerDataInputType }),
-    userProfile: t.field({ type: userEmbeddedUserProfileDataInputType }),
-    images: t.field({ type: [userEmbeddedImagesDataInputType] }),
+    customer: t.field({ type: userCustomerNestedInputInputType }),
+    images: t.field({ type: [userImagesNestedInputInputType] }),
+    roles: t.field({ type: [userRolesNestedInputInputType] }),
+    userProfile: t.field({ type: userUserProfileNestedInputInputType }),
   }),
 });
 
@@ -98,23 +102,23 @@ builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
     input: {
       id: t.input.field({ required: true, type: 'Uuid' }),
-      data: t.input.field({ required: true, type: userUpdateDataInputType }),
+      data: t.input.field({ required: true, type: updateUserDataInputType }),
     },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
     resolve: async (root, { input: { id, data } }, context, info) => {
       const user = await updateUser({
-        id,
+        where: { id },
         data: restrictObjectNulls(
           {
             ...data,
-            userProfile:
-              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
             images: data.images?.map((image) =>
               restrictObjectNulls(image, ['id']),
             ),
+            userProfile:
+              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
           },
-          ['email', 'roles', 'images'],
+          ['email', 'customer', 'images', 'roles', 'userProfile'],
         ),
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
@@ -131,7 +135,7 @@ builder.mutationField('deleteUser', (t) =>
     authorize: ['admin'],
     resolve: async (root, { input: { id } }, context, info) => {
       const user = await deleteUser({
-        id,
+        where: { id },
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
       });

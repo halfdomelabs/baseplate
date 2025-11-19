@@ -5,14 +5,14 @@ import {
   modelTransformerCompilerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { prismaFileTransformerGenerator } from '#src/generators/fastify/index.js';
+import { fileDataFieldGenerator } from '#src/generators/fastify/index.js';
 
 import type { FileTransformerDefinition } from './schema/file-transformer.schema.js';
 
 function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransformerDefinition> {
   return {
     name: 'file',
-    compileTransformer(definition, { model }) {
+    compileField(definition, { model }) {
       const { fileRelationRef, category } = definition;
 
       const foreignRelation = model.model.relations?.find(
@@ -21,13 +21,14 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
 
       if (!foreignRelation) {
         throw new Error(
-          `Could not find relation ${fileRelationRef} for file transformer`,
+          `Could not find relation ${fileRelationRef} for file field`,
         );
       }
 
-      return prismaFileTransformerGenerator({
+      return fileDataFieldGenerator({
+        modelName: model.name,
+        relationName: foreignRelation.name,
         category: category.name,
-        name: foreignRelation.name,
         featureId: model.featureRef,
       });
     },

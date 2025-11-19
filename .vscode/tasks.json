@@ -44,7 +44,7 @@
       "problemMatcher": {
         "base": "$tsc-watch",
         "owner": "typescript",
-        "applyTo": "allDocuments",
+        "applyTo": "closedDocuments",
         "pattern": {
           "regexp": "^//:watch:tsc:root: (.+):(\\d+):(\\d+) - (error|warning|info) TS(\\d+): (.*)$",
           "file": 1,

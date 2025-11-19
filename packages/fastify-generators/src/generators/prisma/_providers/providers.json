@@ -7,7 +7,8 @@
       "projectExports": {
         "PrismaClient": {},
         "Prisma": {},
-        "*": {}
+        "*": {},
+        "$Enums": {}
       }
     }
   }

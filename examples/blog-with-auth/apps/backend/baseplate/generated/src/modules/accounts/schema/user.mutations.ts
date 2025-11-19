@@ -3,21 +3,25 @@ import { queryFromInfo } from '@pothos/plugin-prisma';
 import { builder } from '@src/plugins/graphql/builder.js';
 import { restrictObjectNulls } from '@src/utils/nulls.js';
 
-import { createUser, deleteUser, updateUser } from '../services/user.crud.js';
+import {
+  createUser,
+  deleteUser,
+  updateUser,
+} from '../services/user.data-service.js';
 import { userObjectType } from './user.object-type.js';
 
-const userCreateDataInputType = builder.inputType('UserCreateData', {
+const createUserDataInputType = builder.inputType('CreateUserData', {
   fields: (t) => ({
+    email: t.string(),
     name: t.string(),
     emailVerified: t.boolean(),
-    email: t.string(),
   }),
 });
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
     input: {
-      data: t.input.field({ required: true, type: userCreateDataInputType }),
+      data: t.input.field({ required: true, type: createUserDataInputType }),
     },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
@@ -32,11 +36,11 @@ builder.mutationField('createUser', (t) =>
   }),
 );
 
-const userUpdateDataInputType = builder.inputType('UserUpdateData', {
+const updateUserDataInputType = builder.inputType('UpdateUserData', {
   fields: (t) => ({
+    email: t.string(),
     name: t.string(),
     emailVerified: t.boolean(),
-    email: t.string(),
   }),
 });
 
@@ -44,13 +48,13 @@ builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
     input: {
       id: t.input.field({ required: true, type: 'Uuid' }),
-      data: t.input.field({ required: true, type: userUpdateDataInputType }),
+      data: t.input.field({ required: true, type: updateUserDataInputType }),
     },
     payload: { user: t.payload.field({ type: userObjectType }) },
     authorize: ['admin'],
     resolve: async (root, { input: { id, data } }, context, info) => {
       const user = await updateUser({
-        id,
+        where: { id },
         data: restrictObjectNulls(data, ['emailVerified']),
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
@@ -67,7 +71,7 @@ builder.mutationField('deleteUser', (t) =>
     authorize: ['admin'],
     resolve: async (root, { input: { id } }, context, info) => {
       const user = await deleteUser({
-        id,
+        where: { id },
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
       });

@@ -12,7 +12,7 @@ import {
 
 import { CORE_APP_MODULE_SETUP_PATHS } from './template-paths.js';
 
-const appModuleSetupImportsSchema = createTsImportMapSchema({
+export const appModuleSetupImportsSchema = createTsImportMapSchema({
   flattenAppModule: {},
 });
 

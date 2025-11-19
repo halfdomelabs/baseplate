@@ -35,6 +35,18 @@
     "./extractors": {
       "types": "./dist/renderers/extractors.d.ts",
       "default": "./dist/renderers/extractors.js"
+    },
+    "./test-helpers": {
+      "types": "./dist/test-helpers/index.d.ts",
+      "default": "./dist/test-helpers/index.js"
+    },
+    "./test-helpers/setup": {
+      "types": "./dist/test-helpers/setup.d.ts",
+      "default": "./dist/test-helpers/setup.js"
+    },
+    "./test-helpers/vitest-types": {
+      "types": "./dist/test-helpers/vitest-types.d.ts",
+      "default": "./dist/test-helpers/vitest-types.js"
     }
   },
   "main": "dist/index.js",

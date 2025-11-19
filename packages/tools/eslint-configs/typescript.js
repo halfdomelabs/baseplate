@@ -33,6 +33,7 @@ export function generateTypescriptEslintConfig(options = []) {
     '**/*.test.{js,ts,jsx,tsx}',
     '**/*.bench.{js,ts,jsx,tsx}',
     '**/tests/**/*',
+    '**/test-helpers/**/*',
     '**/__mocks__/**/*',
     // allow dev dependencies for config files at root level
     '*.{js,ts}',

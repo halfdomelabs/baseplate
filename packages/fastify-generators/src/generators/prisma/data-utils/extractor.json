@@ -1,0 +1,190 @@
+{
+  "name": "prisma/data-utils",
+  "templates": {
+    "define-operations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-operations/define-operations.ts",
+      "projectExports": {
+        "defineCreateOperation": {
+          "isTypeOnly": false,
+          "name": "defineCreateOperation"
+        },
+        "defineDeleteOperation": {
+          "isTypeOnly": false,
+          "name": "defineDeleteOperation"
+        },
+        "defineUpdateOperation": {
+          "isTypeOnly": false,
+          "name": "defineUpdateOperation"
+        }
+      },
+      "referencedGeneratorTemplates": ["prisma-types", "prisma-utils", "types"],
+      "sourceFile": "src/utils/data-operations/define-operations.ts",
+      "variables": {}
+    },
+    "field-definitions": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-operations/field-definitions.ts",
+      "projectExports": {
+        "createParentModelConfig": {
+          "isTypeOnly": false,
+          "name": "createParentModelConfig"
+        },
+        "nestedOneToManyField": {
+          "isTypeOnly": false,
+          "name": "nestedOneToManyField"
+        },
+        "NestedOneToManyFieldConfig": {
+          "isTypeOnly": true,
+          "name": "NestedOneToManyFieldConfig"
+        },
+        "nestedOneToOneField": {
+          "isTypeOnly": false,
+          "name": "nestedOneToOneField"
+        },
+        "NestedOneToOneFieldConfig": {
+          "isTypeOnly": true,
+          "name": "NestedOneToOneFieldConfig"
+        },
+        "ParentModelConfig": {
+          "isTypeOnly": true,
+          "name": "ParentModelConfig"
+        },
+        "scalarField": { "isTypeOnly": false, "name": "scalarField" }
+      },
+      "referencedGeneratorTemplates": [
+        "define-operations",
+        "prisma-types",
+        "prisma-utils",
+        "types"
+      ],
+      "sourceFile": "src/utils/data-operations/field-definitions.ts",
+      "variables": {}
+    },
+    "prisma-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-types.ts",
+      "sourceFile": "src/utils/data-operations/prisma-types.ts",
+      "variables": {}
+    },
+    "prisma-utils": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-utils.ts",
+      "referencedGeneratorTemplates": ["prisma-types", "types"],
+      "sourceFile": "src/utils/data-operations/prisma-utils.ts",
+      "variables": {}
+    },
+    "relation-helpers": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/data-operations/relation-helpers.ts",
+      "projectExports": {
+        "relationHelpers": { "isTypeOnly": false, "name": "relationHelpers" }
+      },
+      "sourceFile": "src/utils/data-operations/relation-helpers.ts",
+      "variables": {}
+    },
+    "types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-operations/types.ts",
+      "projectExports": {
+        "AnyFieldDefinition": {
+          "isTypeOnly": true,
+          "name": "AnyFieldDefinition"
+        },
+        "AnyOperationHooks": {
+          "isTypeOnly": true,
+          "name": "AnyOperationHooks"
+        },
+        "DataOperationType": {
+          "isTypeOnly": true,
+          "name": "DataOperationType"
+        },
+        "FieldContext": { "isTypeOnly": true, "name": "FieldContext" },
+        "FieldDefinition": { "isTypeOnly": true, "name": "FieldDefinition" },
+        "FieldTransformData": {
+          "isTypeOnly": true,
+          "name": "FieldTransformData"
+        },
+        "FieldTransformResult": {
+          "isTypeOnly": true,
+          "name": "FieldTransformResult"
+        },
+        "InferFieldsOutput": {
+          "isTypeOnly": true,
+          "name": "InferFieldsOutput"
+        },
+        "InferInput": { "isTypeOnly": true, "name": "InferInput" },
+        "OperationContext": { "isTypeOnly": true, "name": "OperationContext" },
+        "OperationHooks": { "isTypeOnly": true, "name": "OperationHooks" },
+        "PrismaTransaction": {
+          "isTypeOnly": true,
+          "name": "PrismaTransaction"
+        },
+        "TransactionalOperationContext": {
+          "isTypeOnly": true,
+          "name": "TransactionalOperationContext"
+        }
+      },
+      "sourceFile": "src/utils/data-operations/types.ts",
+      "variables": {}
+    }
+  }
+}

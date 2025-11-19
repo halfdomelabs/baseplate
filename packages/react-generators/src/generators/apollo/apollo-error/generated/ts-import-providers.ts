@@ -12,7 +12,7 @@ import {
 
 import { APOLLO_APOLLO_ERROR_PATHS } from './template-paths.js';
 
-const apolloErrorImportsSchema = createTsImportMapSchema({
+export const apolloErrorImportsSchema = createTsImportMapSchema({
   getApolloErrorCode: {},
 });
 

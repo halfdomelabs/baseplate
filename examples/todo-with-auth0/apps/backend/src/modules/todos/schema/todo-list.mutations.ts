@@ -8,17 +8,17 @@ import {
   createTodoList,
   deleteTodoList,
   updateTodoList,
-} from '../services/todo-list.crud.js';
+} from '../services/todo-list.data-service.js';
 import { todoListStatusEnum } from './enums.js';
 import { todoListObjectType } from './todo-list.object-type.js';
 
-const todoListCreateDataInputType = builder.inputType('TodoListCreateData', {
+const createTodoListDataInputType = builder.inputType('CreateTodoListData', {
   fields: (t) => ({
+    ownerId: t.field({ required: true, type: 'Uuid' }),
     position: t.int({ required: true }),
     name: t.string({ required: true }),
-    ownerId: t.field({ required: true, type: 'Uuid' }),
-    status: t.field({ type: todoListStatusEnum }),
     createdAt: t.field({ type: 'DateTime' }),
+    status: t.field({ type: todoListStatusEnum }),
     coverPhoto: t.field({ type: fileInputInputType }),
   }),
 });
@@ -28,7 +28,7 @@ builder.mutationField('createTodoList', (t) =>
     input: {
       data: t.input.field({
         required: true,
-        type: todoListCreateDataInputType,
+        type: createTodoListDataInputType,
       }),
     },
     payload: { todoList: t.payload.field({ type: todoListObjectType }) },
@@ -44,13 +44,13 @@ builder.mutationField('createTodoList', (t) =>
   }),
 );
 
-const todoListUpdateDataInputType = builder.inputType('TodoListUpdateData', {
+const updateTodoListDataInputType = builder.inputType('UpdateTodoListData', {
   fields: (t) => ({
+    ownerId: t.field({ type: 'Uuid' }),
     position: t.int(),
     name: t.string(),
-    ownerId: t.field({ type: 'Uuid' }),
-    status: t.field({ type: todoListStatusEnum }),
     createdAt: t.field({ type: 'DateTime' }),
+    status: t.field({ type: todoListStatusEnum }),
     coverPhoto: t.field({ type: fileInputInputType }),
   }),
 });
@@ -61,18 +61,18 @@ builder.mutationField('updateTodoList', (t) =>
       id: t.input.field({ required: true, type: 'Uuid' }),
       data: t.input.field({
         required: true,
-        type: todoListUpdateDataInputType,
+        type: updateTodoListDataInputType,
       }),
     },
     payload: { todoList: t.payload.field({ type: todoListObjectType }) },
     authorize: ['user'],
     resolve: async (root, { input: { id, data } }, context, info) => {
       const todoList = await updateTodoList({
-        id,
+        where: { id },
         data: restrictObjectNulls(data, [
+          'ownerId',
           'position',
           'name',
-          'ownerId',
           'createdAt',
         ]),
         context,
@@ -90,7 +90,7 @@ builder.mutationField('deleteTodoList', (t) =>
     authorize: ['user'],
     resolve: async (root, { input: { id } }, context, info) => {
       const todoList = await deleteTodoList({
-        id,
+        where: { id },
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
       });

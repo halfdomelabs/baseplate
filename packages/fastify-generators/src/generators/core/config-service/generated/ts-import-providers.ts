@@ -12,7 +12,9 @@ import {
 
 import { CORE_CONFIG_SERVICE_PATHS } from './template-paths.js';
 
-const configServiceImportsSchema = createTsImportMapSchema({ config: {} });
+export const configServiceImportsSchema = createTsImportMapSchema({
+  config: {},
+});
 
 export type ConfigServiceImportsProvider = TsImportMapProviderFromSchema<
   typeof configServiceImportsSchema

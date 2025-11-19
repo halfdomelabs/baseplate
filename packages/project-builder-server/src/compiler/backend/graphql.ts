@@ -16,7 +16,7 @@ import {
   pothosTypesFileGenerator,
 } from '@baseplate-dev/fastify-generators';
 import { authConfigSpec, ModelUtils } from '@baseplate-dev/project-builder-lib';
-import { notEmpty } from '@baseplate-dev/utils';
+import { notEmpty, uppercaseFirstChar } from '@baseplate-dev/utils';
 import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
@@ -153,8 +153,7 @@ function buildMutationsFileForModel(
 
   const sharedMutationConfig = {
     modelName: model.name,
-    crudServiceRef: `prisma-crud-service:${model.name}`,
-    hasPrimaryKeyInputType: ModelUtils.getModelIdFields(model).length > 1,
+    crudServiceRef: `prisma-data-service:${model.name}`,
   };
 
   return pothosTypesFileGenerator({
@@ -165,7 +164,7 @@ function buildMutationsFileForModel(
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 0,
-            type: 'create',
+            name: `create${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
                 isAuthEnabled && create.roles
@@ -180,7 +179,7 @@ function buildMutationsFileForModel(
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 1,
-            type: 'update',
+            name: `update${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
                 isAuthEnabled && update.roles
@@ -195,7 +194,7 @@ function buildMutationsFileForModel(
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 2,
-            type: 'delete',
+            name: `delete${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
                 isAuthEnabled && del.roles

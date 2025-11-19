@@ -13,7 +13,7 @@ import {
 
 import { NODE_TS_UTILS_PATHS } from './template-paths.js';
 
-const tsUtilsImportsSchema = createTsImportMapSchema({
+export const tsUtilsImportsSchema = createTsImportMapSchema({
   capitalizeString: {},
   NormalizeTypes: { isTypeOnly: true },
   notEmpty: {},

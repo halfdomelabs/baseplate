@@ -12,7 +12,7 @@ import {
 
 import { POTHOS_POTHOS_PRISMA_PATHS } from './template-paths.js';
 
-const pothosPrismaImportsSchema = createTsImportMapSchema({
+export const pothosPrismaImportsSchema = createTsImportMapSchema({
   getDatamodel: {},
   PrismaTypes: { isTypeOnly: true, exportedAs: 'default' },
 });

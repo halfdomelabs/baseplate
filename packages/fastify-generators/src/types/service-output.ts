@@ -8,6 +8,7 @@ import type {
   PrismaOutputRelationField,
   PrismaOutputScalarField,
 } from './prisma-output.js';
+import type { InferKindMetadata, ServiceDtoKind } from './service-dto-kinds.js';
 
 // TODO: Rename ServiceOutput to Service since it's both inputs and outputs
 
@@ -58,9 +59,49 @@ export interface ServiceOutputDtoNestedFieldWithPrisma
   schemaFieldName?: string;
 }
 
+/**
+ * Injected arg - a service argument that is provided by the framework
+ * at runtime rather than from user input.
+ *
+ * Examples: context, query, id
+ *
+ * The kind and metadata are strongly typed based on the TKind parameter.
+ *
+ * @template TKind - The service DTO kind that defines the type and metadata
+ */
+export interface ServiceOutputDtoInjectedArg<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TKind extends ServiceDtoKind<any> = ServiceDtoKind<any>,
+> extends ServiceOutputDtoBaseField {
+  type: 'injected';
+  kind: TKind;
+  metadata: InferKindMetadata<TKind>;
+}
+
+export function createServiceOutputDtoInjectedArg<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TKind extends ServiceDtoKind<any>,
+>(
+  arg: undefined extends InferKindMetadata<TKind>
+    ? Omit<ServiceOutputDtoInjectedArg<TKind>, 'metadata'>
+    : ServiceOutputDtoInjectedArg<TKind>,
+): ServiceOutputDtoInjectedArg<TKind> {
+  return {
+    ...arg,
+    metadata:
+      'metadata' in arg
+        ? arg.metadata
+        : (undefined as InferKindMetadata<TKind>),
+  };
+}
+
 export type ServiceOutputDtoField =
   | ServiceOutputDtoScalarField
   | ServiceOutputDtoNestedField;
+
+export type ServiceOutputArgField =
+  | ServiceOutputDtoField
+  | ServiceOutputDtoInjectedArg;
 
 export interface ServiceOutputDto {
   name: string;
@@ -73,12 +114,12 @@ export interface ServiceOutputMethod {
    * Fragment that references the method.
    */
   referenceFragment: TsCodeFragment;
-  arguments: ServiceOutputDtoField[];
+  arguments: ServiceOutputArgField[];
   returnType: ServiceOutputDto;
   requiresContext?: boolean;
 }
 
-export function scalarPrismaFieldToServiceField(
+export function scalarPrismaFieldToServiceOutputField(
   field: PrismaOutputScalarField,
   lookupEnum: (name: string) => ServiceOutputEnum,
 ): ServiceOutputDtoField {
@@ -89,6 +130,23 @@ export function scalarPrismaFieldToServiceField(
     type: 'scalar',
     name: field.name,
     isOptional: field.isOptional,
+    isNullable: field.isOptional,
+    isList: field.isList,
+    scalarType: field.scalarType,
+    enumType:
+      field.enumType === undefined ? undefined : lookupEnum(field.enumType),
+    isId: field.id,
+  };
+}
+
+export function scalarPrismaFieldToServiceInputField(
+  field: PrismaOutputScalarField,
+  lookupEnum: (name: string) => ServiceOutputEnum,
+): ServiceOutputDtoScalarField {
+  return {
+    type: 'scalar',
+    name: field.name,
+    isOptional: field.hasDefault || field.isOptional,
     isNullable: field.isOptional,
     isList: field.isList,
     scalarType: field.scalarType,
@@ -122,7 +180,7 @@ export function prismaToServiceOutputDto(
     name: model.name,
     fields: model.fields.map((field) =>
       field.type === 'scalar'
-        ? scalarPrismaFieldToServiceField(field, lookupEnum)
+        ? scalarPrismaFieldToServiceOutputField(field, lookupEnum)
         : nestedPrismaFieldToServiceField(field),
     ),
   };

@@ -12,7 +12,7 @@ import {
 
 import { REACT_UPLOAD_COMPONENTS_PATHS } from './template-paths.js';
 
-const uploadComponentsImportsSchema = createTsImportMapSchema({
+export const uploadComponentsImportsSchema = createTsImportMapSchema({
   FileInput: { exportedAs: 'default' },
   FileInputField: {},
   FileInputFieldController: {},

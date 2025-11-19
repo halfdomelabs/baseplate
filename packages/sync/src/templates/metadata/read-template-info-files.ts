@@ -33,7 +33,11 @@ export async function readTemplateInfoFiles(
   ignoreInstance?: ignore.Ignore,
 ): Promise<TemplateMetadataFileEntry[]> {
   const templateInfoFiles = await globby(
-    [path.join('**', TEMPLATES_INFO_FILENAME)],
+    [
+      path.posix.join('**', TEMPLATES_INFO_FILENAME),
+      '!/apps/**',
+      '!/packages/**',
+    ],
     {
       absolute: true,
       onlyFiles: true,

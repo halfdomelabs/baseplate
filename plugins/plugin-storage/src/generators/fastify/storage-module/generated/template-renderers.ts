@@ -6,10 +6,11 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  dataUtilsImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
-  prismaUtilsImportsProvider,
+  prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -77,11 +78,12 @@ const fastifyStorageModuleRenderers =
 
 const fastifyStorageModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: FASTIFY_STORAGE_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
-    prismaUtilsImports: prismaUtilsImportsProvider,
+    prismaImports: prismaImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
@@ -89,11 +91,12 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
     fastifyStorageModuleRenderers: fastifyStorageModuleRenderers.export(),
   },
   run({
+    dataUtilsImports,
     errorHandlerServiceImports,
     paths,
     pothosImports,
     prismaGeneratedImports,
-    prismaUtilsImports,
+    prismaImports,
     serviceContextImports,
     typescriptFile,
   }) {
@@ -123,9 +126,10 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 group: FASTIFY_STORAGE_MODULE_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
+                  dataUtilsImports,
                   errorHandlerServiceImports,
                   prismaGeneratedImports,
-                  prismaUtilsImports,
+                  prismaImports,
                   serviceContextImports,
                 },
                 generatorPaths: paths,

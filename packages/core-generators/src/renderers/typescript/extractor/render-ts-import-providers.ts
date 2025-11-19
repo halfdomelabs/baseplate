@@ -53,7 +53,7 @@ function renderDefaultTsImportProviders(
     'createTsImportMapSchema',
     typescriptRendererIndex,
   );
-  const importTemplateSchema = tsTemplate`const ${importProviderNames.providerSchemaName} = ${createImportMapSchema}(
+  const importTemplateSchema = tsTemplate`export const ${importProviderNames.providerSchemaName} = ${createImportMapSchema}(
     ${TsCodeUtils.mergeFragmentsAsObject(
       mapValues(projectExports, (projectExport) =>
         JSON.stringify({

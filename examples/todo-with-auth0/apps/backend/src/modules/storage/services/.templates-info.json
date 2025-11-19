@@ -14,6 +14,11 @@
     "instanceData": {},
     "template": "services-download-file"
   },
+  "file-field.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-file-field"
+  },
   "get-public-url.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
@@ -23,10 +28,5 @@
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
     "template": "services-upload-file"
-  },
-  "validate-file-input.ts": {
-    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
-    "instanceData": {},
-    "template": "services-validate-file-input"
   }
 }

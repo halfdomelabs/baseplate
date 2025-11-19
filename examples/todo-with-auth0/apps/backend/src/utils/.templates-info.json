@@ -4,21 +4,6 @@
     "instanceData": {},
     "template": "app-modules"
   },
-  "arrays.ts": {
-    "generator": "@baseplate-dev/core-generators#node/ts-utils",
-    "instanceData": {},
-    "template": "arrays"
-  },
-  "crud-service-types.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
-    "instanceData": {},
-    "template": "crud-service-types"
-  },
-  "data-pipes.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
-    "instanceData": {},
-    "template": "data-pipes"
-  },
   "http-errors.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
     "instanceData": {},
@@ -33,11 +18,6 @@
     "generator": "@baseplate-dev/core-generators#node/ts-utils",
     "instanceData": {},
     "template": "nulls"
-  },
-  "prisma-relations.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
-    "instanceData": {},
-    "template": "prisma-relations"
   },
   "request-service-context.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/request-service-context",

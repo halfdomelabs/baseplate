@@ -12,7 +12,7 @@ import {
 
 import { VITEST_PRISMA_VITEST_PATHS } from './template-paths.js';
 
-const prismaVitestImportsSchema = createTsImportMapSchema({
+export const prismaVitestImportsSchema = createTsImportMapSchema({
   createTestDatabase: {},
   createTestDatabaseFromTemplate: {},
   destroyTestDatabase: {},

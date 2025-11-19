@@ -12,7 +12,7 @@ import {
 
 import { LOCAL_AUTH_CORE_SEED_INITIAL_USER_PATHS } from './template-paths.js';
 
-const seedInitialUserImportsSchema = createTsImportMapSchema({
+export const seedInitialUserImportsSchema = createTsImportMapSchema({
   seedInitialUser: {},
 });
 

@@ -12,7 +12,7 @@ import {
 
 import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
 
-const authEmailPasswordImportsSchema = createTsImportMapSchema({
+export const authEmailPasswordImportsSchema = createTsImportMapSchema({
   authenticateUserWithEmailAndPassword: {},
   createUserWithEmailAndPassword: {},
   PASSWORD_MIN_LENGTH: {},
