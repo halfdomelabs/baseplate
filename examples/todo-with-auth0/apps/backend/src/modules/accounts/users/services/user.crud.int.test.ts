@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
-import { createUser, updateUser } from './user.crud.js';
+import { createUser, updateUser } from './user.data-service.js';
 
 const context = createTestServiceContext();
 
@@ -47,7 +47,7 @@ describe('create', () => {
     });
 
     await updateUser({
-      id: createdItem.id,
+      where: { id: createdItem.id },
       data: {
         roles: [{ role: 'kiosk' }],
         customer: {

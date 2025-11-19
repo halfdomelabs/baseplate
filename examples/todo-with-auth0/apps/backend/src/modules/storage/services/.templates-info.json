@@ -28,10 +28,5 @@
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
     "template": "services-upload-file"
-  },
-  "validate-file-input.ts": {
-    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
-    "instanceData": {},
-    "template": "services-validate-file-input"
   }
 }

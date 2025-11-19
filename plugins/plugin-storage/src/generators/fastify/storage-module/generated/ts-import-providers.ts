@@ -28,7 +28,6 @@ export const storageModuleImportsSchema = createTsImportMapSchema({
   fileInputInputType: {},
   FileMetadata: { isTypeOnly: true },
   FileSize: {},
-  FileUploadInput: { isTypeOnly: true },
   FileUploadOptions: { isTypeOnly: true },
   getCategoryByName: {},
   getCategoryByNameOrThrow: {},
@@ -41,7 +40,6 @@ export const storageModuleImportsSchema = createTsImportMapSchema({
   StorageAdapter: { isTypeOnly: true },
   StorageAdapterKey: { isTypeOnly: true },
   validateFileExtensionWithMimeType: {},
-  validateFileInput: {},
   validateFileUploadOptions: {},
 });
 
@@ -80,7 +78,6 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           fileInputInputType: paths.schemaFileInput,
           FileMetadata: paths.typesAdapter,
           FileSize: paths.utilsCreateFileCategory,
-          FileUploadInput: paths.servicesValidateFileInput,
           FileUploadOptions: paths.utilsValidateFileUploadOptions,
           getCategoryByName: paths.configCategories,
           getCategoryByNameOrThrow: paths.configCategories,
@@ -93,7 +90,6 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           StorageAdapter: paths.typesAdapter,
           StorageAdapterKey: paths.configAdapters,
           validateFileExtensionWithMimeType: paths.utilsMime,
-          validateFileInput: paths.servicesValidateFileInput,
           validateFileUploadOptions: paths.utilsValidateFileUploadOptions,
         }),
       },

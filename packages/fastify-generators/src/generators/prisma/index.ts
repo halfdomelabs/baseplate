@@ -1,10 +1,5 @@
 export * from './_providers/index.js';
 export * from './data-utils/index.js';
-export * from './embedded-relation-transformer/index.js';
-export * from './prisma-crud-create/index.js';
-export * from './prisma-crud-delete/index.js';
-export * from './prisma-crud-service/index.js';
-export * from './prisma-crud-update/index.js';
 export * from './prisma-data-create/index.js';
 export * from './prisma-data-delete/index.js';
 export * from './prisma-data-nested-field/index.js';
@@ -17,5 +12,4 @@ export * from './prisma-model-index/index.js';
 export * from './prisma-model-unique/index.js';
 export * from './prisma-model/index.js';
 export * from './prisma-relation-field/index.js';
-export * from './prisma-utils/index.js';
 export * from './prisma/index.js';

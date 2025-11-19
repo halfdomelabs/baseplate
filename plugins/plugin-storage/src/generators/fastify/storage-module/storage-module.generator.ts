@@ -226,9 +226,6 @@ export const storageModuleGenerator = createGenerator({
                     TPL_FILE_MODEL: model,
                     TPL_FILE_MODEL_TYPE: modelType,
                   },
-                  servicesValidateFileInput: {
-                    TPL_FILE_MODEL: model,
-                  },
                   utilsValidateFileUploadOptions: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
                       `Prisma.${STORAGE_MODELS.file}CreateInput`,

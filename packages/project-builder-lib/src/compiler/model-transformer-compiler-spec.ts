@@ -12,16 +12,6 @@ export interface ModelTransformerCompiler<
   T extends TransformerConfig = TransformerConfig,
 > {
   name: string;
-  compileTransformer: (
-    definition: T,
-    {
-      definitionContainer,
-      model,
-    }: {
-      definitionContainer: ProjectDefinitionContainer;
-      model: ModelConfig;
-    },
-  ) => GeneratorBundle;
   compileField: (
     definition: T,
     {

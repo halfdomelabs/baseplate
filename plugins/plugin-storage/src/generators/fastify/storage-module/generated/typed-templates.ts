@@ -5,7 +5,6 @@ import {
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
-  prismaUtilsImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
@@ -171,29 +170,6 @@ const servicesUploadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {}, TPL_FILE_MODEL_TYPE: {} },
 });
 
-const servicesValidateFileInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaUtilsImports: prismaUtilsImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
-  },
-  name: 'services-validate-file-input',
-  projectExports: {
-    FileUploadInput: { isTypeOnly: true },
-    validateFileInput: {},
-  },
-  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/validate-file-input.ts',
-    ),
-  },
-  variables: { TPL_FILE_MODEL: {} },
-});
-
 const typesAdapter = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -304,7 +280,6 @@ export const mainGroup = {
   servicesDownloadFile,
   servicesFileField,
   servicesUploadFile,
-  servicesValidateFileInput,
   typesAdapter,
   typesFileCategory,
   utilsCreateFileCategory,

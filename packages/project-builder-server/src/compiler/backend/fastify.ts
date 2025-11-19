@@ -18,7 +18,6 @@ import {
   pothosScalarGenerator,
   pothosSentryGenerator,
   prismaGenerator,
-  prismaUtilsGenerator,
   prismaVitestGenerator,
   readmeGenerator,
   yogaPluginGenerator,
@@ -84,7 +83,6 @@ export function buildFastify(
           defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
         }),
         prismaVitest: prismaVitestGenerator({}),
-        prismaUtils: prismaUtilsGenerator({}),
         dataUtils: dataUtilsGenerator({}),
         yoga: yogaPluginGenerator({
           enableSubscriptions: app.enableSubscriptions,

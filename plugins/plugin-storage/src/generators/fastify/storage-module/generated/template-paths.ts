@@ -16,7 +16,6 @@ export interface FastifyStorageModulePaths {
   servicesFileField: string;
   servicesGetPublicUrl: string;
   servicesUploadFile: string;
-  servicesValidateFileInput: string;
   typesAdapter: string;
   typesFileCategory: string;
   utilsCreateFileCategory: string;
@@ -51,7 +50,6 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           servicesFileField: `${moduleRoot}/services/file-field.ts`,
           servicesGetPublicUrl: `${moduleRoot}/services/get-public-url.ts`,
           servicesUploadFile: `${moduleRoot}/services/upload-file.ts`,
-          servicesValidateFileInput: `${moduleRoot}/services/validate-file-input.ts`,
           typesAdapter: `${moduleRoot}/types/adapter.ts`,
           typesFileCategory: `${moduleRoot}/types/file-category.ts`,
           utilsCreateFileCategory: `${moduleRoot}/utils/create-file-category.ts`,

@@ -245,36 +245,6 @@
       "sourceFile": "module/services/upload-file.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
-    "services-validate-file-input": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
-        "prismaUtilsImportsProvider": {
-          "importName": "prismaUtilsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma-utils/generated/ts-import-providers.ts"
-        },
-        "serviceContextImportsProvider": {
-          "importName": "serviceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/services/validate-file-input.ts",
-      "projectExports": {
-        "FileUploadInput": { "isTypeOnly": true },
-        "validateFileInput": {}
-      },
-      "referencedGeneratorTemplates": [
-        "config-adapters",
-        "types-file-category"
-      ],
-      "sourceFile": "module/services/validate-file-input.ts",
-      "variables": { "TPL_FILE_MODEL": {} }
-    },
     "types-adapter": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
