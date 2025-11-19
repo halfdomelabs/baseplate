@@ -1,11 +1,9 @@
 // @ts-nocheck
 
 import type {
-  CreateInput,
   GetPayload,
   ModelPropName,
   ModelQuery,
-  UpdateInput,
   WhereUniqueInput,
 } from '$prismaTypes';
 import type {
@@ -24,6 +22,7 @@ import type {
 } from '$types';
 import type { Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
+import type { Result } from '@prisma/client/runtime/client';
 
 import { makeGenericPrismaDelegate } from '$prismaUtils';
 import { NotFoundError } from '%errorHandlerServiceImports';
@@ -257,16 +256,21 @@ export interface CreateOperationConfig<
   ) => TPrepareResult | Promise<TPrepareResult>;
 
   /**
-   * Transform step to shape final Prisma payload. This runs inside the transaction
-   * so be sure to keep it lightweight and avoid any heavy computations.
+   * Execute the create operation. This function receives validated field data
+   * and must return a Prisma create operation. It runs inside the transaction.
    */
-  buildData: (
-    data: InferFieldsCreateOutput<TFields> & TPrepareResult,
-    ctx: TransactionalOperationContext<
-      GetPayload<TModelName>,
-      { hasResult: false }
-    >,
-  ) => CreateInput<TModelName> | Promise<CreateInput<TModelName>>;
+  create: <TQueryArgs extends ModelQuery<TModelName>>(input: {
+    tx: PrismaTransaction;
+    data: InferFieldsCreateOutput<TFields> & TPrepareResult;
+    query: { include: NonNullable<TQueryArgs['include']> };
+  }) => Promise<
+    Result<
+      (typeof prisma)[TModelName],
+      // We type the query parameter to ensure that the user always includes ...query into the create call
+      { include: NonNullable<TQueryArgs['include']> },
+      'create'
+    >
+  >;
 
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
@@ -318,10 +322,14 @@ export interface CreateOperationInput<
  *   authorize: async (data, ctx) => {
  *     // Check if user has permission to create
  *   },
- *   buildData: (data) => ({
- *     name: data.name,
- *     email: data.email,
- *   }),
+ *   create: ({ tx, data, query }) =>
+ *     tx.user.create({
+ *       data: {
+ *         name: data.name,
+ *         email: data.email,
+ *       },
+ *       ...query,
+ *     }),
  * });
  *
  * // Usage
@@ -348,6 +356,13 @@ export function defineCreateOperation<
     query,
     context,
   }: CreateOperationInput<TModelName, TFields, TQueryArgs>) => {
+    // Throw error if query select is provided since we will not necessarily have a full result to return
+    if (query?.select) {
+      throw new Error(
+        'Query select is not supported for create operations. Use include instead.',
+      );
+    }
+
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
       { hasResult: false }
@@ -410,21 +425,12 @@ export function defineCreateOperation<
         const awaitedFieldsData =
           typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
 
-        // Build data
-        const builtData = await config.buildData(
-          { ...awaitedFieldsData.create, ...preparedData },
-          txContext,
-        );
-
-        const result = await (
-          tx[config.model].create as unknown as (
-            args: {
-              data: CreateInput<TModelName>;
-            } & TQueryArgs,
-          ) => Promise<GetPayload<TModelName>>
-        )({
-          data: builtData,
-          ...(query ?? ({} as TQueryArgs)),
+        const result = await config.create({
+          tx,
+          data: { ...awaitedFieldsData.create, ...preparedData },
+          query: (query ?? {}) as {
+            include: NonNullable<TQueryArgs['include']>;
+          },
         });
 
         // Run afterExecute hooks
@@ -499,15 +505,22 @@ export interface UpdateOperationConfig<
   ) => TPrepareResult | Promise<TPrepareResult>;
 
   /**
-   * Build data for the update operation
+   * Execute the update operation. This function receives validated field data
+   * and must return a Prisma update operation. It runs inside the transaction.
    */
-  buildData: (
-    data: InferFieldsUpdateOutput<TFields> & TPrepareResult,
-    ctx: TransactionalOperationContext<
-      GetPayload<TModelName>,
-      { hasResult: false }
-    >,
-  ) => UpdateInput<TModelName> | Promise<UpdateInput<TModelName>>;
+  update: <TQueryArgs extends ModelQuery<TModelName>>(input: {
+    tx: PrismaTransaction;
+    where: WhereUniqueInput<TModelName>;
+    data: InferFieldsUpdateOutput<TFields> & TPrepareResult;
+    query: { include: NonNullable<TQueryArgs['include']> };
+  }) => Promise<
+    Result<
+      (typeof prisma)[TModelName],
+      // We type the query parameter to ensure that the user always includes ...query into the update call
+      { include: NonNullable<TQueryArgs['include']> },
+      'update'
+    >
+  >;
 
   /**
    * Optional hooks for the operation
@@ -566,7 +579,12 @@ export interface UpdateOperationInput<
  *     const existing = await ctx.loadExisting();
  *     // Check if user owns this record
  *   },
- *   buildData: (data) => data,
+ *   update: ({ tx, where, data, query }) =>
+ *     tx.user.update({
+ *       where,
+ *       data,
+ *       ...query,
+ *     }),
  * });
  *
  * // Usage
@@ -595,6 +613,13 @@ export function defineUpdateOperation<
     query,
     context,
   }: UpdateOperationInput<TModelName, TFields, TQueryArgs>) => {
+    // Throw error if query select is provided since we will not necessarily have a full result to return
+    if (query?.select) {
+      throw new Error(
+        'Query select is not supported for update operations. Use include instead.',
+      );
+    }
+
     let existingItem: GetPayload<TModelName> | undefined;
 
     const delegate = makeGenericPrismaDelegate(prisma, config.model);
@@ -675,25 +700,14 @@ export function defineUpdateOperation<
         // Run all async update data transformations
         const awaitedFieldsData =
           typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
-        const updateData = { ...awaitedFieldsData.update, ...preparedData };
 
-        // Build data
-        const builtData = await config.buildData(
-          { ...updateData, ...preparedData },
-          txContext,
-        );
-
-        const result = await (
-          tx[config.model].update as unknown as (
-            args: {
-              where: WhereUniqueInput<TModelName>;
-              data: UpdateInput<TModelName>;
-            } & TQueryArgs,
-          ) => Promise<GetPayload<TModelName>>
-        )({
+        const result = await config.update({
+          tx,
           where,
-          data: builtData,
-          ...(query ?? ({} as TQueryArgs)),
+          data: { ...awaitedFieldsData.update, ...preparedData },
+          query: (query ?? {}) as {
+            include: NonNullable<TQueryArgs['include']>;
+          },
         });
 
         // Run afterExecute hooks
@@ -743,6 +757,23 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
   ) => Promise<void>;
 
   /**
+   * Execute the delete operation. This function receives the where clause
+   * and must return a Prisma delete operation. It runs inside the transaction.
+   */
+  delete: <TQueryArgs extends ModelQuery<TModelName>>(input: {
+    tx: PrismaTransaction;
+    where: WhereUniqueInput<TModelName>;
+    query: { include: NonNullable<TQueryArgs['include']> };
+  }) => Promise<
+    Result<
+      (typeof prisma)[TModelName],
+      // We type the query parameter to ensure that the user always includes ...query into the delete call
+      { include: NonNullable<TQueryArgs['include']> },
+      'delete'
+    >
+  >;
+
+  /**
    * Optional hooks for the operation
    */
   hooks?: OperationHooks<GetPayload<TModelName>>;
@@ -788,6 +819,11 @@ export interface DeleteOperationInput<
  *     const existing = await ctx.loadExisting();
  *     // Check if user has permission to delete
  *   },
+ *   delete: ({ tx, where, query }) =>
+ *     tx.user.delete({
+ *       where,
+ *       ...query,
+ *     }),
  *   hooks: {
  *     afterCommit: [
  *       async (ctx) => {
@@ -815,6 +851,13 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
     query,
     context,
   }: DeleteOperationInput<TModelName, TQueryArgs>) => {
+    // Throw error if query select is provided since we will not necessarily have a full result to return
+    if (query?.select) {
+      throw new Error(
+        'Query select is not supported for create operations. Use include instead.',
+      );
+    }
+
     let existingItem: GetPayload<TModelName> | undefined;
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
@@ -862,15 +905,12 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
         await invokeHooks(allHooks.beforeExecute, txContext);
 
         // Execute delete operation
-        const result = await (
-          tx[config.model].delete as unknown as (
-            args: {
-              where: WhereUniqueInput<TModelName>;
-            } & TQueryArgs,
-          ) => Promise<GetPayload<TModelName>>
-        )({
+        const result = await config.delete({
+          tx,
           where,
-          ...(query ?? ({} as TQueryArgs)),
+          query: (query ?? {}) as {
+            include: NonNullable<TQueryArgs['include']>;
+          },
         });
 
         // Run afterExecute hooks

@@ -41,12 +41,22 @@ export interface GenerateRelationBuildDataConfig {
  * Result of generating relation buildData function
  */
 export interface GenerateRelationBuildDataResult {
+  /** Argument pattern for the function (e.g., "{ ownerId, ...data }" or "data") */
+  argumentFragment: TsCodeFragment;
+  /** Return value with relation transformations (e.g., "{ ...data, owner: relationHelpers.connectCreate(...) }") */
+  returnFragment: TsCodeFragment;
+  /** Whether this is a simple passthrough (no relations to transform) */
+  passthrough: boolean;
   /** Complete buildData function fragment: ({ fk1, fk2, ...data }) => ({ ...data, relation1: ..., relation2: ... }) */
   buildDataFunctionFragment: TsCodeFragment;
 }
 
 /**
  * Generates a TypeScript code fragment for a unique where object
+ *
+ * @param foreignKeyFields - Array of foreign key field names (e.g., ['ownerId'] or ['userId', 'tenantId'])
+ * @param referencedFields - Array of referenced field names in target model (e.g., ['id'] or ['id', 'tenantId'])
+ * @returns TypeScript code fragment for the where object
  *
  * @example
  * // Single field
@@ -79,7 +89,7 @@ function generateUniqueWhereFragment(
 /**
  * Finds all relations in the Prisma model that should be included based on input fields
  */
-function findRelevantRelations(
+export function findRelevantRelations(
   prismaModel: PrismaOutputModel,
   inputFieldNames: string[],
 ): PrismaOutputRelationField[] {
@@ -108,7 +118,7 @@ function findRelevantRelations(
 /**
  * Extracts all unique foreign key field names from relations
  */
-function extractForeignKeyFields(
+export function extractForeignKeyFields(
   relations: PrismaOutputRelationField[],
 ): string[] {
   const allFkFields = relations.flatMap((rel) => rel.fields ?? []);
@@ -118,6 +128,11 @@ function extractForeignKeyFields(
 
 /**
  * Generates a relation helper call fragment for a single relation
+ *
+ * @param relation - Prisma relation field metadata
+ * @param operationType - Whether this is a create or update operation
+ * @param relationHelpersFragment - Code fragment for accessing relationHelpers
+ * @returns TypeScript code fragment for the relation helper call
  *
  * @example
  * // Single field, create operation
@@ -310,11 +325,19 @@ export function generateRelationBuildData(
 
     if (createDataBody.passthrough && updateDataBody.passthrough) {
       return {
+        argumentFragment: tsTemplate`data`,
+        returnFragment: tsTemplate`data`,
+        passthrough: true,
         buildDataFunctionFragment: tsTemplate`(data) => data`,
       };
     }
 
+    // For upsert with relations, we don't expose individual fragments since the structure is complex
+    // Consumers should use buildDataFunctionFragment directly
     return {
+      argumentFragment: tsTemplate`{ create: ${createDataBody.argumentFragment}, update: ${updateDataBody.argumentFragment}}`,
+      returnFragment: tsTemplate`{ create: ${createDataBody.returnFragment}, update: ${updateDataBody.returnFragment} }`,
+      passthrough: false,
       buildDataFunctionFragment: tsTemplate`
       ({ create: ${createDataBody.argumentFragment}, update: ${updateDataBody.argumentFragment}}) =>
        ({ create: ${createDataBody.returnFragment}, update: ${updateDataBody.returnFragment} })`,
@@ -329,6 +352,9 @@ export function generateRelationBuildData(
     );
 
     return {
+      argumentFragment: buildDataBody.argumentFragment,
+      returnFragment: buildDataBody.returnFragment,
+      passthrough: buildDataBody.passthrough,
       buildDataFunctionFragment: tsTemplate`(${buildDataBody.argumentFragment}) => (${buildDataBody.returnFragment})`,
     };
   }

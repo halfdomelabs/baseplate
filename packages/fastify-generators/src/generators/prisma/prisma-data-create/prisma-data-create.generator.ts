@@ -19,7 +19,7 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateRelationBuildData } from '../_shared/build-data-helpers/index.js';
+import { generateCreateCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -64,19 +64,19 @@ export const prismaDataCreateGenerator = createGenerator({
                     tsImportBuilder(['pick']).from('es-toolkit'),
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
-            // Generate buildData function that transforms FK fields into relations
-            const relationBuildData = generateRelationBuildData({
+            // Generate create callback that transforms FK fields into relations
+            const { createCallbackFragment } = generateCreateCallback({
               prismaModel: prismaOutput.getPrismaModel(modelName),
               inputFieldNames: fields,
-              operationType: 'create',
               dataUtilsImports,
+              modelVariableName: lowercaseFirstChar(modelName),
             });
 
             const createOperation = tsTemplate`
               export const ${name} = ${dataUtilsImports.defineCreateOperation.fragment()}({
                 model: ${quot(lowercaseFirstChar(modelName))},
                 fields: ${fieldsFragment},
-                buildData: ${relationBuildData.buildDataFunctionFragment},
+                create: ${createCallbackFragment},
               })
             `;
             serviceFile.getServicePath();

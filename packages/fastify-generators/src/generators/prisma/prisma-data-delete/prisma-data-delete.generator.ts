@@ -14,6 +14,7 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
+import { generateDeleteCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -41,9 +42,15 @@ export const prismaDataDeleteGenerator = createGenerator({
       run({ serviceFile, prismaDataService, dataUtilsImports, prismaOutput }) {
         return {
           build: () => {
+            // Generate delete callback
+            const { deleteCallbackFragment } = generateDeleteCallback({
+              modelVariableName: lowercaseFirstChar(modelName),
+            });
+
             const deleteOperation = tsTemplate`
               export const ${name} = ${dataUtilsImports.defineDeleteOperation.fragment()}({
                 model: ${quot(lowercaseFirstChar(modelName))},
+                delete: ${deleteCallbackFragment},
               })
             `;
             serviceFile.getServicePath();

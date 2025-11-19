@@ -23,7 +23,7 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateRelationBuildData } from '../_shared/build-data-helpers/index.js';
+import { generateUpdateCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -68,19 +68,19 @@ export const prismaDataUpdateGenerator = createGenerator({
                     tsImportBuilder(['pick']).from('es-toolkit'),
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
-            // Generate buildData function that transforms FK fields into relations
-            const relationBuildData = generateRelationBuildData({
+            // Generate update callback that transforms FK fields into relations
+            const { updateCallbackFragment } = generateUpdateCallback({
               prismaModel: prismaOutput.getPrismaModel(modelName),
               inputFieldNames: fields,
-              operationType: 'update',
               dataUtilsImports,
+              modelVariableName: lowercaseFirstChar(modelName),
             });
 
             const updateOperation = tsTemplate`
               export const ${name} = ${dataUtilsImports.defineUpdateOperation.fragment()}({
                 model: ${quot(lowercaseFirstChar(modelName))},
                 fields: ${fieldsFragment},
-                buildData: ${relationBuildData.buildDataFunctionFragment},
+                update: ${updateCallbackFragment},
               })
             `;
             serviceFile.getServicePath();

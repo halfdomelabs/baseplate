@@ -18,23 +18,37 @@ export const todoListShareInputFields = {
 export const createTodoListShare = defineCreateOperation({
   model: 'todoListShare',
   fields: todoListShareInputFields,
-  buildData: ({ todoListId, userId, ...data }) => ({
-    ...data,
-    todoList: relationHelpers.connectCreate({ id: todoListId }),
-    user: relationHelpers.connectCreate({ id: userId }),
-  }),
+  create: ({ tx, data: { todoListId, userId, ...data }, query }) =>
+    tx.todoListShare.create({
+      data: {
+        ...data,
+        todoList: relationHelpers.connectCreate({ id: todoListId }),
+        user: relationHelpers.connectCreate({ id: userId }),
+      },
+      ...query,
+    }),
 });
 
 export const updateTodoListShare = defineUpdateOperation({
   model: 'todoListShare',
   fields: todoListShareInputFields,
-  buildData: ({ todoListId, userId, ...data }) => ({
-    ...data,
-    todoList: relationHelpers.connectUpdate({ id: todoListId }),
-    user: relationHelpers.connectUpdate({ id: userId }),
-  }),
+  update: ({ tx, where, data: { todoListId, userId, ...data }, query }) =>
+    tx.todoListShare.update({
+      where,
+      data: {
+        ...data,
+        todoList: relationHelpers.connectUpdate({ id: todoListId }),
+        user: relationHelpers.connectUpdate({ id: userId }),
+      },
+      ...query,
+    }),
 });
 
 export const deleteTodoListShare = defineDeleteOperation({
   model: 'todoListShare',
+  delete: ({ tx, where, query }) =>
+    tx.todoListShare.delete({
+      where,
+      ...query,
+    }),
 });

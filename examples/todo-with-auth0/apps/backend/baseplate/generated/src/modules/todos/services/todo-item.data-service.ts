@@ -43,23 +43,37 @@ export const todoItemInputFields = {
 export const createTodoItem = defineCreateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
-  buildData: ({ assigneeId, todoListId, ...data }) => ({
-    ...data,
-    assignee: relationHelpers.connectCreate({ id: assigneeId }),
-    todoList: relationHelpers.connectCreate({ id: todoListId }),
-  }),
+  create: ({ tx, data: { assigneeId, todoListId, ...data }, query }) =>
+    tx.todoItem.create({
+      data: {
+        ...data,
+        assignee: relationHelpers.connectCreate({ id: assigneeId }),
+        todoList: relationHelpers.connectCreate({ id: todoListId }),
+      },
+      ...query,
+    }),
 });
 
 export const updateTodoItem = defineUpdateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
-  buildData: ({ assigneeId, todoListId, ...data }) => ({
-    ...data,
-    assignee: relationHelpers.connectUpdate({ id: assigneeId }),
-    todoList: relationHelpers.connectUpdate({ id: todoListId }),
-  }),
+  update: ({ tx, where, data: { assigneeId, todoListId, ...data }, query }) =>
+    tx.todoItem.update({
+      where,
+      data: {
+        ...data,
+        assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+        todoList: relationHelpers.connectUpdate({ id: todoListId }),
+      },
+      ...query,
+    }),
 });
 
 export const deleteTodoItem = defineDeleteOperation({
   model: 'todoItem',
+  delete: ({ tx, where, query }) =>
+    tx.todoItem.delete({
+      where,
+      ...query,
+    }),
 });

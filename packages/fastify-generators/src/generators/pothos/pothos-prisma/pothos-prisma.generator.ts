@@ -15,6 +15,7 @@ import { doubleQuot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { configServiceImportsProvider } from '#src/generators/core/index.js';
 import {
   prismaImportsProvider,
   prismaSchemaProvider,
@@ -49,11 +50,18 @@ export const pothosPrismaGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
         pothosPrismaImports: pothosPrismaImportsProvider,
         renderers: POTHOS_POTHOS_PRISMA_GENERATED.renderers.provider,
+        configServiceImports: configServiceImportsProvider,
       },
       exports: {
         pothosPrisma: pothosPrismaProvider.export(packageScope),
       },
-      run({ pothosConfig, prismaImports, pothosPrismaImports, renderers }) {
+      run({
+        pothosConfig,
+        prismaImports,
+        pothosPrismaImports,
+        renderers,
+        configServiceImports,
+      }) {
         return {
           providers: {
             pothosPrisma: {},
@@ -79,6 +87,7 @@ export const pothosPrismaGenerator = createGenerator({
                 dmmf: ${pothosPrismaImports.getDatamodel.fragment()}(),
                 exposeDescriptions: false,
                 filterConnectionTotalCount: true,
+                onUnusedQuery: ${configServiceImports.config.fragment()}.APP_ENVIRONMENT === 'dev' ? 'warn' : null,
               }`,
             );
             await builder.apply(renderers.pothosPrismaTypes.render({}));
