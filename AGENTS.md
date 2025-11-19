@@ -255,6 +255,46 @@ Baseplate consists of two main tiers:
 - Organize complex generation with Task Phases
 - Use Dynamic Tasks for data-driven generation
 
+## String Comparison
+
+**IMPORTANT**: Always use `compareStrings` from `@baseplate-dev/utils` instead of `String.prototype.localeCompare()`.
+
+### Why Avoid localeCompare?
+
+The `localeCompare()` method is not stable across different operating systems and locales. Different users with different locale settings could get different sorting results, leading to inconsistent code generation and potential merge conflicts.
+
+### Recommended Approach
+
+```typescript
+import { compareStrings } from '@baseplate-dev/utils';
+
+// ✅ Good - Stable across all environments
+const sorted = items.sort((a, b) => compareStrings(a.name, b.name));
+
+// ❌ Bad - Results vary by locale/OS
+const sorted = items.sort((a, b) => a.name.localeCompare(b.name));
+```
+
+### Available Functions
+
+- **`compareStrings(a, b)`** - Case-sensitive lexicographic comparison
+
+Returns:
+
+- Negative number if `a < b`
+- Positive number if `a > b`
+- Zero if `a === b`
+
+### When to Use localeCompare
+
+Only use `localeCompare()` when:
+
+1. Building user-facing features that require locale-aware sorting
+2. Displaying sorted lists in the UI
+3. Explicitly requested by product requirements
+
+For all code generation, file sorting, and internal data structures, use `compareStrings`.
+
 ## Key Reminders for Claude Code
 
 - Run `pnpm lint:affected` and `pnpm typecheck` before committing changes

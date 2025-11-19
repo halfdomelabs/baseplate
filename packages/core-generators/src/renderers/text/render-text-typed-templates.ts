@@ -1,6 +1,6 @@
 import type { TemplateExtractorTemplateEntry } from '@baseplate-dev/sync';
 
-import { quot, sortObjectKeys } from '@baseplate-dev/utils';
+import { compareStrings, quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { groupBy } from 'es-toolkit';
 
@@ -56,7 +56,7 @@ function renderTextTypedTemplateGroup(
 ): TemplateExtractorTypedTemplate {
   const renderedTemplates = templates
     .map(({ name, config }) => renderTextTypedTemplate(name, config, context))
-    .toSorted((a, b) => a.exportName.localeCompare(b.exportName));
+    .toSorted((a, b) => compareStrings(a.exportName, b.exportName));
   const exportName = `${camelCase(groupName)}Group`;
 
   return {

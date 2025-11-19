@@ -35,7 +35,7 @@ function createAppCompiler(
       return new WebPackageCompiler(definitionContainer, app);
     }
     default: {
-      throw new Error(`Unknown app type: ${(app as AppConfig).type}`);
+      throw new Error(`Unknown app type: ${app.type}`);
     }
   }
 }

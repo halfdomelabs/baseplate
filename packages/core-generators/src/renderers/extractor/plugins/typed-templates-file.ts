@@ -2,6 +2,7 @@ import {
   createTemplateExtractorPlugin,
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
 } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
 
 import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';
@@ -76,7 +77,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           templateContents: TS_TEMPLATE,
           variables: {
             TPL_TEMPLATE_FRAGMENTS: templatesFragment,
-            TPL_TEMPLATE_EXPORTS: `{ ${templateExports.toSorted((a, b) => a.localeCompare(b)).join(', ')} }`,
+            TPL_TEMPLATE_EXPORTS: `{ ${templateExports.toSorted((a, b) => compareStrings(a, b)).join(', ')} }`,
             TPL_EXPORT_NAME: exportName,
           },
           options: {

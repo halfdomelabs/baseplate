@@ -2,6 +2,7 @@ import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib
 import type { Logger, TemplateConfig } from '@baseplate-dev/sync';
 
 import { indexTemplateConfigs } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,7 +90,7 @@ export async function discoverGenerators(
   }));
 
   // Sort generators by name for consistent output
-  generators.sort((a, b) => a.name.localeCompare(b.name));
+  generators.sort((a, b) => compareStrings(a.name, b.name));
 
   return generators;
 }

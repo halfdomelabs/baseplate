@@ -1,5 +1,6 @@
 import type { CodeBlockWriter, SourceFile } from 'ts-morph';
 
+import { compareStrings } from '@baseplate-dev/utils';
 import { Project } from 'ts-morph';
 
 import type {
@@ -83,7 +84,7 @@ function mergeImportsAndHoistedFragments(
   // This can be improved in the future but since the use-case is very limited,
   // we'll just throw an error if this happens.
   const sortedPositionedHoistedFragments = positionedHoistedFragments.sort(
-    (a, b) => a.key.localeCompare(b.key),
+    (a, b) => compareStrings(a.key, b.key),
   );
   if (
     new Set(sortedPositionedHoistedFragments.map((f) => f.key)).size !==

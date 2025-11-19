@@ -1,3 +1,5 @@
+import { compareStrings } from '@baseplate-dev/utils';
+
 import type { ScalarFieldType } from '#src/types/field-types.js';
 import type { PrismaOutputModel } from '#src/types/prisma-output.js';
 
@@ -186,7 +188,7 @@ export class PrismaModelBlockWriter {
       .sort((a, b) => a.order - b.order);
     const relationFields = this.fields
       .filter((field) => field.fieldType === 'relation')
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => compareStrings(a.name, b.name));
 
     // Look for duplicated orders in scalar fields
     const orderSet = new Set(scalarFields.map((field) => field.order));

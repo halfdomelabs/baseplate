@@ -99,7 +99,7 @@ export function AuthDefinitionEditor({
   );
   const hasSelectedImplementationChanged =
     implementationPluginKey !==
-    (pluginMetadata?.config as AuthPluginDefinitionInput | undefined)
+    (pluginMetadata?.config)
       ?.implementationPluginKey;
 
   const selectedImplementationUrl = selectedPlugin

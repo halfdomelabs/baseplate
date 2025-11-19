@@ -80,7 +80,7 @@ export function useEnumForm({
         Object.fromEntries(
           fieldsToOmit.current.map((field) => [field, true]),
         ) as Record<string | number, never>,
-      ) as typeof baseEnumSchema;
+      );
     }
 
     return baseEnumSchema;

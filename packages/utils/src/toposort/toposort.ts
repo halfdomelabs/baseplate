@@ -1,5 +1,6 @@
 import TinyQueue from 'tinyqueue';
 
+import { compareStrings } from '../string/compare-strings.js';
 import {
   ToposortCyclicalDependencyError,
   ToposortUnknownNodeError,
@@ -113,7 +114,7 @@ function detectCycle<T>(
  */
 function defaultCompareFunc<T>(a: T, b: T): number {
   if (typeof a === 'string' && typeof b === 'string') {
-    return a.localeCompare(b);
+    return compareStrings(a, b);
   }
   if (a === b) return 0;
   return a < b ? -1 : 1;

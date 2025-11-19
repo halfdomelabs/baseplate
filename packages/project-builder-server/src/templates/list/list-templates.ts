@@ -1,5 +1,7 @@
 import type { TemplateConfig } from '@baseplate-dev/sync';
 
+import { compareStrings } from '@baseplate-dev/utils';
+
 import { readExtractorConfig } from '../utils/extractor-config.js';
 
 export interface ListTemplatesInput {
@@ -51,7 +53,7 @@ export async function listTemplates({
   }
 
   // Sort templates by name for consistent output
-  templates.sort((a, b) => a.name.localeCompare(b.name));
+  templates.sort((a, b) => compareStrings(a.name, b.name));
 
   return {
     generatorName: config.name,

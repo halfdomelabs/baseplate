@@ -3,6 +3,7 @@ import {
   createGenerator,
   createGeneratorTask,
 } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { packageScope } from '#src/providers/scopes.js';
@@ -67,7 +68,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
         ];
         if (exclusions.size > 0) {
           const sortedExclusions = [...exclusions.entries()].sort((a, b) =>
-            a[0].localeCompare(b[0]),
+            compareStrings(a[0], b[0]),
           );
           exclusionLines.push(
             ...sortedExclusions.flatMap(([, value]) => ['', ...value]),

@@ -57,7 +57,7 @@ export function useModelForm({
         Object.fromEntries(
           fieldsToOmit.current.map((field) => [field, true]),
         ) as Record<string | number, never>,
-      ) as typeof baseModelSchema;
+      );
     }
 
     return baseModelSchema;

@@ -6,7 +6,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { Link } from '@tanstack/react-router';
 
-import type { QueuePluginDefinition } from '#src/queue/core/schema/plugin-definition.js';
 
 export function QueueConfigTabs(): React.ReactElement | null {
   const { definition, schemaParserContext } = useProjectDefinition();
@@ -24,7 +23,7 @@ export function QueueConfigTabs(): React.ReactElement | null {
   const queueConfig = PluginUtils.configByKey(
     definition,
     queuePlugin.metadata.key,
-  ) as QueuePluginDefinition | undefined;
+  );
 
   const implementationPluginKey = queueConfig?.implementationPluginKey;
 

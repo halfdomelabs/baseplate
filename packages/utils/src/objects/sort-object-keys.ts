@@ -1,3 +1,5 @@
+import { compareStrings } from '../string/compare-strings.js';
+
 /**
  * Sorts the keys of an object.
  *
@@ -6,6 +8,6 @@
  */
 export function sortObjectKeys<T extends Record<string, unknown>>(obj: T): T {
   return Object.fromEntries(
-    Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)),
+    Object.entries(obj).sort(([a], [b]) => compareStrings(a, b)),
   ) as T;
 }
