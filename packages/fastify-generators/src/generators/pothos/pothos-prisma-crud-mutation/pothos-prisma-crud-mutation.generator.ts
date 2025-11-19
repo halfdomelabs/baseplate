@@ -219,7 +219,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
               argRequirements.has('context') || argRequirements.has('info')
                 ? 'context'
                 : undefined,
-              argRequirements.has('info') ? 'info' : '',
+              argRequirements.has('info') ? 'info' : undefined,
             ]
               .filter((x) => x !== undefined)
               .join(', ');

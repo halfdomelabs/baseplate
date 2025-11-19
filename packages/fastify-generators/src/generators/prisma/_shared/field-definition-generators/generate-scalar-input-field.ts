@@ -37,7 +37,7 @@ const SCALAR_TYPE_TO_ZOD_TYPE: Record<ScalarFieldType, string> = {
   date: 'date()',
   dateTime: 'date()',
   json: 'unknown()',
-  jsonObject: 'record(unknown())',
+  jsonObject: 'record(z.unknown())',
   uuid: 'string().uuid()',
   enum: '',
 };

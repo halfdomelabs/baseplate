@@ -855,7 +855,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
     // Throw error if query select is provided since we will not necessarily have a full result to return
     if (query?.select) {
       throw new Error(
-        'Query select is not supported for create operations. Use include instead.',
+        'Query select is not supported for delete operations. Use include instead.',
       );
     }
 

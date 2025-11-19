@@ -161,8 +161,15 @@ export function fileField<
       }
 
       // Validate file was uploaded
+      if (!(file.adapter in STORAGE_ADAPTERS)) {
+        throw new BadRequestError(
+          `Unknown file adapter "${file.adapter}" configured for file "${id}".`,
+        );
+      }
+
       const adapter =
         STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
+
       const fileMetadata = await adapter.getFileMetadata(file.storagePath);
       if (!fileMetadata) {
         throw new BadRequestError(`File "${id}" was not uploaded correctly.`);

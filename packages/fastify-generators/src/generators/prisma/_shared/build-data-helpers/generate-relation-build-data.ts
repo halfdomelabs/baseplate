@@ -302,7 +302,7 @@ export function generateRelationBuildData(
     );
     const updateDataBody = generateBuildDataBody(
       foreignKeyFieldNames,
-      'create',
+      'update',
       dataUtilsImports,
       relevantRelations,
       inputFieldNames,
