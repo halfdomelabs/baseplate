@@ -859,6 +859,8 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
       );
     }
 
+    const delegate = makeGenericPrismaDelegate(prisma, config.model);
+
     let existingItem: GetPayload<TModelName> | undefined;
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
@@ -868,11 +870,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
       serviceContext: context,
       loadExisting: async () => {
         if (existingItem) return existingItem;
-        const findUniqueOrThrow = prisma[config.model]
-          .findUnique as unknown as (args: {
-          where: WhereUniqueInput<TModelName>;
-        }) => Promise<GetPayload<TModelName> | null>;
-        const result = await findUniqueOrThrow({ where });
+        const result = await delegate.findUnique({ where });
         if (!result) throw new NotFoundError(`${config.model} not found`);
         existingItem = result;
         return result;
