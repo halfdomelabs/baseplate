@@ -4,16 +4,6 @@
     "instanceData": {},
     "template": "app-modules"
   },
-  "arrays.ts": {
-    "generator": "@baseplate-dev/core-generators#node/ts-utils",
-    "instanceData": {},
-    "template": "arrays"
-  },
-  "data-pipes.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
-    "instanceData": {},
-    "template": "data-pipes"
-  },
   "http-errors.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
     "instanceData": {},

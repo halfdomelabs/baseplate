@@ -16,15 +16,29 @@ export const userInputFields = {
 export const createUser = defineCreateOperation({
   model: 'user',
   fields: userInputFields,
-  buildData: (data) => data,
+  create: ({ tx, data, query }) =>
+    tx.user.create({
+      data,
+      ...query,
+    }),
 });
 
 export const updateUser = defineUpdateOperation({
   model: 'user',
   fields: userInputFields,
-  buildData: (data) => data,
+  update: ({ tx, where, data, query }) =>
+    tx.user.update({
+      where,
+      data,
+      ...query,
+    }),
 });
 
 export const deleteUser = defineDeleteOperation({
   model: 'user',
+  delete: ({ tx, where, query }) =>
+    tx.user.delete({
+      where,
+      ...query,
+    }),
 });
