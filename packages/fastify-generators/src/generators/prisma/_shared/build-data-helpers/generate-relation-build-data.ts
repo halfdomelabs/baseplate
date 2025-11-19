@@ -10,23 +10,9 @@ import type {
 import type { DataUtilsImportsProvider } from '../../data-utils/index.js';
 
 /**
- * Metadata about a single relation that should be included in buildData
- */
-export interface RelationMapping {
-  /** Name of the relation field (e.g., 'owner', 'assignee') */
-  relationName: string;
-  /** Foreign key field names (e.g., ['ownerId'] or ['userId', 'tenantId']) */
-  foreignKeyFields: string[];
-  /** Referenced field names in the target model (e.g., ['id'] or ['id', 'tenantId']) */
-  referencedFields: string[];
-  /** Whether the relation is optional */
-  optional: boolean;
-}
-
-/**
  * Configuration for generating relation buildData function
  */
-export interface GenerateRelationBuildDataConfig {
+interface GenerateRelationBuildDataConfig {
   /** Prisma model to analyze for relations */
   prismaModel: PrismaOutputModel;
   /** Field names that are included in the input (to determine which relations to include) */
@@ -40,7 +26,7 @@ export interface GenerateRelationBuildDataConfig {
 /**
  * Result of generating relation buildData function
  */
-export interface GenerateRelationBuildDataResult {
+interface GenerateRelationBuildDataResult {
   /** Argument pattern for the function (e.g., "{ ownerId, ...data }" or "data") */
   argumentFragment: TsCodeFragment;
   /** Return value with relation transformations (e.g., "{ ...data, owner: relationHelpers.connectCreate(...) }") */
@@ -89,7 +75,7 @@ function generateUniqueWhereFragment(
 /**
  * Finds all relations in the Prisma model that should be included based on input fields
  */
-export function findRelevantRelations(
+function findRelevantRelations(
   prismaModel: PrismaOutputModel,
   inputFieldNames: string[],
 ): PrismaOutputRelationField[] {
@@ -118,7 +104,7 @@ export function findRelevantRelations(
 /**
  * Extracts all unique foreign key field names from relations
  */
-export function extractForeignKeyFields(
+function extractForeignKeyFields(
   relations: PrismaOutputRelationField[],
 ): string[] {
   const allFkFields = relations.flatMap((rel) => rel.fields ?? []);

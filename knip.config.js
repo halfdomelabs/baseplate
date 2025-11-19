@@ -35,6 +35,9 @@ export default {
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-web': {
       entry: ['src/main.{ts,tsx}'],

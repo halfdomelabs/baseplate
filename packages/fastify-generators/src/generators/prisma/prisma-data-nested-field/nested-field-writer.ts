@@ -196,7 +196,7 @@ function createOneToManyWhereUniqueFunction(
     : tsTemplate`(input, parentModel) => ${conditionalWhereUniqueObj}`;
 }
 
-export function writeParentModelConfigFragment({
+function writeParentModelConfigFragment({
   parentModel,
   dataUtilsImports,
 }: WritePrismaDataNestedFieldInput): TsCodeFragment {

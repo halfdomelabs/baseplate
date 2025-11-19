@@ -11,7 +11,7 @@ import { generateRelationBuildData } from './generate-relation-build-data.js';
 /**
  * Configuration for generating create operation callback
  */
-export interface GenerateCreateCallbackConfig {
+interface GenerateCreateCallbackConfig {
   /** Prisma model to analyze for relations */
   prismaModel: PrismaOutputModel;
   /** Field names that are included in the input */
@@ -25,7 +25,7 @@ export interface GenerateCreateCallbackConfig {
 /**
  * Result of generating create operation callback
  */
-export interface GenerateCreateCallbackResult {
+interface GenerateCreateCallbackResult {
   /** Complete create callback fragment: ({ tx, data, query }) => tx.model.create({...}) */
   createCallbackFragment: TsCodeFragment;
 }
@@ -94,7 +94,7 @@ export function generateCreateCallback(
 /**
  * Configuration for generating update operation callback
  */
-export interface GenerateUpdateCallbackConfig {
+interface GenerateUpdateCallbackConfig {
   /** Prisma model to analyze for relations */
   prismaModel: PrismaOutputModel;
   /** Field names that are included in the input */
@@ -108,7 +108,7 @@ export interface GenerateUpdateCallbackConfig {
 /**
  * Result of generating update operation callback
  */
-export interface GenerateUpdateCallbackResult {
+interface GenerateUpdateCallbackResult {
   /** Complete update callback fragment: ({ tx, where, data, query }) => tx.model.update({...}) */
   updateCallbackFragment: TsCodeFragment;
 }
@@ -180,7 +180,7 @@ export function generateUpdateCallback(
 /**
  * Configuration for generating delete operation callback
  */
-export interface GenerateDeleteCallbackConfig {
+interface GenerateDeleteCallbackConfig {
   /** Prisma model variable name in camelCase (e.g., 'todoItem', 'user') */
   modelVariableName: string;
 }
@@ -188,7 +188,7 @@ export interface GenerateDeleteCallbackConfig {
 /**
  * Result of generating delete operation callback
  */
-export interface GenerateDeleteCallbackResult {
+interface GenerateDeleteCallbackResult {
   /** Complete delete callback fragment: ({ tx, where, query }) => tx.model.delete({...}) */
   deleteCallbackFragment: TsCodeFragment;
 }

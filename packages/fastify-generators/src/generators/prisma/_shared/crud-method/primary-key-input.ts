@@ -80,7 +80,7 @@ export function getModelIdFieldName(model: PrismaOutputModel): string {
   return idFields.join('_');
 }
 
-export function getPrimaryKeyExpressions(
+function getPrimaryKeyExpressions(
   model: PrismaOutputModel,
 ): PrimaryKeyOutput {
   const { idFields, fields } = model;

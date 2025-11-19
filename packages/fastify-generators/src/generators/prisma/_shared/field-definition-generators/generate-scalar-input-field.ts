@@ -15,7 +15,7 @@ import type { InputFieldDefinitionOutput } from './types.js';
 /**
  * Configuration for generating a scalar field definition
  */
-export interface GenerateScalarFieldConfig {
+interface GenerateScalarFieldConfig {
   /** Name of the field */
   fieldName: string;
   /** Prisma scalar field */

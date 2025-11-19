@@ -40,7 +40,7 @@ export interface ServiceDtoKind<TMetadata = undefined> {
  * }>('complex');
  * ```
  */
-export function createServiceDtoKind<TMetadata = undefined>(
+function createServiceDtoKind<TMetadata = undefined>(
   name: string,
 ): ServiceDtoKind<TMetadata> {
   return { name };
