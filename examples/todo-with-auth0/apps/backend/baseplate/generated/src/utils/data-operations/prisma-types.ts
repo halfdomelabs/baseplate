@@ -57,7 +57,10 @@ export type GetPayload<
  * ```
  */
 export type ModelQuery<TModelName extends ModelPropName> = Pick<
-  Args<(typeof prisma)[TModelName], 'findUnique'>,
+  { select?: unknown; include?: unknown } & Args<
+    (typeof prisma)[TModelName],
+    'findUnique'
+  >,
   'select' | 'include'
 >;
 
