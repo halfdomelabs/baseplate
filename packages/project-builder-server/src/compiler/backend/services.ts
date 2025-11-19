@@ -129,8 +129,6 @@ function buildVirtualInputField(
     [embeddedRelationTransformerCompiler],
   );
 
-  if (!compiler.compileField) return undefined;
-
   return compiler.compileField(transformer, {
     definitionContainer: appBuilder.definitionContainer,
     model,
