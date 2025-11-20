@@ -3,6 +3,7 @@ import PrismaPlugin from '@pothos/plugin-prisma';
 import RelayPlugin from '@pothos/plugin-relay';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing';
+import ValidationPlugin from '@pothos/plugin-validation';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
 
 import type PrismaTypes from '@src/generated/prisma/pothos-prisma-types.js';
@@ -44,6 +45,7 @@ export const builder = new SchemaBuilder<{
     pothosStripQueryMutationPlugin,
     RelayPlugin,
     SimpleObjectsPlugin,
+    ValidationPlugin,
   ],
   prisma: {
     client: prisma,

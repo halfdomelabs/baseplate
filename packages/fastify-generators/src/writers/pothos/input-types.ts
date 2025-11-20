@@ -58,6 +58,7 @@ export function writePothosInputDefinitionFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
   shouldExport?: boolean,
+  suffix?: TsCodeFragment,
 ): PothosTypeDefinitionWithVariableName {
   const pothosFields = writePothosInputFieldsFromDtoFields(fields, {
     ...options,
@@ -66,19 +67,11 @@ export function writePothosInputDefinitionFromDtoFields(
 
   const variableName = `${lowerCaseFirst(name)}InputType`;
 
-  const fragment = TsCodeUtils.formatFragment(
-    `${
-      shouldExport ? `export ` : ''
-    }const VARIABLE_NAME = BUILDER.inputType(NAME, {
-      fields: (t) => FIELDS
-    })`,
-    {
-      VARIABLE_NAME: variableName,
-      BUILDER: options.schemaBuilder,
-      NAME: quot(name),
-      FIELDS: pothosFields,
-    },
-  );
+  const fragment = tsTemplate`${
+    shouldExport ? `export ` : ''
+  }const ${variableName} = ${options.schemaBuilder}.inputType(${quot(name)}, {
+    fields: (t) => ${pothosFields}
+  })${suffix ?? ''}`;
 
   return {
     name,
@@ -109,6 +102,10 @@ export function getPothosTypeForNestedInput(
     name,
     fields,
     options,
+    false,
+    field.zodSchemaFragment
+      ? tsTemplate`.validate(${field.zodSchemaFragment})`
+      : undefined,
   );
 
   return getPothosTypeAsFragment(

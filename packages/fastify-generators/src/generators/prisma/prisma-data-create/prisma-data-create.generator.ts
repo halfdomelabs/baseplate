@@ -79,7 +79,11 @@ export const prismaDataCreateGenerator = createGenerator({
                 create: ${createCallbackFragment},
               })
             `;
-            serviceFile.getServicePath();
+
+            const methodFragment = TsCodeUtils.importFragment(
+              name,
+              serviceFile.getServicePath(),
+            );
 
             prismaDataService.registerMethod({
               name,
@@ -87,10 +91,7 @@ export const prismaDataCreateGenerator = createGenerator({
               fragment: createOperation,
               outputMethod: {
                 name,
-                referenceFragment: TsCodeUtils.importFragment(
-                  name,
-                  serviceFile.getServicePath(),
-                ),
+                referenceFragment: methodFragment,
                 arguments: [
                   {
                     name: 'data',
@@ -99,6 +100,7 @@ export const prismaDataCreateGenerator = createGenerator({
                       name: `${uppercaseFirstChar(name)}Data`,
                       fields: usedFields.map((field) => field.outputDtoField),
                     },
+                    zodSchemaFragment: tsTemplate`${methodFragment}.$dataSchema`,
                   },
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',

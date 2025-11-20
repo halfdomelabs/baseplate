@@ -1,7 +1,6 @@
 import { queryFromInfo } from '@pothos/plugin-prisma';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import { fileInputInputType } from '../../../storage/schema/file-input.input-type.js';
 import {
@@ -48,16 +47,18 @@ const userUserProfileNestedInputInputType = builder.inputType(
   },
 );
 
-const createUserDataInputType = builder.inputType('CreateUserData', {
-  fields: (t) => ({
-    name: t.string(),
-    email: t.string({ required: true }),
-    customer: t.field({ type: userCustomerNestedInputInputType }),
-    images: t.field({ type: [userImagesNestedInputInputType] }),
-    roles: t.field({ type: [userRolesNestedInputInputType] }),
-    userProfile: t.field({ type: userUserProfileNestedInputInputType }),
-  }),
-});
+const createUserDataInputType = builder
+  .inputType('CreateUserData', {
+    fields: (t) => ({
+      name: t.string(),
+      email: t.string({ required: true }),
+      customer: t.field({ type: userCustomerNestedInputInputType }),
+      images: t.field({ type: [userImagesNestedInputInputType] }),
+      roles: t.field({ type: [userRolesNestedInputInputType] }),
+      userProfile: t.field({ type: userUserProfileNestedInputInputType }),
+    }),
+  })
+  .validate(createUser.$dataSchema);
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
@@ -68,17 +69,7 @@ builder.mutationField('createUser', (t) =>
     authorize: ['admin'],
     resolve: async (root, { input: { data } }, context, info) => {
       const user = await createUser({
-        data: restrictObjectNulls(
-          {
-            ...data,
-            images: data.images?.map((image) =>
-              restrictObjectNulls(image, ['id']),
-            ),
-            userProfile:
-              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
-          },
-          ['customer', 'images', 'roles', 'userProfile'],
-        ),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
       });
@@ -87,16 +78,18 @@ builder.mutationField('createUser', (t) =>
   }),
 );
 
-const updateUserDataInputType = builder.inputType('UpdateUserData', {
-  fields: (t) => ({
-    name: t.string(),
-    email: t.string(),
-    customer: t.field({ type: userCustomerNestedInputInputType }),
-    images: t.field({ type: [userImagesNestedInputInputType] }),
-    roles: t.field({ type: [userRolesNestedInputInputType] }),
-    userProfile: t.field({ type: userUserProfileNestedInputInputType }),
-  }),
-});
+const updateUserDataInputType = builder
+  .inputType('UpdateUserData', {
+    fields: (t) => ({
+      name: t.string(),
+      email: t.string(),
+      customer: t.field({ type: userCustomerNestedInputInputType }),
+      images: t.field({ type: [userImagesNestedInputInputType] }),
+      roles: t.field({ type: [userRolesNestedInputInputType] }),
+      userProfile: t.field({ type: userUserProfileNestedInputInputType }),
+    }),
+  })
+  .validate(updateUser.$dataSchema);
 
 builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
@@ -109,17 +102,7 @@ builder.mutationField('updateUser', (t) =>
     resolve: async (root, { input: { id, data } }, context, info) => {
       const user = await updateUser({
         where: { id },
-        data: restrictObjectNulls(
-          {
-            ...data,
-            images: data.images?.map((image) =>
-              restrictObjectNulls(image, ['id']),
-            ),
-            userProfile:
-              data.userProfile && restrictObjectNulls(data.userProfile, ['id']),
-          },
-          ['email', 'customer', 'images', 'roles', 'userProfile'],
-        ),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
       });

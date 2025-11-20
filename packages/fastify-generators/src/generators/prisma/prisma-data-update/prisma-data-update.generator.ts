@@ -83,9 +83,13 @@ export const prismaDataUpdateGenerator = createGenerator({
                 update: ${updateCallbackFragment},
               })
             `;
-            serviceFile.getServicePath();
 
             const prismaModel = prismaOutput.getPrismaModel(modelName);
+
+            const methodFragment = TsCodeUtils.importFragment(
+              name,
+              serviceFile.getServicePath(),
+            );
 
             prismaDataService.registerMethod({
               name,
@@ -93,10 +97,7 @@ export const prismaDataUpdateGenerator = createGenerator({
               fragment: updateOperation,
               outputMethod: {
                 name,
-                referenceFragment: TsCodeUtils.importFragment(
-                  name,
-                  serviceFile.getServicePath(),
-                ),
+                referenceFragment: methodFragment,
                 arguments: [
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
@@ -116,6 +117,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                         isOptional: true,
                       })),
                     },
+                    zodSchemaFragment: tsTemplate`${methodFragment}.$dataSchema`,
                   },
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',

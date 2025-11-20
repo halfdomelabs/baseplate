@@ -1,7 +1,6 @@
 import { queryFromInfo } from '@pothos/plugin-prisma';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import {
   createTodoItem,
@@ -29,16 +28,18 @@ const todoItemAttachmentsNestedInputInputType = builder.inputType(
   },
 );
 
-const createTodoItemDataInputType = builder.inputType('CreateTodoItemData', {
-  fields: (t) => ({
-    todoListId: t.field({ required: true, type: 'Uuid' }),
-    position: t.int({ required: true }),
-    text: t.string({ required: true }),
-    done: t.boolean({ required: true }),
-    assigneeId: t.field({ type: 'Uuid' }),
-    attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
-  }),
-});
+const createTodoItemDataInputType = builder
+  .inputType('CreateTodoItemData', {
+    fields: (t) => ({
+      todoListId: t.field({ required: true, type: 'Uuid' }),
+      position: t.int({ required: true }),
+      text: t.string({ required: true }),
+      done: t.boolean({ required: true }),
+      assigneeId: t.field({ type: 'Uuid' }),
+      attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
+    }),
+  })
+  .validate(createTodoItem.$dataSchema);
 
 builder.mutationField('createTodoItem', (t) =>
   t.fieldWithInputPayload({
@@ -52,15 +53,7 @@ builder.mutationField('createTodoItem', (t) =>
     authorize: ['user'],
     resolve: async (root, { input: { data } }, context, info) => {
       const todoItem = await createTodoItem({
-        data: restrictObjectNulls(
-          {
-            ...data,
-            attachments: data.attachments?.map((attachment) =>
-              restrictObjectNulls(attachment, ['id', 'tags']),
-            ),
-          },
-          ['attachments'],
-        ),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
       });
@@ -69,16 +62,18 @@ builder.mutationField('createTodoItem', (t) =>
   }),
 );
 
-const updateTodoItemDataInputType = builder.inputType('UpdateTodoItemData', {
-  fields: (t) => ({
-    todoListId: t.field({ type: 'Uuid' }),
-    position: t.int(),
-    text: t.string(),
-    done: t.boolean(),
-    assigneeId: t.field({ type: 'Uuid' }),
-    attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
-  }),
-});
+const updateTodoItemDataInputType = builder
+  .inputType('UpdateTodoItemData', {
+    fields: (t) => ({
+      todoListId: t.field({ type: 'Uuid' }),
+      position: t.int(),
+      text: t.string(),
+      done: t.boolean(),
+      assigneeId: t.field({ type: 'Uuid' }),
+      attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
+    }),
+  })
+  .validate(updateTodoItem.$dataSchema);
 
 builder.mutationField('updateTodoItem', (t) =>
   t.fieldWithInputPayload({
@@ -94,15 +89,7 @@ builder.mutationField('updateTodoItem', (t) =>
     resolve: async (root, { input: { id, data } }, context, info) => {
       const todoItem = await updateTodoItem({
         where: { id },
-        data: restrictObjectNulls(
-          {
-            ...data,
-            attachments: data.attachments?.map((attachment) =>
-              restrictObjectNulls(attachment, ['id', 'tags']),
-            ),
-          },
-          ['todoListId', 'position', 'text', 'done', 'attachments'],
-        ),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
       });
