@@ -5,8 +5,6 @@
   "@baseplate-dev/core-generators#node/node:package-json": "package.json",
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
-  "@baseplate-dev/core-generators#node/ts-utils:normalize-types": "src/utils/normalize-types.ts",
-  "@baseplate-dev/core-generators#node/ts-utils:nulls": "src/utils/nulls.ts",
   "@baseplate-dev/core-generators#node/ts-utils:string": "src/utils/string.ts",
   "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.json",
   "@baseplate-dev/core-generators#node/vitest:global-setup": "src/tests/scripts/global-setup.ts",

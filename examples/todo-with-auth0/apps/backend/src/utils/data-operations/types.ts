@@ -1,4 +1,5 @@
 import type { ITXClientDenyList } from '@prisma/client/runtime/client';
+import type { z } from 'zod';
 
 import type { PrismaClient } from '@src/generated/prisma/client.js';
 
@@ -190,17 +191,18 @@ export interface FieldTransformResult<TCreateOutput, TUpdateOutput> {
  * Field definition for validating and transforming input values.
  *
  * A field definition specifies how to process a single input field:
- * - Validate the input value
+ * - Validate the input value using a Zod schema
  * - Transform it into Prisma-compatible create/update data
  * - Optionally attach hooks for side effects
  *
- * @template TInput - The expected input type
+ * @template TInputSchema - The Zod schema type for validation
  * @template TCreateOutput - Output type for create operations
  * @template TUpdateOutput - Output type for update operations
  *
  * @example
  * ```typescript
- * const nameField: FieldDefinition<string, string, string> = {
+ * const nameField: FieldDefinition<z.ZodString, string, string> = {
+ *   zodSchema: z.string().min(1),
  *   processInput: (value, ctx) => {
  *     const validated = z.string().min(1).parse(value);
  *     return {
@@ -213,16 +215,30 @@ export interface FieldTransformResult<TCreateOutput, TUpdateOutput> {
  * };
  * ```
  */
-export interface FieldDefinition<TInput, TCreateOutput, TUpdateOutput> {
+export interface FieldDefinition<
+  TInputSchema extends z.ZodSchema,
+  TCreateOutput,
+  TUpdateOutput,
+> {
+  /**
+   * The Zod schema for validating this field's input.
+   * This schema can be extracted and reused for validation in other contexts
+   * (e.g., GraphQL mutations, REST endpoints, tRPC procedures).
+   */
+  schema: TInputSchema;
+
   /**
    * Processes and transforms an input value.
    *
-   * @param value - The input value to process
+   * Note: Validation happens at the operation level (defineCreateOperation/defineUpdateOperation),
+   * not at the field level. This function receives already-validated input.
+   *
+   * @param value - The validated input value to process
    * @param ctx - Context about the operation
    * @returns Transformed data and optional hooks
    */
   processInput: (
-    value: TInput,
+    value: z.output<TInputSchema>,
     ctx: FieldContext,
   ) =>
     | Promise<FieldTransformResult<TCreateOutput, TUpdateOutput>>
@@ -238,14 +254,6 @@ export type AnyFieldDefinition = FieldDefinition<any, any, any>;
  * =========================================
  */
 
-/** Extracts keys from T where the value type does not include undefined */
-type RequiredKeys<T> = {
-  [P in keyof T]: T[P] extends Exclude<T[P], undefined> ? P : never;
-}[keyof T];
-
-/** Makes properties with undefined values optional, keeps others required */
-type OptionalForUndefinedKeys<T> = Partial<T> & Pick<T, RequiredKeys<T>>;
-
 /** Identity type that expands type aliases for better IDE tooltips */
 type Identity<T> = T extends object
   ? {} & {
@@ -254,11 +262,43 @@ type Identity<T> = T extends object
   : T;
 
 /**
+ * Infers the input schema from a record of field definitions.
+ *
+ * Creates an object type where:
+ * - Each key corresponds to a field name
+ * - Each value type is the field's Zod schema type
+ *
+ * @template TFields - Record of field definitions
+ *
+ * @example
+ * ```typescript
+ * const fields = {
+ *   name: scalarField(z.string()),
+ *   email: scalarField(z.string().email().optional()),
+ * };
+ *
+ * type InputSchema = InferInputSchema<typeof fields>;
+ * // { name: z.ZodString; email?: z.ZodString | undefined }
+ * ```
+ */
+export type InferInputSchema<
+  TFields extends Record<string, AnyFieldDefinition>,
+> = z.ZodObject<{
+  [K in keyof TFields]: TFields[K] extends FieldDefinition<
+    infer TInputSchema,
+    any,
+    any
+  >
+    ? TInputSchema
+    : never;
+}>;
+
+/**
  * Infers the input type from a record of field definitions.
  *
  * Creates an object type where:
  * - Each key corresponds to a field name
- * - Each value type is the field's input type
+ * - Each value type is the field's Zod schema type
  * - Fields accepting undefined become optional properties
  *
  * @template TFields - Record of field definitions
@@ -275,17 +315,7 @@ type Identity<T> = T extends object
  * ```
  */
 export type InferInput<TFields extends Record<string, AnyFieldDefinition>> =
-  Identity<
-    OptionalForUndefinedKeys<{
-      [K in keyof TFields]: TFields[K] extends FieldDefinition<
-        infer TInput,
-        any,
-        any
-      >
-        ? TInput
-        : never;
-    }>
-  >;
+  z.output<InferInputSchema<TFields>>;
 
 /**
  * Infers the output type (create and update) from a single field definition.

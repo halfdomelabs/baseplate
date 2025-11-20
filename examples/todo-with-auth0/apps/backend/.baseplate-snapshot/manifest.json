@@ -9,8 +9,7 @@
       "src/modules/todos/services/todo-item-service.int.test.ts",
       "src/services/sentry.e2e.test.ts",
       "src/services/sentry.instrument.test-helper.ts",
-      "src/services/sentry.test-kit.test-helper.ts",
-      "src/utils/nulls.unit.test.ts"
+      "src/services/sentry.test-kit.test-helper.ts"
     ],
     "deleted": [],
     "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]

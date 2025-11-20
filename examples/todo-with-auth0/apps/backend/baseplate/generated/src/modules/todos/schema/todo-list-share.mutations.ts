@@ -1,7 +1,6 @@
 import { queryFromInfo } from '@pothos/plugin-prisma';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import {
   createTodoListShare,
@@ -13,17 +12,16 @@ import {
   todoListSharePrimaryKeyInputType,
 } from './todo-list-share.object-type.js';
 
-const createTodoListShareDataInputType = builder.inputType(
-  'CreateTodoListShareData',
-  {
+const createTodoListShareDataInputType = builder
+  .inputType('CreateTodoListShareData', {
     fields: (t) => ({
       todoListId: t.field({ required: true, type: 'Uuid' }),
       userId: t.field({ required: true, type: 'Uuid' }),
       updatedAt: t.field({ type: 'DateTime' }),
       createdAt: t.field({ type: 'DateTime' }),
     }),
-  },
-);
+  })
+  .validate(createTodoListShare.$dataSchema);
 
 builder.mutationField('createTodoListShare', (t) =>
   t.fieldWithInputPayload({
@@ -39,26 +37,26 @@ builder.mutationField('createTodoListShare', (t) =>
     authorize: ['user'],
     resolve: async (root, { input: { data } }, context, info) => {
       const todoListShare = await createTodoListShare({
-        data: restrictObjectNulls(data, ['updatedAt', 'createdAt']),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoListShare'] }),
+        skipValidation: true,
       });
       return { todoListShare };
     },
   }),
 );
 
-const updateTodoListShareDataInputType = builder.inputType(
-  'UpdateTodoListShareData',
-  {
+const updateTodoListShareDataInputType = builder
+  .inputType('UpdateTodoListShareData', {
     fields: (t) => ({
       todoListId: t.field({ type: 'Uuid' }),
       userId: t.field({ type: 'Uuid' }),
       updatedAt: t.field({ type: 'DateTime' }),
       createdAt: t.field({ type: 'DateTime' }),
     }),
-  },
-);
+  })
+  .validate(updateTodoListShare.$dataSchema);
 
 builder.mutationField('updateTodoListShare', (t) =>
   t.fieldWithInputPayload({
@@ -79,14 +77,10 @@ builder.mutationField('updateTodoListShare', (t) =>
     resolve: async (root, { input: { id, data } }, context, info) => {
       const todoListShare = await updateTodoListShare({
         where: { todoListId_userId: id },
-        data: restrictObjectNulls(data, [
-          'todoListId',
-          'userId',
-          'updatedAt',
-          'createdAt',
-        ]),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoListShare'] }),
+        skipValidation: true,
       });
       return { todoListShare };
     },

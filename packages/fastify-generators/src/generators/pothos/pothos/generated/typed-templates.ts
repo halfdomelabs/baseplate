@@ -59,6 +59,7 @@ const fieldWithInputSchemaBuilder = createTsTemplateFile({
   group: 'field-with-input-payload',
   importMapProviders: { tsUtilsImports: tsUtilsImportsProvider },
   name: 'field-with-input-schema-builder',
+  referencedGeneratorTemplates: { fieldWithInputTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,

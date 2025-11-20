@@ -145,6 +145,7 @@ export const pothosGenerator = createGenerator({
         '@pothos/core',
         '@pothos/plugin-simple-objects',
         '@pothos/plugin-relay',
+        '@pothos/plugin-validation',
       ]),
     }),
     main: createGeneratorTask({
@@ -220,6 +221,12 @@ export const pothosGenerator = createGenerator({
                 tsImportBuilder()
                   .default('RelayPlugin')
                   .from('@pothos/plugin-relay'),
+              ),
+              validationPlugin: tsCodeFragment(
+                `ValidationPlugin`,
+                tsImportBuilder()
+                  .default('ValidationPlugin')
+                  .from('@pothos/plugin-validation'),
               ),
             };
 
