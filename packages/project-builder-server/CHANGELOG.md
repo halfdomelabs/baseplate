@@ -1,5 +1,32 @@
 # @baseplate-dev/project-builder-server
 
+## 0.4.0
+
+### Minor Changes
+
+- [#687](https://github.com/halfdomelabs/baseplate/pull/687) [`57e15c0`](https://github.com/halfdomelabs/baseplate/commit/57e15c085099508898756385661df9cf54108466) Thanks [@kingston](https://github.com/kingston)! - Add support for generating the root of a monorepo
+
+### Patch Changes
+
+- [#690](https://github.com/halfdomelabs/baseplate/pull/690) [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042) Thanks [@kingston](https://github.com/kingston)! - Move Docker Compose generation from backend to root package
+
+  Docker Compose configuration is now generated at the monorepo root instead of within individual backend packages. This provides a better developer experience with a single `docker compose up` command from the project root.
+
+  **Breaking Changes:**
+  - Docker files now generate at `docker/` (root) instead of `apps/backend/docker/`
+  - `enableRedis` removed from backend app configuration - moved to project-level infrastructure settings
+  - New Infrastructure settings page for configuring Redis (Postgres is always enabled)
+
+- [#692](https://github.com/halfdomelabs/baseplate/pull/692) [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18) Thanks [@kingston](https://github.com/kingston)! - Remove support for password transformer since it is no longer used.
+
+- Updated dependencies [[`9f22eef`](https://github.com/halfdomelabs/baseplate/commit/9f22eef139c8db2dde679f6424eb23e024e37d19), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`e79df28`](https://github.com/halfdomelabs/baseplate/commit/e79df28eb7ab0275da2f630edcb1243bee40b7a5), [`e68624e`](https://github.com/halfdomelabs/baseplate/commit/e68624e9372480da767d220cae60d45d9ed3c636), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b), [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`852c3a5`](https://github.com/halfdomelabs/baseplate/commit/852c3a5ff3a185e60efaeb2cbb90eed59a95ec2b), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5), [`a6274e9`](https://github.com/halfdomelabs/baseplate/commit/a6274e98e2f56cdac23e9ff2bc338946a569a65c), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b), [`e79df28`](https://github.com/halfdomelabs/baseplate/commit/e79df28eb7ab0275da2f630edcb1243bee40b7a5), [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b), [`57e15c0`](https://github.com/halfdomelabs/baseplate/commit/57e15c085099508898756385661df9cf54108466)]:
+  - @baseplate-dev/project-builder-lib@0.4.0
+  - @baseplate-dev/fastify-generators@0.4.0
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/core-generators@0.4.0
+  - @baseplate-dev/utils@0.4.0
+  - @baseplate-dev/react-generators@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

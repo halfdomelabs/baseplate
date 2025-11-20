@@ -1,5 +1,11 @@
 # @baseplate-dev/utils
 
+## 0.4.0
+
+### Patch Changes
+
+- [#692](https://github.com/halfdomelabs/baseplate/pull/692) [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18) Thanks [@kingston](https://github.com/kingston)! - Add case utils to utils package
+
 ## 0.3.8
 
 ## 0.3.7
