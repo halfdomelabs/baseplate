@@ -218,15 +218,13 @@ export interface NestedOneToOneFieldConfig<
  * This helper creates a field definition for managing one-to-one nested relationships.
  * It handles nested field validation, transformation, and supports both create and update operations.
  *
- * For create operations:
- * - Returns nested create data if input is provided
- * - Returns undefined if input is not provided
+ * The nested entity is created/updated via afterExecute hooks, allowing it to reference
+ * the parent entity after it has been created.
  *
- * For update operations:
- * - Returns upsert if input has a unique identifier (via getWhereUnique)
- * - Returns create if input doesn't have a unique identifier
- * - Deletes the relation if input is null (requires deleteRelation)
- * - Returns undefined if input is not provided (no change)
+ * Behavior:
+ * - **Provided value**: Upserts the nested entity (creates if new, updates if exists)
+ * - **null**: Deletes the nested entity (update only)
+ * - **undefined**: No change to nested entity
  *
  * @param config - Configuration object
  * @returns Field definition
@@ -235,18 +233,24 @@ export interface NestedOneToOneFieldConfig<
  * ```typescript
  * const fields = {
  *   userProfile: nestedOneToOneField({
+ *     parentModel: createParentModelConfig('user', (user) => ({ id: user.id })),
+ *     model: 'userProfile',
+ *     relationName: 'user',
  *     fields: {
  *       bio: scalarField(z.string()),
  *       avatar: fileField(avatarFileCategory),
  *     },
+ *     getWhereUnique: (parent) => ({ userId: parent.id }),
  *     buildData: (data) => ({
- *       bio: data.bio,
- *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
+ *       create: {
+ *         bio: data.create.bio,
+ *         avatar: data.create.avatar ? { connect: { id: data.create.avatar } } : undefined,
+ *       },
+ *       update: {
+ *         bio: data.update.bio,
+ *         avatar: data.update.avatar ? { connect: { id: data.update.avatar } } : undefined,
+ *       },
  *     }),
- *     getWhereUnique: (input) => input.id ? { id: input.id } : undefined,
- *     deleteRelation: async () => {
- *       await prisma.userProfile.deleteMany({ where: { userId: parentId } });
- *     },
  *   }),
  * };
  * ```

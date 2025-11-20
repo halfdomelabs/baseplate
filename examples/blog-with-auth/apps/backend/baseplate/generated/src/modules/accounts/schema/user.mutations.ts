@@ -31,6 +31,7 @@ builder.mutationField('createUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
+        skipValidation: true,
       });
       return { user };
     },
@@ -61,6 +62,7 @@ builder.mutationField('updateUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
+        skipValidation: true,
       });
       return { user };
     },

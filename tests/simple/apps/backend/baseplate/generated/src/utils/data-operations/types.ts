@@ -146,8 +146,6 @@ export interface FieldContext {
   serviceContext: ServiceContext;
   /** Function to load existing model data (for updates) */
   loadExisting: () => Promise<object | undefined>;
-  /** Skip Zod validation if data has already been validated (avoids double validation) */
-  skipValidation?: boolean;
 }
 
 /**
@@ -232,7 +230,10 @@ export interface FieldDefinition<
   /**
    * Processes and transforms an input value.
    *
-   * @param value - The input value to process
+   * Note: Validation happens at the operation level (defineCreateOperation/defineUpdateOperation),
+   * not at the field level. This function receives already-validated input.
+   *
+   * @param value - The validated input value to process
    * @param ctx - Context about the operation
    * @returns Transformed data and optional hooks
    */

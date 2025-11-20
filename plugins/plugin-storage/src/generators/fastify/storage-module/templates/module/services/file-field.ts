@@ -7,7 +7,7 @@ import type { Prisma } from '%prismaGeneratedImports';
 import { STORAGE_ADAPTERS } from '$configAdapters';
 import { BadRequestError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
-import z from 'zod';
+import { z } from 'zod';
 
 const fileInputSchema = z.object({
   id: z.string().uuid(),
@@ -93,7 +93,9 @@ export function fileField<
     : { connect: { id: string } } | undefined
 > {
   return {
-    schema: fileInputSchema as TOptional extends true
+    schema: (config.optional
+      ? fileInputSchema.nullish()
+      : fileInputSchema) as TOptional extends true
       ? z.ZodOptional<z.ZodNullable<typeof fileInputSchema>>
       : typeof fileInputSchema,
     processInput: async (

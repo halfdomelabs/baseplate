@@ -56,6 +56,7 @@ builder.mutationField('createTodoItem', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
+        skipValidation: true,
       });
       return { todoItem };
     },
@@ -92,6 +93,7 @@ builder.mutationField('updateTodoItem', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
+        skipValidation: true,
       });
       return { todoItem };
     },

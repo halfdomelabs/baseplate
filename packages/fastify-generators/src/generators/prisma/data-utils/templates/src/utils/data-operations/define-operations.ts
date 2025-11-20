@@ -246,7 +246,7 @@ export function generateCreateSchema<
     [K in keyof TFields]: TFields[K]['schema'];
   };
 
-  return z.object(shape);
+  return z.object(shape) as InferInputSchema<TFields>;
 }
 
 /**
@@ -317,6 +317,9 @@ export interface CreateOperationConfig<
     >
   >;
 
+  /**
+   * Optional hooks for the operation
+   */
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
@@ -338,6 +341,11 @@ export interface CreateOperationInput<
   query?: TQueryArgs;
   /** Service context containing user info, request details, etc. */
   context: ServiceContext;
+  /**
+   * Skip Zod validation if data has already been validated (avoids double validation).
+   * Set to true when validation happened at a higher layer (e.g., GraphQL input type validation).
+   */
+  skipValidation?: boolean;
 }
 
 type CreateOperationFunction<
@@ -403,10 +411,13 @@ export function defineCreateOperation<
 >(
   config: CreateOperationConfig<TModelName, TFields, TPrepareResult>,
 ): CreateOperationFunction<TModelName, TFields> {
+  const dataSchema = generateCreateSchema(config.fields);
+
   const createOperation = async <TQueryArgs extends ModelQuery<TModelName>>({
     data,
     query,
     context,
+    skipValidation,
   }: CreateOperationInput<TModelName, TFields, TQueryArgs>): Promise<
     GetPayload<TModelName, TQueryArgs>
   > => {
@@ -416,6 +427,9 @@ export function defineCreateOperation<
         'Query select is not supported for create operations. Use include instead.',
       );
     }
+
+    // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
+    const validatedData = skipValidation ? data : dataSchema.parse(data);
 
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
@@ -429,20 +443,20 @@ export function defineCreateOperation<
 
     // Authorization
     if (config.authorize) {
-      await config.authorize(data, baseOperationContext);
+      await config.authorize(validatedData, baseOperationContext);
     }
 
     // Step 1: Transform fields (OUTSIDE TRANSACTION)
     const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
-        transformFields(config.fields, data, {
+        transformFields(config.fields, validatedData, {
           operation: 'create',
           serviceContext: context,
           allowOptionalFields: false,
           loadExisting: () => Promise.resolve(undefined),
         }),
         config.prepareComputedFields
-          ? config.prepareComputedFields(data, baseOperationContext)
+          ? config.prepareComputedFields(validatedData, baseOperationContext)
           : Promise.resolve(undefined as TPrepareResult),
       ]);
 
@@ -504,7 +518,7 @@ export function defineCreateOperation<
         return result as GetPayload<TModelName, TQueryArgs>;
       });
   };
-  createOperation.$dataSchema = generateCreateSchema(config.fields);
+  createOperation.$dataSchema = dataSchema;
   return createOperation;
 }
 
@@ -604,6 +618,11 @@ export interface UpdateOperationInput<
   query?: TQueryArgs;
   /** Service context containing user info, request details, etc. */
   context: ServiceContext;
+  /**
+   * Skip Zod validation if data has already been validated (avoids double validation).
+   * Set to true when validation happened at a higher layer (e.g., GraphQL input type validation).
+   */
+  skipValidation?: boolean;
 }
 
 type UpdateOperationFunction<
@@ -671,11 +690,14 @@ export function defineUpdateOperation<
 >(
   config: UpdateOperationConfig<TModelName, TFields, TPrepareResult>,
 ): UpdateOperationFunction<TModelName, TFields> {
+  const dataSchema = generateCreateSchema(config.fields).partial();
+
   const updateOperation = async <TQueryArgs extends ModelQuery<TModelName>>({
     where,
     data: inputData,
     query,
     context,
+    skipValidation,
   }: UpdateOperationInput<TModelName, TFields, TQueryArgs>): Promise<
     GetPayload<TModelName, TQueryArgs>
   > => {
@@ -685,6 +707,11 @@ export function defineUpdateOperation<
         'Query select is not supported for update operations. Use include instead.',
       );
     }
+
+    // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
+    const validatedData = skipValidation
+      ? inputData
+      : dataSchema.parse(inputData);
 
     let existingItem: GetPayload<TModelName> | undefined;
 
@@ -709,27 +736,31 @@ export function defineUpdateOperation<
     };
     // Authorization
     if (config.authorize) {
-      await config.authorize(inputData, baseOperationContext);
+      await config.authorize(validatedData, baseOperationContext);
     }
 
-    // Step 1: Transform fields (OUTSIDE TRANSACTION)
+    // Step 1: Transform fields (outside transaction)
     // Only transform fields provided in input
     const fieldsToTransform = Object.fromEntries(
-      Object.entries(config.fields).filter(([key]) => key in inputData),
+      Object.entries(config.fields).filter(([key]) => key in validatedData),
     ) as TFields;
 
     const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
-        transformFields(fieldsToTransform, inputData as InferInput<TFields>, {
-          operation: 'update',
-          serviceContext: context,
-          allowOptionalFields: true,
-          loadExisting: baseOperationContext.loadExisting as () => Promise<
-            Record<string, unknown>
-          >,
-        }),
+        transformFields(
+          fieldsToTransform,
+          validatedData as InferInput<TFields>,
+          {
+            operation: 'update',
+            serviceContext: context,
+            allowOptionalFields: true,
+            loadExisting: baseOperationContext.loadExisting as () => Promise<
+              Record<string, unknown>
+            >,
+          },
+        ),
         config.prepareComputedFields
-          ? config.prepareComputedFields(inputData, baseOperationContext)
+          ? config.prepareComputedFields(validatedData, baseOperationContext)
           : Promise.resolve(undefined as TPrepareResult),
       ]);
 

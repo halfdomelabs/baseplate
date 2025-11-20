@@ -39,6 +39,7 @@ builder.mutationField('createTodoList', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
+        skipValidation: true,
       });
       return { todoList };
     },
@@ -75,6 +76,7 @@ builder.mutationField('updateTodoList', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
+        skipValidation: true,
       });
       return { todoList };
     },

@@ -13,7 +13,11 @@ import {
 import { z } from 'zod';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
-import { contextKind, prismaQueryKind } from '#src/types/service-dto-kinds.js';
+import {
+  contextKind,
+  prismaQueryKind,
+  skipValidationKind,
+} from '#src/types/service-dto-kinds.js';
 import {
   createServiceOutputDtoInjectedArg,
   prismaToServiceOutputDto,
@@ -111,6 +115,11 @@ export const prismaDataCreateGenerator = createGenerator({
                     type: 'injected',
                     name: 'query',
                     kind: prismaQueryKind,
+                  }),
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'skipValidation',
+                    kind: skipValidationKind,
                   }),
                 ],
                 returnType: prismaToServiceOutputDto(

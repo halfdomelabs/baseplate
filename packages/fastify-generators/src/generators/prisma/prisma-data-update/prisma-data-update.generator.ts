@@ -17,6 +17,7 @@ import {
   contextKind,
   prismaQueryKind,
   prismaWhereUniqueInputKind,
+  skipValidationKind,
 } from '#src/types/service-dto-kinds.js';
 import {
   createServiceOutputDtoInjectedArg,
@@ -128,6 +129,11 @@ export const prismaDataUpdateGenerator = createGenerator({
                     type: 'injected',
                     name: 'query',
                     kind: prismaQueryKind,
+                  }),
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'skipValidation',
+                    kind: skipValidationKind,
                   }),
                 ],
                 returnType: prismaToServiceOutputDto(prismaModel, (enumName) =>
