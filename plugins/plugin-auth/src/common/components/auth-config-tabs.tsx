@@ -6,6 +6,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { Link } from '@tanstack/react-router';
 
+import type { AuthPluginDefinition } from '#src/auth/core/schema/plugin-definition.js';
 
 export function AuthConfigTabs(): React.ReactElement | null {
   const { definition, schemaParserContext } = useProjectDefinition();
@@ -23,7 +24,7 @@ export function AuthConfigTabs(): React.ReactElement | null {
   const authConfig = PluginUtils.configByKey(
     definition,
     authPlugin.metadata.key,
-  );
+  ) as AuthPluginDefinition | undefined;
 
   const implementationPluginKey = authConfig?.implementationPluginKey;
 

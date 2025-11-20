@@ -92,7 +92,7 @@ export function QueueDefinitionEditor({
   );
   const hasSelectedImplementationChanged =
     implementationPluginKey !==
-    (pluginMetadata?.config)
+    (pluginMetadata?.config as QueuePluginDefinitionInput | undefined)
       ?.implementationPluginKey;
 
   const selectedImplementationUrl = selectedPlugin
