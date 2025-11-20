@@ -4,6 +4,7 @@ import type { PothosFieldWithInputPayloadPlugin } from '$fieldWithInputPlugin';
 import type {
   MutationWithInputPayloadOptions,
   OutputShapeFromFields,
+  PayloadFieldRef,
 } from '$fieldWithInputTypes';
 import type {
   FieldKind,
@@ -57,10 +58,7 @@ declare global {
       payload: RootFieldBuilder<Types, unknown, 'PayloadObject'>;
       fieldWithInputPayload: <
         InputFields extends InputFieldMap,
-        PayloadFields extends Record<
-          string,
-          FieldRef<Types, unknown, 'PayloadObject'>
-        >,
+        PayloadFields extends Record<string, PayloadFieldRef<Types, unknown>>,
         ResolveShape,
         ResolveReturnShape,
         Args extends InputFieldMap = Record<never, never>,
@@ -80,7 +78,7 @@ declare global {
         ShapeFromTypeParam<
           Types,
           ObjectRef<Types, OutputShapeFromFields<PayloadFields>>,
-          false
+          Types['DefaultFieldNullability']
         >
       >;
     }

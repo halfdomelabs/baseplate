@@ -51,6 +51,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts",
+      "referencedGeneratorTemplates": ["field-with-input-types"],
       "sourceFile": "src/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts",
       "variables": {}
     },

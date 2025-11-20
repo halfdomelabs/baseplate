@@ -241,9 +241,9 @@ export function generateCreateSchema<
   TFields extends Record<string, AnyFieldDefinition>,
 >(fields: TFields): InferInputSchema<TFields> {
   const shape = Object.fromEntries(
-    Object.entries(fields).map(([key, field]) => [key, field.zodSchema]),
+    Object.entries(fields).map(([key, field]) => [key, field.schema]),
   ) as {
-    [K in keyof TFields]: TFields[K]['zodSchema'];
+    [K in keyof TFields]: TFields[K]['schema'];
   };
 
   return z.object(shape);
@@ -613,7 +613,7 @@ type UpdateOperationFunction<
   input: UpdateOperationInput<TModelName, TFields, TQueryArgs>,
 ) => Promise<GetPayload<TModelName, TQueryArgs>>) & {
   $dataSchema: z.ZodObject<{
-    [k in keyof TFields]: z.ZodOptional<TFields[k]['zodSchema']>;
+    [k in keyof TFields]: z.ZodOptional<TFields[k]['schema']>;
   }>;
 };
 /**

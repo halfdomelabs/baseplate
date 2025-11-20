@@ -19,11 +19,15 @@ import type {
   TransactionalOperationContext,
 } from '$types';
 import type { Payload } from '@prisma/client/runtime/client';
+import type { z } from 'zod';
 
-import { invokeHooks, transformFields } from '$defineOperations';
+import {
+  generateCreateSchema,
+  invokeHooks,
+  transformFields,
+} from '$defineOperations';
 import { makeGenericPrismaDelegate } from '$prismaUtils';
 import { prisma } from '%prismaImports';
-import { z } from 'zod';
 
 /**
  * Create a simple scalar field with validation and optional transformation
@@ -73,7 +77,7 @@ export function scalarField<
   },
 ): FieldDefinition<TSchema, TTransformed, TTransformed> {
   return {
-    zodSchema: schema,
+    schema,
     processInput: (value) => {
       // Apply transform if provided
       const transformed = options?.transform
@@ -265,16 +269,7 @@ export function nestedOneToOneField<
   undefined | { delete: true }
 > {
   return {
-    zodSchema: (
-      z.object(
-        Object.fromEntries(
-          Object.entries(config.fields).map(([key, field]) => [
-            key,
-            field.zodSchema,
-          ]),
-        ),
-      ) as InferInputSchema<TFields>
-    ).nullish(),
+    schema: generateCreateSchema(config.fields).nullish(),
     processInput: async (value, processCtx) => {
       // Handle null - delete the relation
       if (value === null) {
@@ -594,18 +589,7 @@ export function nestedOneToManyField<
   };
 
   return {
-    zodSchema: z
-      .array(
-        z.object(
-          Object.fromEntries(
-            Object.entries(config.fields).map(([key, field]) => [
-              key,
-              field.zodSchema,
-            ]),
-          ),
-        ) as InferInputSchema<TFields>,
-      )
-      .optional(),
+    schema: generateCreateSchema(config.fields).array().optional(),
     processInput: async (value, processCtx) => {
       const { serviceContext, loadExisting } = processCtx;
 
