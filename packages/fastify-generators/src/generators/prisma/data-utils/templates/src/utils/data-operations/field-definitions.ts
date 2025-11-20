@@ -14,50 +14,74 @@ import type {
   InferFieldsCreateOutput,
   InferFieldsUpdateOutput,
   InferInput,
+  InferInputSchema,
   OperationContext,
   TransactionalOperationContext,
 } from '$types';
 import type { Payload } from '@prisma/client/runtime/client';
-import type { z } from 'zod';
 
 import { invokeHooks, transformFields } from '$defineOperations';
 import { makeGenericPrismaDelegate } from '$prismaUtils';
 import { prisma } from '%prismaImports';
+import { z } from 'zod';
 
 /**
- * Create a simple scalar field with validation only
+ * Create a simple scalar field with validation and optional transformation
  *
  * This helper creates a field definition that validates input using a Zod schema.
- * The validated value is passed through unchanged to the transform step.
+ * Optionally, you can provide a transform function to convert the validated value
+ * into a different type for Prisma operations.
  *
  * For relation fields (e.g., `userId`), use this helper to validate the ID,
  * then use relation helpers in the transform step to create Prisma connect/disconnect objects.
  *
+ * @template TSchema - The Zod schema type for validation
+ * @template TTransformed - The output type after transformation (defaults to schema output)
  * @param schema - Zod schema for validation
+ * @param options - Optional configuration
+ * @param options.transform - Function to transform the validated value
  * @returns Field definition
  *
  * @example
  * ```typescript
+ * // Simple validation
  * const fields = {
  *   title: scalarField(z.string()),
  *   ownerId: scalarField(z.string()), // Validated as string
  * };
  *
- * // In transform, convert IDs to relations:
- * transform: (data) => ({
- *   title: data.title,
- *   owner: relation.required(data.ownerId),
- * })
+ * // With transformation
+ * const fields = {
+ *   email: scalarField(
+ *     z.string().email(),
+ *     { transform: (email) => email.toLowerCase() }
+ *   ),
+ *   createdAt: scalarField(
+ *     z.string().datetime(),
+ *     { transform: (dateStr) => new Date(dateStr) }
+ *   ),
+ * };
  * ```
  */
-export function scalarField<TSchema extends z.ZodSchema>(
+export function scalarField<
+  TSchema extends z.ZodSchema,
+  TTransformed = z.output<TSchema>,
+>(
   schema: TSchema,
-): FieldDefinition<z.input<TSchema>, z.output<TSchema>, z.output<TSchema>> {
+  options?: {
+    transform?: (value: z.output<TSchema>) => TTransformed;
+  },
+): FieldDefinition<TSchema, TTransformed, TTransformed> {
   return {
+    zodSchema: schema,
     processInput: (value) => {
-      const validated = schema.parse(value) as z.output<TSchema>;
+      // Apply transform if provided
+      const transformed = options?.transform
+        ? options.transform(value)
+        : (value as TTransformed);
+
       return {
-        data: { create: validated, update: validated },
+        data: { create: transformed, update: transformed },
       };
     },
   };
@@ -236,11 +260,21 @@ export function nestedOneToOneField<
     TFields
   >,
 ): FieldDefinition<
-  InferInput<TFields> | null | undefined,
+  z.ZodOptional<z.ZodNullable<InferInputSchema<TFields>>>,
   undefined,
   undefined | { delete: true }
 > {
   return {
+    zodSchema: (
+      z.object(
+        Object.fromEntries(
+          Object.entries(config.fields).map(([key, field]) => [
+            key,
+            field.zodSchema,
+          ]),
+        ),
+      ) as InferInputSchema<TFields>
+    ).nullish(),
     processInput: async (value, processCtx) => {
       // Handle null - delete the relation
       if (value === null) {
@@ -542,7 +576,7 @@ export function nestedOneToManyField<
     TFields
   >,
 ): FieldDefinition<
-  InferInput<TFields>[] | undefined,
+  z.ZodOptional<z.ZodArray<InferInputSchema<TFields>>>,
   undefined,
   undefined | { deleteMany: Record<never, never> }
 > {
@@ -560,6 +594,18 @@ export function nestedOneToManyField<
   };
 
   return {
+    zodSchema: z
+      .array(
+        z.object(
+          Object.fromEntries(
+            Object.entries(config.fields).map(([key, field]) => [
+              key,
+              field.zodSchema,
+            ]),
+          ),
+        ) as InferInputSchema<TFields>,
+      )
+      .optional(),
     processInput: async (value, processCtx) => {
       const { serviceContext, loadExisting } = processCtx;
 

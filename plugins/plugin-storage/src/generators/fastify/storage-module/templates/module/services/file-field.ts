@@ -7,13 +7,16 @@ import type { Prisma } from '%prismaGeneratedImports';
 import { STORAGE_ADAPTERS } from '$configAdapters';
 import { BadRequestError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
+import z from 'zod';
+
+const fileInputSchema = z.object({
+  id: z.string().uuid(),
+});
 
 /**
  * File input type - accepts a file ID string
  */
-export interface FileInput {
-  id: string;
-}
+export type FileInput = z.infer<typeof fileInputSchema>;
 
 /**
  * Configuration for file field handler
@@ -79,7 +82,9 @@ export function fileField<
 >(
   config: FileFieldConfig<TFileCategory, TOptional>,
 ): FieldDefinition<
-  TOptional extends true ? FileInput | null | undefined : FileInput,
+  TOptional extends true
+    ? z.ZodOptional<z.ZodNullable<typeof fileInputSchema>>
+    : typeof fileInputSchema,
   TOptional extends true
     ? { connect: { id: string } } | undefined
     : { connect: { id: string } },
@@ -88,7 +93,13 @@ export function fileField<
     : { connect: { id: string } } | undefined
 > {
   return {
-    processInput: async (value: FileInput | null | undefined, processCtx) => {
+    zodSchema: fileInputSchema as TOptional extends true
+      ? z.ZodOptional<z.ZodNullable<typeof fileInputSchema>>
+      : typeof fileInputSchema,
+    processInput: async (
+      value: z.infer<typeof fileInputSchema> | null | undefined,
+      processCtx,
+    ) => {
       const { serviceContext } = processCtx;
 
       // Handle null - disconnect the file
