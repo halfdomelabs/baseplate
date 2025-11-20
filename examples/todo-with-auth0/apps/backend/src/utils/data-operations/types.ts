@@ -227,7 +227,7 @@ export interface FieldDefinition<
    * This schema can be extracted and reused for validation in other contexts
    * (e.g., GraphQL mutations, REST endpoints, tRPC procedures).
    */
-  zodSchema: TInputSchema;
+  schema: TInputSchema;
 
   /**
    * Processes and transforms an input value.

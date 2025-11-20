@@ -94,7 +94,7 @@ export function fileField<
     : { connect: { id: string } } | undefined
 > {
   return {
-    zodSchema: fileInputSchema as TOptional extends true
+    schema: fileInputSchema as TOptional extends true
       ? z.ZodOptional<z.ZodNullable<typeof fileInputSchema>>
       : typeof fileInputSchema,
     processInput: async (
