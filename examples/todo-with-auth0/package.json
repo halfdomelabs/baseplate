@@ -16,9 +16,9 @@
     "lint:affected": "turbo run lint --affected",
     "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
     "prettier:check:affected": "turbo run prettier:check --affected",
-    "prettier:check:root": "prettier --check .",
+    "prettier:check:root": "prettier --check . \"!apps/**\"",
     "prettier:write": "turbo run prettier:write && pnpm run prettier:write:root",
-    "prettier:write:root": "prettier --write .",
+    "prettier:write:root": "prettier --write . \"!apps/**\"",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "watch": "turbo run watch:gql"

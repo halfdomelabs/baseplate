@@ -1,5 +1,4 @@
 .turbo/**
-/apps/**
 /baseplate
 /build
 /coverage
@@ -7,3 +6,4 @@
 /lib
 /node_modules
 pnpm-lock.yaml
+pnpm-workspace.yaml

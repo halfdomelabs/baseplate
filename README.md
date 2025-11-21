@@ -4,7 +4,7 @@
 
 # Baseplate
 
-![release](https://github.com/halfdomelabs/baseplate/actions/workflows/changesets.yml/badge.svg) ![tests](https://github.com/halfdomelabs/baseplate/actions/workflows/test.yml/badge.svg)
+![release](https://github.com/halfdomelabs/baseplate/actions/workflows/release.yml/badge.svg) ![tests](https://github.com/halfdomelabs/baseplate/actions/workflows/test.yml/badge.svg)
 
 > **⚠️ WARNING: DEVELOPMENT VERSION**
 >
