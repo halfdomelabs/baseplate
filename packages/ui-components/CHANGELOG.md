@@ -1,5 +1,12 @@
 # @baseplate-dev/ui-components
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.4.1
+
 ## 0.4.0
 
 ### Patch Changes

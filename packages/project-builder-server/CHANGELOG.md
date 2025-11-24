@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.4.1
+
+### Patch Changes
+
+- [#695](https://github.com/halfdomelabs/baseplate/pull/695) [`b0152d1`](https://github.com/halfdomelabs/baseplate/commit/b0152d16a8ab34b3cc52a10284c350172a39a1ee) Thanks [@kingston](https://github.com/kingston)! - Fix ignore patterns for monorepo root to handle .turbo/** and apps/** correctly. Added .turbo/** to .gitignore and implemented manual apps/** ignore when running commands on monorepo root to work around VSCode Prettier issue (https://github.com/prettier/prettier-vscode/issues/3424) where adding apps/** to prettier config would incorrectly ignore all prettier formatting in apps/** subdirectories.
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.1
+  - @baseplate-dev/fastify-generators@0.4.1
+  - @baseplate-dev/project-builder-lib@0.4.1
+  - @baseplate-dev/react-generators@0.4.1
+  - @baseplate-dev/sync@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
 ## 0.4.0
 
 ### Minor Changes

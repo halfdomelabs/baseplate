@@ -1,5 +1,13 @@
 # @baseplate-dev/create-project
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-cli@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
 ## 0.4.0
 
 ### Patch Changes
