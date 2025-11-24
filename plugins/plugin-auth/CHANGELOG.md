@@ -1,5 +1,18 @@
 # @baseplate-dev/plugin-auth
 
+## 3.0.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.1
+  - @baseplate-dev/fastify-generators@0.4.1
+  - @baseplate-dev/project-builder-lib@0.4.1
+  - @baseplate-dev/react-generators@0.4.1
+  - @baseplate-dev/sync@0.4.1
+  - @baseplate-dev/ui-components@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
 ## 3.0.0
 
 ### Patch Changes

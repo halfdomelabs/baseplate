@@ -1,5 +1,16 @@
 # @baseplate-dev/plugin-queue
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.1
+  - @baseplate-dev/fastify-generators@0.4.1
+  - @baseplate-dev/project-builder-lib@0.4.1
+  - @baseplate-dev/sync@0.4.1
+  - @baseplate-dev/ui-components@0.4.1
+
 ## 1.0.0
 
 ### Patch Changes
