@@ -1,4 +1,4 @@
-import { enhanceErrorWithContext } from '@baseplate-dev/utils';
+import { compareStrings, enhanceErrorWithContext } from '@baseplate-dev/utils';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
@@ -51,7 +51,7 @@ export async function writeGeneratedFileIdMap(
   const fileIdMapPath = path.join(projectDirectory, FILE_ID_MAP_PATH);
   const fileIdMap = Object.fromEntries(
     [...fileIdToRelativePathMap.entries()].sort(([a], [b]) =>
-      a.localeCompare(b),
+      compareStrings(a, b),
     ),
   );
   await writeJson(fileIdMapPath, fileIdMap);

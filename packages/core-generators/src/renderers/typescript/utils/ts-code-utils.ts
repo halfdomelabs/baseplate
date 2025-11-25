@@ -1,4 +1,4 @@
-import { quot } from '@baseplate-dev/utils';
+import { compareStrings, quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 
 import type { TsCodeFragmentOptions } from '../fragments/creators.js';
@@ -270,7 +270,9 @@ export const TsCodeUtils = {
 
     const sortedKeys = disableSort
       ? keys
-      : keys.toSorted(caseSensitive ? undefined : (a, b) => a.localeCompare(b));
+      : keys.toSorted(
+          caseSensitive ? undefined : (a, b) => compareStrings(a, b),
+        );
 
     if (!disableSort && keys.some((k) => k.startsWith('...'))) {
       throw new Error('Cannot have spread keys when sorting is enabled');
@@ -350,7 +352,9 @@ export const TsCodeUtils = {
 
     const sortedKeys = disableSort
       ? keys
-      : keys.toSorted(caseSensitive ? undefined : (a, b) => a.localeCompare(b));
+      : keys.toSorted(
+          caseSensitive ? undefined : (a, b) => compareStrings(a, b),
+        );
 
     const mergedContent = sortedKeys
       .filter((key) => map.get(key))

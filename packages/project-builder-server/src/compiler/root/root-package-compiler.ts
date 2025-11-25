@@ -117,6 +117,7 @@ export class RootPackageCompiler extends PackageCompiler {
         lint: `turbo run lint`,
         'lint:affected': `turbo run lint --affected`,
         test: `turbo run test`,
+        'test:affected': `turbo run test --affected`,
         'prettier:check': `turbo run prettier:check && pnpm run prettier:check:root`,
         'prettier:check:affected': `turbo run prettier:check --affected`,
         'prettier:write': `turbo run prettier:write && pnpm run prettier:write:root`,

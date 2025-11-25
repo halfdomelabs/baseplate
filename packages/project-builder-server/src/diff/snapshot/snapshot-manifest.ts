@@ -1,4 +1,4 @@
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { compareStrings, stringifyPrettyStable } from '@baseplate-dev/utils';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
@@ -37,7 +37,7 @@ export async function saveSnapshotManifest(
       added: manifest.files.added.toSorted(),
       deleted: manifest.files.deleted.toSorted(),
       modified: manifest.files.modified.toSorted((a, b) =>
-        a.path.localeCompare(b.path),
+        compareStrings(a.path, b.path),
       ),
     },
   };

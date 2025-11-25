@@ -12,6 +12,7 @@ import {
   createProviderType,
 } from '@baseplate-dev/sync';
 import {
+  compareStrings,
   lowercaseFirstChar,
   NamedArrayFieldContainer,
 } from '@baseplate-dev/utils';
@@ -161,7 +162,7 @@ export const prismaDataServiceGenerator = createGenerator({
               }),
             ),
           ...virtualInputFields.toSorted((a, b) =>
-            a.name.localeCompare(b.name),
+            compareStrings(a.name, b.name),
           ),
         ];
 

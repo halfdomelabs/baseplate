@@ -4,6 +4,7 @@ import type {
   SourceFile,
 } from 'ts-morph';
 
+import { compareStrings } from '@baseplate-dev/utils';
 import { Node } from 'ts-morph';
 
 /**
@@ -66,7 +67,7 @@ export function addOrUpdateImport(
     if (newImports.length > 0) {
       // Collect all import names (existing + new)
       const allImportNames = [...existingNames, ...newImports].sort((a, b) =>
-        a.localeCompare(b),
+        compareStrings(a, b),
       );
 
       // Replace with sorted named imports

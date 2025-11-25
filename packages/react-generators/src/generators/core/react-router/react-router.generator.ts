@@ -20,6 +20,7 @@ import {
   createProviderTask,
   createProviderType,
 } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -192,7 +193,7 @@ export const reactRouterGenerator = createGenerator({
         }
 
         const sortedRootContextFields = rootContextFields.toSorted((a, b) =>
-          a.name.localeCompare(b.name),
+          compareStrings(a.name, b.name),
         );
 
         return {

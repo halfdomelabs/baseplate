@@ -22,6 +22,7 @@ import {
   SelectFieldController,
   useControlledState,
 } from '@baseplate-dev/ui-components';
+import { compareStrings } from '@baseplate-dev/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
@@ -109,7 +110,7 @@ function NewAdminSectionDialog({
         webApp.adminApp.sections = [
           ...(webApp.adminApp.sections ?? []),
           { ...data, id: newId },
-        ].sort((a, b) => a.name.localeCompare(b.name));
+        ].sort((a, b) => compareStrings(a.name, b.name));
       },
       {
         successMessage: `Successfully created section "${data.name}"!`,

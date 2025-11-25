@@ -255,6 +255,20 @@ Baseplate consists of two main tiers:
 - Organize complex generation with Task Phases
 - Use Dynamic Tasks for data-driven generation
 
+## String Comparison
+
+**IMPORTANT**: Always use `compareStrings` from `@baseplate-dev/utils` instead of `String.prototype.localeCompare()`.
+
+### When to Use localeCompare
+
+Only use `localeCompare()` when:
+
+1. Building user-facing features that require locale-aware sorting
+2. Displaying sorted lists in the UI
+3. Explicitly requested by product requirements
+
+For all code generation, file sorting, and internal data structures, use `compareStrings`.
+
 ## Key Reminders for Claude Code
 
 - Run `pnpm lint:affected` and `pnpm typecheck` before committing changes

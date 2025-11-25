@@ -1,3 +1,4 @@
+import { compareStrings } from '@baseplate-dev/utils';
 import { isDeepStrictEqual } from 'node:util';
 
 import type {
@@ -31,15 +32,18 @@ export function normalizeImports(
       ...imp,
       // Sort named imports alphabetically
       namedImports: imp.namedImports?.slice().sort((a, b) => {
-        const nameCompare = a.name.localeCompare(b.name);
+        const nameCompare = compareStrings(a.name, b.name);
         if (nameCompare !== 0) return nameCompare;
         // If names are equal, sort by alias
-        return (a.alias ?? '').localeCompare(b.alias ?? '');
+        return compareStrings(a.alias ?? '', b.alias ?? '');
       }),
     }))
     .sort((a, b) => {
       // Primary sort: module specifier
-      const moduleCompare = a.moduleSpecifier.localeCompare(b.moduleSpecifier);
+      const moduleCompare = compareStrings(
+        a.moduleSpecifier,
+        b.moduleSpecifier,
+      );
       if (moduleCompare !== 0) return moduleCompare;
 
       // Secondary sort: import type (namespace > default > named)
@@ -82,7 +86,7 @@ export function normalizeHoistedFragments(
         key: frag.key,
       } as TsHoistedFragment;
     })
-    .sort((a, b) => a.key.localeCompare(b.key));
+    .sort((a, b) => compareStrings(a.key, b.key));
 }
 
 /**

@@ -5,6 +5,8 @@
  * and returns a mapping for simple replacements.
  */
 
+import { compareStrings } from '@baseplate-dev/utils';
+
 const SIMPLE_REPLACEMENT_REGEX = /\/\* TPL_([A-Z0-9_]+)=([^*]*?) \*\/\n*/g;
 const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/.\-?]+$/;
 
@@ -85,7 +87,7 @@ export function generateSimpleReplacementComments(
   replacements: Record<string, string>,
 ): string[] {
   return Object.entries(replacements)
-    .sort(([, a], [, b]) => a.localeCompare(b)) // Sort by variable name
+    .sort(([, a], [, b]) => compareStrings(a, b)) // Sort by variable name
     .map(([value, variable]) => {
       // Extract just the part after TPL_
       const varName = variable.replace(/^TPL_/, '');

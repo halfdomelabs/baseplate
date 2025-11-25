@@ -1,4 +1,4 @@
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { compareStrings, stringifyPrettyStable } from '@baseplate-dev/utils';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -59,7 +59,7 @@ export async function writeTemplateInfoFiles(
     const infoPath = path.join(fullDirPath, TEMPLATES_INFO_FILENAME);
 
     const sortedInfoEntries = Object.fromEntries(
-      Object.entries(info).sort(([a], [b]) => a.localeCompare(b)),
+      Object.entries(info).sort(([a], [b]) => compareStrings(a, b)),
     );
 
     // Ensure directory exists

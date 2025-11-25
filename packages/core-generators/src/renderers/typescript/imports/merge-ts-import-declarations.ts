@@ -1,4 +1,4 @@
-import { mapGroupBy } from '@baseplate-dev/utils';
+import { compareStrings, mapGroupBy } from '@baseplate-dev/utils';
 import { uniqBy } from 'es-toolkit';
 
 import type { TsImportDeclaration } from './types.js';
@@ -81,7 +81,7 @@ function convertToImportDeclarations(
       name: e.name as string,
       alias: e.alias === e.name ? undefined : e.alias,
     }))
-    .toSorted((a, b) => (a.alias ?? a.name).localeCompare(b.alias ?? b.name));
+    .toSorted((a, b) => compareStrings(a.alias ?? a.name, b.alias ?? b.name));
 
   const importDeclarations: TsImportDeclaration[] = [];
   const addDeclaration = (declaration: Partial<TsImportDeclaration>): void => {

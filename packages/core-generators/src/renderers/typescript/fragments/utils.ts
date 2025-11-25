@@ -1,4 +1,4 @@
-import { toposortLocal } from '@baseplate-dev/utils';
+import { compareStrings, toposortLocal } from '@baseplate-dev/utils';
 import { isEqual, keyBy, uniqWith } from 'es-toolkit';
 
 import type { TsImportDeclaration } from '../imports/types.js';
@@ -191,7 +191,7 @@ export function mergeFragmentsWithHoistedFragments(
       // to the root fragment that uses them
       if (isARoot && !isBRoot) return -1;
       if (!isARoot && isBRoot) return 1;
-      return a.localeCompare(b);
+      return compareStrings(a, b);
     },
   );
 

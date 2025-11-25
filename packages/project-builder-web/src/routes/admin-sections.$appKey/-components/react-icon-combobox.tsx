@@ -7,6 +7,7 @@ import {
   AsyncComboboxField,
   useControllerMerged,
 } from '@baseplate-dev/ui-components';
+import { compareStrings } from '@baseplate-dev/utils';
 
 interface IconOption {
   label: string;
@@ -53,7 +54,7 @@ function ReactIconCombobox({
                 !query ||
                 option.label.toLowerCase().includes(query.toLowerCase()),
             )
-            .sort((a, b) => a.label.localeCompare(b.label))
+            .sort((a, b) => compareStrings(a.label, b.label))
             .slice(0, 20),
         )
       }

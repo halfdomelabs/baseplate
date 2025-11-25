@@ -1,7 +1,7 @@
 import type { TemplateExtractorContext } from '@baseplate-dev/sync';
 
 import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync';
-import { mapValuesOfMap } from '@baseplate-dev/utils';
+import { compareStrings, mapValuesOfMap } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
 import { camelCase } from 'change-case';
 import { z } from 'zod';
@@ -127,7 +127,7 @@ function createPathsTask(
           methodName: root.method,
         })),
     }))
-    .toSorted((a, b) => a.providerName.localeCompare(b.providerName));
+    .toSorted((a, b) => compareStrings(a.providerName, b.providerName));
 
   const dependencies = TsCodeUtils.mergeFragmentsAsObject(
     Object.fromEntries(

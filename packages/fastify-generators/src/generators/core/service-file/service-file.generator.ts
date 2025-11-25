@@ -15,7 +15,7 @@ import {
   createProviderType,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
-import { NamedArrayFieldContainer } from '@baseplate-dev/utils';
+import { compareStrings, NamedArrayFieldContainer } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
@@ -140,7 +140,7 @@ export const serviceFileGenerator = createGenerator({
           build: async (builder) => {
             const orderedHeaders = headersContainer
               .getValue()
-              .sort((a, b) => a.name.localeCompare(b.name));
+              .sort((a, b) => compareStrings(a.name, b.name));
             const orderedMethods = methodsContainer
               .getValue()
               .sort((a, b) => a.order - b.order);
