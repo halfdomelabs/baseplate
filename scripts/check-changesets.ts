@@ -8,11 +8,11 @@
  * - Uses the last git tag with prefix "@baseplate-dev/project-builder-cli@" as the comparison point
  */
 
-import { promises as fs, globSync } from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
-import { promisify } from 'node:util';
 import { exec } from 'node:child_process';
+import { promises as fs, globSync } from 'node:fs';
+import * as os from 'node:os';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
 
@@ -21,7 +21,7 @@ interface PackageJson {
   name: string;
   private?: boolean;
   files?: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface PackageInfo {
@@ -39,11 +39,11 @@ interface ChangesetRelease {
 }
 
 interface ChangesetStatus {
-  changesets: Array<{
-    releases: Array<{ name: string; type: string }>;
+  changesets: {
+    releases: { name: string; type: string }[];
     summary: string;
     id: string;
-  }>;
+  }[];
   releases: ChangesetRelease[];
 }
 
@@ -51,10 +51,10 @@ interface TurboOutput {
   packageManager: string;
   packages: {
     count: number;
-    items: Array<{
+    items: {
       name: string;
       path: string;
-    }>;
+    }[];
   };
 }
 
@@ -69,13 +69,13 @@ async function extractAndValidatePackage(
 
   try {
     // Pack the package to the temp directory
-    console.log(`Packing ${pkg.name} to temporary directory...`);
+    console.info(`Packing ${pkg.name} to temporary directory...`);
     const { stdout: packOutput } = await execAsync(
       `npm pack ${pkg.name}@latest --pack-destination="${packageTempDir}"`,
     );
 
     // Extract the tarball name from the output
-    const tarballName = packOutput.trim().split('\n').pop() as string;
+    const tarballName = packOutput.trim().split('\n').pop() ?? '';
     const tarballPath = path.join(packageTempDir, tarballName);
 
     // Extract the tarball
@@ -84,7 +84,7 @@ async function extractAndValidatePackage(
     // Now check the package contents
     const extractedPackageDir = path.join(packageTempDir, 'package');
     const filesInPackage = new Set<string>();
-    for await (const file of await globSync('**/*', {
+    for (const file of globSync('**/*', {
       withFileTypes: true,
       cwd: extractedPackageDir,
     })) {
@@ -109,23 +109,26 @@ async function extractAndValidatePackage(
     const expectedFiles = new Set<string>();
 
     // Add files from the "files" array
-    for (const pattern of declaredFiles) {
-      const matchedFiles = await fs.glob(pattern, {
-        cwd: pkg.dir,
-        withFileTypes: true,
-      });
+    const globPatterns = declaredFiles.filter((f) => !f.startsWith('!'));
+    const excludePatterns = declaredFiles
+      .filter((f) => f.startsWith('!'))
+      .map((f) => f.slice(1));
+    const matchedFiles = fs.glob(globPatterns, {
+      cwd: pkg.dir,
+      withFileTypes: true,
+      exclude: excludePatterns,
+    });
 
-      for await (const file of matchedFiles) {
-        if (!file.isDirectory() && file.name !== 'package.json') {
-          expectedFiles.add(
-            path.relative(pkg.dir, path.join(file.parentPath, file.name)),
-          );
-        }
+    for await (const file of matchedFiles) {
+      if (!file.isDirectory() && file.name !== 'package.json') {
+        expectedFiles.add(
+          path.relative(pkg.dir, path.join(file.parentPath, file.name)),
+        );
       }
     }
 
     // Convert expectedFiles set to array for comparison
-    const expectedFilesArray = Array.from(expectedFiles);
+    const expectedFilesArray = [...expectedFiles];
 
     // Check if all expected files exist in the package
     const missingFiles = expectedFilesArray.filter(
@@ -153,7 +156,7 @@ async function extractAndValidatePackage(
     const mismatchedFiles = fileMatches.filter(({ isMatch }) => !isMatch);
 
     // Check if there are files in the package that aren't in the expected files
-    const extraFiles = Array.from(filesInPackage).filter(
+    const extraFiles = [...filesInPackage].filter(
       (file) => !expectedFiles.has(file),
     );
 
@@ -200,7 +203,7 @@ async function getLastPackageTag(): Promise<string | null> {
     const tags = stdout.trim().split('\n').filter(Boolean);
 
     if (tags.length === 0) {
-      console.log(
+      console.info(
         'No previous tags found for @baseplate-dev/project-builder-cli',
       );
       return null;
@@ -208,7 +211,7 @@ async function getLastPackageTag(): Promise<string | null> {
 
     // Return the most recent tag (first in the list due to sorting)
     const lastTag = tags[0];
-    console.log(`Last tag for project-builder-cli: ${lastTag}`);
+    console.info(`Last tag for project-builder-cli: ${lastTag}`);
     return lastTag;
   } catch (error) {
     console.warn('Error getting last tag:', error);
@@ -230,7 +233,7 @@ async function getPackagesToPublish(): Promise<string[]> {
 
   // If no changeset files, return empty array (no packages to publish)
   if (changesetFiles.length === 0) {
-    console.log('No changeset files found, assuming no packages to publish');
+    console.info('No changeset files found, assuming no packages to publish');
     return [];
   }
 
@@ -243,13 +246,13 @@ async function getPackagesToPublish(): Promise<string[]> {
       ? `pnpm changeset status --since ${lastTag} --output=${CHANGESET_OUTPUT_FILE}`
       : `pnpm changeset status --output=${CHANGESET_OUTPUT_FILE}`;
 
-    console.log(`Running: ${changesetCommand}`);
+    console.info(`Running: ${changesetCommand}`);
     await execAsync(changesetCommand);
 
     // Parse the output file
-    const changesetData: ChangesetStatus = JSON.parse(
+    const changesetData = JSON.parse(
       await fs.readFile(CHANGESET_OUTPUT_FILE, 'utf8'),
-    );
+    ) as ChangesetStatus;
 
     // Extract packages that will be published (from the releases array)
     const packagesToPublish = changesetData.releases.map(
@@ -269,37 +272,37 @@ async function getPackagesToPublish(): Promise<string[]> {
 
 // Main function to run the validation
 async function checkChangesets(): Promise<void> {
-  let tempDir: string = await fs.mkdtemp(
+  const tempDir: string = await fs.mkdtemp(
     path.join(os.tmpdir(), 'npm-packages-'),
   );
   let exitCode = 0;
 
   try {
     // Step 1: Create a temporary directory
-    console.log(`Created temporary directory: ${tempDir}`);
+    console.info(`Created temporary directory: ${tempDir}`);
 
     // Step 2: Get the list of affected packages from turbo
-    console.log('Getting affected packages from turbo...');
+    console.info('Getting affected packages from turbo...');
     const { stdout: turboOutput } = await execAsync(
       `pnpm turbo ls --affected --output json`,
     );
-    const turboData: TurboOutput = JSON.parse(turboOutput);
+    const turboData = JSON.parse(turboOutput) as TurboOutput;
 
     const affectedPackageNames = turboData.packages.items.map(
       (item) => item.name,
     );
-    console.log(
+    console.info(
       `Found ${affectedPackageNames.length} affected packages from turbo:`,
     );
-    console.log(affectedPackageNames.join(', '));
+    console.info(affectedPackageNames.join(', '));
 
     // Step 3: Get packages to be published from changeset
-    console.log('Getting packages from changeset...');
+    console.info('Getting packages from changeset...');
 
     // Extract packages that will be published (from the releases array)
     const packagesToPublish = await getPackagesToPublish();
 
-    console.log(
+    console.info(
       `Packages to be published according to changeset:`,
       packagesToPublish.join(', ') || 'None',
     );
@@ -310,16 +313,16 @@ async function checkChangesets(): Promise<void> {
     );
 
     if (packagesToCheck.length === 0) {
-      console.log(
+      console.info(
         'No affected packages need checking. All affected packages are already in changeset or there are no affected packages.',
       );
       return;
     }
 
-    console.log(
+    console.info(
       `Checking ${packagesToCheck.length} affected packages not in changeset:`,
     );
-    console.log(packagesToCheck.join(', '));
+    console.info(packagesToCheck.join(', '));
 
     // Step 5: Find all package.json files for the packages to check
     const packagesInfo: PackageInfo[] = [];
@@ -339,17 +342,17 @@ async function checkChangesets(): Promise<void> {
 
       try {
         const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
-        const packageJson: PackageJson = JSON.parse(packageJsonContent);
+        const packageJson = JSON.parse(packageJsonContent) as PackageJson;
 
         // Skip private packages
         if (packageJson.private === true) {
-          console.log(`Skipping private package: ${packageJson.name}`);
+          console.info(`Skipping private package: ${packageJson.name}`);
           continue;
         }
 
         // Check if "files" array exists
         if (!Array.isArray(packageJson.files)) {
-          throw new Error(
+          throw new TypeError(
             `Package ${packageJson.name} is missing the "files" array in package.json`,
           );
         }
@@ -360,15 +363,14 @@ async function checkChangesets(): Promise<void> {
           packageJson,
         });
       } catch (error) {
-        console.error(
-          `Error processing package.json for ${packageName}:`,
-          error,
+        throw new Error(
+          `Error processing package.json for ${packageName}: ${String(error)}`,
+          { cause: error },
         );
-        exitCode = 1;
       }
     }
 
-    console.log(
+    console.info(
       `Found ${packagesInfo.length} non-private packages to validate`,
     );
 
@@ -403,7 +405,7 @@ async function checkChangesets(): Promise<void> {
       throw new Error('Some packages have issues and need changesets');
     }
 
-    console.log('Package changeset validation completed successfully!');
+    console.info('Package changeset validation completed successfully!');
   } catch (error) {
     console.error('Package changeset validation failed:', error);
     exitCode = 1;
@@ -412,7 +414,7 @@ async function checkChangesets(): Promise<void> {
     if (tempDir) {
       try {
         await fs.rm(tempDir, { recursive: true, force: true });
-        console.log(`Cleaned up temporary directory: ${tempDir}`);
+        console.info(`Cleaned up temporary directory: ${tempDir}`);
       } catch (cleanupError) {
         console.error('Error during cleanup:', cleanupError);
       }
@@ -422,4 +424,7 @@ async function checkChangesets(): Promise<void> {
 }
 
 // Run the validation
-checkChangesets();
+await checkChangesets().catch((error: unknown) => {
+  console.error('Package changeset validation failed:', error);
+  process.exit(1);
+});
