@@ -21,11 +21,18 @@ describe('compareStrings', () => {
     expect(items).toEqual(['apple', 'banana', 'cherry']);
   });
 
-  it('should be case-sensitive', () => {
+  it('should sort case-insensitively with case-sensitive tiebreaker', () => {
     const items = ['apple', 'Banana', 'cherry'];
     items.sort(compareStrings);
-    // Capital letters come before lowercase in ASCII
-    expect(items).toEqual(['Banana', 'apple', 'cherry']);
+    // Case-insensitive primary sort, case-sensitive tiebreaker
+    expect(items).toEqual(['apple', 'Banana', 'cherry']);
+  });
+
+  it('should use case-sensitive tiebreaker for same-letter-different-case strings', () => {
+    const items = ['Cherry', 'cherry', 'CHERRY'];
+    items.sort(compareStrings);
+    // Uppercase comes before lowercase in ASCII tiebreaker
+    expect(items).toEqual(['CHERRY', 'Cherry', 'cherry']);
   });
 
   it('should handle empty strings', () => {
@@ -43,5 +50,18 @@ describe('compareStrings', () => {
 
     expect(items1).toEqual(items2);
     expect(items1).toEqual(['apple', 'banana', 'mango', 'zebra']);
+  });
+
+  it('should sort mixed case strings case-insensitively', () => {
+    const items = ['Banana', 'apple', 'Cherry', 'cherry'];
+    items.sort(compareStrings);
+    expect(items).toEqual(['apple', 'Banana', 'Cherry', 'cherry']);
+  });
+
+  it('should compare case-insensitively for different strings', () => {
+    expect(compareStrings('Apple', 'banana')).toBeLessThan(0);
+    expect(compareStrings('apple', 'BANANA')).toBeLessThan(0);
+    expect(compareStrings('Banana', 'apple')).toBeGreaterThan(0);
+    expect(compareStrings('BANANA', 'apple')).toBeGreaterThan(0);
   });
 });
