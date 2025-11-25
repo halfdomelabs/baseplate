@@ -259,32 +259,6 @@ Baseplate consists of two main tiers:
 
 **IMPORTANT**: Always use `compareStrings` from `@baseplate-dev/utils` instead of `String.prototype.localeCompare()`.
 
-### Why Avoid localeCompare?
-
-The `localeCompare()` method is not stable across different operating systems and locales. Different users with different locale settings could get different sorting results, leading to inconsistent code generation and potential merge conflicts.
-
-### Recommended Approach
-
-```typescript
-import { compareStrings } from '@baseplate-dev/utils';
-
-// ✅ Good - Stable across all environments
-const sorted = items.sort((a, b) => compareStrings(a.name, b.name));
-
-// ❌ Bad - Results vary by locale/OS
-const sorted = items.sort((a, b) => a.name.localeCompare(b.name));
-```
-
-### Available Functions
-
-- **`compareStrings(a, b)`** - Case-sensitive lexicographic comparison
-
-Returns:
-
-- Negative number if `a < b`
-- Positive number if `a > b`
-- Zero if `a === b`
-
 ### When to Use localeCompare
 
 Only use `localeCompare()` when:
