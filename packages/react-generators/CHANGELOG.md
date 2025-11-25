@@ -1,5 +1,25 @@
 # @baseplate-dev/react-generators
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.1
+  - @baseplate-dev/sync@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
+## 0.4.0
+
+### Patch Changes
+
+- [#685](https://github.com/halfdomelabs/baseplate/pull/685) [`a6274e9`](https://github.com/halfdomelabs/baseplate/commit/a6274e98e2f56cdac23e9ff2bc338946a569a65c) Thanks [@kingston](https://github.com/kingston)! - Upgrade vite to 7.1.12
+
+- Updated dependencies [[`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5)]:
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/core-generators@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

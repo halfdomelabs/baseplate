@@ -28,6 +28,7 @@ export const FASTIFY_PACKAGES = {
   '@pothos/plugin-simple-objects': '4.1.3',
   '@pothos/plugin-relay': '4.6.2',
   '@pothos/plugin-prisma': '4.12.0',
+  '@pothos/plugin-validation': '4.2.0',
   'graphql-scalars': '1.23.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',

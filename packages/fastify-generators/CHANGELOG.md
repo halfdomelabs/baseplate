@@ -1,5 +1,144 @@
 # @baseplate-dev/fastify-generators
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.1
+  - @baseplate-dev/sync@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
+## 0.4.0
+
+### Minor Changes
+
+- [#692](https://github.com/halfdomelabs/baseplate/pull/692) [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18) Thanks [@kingston](https://github.com/kingston)! - Replace imperative CRUD service pattern with declarative, type-safe data operations architecture
+
+  ## Overview
+
+  This change migrates from manually-written imperative CRUD functions to a declarative, type-safe data operations system featuring composable field definitions and automatic type inference. This represents a fundamental architectural improvement in how Baseplate generates data access code.
+
+  ## Key Changes
+
+  ### Architecture Shift
+
+  **Before**: Manual, imperative functions with explicit Prisma calls and complex data transformations
+
+  ```typescript
+  // 250+ lines of manual data handling
+  export async function createUser({ data, query, context }) {
+    const { roles, customer, userProfile, images, ...rest } = data;
+
+    const customerOutput = await createOneToOneCreateData({ input: customer });
+    const imagesOutput = await createOneToManyCreateData({
+      /* complex config */
+    });
+    // ... more manual transformations
+
+    return applyDataPipeOutput(
+      [rolesOutput, customerOutput, userProfileOutput, imagesOutput],
+      prisma.user.create({
+        /* manually built data object */
+      }),
+    );
+  }
+  ```
+
+  **After**: Declarative operations with composable field definitions
+
+  ```typescript
+  // ~100 lines with clear separation of concerns
+  export const createUser = defineCreateOperation({
+    model: 'user',
+    fields: userInputFields,
+    create: ({ tx, data, query }) =>
+      tx.user.create({
+        data,
+        ...query,
+      }),
+  });
+  ```
+
+  ### Composable Field Definitions
+
+  Field definitions are now centralized, reusable components:
+
+  ```typescript
+  export const userInputFields = {
+    name: scalarField(z.string().nullish()),
+    email: scalarField(z.string()),
+    customer: nestedOneToOneField({
+      buildData: (data) => data,
+      fields: { stripeCustomerId: scalarField(z.string()) },
+      getWhereUnique: (parentModel) => ({ id: parentModel.id }),
+      model: 'customer',
+      parentModel,
+      relationName: 'user',
+    }),
+    images: nestedOneToManyField({
+      buildData: (data) => data,
+      fields: pick(userImageInputFields, ['id', 'caption', 'file']),
+      getWhereUnique: (input) => (input.id ? { id: input.id } : undefined),
+      model: 'userImage',
+      parentModel,
+      relationName: 'user',
+    }),
+  };
+  ```
+
+  ## Breaking Changes
+  - **File naming**: Services now use `*-data-service.ts` instead of `*-crud.ts`
+  - **Import paths**: New utilities from `@src/utils/data-operations/`
+  - **Service signatures**: Remain compatible - same inputs and outputs
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Switch backend to ESM instead of CommonJS. This may break some packages but
+  most packages at this point are now ESM compatible.
+
+### Patch Changes
+
+- [#693](https://github.com/halfdomelabs/baseplate/pull/693) [`e79df28`](https://github.com/halfdomelabs/baseplate/commit/e79df28eb7ab0275da2f630edcb1243bee40b7a5) Thanks [@kingston](https://github.com/kingston)! - Use Zod schema defined in mutations instead of restrictObjectNulls to allow for cleaner mutations and validation
+
+- [#676](https://github.com/halfdomelabs/baseplate/pull/676) [`e68624e`](https://github.com/halfdomelabs/baseplate/commit/e68624e9372480da767d220cae60d45d9ed3c636) Thanks [@kingston](https://github.com/kingston)! - Allow prisma.config.mts to gracefully handle missing .env files by checking file existence before calling loadEnvFile(), enabling pnpm prisma generate to run successfully in environments without .env files
+
+- [#677](https://github.com/halfdomelabs/baseplate/pull/677) [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 6.17.1 and adopt the new Prisma generator architecture:
+  - Updated to Prisma 6.17.1 for improved performance and features
+  - Migrated Prisma generated client location from `node_modules/.prisma/client` to `@src/generated/prisma/client.js` for better control and type safety
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Upgrade TSX to 4.20.6
+
+- [#673](https://github.com/halfdomelabs/baseplate/pull/673) [`852c3a5`](https://github.com/halfdomelabs/baseplate/commit/852c3a5ff3a185e60efaeb2cbb90eed59a95ec2b) Thanks [@kingston](https://github.com/kingston)! - Replace custom Date/DateTime/UUID scalars with graphql-scalars package and add JSON/JSONObject scalar support
+
+  This change migrates from custom scalar implementations to the well-maintained graphql-scalars package, providing:
+  - **Reduced maintenance burden**: No custom scalar code to maintain
+  - **Battle-tested implementations**: Comprehensive edge case handling from widely-used library
+  - **Standards compliance**: RFC 3339 compliant Date/DateTime handling
+  - **Better error messages**: Detailed validation error messages out of the box
+  - **Additional scalars**: JSON and JSONObject scalars now available
+
+  **Breaking Changes:**
+  - Date scalar now uses RFC 3339 format (stricter than previous YYYY-MM-DD regex)
+  - DateTime scalar automatically shifts non-UTC timezones to UTC
+  - UUID scalar has more comprehensive validation
+
+  **New Features:**
+  - JSON scalar for any valid JSON value (objects, arrays, primitives, null)
+  - JSONObject scalar for JSON objects only (rejects arrays and primitives)
+
+  **Dependencies:**
+  - Added graphql-scalars@1.23.0 to generated backend packages
+
+- [#692](https://github.com/halfdomelabs/baseplate/pull/692) [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18) Thanks [@kingston](https://github.com/kingston)! - Remove support for password transformer since it is no longer used.
+
+- [#680](https://github.com/halfdomelabs/baseplate/pull/680) [`ac912b3`](https://github.com/halfdomelabs/baseplate/commit/ac912b384559f48c3603976d070eb54c9f20fb9b) Thanks [@kingston](https://github.com/kingston)! - Upgrade ioredis to 5.8.1 and ioredis-mock to 8.13.0-
+
+- [#693](https://github.com/halfdomelabs/baseplate/pull/693) [`e79df28`](https://github.com/halfdomelabs/baseplate/commit/e79df28eb7ab0275da2f630edcb1243bee40b7a5) Thanks [@kingston](https://github.com/kingston)! - Add support for validation plugin in Pothos
+
+- Updated dependencies [[`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`6daff18`](https://github.com/halfdomelabs/baseplate/commit/6daff18a033d2d78746984edebba4d8c6fe957a5)]:
+  - @baseplate-dev/sync@0.4.0
+  - @baseplate-dev/core-generators@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

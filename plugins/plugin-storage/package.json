@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-storage",
-  "version": "2.0.8",
+  "version": "3.0.1",
   "description": "Contains the storage plugin for Baseplate",
   "keywords": [
     "storage",
@@ -27,7 +27,7 @@
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "!dist/**/*.d.ts.map",
+    "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {

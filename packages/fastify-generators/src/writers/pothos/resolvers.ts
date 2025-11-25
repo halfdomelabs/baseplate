@@ -15,9 +15,17 @@ import type {
   ServiceOutputDtoNestedField,
 } from '#src/types/service-output.js';
 
+interface NestedArgContext {
+  /**
+   * If the field is validated, we can skip the restrictObjectNulls call.
+   */
+  isValidatedField?: boolean;
+}
+
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
   tsUtils: TsUtilsImportsProvider,
+  context: NestedArgContext,
 ): TsCodeFragment {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
@@ -42,6 +50,7 @@ function buildNestedArgExpression(
               : `${arg.name}.${nestedField.name}`,
           },
           tsUtils,
+          context,
         ),
       }))
       .filter((f) => f.expression.contents.includes('restrictObjectNulls'));
@@ -78,6 +87,7 @@ function buildNestedArgExpression(
 function convertNestedArgForCall(
   arg: ServiceOutputDtoNestedField,
   tsUtils: TsUtilsImportsProvider,
+  context: NestedArgContext,
 ): TsCodeFragment {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
@@ -87,12 +97,17 @@ function convertNestedArgForCall(
     (f) => f.isOptional && !f.isNullable,
   );
 
+  const isValidatedField = !!arg.zodSchemaFragment || context.isValidatedField;
+
   const nestedArgExpression: TsCodeFragment = buildNestedArgExpression(
     arg,
     tsUtils,
+    {
+      isValidatedField,
+    },
   );
 
-  if (nonNullableOptionalFields.length > 0) {
+  if (nonNullableOptionalFields.length > 0 && !isValidatedField) {
     return TsCodeUtils.templateWithImports([
       tsUtils.restrictObjectNulls.declaration(),
     ])`restrictObjectNulls(${nestedArgExpression}, [${nonNullableOptionalFields
@@ -111,7 +126,7 @@ export function writeValueFromPothosArg(
     throw new Error(`Optional non-nullable top-level args not handled`);
   }
   if (arg.type === 'nested') {
-    return convertNestedArgForCall(arg, tsUtils);
+    return convertNestedArgForCall(arg, tsUtils, { isValidatedField: false });
   }
   return tsCodeFragment(arg.name);
 }

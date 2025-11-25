@@ -1,7 +1,6 @@
 import { queryFromInfo } from '@pothos/plugin-prisma';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import {
   createUser,
@@ -10,13 +9,15 @@ import {
 } from '../services/user.data-service.js';
 import { userObjectType } from './user.object-type.js';
 
-const createUserDataInputType = builder.inputType('CreateUserData', {
-  fields: (t) => ({
-    email: t.string(),
-    name: t.string(),
-    emailVerified: t.boolean(),
-  }),
-});
+const createUserDataInputType = builder
+  .inputType('CreateUserData', {
+    fields: (t) => ({
+      email: t.string(),
+      name: t.string(),
+      emailVerified: t.boolean(),
+    }),
+  })
+  .validate(createUser.$dataSchema);
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
@@ -27,22 +28,25 @@ builder.mutationField('createUser', (t) =>
     authorize: ['admin'],
     resolve: async (root, { input: { data } }, context, info) => {
       const user = await createUser({
-        data: restrictObjectNulls(data, ['emailVerified']),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
+        skipValidation: true,
       });
       return { user };
     },
   }),
 );
 
-const updateUserDataInputType = builder.inputType('UpdateUserData', {
-  fields: (t) => ({
-    email: t.string(),
-    name: t.string(),
-    emailVerified: t.boolean(),
-  }),
-});
+const updateUserDataInputType = builder
+  .inputType('UpdateUserData', {
+    fields: (t) => ({
+      email: t.string(),
+      name: t.string(),
+      emailVerified: t.boolean(),
+    }),
+  })
+  .validate(updateUser.$dataSchema);
 
 builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
@@ -55,9 +59,10 @@ builder.mutationField('updateUser', (t) =>
     resolve: async (root, { input: { id, data } }, context, info) => {
       const user = await updateUser({
         where: { id },
-        data: restrictObjectNulls(data, ['emailVerified']),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
+        skipValidation: true,
       });
       return { user };
     },

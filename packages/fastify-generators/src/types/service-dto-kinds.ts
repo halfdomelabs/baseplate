@@ -84,3 +84,10 @@ export const prismaQueryKind = createServiceDtoKind('prisma-query');
 export const prismaWhereUniqueInputKind = createServiceDtoKind<{
   idFields: string[];
 }>('prisma-where-unique-input');
+
+/**
+ * Skip validation argument kind.
+ *
+ * Skips Zod validation if data has already been validated (avoids double validation).
+ */
+export const skipValidationKind = createServiceDtoKind('skip-validation');

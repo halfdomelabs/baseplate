@@ -1,5 +1,23 @@
 # @baseplate-dev/create-project
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-cli@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
+## 0.4.0
+
+### Patch Changes
+
+- [#679](https://github.com/halfdomelabs/baseplate/pull/679) [`b1634b0`](https://github.com/halfdomelabs/baseplate/commit/b1634b08904e6d862fe1a3a377bfe21b455ece5c) Thanks [@kingston](https://github.com/kingston)! - Upgrade pnpm to 10.18.3
+
+- Updated dependencies [[`d324059`](https://github.com/halfdomelabs/baseplate/commit/d3240594e1c2bc2348eb1a7e8938f97ea5f55d22), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`57e15c0`](https://github.com/halfdomelabs/baseplate/commit/57e15c085099508898756385661df9cf54108466)]:
+  - @baseplate-dev/project-builder-cli@0.4.0
+  - @baseplate-dev/utils@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

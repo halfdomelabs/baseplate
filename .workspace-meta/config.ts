@@ -77,7 +77,7 @@ export default defineWorkspaceMetaConfig({
             'LICENSE',
             'CHANGELOG',
             'dist/**/*',
-            '!dist/**/*.d.ts.map',
+            '!dist/**/*.map',
             '!dist/**/*.tsbuildinfo',
           ];
 

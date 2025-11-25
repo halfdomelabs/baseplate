@@ -1,5 +1,7 @@
 import type { Result } from '@prisma/client/runtime/client';
 
+import { z } from 'zod';
+
 import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { prisma } from '@src/services/prisma.js';
@@ -20,6 +22,7 @@ import type {
   InferFieldsOutput,
   InferFieldsUpdateOutput,
   InferInput,
+  InferInputSchema,
   OperationContext,
   OperationHooks,
   PrismaTransaction,
@@ -207,6 +210,49 @@ export async function transformFields<
 
 /**
  * =========================================
+ * Schema Generation Utilities
+ * =========================================
+ */
+
+/**
+ * Generates a Zod schema for create operations from field definitions.
+ *
+ * Extracts the Zod schema from each field definition and combines them
+ * into a single object schema. This schema can be used for validation
+ * in GraphQL resolvers, REST endpoints, tRPC procedures, or OpenAPI documentation.
+ *
+ * @template TFields - Record of field definitions
+ * @param fields - Field definitions to extract schemas from
+ * @returns Zod object schema with all fields required
+ *
+ * @example
+ * ```typescript
+ * const fields = {
+ *   name: scalarField(z.string()),
+ *   email: scalarField(z.string().email()),
+ * };
+ *
+ * const schema = generateCreateSchema(fields);
+ * // schema is z.object({ name: z.string(), email: z.string().email() })
+ *
+ * // Use for validation
+ * const validated = schema.parse({ name: 'John', email: 'john@example.com' });
+ * ```
+ */
+export function generateCreateSchema<
+  TFields extends Record<string, AnyFieldDefinition>,
+>(fields: TFields): InferInputSchema<TFields> {
+  const shape = Object.fromEntries(
+    Object.entries(fields).map(([key, field]) => [key, field.schema]),
+  ) as {
+    [K in keyof TFields]: TFields[K]['schema'];
+  };
+
+  return z.object(shape) as InferInputSchema<TFields>;
+}
+
+/**
+ * =========================================
  * Create Operation
  * =========================================
  */
@@ -273,6 +319,9 @@ export interface CreateOperationConfig<
     >
   >;
 
+  /**
+   * Optional hooks for the operation
+   */
   hooks?: OperationHooks<GetPayload<TModelName>>;
 }
 
@@ -294,7 +343,21 @@ export interface CreateOperationInput<
   query?: TQueryArgs;
   /** Service context containing user info, request details, etc. */
   context: ServiceContext;
+  /**
+   * Skip Zod validation if data has already been validated (avoids double validation).
+   * Set to true when validation happened at a higher layer (e.g., GraphQL input type validation).
+   */
+  skipValidation?: boolean;
 }
+
+type CreateOperationFunction<
+  TModelName extends ModelPropName,
+  TFields extends Record<string, AnyFieldDefinition>,
+> = (<TQueryArgs extends ModelQuery<TModelName>>(
+  input: CreateOperationInput<TModelName, TFields, TQueryArgs>,
+) => Promise<GetPayload<TModelName, TQueryArgs>>) & {
+  $dataSchema: InferInputSchema<TFields>;
+};
 
 /**
  * Defines a type-safe create operation for a Prisma model.
@@ -349,20 +412,26 @@ export function defineCreateOperation<
   >,
 >(
   config: CreateOperationConfig<TModelName, TFields, TPrepareResult>,
-): <TQueryArgs extends ModelQuery<TModelName>>(
-  input: CreateOperationInput<TModelName, TFields, TQueryArgs>,
-) => Promise<GetPayload<TModelName, TQueryArgs>> {
-  return async <TQueryArgs extends ModelQuery<TModelName>>({
+): CreateOperationFunction<TModelName, TFields> {
+  const dataSchema = generateCreateSchema(config.fields);
+
+  const createOperation = async <TQueryArgs extends ModelQuery<TModelName>>({
     data,
     query,
     context,
-  }: CreateOperationInput<TModelName, TFields, TQueryArgs>) => {
+    skipValidation,
+  }: CreateOperationInput<TModelName, TFields, TQueryArgs>): Promise<
+    GetPayload<TModelName, TQueryArgs>
+  > => {
     // Throw error if query select is provided since we will not necessarily have a full result to return
     if (query?.select) {
       throw new Error(
         'Query select is not supported for create operations. Use include instead.',
       );
     }
+
+    // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
+    const validatedData = skipValidation ? data : dataSchema.parse(data);
 
     const baseOperationContext: OperationContext<
       GetPayload<TModelName>,
@@ -376,20 +445,20 @@ export function defineCreateOperation<
 
     // Authorization
     if (config.authorize) {
-      await config.authorize(data, baseOperationContext);
+      await config.authorize(validatedData, baseOperationContext);
     }
 
     // Step 1: Transform fields (OUTSIDE TRANSACTION)
     const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
-        transformFields(config.fields, data, {
+        transformFields(config.fields, validatedData, {
           operation: 'create',
           serviceContext: context,
           allowOptionalFields: false,
           loadExisting: () => Promise.resolve(undefined),
         }),
         config.prepareComputedFields
-          ? config.prepareComputedFields(data, baseOperationContext)
+          ? config.prepareComputedFields(validatedData, baseOperationContext)
           : Promise.resolve(undefined as TPrepareResult),
       ]);
 
@@ -451,6 +520,8 @@ export function defineCreateOperation<
         return result as GetPayload<TModelName, TQueryArgs>;
       });
   };
+  createOperation.$dataSchema = dataSchema;
+  return createOperation;
 }
 
 /**
@@ -549,8 +620,23 @@ export interface UpdateOperationInput<
   query?: TQueryArgs;
   /** Service context containing user info, request details, etc. */
   context: ServiceContext;
+  /**
+   * Skip Zod validation if data has already been validated (avoids double validation).
+   * Set to true when validation happened at a higher layer (e.g., GraphQL input type validation).
+   */
+  skipValidation?: boolean;
 }
 
+type UpdateOperationFunction<
+  TModelName extends ModelPropName,
+  TFields extends Record<string, AnyFieldDefinition>,
+> = (<TQueryArgs extends ModelQuery<TModelName>>(
+  input: UpdateOperationInput<TModelName, TFields, TQueryArgs>,
+) => Promise<GetPayload<TModelName, TQueryArgs>>) & {
+  $dataSchema: z.ZodObject<{
+    [k in keyof TFields]: z.ZodOptional<TFields[k]['schema']>;
+  }>;
+};
 /**
  * Defines a type-safe update operation for a Prisma model.
  *
@@ -605,21 +691,29 @@ export function defineUpdateOperation<
   >,
 >(
   config: UpdateOperationConfig<TModelName, TFields, TPrepareResult>,
-): <TQueryArgs extends ModelQuery<TModelName>>(
-  input: UpdateOperationInput<TModelName, TFields, TQueryArgs>,
-) => Promise<GetPayload<TModelName, TQueryArgs>> {
-  return async <TQueryArgs extends ModelQuery<TModelName>>({
+): UpdateOperationFunction<TModelName, TFields> {
+  const dataSchema = generateCreateSchema(config.fields).partial();
+
+  const updateOperation = async <TQueryArgs extends ModelQuery<TModelName>>({
     where,
     data: inputData,
     query,
     context,
-  }: UpdateOperationInput<TModelName, TFields, TQueryArgs>) => {
+    skipValidation,
+  }: UpdateOperationInput<TModelName, TFields, TQueryArgs>): Promise<
+    GetPayload<TModelName, TQueryArgs>
+  > => {
     // Throw error if query select is provided since we will not necessarily have a full result to return
     if (query?.select) {
       throw new Error(
         'Query select is not supported for update operations. Use include instead.',
       );
     }
+
+    // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
+    const validatedData = skipValidation
+      ? inputData
+      : dataSchema.parse(inputData);
 
     let existingItem: GetPayload<TModelName> | undefined;
 
@@ -644,27 +738,31 @@ export function defineUpdateOperation<
     };
     // Authorization
     if (config.authorize) {
-      await config.authorize(inputData, baseOperationContext);
+      await config.authorize(validatedData, baseOperationContext);
     }
 
-    // Step 1: Transform fields (OUTSIDE TRANSACTION)
+    // Step 1: Transform fields (outside transaction)
     // Only transform fields provided in input
     const fieldsToTransform = Object.fromEntries(
-      Object.entries(config.fields).filter(([key]) => key in inputData),
+      Object.entries(config.fields).filter(([key]) => key in validatedData),
     ) as TFields;
 
     const [{ data: fieldsData, hooks: fieldsHooks }, preparedData] =
       await Promise.all([
-        transformFields(fieldsToTransform, inputData as InferInput<TFields>, {
-          operation: 'update',
-          serviceContext: context,
-          allowOptionalFields: true,
-          loadExisting: baseOperationContext.loadExisting as () => Promise<
-            Record<string, unknown>
-          >,
-        }),
+        transformFields(
+          fieldsToTransform,
+          validatedData as InferInput<TFields>,
+          {
+            operation: 'update',
+            serviceContext: context,
+            allowOptionalFields: true,
+            loadExisting: baseOperationContext.loadExisting as () => Promise<
+              Record<string, unknown>
+            >,
+          },
+        ),
         config.prepareComputedFields
-          ? config.prepareComputedFields(inputData, baseOperationContext)
+          ? config.prepareComputedFields(validatedData, baseOperationContext)
           : Promise.resolve(undefined as TPrepareResult),
       ]);
 
@@ -728,6 +826,8 @@ export function defineUpdateOperation<
         return result as GetPayload<TModelName, TQueryArgs>;
       });
   };
+  updateOperation.$dataSchema = generateCreateSchema(config.fields).partial();
+  return updateOperation;
 }
 
 /**

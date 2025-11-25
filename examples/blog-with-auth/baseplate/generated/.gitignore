@@ -26,3 +26,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Baseplate build artifacts
 baseplate/.build
+
+# Turbo build artifacts
+.turbo/**

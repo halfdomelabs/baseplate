@@ -124,8 +124,8 @@ export class RootPackageCompiler extends PackageCompiler {
         watch: `turbo run ${watchTasks}`,
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
-        'prettier:check:root': 'prettier --check .',
-        'prettier:write:root': 'prettier --write .',
+        'prettier:check:root': `prettier --check . "!${appsFolder}/**"`,
+        'prettier:write:root': `prettier --write . "!${appsFolder}/**"`,
       },
       additionalPackages: {
         dev: {
@@ -139,10 +139,12 @@ export class RootPackageCompiler extends PackageCompiler {
       },
       children: {
         docker: buildDocker(projectDefinition),
-        gitIgnore: nodeGitIgnoreGenerator({}),
+        gitIgnore: nodeGitIgnoreGenerator({
+          additionalExclusions: ['# Turbo build artifacts', '.turbo/**'],
+        }),
         prettier: prettierGenerator({
           disableDefaultScripts: true,
-          additionalIgnorePaths: [`/${appsFolder}/**`, '.turbo/**'],
+          additionalIgnorePaths: ['.turbo/**', 'pnpm-workspace.yaml'],
         }),
         workspacePackages: pnpmWorkspaceGenerator({
           packages: workspacePackages,

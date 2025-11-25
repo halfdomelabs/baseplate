@@ -13,7 +13,11 @@ import {
 import { z } from 'zod';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
-import { contextKind, prismaQueryKind } from '#src/types/service-dto-kinds.js';
+import {
+  contextKind,
+  prismaQueryKind,
+  skipValidationKind,
+} from '#src/types/service-dto-kinds.js';
 import {
   createServiceOutputDtoInjectedArg,
   prismaToServiceOutputDto,
@@ -79,7 +83,11 @@ export const prismaDataCreateGenerator = createGenerator({
                 create: ${createCallbackFragment},
               })
             `;
-            serviceFile.getServicePath();
+
+            const methodFragment = TsCodeUtils.importFragment(
+              name,
+              serviceFile.getServicePath(),
+            );
 
             prismaDataService.registerMethod({
               name,
@@ -87,10 +95,7 @@ export const prismaDataCreateGenerator = createGenerator({
               fragment: createOperation,
               outputMethod: {
                 name,
-                referenceFragment: TsCodeUtils.importFragment(
-                  name,
-                  serviceFile.getServicePath(),
-                ),
+                referenceFragment: methodFragment,
                 arguments: [
                   {
                     name: 'data',
@@ -99,6 +104,7 @@ export const prismaDataCreateGenerator = createGenerator({
                       name: `${uppercaseFirstChar(name)}Data`,
                       fields: usedFields.map((field) => field.outputDtoField),
                     },
+                    zodSchemaFragment: tsTemplate`${methodFragment}.$dataSchema`,
                   },
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
@@ -109,6 +115,11 @@ export const prismaDataCreateGenerator = createGenerator({
                     type: 'injected',
                     name: 'query',
                     kind: prismaQueryKind,
+                  }),
+                  createServiceOutputDtoInjectedArg({
+                    type: 'injected',
+                    name: 'skipValidation',
+                    kind: skipValidationKind,
                   }),
                 ],
                 returnType: prismaToServiceOutputDto(

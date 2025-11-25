@@ -17,47 +17,75 @@ import type {
   InferFieldsCreateOutput,
   InferFieldsUpdateOutput,
   InferInput,
+  InferInputSchema,
   OperationContext,
   TransactionalOperationContext,
 } from './types.js';
 
-import { invokeHooks, transformFields } from './define-operations.js';
+import {
+  generateCreateSchema,
+  invokeHooks,
+  transformFields,
+} from './define-operations.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**
- * Create a simple scalar field with validation only
+ * Create a simple scalar field with validation and optional transformation
  *
  * This helper creates a field definition that validates input using a Zod schema.
- * The validated value is passed through unchanged to the transform step.
+ * Optionally, you can provide a transform function to convert the validated value
+ * into a different type for Prisma operations.
  *
  * For relation fields (e.g., `userId`), use this helper to validate the ID,
  * then use relation helpers in the transform step to create Prisma connect/disconnect objects.
  *
+ * @template TSchema - The Zod schema type for validation
+ * @template TTransformed - The output type after transformation (defaults to schema output)
  * @param schema - Zod schema for validation
+ * @param options - Optional configuration
+ * @param options.transform - Function to transform the validated value
  * @returns Field definition
  *
  * @example
  * ```typescript
+ * // Simple validation
  * const fields = {
  *   title: scalarField(z.string()),
  *   ownerId: scalarField(z.string()), // Validated as string
  * };
  *
- * // In transform, convert IDs to relations:
- * transform: (data) => ({
- *   title: data.title,
- *   owner: relation.required(data.ownerId),
- * })
+ * // With transformation
+ * const fields = {
+ *   email: scalarField(
+ *     z.string().email(),
+ *     { transform: (email) => email.toLowerCase() }
+ *   ),
+ *   createdAt: scalarField(
+ *     z.string().datetime(),
+ *     { transform: (dateStr) => new Date(dateStr) }
+ *   ),
+ * };
  * ```
  */
-export function scalarField<TSchema extends z.ZodSchema>(
+export function scalarField<
+  TSchema extends z.ZodSchema,
+  TTransformed = z.output<TSchema>,
+>(
   schema: TSchema,
-): FieldDefinition<z.input<TSchema>, z.output<TSchema>, z.output<TSchema>> {
+  options?: {
+    transform?: (value: z.output<TSchema>) => TTransformed;
+  },
+): FieldDefinition<TSchema, TTransformed, TTransformed> {
   return {
+    schema,
     processInput: (value) => {
-      const validated = schema.parse(value) as z.output<TSchema>;
+      // Apply transform if provided
+      const transformed = options?.transform
+        ? options.transform(value)
+        : (value as TTransformed);
+
       return {
-        data: { create: validated, update: validated },
+        data: { create: transformed, update: transformed },
       };
     },
   };
@@ -190,15 +218,13 @@ export interface NestedOneToOneFieldConfig<
  * This helper creates a field definition for managing one-to-one nested relationships.
  * It handles nested field validation, transformation, and supports both create and update operations.
  *
- * For create operations:
- * - Returns nested create data if input is provided
- * - Returns undefined if input is not provided
+ * The nested entity is created/updated via afterExecute hooks, allowing it to reference
+ * the parent entity after it has been created.
  *
- * For update operations:
- * - Returns upsert if input has a unique identifier (via getWhereUnique)
- * - Returns create if input doesn't have a unique identifier
- * - Deletes the relation if input is null (requires deleteRelation)
- * - Returns undefined if input is not provided (no change)
+ * Behavior:
+ * - **Provided value**: Upserts the nested entity (creates if new, updates if exists)
+ * - **null**: Deletes the nested entity (update only)
+ * - **undefined**: No change to nested entity
  *
  * @param config - Configuration object
  * @returns Field definition
@@ -207,18 +233,24 @@ export interface NestedOneToOneFieldConfig<
  * ```typescript
  * const fields = {
  *   userProfile: nestedOneToOneField({
+ *     parentModel: createParentModelConfig('user', (user) => ({ id: user.id })),
+ *     model: 'userProfile',
+ *     relationName: 'user',
  *     fields: {
  *       bio: scalarField(z.string()),
  *       avatar: fileField(avatarFileCategory),
  *     },
+ *     getWhereUnique: (parent) => ({ userId: parent.id }),
  *     buildData: (data) => ({
- *       bio: data.bio,
- *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
+ *       create: {
+ *         bio: data.create.bio,
+ *         avatar: data.create.avatar ? { connect: { id: data.create.avatar } } : undefined,
+ *       },
+ *       update: {
+ *         bio: data.update.bio,
+ *         avatar: data.update.avatar ? { connect: { id: data.update.avatar } } : undefined,
+ *       },
  *     }),
- *     getWhereUnique: (input) => input.id ? { id: input.id } : undefined,
- *     deleteRelation: async () => {
- *       await prisma.userProfile.deleteMany({ where: { userId: parentId } });
- *     },
  *   }),
  * };
  * ```
@@ -236,11 +268,12 @@ export function nestedOneToOneField<
     TFields
   >,
 ): FieldDefinition<
-  InferInput<TFields> | null | undefined,
+  z.ZodOptional<z.ZodNullable<InferInputSchema<TFields>>>,
   undefined,
   undefined | { delete: true }
 > {
   return {
+    schema: generateCreateSchema(config.fields).nullish(),
     processInput: async (value, processCtx) => {
       // Handle null - delete the relation
       if (value === null) {
@@ -542,7 +575,7 @@ export function nestedOneToManyField<
     TFields
   >,
 ): FieldDefinition<
-  InferInput<TFields>[] | undefined,
+  z.ZodOptional<z.ZodArray<InferInputSchema<TFields>>>,
   undefined,
   undefined | { deleteMany: Record<never, never> }
 > {
@@ -560,6 +593,7 @@ export function nestedOneToManyField<
   };
 
   return {
+    schema: generateCreateSchema(config.fields).array().optional(),
     processInput: async (value, processCtx) => {
       const { serviceContext, loadExisting } = processCtx;
 

@@ -48,6 +48,10 @@ export interface ServiceOutputDtoNestedFieldWithoutPrisma
   nestedType: ServiceOutputDto;
   typescriptType?: TsCodeFragment;
   schemaFieldName?: string;
+  /**
+   * Fragment that references the Zod schema for the nested field.
+   */
+  zodSchemaFragment?: TsCodeFragment;
 }
 
 export interface ServiceOutputDtoNestedFieldWithPrisma

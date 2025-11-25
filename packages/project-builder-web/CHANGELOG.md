@@ -1,5 +1,36 @@
 # @baseplate-dev/project-builder-web
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-lib@0.4.1
+  - @baseplate-dev/ui-components@0.4.1
+  - @baseplate-dev/utils@0.4.1
+
+## 0.4.0
+
+### Minor Changes
+
+- [#687](https://github.com/halfdomelabs/baseplate/pull/687) [`57e15c0`](https://github.com/halfdomelabs/baseplate/commit/57e15c085099508898756385661df9cf54108466) Thanks [@kingston](https://github.com/kingston)! - Add support for generating the root of a monorepo
+
+### Patch Changes
+
+- [#690](https://github.com/halfdomelabs/baseplate/pull/690) [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042) Thanks [@kingston](https://github.com/kingston)! - Move Docker Compose generation from backend to root package
+
+  Docker Compose configuration is now generated at the monorepo root instead of within individual backend packages. This provides a better developer experience with a single `docker compose up` command from the project root.
+
+  **Breaking Changes:**
+  - Docker files now generate at `docker/` (root) instead of `apps/backend/docker/`
+  - `enableRedis` removed from backend app configuration - moved to project-level infrastructure settings
+  - New Infrastructure settings page for configuring Redis (Postgres is always enabled)
+
+- Updated dependencies [[`9f22eef`](https://github.com/halfdomelabs/baseplate/commit/9f22eef139c8db2dde679f6424eb23e024e37d19), [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`839cbdf`](https://github.com/halfdomelabs/baseplate/commit/839cbdfc6ddc059aa86d24bf6ec5d8e95cce9042), [`c3c2a00`](https://github.com/halfdomelabs/baseplate/commit/c3c2a001d57a21f76e064af55941a43bedf26f18), [`d324059`](https://github.com/halfdomelabs/baseplate/commit/d3240594e1c2bc2348eb1a7e8938f97ea5f55d22), [`57e15c0`](https://github.com/halfdomelabs/baseplate/commit/57e15c085099508898756385661df9cf54108466)]:
+  - @baseplate-dev/project-builder-lib@0.4.0
+  - @baseplate-dev/utils@0.4.0
+  - @baseplate-dev/ui-components@0.4.0
+
 ## 0.3.8
 
 ### Patch Changes

@@ -4,6 +4,7 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
+  tsTemplate,
   tsUtilsImportsProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -27,6 +28,7 @@ import {
   contextKind,
   prismaQueryKind,
   prismaWhereUniqueInputKind,
+  skipValidationKind,
 } from '#src/types/service-dto-kinds.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
@@ -105,6 +107,10 @@ function handleInjectedArg(
               }),
         requirements: ['id'],
       };
+    }
+
+    case skipValidationKind: {
+      return { fragment: tsTemplate`true`, requirements: [] };
     }
 
     default: {

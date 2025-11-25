@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { PayloadFieldRef } from '$fieldWithInputTypes';
 import type { FieldRef, SchemaTypes } from '@pothos/core';
 
 import { capitalizeString } from '%tsUtilsImports';
@@ -28,11 +29,11 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
   // expose all fields of payload by default
   const payloadFields = (): Record<
     string,
-    FieldRef<SchemaTypes, unknown, 'PayloadObject'>
+    PayloadFieldRef<SchemaTypes, unknown>
   > => {
     for (const key of Object.keys(payload)) {
       payload[key].onFirstUse((cfg) => {
-        if (cfg.kind === 'Object') {
+        if (cfg.kind === 'Object' && !cfg.resolve) {
           cfg.resolve = (parent) =>
             (parent as Record<string, unknown>)[key] as Readonly<unknown>;
         }
@@ -57,9 +58,11 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     type: payloadRef,
     nullable: false,
     ...fieldOptions,
-  } as never);
+  } as never) as FieldRef<SchemaTypes, never, 'Mutation'>;
 
-  fieldRef.onFirstUse((config) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fieldRef.onFirstUse((config: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     const capitalizedName = capitalizeString(config.name);
     const inputName = `${capitalizedName}Input`;
     const payloadName = `${capitalizedName}Payload`;
@@ -67,6 +70,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     if (inputRef) {
       inputRef.name = inputName;
       this.builder.inputType(inputRef, {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         description: `Input type for ${config.name} mutation`,
         fields: () => input,
       });
@@ -75,6 +79,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     payloadRef.name = payloadName;
     this.builder.objectType(payloadRef, {
       name: payloadName,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       description: `Payload type for ${config.name} mutation`,
       fields: payloadFields,
     });

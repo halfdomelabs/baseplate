@@ -1,7 +1,6 @@
 import { queryFromInfo } from '@pothos/plugin-prisma';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { restrictObjectNulls } from '@src/utils/nulls.js';
 
 import { fileInputInputType } from '../../storage/schema/file-input.input-type.js';
 import {
@@ -12,16 +11,18 @@ import {
 import { todoListStatusEnum } from './enums.js';
 import { todoListObjectType } from './todo-list.object-type.js';
 
-const createTodoListDataInputType = builder.inputType('CreateTodoListData', {
-  fields: (t) => ({
-    ownerId: t.field({ required: true, type: 'Uuid' }),
-    position: t.int({ required: true }),
-    name: t.string({ required: true }),
-    createdAt: t.field({ type: 'DateTime' }),
-    status: t.field({ type: todoListStatusEnum }),
-    coverPhoto: t.field({ type: fileInputInputType }),
-  }),
-});
+const createTodoListDataInputType = builder
+  .inputType('CreateTodoListData', {
+    fields: (t) => ({
+      ownerId: t.field({ required: true, type: 'Uuid' }),
+      position: t.int({ required: true }),
+      name: t.string({ required: true }),
+      createdAt: t.field({ type: 'DateTime' }),
+      status: t.field({ type: todoListStatusEnum }),
+      coverPhoto: t.field({ type: fileInputInputType }),
+    }),
+  })
+  .validate(createTodoList.$dataSchema);
 
 builder.mutationField('createTodoList', (t) =>
   t.fieldWithInputPayload({
@@ -35,25 +36,28 @@ builder.mutationField('createTodoList', (t) =>
     authorize: ['user'],
     resolve: async (root, { input: { data } }, context, info) => {
       const todoList = await createTodoList({
-        data: restrictObjectNulls(data, ['createdAt']),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
+        skipValidation: true,
       });
       return { todoList };
     },
   }),
 );
 
-const updateTodoListDataInputType = builder.inputType('UpdateTodoListData', {
-  fields: (t) => ({
-    ownerId: t.field({ type: 'Uuid' }),
-    position: t.int(),
-    name: t.string(),
-    createdAt: t.field({ type: 'DateTime' }),
-    status: t.field({ type: todoListStatusEnum }),
-    coverPhoto: t.field({ type: fileInputInputType }),
-  }),
-});
+const updateTodoListDataInputType = builder
+  .inputType('UpdateTodoListData', {
+    fields: (t) => ({
+      ownerId: t.field({ type: 'Uuid' }),
+      position: t.int(),
+      name: t.string(),
+      createdAt: t.field({ type: 'DateTime' }),
+      status: t.field({ type: todoListStatusEnum }),
+      coverPhoto: t.field({ type: fileInputInputType }),
+    }),
+  })
+  .validate(updateTodoList.$dataSchema);
 
 builder.mutationField('updateTodoList', (t) =>
   t.fieldWithInputPayload({
@@ -69,14 +73,10 @@ builder.mutationField('updateTodoList', (t) =>
     resolve: async (root, { input: { id, data } }, context, info) => {
       const todoList = await updateTodoList({
         where: { id },
-        data: restrictObjectNulls(data, [
-          'ownerId',
-          'position',
-          'name',
-          'createdAt',
-        ]),
+        data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
+        skipValidation: true,
       });
       return { todoList };
     },

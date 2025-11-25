@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/create-project",
-  "version": "0.3.8",
+  "version": "0.4.1",
   "description": "CLI starter kit for creating a new Baseplate project",
   "keywords": [
     "cli",
@@ -29,7 +29,7 @@
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "!dist/**/*.d.ts.map",
+    "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo",
     "templates/**/*",
     "bin/**/*"

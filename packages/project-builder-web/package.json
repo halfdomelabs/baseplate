@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-web",
-  "version": "0.3.8",
+  "version": "0.4.1",
   "description": "Web interface for constructing project builder JSON",
   "keywords": [
     "react",
@@ -24,7 +24,7 @@
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "!dist/**/*.d.ts.map",
+    "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
