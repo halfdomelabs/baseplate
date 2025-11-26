@@ -20,6 +20,7 @@
     "prettier:write": "turbo run prettier:write && pnpm run prettier:write:root",
     "prettier:write:root": "prettier --write . \"!apps/**\"",
     "test": "turbo run test",
+    "test:affected": "turbo run test --affected",
     "typecheck": "turbo run typecheck",
     "watch": "turbo run watch:gql"
   },

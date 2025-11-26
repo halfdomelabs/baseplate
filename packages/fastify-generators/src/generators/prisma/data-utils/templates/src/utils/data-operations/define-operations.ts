@@ -308,6 +308,7 @@ export interface CreateOperationConfig<
     tx: PrismaTransaction;
     data: InferFieldsCreateOutput<TFields> & TPrepareResult;
     query: { include: NonNullable<TQueryArgs['include']> };
+    serviceContext: ServiceContext;
   }) => Promise<
     Result<
       (typeof prisma)[TModelName],
@@ -384,11 +385,12 @@ type CreateOperationFunction<
  *   authorize: async (data, ctx) => {
  *     // Check if user has permission to create
  *   },
- *   create: ({ tx, data, query }) =>
+ *   create: ({ tx, data, query, serviceContext }) =>
  *     tx.user.create({
  *       data: {
  *         name: data.name,
  *         email: data.email,
+ *         createdById: serviceContext.user?.id,
  *       },
  *       ...query,
  *     }),
@@ -499,6 +501,7 @@ export function defineCreateOperation<
           query: (query ?? {}) as {
             include: NonNullable<TQueryArgs['include']>;
           },
+          serviceContext: context,
         });
 
         // Run afterExecute hooks
@@ -583,6 +586,7 @@ export interface UpdateOperationConfig<
     where: WhereUniqueInput<TModelName>;
     data: InferFieldsUpdateOutput<TFields> & TPrepareResult;
     query: { include: NonNullable<TQueryArgs['include']> };
+    serviceContext: ServiceContext;
   }) => Promise<
     Result<
       (typeof prisma)[TModelName],
@@ -664,10 +668,13 @@ type UpdateOperationFunction<
  *     const existing = await ctx.loadExisting();
  *     // Check if user owns this record
  *   },
- *   update: ({ tx, where, data, query }) =>
+ *   update: ({ tx, where, data, query, serviceContext }) =>
  *     tx.user.update({
  *       where,
- *       data,
+ *       data: {
+ *         ...data,
+ *         updatedById: serviceContext.user?.id,
+ *       },
  *       ...query,
  *     }),
  * });
@@ -805,6 +812,7 @@ export function defineUpdateOperation<
           query: (query ?? {}) as {
             include: NonNullable<TQueryArgs['include']>;
           },
+          serviceContext: context,
         });
 
         // Run afterExecute hooks
@@ -863,6 +871,7 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
     tx: PrismaTransaction;
     where: WhereUniqueInput<TModelName>;
     query: { include: NonNullable<TQueryArgs['include']> };
+    serviceContext: ServiceContext;
   }) => Promise<
     Result<
       (typeof prisma)[TModelName],
@@ -918,7 +927,7 @@ export interface DeleteOperationInput<
  *     const existing = await ctx.loadExisting();
  *     // Check if user has permission to delete
  *   },
- *   delete: ({ tx, where, query }) =>
+ *   delete: ({ tx, where, query, serviceContext }) =>
  *     tx.user.delete({
  *       where,
  *       ...query,
@@ -1008,6 +1017,7 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
           query: (query ?? {}) as {
             include: NonNullable<TQueryArgs['include']>;
           },
+          serviceContext: context,
         });
 
         // Run afterExecute hooks
