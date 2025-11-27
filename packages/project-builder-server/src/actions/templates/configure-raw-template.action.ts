@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-const configureRawTemplateInputSchema = {
+const configureRawTemplateInputSchema = z.object({
   filePath: z.string().describe('File path (absolute or relative)'),
   project: z
     .string()
@@ -12,9 +12,9 @@ const configureRawTemplateInputSchema = {
     .string()
     .describe('The generator name (e.g., @baseplate-dev/react-generators)'),
   templateName: z.string().describe('Template name in kebab-case format'),
-};
+});
 
-const configureRawTemplateOutputSchema = {
+const configureRawTemplateOutputSchema = z.object({
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The configured template name'),
   absolutePath: z
@@ -23,7 +23,7 @@ const configureRawTemplateOutputSchema = {
   generatorDirectory: z
     .string()
     .describe('The generator directory that was configured'),
-};
+});
 
 /**
  * Service action to configure a raw/binary template

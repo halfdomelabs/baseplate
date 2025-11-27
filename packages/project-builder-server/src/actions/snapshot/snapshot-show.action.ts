@@ -5,21 +5,21 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const snapshotShowInputSchema = {
+const snapshotShowInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
   snapshotDirectory: z
     .string()
     .optional()
     .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
-};
+});
 
 const snapshotFileEntry = z.object({
   path: z.string().describe('File path.'),
   diffFile: z.string().optional().describe('Associated diff file if modified.'),
 });
 
-const snapshotShowOutputSchema = {
+const snapshotShowOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the snapshot show operation was successful.'),
@@ -38,7 +38,7 @@ const snapshotShowOutputSchema = {
     })
     .describe('Files tracked in the snapshot.'),
   totalFiles: z.number().describe('Total number of files in snapshot.'),
-};
+});
 
 /**
  * Service action to show contents of a project snapshot.

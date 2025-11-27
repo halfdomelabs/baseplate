@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-const listTemplatesInputSchema = {
+const listTemplatesInputSchema = z.object({
   generatorDirectory: z
     .string()
     .describe('The directory path containing the generator'),
-};
+});
 
 const templateInfoSchema = z.object({
   name: z.string().describe('The name of the template'),
@@ -19,13 +19,13 @@ const templateInfoSchema = z.object({
     .describe('The full template configuration'),
 });
 
-const listTemplatesOutputSchema = {
+const listTemplatesOutputSchema = z.object({
   message: z.string().describe('Success message'),
   generatorName: z.string().describe('The name of the generator'),
   generatorDirectory: z.string().describe('The generator directory'),
   templates: z.array(templateInfoSchema).describe('List of templates'),
   templateCount: z.number().describe('Total number of templates'),
-};
+});
 
 /**
  * Service action to list templates in a specific generator

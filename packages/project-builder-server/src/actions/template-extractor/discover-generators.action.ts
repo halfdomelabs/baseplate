@@ -4,14 +4,14 @@ import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const discoverGeneratorsInputSchema = {
+const discoverGeneratorsInputSchema = z.object({
   project: z
     .string()
     .optional()
     .describe(
       'Optionally, specify the project to discover generators from. If not provided, uses current directory.',
     ),
-};
+});
 
 const generatorInfoSchema = z.object({
   name: z.string().describe('The generator name'),
@@ -23,11 +23,11 @@ const generatorInfoSchema = z.object({
 
 export type GeneratorInfo = z.infer<typeof generatorInfoSchema>;
 
-const discoverGeneratorsOutputSchema = {
+const discoverGeneratorsOutputSchema = z.object({
   generators: z
     .array(generatorInfoSchema)
     .describe('List of discovered generators with their template information'),
-};
+});
 
 /**
  * Service action to discover all available generators with extractor.json files.

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-const deleteTemplateInputSchema = {
+const deleteTemplateInputSchema = z.object({
   filePath: z
     .string()
     .describe('Path to file to delete (absolute or relative)'),
@@ -12,15 +12,15 @@ const deleteTemplateInputSchema = {
     .describe(
       'Project name or ID (required for relative paths, optional for absolute)',
     ),
-};
+});
 
-const deleteTemplateOutputSchema = {
+const deleteTemplateOutputSchema = z.object({
   success: z.boolean().describe('Whether the operation was successful'),
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The template name that was deleted'),
   absolutePath: z.string().describe('The absolute path of the deleted file'),
   generatorDirectory: z.string().describe('The generator directory used'),
-};
+});
 
 /**
  * Service action to delete a template by file path
