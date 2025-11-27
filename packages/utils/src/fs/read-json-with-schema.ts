@@ -17,7 +17,6 @@ export async function readJsonWithSchema<T extends z.ZodType>(
   try {
     const fileContent = await fs.readFile(filePath, 'utf8');
     const parsedData = JSON.parse(fileContent) as unknown;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- z.output<T> is generic
     return await (schema.parseAsync(parsedData) as Promise<z.output<T>>);
   } catch (error) {
     if (error instanceof ZodError) {

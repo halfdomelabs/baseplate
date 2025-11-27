@@ -172,9 +172,6 @@ export interface TemplateFileExtractor<
   ): Promise<void> | void;
 }
 
-// TODO [2025-11-23]: Do we need this type anymore?
-export type AnyTemplateFileExtractor = TemplateFileExtractor;
-
 /**
  * Creates a typed TemplateFileExtractor.
  */

@@ -7,7 +7,7 @@ import { loadIgnorePatterns } from '#src/utils/ignore-patterns.js';
 
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
-  AnyTemplateFileExtractor,
+  TemplateFileExtractor,
   TemplateFileExtractorMetadataEntry,
   TemplateFileExtractorSourceFile,
 } from './runner/template-file-extractor.js';
@@ -52,7 +52,7 @@ export interface GenerateTemplateFilesOptions {
  * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
-  templateFileExtractors: AnyTemplateFileExtractor[],
+  templateFileExtractors: TemplateFileExtractor[],
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
@@ -232,7 +232,7 @@ export async function runTemplateFileExtractors(
  * @param options - The options to use
  */
 export async function generateTemplateFiles(
-  templateFileExtractors: AnyTemplateFileExtractor[],
+  templateFileExtractors: TemplateFileExtractor[],
   generatorPackageMap: Map<string, string>,
   logger: Logger,
   options?: GenerateTemplateFilesOptions,
