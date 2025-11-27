@@ -100,7 +100,10 @@ export const syncProjectAction = createServiceAction({
         message: `${statusMessage}: ${project.name}`,
       };
     } catch (error) {
-      logger.error(`Failed to sync project ${project.name}: ${String(error)}`);
+      logger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        `Failed to sync project ${project.name}: ${String(error)}`,
+      );
       return {
         status: 'error' as const,
         message: `Failed to sync project ${project.name}: ${error instanceof Error ? error.message : String(error)}`,

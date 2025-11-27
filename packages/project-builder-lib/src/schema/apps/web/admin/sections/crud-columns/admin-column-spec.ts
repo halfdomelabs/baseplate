@@ -3,7 +3,7 @@ import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
-import type { AdminCrudColumnType } from './types.js';
+import type { AdminCrudColumnSchema, AdminCrudColumnType } from './types.js';
 
 import { BUILT_IN_ADMIN_CRUD_COLUMNS } from './built-in-columns.js';
 
@@ -11,7 +11,9 @@ import { BUILT_IN_ADMIN_CRUD_COLUMNS } from './built-in-columns.js';
  * Spec for registering additional admin CRUD table columns
  */
 export interface AdminCrudColumnSpec extends PluginSpecImplementation {
-  registerAdminCrudColumn: <T extends DefinitionSchemaCreator>(
+  registerAdminCrudColumn: <
+    T extends DefinitionSchemaCreator<AdminCrudColumnSchema>,
+  >(
     column: AdminCrudColumnType<T>,
   ) => void;
   getAdminCrudColumns: () => Map<string, AdminCrudColumnType>;

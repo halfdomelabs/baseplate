@@ -119,6 +119,7 @@ export const syncAllProjectsAction = createServiceAction({
         }
       } catch (error) {
         logger.error(
+          error instanceof Error ? error : new Error(String(error)),
           `Failed to sync project ${project.name}: ${String(error)}`,
         );
 

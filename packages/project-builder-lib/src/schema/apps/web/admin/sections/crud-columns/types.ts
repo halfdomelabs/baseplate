@@ -21,16 +21,22 @@ export type AdminCrudColumnDefinition = z.infer<
   typeof baseAdminCrudColumnSchema
 >;
 
+export type AdminCrudColumnSchema = z.ZodType<
+  AdminCrudColumnDefinition,
+  AdminCrudColumnInput
+>;
+
 export interface AdminCrudColumnType<
-  T extends DefinitionSchemaCreator = DefinitionSchemaCreator,
+  T extends
+    DefinitionSchemaCreator<AdminCrudColumnSchema> = DefinitionSchemaCreator<AdminCrudColumnSchema>,
 > {
   name: string;
   createSchema: T;
 }
 
-export function createAdminCrudColumnType<T extends DefinitionSchemaCreator>(
-  payload: AdminCrudColumnType<T>,
-): AdminCrudColumnType<T> {
+export function createAdminCrudColumnType<
+  T extends DefinitionSchemaCreator<AdminCrudColumnSchema>,
+>(payload: AdminCrudColumnType<T>): AdminCrudColumnType<T> {
   return payload;
 }
 

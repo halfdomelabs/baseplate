@@ -22,10 +22,7 @@ export const createAdminCrudColumnSchema = definitionSchema((ctx) =>
       const crudColumn = ctx.plugins
         .getPluginSpec(adminCrudColumnSpec)
         .getAdminCrudColumn(type);
-      return crudColumn
-        .createSchema(ctx)
-        .and(baseAdminCrudColumnSchema)
-        .parse(data);
+      return crudColumn.createSchema(ctx).parse(data);
     }),
 );
 
