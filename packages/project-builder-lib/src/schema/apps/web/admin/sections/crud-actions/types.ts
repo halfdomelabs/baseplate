@@ -21,16 +21,22 @@ export type AdminCrudActionDefinition = z.infer<
   typeof baseAdminCrudActionSchema
 >;
 
+export type AdminCrudActionSchema = z.ZodType<
+  AdminCrudActionDefinition,
+  AdminCrudActionInput
+>;
+
 export interface AdminCrudActionType<
-  T extends DefinitionSchemaCreator = DefinitionSchemaCreator,
+  T extends
+    DefinitionSchemaCreator<AdminCrudActionSchema> = DefinitionSchemaCreator<AdminCrudActionSchema>,
 > {
   name: string;
   createSchema: T;
 }
 
-export function createAdminCrudActionType<T extends DefinitionSchemaCreator>(
-  payload: AdminCrudActionType<T>,
-): AdminCrudActionType<T> {
+export function createAdminCrudActionType<
+  T extends DefinitionSchemaCreator<AdminCrudActionSchema>,
+>(payload: AdminCrudActionType<T>): AdminCrudActionType<T> {
   return payload;
 }
 

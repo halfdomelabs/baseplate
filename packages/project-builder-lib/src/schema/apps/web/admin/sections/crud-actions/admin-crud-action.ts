@@ -1,33 +1,28 @@
+import z from 'zod';
+
 import type { def } from '#src/schema/creator/index.js';
 
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import { adminCrudActionSpec } from './admin-action-spec.js';
-import {
-  adminCrudActionEntityType,
-  baseAdminCrudActionSchema,
-} from './types.js';
+import type { baseAdminCrudActionSchema } from './types.js';
 
-export const createAdminCrudActionSchema = definitionSchema((ctx) =>
-  ctx
-    .withEnt(baseAdminCrudActionSchema, {
-      type: adminCrudActionEntityType,
-      parentPath: {
-        context: 'admin-section',
-      },
-      getNameResolver: (value) => value.type,
-    })
-    .transform((data) => {
-      const { type } = data;
-      const crudAction = ctx.plugins
-        .getPluginSpec(adminCrudActionSpec)
-        .getAdminCrudAction(type);
-      return crudAction
-        .createSchema(ctx)
-        .and(baseAdminCrudActionSchema)
-        .parse(data);
-    }),
-);
+import { adminCrudActionSpec } from './admin-action-spec.js';
+
+export const createAdminCrudActionSchema = definitionSchema((ctx) => {
+  const adminCrudActions = ctx.plugins
+    .getPluginSpec(adminCrudActionSpec)
+    .getAdminCrudActions();
+  const schemas = [...adminCrudActions.values()].map((action) =>
+    action.createSchema(ctx),
+  );
+  return z.discriminatedUnion(
+    'type',
+    schemas as [
+      typeof baseAdminCrudActionSchema,
+      ...(typeof baseAdminCrudActionSchema)[],
+    ],
+  );
+});
 
 export type AdminCrudActionConfig = def.InferOutput<
   typeof createAdminCrudActionSchema
