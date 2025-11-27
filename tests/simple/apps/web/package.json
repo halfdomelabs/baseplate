@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.13.8",
-    "@hookform/resolvers": "5.0.1",
+    "@hookform/resolvers": "5.2.2",
     "@sentry/react": "9.17.0",
     "@tanstack/react-router": "1.130.8",
     "class-variance-authority": "0.7.1",

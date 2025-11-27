@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
 import type { DefinitionSchemaCreatorOptions } from './types.js';
 
@@ -48,24 +48,13 @@ export function extendParserContextWithDefaults(
     ): z.ZodOptional<
       z.ZodType<z.output<z.ZodOptional<T>>, z.input<z.ZodOptional<T>>>
     > {
-      // Auto-add .optional() to the schema
-      const optionalSchema = schema.optional();
-
       switch (mode) {
         case 'populate': {
-          // Use preprocess to inject defaults before validation
-          return z
-            .preprocess((value: z.input<z.ZodOptional<T>>) => {
-              if (value === undefined) {
-                return defaultValue;
-              }
-              return value;
-            }, optionalSchema)
-            .optional();
+          return schema.prefault(defaultValue).optional();
         }
         case 'strip': {
           // Use transform to remove values matching defaults after validation
-          return optionalSchema
+          return schema
             .transform((value) => {
               if (isEmpty(value)) {
                 return undefined;
@@ -78,7 +67,7 @@ export function extendParserContextWithDefaults(
         case 'preserve': {
           // Return schema with .optional() added
 
-          return optionalSchema.transform((x) => x).optional();
+          return schema.transform((x) => x).optional();
         }
       }
     },
