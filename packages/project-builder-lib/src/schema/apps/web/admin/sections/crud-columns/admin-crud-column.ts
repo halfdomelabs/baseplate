@@ -1,30 +1,28 @@
+import z from 'zod';
+
 import type { def } from '#src/schema/creator/index.js';
 
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import { adminCrudColumnSpec } from './admin-column-spec.js';
-import {
-  adminCrudColumnEntityType,
-  baseAdminCrudColumnSchema,
-} from './types.js';
+import type { baseAdminCrudColumnSchema } from './types.js';
 
-export const createAdminCrudColumnSchema = definitionSchema((ctx) =>
-  ctx
-    .withEnt(baseAdminCrudColumnSchema, {
-      type: adminCrudColumnEntityType,
-      parentPath: {
-        context: 'admin-section',
-      },
-      getNameResolver: (value) => value.type,
-    })
-    .transform((data) => {
-      const { type } = data;
-      const crudColumn = ctx.plugins
-        .getPluginSpec(adminCrudColumnSpec)
-        .getAdminCrudColumn(type);
-      return crudColumn.createSchema(ctx).parse(data);
-    }),
-);
+import { adminCrudColumnSpec } from './admin-column-spec.js';
+
+export const createAdminCrudColumnSchema = definitionSchema((ctx) => {
+  const adminCrudColumns = ctx.plugins
+    .getPluginSpec(adminCrudColumnSpec)
+    .getAdminCrudColumns();
+  const schemas = [...adminCrudColumns.values()].map((column) =>
+    column.createSchema(ctx),
+  );
+  return z.discriminatedUnion(
+    'type',
+    schemas as [
+      typeof baseAdminCrudColumnSchema,
+      ...(typeof baseAdminCrudColumnSchema)[],
+    ],
+  );
+});
 
 export type AdminCrudColumnConfig = def.InferOutput<
   typeof createAdminCrudColumnSchema
