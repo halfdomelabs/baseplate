@@ -7,7 +7,7 @@ import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-colum
 const descriptorSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   modelField: z.string().min(1),
 });
 

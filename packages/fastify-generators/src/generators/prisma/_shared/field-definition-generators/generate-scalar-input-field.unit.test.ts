@@ -62,7 +62,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.number().int())');
+      expect(result.fragment.contents).toBe('scalarField(z.int())');
     });
 
     it('generates scalarField call for float type', () => {
@@ -222,9 +222,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.number().int().nullish())',
-      );
+      expect(result.fragment.contents).toBe('scalarField(z.int().nullish())');
     });
   });
 
@@ -262,9 +260,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.number().int().optional())',
-      );
+      expect(result.fragment.contents).toBe('scalarField(z.int().optional())');
     });
 
     it('generates scalarField with optional for enum with default', () => {

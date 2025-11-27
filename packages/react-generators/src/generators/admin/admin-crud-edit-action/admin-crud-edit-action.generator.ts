@@ -11,7 +11,7 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 import { adminCrudActionContainerProvider } from '../_providers/admin-crud-action-container.js';
 
 const descriptorSchema = z.object({
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   position: z.enum(['inline', 'dropdown']).default('inline'),
 });
 

@@ -55,7 +55,7 @@
     "graphql-yoga": "5.15.1",
     "nanoid": "5.1.6",
     "pino": "9.5.0",
-    "zod": "3.25.76"
+    "zod": "4.1.13"
   },
   "devDependencies": {
     "@envelop/types": "5.2.1",

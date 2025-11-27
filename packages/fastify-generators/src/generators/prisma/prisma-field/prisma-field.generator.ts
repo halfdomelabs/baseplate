@@ -12,7 +12,7 @@ import { prismaModelProvider } from '../prisma-model/index.js';
 
 const baseFieldSchema = z.object({
   name: z.string().min(1),
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   dbName: z.string().optional(),
   id: z.boolean().optional(),
   unique: z.boolean().optional(),

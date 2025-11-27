@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
   userModelName: z.string().min(1),
   availableRoles: z.array(
