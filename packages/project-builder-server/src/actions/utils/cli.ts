@@ -11,16 +11,18 @@ import type { ServiceAction, ServiceActionContext } from '../types.js';
  * @returns The result of the service action.
  */
 export async function invokeServiceActionAsCli<
-  TInputShape extends z.ZodRawShape,
-  TOutputShape extends z.ZodRawShape,
+  TInputType extends z.ZodType,
+  TOutputType extends z.ZodType,
 >(
-  action: ServiceAction<TInputShape, TOutputShape>,
-  input: z.infer<z.ZodObject<TInputShape>>,
+  action: ServiceAction<TInputType, TOutputType>,
+  input: z.input<TInputType>,
   context: ServiceActionContext,
-): Promise<z.infer<z.ZodObject<TOutputShape>>> {
-  const result = await action.handler(input, context);
+): Promise<z.output<TOutputType>> {
+  const parsedInput = action.inputSchema.parse(input);
+  const result = await action.handler(parsedInput, context);
+  const parsedResult = action.outputSchema.parse(result);
 
-  action.writeCliOutput?.(result, input);
+  action.writeCliOutput?.(parsedResult, parsedInput);
 
-  return result;
+  return parsedResult;
 }

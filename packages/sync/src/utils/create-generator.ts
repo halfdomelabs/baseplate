@@ -103,7 +103,8 @@ export function createGenerator<
 
   return ({ children, ...rest }) => {
     const validatedDescriptor =
-      (config.descriptorSchema?.parse(rest) as unknown) ?? {};
+      config.descriptorSchema?.parse(rest) ??
+      ({} as z.output<DescriptorSchema>);
 
     const tasks = config.buildTasks(validatedDescriptor);
 

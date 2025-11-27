@@ -10,7 +10,7 @@ const DEFAULT_FROM = TPL_DEFAULT_FROM;
 
 interface EmailTemplateConfiguration {
   alias: string;
-  schema: z.ZodSchema;
+  schema: z.ZodType;
 }
 
 // helper for making strongly-typed template configs

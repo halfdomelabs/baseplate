@@ -2,8 +2,6 @@ import type { def } from '#src/schema/creator/index.js';
 
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import type { AdminCrudColumnDefinition } from './types.js';
-
 import { adminCrudColumnSpec } from './admin-column-spec.js';
 import {
   adminCrudColumnEntityType,
@@ -12,14 +10,14 @@ import {
 
 export const createAdminCrudColumnSchema = definitionSchema((ctx) =>
   ctx
-    .withEnt(baseAdminCrudColumnSchema.passthrough(), {
+    .withEnt(baseAdminCrudColumnSchema, {
       type: adminCrudColumnEntityType,
       parentPath: {
         context: 'admin-section',
       },
       getNameResolver: (value) => value.type,
     })
-    .transform((data, parseCtx) => {
+    .transform((data) => {
       const { type } = data;
       const crudColumn = ctx.plugins
         .getPluginSpec(adminCrudColumnSpec)
@@ -27,9 +25,7 @@ export const createAdminCrudColumnSchema = definitionSchema((ctx) =>
       return crudColumn
         .createSchema(ctx)
         .and(baseAdminCrudColumnSchema)
-        .parse(data, {
-          path: parseCtx.path,
-        }) as AdminCrudColumnDefinition;
+        .parse(data);
     }),
 );
 

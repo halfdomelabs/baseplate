@@ -21,13 +21,11 @@ function isEmpty(value: unknown): boolean {
   return false;
 }
 
-export type WithDefaultType = <T extends z.ZodTypeAny>(
+export type WithDefaultType = <T extends z.ZodType>(
   schema: T,
   defaultValue: z.input<T>,
-) => z.ZodEffects<
-  z.ZodOptional<T>,
-  z.output<z.ZodOptional<T>>,
-  z.input<z.ZodOptional<T>>
+) => z.ZodOptional<
+  z.ZodType<z.output<z.ZodOptional<T>>, z.input<z.ZodOptional<T>>>
 >;
 
 /**
@@ -44,37 +42,43 @@ export function extendParserContextWithDefaults(
   const mode = options.defaultMode ?? 'populate';
 
   return {
-    withDefault: function withDefault<T extends z.ZodTypeAny>(
+    withDefault: function withDefault<T extends z.ZodType>(
       schema: T,
       defaultValue: z.input<T>,
-    ): z.ZodEffects<z.ZodOptional<T>, z.output<z.ZodOptional<T>>, z.input<T>> {
+    ): z.ZodOptional<
+      z.ZodType<z.output<z.ZodOptional<T>>, z.input<z.ZodOptional<T>>>
+    > {
       // Auto-add .optional() to the schema
       const optionalSchema = schema.optional();
 
       switch (mode) {
         case 'populate': {
           // Use preprocess to inject defaults before validation
-          return z.preprocess((value: z.input<z.ZodOptional<T>>) => {
-            if (value === undefined) {
-              return defaultValue;
-            }
-            return value;
-          }, optionalSchema);
+          return z
+            .preprocess((value: z.input<z.ZodOptional<T>>) => {
+              if (value === undefined) {
+                return defaultValue;
+              }
+              return value;
+            }, optionalSchema)
+            .optional();
         }
         case 'strip': {
           // Use transform to remove values matching defaults after validation
-          return optionalSchema.transform((value) => {
-            if (isEmpty(value)) {
-              return undefined;
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- it's typed to a generic
-            return value;
-          });
+          return optionalSchema
+            .transform((value) => {
+              if (isEmpty(value)) {
+                return undefined;
+              }
+
+              return value;
+            })
+            .optional();
         }
         case 'preserve': {
           // Return schema with .optional() added
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- it's typed to a generic
-          return optionalSchema.transform((x) => x);
+
+          return optionalSchema.transform((x) => x).optional();
         }
       }
     },

@@ -6,7 +6,7 @@ import { createEntityType } from '#src/references/types.js';
 
 import { adminSectionEntityType } from '../types.js';
 
-export const baseAdminCrudInputSchema = z.object({
+export const baseAdminCrudInputSchema = z.looseObject({
   id: z
     .string()
     .min(1)

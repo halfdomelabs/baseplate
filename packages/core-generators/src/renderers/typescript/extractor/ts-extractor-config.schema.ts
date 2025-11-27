@@ -34,7 +34,7 @@ export const tsExtractorConfigSchema = z
      */
     skipDefaultImportMap: z.boolean().default(false),
   })
-  .default({});
+  .prefault({});
 
 /**
  * Type for TypeScript extractor configuration

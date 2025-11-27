@@ -3,18 +3,18 @@ import { z } from 'zod';
 /**
  * Schema for a single template configuration in the extractor.json file
  */
-export const templateConfigSchema = z
-  .object({
-    /**
-     * Source file path relative to templates directory
-     */
-    sourceFile: z.string(),
-    /**
-     * Type of the template. For example, it can be `ts` for typescript templates.
-     */
-    type: z.string(),
-  })
-  .passthrough();
+export const templateConfigSchema = z.looseObject({
+  /**
+   * Source file path relative to templates directory
+   */
+  sourceFile: z.string(),
+  /**
+   * Type of the template. For example, it can be `ts` for typescript templates.
+   */
+  type: z.string(),
+});
+
+export type TemplateConfigSchema = typeof templateConfigSchema;
 
 /**
  * Main schema for extractor.json configuration
@@ -32,15 +32,15 @@ export const extractorConfigSchema = z.object({
   /**
    * Template map keyed by template name
    */
-  templates: z.record(templateConfigSchema).default({}),
+  templates: z.record(z.string(), templateConfigSchema).prefault({}),
   /**
    * Configuration for each extractor keyed by extractor type
    */
-  extractors: z.record(z.string(), z.object({}).passthrough()).optional(),
+  extractors: z.record(z.string(), z.looseObject({})).optional(),
   /**
    * Plugin-specific configuration keyed by plugin name
    */
-  plugins: z.record(z.string(), z.object({}).passthrough()).optional(),
+  plugins: z.record(z.string(), z.looseObject({})).optional(),
 });
 
 /**

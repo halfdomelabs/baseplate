@@ -216,7 +216,7 @@ export interface FieldTransformResult<TCreateOutput, TUpdateOutput> {
  * ```
  */
 export interface FieldDefinition<
-  TInputSchema extends z.ZodSchema,
+  TInputSchema extends z.ZodType,
   TCreateOutput,
   TUpdateOutput,
 > {

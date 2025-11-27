@@ -2,7 +2,6 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '#src/types/field-types.js';
-import type { PrismaFieldTypeConfig } from '#src/writers/prisma-schema/fields.js';
 
 import {
   buildPrismaScalarField,
@@ -11,40 +10,35 @@ import {
 
 import { prismaModelProvider } from '../prisma-model/index.js';
 
-// some typescript hacking to make field types work generically
-const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<
-  ScalarFieldType,
-  PrismaFieldTypeConfig
->;
+const baseFieldSchema = z.object({
+  name: z.string().min(1),
+  order: z.number().int().nonnegative(),
+  dbName: z.string().optional(),
+  id: z.boolean().optional(),
+  unique: z.boolean().optional(),
+  optional: z.boolean().optional(),
+  enumType: z.string().optional(),
+  type: z.enum(
+    Object.keys(PRISMA_SCALAR_FIELD_TYPES) as [
+      ScalarFieldType,
+      ...ScalarFieldType[],
+    ],
+  ),
+  options: z.unknown(),
+});
 
-const descriptorSchema = z
-  .object({
-    name: z.string().min(1),
-    order: z.number().int().nonnegative(),
-    dbName: z.string().optional(),
-    type: z.enum(
-      Object.keys(prismaScalarFieldTypes) as [
-        ScalarFieldType,
-        ...ScalarFieldType[],
-      ],
-    ),
-    options: z.object({}).catchall(z.any()).optional(),
-    id: z.boolean().optional(),
-    unique: z.boolean().optional(),
-    optional: z.boolean().optional(),
-    enumType: z.string().optional(),
-  })
-  .superRefine((obj, ctx) => {
-    // TODO: Clean up
-    const schema = prismaScalarFieldTypes[obj.type].optionsSchema;
-    if (schema && obj.options) {
-      const parseResult = schema.safeParse(obj.options);
-      if (!parseResult.success) {
-        ctx.addIssue(parseResult.error.errors[0]);
-      }
-    }
-    return obj;
-  });
+const fieldTypeSchemas = Object.entries(PRISMA_SCALAR_FIELD_TYPES).map(
+  ([type, config]) =>
+    baseFieldSchema.extend({
+      type: z.literal(type),
+      options:
+        'optionsSchema' in config
+          ? config.optionsSchema
+          : z.undefined().optional(),
+    }),
+) as unknown as [typeof baseFieldSchema, ...(typeof baseFieldSchema)[]];
+
+const descriptorSchema = z.discriminatedUnion('type', fieldTypeSchemas);
 
 export type PrismaFieldDescriptor = z.infer<typeof descriptorSchema>;
 

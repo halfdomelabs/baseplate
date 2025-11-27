@@ -22,7 +22,7 @@ export const REACT_PACKAGES = {
   'tailwind-merge': '3.3.1',
 
   // Components
-  '@hookform/resolvers': '5.0.1',
+  '@hookform/resolvers': '5.2.2',
   clsx: '2.1.1',
   'react-hook-form': '7.60.0',
   'react-icons': '5.5.0',

@@ -20,7 +20,7 @@ export function createDefinitionSchemaParserContext(
   };
 }
 
-export function definitionSchema<T extends z.ZodTypeAny>(
+export function definitionSchema<T extends z.ZodType>(
   creator: DefinitionSchemaCreator<T>,
 ): (context: DefinitionSchemaParserContext) => T {
   return (context) => creator(context);

@@ -68,7 +68,7 @@ import { prisma } from '%prismaImports';
  * ```
  */
 export function scalarField<
-  TSchema extends z.ZodSchema,
+  TSchema extends z.ZodType,
   TTransformed = z.output<TSchema>,
 >(
   schema: TSchema,

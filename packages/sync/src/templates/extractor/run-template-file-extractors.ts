@@ -1,6 +1,5 @@
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy, uniq } from 'es-toolkit';
-import { z } from 'zod';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
@@ -14,6 +13,7 @@ import type {
 } from './runner/template-file-extractor.js';
 
 import { readTemplateInfoFiles } from '../metadata/read-template-info-files.js';
+import { templateConfigSchema } from './configs/extractor-config.schema.js';
 import { TemplateExtractorConfigLookup } from './configs/template-extractor-config-lookup.js';
 import { tryCreateExtractorJson } from './configs/try-create-extractor-json.js';
 import { initializeTemplateExtractorPlugins } from './runner/initialize-template-extractor-plugins.js';
@@ -284,8 +284,7 @@ export async function generateTemplateFiles(
   for (const templateType of allTemplateTypes) {
     const generatorConfigs = configLookup.getGeneratorConfigsForExtractorType(
       templateType,
-      // Use a simple passthrough schema since we just need the type
-      z.object({ type: z.literal(templateType) }).passthrough(),
+      templateConfigSchema,
     );
 
     const generatorNames = generatorConfigs

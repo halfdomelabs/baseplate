@@ -21,7 +21,7 @@ const configureTextTemplateInputSchema = {
     .describe('The generator name (e.g., @baseplate-dev/react-generators)'),
   templateName: z.string().describe('Template name in kebab-case format'),
   variables: z
-    .record(variableSchema)
+    .record(z.string(), variableSchema)
     .optional()
     .describe('Object mapping variable names to their metadata'),
   group: z.string().optional().describe('Optional template group'),

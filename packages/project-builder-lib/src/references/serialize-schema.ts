@@ -11,14 +11,18 @@ import type { ResolvedZodRefPayload } from './types.js';
 
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 
-export function serializeSchemaFromRefPayload<
-  TValue extends Record<string, unknown>,
->(payload: ResolvedZodRefPayload<TValue>): TValue {
+export function serializeSchemaFromRefPayload<TValue>(
+  payload: ResolvedZodRefPayload<TValue>,
+): TValue {
   const { references, entities, data } = payload;
+
+  if (typeof data !== 'object' || data === null) {
+    throw new TypeError('Data is not an object');
+  }
 
   const entitiesById = new Map(entities.map((e) => [e.id, e]));
 
-  return produce((draftData: Record<string, unknown>) => {
+  return produce((draftData: object) => {
     for (const reference of references) {
       const entityId = get(draftData, reference.path) as string;
       const entity = entitiesById.get(entityId);
@@ -48,6 +52,5 @@ export function serializeSchema<T extends DefinitionSchemaCreator>(
     schemaCreatorOptions,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- typed as def.InferOutput<T>
   return serializeSchemaFromRefPayload(payload);
 }

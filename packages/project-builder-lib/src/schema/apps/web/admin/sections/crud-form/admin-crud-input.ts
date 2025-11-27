@@ -1,20 +1,18 @@
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import type { AdminCrudInputDefinition } from './types.js';
-
 import { adminCrudInputSpec } from './admin-input-spec.js';
 import { adminCrudInputEntityType, baseAdminCrudInputSchema } from './types.js';
 
 export const createAdminCrudInputSchema = definitionSchema((ctx) =>
   ctx
-    .withEnt(baseAdminCrudInputSchema.passthrough(), {
+    .withEnt(baseAdminCrudInputSchema, {
       type: adminCrudInputEntityType,
       parentPath: {
         context: 'admin-section',
       },
       getNameResolver: (value) => value.id ?? '',
     })
-    .transform((data, parseCtx) => {
+    .transform((data) => {
       const { type } = data;
       const crudInput = ctx.plugins
         .getPluginSpec(adminCrudInputSpec)
@@ -22,8 +20,6 @@ export const createAdminCrudInputSchema = definitionSchema((ctx) =>
       return crudInput
         .createSchema(ctx)
         .and(baseAdminCrudInputSchema)
-        .parse(data, {
-          path: parseCtx.path,
-        }) as AdminCrudInputDefinition;
+        .parse(data);
     }),
 );

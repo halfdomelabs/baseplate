@@ -6,7 +6,7 @@ import { createEntityType } from '#src/references/types.js';
 
 import { adminSectionEntityType } from '../types.js';
 
-export const baseAdminCrudActionSchema = z.object({
+export const baseAdminCrudActionSchema = z.looseObject({
   id: z
     .string()
     .min(1)

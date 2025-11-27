@@ -14,7 +14,9 @@ const templateInfoSchema = z.object({
   sourceFile: z.string().optional().describe('The source file path'),
   group: z.string().optional().describe('The template group'),
   kind: z.string().optional().describe('The template kind'),
-  config: z.record(z.any()).describe('The full template configuration'),
+  config: z
+    .record(z.string(), z.any())
+    .describe('The full template configuration'),
 });
 
 const listTemplatesOutputSchema = {

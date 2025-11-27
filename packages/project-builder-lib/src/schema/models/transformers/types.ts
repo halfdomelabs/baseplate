@@ -9,7 +9,7 @@ export const baseTransformerFields = {
   type: z.string().min(1),
 } as const;
 
-export const baseTransformerSchema = z.object(baseTransformerFields);
+export const baseTransformerSchema = z.looseObject(baseTransformerFields);
 
 export interface ModelTransformerType<
   T extends DefinitionSchemaCreator = DefinitionSchemaCreator,

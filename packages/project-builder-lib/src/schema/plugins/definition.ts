@@ -5,7 +5,7 @@ import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
 
-export const basePluginDefinitionSchema = z.object({
+export const basePluginDefinitionSchema = z.looseObject({
   id: z.string(),
   packageName: z.string(),
   name: z.string(),
@@ -18,10 +18,10 @@ export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
 export const createPluginWithConfigSchema = definitionSchema((ctx) =>
   ctx
-    .withEnt(basePluginDefinitionSchema.passthrough(), {
+    .withEnt(basePluginDefinitionSchema, {
       type: pluginEntityType,
     })
-    .transform((data, parseCtx) => {
+    .transform((data) => {
       const pluginKey = pluginEntityType.keyFromId(data.id);
 
       const createConfigSchema = ctx.plugins
@@ -36,9 +36,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
         }) as typeof basePluginDefinitionSchema;
       }
 
-      return pluginDefinitionSchema.parse(data, {
-        path: parseCtx.path,
-      });
+      return pluginDefinitionSchema.parse(data);
     }),
 );
 

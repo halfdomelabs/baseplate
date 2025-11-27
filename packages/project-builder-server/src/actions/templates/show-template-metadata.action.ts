@@ -21,7 +21,7 @@ const showTemplateMetadataOutputSchema = {
   templateName: z.string().describe('The template name (empty if no metadata)'),
   generator: z.string().describe('The generator name (empty if no metadata)'),
   instanceData: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .optional()
     .describe('Template instance data if available'),
   hasMetadata: z.boolean().describe('Whether the file has template metadata'),

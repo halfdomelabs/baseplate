@@ -79,11 +79,7 @@ try {
   });
 
   const result = await action.handler(
-    input as z.objectInputType<
-      typeof action.inputSchema,
-      z.ZodTypeAny,
-      'strip'
-    >,
+    input as z.objectInputType<typeof action.inputSchema, z.ZodType, 'strip'>,
     contextWithLogger,
   );
   const validatedResult = z.object(action.outputSchema).parse(result);

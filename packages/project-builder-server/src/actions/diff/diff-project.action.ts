@@ -4,7 +4,7 @@ import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const diffProjectInputSchema = {
+const diffProjectInputSchema = z.object({
   project: z.string().describe('The name or ID of the project to diff.'),
   compact: z
     .boolean()
@@ -18,7 +18,7 @@ const diffProjectInputSchema = {
     .array(z.string())
     .optional()
     .describe('Filter files by glob patterns.'),
-};
+});
 
 const packageDiffResultSchema = z.object({
   name: z.string().describe('The name of the package.'),
@@ -36,13 +36,13 @@ const packageDiffResultSchema = z.object({
   hasDifferences: z.boolean().describe('Whether differences were found.'),
 });
 
-const diffProjectOutputSchema = {
+const diffProjectOutputSchema = z.object({
   packageResults: z.array(packageDiffResultSchema),
   totalDiffs: z.number().describe('Total number of files with differences.'),
   hasDifferences: z
     .boolean()
     .describe('Whether any differences were found across all applications.'),
-};
+});
 
 /**
  * Service action to generate a diff between what would be generated and what currently exists.
