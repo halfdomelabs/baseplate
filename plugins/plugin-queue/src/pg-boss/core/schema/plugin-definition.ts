@@ -9,13 +9,13 @@ export const createPgBossPluginDefinitionSchema = definitionSchema(() =>
     pgBossOptions: z
       .object({
         // Queue behavior options
-        deleteAfterDays: z.coerce
-          .number()
+        deleteAfterDays: z
+          .int()
           .min(1)
           .default(7)
           .describe('Days to retain completed jobs'),
       })
-      .default({}),
+      .prefault({}),
   }),
 );
 

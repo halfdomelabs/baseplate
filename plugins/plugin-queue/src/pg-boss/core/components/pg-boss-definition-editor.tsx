@@ -111,6 +111,9 @@ export function PgBossDefinitionEditor({
                     type="number"
                     min={1}
                     description="Number of days to retain completed jobs before deletion"
+                    registerOptions={{
+                      valueAsNumber: true,
+                    }}
                   />
                 </SectionListSectionContent>
               </SectionListSection>

@@ -14,8 +14,6 @@ export const templateConfigSchema = z.looseObject({
   type: z.string(),
 });
 
-export type TemplateConfigSchema = typeof templateConfigSchema;
-
 /**
  * Main schema for extractor.json configuration
  */

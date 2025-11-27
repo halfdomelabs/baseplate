@@ -165,7 +165,7 @@ export function createMcpServer({
                 mimeType: 'application/json',
               },
             ],
-            structuredContent: result,
+            structuredContent: result as Record<string, unknown>,
           };
         } finally {
           isActionRunning = false;

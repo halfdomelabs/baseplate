@@ -3,7 +3,6 @@ import type { z } from 'zod';
 import type {
   ExtractorConfig,
   TemplateConfig,
-  TemplateConfigSchema,
 } from './extractor-config.schema.js';
 
 import { indexTemplateConfigs } from '../utils/index-template-configs.js';
@@ -134,7 +133,7 @@ export class TemplateExtractorConfigLookup {
     return config;
   }
 
-  getTemplatesForGenerator<T extends TemplateConfigSchema>(
+  getTemplatesForGenerator<T extends z.ZodType<{ type: string }>>(
     generatorName: string,
     templateMetadataSchema: T,
     templateType: z.infer<T>['type'],
@@ -150,7 +149,7 @@ export class TemplateExtractorConfigLookup {
   }
 
   getGeneratorConfigsForExtractorType<
-    TTemplateMetadata extends TemplateConfigSchema,
+    TTemplateMetadata extends z.ZodType<{ type: string }>,
     TGeneratorConfig extends z.ZodType = z.ZodUndefined,
   >(
     templateType: z.infer<TTemplateMetadata>['type'],

@@ -35,13 +35,37 @@ export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
       baseProcedure
         .input(action.inputSchema)
         .output(action.outputSchema)
-        .mutation(({ input, ctx }) => runActionInWorker(action, input, ctx)),
+        // The types of TRPC are quite complex and we need to cast to never to avoid type errors
+        .mutation(
+          ({ input, ctx }) =>
+            runActionInWorker(
+              action,
+              input as unknown as z.output<TInputType>,
+              ctx,
+            ) as never,
+        ) as TRPCMutationProcedure<{
+        meta: unknown;
+        input: z.input<TInputType>;
+        output: z.output<TOutputType>;
+      }>,
     query: <TInputType extends z.ZodType, TOutputType extends z.ZodType>(
       action: ServiceAction<TInputType, TOutputType>,
     ) =>
       baseProcedure
         .input(action.inputSchema)
         .output(action.outputSchema)
-        .query(({ input, ctx }) => runActionInWorker(action, input, ctx)),
+        // The types of TRPC are quite complex and we need to cast to never to avoid type errors
+        .query(
+          ({ input, ctx }) =>
+            runActionInWorker(
+              action,
+              input as unknown as z.output<TInputType>,
+              ctx,
+            ) as never,
+        ) as TRPCQueryProcedure<{
+        meta: unknown;
+        input: z.input<TInputType>;
+        output: z.input<TOutputType>;
+      }>,
   };
 }

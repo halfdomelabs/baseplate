@@ -71,9 +71,9 @@ export type GeneratorBundleCreator<
     AnyGeneratorTask | undefined
   >,
 > = (
-  descriptorWithChildren: Omit<Descriptor, 'children'> & {
-    children?: GeneratorBundleChildren;
-  },
+  descriptorWithChildren: Descriptor extends Record<string, never>
+    ? { children?: GeneratorBundleChildren }
+    : Omit<Descriptor, 'children'> & { children?: GeneratorBundleChildren },
 ) => GeneratorBundle<TaskConfigs>;
 
 /**

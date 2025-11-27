@@ -390,8 +390,8 @@ importers:
         specifier: 'catalog:'
         version: 9.32.0(jiti@2.6.1)
       fastify:
-        specifier: 5.3.2
-        version: 5.3.2
+        specifier: 5.6.2
+        version: 5.6.2
       memfs:
         specifier: 4.15.1
         version: 4.15.1
@@ -572,8 +572,8 @@ importers:
         specifier: 5.6.2
         version: 5.6.2
       fastify-plugin:
-        specifier: 5.0.1
-        version: 5.0.1
+        specifier: 5.1.0
+        version: 5.1.0
       fastify-type-provider-zod:
         specifier: ^6.0.0
         version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.1.13)
@@ -5195,8 +5195,8 @@ packages:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
     engines: {node: '>= 4.9.1'}
 
-  fastify-plugin@5.0.1:
-    resolution: {integrity: sha512-HCxs+YnRaWzCl+cWRYFnHmeRFyR5GVnJTAaCJQiYzQSDwK9MgJdyAsuL3nh0EWRCYMgQ5MeziymvmAhUHYHDUQ==}
+  fastify-plugin@5.1.0:
+    resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
 
   fastify-type-provider-zod@6.1.0:
     resolution: {integrity: sha512-Sl19VZFSX4W/+AFl3hkL5YgWk3eDXZ4XYOdrq94HunK+o7GQBCAqgk7+3gPXoWkF0bNxOiIgfnFGJJ3i9a2BtQ==}
@@ -5205,9 +5205,6 @@ packages:
       fastify: ^5.5.0
       openapi-types: ^12.1.3
       zod: '>=4.1.5'
-
-  fastify@5.3.2:
-    resolution: {integrity: sha512-AIPqBgtqBAwkOkrnwesEE+dOyU30dQ4kh7udxeGVR05CRGwubZx+p2H8P0C4cRnQT0+EPK4VGea2DTL2RtWttg==}
 
   fastify@5.6.2:
     resolution: {integrity: sha512-dPugdGnsvYkBlENLhCgX8yhyGCsCPrpA8lFWbTNU428l+YOnLgYHR69hzV8HWPC79n536EqzqQtvhtdaCE0dKg==}
@@ -8468,7 +8465,7 @@ snapshots:
 
   '@fastify/helmet@13.0.0':
     dependencies:
-      fastify-plugin: 5.0.1
+      fastify-plugin: 5.1.0
       helmet: 8.0.0
 
   '@fastify/merge-json-schemas@0.1.1':
@@ -8493,13 +8490,13 @@ snapshots:
       '@fastify/accept-negotiator': 2.0.0
       '@fastify/send': 3.2.0
       content-disposition: 0.5.4
-      fastify-plugin: 5.0.1
+      fastify-plugin: 5.1.0
       fastq: 1.19.1
       glob: 11.1.0
 
   '@fastify/swagger@9.6.1':
     dependencies:
-      fastify-plugin: 5.0.1
+      fastify-plugin: 5.1.0
       json-schema-resolver: 3.0.0
       openapi-types: 12.1.3
       rfdc: 1.4.1
@@ -8510,7 +8507,7 @@ snapshots:
   '@fastify/websocket@11.0.1':
     dependencies:
       duplexify: 4.1.3
-      fastify-plugin: 5.0.1
+      fastify-plugin: 5.1.0
       ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
@@ -11871,7 +11868,7 @@ snapshots:
 
   fastest-levenshtein@1.0.16: {}
 
-  fastify-plugin@5.0.1: {}
+  fastify-plugin@5.1.0: {}
 
   fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.1.13):
     dependencies:
@@ -11880,24 +11877,6 @@ snapshots:
       fastify: 5.6.2
       openapi-types: 12.1.3
       zod: 4.1.13
-
-  fastify@5.3.2:
-    dependencies:
-      '@fastify/ajv-compiler': 4.0.1
-      '@fastify/error': 4.2.0
-      '@fastify/fast-json-stringify-compiler': 5.0.1
-      '@fastify/proxy-addr': 5.0.0
-      abstract-logging: 2.0.1
-      avvio: 9.1.0
-      fast-json-stringify: 6.0.0
-      find-my-way: 9.1.0
-      light-my-request: 6.3.0
-      pino: 9.5.0
-      process-warning: 5.0.0
-      rfdc: 1.4.1
-      secure-json-parse: 4.0.0
-      semver: 7.7.2
-      toad-cache: 3.7.0
 
   fastify@5.6.2:
     dependencies:
