@@ -24,7 +24,7 @@ export const /* TPL_SCHEMA_NAME:START */ userEditFormSchema /* TPL_SCHEMA_NAME:E
     z.object(
       /* TPL_SCHEMA_OBJECT:START */ {
         customer: embeddedCustomerFormSchema.nullish(),
-        email: z.string().email().min(1),
+        email: z.email().min(1),
         name: z.string().nullish(),
         password: z.string().nullish(),
         roles: z.array(embeddedRolesFormSchema).nullish(),
