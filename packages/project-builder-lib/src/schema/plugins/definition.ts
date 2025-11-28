@@ -5,12 +5,12 @@ import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
 
-export const basePluginDefinitionSchema = z.looseObject({
+export const basePluginDefinitionSchema = z.object({
   id: z.string(),
   packageName: z.string(),
   name: z.string(),
   version: z.string(),
-  config: z.unknown(),
+  config: z.looseObject({}).optional(),
   configSchemaVersion: z.number().optional(),
 });
 
@@ -28,15 +28,12 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
         .getPluginSpec(pluginConfigSpec)
         .getSchemaCreator(pluginKey);
 
-      let pluginDefinitionSchema = basePluginDefinitionSchema;
+      if (!createConfigSchema) return data;
 
-      if (createConfigSchema) {
-        pluginDefinitionSchema = pluginDefinitionSchema.extend({
-          config: createConfigSchema(ctx),
-        }) as typeof basePluginDefinitionSchema;
-      }
-
-      return pluginDefinitionSchema.parse(data);
+      return {
+        ...data,
+        config: createConfigSchema(ctx).parse(data.config),
+      };
     }),
 );
 

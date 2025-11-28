@@ -56,6 +56,7 @@ export function extendParserContextWithDefaults(
           // Use transform to remove values matching defaults after validation
           return schema
             .transform((value) => {
+              if (value === defaultValue) return undefined;
               if (isEmpty(value)) {
                 return undefined;
               }
