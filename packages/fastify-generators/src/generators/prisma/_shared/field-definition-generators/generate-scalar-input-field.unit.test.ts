@@ -171,7 +171,7 @@ describe('generateScalarInputField', () => {
       });
 
       expect(result.fragment.contents).toBe(
-        'scalarField(z.record(z.unknown()))',
+        'scalarField(z.record(z.string(), z.unknown()))',
       );
     });
 

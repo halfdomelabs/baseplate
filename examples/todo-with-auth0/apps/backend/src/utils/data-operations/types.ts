@@ -274,7 +274,7 @@ type Identity<T> = T extends object
  * ```typescript
  * const fields = {
  *   name: scalarField(z.string()),
- *   email: scalarField(z.string().email().optional()),
+ *   email: scalarField(z.email().optional()),
  * };
  *
  * type InputSchema = InferInputSchema<typeof fields>;
@@ -307,7 +307,7 @@ export type InferInputSchema<
  * ```typescript
  * const fields = {
  *   name: scalarField(z.string()),
- *   email: scalarField(z.string().email().optional()),
+ *   email: scalarField(z.email().optional()),
  * };
  *
  * type Input = InferInput<typeof fields>;

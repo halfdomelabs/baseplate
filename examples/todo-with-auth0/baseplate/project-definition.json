@@ -127,7 +127,7 @@
                   "label": "Email",
                   "modelFieldRef": "email",
                   "type": "text",
-                  "validation": "z.string().email().min(1)"
+                  "validation": "z.email().min(1)"
                 },
                 {
                   "embeddedFormRef": "customer",

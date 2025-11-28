@@ -57,7 +57,7 @@ import { makeGenericPrismaDelegate } from './prisma-utils.js';
  * // With transformation
  * const fields = {
  *   email: scalarField(
- *     z.string().email(),
+ *     z.email(),
  *     { transform: (email) => email.toLowerCase() }
  *   ),
  *   createdAt: scalarField(
