@@ -7,7 +7,7 @@ import { doubleQuot } from '#src/utils/string.js';
 
 import type { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
 
-export interface PrismaFieldTypeConfig<Schema extends z.ZodType = z.ZodObject> {
+interface PrismaFieldTypeConfig<Schema extends z.ZodType = z.ZodObject> {
   optionsSchema?: Schema;
   prismaType: string;
   getAttributes?: (config?: z.infer<Schema>) => PrismaModelAttribute[];
