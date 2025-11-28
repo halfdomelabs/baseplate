@@ -62,7 +62,7 @@ function generateValidator({
       throw new Error('Enum name is required for enum scalar type');
     }
     const enumFrag = prismaGeneratedImports.$Enums.fragment();
-    return tsTemplate`${zFrag}.nativeEnum(${enumFrag}.${enumType})${modifier}`;
+    return tsTemplate`${zFrag}.enum(${enumFrag}.${enumType})${modifier}`;
   }
 
   return tsTemplate`${zFrag}.${SCALAR_TYPE_TO_ZOD_TYPE[scalarType]}${modifier}`;
