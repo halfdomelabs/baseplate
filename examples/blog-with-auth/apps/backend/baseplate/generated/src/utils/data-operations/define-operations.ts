@@ -718,9 +718,9 @@ export function defineUpdateOperation<
     }
 
     // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
-    const validatedData = skipValidation
-      ? inputData
-      : dataSchema.parse(inputData);
+    const validatedData = (
+      skipValidation ? inputData : dataSchema.parse(inputData)
+    ) as Partial<InferInput<TFields>>;
 
     let existingItem: GetPayload<TModelName> | undefined;
 

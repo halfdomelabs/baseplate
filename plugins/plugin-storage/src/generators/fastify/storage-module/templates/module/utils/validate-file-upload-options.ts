@@ -32,22 +32,18 @@ function makeFilenameSafe(filename: string): string {
 const fileUploadOptionsSchema = z.object({
   /** The file name */
   filename: z
-    .string({ required_error: 'File name is required and must be a string' })
+    .string('File name is required and must be a string')
     .max(MAX_FILENAME_LENGTH, {
       message: `File name is too long (max ${MAX_FILENAME_LENGTH} characters)`,
     }),
   /** The file size in bytes */
   size: z
-    .number({
-      required_error: 'File size is required and must be a positive number',
-    })
-    .positive({
-      message: 'File size is required and must be a positive number',
-    }),
+    .number('File size is required and must be a positive number')
+    .positive('File size is required and must be a positive number'),
   /** The content type of the file */
-  contentType: z.string({ required_error: 'Content type is required' }).min(1),
+  contentType: z.string('Content type is required').min(1),
   /** The category of the file */
-  category: z.string({ required_error: 'Category is required' }).min(1),
+  category: z.string('Category is required').min(1),
 });
 
 export type FileUploadOptions = z.infer<typeof fileUploadOptionsSchema>;
