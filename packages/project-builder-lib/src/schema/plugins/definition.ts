@@ -10,7 +10,7 @@ export const basePluginDefinitionSchema = z.object({
   packageName: z.string(),
   name: z.string(),
   version: z.string(),
-  config: z.looseObject({}).optional(),
+  config: z.unknown(),
   configSchemaVersion: z.number().optional(),
 });
 

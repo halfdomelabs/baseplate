@@ -122,6 +122,10 @@ function getInputType(
   }
 }
 
+function getIsNumber(fieldConfig: ModelScalarFieldConfig): boolean {
+  return fieldConfig.type === 'int' || fieldConfig.type === 'float';
+}
+
 const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfig> =
   {
     name: 'text',
@@ -150,6 +154,7 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
               fieldConfig.id,
               true,
             ),
+        isNumber: getIsNumber(fieldConfig),
       });
     },
   };

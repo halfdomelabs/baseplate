@@ -7,7 +7,7 @@ import { fileField } from '../../../storage/services/file-field.js';
 import { userProfileAvatarFileCategory } from '../constants/file-categories.js';
 
 export const userProfileInputFields = {
-  id: scalarField(z.string().uuid().optional()),
+  id: scalarField(z.uuid().optional()),
   bio: scalarField(z.string().nullish()),
   birthDay: scalarField(z.date().nullish()),
   avatar: fileField({

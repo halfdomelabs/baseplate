@@ -86,7 +86,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
             {
               key: localField,
               expression: tsCodeFragment(
-                `z.string().uuid()${isOptional ? '.nullish()' : ''}`,
+                `z.uuid()${isOptional ? '.nullish()' : ''}`,
               ),
             },
           ],

@@ -30,15 +30,15 @@ interface GenerateScalarFieldConfig {
 
 const SCALAR_TYPE_TO_ZOD_TYPE: Record<ScalarFieldType, string> = {
   string: 'string()',
-  int: 'number().int()',
+  int: 'int()',
   float: 'number()',
   decimal: 'number()',
   boolean: 'boolean()',
   date: 'date()',
   dateTime: 'date()',
   json: 'unknown()',
-  jsonObject: 'record(z.unknown())',
-  uuid: 'string().uuid()',
+  jsonObject: 'record(z.string(), z.unknown())',
+  uuid: 'uuid()',
   enum: '',
 };
 

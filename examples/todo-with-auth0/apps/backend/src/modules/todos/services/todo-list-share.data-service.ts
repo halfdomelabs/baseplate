@@ -9,8 +9,8 @@ import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 export const todoListShareInputFields = {
-  todoListId: scalarField(z.string().uuid()),
-  userId: scalarField(z.string().uuid()),
+  todoListId: scalarField(z.uuid()),
+  userId: scalarField(z.uuid()),
   updatedAt: scalarField(z.date().optional()),
   createdAt: scalarField(z.date().optional()),
 };

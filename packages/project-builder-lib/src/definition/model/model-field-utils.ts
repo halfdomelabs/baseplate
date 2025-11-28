@@ -77,7 +77,9 @@ function getModelValidator(modelField: ModelScalarFieldConfig): string {
     case 'date': {
       return 'string()';
     }
-    case 'int':
+    case 'int': {
+      return 'int()';
+    }
     case 'float': {
       return 'number()';
     }
@@ -106,13 +108,6 @@ function getModelFieldValidation(
   }
 
   const nullishSuffix = field.isOptional ? '.nullish()' : '';
-
-  if (field.type === 'int') {
-    return `z.number().or(z.string()).pipe(z.coerce.number().finite().int())${nullishSuffix}`;
-  }
-  if (field.type === 'float') {
-    return `z.number().or(z.string()).pipe(z.coerce.number().finite())${nullishSuffix}`;
-  }
 
   const validator = `z.${getModelValidator(field)}${nullishSuffix}`;
   if (!preProcess) {

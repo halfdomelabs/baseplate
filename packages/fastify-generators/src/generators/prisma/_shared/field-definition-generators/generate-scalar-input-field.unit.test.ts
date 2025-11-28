@@ -184,7 +184,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.string().uuid())');
+      expect(result.fragment.contents).toBe('scalarField(z.uuid())');
     });
   });
 
