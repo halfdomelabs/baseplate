@@ -82,9 +82,10 @@ export interface TemplateFileExtractorMetadataEntry<
  * - Writing template files to the package
  */
 export interface TemplateFileExtractor<
-  TTemplateMetadataSchema extends z.ZodSchema = typeof templateConfigSchema,
-  TTemplateInstanceDataSchema extends z.AnyZodObject = z.AnyZodObject,
-  TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
+  TTemplateMetadataSchema extends
+    typeof templateConfigSchema = typeof templateConfigSchema,
+  TTemplateInstanceDataSchema extends z.ZodObject = z.ZodObject,
+  TExtractorConfig extends z.ZodType = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
 > {
@@ -121,20 +122,20 @@ export interface TemplateFileExtractor<
    */
   extractTemplateMetadataEntries(
     files: TemplateFileExtractorSourceFile<
-      z.infer<TTemplateMetadataSchema>,
-      z.infer<TTemplateInstanceDataSchema>
+      z.output<TTemplateMetadataSchema>,
+      z.output<TTemplateInstanceDataSchema>
     >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
   ):
     | TemplateFileExtractorMetadataEntry<
-        z.infer<TTemplateMetadataSchema>,
-        z.infer<TTemplateInstanceDataSchema>
+        z.output<TTemplateMetadataSchema>,
+        z.output<TTemplateInstanceDataSchema>
       >[]
     | Promise<
         TemplateFileExtractorMetadataEntry<
-          z.infer<TTemplateMetadataSchema>,
-          z.infer<TTemplateInstanceDataSchema>
+          z.output<TTemplateMetadataSchema>,
+          z.output<TTemplateInstanceDataSchema>
         >[]
       >;
 
@@ -171,15 +172,14 @@ export interface TemplateFileExtractor<
   ): Promise<void> | void;
 }
 
-export type AnyTemplateFileExtractor = TemplateFileExtractor<z.ZodSchema>;
-
 /**
  * Creates a typed TemplateFileExtractor.
  */
 export function createTemplateFileExtractor<
-  TGeneratorTemplateMetadata extends z.ZodSchema = typeof templateConfigSchema,
-  TTemplateInstanceData extends z.AnyZodObject = z.AnyZodObject,
-  TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
+  TGeneratorTemplateMetadata extends
+    typeof templateConfigSchema = typeof templateConfigSchema,
+  TTemplateInstanceData extends z.ZodObject = z.ZodObject,
+  TExtractorConfig extends z.ZodType = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
 >(

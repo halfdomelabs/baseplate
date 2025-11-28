@@ -5,7 +5,7 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const snapshotSaveInputSchema = {
+const snapshotSaveInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
   snapshotDirectory: z
@@ -16,15 +16,15 @@ const snapshotSaveInputSchema = {
     .boolean()
     .optional()
     .describe('Skip confirmation prompt and force save snapshot.'),
-};
+});
 
-const snapshotSaveOutputSchema = {
+const snapshotSaveOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the snapshot save operation was successful.'),
   message: z.string().describe('Result message.'),
   snapshotPath: z.string().optional().describe('Path to the saved snapshot.'),
-};
+});
 
 /**
  * Service action to save a complete snapshot for a project.

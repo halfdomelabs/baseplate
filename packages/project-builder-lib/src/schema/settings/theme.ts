@@ -37,7 +37,7 @@ export const oklchColor = z
  */
 export const themeColorSchema = z.record(
   z.enum(THEME_COLOR_KEYS as [ThemeColorKey, ...ThemeColorKey[]]),
-  oklchColor,
+  oklchColor.optional(),
 );
 
 /**

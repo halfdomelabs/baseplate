@@ -133,7 +133,7 @@ export class TemplateExtractorConfigLookup {
     return config;
   }
 
-  getTemplatesForGenerator<T extends z.ZodTypeAny>(
+  getTemplatesForGenerator<T extends z.ZodType<{ type: string }>>(
     generatorName: string,
     templateMetadataSchema: T,
     templateType: z.infer<T>['type'],
@@ -149,8 +149,8 @@ export class TemplateExtractorConfigLookup {
   }
 
   getGeneratorConfigsForExtractorType<
-    TTemplateMetadata extends z.ZodTypeAny,
-    TGeneratorConfig extends z.ZodTypeAny = z.ZodNever,
+    TTemplateMetadata extends z.ZodType<{ type: string }>,
+    TGeneratorConfig extends z.ZodType = z.ZodUndefined,
   >(
     templateType: z.infer<TTemplateMetadata>['type'],
     templateMetadataSchema: TTemplateMetadata,
@@ -166,9 +166,9 @@ export class TemplateExtractorConfigLookup {
     return [...this.extractorConfigCache.entries()].map(
       ([generatorName, config]) => {
         const generatorConfig = generatorConfigSchema
-          ? (generatorConfigSchema.parse(
+          ? generatorConfigSchema.parse(
               config.config.extractors?.[templateType],
-            ) as z.infer<TGeneratorConfig>)
+            )
           : undefined;
         const templates = Object.fromEntries(
           Object.entries(config.config.templates)
@@ -186,7 +186,7 @@ export class TemplateExtractorConfigLookup {
           packageName: config.packageName,
           packagePath: config.packagePath,
           templates,
-          config: generatorConfig,
+          config: generatorConfig as z.infer<TGeneratorConfig>,
         };
       },
     );
@@ -195,7 +195,7 @@ export class TemplateExtractorConfigLookup {
   /**
    * Get provider configs by type
    */
-  getProviderConfigsByType<T extends z.ZodTypeAny>(
+  getProviderConfigsByType<T extends z.ZodType<{ type: string }>>(
     type: z.infer<T>['type'],
     providerConfigSchema: T,
   ): TemplateExtractorProviderEntry<z.infer<T>>[] {
@@ -269,7 +269,7 @@ export class TemplateExtractorConfigLookup {
    * @param schema - Zod schema to validate and parse the plugin configuration
    * @returns The parsed plugin configuration or undefined if not found
    */
-  getPluginConfigForGenerator<T extends z.ZodTypeAny>(
+  getPluginConfigForGenerator<T extends z.ZodType>(
     generatorName: string,
     pluginName: string,
     schema: T,
@@ -287,7 +287,6 @@ export class TemplateExtractorConfigLookup {
 
     const pluginConfig = config.config.plugins[pluginName];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- pluginConfig is validated by the schema
     return schema.parse(pluginConfig) as z.infer<T>;
   }
 
@@ -298,7 +297,7 @@ export class TemplateExtractorConfigLookup {
    * @param schema - Zod schema to validate and parse the extractor configuration
    * @returns The parsed extractor configuration or undefined if not found
    */
-  getExtractorConfigForGenerator<T extends z.ZodTypeAny>(
+  getExtractorConfigForGenerator<T extends z.ZodType>(
     generatorName: string,
     extractorType: string,
     schema: T,
@@ -316,7 +315,6 @@ export class TemplateExtractorConfigLookup {
 
     const extractorConfig = config.config.extractors[extractorType];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- extractorConfig is validated by the schema
     return schema.parse(extractorConfig) as z.infer<T>;
   }
 }

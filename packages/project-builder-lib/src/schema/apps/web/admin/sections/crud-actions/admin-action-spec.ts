@@ -3,7 +3,7 @@ import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
-import type { AdminCrudActionType } from './types.js';
+import type { AdminCrudActionSchema, AdminCrudActionType } from './types.js';
 
 import { BUILT_IN_ADMIN_CRUD_ACTIONS } from './built-in-actions.js';
 
@@ -11,7 +11,9 @@ import { BUILT_IN_ADMIN_CRUD_ACTIONS } from './built-in-actions.js';
  * Spec for registering additional admin CRUD table actions
  */
 export interface AdminCrudActionSpec extends PluginSpecImplementation {
-  registerAdminCrudAction: <T extends DefinitionSchemaCreator>(
+  registerAdminCrudAction: <
+    T extends DefinitionSchemaCreator<AdminCrudActionSchema>,
+  >(
     action: AdminCrudActionType<T>,
   ) => void;
   getAdminCrudActions: () => Map<string, AdminCrudActionType>;

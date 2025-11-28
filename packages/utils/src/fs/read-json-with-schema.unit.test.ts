@@ -13,7 +13,7 @@ beforeEach(() => {
 describe('readJsonWithSchema', () => {
   const schema = z.object({
     name: z.string(),
-    age: z.number().int().positive(),
+    age: z.int().positive(),
   });
 
   it('should validate a valid JSON file', async () => {

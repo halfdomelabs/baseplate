@@ -40,8 +40,8 @@ const prismaPrismaImportsTask = createGeneratorTask({
         prismaGeneratedImports: createTsImportMap(
           prismaGeneratedImportsSchema,
           {
-            '*': paths.client,
             $Enums: paths.client,
+            '*': paths.client,
             Prisma: paths.client,
             PrismaClient: paths.client,
           },

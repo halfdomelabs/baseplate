@@ -2,8 +2,8 @@ export const REACT_PACKAGES = {
   // React
   react: '19.1.0',
   'react-dom': '19.1.0',
-  '@tanstack/react-router': '1.130.8',
-  '@tanstack/router-plugin': '1.130.8',
+  '@tanstack/react-router': '1.139.7',
+  '@tanstack/router-plugin': '1.139.7',
   '@types/node': `^22.0.0`,
   '@types/react': '19.1.3',
   '@types/react-dom': '19.1.3',
@@ -22,7 +22,7 @@ export const REACT_PACKAGES = {
   'tailwind-merge': '3.3.1',
 
   // Components
-  '@hookform/resolvers': '5.0.1',
+  '@hookform/resolvers': '5.2.2',
   clsx: '2.1.1',
   'react-hook-form': '7.60.0',
   'react-icons': '5.5.0',
@@ -55,7 +55,7 @@ export const REACT_PACKAGES = {
   '@types/use-subscription': '^1.0.0',
 
   // Validation
-  zod: '3.25.76',
+  zod: '4.1.13',
 
   // Sentry
   '@sentry/react': '9.17.0',

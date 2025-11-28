@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-const configureTsTemplateInputSchema = {
+const configureTsTemplateInputSchema = z.object({
   filePath: z.string().describe('File path (absolute or relative)'),
   project: z
     .string()
@@ -22,9 +22,9 @@ const configureTsTemplateInputSchema = {
     .array(z.string())
     .optional()
     .describe('Array of identifiers to expose as exports for other generators'),
-};
+});
 
-const configureTsTemplateOutputSchema = {
+const configureTsTemplateOutputSchema = z.object({
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The configured template name'),
   absolutePath: z
@@ -33,7 +33,7 @@ const configureTsTemplateOutputSchema = {
   generatorDirectory: z
     .string()
     .describe('The generator directory that was configured'),
-};
+});
 
 /**
  * Service action to configure a TypeScript template

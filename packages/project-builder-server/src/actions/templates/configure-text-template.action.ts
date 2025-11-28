@@ -10,7 +10,7 @@ const variableSchema = z.object({
   value: z.string().min(1).describe('The value of the variable'),
 });
 
-const configureTextTemplateInputSchema = {
+const configureTextTemplateInputSchema = z.object({
   filePath: z.string().describe('File path (absolute or relative)'),
   project: z
     .string()
@@ -21,13 +21,13 @@ const configureTextTemplateInputSchema = {
     .describe('The generator name (e.g., @baseplate-dev/react-generators)'),
   templateName: z.string().describe('Template name in kebab-case format'),
   variables: z
-    .record(variableSchema)
+    .record(z.string(), variableSchema)
     .optional()
     .describe('Object mapping variable names to their metadata'),
   group: z.string().optional().describe('Optional template group'),
-};
+});
 
-const configureTextTemplateOutputSchema = {
+const configureTextTemplateOutputSchema = z.object({
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The configured template name'),
   absolutePath: z
@@ -36,7 +36,7 @@ const configureTextTemplateOutputSchema = {
   generatorDirectory: z
     .string()
     .describe('The generator directory that was configured'),
-};
+});
 
 /**
  * Service action to configure a text template

@@ -4,7 +4,7 @@ import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const generateTemplatesInputSchema = {
+const generateTemplatesInputSchema = z.object({
   project: z
     .string()
     .optional()
@@ -18,14 +18,14 @@ const generateTemplatesInputSchema = {
     .describe(
       'Skip cleaning the output directories (templates and generated).',
     ),
-};
+});
 
-const generateTemplatesOutputSchema = {
+const generateTemplatesOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the template generation was successful.'),
   message: z.string().describe('Success message.'),
-};
+});
 
 /**
  * Service action to generate typed template files from existing extractor.json configurations.

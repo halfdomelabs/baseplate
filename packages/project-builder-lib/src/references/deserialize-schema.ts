@@ -1,5 +1,3 @@
-import type { TypeOf, z } from 'zod';
-
 import { toposort } from '@baseplate-dev/utils';
 import { groupBy, keyBy, uniq } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
@@ -8,6 +6,7 @@ import type {
   DefinitionSchemaCreator,
   DefinitionSchemaCreatorOptions,
 } from '#src/schema/creator/types.js';
+import type { def } from '#src/schema/index.js';
 
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
@@ -33,9 +32,7 @@ export function deserializeSchemaWithTransformedReferences<
   schemaCreator: T,
   input: unknown,
   options: Omit<DefinitionSchemaCreatorOptions, 'transformReferences'>,
-): ResolvedZodRefPayload<
-  ReturnType<T> extends z.ZodType ? TypeOf<ReturnType<T>> : unknown
-> {
+): ResolvedZodRefPayload<def.InferOutput<T>> {
   const payload = parseSchemaWithTransformedReferences(
     schemaCreator,
     input,
@@ -56,10 +53,14 @@ export function deserializeSchemaWithTransformedReferences<
  * @param payload - The parsed payload with entities and references
  * @returns The payload with references resolved to IDs
  */
-function resolveReferencesToIds<T extends object>(
+function resolveReferencesToIds<T>(
   payload: ResolvedZodRefPayload<T>,
 ): ResolvedZodRefPayload<T> {
   const { references, entities, data } = payload;
+
+  if (typeof data !== 'object' || data === null) {
+    throw new TypeError('Data is not an object');
+  }
 
   // check we don't have more entities than IDs
   const entitiesById = groupBy(entities, (entity) => entity.id);

@@ -7,15 +7,13 @@ import { doubleQuot } from '#src/utils/string.js';
 
 import type { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
 
-export interface PrismaFieldTypeConfig<
-  Schema extends z.ZodType = z.AnyZodObject,
-> {
+interface PrismaFieldTypeConfig<Schema extends z.ZodType = z.ZodObject> {
   optionsSchema?: Schema;
   prismaType: string;
   getAttributes?: (config?: z.infer<Schema>) => PrismaModelAttribute[];
 }
 
-function createConfig<Schema extends z.AnyZodObject>(
+function createConfig<Schema extends z.ZodObject>(
   config: PrismaFieldTypeConfig<Schema>,
 ): PrismaFieldTypeConfig<Schema> {
   return config;
@@ -40,7 +38,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       return [];
     },
   }),
-  int: {
+  int: createConfig({
     prismaType: 'Int',
     optionsSchema: z.object({
       default: z
@@ -56,8 +54,8 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       }
       return [];
     },
-  },
-  float: {
+  }),
+  float: createConfig({
     prismaType: 'Float',
     optionsSchema: z.object({
       default: z
@@ -73,9 +71,9 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       }
       return [];
     },
-  },
+  }),
   decimal: { prismaType: 'Decimal' },
-  boolean: {
+  boolean: createConfig({
     prismaType: 'Boolean',
     optionsSchema: z.object({
       default: z.string().optional(),
@@ -86,7 +84,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       }
       return [];
     },
-  },
+  }),
   json: { prismaType: 'Json' },
   jsonObject: { prismaType: 'Json' },
   uuid: createConfig({

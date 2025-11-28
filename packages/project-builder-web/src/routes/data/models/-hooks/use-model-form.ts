@@ -22,7 +22,7 @@ import { sortBy } from 'es-toolkit';
 import { useMemo, useRef } from 'react';
 
 interface UseModelFormOptions {
-  schema?: z.ZodTypeAny;
+  schema?: z.ZodType;
   omit?: string[];
   onSubmitSuccess?: () => void;
   modelKey: string;

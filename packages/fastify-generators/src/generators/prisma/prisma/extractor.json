@@ -14,8 +14,8 @@
       "group": "generated",
       "pathRootRelativePath": "{src-root}/generated/prisma/client.ts",
       "projectExports": {
-        "*": {},
         "$Enums": {},
+        "*": {},
         "Prisma": {},
         "PrismaClient": {}
       },

@@ -23,10 +23,8 @@ export const extractorProvidersConfigSchema = z.record(
   z.string(), // file path
   z.record(
     z.string(), // provider name
-    z
-      .object({
-        type: z.string(),
-      })
-      .passthrough(),
+    z.looseObject({
+      type: z.string(),
+    }),
   ),
 );

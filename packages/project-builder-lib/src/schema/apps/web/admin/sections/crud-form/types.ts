@@ -6,7 +6,7 @@ import { createEntityType } from '#src/references/types.js';
 
 import { adminSectionEntityType } from '../types.js';
 
-export const baseAdminCrudInputSchema = z.object({
+export const baseAdminCrudInputSchema = z.looseObject({
   id: z
     .string()
     .min(1)
@@ -19,16 +19,22 @@ export type AdminCrudInputInput = z.input<typeof baseAdminCrudInputSchema>;
 
 export type AdminCrudInputDefinition = z.infer<typeof baseAdminCrudInputSchema>;
 
+export type AdminCrudInputSchema = z.ZodType<
+  AdminCrudInputDefinition,
+  AdminCrudInputInput
+>;
+
 export interface AdminCrudInputType<
-  T extends DefinitionSchemaCreator = DefinitionSchemaCreator,
+  T extends
+    DefinitionSchemaCreator<AdminCrudInputSchema> = DefinitionSchemaCreator<AdminCrudInputSchema>,
 > {
   name: string;
   createSchema: T;
 }
 
-export function createAdminCrudInputType<T extends DefinitionSchemaCreator>(
-  payload: AdminCrudInputType<T>,
-): AdminCrudInputType<T> {
+export function createAdminCrudInputType<
+  T extends DefinitionSchemaCreator<AdminCrudInputSchema>,
+>(payload: AdminCrudInputType<T>): AdminCrudInputType<T> {
   return payload;
 }
 

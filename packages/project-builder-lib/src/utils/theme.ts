@@ -47,7 +47,7 @@ export function generateThemeColorsFromShade(
     config: ThemeColorsConfig;
   },
 ): ThemeColorsConfig {
-  const result: ThemeColorsConfig = {};
+  const result: Partial<ThemeColorsConfig> = {};
 
   for (const [key, config] of Object.entries(THEME_COLORS)) {
     const themeColorKey = key as ThemeColorKey;
@@ -66,17 +66,16 @@ export function generateThemeColorsFromShade(
         : newDefaultColor;
   }
 
-  return result;
+  return result as ThemeColorsConfig;
 }
 
 export function generateCssFromThemeConfig(
   config: ThemeColorsConfig,
 ): Record<string, string> {
   return Object.fromEntries(
-    Object.entries(config).map(([key, value]) => [
-      `--${dasherize(underscore(key))}`,
-      value,
-    ]),
+    Object.entries(config)
+      .filter((input): input is [string, string] => input[1] !== undefined)
+      .map(([key, value]) => [`--${dasherize(underscore(key))}`, value]),
   );
 }
 

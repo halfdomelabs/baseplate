@@ -31,5 +31,5 @@ export const tsImportProviderConfigSchema = z.object({
   /**
    * Project exports of the provider, e.g. the import map following same schema as the export
    */
-  projectExports: z.record(z.string(), z.object({}).passthrough()),
+  projectExports: z.record(z.string(), z.looseObject({})),
 });

@@ -22,7 +22,6 @@ const MAX_VALUE_LENGTH = 255;
 
 const emailPasswordSchema = z.object({
   email: z
-    .string()
     .email()
     .max(MAX_VALUE_LENGTH)
     .transform((value) => value.toLowerCase()),

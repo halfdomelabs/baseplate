@@ -4,7 +4,7 @@ import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const extractTemplatesInputSchema = {
+const extractTemplatesInputSchema = z.object({
   project: z
     .string()
     .describe('The name or ID of the project to extract templates from.'),
@@ -21,14 +21,14 @@ const extractTemplatesInputSchema = {
     .describe(
       'Skip cleaning the output directories (templates and generated).',
     ),
-};
+});
 
-const extractTemplatesOutputSchema = {
+const extractTemplatesOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the template extraction was successful.'),
   message: z.string().describe('Success message.'),
-};
+});
 
 /**
  * Service action to extract templates from a project.

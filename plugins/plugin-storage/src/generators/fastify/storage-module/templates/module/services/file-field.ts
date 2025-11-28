@@ -10,7 +10,7 @@ import { prisma } from '%prismaImports';
 import { z } from 'zod';
 
 const fileInputSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 /**

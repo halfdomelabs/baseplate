@@ -5,7 +5,7 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const snapshotRemoveInputSchema = {
+const snapshotRemoveInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
   files: z
@@ -15,9 +15,9 @@ const snapshotRemoveInputSchema = {
     .string()
     .optional()
     .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
-};
+});
 
-const snapshotRemoveOutputSchema = {
+const snapshotRemoveOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the snapshot remove operation was successful.'),
@@ -25,7 +25,7 @@ const snapshotRemoveOutputSchema = {
   filesRemoved: z
     .number()
     .describe('Number of files removed from the snapshot.'),
-};
+});
 
 /**
  * Service action to remove files from a project snapshot.

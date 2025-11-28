@@ -62,7 +62,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.number().int())');
+      expect(result.fragment.contents).toBe('scalarField(z.int())');
     });
 
     it('generates scalarField call for float type', () => {
@@ -171,7 +171,7 @@ describe('generateScalarInputField', () => {
       });
 
       expect(result.fragment.contents).toBe(
-        'scalarField(z.record(z.unknown()))',
+        'scalarField(z.record(z.string(), z.unknown()))',
       );
     });
 
@@ -184,7 +184,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.string().uuid())');
+      expect(result.fragment.contents).toBe('scalarField(z.uuid())');
     });
   });
 
@@ -222,9 +222,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.number().int().nullish())',
-      );
+      expect(result.fragment.contents).toBe('scalarField(z.int().nullish())');
     });
   });
 
@@ -262,9 +260,7 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.number().int().optional())',
-      );
+      expect(result.fragment.contents).toBe('scalarField(z.int().optional())');
     });
 
     it('generates scalarField with optional for enum with default', () => {
@@ -283,7 +279,7 @@ describe('generateScalarInputField', () => {
       });
 
       expect(result.fragment.contents).toBe(
-        'scalarField(z.nativeEnum($Enums.Status).optional())',
+        'scalarField(z.enum($Enums.Status).optional())',
       );
     });
 
@@ -309,7 +305,7 @@ describe('generateScalarInputField', () => {
   });
 
   describe('enum type', () => {
-    it('generates scalarField with nativeEnum for enum type', () => {
+    it('generates scalarField with enum for enum type', () => {
       const result = generateScalarInputField({
         fieldName: 'status',
         scalarField: {
@@ -324,7 +320,7 @@ describe('generateScalarInputField', () => {
       });
 
       expect(result.fragment.contents).toBe(
-        'scalarField(z.nativeEnum($Enums.Status))',
+        'scalarField(z.enum($Enums.Status))',
       );
       expect(result.fragment).toIncludeImport('z', 'zod');
       expect(result.fragment).toIncludeImport('$Enums', 'prisma/$Enums');
@@ -350,7 +346,7 @@ describe('generateScalarInputField', () => {
       });
 
       expect(result.fragment.contents).toBe(
-        'scalarField(z.nativeEnum($Enums.Status).nullish())',
+        'scalarField(z.enum($Enums.Status).nullish())',
       );
     });
 

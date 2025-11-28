@@ -19,7 +19,7 @@ import { ZodError } from 'zod';
  */
 export const handleZodRequestValidationError = (error: unknown): never => {
   if (error instanceof ZodError) {
-    const formattedErrors = error.errors.map((err) => ({
+    const formattedErrors = error.issues.map((err) => ({
       path: err.path.join('.'),
       message: err.message,
       code: err.code,

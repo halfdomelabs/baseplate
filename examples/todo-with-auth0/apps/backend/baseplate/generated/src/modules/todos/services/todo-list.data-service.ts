@@ -13,11 +13,11 @@ import { fileField } from '../../storage/services/file-field.js';
 import { todoListCoverPhotoFileCategory } from '../constants/file-categories.js';
 
 export const todoListInputFields = {
-  ownerId: scalarField(z.string().uuid()),
-  position: scalarField(z.number().int()),
+  ownerId: scalarField(z.uuid()),
+  position: scalarField(z.int()),
   name: scalarField(z.string()),
   createdAt: scalarField(z.date().optional()),
-  status: scalarField(z.nativeEnum($Enums.TodoListStatus).nullish()),
+  status: scalarField(z.enum($Enums.TodoListStatus).nullish()),
   coverPhoto: fileField({
     category: todoListCoverPhotoFileCategory,
     fileIdFieldName: 'coverPhotoId',

@@ -5,12 +5,12 @@ import type {
   TemplateExtractorPluginApi,
   TemplateExtractorPluginDependencies,
 } from './template-extractor-plugin.js';
-import type { AnyTemplateFileExtractor } from './template-file-extractor.js';
+import type { TemplateFileExtractor } from './template-file-extractor.js';
 
 import { TemplateExtractorContext } from './template-extractor-context.js';
 
 interface InitializeTemplateExtractorPluginsInput {
-  templateExtractors: AnyTemplateFileExtractor[];
+  templateExtractors: TemplateFileExtractor[];
   context: TemplateExtractorContext;
 }
 
@@ -80,7 +80,7 @@ export async function initializeTemplateExtractorPlugins({
  * Extracts all plugins from template extractors and their dependencies recursively.
  */
 function extractPluginsRecursively(
-  templateExtractors: AnyTemplateFileExtractor[],
+  templateExtractors: TemplateFileExtractor[],
 ): TemplateExtractorPlugin[] {
   const pluginMap = new Map<string, TemplateExtractorPlugin>();
   const visited = new Set<string>();

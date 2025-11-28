@@ -21,25 +21,33 @@ import {
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
 
+type ZodTypeWithOptional<T extends z.ZodType> = T extends z.ZodOptional
+  ? z.ZodOptional<z.ZodType<z.output<T>, z.input<T>>>
+  : T extends z.ZodDefault
+    ? z.ZodDefault<z.ZodType<z.output<T>, z.input<T>>>
+    : T extends z.ZodPrefault
+      ? z.ZodPrefault<z.ZodType<z.output<T>, z.input<T>>>
+      : z.ZodType<z.output<T>, z.input<T>>;
+
 export type WithRefType = <TEntityType extends DefinitionEntityType>(
   reference: DefinitionReferenceInput<string, TEntityType>,
-) => z.ZodEffects<z.ZodString>;
+) => z.ZodType<string, string>;
 
 type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 export type WithEntType = <
-  TObject extends z.SomeZodObject,
+  TObject extends z.ZodObject,
   TEntityType extends DefinitionEntityType,
   TPath extends PathInput<z.input<TObject>>,
 >(
   schema: TObject,
   entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-) => z.ZodEffects<TObject>;
+) => ZodTypeWithOptional<TObject>;
 
 export type WithRefBuilder = <T extends z.ZodType>(
   schema: T,
   builder?: ZodBuilderFunction<z.TypeOf<T>>,
-) => z.ZodEffects<T>;
+) => ZodTypeWithOptional<T>;
 
 export function extendParserContextWithRefs({
   transformReferences,
@@ -50,7 +58,7 @@ export function extendParserContextWithRefs({
 } {
   function withRef<TEntityType extends DefinitionEntityType>(
     reference: DefinitionReferenceInput<string, TEntityType>,
-  ): z.ZodEffects<z.ZodString> {
+  ): z.ZodType<string, string> {
     return z.string().transform((value) => {
       if (transformReferences && value) {
         return new DefinitionReferenceMarker(
@@ -64,13 +72,13 @@ export function extendParserContextWithRefs({
   }
 
   function withEnt<
-    TObject extends z.SomeZodObject,
+    TObject extends z.ZodObject,
     TEntityType extends DefinitionEntityType,
     TPath extends PathInput<z.input<TObject>>,
   >(
     schema: TObject,
     entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-  ): z.ZodEffects<TObject> {
+  ): ZodTypeWithOptional<TObject> {
     if (!('id' in schema.shape)) {
       throw new Error(
         `Entity must have an id field. Entity type: ${entity.type.name}. Schema keys: ${Object.keys(
@@ -82,7 +90,7 @@ export function extendParserContextWithRefs({
       // Check if the id is valid
       if (!('id' in value) || !entity.type.isId(value.id as string)) {
         throw new Error(
-          `Invalid id for entity ${entity.type.name}. Id: ${value.id}`,
+          `Invalid id for entity ${entity.type.name}. Id: ${value.id as string}`,
         );
       }
       if (transformReferences) {
@@ -100,14 +108,14 @@ export function extendParserContextWithRefs({
         };
       }
       return value;
-    });
+    }) as unknown as ZodTypeWithOptional<TObject>;
   }
 
   function withRefBuilder<T extends z.ZodType>(
     schema: T,
-    builder?: ZodBuilderFunction<z.TypeOf<T>>,
-  ): z.ZodEffects<T> {
-    return schema.transform((value: unknown) => {
+    builder?: ZodBuilderFunction<z.output<T>>,
+  ): ZodTypeWithOptional<T> {
+    return schema.transform((value) => {
       if (!value) {
         return value;
       }
@@ -123,7 +131,7 @@ export function extendParserContextWithRefs({
       const entities = existingAnnotations?.entities ?? [];
       const references = existingAnnotations?.references ?? [];
       const contextPaths = existingAnnotations?.contextPaths ?? [];
-      const refBuilder: ZodRefBuilderInterface<z.TypeOf<T>> = {
+      const refBuilder: ZodRefBuilderInterface<z.output<T>> = {
         addReference: (reference) => {
           references.push(reference);
         },
@@ -134,7 +142,7 @@ export function extendParserContextWithRefs({
           contextPaths.push({ path, type, context });
         },
       };
-      builder?.(refBuilder, value);
+      builder?.(refBuilder, value as z.output<T>);
       if (transformReferences) {
         return {
           ...value,
@@ -147,7 +155,7 @@ export function extendParserContextWithRefs({
       }
 
       return value;
-    });
+    }) as unknown as ZodTypeWithOptional<T>;
   }
 
   return {

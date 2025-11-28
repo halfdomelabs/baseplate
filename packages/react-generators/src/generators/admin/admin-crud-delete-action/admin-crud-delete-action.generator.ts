@@ -15,7 +15,7 @@ import { adminCrudActionContainerProvider } from '../_providers/admin-crud-actio
 import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
 
 const descriptorSchema = z.object({
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   modelName: z.string().min(1),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
   nameField: z.string().min(1),

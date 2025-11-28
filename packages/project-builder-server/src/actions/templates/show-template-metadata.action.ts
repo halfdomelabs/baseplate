@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-const showTemplateMetadataInputSchema = {
+const showTemplateMetadataInputSchema = z.object({
   filePath: z
     .string()
     .describe('Path to file to show metadata for (absolute or relative)'),
@@ -12,20 +12,20 @@ const showTemplateMetadataInputSchema = {
     .describe(
       'Project name or ID (required for relative paths, optional for absolute)',
     ),
-};
+});
 
-const showTemplateMetadataOutputSchema = {
+const showTemplateMetadataOutputSchema = z.object({
   message: z.string().describe('Status message'),
   filePath: z.string().describe('The relative file path within the project'),
   absolutePath: z.string().describe('The absolute path to the file'),
   templateName: z.string().describe('The template name (empty if no metadata)'),
   generator: z.string().describe('The generator name (empty if no metadata)'),
   instanceData: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .optional()
     .describe('Template instance data if available'),
   hasMetadata: z.boolean().describe('Whether the file has template metadata'),
-};
+});
 
 /**
  * Service action to show template metadata for a file

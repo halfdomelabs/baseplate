@@ -17,7 +17,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
   const appId = appEntityType.idFromKey('test-app');
   const fieldId = modelScalarFieldEntityType.idFromKey('test-field');
 
-  const { makeUrl } = await addProject({
+  const { startUrl } = await addProject({
     ...getInitializedTestProjectDefinition(),
     apps: [
       {
@@ -68,7 +68,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
     ],
   });
 
-  await page.goto(makeUrl('/'));
+  await page.goto(startUrl);
 
   await page.getByTestId('sync-button').click();
 

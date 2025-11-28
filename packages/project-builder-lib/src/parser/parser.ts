@@ -127,6 +127,7 @@ export function createPluginImplementationStoreWithNewPlugins(
           version: p.version,
           name: p.name,
           packageName: p.packageName,
+          config: undefined,
         })),
     ],
   };

@@ -57,7 +57,7 @@ export const createModelScalarFieldSchema = definitionSchema((ctx) =>
               ...val,
               ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
             }))
-            .default({ default: '' }),
+            .prefault({}),
           (builder) => {
             builder.addReference({
               type: modelEnumValueEntityType,

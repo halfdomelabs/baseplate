@@ -18,7 +18,7 @@ const userSessionClient = createTsTemplateFile({
   group: 'main',
   importMapProviders: { reactUtilsImports: reactUtilsImportsProvider },
   name: 'user-session-client',
-  projectExports: { userSessionClient: {}, UserSessionClient: {} },
+  projectExports: { UserSessionClient: {}, userSessionClient: {} },
   source: {
     path: path.join(
       import.meta.dirname,

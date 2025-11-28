@@ -44,8 +44,8 @@ export async function discoverPlugins(
   const packageJson = await readJsonWithSchema(
     packageJsonPath,
     z.object({
-      dependencies: z.record(z.string()).optional(),
-      devDependencies: z.record(z.string()).optional(),
+      dependencies: z.record(z.string(), z.string()).optional(),
+      devDependencies: z.record(z.string(), z.string()).optional(),
     }),
   ).catch(() => {
     throw new UserVisibleError(

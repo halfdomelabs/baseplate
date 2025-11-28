@@ -71,9 +71,9 @@ export type GeneratorBundleCreator<
     AnyGeneratorTask | undefined
   >,
 > = (
-  descriptorWithChildren: Omit<Descriptor, 'children'> & {
-    children?: GeneratorBundleChildren;
-  },
+  descriptorWithChildren: Descriptor extends Record<string, never>
+    ? { children?: GeneratorBundleChildren }
+    : Omit<Descriptor, 'children'> & { children?: GeneratorBundleChildren },
 ) => GeneratorBundle<TaskConfigs>;
 
 /**
@@ -103,7 +103,8 @@ export function createGenerator<
 
   return ({ children, ...rest }) => {
     const validatedDescriptor =
-      (config.descriptorSchema?.parse(rest) as unknown) ?? {};
+      config.descriptorSchema?.parse(rest) ??
+      ({} as z.output<DescriptorSchema>);
 
     const tasks = config.buildTasks(validatedDescriptor);
 

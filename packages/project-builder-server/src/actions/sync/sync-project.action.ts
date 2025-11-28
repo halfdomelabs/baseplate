@@ -6,7 +6,7 @@ import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const syncProjectInputSchema = {
+const syncProjectInputSchema = z.object({
   project: z.string().describe('The name or ID of the project to sync.'),
   overwrite: z
     .boolean()
@@ -20,14 +20,14 @@ const syncProjectInputSchema = {
     .string()
     .optional()
     .describe('Directory containing snapshot to use when generating.'),
-};
+});
 
-const syncProjectOutputSchema = {
+const syncProjectOutputSchema = z.object({
   status: z
     .enum(['success', 'error', 'cancelled'])
     .describe('The status of the sync operation.'),
   message: z.string().describe('Human-readable result message.'),
-};
+});
 
 /**
  * Service action to sync a project.
@@ -100,7 +100,10 @@ export const syncProjectAction = createServiceAction({
         message: `${statusMessage}: ${project.name}`,
       };
     } catch (error) {
-      logger.error(`Failed to sync project ${project.name}: ${String(error)}`);
+      logger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        `Failed to sync project ${project.name}: ${String(error)}`,
+      );
       return {
         status: 'error' as const,
         message: `Failed to sync project ${project.name}: ${error instanceof Error ? error.message : String(error)}`,

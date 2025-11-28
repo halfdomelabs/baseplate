@@ -29,8 +29,8 @@ export interface ServiceActionContext {
  * A service action is a function that can be called by a client via CLI, MCP, or TRPC.
  */
 export interface ServiceAction<
-  TInputShape extends z.ZodRawShape = z.ZodRawShape,
-  TOutputShape extends z.ZodRawShape = z.ZodRawShape,
+  TInputType extends z.ZodType = z.ZodType,
+  TOutputType extends z.ZodType = z.ZodType,
 > {
   /** The name of the service action in kebab case. */
   name: string;
@@ -39,23 +39,21 @@ export interface ServiceAction<
   /** The description of the service action. */
   description: string;
   /** The input schema of the service action. */
-  inputSchema: TInputShape;
+  inputSchema: TInputType;
   /** The output schema of the service action. */
-  outputSchema: TOutputShape;
+  outputSchema: TOutputType;
   /** The handler of the service action. */
   handler: (
-    input: z.objectOutputType<TInputShape, z.ZodTypeAny, 'strip'>,
+    input: z.output<TInputType>,
     context: ServiceActionContext,
-  ) =>
-    | Promise<z.objectInputType<TOutputShape, z.ZodTypeAny, 'strip'>>
-    | z.objectInputType<TOutputShape, z.ZodTypeAny, 'strip'>;
+  ) => Promise<z.input<TOutputType>> | z.input<TOutputType>;
   /**
    * (Optional) A function to write the output to the CLI.
    * If not provided, the CLI will default to printing the raw JSON output.
    */
   writeCliOutput?: (
-    output: z.objectInputType<TOutputShape, z.ZodTypeAny, 'strip'>,
-    input: z.objectInputType<TInputShape, z.ZodTypeAny, 'strip'>,
+    output: z.output<TOutputType>,
+    input: z.output<TInputType>,
   ) => void;
 }
 
@@ -68,10 +66,10 @@ export type AnyServiceAction = ServiceAction<any, any>;
  * @returns The created service action.
  */
 export function createServiceAction<
-  TInputShape extends z.ZodRawShape,
-  TOutputShape extends z.ZodRawShape,
+  TInputType extends z.ZodType,
+  TOutputType extends z.ZodType,
 >(
-  action: ServiceAction<TInputShape, TOutputShape>,
-): ServiceAction<TInputShape, TOutputShape> {
+  action: ServiceAction<TInputType, TOutputType>,
+): ServiceAction<TInputType, TOutputType> {
   return action;
 }

@@ -40,7 +40,7 @@ export const createAuthRolesSchema = definitionSchema((ctx) =>
         .filter((v, i, a) => a.indexOf(v) !== i);
       if (dup.length > 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: `Duplicate role name(s): ${dup.join(', ')}`,
         });
       }

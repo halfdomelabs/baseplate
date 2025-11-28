@@ -27,7 +27,7 @@ const descriptorSchema = z.object({
   fileCategories: z.array(
     z.object({
       name: CASE_VALIDATORS.CONSTANT_CASE,
-      maxFileSizeMb: z.number().int().positive(),
+      maxFileSizeMb: z.int().positive(),
       adapter: z.string(),
       authorize: z.object({
         uploadRoles: z.array(z.string()),

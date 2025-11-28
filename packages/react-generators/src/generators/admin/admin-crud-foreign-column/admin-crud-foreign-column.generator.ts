@@ -14,7 +14,7 @@ import { createForeignDataDependency } from '../_utils/foreign-data-dependency.j
 const descriptorSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   localField: z.string().min(1),
   isOptional: z.boolean().optional(),
   foreignModelName: z.string().min(1),

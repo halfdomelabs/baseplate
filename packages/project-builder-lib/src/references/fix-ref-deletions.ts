@@ -79,7 +79,7 @@ export function fixRefDeletions<T extends DefinitionSchemaCreator>(
       }
       return {
         type: 'success',
-        value: valueToEdit,
+        value: valueToEdit as def.InferOutput<T>,
         refPayload: parseResult,
       };
     }

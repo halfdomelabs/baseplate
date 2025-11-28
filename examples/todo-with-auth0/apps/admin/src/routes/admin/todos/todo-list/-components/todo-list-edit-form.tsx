@@ -113,6 +113,7 @@ export function /* TPL_COMPONENT_NAME:START */ TodoListEditForm /* TPL_COMPONENT
               label="Position"
               control={control}
               name="position"
+              registerOptions={{ valueAsNumber: true }}
             />
             {/* TPL_INPUTS:END */}
           </CardContent>

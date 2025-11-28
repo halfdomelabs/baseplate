@@ -67,7 +67,7 @@
     "@baseplate-dev/utils": "workspace:*",
     "@fontsource-variable/geist": "5.2.5",
     "@fontsource-variable/geist-mono": "5.2.5",
-    "@hookform/resolvers": "5.0.1",
+    "@hookform/resolvers": "5.2.2",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "class-variance-authority": "0.7.1",

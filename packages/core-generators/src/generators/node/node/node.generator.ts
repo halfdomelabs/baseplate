@@ -40,10 +40,10 @@ const descriptorSchema = z.object({
   rootPackage: z.boolean().default(false),
   additionalPackages: z
     .object({
-      prod: z.record(z.string()).default({}),
-      dev: z.record(z.string()).default({}),
+      prod: z.record(z.string(), z.string()).default({}),
+      dev: z.record(z.string(), z.string()).default({}),
     })
-    .default({}),
+    .prefault({}),
 });
 
 const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({

@@ -14,12 +14,12 @@ export interface ModelTransformerSpec extends PluginSpecImplementation {
   registerModelTransformer: <T extends DefinitionSchemaCreator>(
     transformer: ModelTransformerType<T>,
   ) => void;
-  getModelTransformers: () => Partial<Record<string, ModelTransformerType>>;
+  getModelTransformers: () => Record<string, ModelTransformerType>;
   getModelTransformer: (name: string) => ModelTransformerType;
 }
 
 export function createModelTransformerImplementation(): ModelTransformerSpec {
-  const transformers: Partial<Record<string, ModelTransformerType>> = {};
+  const transformers: Record<string, ModelTransformerType> = {};
   for (const transformer of BUILT_IN_TRANSFORMERS) {
     transformers[transformer.name] =
       transformer as unknown as ModelTransformerType;
@@ -27,7 +27,7 @@ export function createModelTransformerImplementation(): ModelTransformerSpec {
 
   return {
     registerModelTransformer(transformer) {
-      if (transformers[transformer.name]) {
+      if (transformer.name in transformers) {
         throw new Error(
           `Model transformer with name ${transformer.name} is already registered`,
         );
@@ -39,11 +39,10 @@ export function createModelTransformerImplementation(): ModelTransformerSpec {
       return transformers;
     },
     getModelTransformer(name) {
-      const transformer = transformers[name];
-      if (!transformer) {
+      if (!(name in transformers)) {
         throw new Error(`Unable to find transformer with name ${name}`);
       }
-      return transformer;
+      return transformers[name];
     },
   };
 }

@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Zod validator for a positive integer.
  */
-const POSITIVE_INT = z.number().int().positive();
+const POSITIVE_INT = z.int().positive();
 
 /**
  * Zod number validators.

@@ -1,8 +1,8 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.3.2',
+  fastify: '5.6.2',
   '@fastify/helmet': '13.0.0',
-  'fastify-plugin': '5.0.1',
+  'fastify-plugin': '5.1.0',
   nanoid: '5.1.6',
 
   pino: '9.5.0',
@@ -69,7 +69,7 @@ export const FASTIFY_PACKAGES = {
   '@pothos/tracing-sentry': '1.1.1',
 
   // Validation
-  zod: '3.25.76',
+  zod: '4.1.13',
 
   // Testing
   'vitest-mock-extended': '3.1.0',

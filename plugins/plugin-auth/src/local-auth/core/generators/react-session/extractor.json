@@ -13,7 +13,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/user-session-client.ts",
-      "projectExports": { "userSessionClient": {}, "UserSessionClient": {} },
+      "projectExports": { "UserSessionClient": {}, "userSessionClient": {} },
       "sourceFile": "src/services/user-session-client.ts",
       "variables": {}
     },

@@ -16,13 +16,13 @@ import type { WorkerData, WorkerMessage } from './worker-script.js';
  * @returns Promise that resolves with the action result
  */
 export async function runActionInWorker<
-  TInputShape extends z.ZodRawShape,
-  TOutputShape extends z.ZodRawShape,
+  TInputType extends z.ZodType,
+  TOutputType extends z.ZodType,
 >(
-  serviceAction: ServiceAction<TInputShape, TOutputShape>,
-  input: z.objectOutputType<TInputShape, z.ZodTypeAny, 'strip'>,
+  serviceAction: ServiceAction<TInputType, TOutputType>,
+  input: z.output<TInputType>,
   context: ServiceActionContext,
-): Promise<z.objectInputType<TOutputShape, z.ZodTypeAny, 'strip'>> {
+): Promise<z.input<TOutputType>> {
   return new Promise((resolve, reject) => {
     const { logger, ...restContext } = context;
 
@@ -69,13 +69,7 @@ export async function runActionInWorker<
           message: `Action ${serviceAction.name} completed successfully`,
           name: serviceAction.name,
         });
-        resolve(
-          typedMessage.result as z.objectInputType<
-            TOutputShape,
-            z.ZodTypeAny,
-            'strip'
-          >,
-        );
+        resolve(typedMessage.result as z.input<TOutputType>);
       } else {
         logger.error({
           message: `Action ${serviceAction.name} completed with an error`,

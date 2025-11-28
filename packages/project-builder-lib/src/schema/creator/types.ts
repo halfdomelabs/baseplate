@@ -71,6 +71,6 @@ export interface DefinitionSchemaParserContext {
   withDefault: WithDefaultType;
 }
 
-export type DefinitionSchemaCreator<T extends z.ZodTypeAny = z.ZodTypeAny> = (
+export type DefinitionSchemaCreator<T extends z.ZodType = z.ZodType> = (
   ctx: DefinitionSchemaParserContext,
 ) => T;

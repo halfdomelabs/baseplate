@@ -52,9 +52,10 @@ function sendMessage(message: WorkerMessage): void {
 try {
   const actionRegistry = await import('../registry.js');
 
-  const action = actionRegistry.ALL_SERVICE_ACTIONS.find(
-    (action) => action.name === actionName,
-  ) as ServiceAction | undefined;
+  const action: ServiceAction | undefined =
+    actionRegistry.ALL_SERVICE_ACTIONS.find(
+      (action) => action.name === actionName,
+    );
 
   if (!action) {
     throw new Error(
@@ -78,14 +79,7 @@ try {
     });
   });
 
-  const result = await action.handler(
-    input as z.objectInputType<
-      typeof action.inputSchema,
-      z.ZodTypeAny,
-      'strip'
-    >,
-    contextWithLogger,
-  );
+  const result = await action.handler(input, contextWithLogger);
   const validatedResult = z.object(action.outputSchema).parse(result);
   sendMessage({ type: 'success', result: validatedResult });
 } catch (error) {

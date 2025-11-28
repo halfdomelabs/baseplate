@@ -11,7 +11,7 @@ import type { FileCategory } from '../types/file-category.js';
 import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 
 const fileInputSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 /**

@@ -5,7 +5,7 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
-const snapshotAddInputSchema = {
+const snapshotAddInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
   files: z
@@ -19,15 +19,15 @@ const snapshotAddInputSchema = {
     .string()
     .optional()
     .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
-};
+});
 
-const snapshotAddOutputSchema = {
+const snapshotAddOutputSchema = z.object({
   success: z
     .boolean()
     .describe('Whether the snapshot add operation was successful.'),
   message: z.string().describe('Result message.'),
   filesAdded: z.number().describe('Number of files added to the snapshot.'),
-};
+});
 
 /**
  * Service action to add files to a project snapshot.

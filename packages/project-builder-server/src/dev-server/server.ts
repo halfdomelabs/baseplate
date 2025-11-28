@@ -98,12 +98,12 @@ export class DevServer {
       });
 
       server.log.info(
-        `Baseplate dev server started for projects: ${this.context.projects.map((p) => p.name).join(', ')}`,
         {
           port: configResult.port,
           token: configResult.token,
           projects: this.context.projects.map((p) => p.name),
         },
+        `Baseplate dev server started for projects: ${this.context.projects.map((p) => p.name).join(', ')}`,
       );
 
       return {

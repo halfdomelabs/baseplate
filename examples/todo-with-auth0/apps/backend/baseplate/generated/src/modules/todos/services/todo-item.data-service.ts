@@ -20,11 +20,11 @@ const parentModel = createParentModelConfig('todoItem', (value) => ({
 }));
 
 export const todoItemInputFields = {
-  todoListId: scalarField(z.string().uuid()),
-  position: scalarField(z.number().int()),
+  todoListId: scalarField(z.uuid()),
+  position: scalarField(z.int()),
   text: scalarField(z.string()),
   done: scalarField(z.boolean()),
-  assigneeId: scalarField(z.string().uuid().nullish()),
+  assigneeId: scalarField(z.uuid().nullish()),
   attachments: nestedOneToManyField({
     buildData: (data) => data,
     fields: pick(todoItemAttachmentInputFields, [

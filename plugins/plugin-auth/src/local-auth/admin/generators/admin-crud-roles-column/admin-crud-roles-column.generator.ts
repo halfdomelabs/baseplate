@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
-  order: z.number().int().nonnegative(),
+  order: z.int().nonnegative(),
   label: z.string().min(1),
 });
 

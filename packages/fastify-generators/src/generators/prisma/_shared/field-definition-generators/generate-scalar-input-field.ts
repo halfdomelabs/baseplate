@@ -30,15 +30,15 @@ interface GenerateScalarFieldConfig {
 
 const SCALAR_TYPE_TO_ZOD_TYPE: Record<ScalarFieldType, string> = {
   string: 'string()',
-  int: 'number().int()',
+  int: 'int()',
   float: 'number()',
   decimal: 'number()',
   boolean: 'boolean()',
   date: 'date()',
   dateTime: 'date()',
   json: 'unknown()',
-  jsonObject: 'record(z.unknown())',
-  uuid: 'string().uuid()',
+  jsonObject: 'record(z.string(), z.unknown())',
+  uuid: 'uuid()',
   enum: '',
 };
 
@@ -62,7 +62,7 @@ function generateValidator({
       throw new Error('Enum name is required for enum scalar type');
     }
     const enumFrag = prismaGeneratedImports.$Enums.fragment();
-    return tsTemplate`${zFrag}.nativeEnum(${enumFrag}.${enumType})${modifier}`;
+    return tsTemplate`${zFrag}.enum(${enumFrag}.${enumType})${modifier}`;
   }
 
   return tsTemplate`${zFrag}.${SCALAR_TYPE_TO_ZOD_TYPE[scalarType]}${modifier}`;

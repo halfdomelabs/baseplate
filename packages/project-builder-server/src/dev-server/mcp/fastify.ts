@@ -36,9 +36,10 @@ const mcpPluginCallback: FastifyPluginCallbackZod<McpPluginOptions> = function (
         onsessioninitialized: (newSessionId) => {
           // Store the transport by session ID
           transports[newSessionId] = transport;
-          fastify.log.info('MCP session initialized', {
-            sessionId: newSessionId,
-          });
+          fastify.log.info(
+            { sessionId: newSessionId },
+            'MCP session initialized',
+          );
         },
         // DNS rebinding protection
         enableDnsRebindingProtection: true,
@@ -49,9 +50,10 @@ const mcpPluginCallback: FastifyPluginCallbackZod<McpPluginOptions> = function (
       transport.onclose = () => {
         if (transport.sessionId) {
           transports[transport.sessionId] = undefined;
-          fastify.log.info('MCP session closed', {
-            sessionId: transport.sessionId,
-          });
+          fastify.log.info(
+            { sessionId: transport.sessionId },
+            'MCP session closed',
+          );
         }
       };
 
@@ -97,9 +99,7 @@ const mcpPluginCallback: FastifyPluginCallbackZod<McpPluginOptions> = function (
   // Handle DELETE requests for session termination
   fastify.delete('/dev/mcp', handleSessionRequest);
 
-  fastify.log.info('MCP plugin registered', {
-    endpoint: '/dev/mcp',
-  });
+  fastify.log.info({ endpoint: '/dev/mcp' }, 'MCP plugin registered');
 
   done();
 };

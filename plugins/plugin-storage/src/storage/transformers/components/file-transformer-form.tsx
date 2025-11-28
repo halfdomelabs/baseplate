@@ -99,6 +99,9 @@ export function FileTransformerForm({
             type="number"
             placeholder="e.g., 10"
             description="Maximum file size in megabytes"
+            registerOptions={{
+              valueAsNumber: true,
+            }}
           />
         </div>
 

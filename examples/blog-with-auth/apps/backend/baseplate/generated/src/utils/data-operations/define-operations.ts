@@ -89,7 +89,7 @@ type FieldDataOrFunction<TField extends AnyFieldDefinition> =
  * @example
  * ```typescript
  * const { data, hooks } = await transformFields(
- *   { name: scalarField(z.string()), email: scalarField(z.string().email()) },
+ *   { name: scalarField(z.string()), email: scalarField(z.email()) },
  *   { name: 'John', email: 'john@example.com' },
  *   {
  *     serviceContext: ctx,
@@ -229,11 +229,11 @@ export async function transformFields<
  * ```typescript
  * const fields = {
  *   name: scalarField(z.string()),
- *   email: scalarField(z.string().email()),
+ *   email: scalarField(z.email()),
  * };
  *
  * const schema = generateCreateSchema(fields);
- * // schema is z.object({ name: z.string(), email: z.string().email() })
+ * // schema is z.object({ name: z.string(), email: z.email() })
  *
  * // Use for validation
  * const validated = schema.parse({ name: 'John', email: 'john@example.com' });
@@ -382,7 +382,7 @@ type CreateOperationFunction<
  *   model: 'user',
  *   fields: {
  *     name: scalarField(z.string()),
- *     email: scalarField(z.string().email()),
+ *     email: scalarField(z.email()),
  *   },
  *   authorize: async (data, ctx) => {
  *     // Check if user has permission to create
@@ -664,7 +664,7 @@ type UpdateOperationFunction<
  *   model: 'user',
  *   fields: {
  *     name: scalarField(z.string()),
- *     email: scalarField(z.string().email()),
+ *     email: scalarField(z.email()),
  *   },
  *   authorize: async (data, ctx) => {
  *     const existing = await ctx.loadExisting();
@@ -718,9 +718,9 @@ export function defineUpdateOperation<
     }
 
     // Validate data unless skipValidation is true (e.g., when GraphQL already validated)
-    const validatedData = skipValidation
-      ? inputData
-      : dataSchema.parse(inputData);
+    const validatedData = (
+      skipValidation ? inputData : dataSchema.parse(inputData)
+    ) as Partial<InferInput<TFields>>;
 
     let existingItem: GetPayload<TModelName> | undefined;
 

@@ -35,7 +35,7 @@ export const templateInfoSchema = z.object({
   /**
    * Instance-specific data for the template. Presence indicates file is extractable.
    */
-  instanceData: z.object({}).passthrough().optional(),
+  instanceData: z.looseObject({}).optional(),
 });
 
 export type TemplateInfo<

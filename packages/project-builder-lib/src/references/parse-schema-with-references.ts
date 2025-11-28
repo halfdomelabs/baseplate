@@ -36,11 +36,10 @@ export function parseSchemaWithTransformedReferences<
     ...schemaCreatorOptions,
     transformReferences: true,
   });
-  const schema = schemaCreator(schemaContext);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- using the type T which can be any zod schema
+  const schema = schemaCreator(schemaContext) as def.InferSchema<T>;
+
   const value = schema.parse(input);
   const refPayload = extractDefinitionRefs(value);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- using the type T which can be any zod schema
   return resolveZodRefPayloadNames(refPayload, options);
 }

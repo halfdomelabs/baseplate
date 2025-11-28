@@ -4,7 +4,7 @@ import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
 
-const syncAllProjectsInputSchema = {
+const syncAllProjectsInputSchema = z.object({
   overwrite: z
     .boolean()
     .optional()
@@ -13,9 +13,9 @@ const syncAllProjectsInputSchema = {
     .boolean()
     .optional()
     .describe('Whether to skip running commands.'),
-};
+});
 
-const syncAllProjectsOutputSchema = {
+const syncAllProjectsOutputSchema = z.object({
   overallStatus: z
     .enum(['success', 'partial', 'error'])
     .describe('The overall status of the sync operation across all projects.'),
@@ -31,7 +31,7 @@ const syncAllProjectsOutputSchema = {
       }),
     )
     .describe('Results for each individual project.'),
-};
+});
 
 /**
  * Service action to sync all projects.
@@ -119,6 +119,7 @@ export const syncAllProjectsAction = createServiceAction({
         }
       } catch (error) {
         logger.error(
+          error instanceof Error ? error : new Error(String(error)),
           `Failed to sync project ${project.name}: ${String(error)}`,
         );
 
