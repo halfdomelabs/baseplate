@@ -13,8 +13,8 @@ import {
 import { LOCAL_AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
 
 export const reactSessionImportsSchema = createTsImportMapSchema({
-  userSessionClient: {},
   UserSessionClient: {},
+  userSessionClient: {},
 });
 
 export type ReactSessionImportsProvider = TsImportMapProviderFromSchema<
@@ -37,8 +37,8 @@ const localAuthCoreReactSessionImportsTask = createGeneratorTask({
     return {
       providers: {
         reactSessionImports: createTsImportMap(reactSessionImportsSchema, {
-          userSessionClient: paths.userSessionClient,
           UserSessionClient: paths.userSessionClient,
+          userSessionClient: paths.userSessionClient,
         }),
       },
     };
