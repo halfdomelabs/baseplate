@@ -1,27 +1,20 @@
-import z from 'zod';
-
 import type { def } from '#src/schema/creator/index.js';
 
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import type { baseAdminCrudColumnSchema } from './types.js';
-
 import { adminCrudColumnSpec } from './admin-column-spec.js';
+import { baseAdminCrudColumnSchema } from './types.js';
 
 export const createAdminCrudColumnSchema = definitionSchema((ctx) => {
   const adminCrudColumns = ctx.plugins
     .getPluginSpec(adminCrudColumnSpec)
     .getAdminCrudColumns();
-  const schemas = [...adminCrudColumns.values()].map((column) =>
-    column.createSchema(ctx),
-  );
-  return z.discriminatedUnion(
-    'type',
-    schemas as [
-      typeof baseAdminCrudColumnSchema,
-      ...(typeof baseAdminCrudColumnSchema)[],
-    ],
-  );
+
+  return baseAdminCrudColumnSchema.transform((data) => {
+    const columnDef = adminCrudColumns.get(data.type);
+    if (!columnDef) return data;
+    return columnDef.createSchema(ctx).parse(data);
+  });
 });
 
 export type AdminCrudColumnConfig = def.InferOutput<
