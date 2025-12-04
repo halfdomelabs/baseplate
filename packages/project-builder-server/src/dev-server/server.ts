@@ -35,7 +35,9 @@ async function createServer(
   const server = fastify({
     loggerInstance: context.logger as FastifyBaseLogger,
     forceCloseConnections: 'idle',
-    maxParamLength: 10_000,
+    routerOptions: {
+      maxParamLength: 10_000,
+    },
   });
 
   server.setValidatorCompiler(validatorCompiler);
