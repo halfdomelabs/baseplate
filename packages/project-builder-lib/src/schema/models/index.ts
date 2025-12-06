@@ -51,7 +51,13 @@ export const createModelScalarFieldSchema = definitionSchema((ctx) =>
                   onDelete: 'RESTRICT',
                 })
                 .optional(),
-              defaultEnumValueRef: z.string().optional(),
+              defaultEnumValueRef: ctx
+                .withRef({
+                  type: modelEnumValueEntityType,
+                  onDelete: 'RESTRICT',
+                  parentPath: { context: 'enumRef' },
+                })
+                .optional(),
             })
             .transform((val) => ({
               ...val,
@@ -59,6 +65,7 @@ export const createModelScalarFieldSchema = definitionSchema((ctx) =>
             }))
             .prefault({}),
           (builder) => {
+            builder.addPathToContext('enumRef', modelEnumEntityType, 'enumRef');
             builder.addReference({
               type: modelEnumValueEntityType,
               onDelete: 'RESTRICT',
@@ -140,7 +147,10 @@ export const createModelRelationFieldSchema = definitionSchema((ctx) =>
           }),
         }),
       ),
-      modelRef: z.string().min(1),
+      modelRef: ctx.withRef({
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
       foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
       onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
       onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
