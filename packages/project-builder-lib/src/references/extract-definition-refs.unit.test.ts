@@ -260,7 +260,7 @@ describe('extract-definition-refs', () => {
       it('should resolve nested and parent references with context paths', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
-        const modelSlot = createRefContextSlot(modelType);
+        const modelSlot = createRefContextSlot('modelSlot', modelType);
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
@@ -339,8 +339,11 @@ describe('extract-definition-refs', () => {
       it('should handle complex parent-child hierarchies', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
-        const modelSlot = createRefContextSlot(modelType);
-        const foreignModelSlot = createRefContextSlot(modelType);
+        const modelSlot = createRefContextSlot('modelSlot', modelType);
+        const foreignModelSlot = createRefContextSlot(
+          'foreignModelSlot',
+          modelType,
+        );
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
@@ -731,8 +734,8 @@ describe('extract-definition-refs', () => {
       it('should handle missing context paths gracefully', () => {
         const modelType = new DefinitionEntityType('model', 'model');
         const fieldType = new DefinitionEntityType('field', 'field', modelType);
-        const modelSlot = createRefContextSlot(modelType);
-        const missingSlot = createRefContextSlot(modelType);
+        const modelSlot = createRefContextSlot('modelSlot', modelType);
+        const missingSlot = createRefContextSlot('missingSlot', modelType);
 
         const context: ZodRefContext = {
           context: {

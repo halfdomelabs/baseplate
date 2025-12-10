@@ -330,15 +330,11 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
 );
 
 export const createModelSchema = definitionSchema((ctx) =>
-  ctx.refContext(
-    {
-      modelSlot: modelEntityType,
-    },
-    ({ modelSlot }) =>
-      ctx.withEnt(createModelBaseSchema(ctx, { modelSlot }), {
-        type: modelEntityType,
-        provides: modelSlot,
-      }),
+  ctx.refContext({ modelSlot: modelEntityType }, ({ modelSlot }) =>
+    ctx.withEnt(createModelBaseSchema(ctx, { modelSlot }), {
+      type: modelEntityType,
+      provides: modelSlot,
+    }),
   ),
 );
 

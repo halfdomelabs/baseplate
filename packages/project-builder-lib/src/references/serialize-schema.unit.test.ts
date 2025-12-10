@@ -121,8 +121,11 @@ describe('serializeSchema', () => {
     const fieldType = createEntityType('field', {
       parentType: modelType,
     });
-    const modelSlot = createRefContextSlot(modelType);
-    const foreignModelSlot = createRefContextSlot(modelType);
+    const modelSlot = createRefContextSlot('modelSlot', modelType);
+    const foreignModelSlot = createRefContextSlot(
+      'foreignModelSlot',
+      modelType,
+    );
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         models: z.array(

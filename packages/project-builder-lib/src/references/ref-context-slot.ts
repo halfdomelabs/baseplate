@@ -38,25 +38,28 @@ export interface RefContextSlot<
  * Creates a new ref context slot for the given entity type.
  * Each call creates a unique slot, even for the same entity type.
  *
+ * @param name - A descriptive name for debugging (shows in Symbol description)
  * @param entityType - The entity type this slot will be associated with
  * @returns A new unique RefContextSlot instance
  *
  * @example
  * ```typescript
- * const modelSlot = createRefContextSlot(modelEntityType);
- * const anotherModelSlot = createRefContextSlot(modelEntityType);
+ * const modelSlot = createRefContextSlot('modelSlot', modelEntityType);
+ * const anotherModelSlot = createRefContextSlot('anotherModelSlot', modelEntityType);
  *
  * // These are different slots despite same entity type
  * modelSlot._slotId !== anotherModelSlot._slotId
+ * // modelSlot._slotId.toString() === 'Symbol(modelSlot)'
  * ```
  */
 export function createRefContextSlot<T extends DefinitionEntityType>(
+  name: string,
   entityType: T,
 ): RefContextSlot<T> {
   return {
     [REF_CONTEXT_SLOT_SYMBOL]: true,
     entityType,
-    _slotId: Symbol('refContextSlot'),
+    _slotId: Symbol(name),
   };
 }
 
@@ -122,7 +125,7 @@ export function createRefContextSlotMap<T extends RefContextSlotDefinition>(
   return Object.fromEntries(
     Object.entries(slotDefinition).map(([key, entityType]) => [
       key,
-      createRefContextSlot(entityType),
+      createRefContextSlot(key, entityType),
     ]),
   ) as RefContextSlotMap<T>;
 }

@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { createRefContextSlot } from '#src/references/ref-context-slot.js';
 import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
 import {
   modelEntityType,
@@ -62,30 +61,28 @@ const createAdminCrudEmbeddedListSchemaInternal = definitionSchemaWithSlots(
 
 export const createAdminCrudEmbeddedFormSchema = definitionSchemaWithSlots(
   { adminSectionSlot: adminSectionEntityType },
-  (ctx, { adminSectionSlot }) => {
-    // Create local modelSlot that will be provided by modelRef
-    const modelSlot = createRefContextSlot(modelEntityType);
-
-    return ctx.withRefBuilder(
-      z.discriminatedUnion('type', [
-        createAdminCrudEmbeddedObjectSchemaInternal(ctx, {
-          modelSlot,
-          adminSectionSlot,
-        }),
-        createAdminCrudEmbeddedListSchemaInternal(ctx, {
-          modelSlot,
-          adminSectionSlot,
-        }),
-      ]),
-      (builder) => {
-        builder.addEntity({
-          type: adminCrudEmbeddedFormEntityType,
-          parentRef: adminSectionSlot,
-        });
-        builder.addPathToContext('modelRef', modelSlot);
-      },
-    );
-  },
+  (ctx, { adminSectionSlot }) =>
+    ctx.refContext({ modelSlot: modelEntityType }, ({ modelSlot }) =>
+      ctx.withRefBuilder(
+        z.discriminatedUnion('type', [
+          createAdminCrudEmbeddedObjectSchemaInternal(ctx, {
+            modelSlot,
+            adminSectionSlot,
+          }),
+          createAdminCrudEmbeddedListSchemaInternal(ctx, {
+            modelSlot,
+            adminSectionSlot,
+          }),
+        ]),
+        (builder) => {
+          builder.addEntity({
+            type: adminCrudEmbeddedFormEntityType,
+            parentRef: adminSectionSlot,
+          });
+          builder.addPathToContext('modelRef', modelSlot);
+        },
+      ),
+    ),
 );
 
 export type AdminCrudEmbeddedFormConfig = def.InferOutput<
@@ -102,7 +99,7 @@ export const createAdminCrudSectionSchema = definitionSchemaWithSlots(
   { adminSectionSlot: adminSectionEntityType },
   (ctx, { adminSectionSlot }) => {
     // Create local modelSlot that will be provided by modelRef
-    const modelSlot = createRefContextSlot(modelEntityType);
+    const modelSlot = createRefContextSlot('modelSlot', modelEntityType);
 
     return ctx.withRefBuilder(
       createBaseAdminSectionValidators(ctx).and(
