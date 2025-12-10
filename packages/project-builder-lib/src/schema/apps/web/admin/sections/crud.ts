@@ -97,50 +97,53 @@ export type AdminCrudEmbeddedFormConfigInput = def.InferInput<
 
 export const createAdminCrudSectionSchema = definitionSchemaWithSlots(
   { adminSectionSlot: adminSectionEntityType },
-  (ctx, { adminSectionSlot }) => {
-    // Create local modelSlot that will be provided by modelRef
-    const modelSlot = createRefContextSlot('modelSlot', modelEntityType);
-
-    return ctx.withRefBuilder(
-      createBaseAdminSectionValidators(ctx).and(
-        z.object({
-          type: z.literal('crud'),
-          modelRef: ctx.withRef({
-            type: modelEntityType,
-            onDelete: 'RESTRICT',
+  (ctx, { adminSectionSlot }) =>
+    ctx.refContext({ modelSlot: modelEntityType }, ({ modelSlot }) =>
+      ctx.withRefBuilder(
+        createBaseAdminSectionValidators(ctx).and(
+          z.object({
+            type: z.literal('crud'),
+            modelRef: ctx.withRef({
+              type: modelEntityType,
+              onDelete: 'RESTRICT',
+            }),
+            /* The field that will be used to display the name of the entity in the form */
+            nameFieldRef: ctx.withRef({
+              type: modelScalarFieldEntityType,
+              onDelete: 'RESTRICT',
+              parentRef: modelSlot,
+            }),
+            disableCreate: ctx.withDefault(z.boolean(), false),
+            table: z.object({
+              columns: z.array(createAdminCrudColumnSchema(ctx, { modelSlot })),
+              actions: ctx.withDefault(
+                z.array(createAdminCrudActionSchema(ctx)),
+                [
+                  { type: 'edit', position: 'inline' },
+                  { type: 'delete', position: 'dropdown' },
+                ],
+              ),
+            }),
+            form: z.object({
+              fields: z.array(
+                createAdminCrudInputSchema(ctx, {
+                  modelSlot,
+                  adminSectionSlot,
+                }),
+              ),
+            }),
+            embeddedForms: z
+              .array(
+                createAdminCrudEmbeddedFormSchema(ctx, { adminSectionSlot }),
+              )
+              .optional(),
           }),
-          /* The field that will be used to display the name of the entity in the form */
-          nameFieldRef: ctx.withRef({
-            type: modelScalarFieldEntityType,
-            onDelete: 'RESTRICT',
-            parentRef: modelSlot,
-          }),
-          disableCreate: ctx.withDefault(z.boolean(), false),
-          table: z.object({
-            columns: z.array(createAdminCrudColumnSchema(ctx, { modelSlot })),
-            actions: ctx.withDefault(
-              z.array(createAdminCrudActionSchema(ctx)),
-              [
-                { type: 'edit', position: 'inline' },
-                { type: 'delete', position: 'dropdown' },
-              ],
-            ),
-          }),
-          form: z.object({
-            fields: z.array(
-              createAdminCrudInputSchema(ctx, { modelSlot, adminSectionSlot }),
-            ),
-          }),
-          embeddedForms: z
-            .array(createAdminCrudEmbeddedFormSchema(ctx, { adminSectionSlot }))
-            .optional(),
-        }),
+        ),
+        (builder) => {
+          builder.addPathToContext('modelRef', modelSlot);
+        },
       ),
-      (builder) => {
-        builder.addPathToContext('modelRef', modelSlot);
-      },
-    );
-  },
+    ),
 );
 
 export type AdminCrudSectionConfig = def.InferOutput<
