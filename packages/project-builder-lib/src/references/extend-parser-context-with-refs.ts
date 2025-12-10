@@ -14,12 +14,18 @@ import type {
 import type {
   AnyDefinitionEntityInput,
   DefinitionRefAnnotations,
+  SlotContextPath,
 } from './markers.js';
+import type {
+  RefContextSlotDefinition,
+  RefContextSlotMap,
+} from './ref-context-slot.js';
 
 import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
+import { createRefContextSlotMap } from './ref-context-slot.js';
 
 type ZodTypeWithOptional<T extends z.ZodType> = T extends z.ZodOptional
   ? z.ZodOptional<z.ZodType<z.output<T>, z.input<T>>>
@@ -49,12 +55,25 @@ export type WithRefBuilder = <T extends z.ZodType>(
   builder?: ZodBuilderFunction<z.TypeOf<T>>,
 ) => ZodTypeWithOptional<T>;
 
+/**
+ * Creates ref context slots for use within a schema definition.
+ * Slots provide type-safe context for parent-child entity relationships.
+ */
+export type RefContextType = <
+  TSlotDef extends RefContextSlotDefinition,
+  TSchema extends z.ZodType,
+>(
+  slotDefinition: TSlotDef,
+  schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
+) => TSchema;
+
 export function extendParserContextWithRefs({
   transformReferences,
 }: DefinitionSchemaCreatorOptions): {
   withRef: WithRefType;
   withEnt: WithEntType;
   withRefBuilder: WithRefBuilder;
+  refContext: RefContextType;
 } {
   function withRef<TEntityType extends DefinitionEntityType>(
     reference: DefinitionReferenceInput<string, TEntityType>,
@@ -103,7 +122,7 @@ export function extendParserContextWithRefs({
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
             entities: [...(existingAnnotations?.entities ?? []), entity],
             references: existingAnnotations?.references ?? [],
-            contextPaths: existingAnnotations?.contextPaths ?? [],
+            slotContextPaths: existingAnnotations?.slotContextPaths ?? [],
           },
         };
       }
@@ -130,7 +149,8 @@ export function extendParserContextWithRefs({
           : undefined;
       const entities = existingAnnotations?.entities ?? [];
       const references = existingAnnotations?.references ?? [];
-      const contextPaths = existingAnnotations?.contextPaths ?? [];
+      const slotContextPaths: SlotContextPath[] =
+        existingAnnotations?.slotContextPaths ?? [];
       const refBuilder: ZodRefBuilderInterface<z.output<T>> = {
         addReference: (reference) => {
           references.push(reference);
@@ -138,8 +158,8 @@ export function extendParserContextWithRefs({
         addEntity: (entity) => {
           entities.push(entity as AnyDefinitionEntityInput);
         },
-        addPathToContext: (path, type, context) => {
-          contextPaths.push({ path, type, context });
+        addPathToContext: (path, slot) => {
+          slotContextPaths.push({ path, type: slot.entityType, slot });
         },
       };
       builder?.(refBuilder, value as z.output<T>);
@@ -149,7 +169,7 @@ export function extendParserContextWithRefs({
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
             entities,
             references,
-            contextPaths,
+            slotContextPaths,
           },
         };
       }
@@ -162,5 +182,33 @@ export function extendParserContextWithRefs({
     withRef,
     withEnt,
     withRefBuilder,
+    refContext,
   };
+}
+
+/**
+ * Creates ref context slots for use within a schema definition.
+ * Slots provide type-safe context for parent-child entity relationships.
+ *
+ * @example
+ * ```typescript
+ * ctx.refContext(
+ *   { modelSlot: modelEntityType },
+ *   ({ modelSlot }) =>
+ *     ctx.withEnt(schema, {
+ *       type: modelEntityType,
+ *       provides: modelSlot,
+ *     }),
+ * );
+ * ```
+ */
+function refContext<
+  TSlotDef extends RefContextSlotDefinition,
+  TSchema extends z.ZodType,
+>(
+  slotDefinition: TSlotDef,
+  schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
+): TSchema {
+  const slots = createRefContextSlotMap(slotDefinition);
+  return schemaBuilder(slots);
 }

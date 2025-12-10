@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { createRefContextSlot } from '#src/references/ref-context-slot.js';
+
 import type { def } from './creator/index.js';
 
 import { createBackendAppSchema } from './apps/backend/index.js';
@@ -12,20 +14,23 @@ import { createModelSchema } from './models/index.js';
 import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings/index.js';
 
-export const createAppSchema = definitionSchema((ctx) =>
-  ctx.withRefBuilder(
+export const createAppSchema = definitionSchema((ctx) => {
+  // Create the appSlot at the top level
+  const appSlot = createRefContextSlot(appEntityType);
+
+  return ctx.withRefBuilder(
     z.discriminatedUnion('type', [
-      createBackendAppSchema(ctx),
-      createWebAppSchema(ctx),
+      createBackendAppSchema(ctx, { appSlot }),
+      createWebAppSchema(ctx, { appSlot }),
     ]),
     (builder) => {
       builder.addEntity({
         type: appEntityType,
-        addContext: 'app',
+        provides: appSlot,
       });
     },
-  ),
-);
+  );
+});
 
 export type AppConfig = def.InferOutput<typeof createAppSchema>;
 

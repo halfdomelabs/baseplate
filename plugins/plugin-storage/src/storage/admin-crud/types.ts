@@ -2,20 +2,23 @@ import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
   baseAdminCrudInputSchema,
-  definitionSchema,
+  definitionSchemaWithSlots,
+  modelEntityType,
   modelTransformerEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const createAdminCrudFileInputSchema = definitionSchema((ctx) =>
-  baseAdminCrudInputSchema.extend({
-    type: z.literal('file'),
-    modelRelationRef: ctx.withRef({
-      type: modelTransformerEntityType,
-      onDelete: 'RESTRICT',
-      parentPath: { context: 'model' },
+export const createAdminCrudFileInputSchema = definitionSchemaWithSlots(
+  { modelSlot: modelEntityType },
+  (ctx, { modelSlot }) =>
+    baseAdminCrudInputSchema.extend({
+      type: z.literal('file'),
+      modelRelationRef: ctx.withRef({
+        type: modelTransformerEntityType,
+        onDelete: 'RESTRICT',
+        parentRef: modelSlot,
+      }),
     }),
-  }),
 );
 
 export type AdminCrudFileInputInput = def.InferInput<

@@ -17,6 +17,7 @@ import {
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
+import { createRefContextSlot } from './ref-context-slot.js';
 import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {
@@ -259,6 +260,7 @@ describe('extract-definition-refs', () => {
       it('should resolve nested and parent references with context paths', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
+        const modelSlot = createRefContextSlot(modelType);
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
@@ -270,11 +272,11 @@ describe('extract-definition-refs', () => {
                   z.object({ id: z.string(), name: z.string() }),
                   {
                     type: fieldType,
-                    parentPath: { context: 'model' },
+                    parentRef: modelSlot,
                   },
                 ),
               }),
-              { type: modelType, addContext: 'model' },
+              { type: modelType, provides: modelSlot },
             ),
             foreignRelation: ctx.withRefBuilder(
               z.object({
@@ -282,7 +284,7 @@ describe('extract-definition-refs', () => {
                 fieldRef: ctx.withRef({
                   type: fieldType,
                   onDelete: 'RESTRICT',
-                  parentPath: { context: 'model' },
+                  parentRef: modelSlot,
                 }),
               }),
               (builder) => {
@@ -290,7 +292,7 @@ describe('extract-definition-refs', () => {
                   path: 'modelRef',
                   type: modelType,
                   onDelete: 'RESTRICT',
-                  addContext: 'model',
+                  provides: modelSlot,
                 });
               },
             ),
@@ -337,6 +339,8 @@ describe('extract-definition-refs', () => {
       it('should handle complex parent-child hierarchies', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
+        const modelSlot = createRefContextSlot(modelType);
+        const foreignModelSlot = createRefContextSlot(modelType);
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
@@ -350,7 +354,7 @@ describe('extract-definition-refs', () => {
                       z.object({ id: z.string(), name: z.string() }),
                       {
                         type: fieldType,
-                        parentPath: { context: 'model' },
+                        parentRef: modelSlot,
                       },
                     ),
                   ),
@@ -359,19 +363,19 @@ describe('extract-definition-refs', () => {
                       modelName: ctx.withRef({
                         type: modelType,
                         onDelete: 'RESTRICT',
-                        addContext: 'foreignModel',
+                        provides: foreignModelSlot,
                       }),
                       fields: z.array(
                         ctx.withRef({
                           type: fieldType,
                           onDelete: 'RESTRICT',
-                          parentPath: { context: 'foreignModel' },
+                          parentRef: foreignModelSlot,
                         }),
                       ),
                     }),
                   ),
                 }),
-                { type: modelType, addContext: 'model' },
+                { type: modelType, provides: modelSlot },
               ),
             ),
           }),
@@ -727,11 +731,13 @@ describe('extract-definition-refs', () => {
       it('should handle missing context paths gracefully', () => {
         const modelType = new DefinitionEntityType('model', 'model');
         const fieldType = new DefinitionEntityType('field', 'field', modelType);
+        const modelSlot = createRefContextSlot(modelType);
+        const missingSlot = createRefContextSlot(modelType);
 
         const context: ZodRefContext = {
           context: {
             pathMap: new Map([
-              ['model', { path: ['models', 0], type: modelType }],
+              [modelSlot._slotId, { path: ['models', 0], type: modelType }],
             ]),
           },
           references: [],
@@ -743,7 +749,7 @@ describe('extract-definition-refs', () => {
           {
             type: fieldType,
             onDelete: 'RESTRICT',
-            parentPath: { context: 'nonExistentContext' },
+            parentRef: missingSlot,
           },
         );
 
@@ -752,9 +758,7 @@ describe('extract-definition-refs', () => {
             'field',
             'ref',
           ]),
-        ).toThrow(
-          'Could not find context for nonExistentContext from field.ref',
-        );
+        ).toThrow('Could not find context for slot (model) from field.ref');
       });
 
       it('should return primitive values unchanged', () => {

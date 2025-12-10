@@ -1,9 +1,11 @@
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
-import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
-import type { AdminCrudInputSchema, AdminCrudInputType } from './types.js';
+import type {
+  AdminCrudInputSchemaCreator,
+  AdminCrudInputType,
+} from './types.js';
 
 import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-input.js';
 
@@ -11,9 +13,7 @@ import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-input.js';
  * Spec for registering additional model input types
  */
 export interface AdminCrudInputSpec extends PluginSpecImplementation {
-  registerAdminCrudInput: <
-    T extends DefinitionSchemaCreator<AdminCrudInputSchema>,
-  >(
+  registerAdminCrudInput: <T extends AdminCrudInputSchemaCreator>(
     input: AdminCrudInputType<T>,
   ) => void;
   getAdminCrudInputs: () => Map<string, AdminCrudInputType>;

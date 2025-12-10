@@ -61,20 +61,31 @@ export function extractDefinitionRefsRecursive(
       REF_ANNOTATIONS_MARKER_SYMBOL
     ] as DefinitionRefAnnotations;
 
+    // Phase 1: Pre-register all provides slots at this level first.
+    // This ensures slots are available before any parentRef lookups,
+    // regardless of property iteration order.
+    for (const entity of annotations.entities) {
+      builder.preRegisterEntitySlot(entity);
+    }
+
+    for (const reference of annotations.references) {
+      builder.preRegisterReferenceSlot(reference);
+    }
+
+    for (const slotPath of annotations.slotContextPaths ?? []) {
+      builder.addPathToContext(
+        slotPath.path as PathInput<unknown>,
+        slotPath.slot,
+      );
+    }
+
+    // Phase 2: Full processing (all parentRef lookups will now succeed)
     for (const entity of annotations.entities) {
       builder.addEntity(entity);
     }
 
     for (const reference of annotations.references) {
       builder.addReference(reference);
-    }
-
-    for (const pathInfo of annotations.contextPaths) {
-      builder.addPathToContext(
-        pathInfo.path as PathInput<unknown>,
-        pathInfo.type,
-        pathInfo.context,
-      );
     }
 
     context.references.push(...builder.references);

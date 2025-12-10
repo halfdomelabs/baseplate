@@ -2,6 +2,7 @@ import type { Paths } from 'type-fest';
 
 import { get } from 'es-toolkit/compat';
 
+import type { RefContextSlot } from './ref-context-slot.js';
 import type {
   DefinitionEntity,
   DefinitionEntityType,
@@ -12,12 +13,6 @@ import type {
 import { stripRefMarkers } from './strip-ref-markers.js';
 
 export type PathInput<Type> = Exclude<Paths<Type>, number>;
-
-interface ContextValue {
-  context: string;
-}
-
-type PathInputOrContext<Type> = PathInput<Type> | ContextValue;
 
 /**
  * Allows the caller to resolve the name of an entity, optionally providing a
@@ -81,8 +76,8 @@ interface DefinitionEntityInputBase<
     value: TInput,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to allow more specific generic typed to be put in here
   ) => DefinitionEntityNameResolver<any> | string;
-  /** Optional context identifier used to register the entity's path in a shared context. */
-  addContext?: string;
+  /** Optional ref context slot that this entity provides. Registers this entity's path in a shared context. */
+  provides?: RefContextSlot<TEntityType>;
 }
 
 /**
@@ -94,7 +89,8 @@ interface DefinitionEntityInputWithParent<
   TPath extends PathInput<TInput> | undefined = undefined,
   TIDKey extends string = 'id',
 > extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
-  parentPath: PathInputOrContext<TInput>;
+  /** The slot from which to resolve the parent entity path. */
+  parentRef: RefContextSlot<NonNullable<TEntityType['parentType']>>;
 }
 
 /**
@@ -106,7 +102,7 @@ interface DefinitionEntityInputWithoutParent<
   TPath extends PathInput<TInput> | undefined = undefined,
   TIDKey extends string = 'id',
 > extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
-  parentPath?: never;
+  parentRef?: never;
 }
 
 /**
@@ -133,21 +129,23 @@ interface DefinitionReferenceInputBase<
 > extends Pick<DefinitionReference, 'onDelete'> {
   type: TEntityType;
   path?: PathInput<TInput>;
-  addContext?: string;
+  /** Optional ref context slot that this reference provides. Registers this reference's path in a shared context. */
+  provides?: RefContextSlot<TEntityType>;
 }
 
 interface DefinitionReferenceInputWithParent<
   TInput,
   TEntityType extends DefinitionEntityType,
 > extends DefinitionReferenceInputBase<TInput, TEntityType> {
-  parentPath: PathInputOrContext<TInput>;
+  /** The slot from which to resolve the parent entity path. */
+  parentRef: RefContextSlot<NonNullable<TEntityType['parentType']>>;
 }
 
 interface DefinitionReferenceInputWithoutParent<
   TInput,
   TEntityType extends DefinitionEntityType,
 > extends DefinitionReferenceInputBase<TInput, TEntityType> {
-  parentPath?: never;
+  parentRef?: never;
 }
 
 /**
@@ -169,7 +167,8 @@ interface DefinitionEntityWithNameResolver
 }
 
 export interface RefBuilderContext {
-  pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
+  /** Maps slot IDs to their registered paths and types */
+  pathMap: Map<symbol, { path: ReferencePath; type: DefinitionEntityType }>;
 }
 
 export interface ZodRefBuilderInterface<TInput> {
@@ -183,10 +182,14 @@ export interface ZodRefBuilderInterface<TInput> {
   >(
     entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>,
   ): void;
-  addPathToContext(
+  /**
+   * Registers a path in the context for a given slot.
+   * @param path - The dot-separated string path to register
+   * @param slot - The ref context slot to register the path under
+   */
+  addPathToContext<TEntityType extends DefinitionEntityType>(
     path: PathInput<TInput>,
-    type: DefinitionEntityType,
-    context: string,
+    slot: RefContextSlot<TEntityType>,
   ): void;
 }
 
@@ -207,7 +210,7 @@ export class DefinitionRefBuilder<TInput>
   readonly pathPrefix: ReferencePath;
   readonly context: RefBuilderContext;
   readonly pathMap: Map<
-    string,
+    symbol,
     { path: ReferencePath; type: DefinitionEntityType }
   >;
   readonly data: TInput;
@@ -260,34 +263,29 @@ export class DefinitionRefBuilder<TInput>
   }
 
   /**
-   * Constructs a reference path that may be defined directly as a string or indirectly
-   * via a context object. If a context object is provided, the function looks up the
-   * actual path from the builder's context.
+   * Looks up the path registered for a slot from the builder's context.
    *
-   * @param path - Either a dot-separated string path or an object with a context key.
-   * @param expectedEntityType - The entity type expected for this context.
+   * @param slot - The ref context slot to look up.
+   * @param expectedEntityType - The entity type expected for this slot.
    * @returns The resolved reference path.
-   * @throws If the context cannot be found or its type does not match.
+   * @throws If the slot is not found or its type does not match.
    */
-  protected _constructPathWithContext(
-    path: PathInputOrContext<TInput>,
+  protected _constructPathFromSlot(
+    slot: RefContextSlot,
     expectedEntityType: DefinitionEntityType,
   ): ReferencePath {
-    if (typeof path === 'string') {
-      return this._constructPath(path);
-    }
-    // Lookup the context for the given key.
-    const pathContext = this.context.pathMap.get(path.context);
+    // Lookup the context for the given slot.
+    const pathContext = this.context.pathMap.get(slot._slotId);
     if (!pathContext) {
       throw new Error(
-        `Could not find context for ${path.context} from ${this.pathPrefix.join('.')}`,
+        `Could not find context for slot (${slot.entityType.name}) from ${this.pathPrefix.join('.')}. ` +
+          `Make sure the parent entity uses 'provides: slot' to register its path.`,
       );
     }
     if (pathContext.type !== expectedEntityType) {
       throw new Error(
-        `Attempted to retrieve context for ${path.context} from ${this.pathPrefix.join(
-          '.',
-        )} expecting ${expectedEntityType.name}, but found ${pathContext.type.name}`,
+        `Slot type mismatch at ${this.pathPrefix.join('.')}: ` +
+          `expected ${expectedEntityType.name}, but slot contains ${pathContext.type.name}`,
       );
     }
     return pathContext.path;
@@ -297,24 +295,26 @@ export class DefinitionRefBuilder<TInput>
    * Registers a reference based on the provided input definition.
    *
    * Flow:
-   * 1. Validate that the parent path is provided if required (and vice versa).
+   * 1. Validate that the parent ref is provided if required (and vice versa).
    * 2. Compute the reference path; if the path is empty, use the entire data.
    * 3. If the referenced value is null or undefined, skip adding the reference.
-   * 4. Otherwise, add the reference and, if requested, register its context.
+   * 4. Otherwise, add the reference and, if requested, register its slot.
    *
    * @param reference - The reference definition.
-   * @throws If parent path usage is incorrect.
+   * @throws If parent ref usage is incorrect.
    */
   addReference<TEntityType extends DefinitionEntityType>(
     reference: DefinitionReferenceInput<TInput, TEntityType>,
   ): void {
-    if (!reference.type.parentType && reference.parentPath) {
+    if (!reference.type.parentType && reference.parentRef) {
       throw new Error(
-        `Parent path does nothing since reference does not have parent`,
+        `parentRef does nothing since reference type does not have parentType`,
       );
     }
-    if (reference.type.parentType && !reference.parentPath) {
-      throw new Error(`Parent path required if reference type has parent type`);
+    if (reference.type.parentType && !reference.parentRef) {
+      throw new Error(
+        `parentRef is required when reference type has parentType`,
+      );
     }
 
     // Compute the path without prefix once.
@@ -334,18 +334,18 @@ export class DefinitionRefBuilder<TInput>
       type: reference.type,
       path: fullPath,
       parentPath:
-        reference.parentPath &&
+        reference.parentRef &&
         reference.type.parentType &&
-        this._constructPathWithContext(
-          reference.parentPath,
+        this._constructPathFromSlot(
+          reference.parentRef,
           reference.type.parentType,
         ),
       onDelete: reference.onDelete,
     });
 
-    // Optionally, add this path to the shared context.
-    if (reference.addContext) {
-      this._addPathToContext(fullPath, reference.type, reference.addContext);
+    // Optionally, register this path in the shared context for the provided slot.
+    if (reference.provides) {
+      this._addSlotToContext(fullPath, reference.provides);
     }
   }
 
@@ -353,20 +353,18 @@ export class DefinitionRefBuilder<TInput>
    * Registers an entity based on the provided definition.
    *
    * Flow:
-   * 1. Validate that not both a name and a name reference path are provided.
-   * 2. Compute the full entity path.
-   * 3. Resolve the entity ID:
+   * 1. Compute the full entity path.
+   * 2. Resolve the entity ID:
    *    - Use the provided idPath if available; otherwise, default to appending 'id'
    *      to the entity path.
-   *    - If no id is found, generate a new one.
-   * 4. Resolve the entity name:
-   *    - Use the provided resolveName if available; otherwise, default to using the
-   *      name path.
-   * 5. Register the entity in either the direct entities list or the name-ref list.
-   * 6. Optionally, add the entity’s id path to the shared context.
+   * 3. Resolve the entity name:
+   *    - Use the provided getNameResolver if available; otherwise, default to using the
+   *      name property.
+   * 4. Register the entity in the entities list.
+   * 5. Optionally, register the entity's id path in the slot context.
    *
    * @param entity - The entity definition.
-   * @throws If both name and nameRefPath are provided or if no name is resolved.
+   * @throws If no id or name resolver is found.
    */
   addEntity<
     TEntityType extends DefinitionEntityType,
@@ -413,12 +411,9 @@ export class DefinitionRefBuilder<TInput>
       path,
       idPath: [...this.pathPrefix, ...idPath],
       parentPath:
-        entity.parentPath &&
+        entity.parentRef &&
         entity.type.parentType &&
-        this._constructPathWithContext(
-          entity.parentPath,
-          entity.type.parentType,
-        ),
+        this._constructPathFromSlot(entity.parentRef, entity.type.parentType),
     };
 
     this.entitiesWithNameResolver.push({
@@ -430,47 +425,75 @@ export class DefinitionRefBuilder<TInput>
           : nameResolver,
     });
 
-    // Optionally add the id path to the context.
-    if (entity.addContext) {
-      this._addPathToContext(
-        [...this.pathPrefix, ...idPath],
-        entity.type,
-        entity.addContext,
-      );
+    // Optionally register the id path in the slot context.
+    if (entity.provides) {
+      this._addSlotToContext([...this.pathPrefix, ...idPath], entity.provides);
     }
   }
 
   /**
-   * Registers a given path into the builder's context map.
+   * Registers a given path into the builder's context map for a slot.
    * @param path - The full reference path.
-   * @param type - The entity type associated with the path.
-   * @param context - A unique key to identify this context.
-   * @throws If the context key is already registered.
+   * @param slot - The ref context slot to register.
    */
-  _addPathToContext(
-    path: ReferencePath,
-    type: DefinitionEntityType,
-    context: string,
-  ): void {
-    // For now, allow overriding contexts to maintain compatibility
-    this.pathMap.set(context, { path, type });
+  _addSlotToContext(path: ReferencePath, slot: RefContextSlot): void {
+    // Allow overriding slots during array iteration
+    this.pathMap.set(slot._slotId, { path, type: slot.entityType });
     // Also register in the shared context for other builders to access
-    this.context.pathMap.set(context, { path, type });
+    this.context.pathMap.set(slot._slotId, { path, type: slot.entityType });
   }
 
   /**
    * Convenience method that builds a full path from a dot-separated string and
-   * adds it to the context.
+   * registers it in the context for a slot.
    * @param path - The dot-separated string path.
-   * @param type - The entity type.
-   * @param context - The context key.
+   * @param slot - The ref context slot to register the path under.
    */
-  addPathToContext(
+  addPathToContext<TEntityType extends DefinitionEntityType>(
     path: PathInput<TInput>,
-    type: DefinitionEntityType,
-    context: string,
+    slot: RefContextSlot<TEntityType>,
   ): void {
-    this._addPathToContext(this._constructPath(path), type, context);
+    this._addSlotToContext(this._constructPath(path), slot);
+  }
+
+  /**
+   * Pre-registers the slot for an entity without full processing.
+   * Used to ensure slots are available before parentRef lookups.
+   * @param entity - The entity definition.
+   */
+  preRegisterEntitySlot<
+    TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<TInput> | undefined = undefined,
+    TIDKey extends string | PathInput<TInput> = 'id',
+  >(entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>): void {
+    if (!entity.provides) return;
+    const idPath = entity.idPath
+      ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
+      : [...this._constructPathWithoutPrefix(entity.path), 'id'];
+    this._addSlotToContext([...this.pathPrefix, ...idPath], entity.provides);
+  }
+
+  /**
+   * Pre-registers the slot for a reference without full processing.
+   * Used to ensure slots are available before parentRef lookups.
+   * @param reference - The reference definition.
+   */
+  preRegisterReferenceSlot<TEntityType extends DefinitionEntityType>(
+    reference: DefinitionReferenceInput<TInput, TEntityType>,
+  ): void {
+    if (!reference.provides) return;
+    // Check if the reference value exists (same check as addReference)
+    const refPathWithoutPrefix = this._constructPathWithoutPrefix(
+      reference.path,
+    );
+    const refValue =
+      refPathWithoutPrefix.length === 0
+        ? this.data
+        : (get(this.data, refPathWithoutPrefix) as string);
+    if (refValue === undefined || refValue === null) return;
+
+    const fullPath = this._constructPath(reference.path);
+    this._addSlotToContext(fullPath, reference.provides);
   }
 }
 

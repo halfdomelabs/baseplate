@@ -3,6 +3,7 @@ import type React from 'react';
 import { createBackendAppSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -19,8 +20,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/backend')({
   component: BackendAppEditPage,

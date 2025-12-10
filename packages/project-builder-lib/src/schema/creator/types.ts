@@ -2,10 +2,15 @@ import type { z } from 'zod';
 
 import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
+  RefContextType,
   WithEntType,
   WithRefBuilder,
   WithRefType,
 } from '#src/references/extend-parser-context-with-refs.js';
+import type {
+  RefContextSlotDefinition,
+  RefContextSlotMap,
+} from '#src/references/ref-context-slot.js';
 
 import type { WithDefaultType } from './extend-parser-context-with-defaults.js';
 
@@ -69,8 +74,23 @@ export interface DefinitionSchemaParserContext {
    * - 'preserve': Returns schema unchanged
    */
   withDefault: WithDefaultType;
+  /**
+   * Creates ref context slots for use within a schema definition.
+   * Slots provide type-safe context for parent-child entity relationships.
+   */
+  refContext: RefContextType;
 }
 
 export type DefinitionSchemaCreator<T extends z.ZodType = z.ZodType> = (
   ctx: DefinitionSchemaParserContext,
 ) => T;
+
+export type DefinitionSchemaCreatorWithSlots<
+  TDefinitionSchema extends z.ZodType = z.ZodType,
+  TSlotDefinition extends RefContextSlotDefinition = RefContextSlotDefinition,
+> = ((
+  ctx: DefinitionSchemaParserContext,
+  slots: RefContextSlotMap<TSlotDefinition>,
+) => TDefinitionSchema) & {
+  slotDefinition: TSlotDefinition;
+};

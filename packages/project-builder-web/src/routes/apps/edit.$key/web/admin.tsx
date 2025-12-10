@@ -7,6 +7,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -26,8 +27,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdSettings } from 'react-icons/md';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/web/admin')({
   component: WebAdminPage,

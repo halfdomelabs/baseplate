@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { PluginImplementationStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
+import { createRefContextSlot } from './ref-context-slot.js';
 import { serializeSchema } from './serialize-schema.js';
 import { createEntityType } from './types.js';
 
@@ -120,6 +121,8 @@ describe('serializeSchema', () => {
     const fieldType = createEntityType('field', {
       parentType: modelType,
     });
+    const modelSlot = createRefContextSlot(modelType);
+    const foreignModelSlot = createRefContextSlot(modelType);
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         models: z.array(
@@ -133,7 +136,7 @@ describe('serializeSchema', () => {
                     id: z.string(),
                     name: z.string(),
                   }),
-                  { type: fieldType, parentPath: { context: 'model' } },
+                  { type: fieldType, parentRef: modelSlot },
                 ),
               ),
               relations: z.array(
@@ -141,19 +144,19 @@ describe('serializeSchema', () => {
                   modelName: ctx.withRef({
                     type: modelType,
                     onDelete: 'RESTRICT',
-                    addContext: 'foreignModel',
+                    provides: foreignModelSlot,
                   }),
                   fields: z.array(
                     ctx.withRef({
                       type: fieldType,
                       onDelete: 'RESTRICT',
-                      parentPath: { context: 'foreignModel' },
+                      parentRef: foreignModelSlot,
                     }),
                   ),
                 }),
               ),
             }),
-            { type: modelType, addContext: 'model' },
+            { type: modelType, provides: modelSlot },
           ),
         ),
       }),
