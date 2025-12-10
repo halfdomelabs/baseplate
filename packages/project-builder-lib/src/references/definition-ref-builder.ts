@@ -278,7 +278,7 @@ export class DefinitionRefBuilder<TInput>
     const pathContext = this.context.pathMap.get(slot._slotId);
     if (!pathContext) {
       throw new Error(
-        `Could not find context for slot (${slot.entityType.name}) from ${this.pathPrefix.join('.')}. ` +
+        `Could not find context for slot (${slot._slotId.description ?? slot.entityType.name}) from ${this.pathPrefix.join('.')}. ` +
           `Make sure the parent entity uses 'provides: slot' to register its path.`,
       );
     }
