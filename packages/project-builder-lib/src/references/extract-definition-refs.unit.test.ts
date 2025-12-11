@@ -14,7 +14,6 @@ import {
 } from './markers.js';
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 import { createRefContextSlot } from './ref-context-slot.js';
-import { resolveSlots } from './resolve-slots.js';
 import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {
@@ -257,43 +256,42 @@ describe('extract-definition-refs', () => {
       it('should resolve nested and parent references with context paths', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
-        const modelSlot = createRefContextSlot('modelSlot', modelType);
 
         const schemaCreator = definitionSchema((ctx) =>
-          z.object({
-            model: ctx.withEnt(
-              z.object({
-                id: z.string(),
-                name: z.string(),
-                field: ctx.withEnt(
-                  z.object({ id: z.string(), name: z.string() }),
-                  {
-                    type: fieldType,
-                    parentSlot: modelSlot,
-                  },
-                ),
-              }),
-              { type: modelType, provides: modelSlot },
-            ),
-            foreignRelation: ctx.withRefBuilder(
-              z.object({
-                modelRef: z.string(),
-                fieldRef: ctx.withRef({
-                  type: fieldType,
-                  onDelete: 'RESTRICT',
-                  parentSlot: modelSlot,
+          ctx.refContext({ modelSlot: modelType }, ({ modelSlot }) =>
+            z.object({
+              model: ctx.withEnt(
+                z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  field: ctx.withEnt(
+                    z.object({ id: z.string(), name: z.string() }),
+                    {
+                      type: fieldType,
+                      parentSlot: modelSlot,
+                    },
+                  ),
                 }),
-              }),
-              (builder) => {
-                builder.addReference({
-                  path: 'modelRef',
-                  type: modelType,
-                  onDelete: 'RESTRICT',
-                  provides: modelSlot,
-                });
-              },
-            ),
-          }),
+                { type: modelType, provides: modelSlot },
+              ),
+              foreignRelation: ctx.refContext(
+                { foreignModelSlot: modelType },
+                ({ foreignModelSlot }) =>
+                  z.object({
+                    modelRef: ctx.withRef({
+                      type: modelType,
+                      onDelete: 'RESTRICT',
+                      provides: foreignModelSlot,
+                    }),
+                    fieldRef: ctx.withRef({
+                      type: fieldType,
+                      onDelete: 'RESTRICT',
+                      parentSlot: foreignModelSlot,
+                    }),
+                  }),
+              ),
+            }),
+          ),
         );
 
         const input = {
@@ -336,46 +334,47 @@ describe('extract-definition-refs', () => {
       it('should handle complex parent-child hierarchies', () => {
         const modelType = createEntityType('model');
         const fieldType = createEntityType('field', { parentType: modelType });
-        const modelSlot = createRefContextSlot('modelSlot', modelType);
-        const foreignModelSlot = createRefContextSlot(
-          'foreignModelSlot',
-          modelType,
-        );
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             models: z.array(
-              ctx.withEnt(
-                z.object({
-                  id: z.string(),
-                  name: z.string(),
-                  fields: z.array(
-                    ctx.withEnt(
-                      z.object({ id: z.string(), name: z.string() }),
-                      {
-                        type: fieldType,
-                        parentSlot: modelSlot,
-                      },
-                    ),
-                  ),
-                  relations: z.array(
-                    z.object({
-                      modelName: ctx.withRef({
-                        type: modelType,
-                        onDelete: 'RESTRICT',
-                        provides: foreignModelSlot,
-                      }),
-                      fields: z.array(
-                        ctx.withRef({
+              ctx.refContext({ modelSlot: modelType }, ({ modelSlot }) =>
+                ctx.withEnt(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    fields: z.array(
+                      ctx.withEnt(
+                        z.object({ id: z.string(), name: z.string() }),
+                        {
                           type: fieldType,
-                          onDelete: 'RESTRICT',
-                          parentSlot: foreignModelSlot,
-                        }),
+                          parentSlot: modelSlot,
+                        },
                       ),
-                    }),
-                  ),
-                }),
-                { type: modelType, provides: modelSlot },
+                    ),
+                    relations: z.array(
+                      ctx.refContext(
+                        { foreignModelSlot: modelType },
+                        ({ foreignModelSlot }) =>
+                          z.object({
+                            modelName: ctx.withRef({
+                              type: modelType,
+                              onDelete: 'RESTRICT',
+                              provides: foreignModelSlot,
+                            }),
+                            fields: z.array(
+                              ctx.withRef({
+                                type: fieldType,
+                                onDelete: 'RESTRICT',
+                                parentSlot: foreignModelSlot,
+                              }),
+                            ),
+                          }),
+                      ),
+                    ),
+                  }),
+                  { type: modelType, provides: modelSlot },
+                ),
               ),
             ),
           }),
@@ -589,7 +588,7 @@ describe('extract-definition-refs', () => {
     });
 
     describe('RefBuilder Scenarios', () => {
-      it('should handle withRefBuilder for complex scenarios', () => {
+      it('should handle complex reference scenarios', () => {
         const entityType = createEntityType('entity');
 
         const schemaCreator = definitionSchema((ctx) =>
@@ -599,21 +598,15 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            complexRef: ctx.withRefBuilder(
-              z.object({
-                targetName: z.string(),
-                metadata: z.object({
-                  description: z.string(),
-                }),
+            complexRef: z.object({
+              targetName: ctx.withRef({
+                type: entityType,
+                onDelete: 'DELETE',
               }),
-              (builder, _data) => {
-                builder.addReference({
-                  path: 'targetName',
-                  type: entityType,
-                  onDelete: 'DELETE',
-                });
-              },
-            ),
+              metadata: z.object({
+                description: z.string(),
+              }),
+            }),
           }),
         );
 
@@ -728,73 +721,65 @@ describe('extract-definition-refs', () => {
 
   describe('Core Logic Tests (collectRefs + resolveSlots)', () => {
     describe('Edge Cases', () => {
-      it('should handle missing slots during resolution', () => {
+      it('should handle missing slots during extraction', () => {
         const modelType = new DefinitionEntityType('model', 'model');
         const fieldType = new DefinitionEntityType('field', 'field', modelType);
-        const modelSlot = createRefContextSlot('modelSlot', modelType);
         const missingSlot = createRefContextSlot('missingSlot', modelType);
 
         const referenceWithMissingContext = new DefinitionReferenceMarker(
           'field:missing-context-field',
           {
+            path: [],
             type: fieldType,
             onDelete: 'RESTRICT',
             parentSlot: missingSlot,
           },
         );
 
-        // Collect refs - this should succeed
-        const collected = collectRefs({ ref: referenceWithMissingContext }, []);
-
-        // Add the modelSlot to slotPaths, but not missingSlot
-        collected.slotPaths.set(modelSlot.id, [
-          { path: ['models', 0], type: modelType },
-        ]);
-
-        // Resolution should fail because missingSlot is not in slotPaths
-        expect(() => resolveSlots(collected)).toThrow(
-          'Could not find slot "missingSlot"',
-        );
+        // Extraction should fail because missingSlot is not registered
+        expect(() =>
+          extractDefinitionRefs({ ref: referenceWithMissingContext }),
+        ).toThrow('Could not resolve parent path');
       });
 
       it('should collect nothing from primitive values', () => {
-        expect(collectRefs('string', [])).toEqual({
+        expect(collectRefs('string')).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
-        expect(collectRefs(42, [])).toEqual({
+        expect(collectRefs(42)).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
-        expect(collectRefs(true, [])).toEqual({
+        expect(collectRefs(true)).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
-        expect(collectRefs(null, [])).toEqual({
+        expect(collectRefs(null)).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
-        expect(collectRefs(undefined, [])).toEqual({
+        expect(collectRefs(undefined)).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
       });
 
       it('should handle empty objects and arrays', () => {
-        expect(collectRefs({}, [])).toEqual({
+        expect(collectRefs({})).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
-        expect(collectRefs([], [])).toEqual({
+        expect(collectRefs([])).toEqual({
           entities: [],
           references: [],
-          slotPaths: new Map(),
+          slots: [],
         });
       });
     });
@@ -807,20 +792,19 @@ describe('extract-definition-refs', () => {
         const referenceMarker = new DefinitionReferenceMarker(
           'testref:test-id',
           {
+            path: [],
             type: testRefEntityType,
             onDelete: 'RESTRICT',
           },
         );
 
-        const collected = collectRefs({ field: referenceMarker }, []);
-        const resolved = resolveSlots(collected);
+        const collected = collectRefs({ field: referenceMarker });
 
-        expect(resolved.references).toHaveLength(1);
-        expect(resolved.references[0]).toEqual({
-          type: testRefEntityType,
+        expect(collected.references).toHaveLength(1);
+        expect(collected.references[0]).toEqual({
           path: ['field'],
+          type: testRefEntityType,
           onDelete: 'RESTRICT',
-          parentPath: undefined,
         });
       });
 
@@ -831,24 +815,24 @@ describe('extract-definition-refs', () => {
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
             entities: [
               {
+                path: [],
+                id: 'test:test-id',
                 type: testEntityType,
-                getNameResolver: () => ({ resolveName: () => 'Test Entity' }),
+                nameResolver: { resolveName: () => 'Test Entity' },
               },
             ],
             references: [],
-            contextPaths: [],
+            slots: [],
           },
         };
 
-        const collected = collectRefs({ entity: inputWithAnnotations }, []);
-        const resolved = resolveSlots(collected);
+        const collected = collectRefs({ entity: inputWithAnnotations });
 
-        expect(resolved.entities).toHaveLength(1);
-        expect(resolved.entities[0]).toMatchObject({
+        expect(collected.entities).toHaveLength(1);
+        expect(collected.entities[0]).toMatchObject({
           id: 'test:test-id',
           type: testEntityType,
           path: ['entity'],
-          idPath: ['entity', 'id'],
         });
       });
     });
@@ -864,12 +848,14 @@ describe('extract-definition-refs', () => {
             [REF_ANNOTATIONS_MARKER_SYMBOL]: {
               entities: [
                 {
+                  path: [],
+                  id: 'test:duplicate-id',
                   type: testEntityType,
-                  getNameResolver: () => ({ resolveName: () => 'Entity One' }),
+                  nameResolver: { resolveName: () => 'Entity One' },
                 },
               ],
               references: [],
-              contextPaths: [],
+              slots: [],
             },
           },
           entity2: {
@@ -878,12 +864,14 @@ describe('extract-definition-refs', () => {
             [REF_ANNOTATIONS_MARKER_SYMBOL]: {
               entities: [
                 {
+                  path: [],
+                  id: 'test:duplicate-id',
                   type: testEntityType,
-                  getNameResolver: () => ({ resolveName: () => 'Entity Two' }),
+                  nameResolver: { resolveName: () => 'Entity Two' },
                 },
               ],
               references: [],
-              contextPaths: [],
+              slots: [],
             },
           },
         };
@@ -905,12 +893,14 @@ describe('extract-definition-refs', () => {
         [REF_ANNOTATIONS_MARKER_SYMBOL]: {
           entities: [
             {
+              path: [],
+              id: 'test:test-id',
               type: testEntityType,
-              getNameResolver: () => ({ resolveName: () => 'Test Entity' }),
+              nameResolver: { resolveName: () => 'Test Entity' },
             },
           ],
           references: [],
-          contextPaths: [],
+          slots: [],
         },
       };
 
@@ -925,7 +915,6 @@ describe('extract-definition-refs', () => {
         id: 'test:test-id',
         type: testEntityType,
         path: [],
-        idPath: ['id'],
       });
       expect(result.references).toHaveLength(0);
     });
@@ -941,15 +930,18 @@ describe('extract-definition-refs', () => {
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
             entities: [
               {
+                path: [],
+                id: 'test:entity-id',
                 type: testEntityType,
-                getNameResolver: () => ({ resolveName: () => 'Test Entity' }),
+                nameResolver: { resolveName: () => 'Test Entity' },
               },
             ],
             references: [],
-            contextPaths: [],
+            slots: [],
           },
         },
         ref: new DefinitionReferenceMarker('ref:ref-id', {
+          path: [],
           type: refEntityType,
           onDelete: 'RESTRICT',
         }),

@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import type { ExtractDefinitionRefsPayload } from './extract-definition-refs.js';
 
-import { resolveExtractDefinitionRefsPayloadNames } from './resolve-zod-ref-payload-names.js';
+import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
 import { createEntityType } from './types.js';
 
-describe('resolveExtractDefinitionRefsPayloadNames', () => {
+describe('resolveZodRefPayloadNames', () => {
   it('should resolve simple entity names without dependencies', () => {
     const entityType = createEntityType('test');
     const payload: ExtractDefinitionRefsPayload<unknown> = {
@@ -23,13 +23,12 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
+    const resolved = resolveZodRefPayloadNames(payload);
     expect(resolved.entities).toHaveLength(1);
     expect(resolved.entities[0]).toEqual({
       id: 'test-1',
       type: entityType,
       path: ['test'],
-      idPath: ['test', 'id'],
       name: 'Test Entity',
     });
   });
@@ -44,7 +43,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -54,7 +52,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'parent-1',
           type: entityType,
           path: ['parent'],
-          idPath: ['parent', 'id'],
           nameResolver: {
             resolveName: () => 'Parent Entity',
           },
@@ -62,7 +59,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
+    const resolved = resolveZodRefPayloadNames(payload);
     expect(resolved.entities).toHaveLength(2);
     expect(resolved.entities.find((e) => e.id === 'parent-1')?.name).toBe(
       'Parent Entity',
@@ -82,7 +79,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'collection-1',
           type: entityType,
           path: ['collection'],
-          idPath: ['collection', 'id'],
           nameResolver: {
             idsToResolve: { itemIds: ['item-1', 'item-2'] },
             resolveName: ({ itemIds }) =>
@@ -93,7 +89,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'item-1',
           type: entityType,
           path: ['items', 0],
-          idPath: ['items', 0, 'id'],
           nameResolver: {
             resolveName: () => 'Item One',
           },
@@ -102,7 +97,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'item-2',
           type: entityType,
           path: ['items', 1],
-          idPath: ['items', 1, 'id'],
           nameResolver: {
             resolveName: () => 'Item Two',
           },
@@ -110,7 +104,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
+    const resolved = resolveZodRefPayloadNames(payload);
     expect(resolved.entities).toHaveLength(3);
     expect(resolved.entities.find((e) => e.id === 'collection-1')?.name).toBe(
       'Collection of Item One and Item Two',
@@ -127,7 +121,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -136,7 +129,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    expect(() => resolveExtractDefinitionRefsPayloadNames(payload)).toThrow(
+    expect(() => resolveZodRefPayloadNames(payload)).toThrow(
       'Could not resolve entity name for id: non-existent',
     );
   });
@@ -151,7 +144,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -160,7 +152,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload, {
+    const resolved = resolveZodRefPayloadNames(payload, {
       allowInvalidReferences: true,
     });
     expect(resolved.entities).toHaveLength(1);
@@ -177,7 +169,6 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -186,7 +177,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload, {
+    const resolved = resolveZodRefPayloadNames(payload, {
       skipReferenceNameResolution: true,
     });
     expect(resolved.entities).toHaveLength(1);
@@ -208,7 +199,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       entitiesWithNameResolver: [],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
+    const resolved = resolveZodRefPayloadNames(payload);
     expect(resolved.references).toBe(references);
   });
 
@@ -220,7 +211,7 @@ describe('resolveExtractDefinitionRefsPayloadNames', () => {
       entitiesWithNameResolver: [],
     };
 
-    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
+    const resolved = resolveZodRefPayloadNames(payload);
     expect(resolved.data).toBe(data);
   });
 });
