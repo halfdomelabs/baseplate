@@ -71,6 +71,10 @@ export interface DefinitionEntity {
    */
   id: string;
   /**
+   * The ID path of the entity.
+   */
+  idPath: ReferencePath;
+  /**
    * The name of the entity.
    */
   name: string;

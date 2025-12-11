@@ -4,7 +4,7 @@ import type { CollectedRefs } from './collect-refs.js';
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { ReferencePath } from './types.js';
 
-export interface ResolvedSlot {
+interface ResolvedSlot {
   /**
    * Path to the resolved slot
    */

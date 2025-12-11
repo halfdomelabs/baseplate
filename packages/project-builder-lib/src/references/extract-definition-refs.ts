@@ -61,6 +61,7 @@ export function extractDefinitionRefs<T>(
   const entitiesWithNameResolver: DefinitionEntityWithNameResolver[] =
     collected.entities.map((entity) => ({
       id: entity.id,
+      idPath: entity.idPath,
       nameResolver: entity.nameResolver,
       type: entity.type,
       path: entity.path,

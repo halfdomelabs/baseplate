@@ -16,6 +16,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'test-1',
           type: entityType,
           path: ['test'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Test Entity',
           },
@@ -29,6 +30,7 @@ describe('resolveZodRefPayloadNames', () => {
       id: 'test-1',
       type: entityType,
       path: ['test'],
+      idPath: ['id'],
       name: 'Test Entity',
     });
   });
@@ -43,6 +45,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -52,6 +55,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'parent-1',
           type: entityType,
           path: ['parent'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Parent Entity',
           },
@@ -79,6 +83,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'collection-1',
           type: entityType,
           path: ['collection'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { itemIds: ['item-1', 'item-2'] },
             resolveName: ({ itemIds }) =>
@@ -89,6 +94,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'item-1',
           type: entityType,
           path: ['items', 0],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Item One',
           },
@@ -97,6 +103,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'item-2',
           type: entityType,
           path: ['items', 1],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Item Two',
           },
@@ -121,6 +128,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -144,6 +152,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -169,6 +178,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
