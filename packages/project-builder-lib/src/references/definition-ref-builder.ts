@@ -1,4 +1,4 @@
-import type { Paths } from 'type-fest';
+import type { TuplePaths } from '@baseplate-dev/utils';
 
 import type { RefContextSlot } from './ref-context-slot.js';
 import type {
@@ -6,8 +6,6 @@ import type {
   DefinitionEntityType,
   DefinitionReference,
 } from './types.js';
-
-export type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 /**
  * Allows the caller to resolve the name of an entity, optionally providing a
@@ -57,15 +55,12 @@ export function createDefinitionEntityNameResolver<
 interface DefinitionEntityInputBase<
   TInput,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<TInput> | undefined = undefined,
-  TIdKey = 'id',
+  TIdPath extends TuplePaths<TInput> | undefined = undefined,
 > {
   /** The entity type definition. */
   type: TEntityType;
-  /** Optional dot-separated string representing the location of the entity within the input. */
-  path?: TPath;
   /** Optional path key used to store the entity's id; if not provided, the id is assumed to be under the entity's path with key "id". */
-  idPath?: TIdKey;
+  idPath?: TIdPath;
   /** Optional function used to get the name resolver from the input data. Otherwise, the entity's name is assumed to be under the entity's path with key "name". */
   getNameResolver?: (
     value: TInput,
@@ -81,9 +76,8 @@ interface DefinitionEntityInputBase<
 interface DefinitionEntityInputWithParent<
   TInput,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<TInput> | undefined = undefined,
-  TIDKey extends string = 'id',
-> extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
+  TIdPath extends TuplePaths<TInput> | undefined = undefined,
+> extends DefinitionEntityInputBase<TInput, TEntityType, TIdPath> {
   /** The slot from which to resolve the parent entity path. */
   parentSlot: RefContextSlot<NonNullable<TEntityType['parentType']>>;
 }
@@ -94,9 +88,8 @@ interface DefinitionEntityInputWithParent<
 interface DefinitionEntityInputWithoutParent<
   TInput,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<TInput> | undefined = undefined,
-  TIDKey extends string = 'id',
-> extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
+  TIdPath extends TuplePaths<TInput> | undefined = undefined,
+> extends DefinitionEntityInputBase<TInput, TEntityType, TIdPath> {
   parentSlot?: never;
 }
 
@@ -107,51 +100,43 @@ interface DefinitionEntityInputWithoutParent<
 export type DefinitionEntityInput<
   TInput,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<TInput> | undefined = undefined,
-  TIDKey extends string = 'id',
+  TIdPath extends TuplePaths<TInput> | undefined = undefined,
 > = TEntityType['parentType'] extends undefined
-  ? DefinitionEntityInputWithoutParent<TInput, TEntityType, TPath, TIDKey>
-  : DefinitionEntityInputWithParent<TInput, TEntityType, TPath, TIDKey>;
+  ? DefinitionEntityInputWithoutParent<TInput, TEntityType, TIdPath>
+  : DefinitionEntityInputWithParent<TInput, TEntityType, TIdPath>;
 
 /**
  * Base interface for defining a reference input.
  * @template TInput - The overall input type.
  * @template TEntityType - The entity type.
  */
-interface DefinitionReferenceInputBase<
-  TInput,
-  TEntityType extends DefinitionEntityType,
-> extends Pick<DefinitionReference, 'onDelete'> {
+interface DefinitionReferenceInputBase<TEntityType extends DefinitionEntityType>
+  extends Pick<DefinitionReference, 'onDelete'> {
   type: TEntityType;
-  path?: PathInput<TInput>;
   /** Optional ref context slot that this reference provides. Registers this reference's path in a shared context. */
   provides?: RefContextSlot<TEntityType>;
 }
 
 interface DefinitionReferenceInputWithParent<
-  TInput,
   TEntityType extends DefinitionEntityType,
-> extends DefinitionReferenceInputBase<TInput, TEntityType> {
+> extends DefinitionReferenceInputBase<TEntityType> {
   /** The slot from which to resolve the parent entity path. */
   parentSlot: RefContextSlot<NonNullable<TEntityType['parentType']>>;
 }
 
 interface DefinitionReferenceInputWithoutParent<
-  TInput,
   TEntityType extends DefinitionEntityType,
-> extends DefinitionReferenceInputBase<TInput, TEntityType> {
+> extends DefinitionReferenceInputBase<TEntityType> {
   parentSlot?: never;
 }
 
 /**
  * Depending on the entity type’s requirements, defines the input required to create a definition reference.
  */
-export type DefinitionReferenceInput<
-  TInput,
-  TEntityType extends DefinitionEntityType,
-> = TEntityType['parentType'] extends undefined
-  ? DefinitionReferenceInputWithoutParent<TInput, TEntityType>
-  : DefinitionReferenceInputWithParent<TInput, TEntityType>;
+export type DefinitionReferenceInput<TEntityType extends DefinitionEntityType> =
+  TEntityType['parentType'] extends undefined
+    ? DefinitionReferenceInputWithoutParent<TEntityType>
+    : DefinitionReferenceInputWithParent<TEntityType>;
 
 /**
  * Entity with a name resolver.

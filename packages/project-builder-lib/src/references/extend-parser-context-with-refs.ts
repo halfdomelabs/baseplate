@@ -1,4 +1,4 @@
-import type { Paths } from 'type-fest';
+import type { TuplePaths } from '@baseplate-dev/utils';
 
 import { get } from 'es-toolkit/compat';
 import { z } from 'zod';
@@ -36,19 +36,16 @@ type ZodTypeWithOptional<T extends z.ZodType> = T extends z.ZodOptional
       : z.ZodType<z.output<T>, z.input<T>>;
 
 export type WithRefType = <TEntityType extends DefinitionEntityType>(
-  reference: DefinitionReferenceInput<string, TEntityType>,
+  reference: DefinitionReferenceInput<TEntityType>,
 ) => z.ZodType<string, string>;
-
-type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 export type WithEntType = <
   TType extends z.ZodType,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<z.output<TType>>,
-  TIdKey extends PathInput<z.output<TType>>,
+  TIdPath extends TuplePaths<z.output<TType>> | undefined = undefined,
 >(
   schema: TType,
-  entity: DefinitionEntityInput<z.output<TType>, TEntityType, TPath, TIdKey>,
+  entity: DefinitionEntityInput<z.output<TType>, TEntityType, TIdPath>,
 ) => ZodTypeWithOptional<TType>;
 
 /**
@@ -101,36 +98,30 @@ export function extendParserContextWithRefs({
   }
 
   function withRef<TEntityType extends DefinitionEntityType>(
-    reference: DefinitionReferenceInput<string, TEntityType>,
+    reference: DefinitionReferenceInput<TEntityType>,
   ): z.ZodType<string, string> {
-    return z
-      .string()
-      .refine((val) => reference.type.isId(val), {
-        error: `Invalid id for entity ${reference.type.name}`,
-      })
-      .transform((value) => {
-        if (transformReferences && value) {
-          return new DefinitionReferenceMarker(value, {
-            path: [],
-            type: reference.type,
-            onDelete: reference.onDelete,
-            parentSlot: reference.parentSlot,
-            provides: reference.provides,
-          }) as unknown as string;
-        }
+    return z.string().transform((value) => {
+      if (transformReferences && value) {
+        return new DefinitionReferenceMarker(value, {
+          path: [],
+          type: reference.type,
+          onDelete: reference.onDelete,
+          parentSlot: reference.parentSlot,
+          provides: reference.provides,
+        }) as unknown as string;
+      }
 
-        return value;
-      });
+      return value;
+    });
   }
 
   function withEnt<
     TType extends z.ZodType,
     TEntityType extends DefinitionEntityType,
-    TPath extends PathInput<z.output<TType>>,
-    TIdKey extends PathInput<z.output<TType>>,
+    TIdPath extends TuplePaths<z.output<TType>> | undefined = undefined,
   >(
     schema: TType,
-    entity: DefinitionEntityInput<z.output<TType>, TEntityType, TPath, TIdKey>,
+    entity: DefinitionEntityInput<z.output<TType>, TEntityType, TIdPath>,
   ): ZodTypeWithOptional<TType> {
     return schema.transform((value, ctx) => {
       if (value === null || value === undefined) return value;
@@ -145,11 +136,12 @@ export function extendParserContextWithRefs({
           return value;
         }
         // Check if the id is valid
-        const id = get(value, entity.idPath ?? 'id');
+        const idPath = entity.idPath ?? ['id'];
+        const id = get(value, idPath) as unknown;
         if (typeof id !== 'string' || !id || !entity.type.isId(id)) {
           ctx.addIssue({
             code: 'custom',
-            message: `Unable to find string id field '${entity.idPath ?? 'id'}' in entity ${entity.type.name}`,
+            message: `Unable to find string id field '${entity.idPath?.join('.') ?? 'id'}' in entity ${entity.type.name}`,
             input: value,
           });
           return value;
@@ -172,6 +164,7 @@ export function extendParserContextWithRefs({
 
         const newEntity: DefinitionEntityAnnotation = {
           id,
+          idPath,
           path: [],
           type: entity.type,
           nameResolver,

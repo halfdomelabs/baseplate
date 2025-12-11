@@ -168,7 +168,7 @@ export const createModelRelationFieldSchema = definitionSchemaWithSlots(
           ),
           {
             type: modelForeignRelationEntityType,
-            idPath: 'foreignId',
+            idPath: ['foreignId'],
             getNameResolver: (entity) => entity.foreignRelationName,
             parentSlot: foreignModelSlot,
           },

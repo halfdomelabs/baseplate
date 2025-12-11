@@ -46,8 +46,11 @@ export function findNearestAncestorSlot<T extends { path: ReferencePath }>(
   let bestMatch: { prefixLength: number; slot: T } | undefined;
   for (const candidateSlot of candidateSlots) {
     const prefixLength = commonPrefixLength(candidateSlot.path, targetPath);
+    // A slot at path [] (root) is a valid ancestor of any path
+    // For non-root slots, require at least 1 common prefix element
+    const isValidAncestor = candidateSlot.path.length === 0 || prefixLength > 0;
     if (
-      prefixLength > 0 &&
+      isValidAncestor &&
       (!bestMatch || prefixLength > bestMatch.prefixLength)
     ) {
       bestMatch = { prefixLength, slot: candidateSlot };
@@ -104,7 +107,7 @@ export function resolveSlots(
   // Collect entity provides
   for (const entity of entities) {
     if (entity.provides) {
-      registerSlot(entity.provides, entity.path);
+      registerSlot(entity.provides, [...entity.path, ...entity.idPath]);
     }
   }
 

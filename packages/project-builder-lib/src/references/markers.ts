@@ -9,6 +9,7 @@ import type {
 export interface DefinitionEntityAnnotation {
   path: ReferencePath;
   id: string;
+  idPath: ReferencePath;
   type: DefinitionEntityType;
   nameResolver: DefinitionEntityNameResolver | string;
   parentSlot?: RefContextSlot;

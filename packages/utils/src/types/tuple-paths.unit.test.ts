@@ -78,4 +78,83 @@ describe('TuplePaths Type Definitions', () => {
     // Verify that string indices on tuples are rejected
     expectTypeOf<['config', '0']>().not.toExtend<Result>();
   });
+
+  test('IsAny Guard: Should handle any type without excessive depth', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type Result = TuplePaths<any>;
+
+    // Should return never instead of causing type instantiation errors
+    expectTypeOf<Result>().toEqualTypeOf<never>();
+  });
+
+  test('IsAny Guard: Should handle objects with any properties', () => {
+    interface DataWithAny {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      value: any;
+      name: string;
+    }
+
+    type Result = TuplePaths<DataWithAny>;
+
+    // Should include valid paths but not recurse into any
+    expectTypeOf<Result>().toEqualTypeOf<['value'] | ['name']>();
+  });
+
+  test('Depth Limiter: Should handle recursive types without infinite recursion', () => {
+    interface Node {
+      value: string;
+      child: Node;
+    }
+
+    type Result = TuplePaths<Node>;
+
+    // Should generate paths up to depth limit, then stop
+    // This test verifies it doesn't cause "Type instantiation is excessively deep" error
+    expectTypeOf<['value']>().toExtend<Result>();
+    expectTypeOf<['child']>().toExtend<Result>();
+    expectTypeOf<['child', 'value']>().toExtend<Result>();
+    expectTypeOf<['child', 'child']>().toExtend<Result>();
+  });
+
+  test('Depth Limiter: Should handle deeply nested structures', () => {
+    interface Level1 {
+      level2: {
+        level3: {
+          level4: {
+            level5: {
+              level6: {
+                level7: {
+                  level8: {
+                    level9: {
+                      level10: {
+                        level11: string;
+                      };
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    }
+
+    type Result = TuplePaths<Level1>;
+
+    // Should handle deep nesting without errors
+    expectTypeOf<['level2']>().toExtend<Result>();
+    expectTypeOf<
+      [
+        'level2',
+        'level3',
+        'level4',
+        'level5',
+        'level6',
+        'level7',
+        'level8',
+        'level9',
+        'level10',
+      ]
+    >().toExtend<Result>();
+  });
 });
