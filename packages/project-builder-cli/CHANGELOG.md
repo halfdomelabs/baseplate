@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.4.2
+
+### Patch Changes
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- Updated dependencies [[`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220), [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f), [`18c7cf1`](https://github.com/halfdomelabs/baseplate/commit/18c7cf19c0d171b734eb9bcc53320ccf02baa08a)]:
+  - @baseplate-dev/project-builder-server@0.4.2
+  - @baseplate-dev/project-builder-lib@0.4.2
+  - @baseplate-dev/project-builder-web@0.4.2
+  - @baseplate-dev/utils@0.4.2
+  - @baseplate-dev/project-builder-common@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes
