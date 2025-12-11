@@ -1,5 +1,19 @@
 # @baseplate-dev/core-generators
 
+## 0.4.2
+
+### Patch Changes
+
+- [#701](https://github.com/halfdomelabs/baseplate/pull/701) [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Zod v4
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#694](https://github.com/halfdomelabs/baseplate/pull/694) [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f) Thanks [@kingston](https://github.com/kingston)! - Add test:affected command to monorepo
+
+- Updated dependencies [[`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f)]:
+  - @baseplate-dev/utils@0.4.2
+  - @baseplate-dev/sync@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes
