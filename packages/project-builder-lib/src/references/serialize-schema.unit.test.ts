@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { PluginImplementationStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import { createRefContextSlot } from './ref-context-slot.js';
 import { serializeSchema } from './serialize-schema.js';
 import { createEntityType } from './types.js';
 
@@ -121,48 +120,47 @@ describe('serializeSchema', () => {
     const fieldType = createEntityType('field', {
       parentType: modelType,
     });
-    const modelSlot = createRefContextSlot('modelSlot', modelType);
-    const foreignModelSlot = createRefContextSlot(
-      'foreignModelSlot',
-      modelType,
-    );
     const schemaCreator = definitionSchema((ctx) =>
-      z.object({
-        models: z.array(
-          ctx.withEnt(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              fields: z.array(
-                ctx.withEnt(
-                  z.object({
-                    id: z.string(),
-                    name: z.string(),
-                  }),
-                  { type: fieldType, parentSlot: modelSlot },
-                ),
-              ),
-              relations: z.array(
+      ctx.refContext(
+        { modelSlot: modelType, foreignModelSlot: modelType },
+        ({ modelSlot, foreignModelSlot }) =>
+          z.object({
+            models: z.array(
+              ctx.withEnt(
                 z.object({
-                  modelName: ctx.withRef({
-                    type: modelType,
-                    onDelete: 'RESTRICT',
-                    provides: foreignModelSlot,
-                  }),
+                  id: z.string(),
+                  name: z.string(),
                   fields: z.array(
-                    ctx.withRef({
-                      type: fieldType,
-                      onDelete: 'RESTRICT',
-                      parentSlot: foreignModelSlot,
+                    ctx.withEnt(
+                      z.object({
+                        id: z.string(),
+                        name: z.string(),
+                      }),
+                      { type: fieldType, parentSlot: modelSlot },
+                    ),
+                  ),
+                  relations: z.array(
+                    z.object({
+                      modelName: ctx.withRef({
+                        type: modelType,
+                        onDelete: 'RESTRICT',
+                        provides: foreignModelSlot,
+                      }),
+                      fields: z.array(
+                        ctx.withRef({
+                          type: fieldType,
+                          onDelete: 'RESTRICT',
+                          parentSlot: foreignModelSlot,
+                        }),
+                      ),
                     }),
                   ),
                 }),
+                { type: modelType, provides: modelSlot },
               ),
-            }),
-            { type: modelType, provides: modelSlot },
-          ),
-        ),
-      }),
+            ),
+          }),
+      ),
     );
 
     const data = {
