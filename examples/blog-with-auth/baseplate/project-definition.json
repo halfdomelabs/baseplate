@@ -95,7 +95,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.3.1",
+  "cliVersion": "0.4.1",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
@@ -694,16 +694,7 @@
   ],
   "plugins": [
     {
-      "config": {
-        "initialUserRoles": ["admin"],
-        "modelRefs": {
-          "user": "User",
-          "userAccount": "UserAccount",
-          "userRole": "UserRole",
-          "userSession": "UserSession"
-        },
-        "userAdminRoles": ["admin"]
-      },
+      "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
       "packageName": "@baseplate-dev/plugin-auth",

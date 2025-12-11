@@ -5,6 +5,7 @@ import {
   createWebAdminSectionSchema,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -27,8 +28,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 interface NewAdminSectionDialogProps {
   children: React.ReactNode;

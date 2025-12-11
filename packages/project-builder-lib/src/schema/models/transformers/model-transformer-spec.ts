@@ -1,9 +1,11 @@
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
-import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
-import type { ModelTransformerType } from './types.js';
+import type {
+  ModelTransformerSchemaCreator,
+  ModelTransformerType,
+} from './types.js';
 
 import { BUILT_IN_TRANSFORMERS } from './built-in-transformers.js';
 
@@ -11,7 +13,7 @@ import { BUILT_IN_TRANSFORMERS } from './built-in-transformers.js';
  * Spec for registering additional model transformer types
  */
 export interface ModelTransformerSpec extends PluginSpecImplementation {
-  registerModelTransformer: <T extends DefinitionSchemaCreator>(
+  registerModelTransformer: <T extends ModelTransformerSchemaCreator>(
     transformer: ModelTransformerType<T>,
   ) => void;
   getModelTransformers: () => Record<string, ModelTransformerType>;

@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
 import {
+  modelEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/index.js';
@@ -16,15 +17,17 @@ import {
 } from './types.js';
 
 // Text Column
-export const createAdminCrudTextColumnSchema = definitionSchema((ctx) =>
-  baseAdminCrudColumnSchema.extend({
-    type: z.literal('text'),
-    modelFieldRef: ctx.withRef({
-      type: modelScalarFieldEntityType,
-      onDelete: 'RESTRICT',
-      parentPath: { context: 'model' },
+export const createAdminCrudTextColumnSchema = definitionSchemaWithSlots(
+  { modelSlot: modelEntityType },
+  (ctx, { modelSlot }) =>
+    baseAdminCrudColumnSchema.extend({
+      type: z.literal('text'),
+      modelFieldRef: ctx.withRef({
+        type: modelScalarFieldEntityType,
+        onDelete: 'RESTRICT',
+        parentSlot: modelSlot,
+      }),
     }),
-  }),
 );
 
 export type AdminCrudTextColumnInput = def.InferInput<
@@ -41,17 +44,19 @@ const adminCrudTextColumnType = createAdminCrudColumnType({
 });
 
 // Foreign Column
-export const createAdminCrudForeignColumnSchema = definitionSchema((ctx) =>
-  baseAdminCrudColumnSchema.extend({
-    type: z.literal('foreign'),
-    localRelationRef: ctx.withRef({
-      type: modelLocalRelationEntityType,
-      onDelete: 'RESTRICT',
-      parentPath: { context: 'model' },
+export const createAdminCrudForeignColumnSchema = definitionSchemaWithSlots(
+  { modelSlot: modelEntityType },
+  (ctx, { modelSlot }) =>
+    baseAdminCrudColumnSchema.extend({
+      type: z.literal('foreign'),
+      localRelationRef: ctx.withRef({
+        type: modelLocalRelationEntityType,
+        onDelete: 'RESTRICT',
+        parentSlot: modelSlot,
+      }),
+      labelExpression: z.string().min(1),
+      valueExpression: z.string().min(1),
     }),
-    labelExpression: z.string().min(1),
-    valueExpression: z.string().min(1),
-  }),
 );
 
 export type AdminCrudForeignColumnInput = def.InferInput<

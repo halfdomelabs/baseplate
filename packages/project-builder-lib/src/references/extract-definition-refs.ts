@@ -1,132 +1,89 @@
-import type {
-  DefinitionEntityNameResolver,
-  PathInput,
-  RefBuilderContext,
-  ZodRefPayload,
-} from './definition-ref-builder.js';
-import type { DefinitionRefAnnotations } from './markers.js';
-import type {
-  DefinitionEntity,
-  DefinitionReference,
-  ReferencePath,
-} from './types.js';
+import type { DefinitionEntityWithNameResolver } from './definition-ref-builder.js';
+import type { RefContextSlot } from './ref-context-slot.js';
+import type { DefinitionReference, ReferencePath } from './types.js';
 
-import { DefinitionRefBuilder } from './definition-ref-builder.js';
-import {
-  DefinitionReferenceMarker,
-  REF_ANNOTATIONS_MARKER_SYMBOL,
-} from './markers.js';
+import { collectRefs } from './collect-refs.js';
+import { findNearestAncestorSlot, resolveSlots } from './resolve-slots.js';
+import { stripRefMarkers } from './strip-ref-markers.js';
 
 /**
- * Entity with a name resolver.
+ * Payload returned after parsing, containing the data, references, and entities.
+ *
+ * @template TData - The type of the parsed data.
  */
-export interface DefinitionEntityWithNameResolver
-  extends Omit<DefinitionEntity, 'name'> {
-  nameResolver: DefinitionEntityNameResolver;
-}
-
-/**
- * Context for storing references, entities, and builder context.
- */
-export interface ZodRefContext {
-  context: RefBuilderContext;
+export interface ExtractDefinitionRefsPayload<TData> {
+  data: TData;
   references: DefinitionReference[];
   entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
 }
 
-export function extractDefinitionRefsRecursive(
-  value: unknown,
-  context: ZodRefContext,
-  path: ReferencePath,
-): unknown {
-  const builder = new DefinitionRefBuilder<unknown>(
-    path,
-    context.context,
-    value,
-  );
+/**
+ * Extracts definition refs from a parsed value using functional approach.
+ *
+ * Flow:
+ * 1. Collect all refs (entities, references, slots) recursively
+ * 2. Resolve all slot references to actual paths
+ * 3. Strip ref markers from the data
+ * 4. Validate no duplicate IDs
+ *
+ * @param value - The parsed value from Zod schema
+ * @returns The extracted refs with clean data
+ */
+export function extractDefinitionRefs<T>(
+  value: T,
+): ExtractDefinitionRefsPayload<T> {
+  // Step 1: Collect all refs without resolving slots
+  const collected = collectRefs(value);
 
-  if (value instanceof DefinitionReferenceMarker) {
-    builder.addReference(value.reference);
-    context.references.push(...builder.references);
-    context.entitiesWithNameResolver.push(...builder.entitiesWithNameResolver);
-    return value.value;
-  }
+  // Step 2: Resolve all slots to paths
+  const resolvedSlots = resolveSlots(collected);
 
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    REF_ANNOTATIONS_MARKER_SYMBOL in value
-  ) {
-    const annotations = value[
-      REF_ANNOTATIONS_MARKER_SYMBOL
-    ] as DefinitionRefAnnotations;
+  // Step 3: Strip markers from data
+  const cleanData = stripRefMarkers(value);
 
-    for (const entity of annotations.entities) {
-      builder.addEntity(entity);
-    }
-
-    for (const reference of annotations.references) {
-      builder.addReference(reference);
-    }
-
-    for (const pathInfo of annotations.contextPaths) {
-      builder.addPathToContext(
-        pathInfo.path as PathInput<unknown>,
-        pathInfo.type,
-        pathInfo.context,
+  // Step 4: Resolve entity and reference parent paths
+  function resolveParentPath(
+    parentSlot: RefContextSlot,
+    path: ReferencePath,
+  ): ReferencePath | undefined {
+    const resolvedSlot = findNearestAncestorSlot(
+      resolvedSlots.get(parentSlot.id),
+      path,
+    );
+    if (!resolvedSlot) {
+      throw new Error(
+        `Could not resolve parent path from ${path.join('.')} for slot ${parentSlot.id.description}`,
       );
     }
-
-    context.references.push(...builder.references);
-    context.entitiesWithNameResolver.push(...builder.entitiesWithNameResolver);
-
-    // Remove the marker symbol and process the clean object
-    const { [REF_ANNOTATIONS_MARKER_SYMBOL]: _, ...cleanValue } = value;
-
-    // Process the clean object recursively
-    return Object.fromEntries(
-      Object.entries(cleanValue).map(([key, childValue]) => [
-        key,
-        extractDefinitionRefsRecursive(childValue, context, [...path, key]),
-      ]),
-    );
+    return resolvedSlot.resolvedPath;
   }
 
-  // Run recursively for arrays first (arrays are also objects)
-  if (Array.isArray(value)) {
-    return value.map((element, i) =>
-      extractDefinitionRefsRecursive(element, context, [...path, i]),
-    );
-  }
+  const entitiesWithNameResolver: DefinitionEntityWithNameResolver[] =
+    collected.entities.map((entity) => ({
+      id: entity.id,
+      idPath: entity.idPath,
+      nameResolver: entity.nameResolver,
+      type: entity.type,
+      path: entity.path,
+      parentPath: entity.parentSlot
+        ? resolveParentPath(entity.parentSlot, entity.path)
+        : undefined,
+    }));
 
-  // Run recursively for regular objects
-  if (typeof value === 'object' && value !== null) {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, childValue]) => [
-        key,
-        extractDefinitionRefsRecursive(childValue, context, [...path, key]),
-      ]),
-    );
-  }
+  const references: DefinitionReference[] = collected.references.map(
+    (reference) => ({
+      type: reference.type,
+      path: reference.path,
+      onDelete: reference.onDelete,
+      parentPath: reference.parentSlot
+        ? resolveParentPath(reference.parentSlot, reference.path)
+        : undefined,
+    }),
+  );
 
-  // Return primitive values as-is
-  return value;
-}
-
-export function extractDefinitionRefs<T>(value: T): ZodRefPayload<T> {
-  const refContext: ZodRefContext = {
-    context: {
-      pathMap: new Map(),
-    },
-    references: [],
-    entitiesWithNameResolver: [],
-  };
-
-  const cleanData = extractDefinitionRefsRecursive(value, refContext, []);
-
-  // Simple sanity check to make sure we don't have duplicate IDs
+  // Step 4: Validate no duplicate IDs
   const idSet = new Set<string>();
-  for (const entity of refContext.entitiesWithNameResolver) {
+  for (const entity of collected.entities) {
     if (idSet.has(entity.id)) {
       throw new Error(`Duplicate ID found: ${entity.id}`);
     }
@@ -134,8 +91,8 @@ export function extractDefinitionRefs<T>(value: T): ZodRefPayload<T> {
   }
 
   return {
-    data: cleanData as T,
-    references: refContext.references,
-    entitiesWithNameResolver: refContext.entitiesWithNameResolver,
+    data: cleanData,
+    references,
+    entitiesWithNameResolver,
   };
 }

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
+import type { RefContextSlot } from '#src/references/ref-context-slot.js';
+import type { DefinitionSchemaParserContext } from '#src/schema/creator/types.js';
+import type { modelEntityType } from '#src/schema/models/types.js';
 
 import { createEntityType } from '#src/references/types.js';
 
@@ -24,17 +26,29 @@ export type AdminCrudInputSchema = z.ZodType<
   AdminCrudInputInput
 >;
 
+/** Slots required by admin crud input schemas */
+export interface AdminCrudInputSlots {
+  modelSlot: RefContextSlot<typeof modelEntityType>;
+  adminSectionSlot: RefContextSlot<typeof adminSectionEntityType>;
+}
+
+/**
+ * Schema creator for admin crud inputs that requires modelSlot and adminSectionSlot.
+ */
+export type AdminCrudInputSchemaCreator<
+  T extends AdminCrudInputSchema = AdminCrudInputSchema,
+> = (ctx: DefinitionSchemaParserContext, slots: AdminCrudInputSlots) => T;
+
 export interface AdminCrudInputType<
-  T extends
-    DefinitionSchemaCreator<AdminCrudInputSchema> = DefinitionSchemaCreator<AdminCrudInputSchema>,
+  T extends AdminCrudInputSchemaCreator = AdminCrudInputSchemaCreator,
 > {
   name: string;
   createSchema: T;
 }
 
-export function createAdminCrudInputType<
-  T extends DefinitionSchemaCreator<AdminCrudInputSchema>,
->(payload: AdminCrudInputType<T>): AdminCrudInputType<T> {
+export function createAdminCrudInputType<T extends AdminCrudInputSchemaCreator>(
+  payload: AdminCrudInputType<T>,
+): AdminCrudInputType<T> {
   return payload;
 }
 

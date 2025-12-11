@@ -13,17 +13,17 @@ import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings/index.js';
 
 export const createAppSchema = definitionSchema((ctx) =>
-  ctx.withRefBuilder(
-    z.discriminatedUnion('type', [
-      createBackendAppSchema(ctx),
-      createWebAppSchema(ctx),
-    ]),
-    (builder) => {
-      builder.addEntity({
+  ctx.refContext({ appSlot: appEntityType }, ({ appSlot }) =>
+    ctx.withEnt(
+      z.discriminatedUnion('type', [
+        createBackendAppSchema(ctx, { appSlot }),
+        createWebAppSchema(ctx, { appSlot }),
+      ]),
+      {
         type: appEntityType,
-        addContext: 'app',
-      });
-    },
+        provides: appSlot,
+      },
+    ),
   ),
 );
 

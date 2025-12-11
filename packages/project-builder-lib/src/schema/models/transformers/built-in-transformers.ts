@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { def } from '#src/schema/creator/index.js';
 
 import { createDefinitionEntityNameResolver } from '#src/references/index.js';
-import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
 
 import {
   modelEntityType,
@@ -13,53 +13,56 @@ import {
 } from '../types.js';
 import { baseTransformerFields, createModelTransformerType } from './types.js';
 
-export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
-  ctx.withRefBuilder(
-    ctx.withEnt(
-      z.object({
-        ...baseTransformerFields,
-        foreignRelationRef: ctx.withRef({
-          type: modelForeignRelationEntityType,
-          onDelete: 'DELETE_PARENT',
-          parentPath: { context: 'model' },
-        }),
-        type: z.literal('embeddedRelation'),
-        embeddedFieldNames: z.array(
-          ctx.withRef({
-            type: modelScalarFieldEntityType,
-            onDelete: 'RESTRICT',
-            parentPath: { context: 'embeddedModel' },
-          }),
-        ),
-        embeddedTransformerNames: z
-          .array(
-            ctx.withRef({
-              type: modelTransformerEntityType,
-              onDelete: 'RESTRICT',
-              parentPath: { context: 'embeddedModel' },
+export const createEmbeddedRelationTransformerSchema =
+  definitionSchemaWithSlots(
+    { modelSlot: modelEntityType },
+    (ctx, { modelSlot }) =>
+      ctx.refContext(
+        { embeddedModelSlot: modelEntityType },
+        ({ embeddedModelSlot }) =>
+          ctx.withEnt(
+            z.object({
+              ...baseTransformerFields,
+              foreignRelationRef: ctx.withRef({
+                type: modelForeignRelationEntityType,
+                onDelete: 'DELETE_PARENT',
+                parentSlot: modelSlot,
+              }),
+              type: z.literal('embeddedRelation'),
+              embeddedFieldNames: z.array(
+                ctx.withRef({
+                  type: modelScalarFieldEntityType,
+                  onDelete: 'RESTRICT',
+                  parentSlot: embeddedModelSlot,
+                }),
+              ),
+              embeddedTransformerNames: z
+                .array(
+                  ctx.withRef({
+                    type: modelTransformerEntityType,
+                    onDelete: 'RESTRICT',
+                    parentSlot: embeddedModelSlot,
+                  }),
+                )
+                .optional(),
+              modelRef: ctx.withRef({
+                type: modelEntityType,
+                onDelete: 'RESTRICT',
+                provides: embeddedModelSlot,
+              }),
             }),
-          )
-          .optional(),
-        modelRef: ctx.withRef({
-          type: modelEntityType,
-          onDelete: 'RESTRICT',
-        }),
-      }),
-      {
-        type: modelTransformerEntityType,
-        parentPath: { context: 'model' },
-        getNameResolver: (entity) =>
-          createDefinitionEntityNameResolver({
-            idsToResolve: { foreignRelation: entity.foreignRelationRef },
-            resolveName: (entityNames) => entityNames.foreignRelation,
-          }),
-      },
-    ),
-    (builder) => {
-      builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
-    },
-  ),
-);
+            {
+              type: modelTransformerEntityType,
+              parentSlot: modelSlot,
+              getNameResolver: (entity) =>
+                createDefinitionEntityNameResolver({
+                  idsToResolve: { foreignRelation: entity.foreignRelationRef },
+                  resolveName: (entityNames) => entityNames.foreignRelation,
+                }),
+            },
+          ),
+      ),
+  );
 
 export type EmbeddedRelationTransformerConfig = def.InferOutput<
   typeof createEmbeddedRelationTransformerSchema

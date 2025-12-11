@@ -9,4 +9,5 @@ export * from './sets/index.js';
 export * from './string/index.js';
 export * from './toposort/index.js';
 export * from './type-guards/index.js';
+export type * from './types/index.js';
 export * from './validators/index.js';

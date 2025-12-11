@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ZodRefPayload } from './definition-ref-builder.js';
+import type { ExtractDefinitionRefsPayload } from './extract-definition-refs.js';
 
 import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
 import { createEntityType } from './types.js';
@@ -8,7 +8,7 @@ import { createEntityType } from './types.js';
 describe('resolveZodRefPayloadNames', () => {
   it('should resolve simple entity names without dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -16,7 +16,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'test-1',
           type: entityType,
           path: ['test'],
-          idPath: ['test', 'id'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Test Entity',
           },
@@ -30,14 +30,14 @@ describe('resolveZodRefPayloadNames', () => {
       id: 'test-1',
       type: entityType,
       path: ['test'],
-      idPath: ['test', 'id'],
+      idPath: ['id'],
       name: 'Test Entity',
     });
   });
 
   it('should resolve entity names with dependencies in correct order', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -45,7 +45,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -55,7 +55,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'parent-1',
           type: entityType,
           path: ['parent'],
-          idPath: ['parent', 'id'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Parent Entity',
           },
@@ -75,7 +75,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should handle array dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -83,7 +83,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'collection-1',
           type: entityType,
           path: ['collection'],
-          idPath: ['collection', 'id'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { itemIds: ['item-1', 'item-2'] },
             resolveName: ({ itemIds }) =>
@@ -94,7 +94,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'item-1',
           type: entityType,
           path: ['items', 0],
-          idPath: ['items', 0, 'id'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Item One',
           },
@@ -103,7 +103,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'item-2',
           type: entityType,
           path: ['items', 1],
-          idPath: ['items', 1, 'id'],
+          idPath: ['id'],
           nameResolver: {
             resolveName: () => 'Item Two',
           },
@@ -120,7 +120,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should throw error for unresolvable dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -128,7 +128,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -144,7 +144,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should allow invalid references when allowInvalidReferences is true', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -152,7 +152,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'non-existent' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -170,7 +170,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should skip reference name resolution when skipReferenceNameResolution is true', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -178,7 +178,7 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'child-1',
           type: entityType,
           path: ['child'],
-          idPath: ['child', 'id'],
+          idPath: ['id'],
           nameResolver: {
             idsToResolve: { parentId: 'parent-1' },
             resolveName: ({ parentId }) => `Child of ${parentId as string}`,
@@ -203,7 +203,7 @@ describe('resolveZodRefPayloadNames', () => {
         onDelete: 'RESTRICT' as const,
       },
     ];
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references,
       entitiesWithNameResolver: [],
@@ -215,7 +215,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should preserve input data in the output', () => {
     const data = { test: 'value' };
-    const payload: ZodRefPayload<typeof data> = {
+    const payload: ExtractDefinitionRefsPayload<typeof data> = {
       data,
       references: [],
       entitiesWithNameResolver: [],

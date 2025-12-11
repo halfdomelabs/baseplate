@@ -121,42 +121,46 @@ describe('serializeSchema', () => {
       parentType: modelType,
     });
     const schemaCreator = definitionSchema((ctx) =>
-      z.object({
-        models: z.array(
-          ctx.withEnt(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              fields: z.array(
-                ctx.withEnt(
-                  z.object({
-                    id: z.string(),
-                    name: z.string(),
-                  }),
-                  { type: fieldType, parentPath: { context: 'model' } },
-                ),
-              ),
-              relations: z.array(
+      ctx.refContext(
+        { modelSlot: modelType, foreignModelSlot: modelType },
+        ({ modelSlot, foreignModelSlot }) =>
+          z.object({
+            models: z.array(
+              ctx.withEnt(
                 z.object({
-                  modelName: ctx.withRef({
-                    type: modelType,
-                    onDelete: 'RESTRICT',
-                    addContext: 'foreignModel',
-                  }),
+                  id: z.string(),
+                  name: z.string(),
                   fields: z.array(
-                    ctx.withRef({
-                      type: fieldType,
-                      onDelete: 'RESTRICT',
-                      parentPath: { context: 'foreignModel' },
+                    ctx.withEnt(
+                      z.object({
+                        id: z.string(),
+                        name: z.string(),
+                      }),
+                      { type: fieldType, parentSlot: modelSlot },
+                    ),
+                  ),
+                  relations: z.array(
+                    z.object({
+                      modelName: ctx.withRef({
+                        type: modelType,
+                        onDelete: 'RESTRICT',
+                        provides: foreignModelSlot,
+                      }),
+                      fields: z.array(
+                        ctx.withRef({
+                          type: fieldType,
+                          onDelete: 'RESTRICT',
+                          parentSlot: foreignModelSlot,
+                        }),
+                      ),
                     }),
                   ),
                 }),
+                { type: modelType, provides: modelSlot },
               ),
-            }),
-            { type: modelType, addContext: 'model' },
-          ),
-        ),
-      }),
+            ),
+          }),
+      ),
     );
 
     const data = {

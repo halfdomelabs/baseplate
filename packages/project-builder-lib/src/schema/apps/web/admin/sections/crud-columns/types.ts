@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
+import type { RefContextSlot } from '#src/references/ref-context-slot.js';
+import type { DefinitionSchemaParserContext } from '#src/schema/creator/types.js';
+import type { modelEntityType } from '#src/schema/models/types.js';
 
 import { createEntityType } from '#src/references/types.js';
 
@@ -26,16 +28,27 @@ export type AdminCrudColumnSchema = z.ZodType<
   AdminCrudColumnInput
 >;
 
+/** Slots required by admin crud column schemas */
+export interface AdminCrudColumnSlots {
+  modelSlot: RefContextSlot<typeof modelEntityType>;
+}
+
+/**
+ * Schema creator for admin crud columns that requires modelSlot.
+ */
+export type AdminCrudColumnSchemaCreator<
+  T extends AdminCrudColumnSchema = AdminCrudColumnSchema,
+> = (ctx: DefinitionSchemaParserContext, slots: AdminCrudColumnSlots) => T;
+
 export interface AdminCrudColumnType<
-  T extends
-    DefinitionSchemaCreator<AdminCrudColumnSchema> = DefinitionSchemaCreator<AdminCrudColumnSchema>,
+  T extends AdminCrudColumnSchemaCreator = AdminCrudColumnSchemaCreator,
 > {
   name: string;
   createSchema: T;
 }
 
 export function createAdminCrudColumnType<
-  T extends DefinitionSchemaCreator<AdminCrudColumnSchema>,
+  T extends AdminCrudColumnSchemaCreator,
 >(payload: AdminCrudColumnType<T>): AdminCrudColumnType<T> {
   return payload;
 }

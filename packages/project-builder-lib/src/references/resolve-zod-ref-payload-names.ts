@@ -1,7 +1,7 @@
 import { toposort } from '@baseplate-dev/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
-import type { ZodRefPayload } from './definition-ref-builder.js';
+import type { ExtractDefinitionRefsPayload } from './extract-definition-refs.js';
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
 /**
@@ -28,7 +28,7 @@ export interface ResolveZodRefPayloadNamesOptions {
  * @template T - The type of the payload.
  */
 export function resolveZodRefPayloadNames<T>(
-  payload: ZodRefPayload<T>,
+  payload: ExtractDefinitionRefsPayload<T>,
   {
     skipReferenceNameResolution = false,
     allowInvalidReferences = false,
@@ -41,6 +41,9 @@ export function resolveZodRefPayloadNames<T>(
   const orderedEntities = toposort(
     entitiesWithNameResolver.map((entity) => entity.id),
     entitiesWithNameResolver.flatMap((entity) => {
+      if (typeof entity.nameResolver !== 'object') {
+        return [];
+      }
       const entityIds = entity.nameResolver.idsToResolve ?? {};
       return Object.values(entityIds)
         .flat()
@@ -65,15 +68,24 @@ export function resolveZodRefPayloadNames<T>(
 
   for (const id of orderedEntities) {
     const { nameResolver, ...rest } = entitiesById[id];
-    const resolvedIds = mapValues(nameResolver.idsToResolve ?? {}, (idOrIds) =>
-      Array.isArray(idOrIds)
-        ? idOrIds.map((id) => resolveIdToName(id))
-        : resolveIdToName(idOrIds),
-    );
-    resolvedEntitiesById.set(rest.id, {
-      ...rest,
-      name: nameResolver.resolveName(resolvedIds),
-    });
+    if (typeof nameResolver === 'string') {
+      resolvedEntitiesById.set(rest.id, {
+        ...rest,
+        name: nameResolver,
+      });
+    } else {
+      const resolvedIds = mapValues(
+        nameResolver.idsToResolve ?? {},
+        (idOrIds) =>
+          Array.isArray(idOrIds)
+            ? idOrIds.map((id) => resolveIdToName(id))
+            : resolveIdToName(idOrIds),
+      );
+      resolvedEntitiesById.set(rest.id, {
+        ...rest,
+        name: nameResolver.resolveName(resolvedIds),
+      });
+    }
   }
 
   return {

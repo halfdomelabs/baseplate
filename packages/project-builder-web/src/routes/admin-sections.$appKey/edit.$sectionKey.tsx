@@ -6,6 +6,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -32,7 +33,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import AdminCrudSectionForm from './-components/admin-crud-section-form.js';

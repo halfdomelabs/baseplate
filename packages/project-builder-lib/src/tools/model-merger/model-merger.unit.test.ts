@@ -777,7 +777,7 @@ describe('GraphQL support', () => {
           relations: [
             {
               name: 'author',
-              modelRef: authorModel.id,
+              modelRef: 'Author',
               references: [
                 {
                   localRef: 'id',

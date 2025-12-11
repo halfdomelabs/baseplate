@@ -40,7 +40,9 @@ export async function buildServer({
   const server = fastify({
     forceCloseConnections: 'idle',
     loggerInstance: logger as FastifyBaseLogger,
-    maxParamLength: 10_000,
+    routerOptions: {
+      maxParamLength: 10_000,
+    },
   });
 
   server.setValidatorCompiler(validatorCompiler);
