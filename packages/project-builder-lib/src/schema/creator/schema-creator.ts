@@ -45,7 +45,7 @@ export function definitionSchema<T extends z.ZodType>(
  *   (ctx, { modelSlot }) =>
  *     ctx.withEnt(schema, {
  *       type: modelScalarFieldEntityType,
- *       parentRef: modelSlot,
+ *       parentSlot: modelSlot,
  *     }),
  * );
  *
@@ -84,7 +84,7 @@ export function definitionSchemaWithSlots<
  * // Schema that normally requires modelSlot from parent
  * const createModelScalarFieldSchema = definitionSchemaWithSlots(
  *   { modelSlot: modelEntityType },
- *   (ctx, { modelSlot }) => ctx.withEnt(schema, { parentRef: modelSlot }),
+ *   (ctx, { modelSlot }) => ctx.withEnt(schema, { parentSlot: modelSlot }),
  * );
  *
  * // For React Hook Form validation, wrap with placeholder slots

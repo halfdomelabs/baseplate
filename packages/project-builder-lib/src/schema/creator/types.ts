@@ -4,7 +4,6 @@ import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
   RefContextType,
   WithEntType,
-  WithRefBuilder,
   WithRefType,
 } from '#src/references/extend-parser-context-with-refs.js';
 import type {
@@ -63,10 +62,6 @@ export interface DefinitionSchemaParserContext {
    * Adds an entity to the schema.
    */
   withEnt: WithEntType;
-  /**
-   * Provides access to the reference builder functions for the schema.
-   */
-  withRefBuilder: WithRefBuilder;
   /**
    * Wraps a schema with default value handling based on the defaultMode.
    * - 'populate': Uses preprocess to ensure defaults are present

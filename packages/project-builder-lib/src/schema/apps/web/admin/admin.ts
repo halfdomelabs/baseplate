@@ -15,16 +15,11 @@ export const createWebAdminSectionSchema = definitionSchemaWithSlots(
     ctx.refContext(
       { adminSectionSlot: adminSectionEntityType },
       ({ adminSectionSlot }) =>
-        ctx.withRefBuilder(
-          createAdminCrudSectionSchema(ctx, { adminSectionSlot }),
-          (builder) => {
-            builder.addEntity({
-              type: adminSectionEntityType,
-              parentRef: appSlot,
-              provides: adminSectionSlot,
-            });
-          },
-        ),
+        ctx.withEnt(createAdminCrudSectionSchema(ctx, { adminSectionSlot }), {
+          type: adminSectionEntityType,
+          parentSlot: appSlot,
+          provides: adminSectionSlot,
+        }),
     ),
 );
 

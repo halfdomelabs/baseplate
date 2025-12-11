@@ -1,11 +1,6 @@
 import type { DefinitionEntityType } from './types.js';
 
 /**
- * Symbol used to brand RefContextSlot instances for type safety.
- */
-export const REF_CONTEXT_SLOT_SYMBOL = Symbol('refContextSlot');
-
-/**
  * A typed slot representing a context that can be provided and consumed.
  * The type parameter T represents the DefinitionEntityType this slot is for.
  *
@@ -21,17 +16,16 @@ export const REF_CONTEXT_SLOT_SYMBOL = Symbol('refContextSlot');
  * ctx.withEnt(schema, { type: modelEntityType, provides: modelSlot });
  *
  * // Consumer: uses the slot for parent path resolution
- * ctx.withRef({ type: fieldEntityType, parentRef: modelSlot });
+ * ctx.withRef({ type: fieldEntityType, parentSlot: modelSlot });
  * ```
  */
 export interface RefContextSlot<
   T extends DefinitionEntityType = DefinitionEntityType,
 > {
-  readonly [REF_CONTEXT_SLOT_SYMBOL]: true;
   /** The entity type this slot is associated with */
   readonly entityType: T;
   /** Unique identifier for this slot instance */
-  readonly _slotId: symbol;
+  readonly id: symbol;
 }
 
 /**
@@ -48,8 +42,8 @@ export interface RefContextSlot<
  * const anotherModelSlot = createRefContextSlot('anotherModelSlot', modelEntityType);
  *
  * // These are different slots despite same entity type
- * modelSlot._slotId !== anotherModelSlot._slotId
- * // modelSlot._slotId.toString() === 'Symbol(modelSlot)'
+ * modelSlot.id !== anotherModelSlot.id
+ * // modelSlot.id.toString() === 'Symbol(modelSlot)'
  * ```
  */
 export function createRefContextSlot<T extends DefinitionEntityType>(
@@ -57,25 +51,9 @@ export function createRefContextSlot<T extends DefinitionEntityType>(
   entityType: T,
 ): RefContextSlot<T> {
   return {
-    [REF_CONTEXT_SLOT_SYMBOL]: true,
     entityType,
-    _slotId: Symbol(name),
+    id: Symbol(name),
   };
-}
-
-/**
- * Type guard to check if a value is a RefContextSlot.
- *
- * @param value - The value to check
- * @returns True if the value is a RefContextSlot
- */
-export function isRefContextSlot(value: unknown): value is RefContextSlot {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    REF_CONTEXT_SLOT_SYMBOL in value &&
-    value[REF_CONTEXT_SLOT_SYMBOL] === true
-  );
 }
 
 /**

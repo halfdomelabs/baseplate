@@ -13,25 +13,23 @@ export const storageAdapterEntityType = createEntityType(
 );
 
 export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
-  ctx.withRefBuilder(
-    z.object({
-      storageFeatureRef: ctx.withRef({
-        type: featureEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      s3Adapters: z.array(
-        ctx.withEnt(
-          z.object({
-            id: z.string(),
-            name: VALIDATORS.CAMEL_CASE_STRING,
-            bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
-            hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,
-          }),
-          { type: storageAdapterEntityType },
-        ),
-      ),
+  z.object({
+    storageFeatureRef: ctx.withRef({
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
     }),
-  ),
+    s3Adapters: z.array(
+      ctx.withEnt(
+        z.object({
+          id: z.string(),
+          name: VALIDATORS.CAMEL_CASE_STRING,
+          bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
+          hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,
+        }),
+        { type: storageAdapterEntityType },
+      ),
+    ),
+  }),
 );
 
 export type StoragePluginDefinition = def.InferOutput<

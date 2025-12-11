@@ -65,7 +65,7 @@ export const createAdminCrudEmbeddedFormSchema = definitionSchemaWithSlots(
   { adminSectionSlot: adminSectionEntityType },
   (ctx, { adminSectionSlot }) =>
     ctx.refContext({ modelSlot: modelEntityType }, ({ modelSlot }) =>
-      ctx.withRefBuilder(
+      ctx.withEnt(
         z.discriminatedUnion('type', [
           createAdminCrudEmbeddedObjectSchemaInternal(ctx, {
             modelSlot,
@@ -76,11 +76,9 @@ export const createAdminCrudEmbeddedFormSchema = definitionSchemaWithSlots(
             adminSectionSlot,
           }),
         ]),
-        (builder) => {
-          builder.addEntity({
-            type: adminCrudEmbeddedFormEntityType,
-            parentRef: adminSectionSlot,
-          });
+        {
+          type: adminCrudEmbeddedFormEntityType,
+          parentSlot: adminSectionSlot,
         },
       ),
     ),
@@ -112,7 +110,7 @@ export const createAdminCrudSectionSchema = definitionSchemaWithSlots(
           nameFieldRef: ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
-            parentRef: modelSlot,
+            parentSlot: modelSlot,
           }),
           disableCreate: ctx.withDefault(z.boolean(), false),
           table: z.object({

@@ -21,7 +21,7 @@ export const createEnumValueSchema = definitionSchemaWithSlots(
       }),
       {
         type: modelEnumValueEntityType,
-        parentRef: enumSlot,
+        parentSlot: enumSlot,
       },
     ),
 );

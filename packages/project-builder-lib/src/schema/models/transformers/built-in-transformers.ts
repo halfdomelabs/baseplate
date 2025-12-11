@@ -26,14 +26,14 @@ export const createEmbeddedRelationTransformerSchema =
               foreignRelationRef: ctx.withRef({
                 type: modelForeignRelationEntityType,
                 onDelete: 'DELETE_PARENT',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
               type: z.literal('embeddedRelation'),
               embeddedFieldNames: z.array(
                 ctx.withRef({
                   type: modelScalarFieldEntityType,
                   onDelete: 'RESTRICT',
-                  parentRef: embeddedModelSlot,
+                  parentSlot: embeddedModelSlot,
                 }),
               ),
               embeddedTransformerNames: z
@@ -41,7 +41,7 @@ export const createEmbeddedRelationTransformerSchema =
                   ctx.withRef({
                     type: modelTransformerEntityType,
                     onDelete: 'RESTRICT',
-                    parentRef: embeddedModelSlot,
+                    parentSlot: embeddedModelSlot,
                   }),
                 )
                 .optional(),
@@ -53,7 +53,7 @@ export const createEmbeddedRelationTransformerSchema =
             }),
             {
               type: modelTransformerEntityType,
-              parentRef: modelSlot,
+              parentSlot: modelSlot,
               getNameResolver: (entity) =>
                 createDefinitionEntityNameResolver({
                   idsToResolve: { foreignRelation: entity.foreignRelationRef },

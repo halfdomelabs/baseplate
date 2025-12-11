@@ -4,20 +4,17 @@ import { z } from 'zod';
 import { PluginImplementationStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
-import type { ZodRefContext } from './extract-definition-refs.js';
-
+import { collectRefs } from './collect-refs.js';
 import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
-import {
-  extractDefinitionRefs,
-  extractDefinitionRefsRecursive,
-} from './extract-definition-refs.js';
+import { extractDefinitionRefs } from './extract-definition-refs.js';
 import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 import { createRefContextSlot } from './ref-context-slot.js';
+import { resolveSlots } from './resolve-slots.js';
 import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {
@@ -272,7 +269,7 @@ describe('extract-definition-refs', () => {
                   z.object({ id: z.string(), name: z.string() }),
                   {
                     type: fieldType,
-                    parentRef: modelSlot,
+                    parentSlot: modelSlot,
                   },
                 ),
               }),
@@ -284,7 +281,7 @@ describe('extract-definition-refs', () => {
                 fieldRef: ctx.withRef({
                   type: fieldType,
                   onDelete: 'RESTRICT',
-                  parentRef: modelSlot,
+                  parentSlot: modelSlot,
                 }),
               }),
               (builder) => {
@@ -357,7 +354,7 @@ describe('extract-definition-refs', () => {
                       z.object({ id: z.string(), name: z.string() }),
                       {
                         type: fieldType,
-                        parentRef: modelSlot,
+                        parentSlot: modelSlot,
                       },
                     ),
                   ),
@@ -372,7 +369,7 @@ describe('extract-definition-refs', () => {
                         ctx.withRef({
                           type: fieldType,
                           onDelete: 'RESTRICT',
-                          parentRef: foreignModelSlot,
+                          parentSlot: foreignModelSlot,
                         }),
                       ),
                     }),
@@ -729,68 +726,76 @@ describe('extract-definition-refs', () => {
     });
   });
 
-  describe('Core Logic Tests (extractDefinitionRefsRecursive)', () => {
+  describe('Core Logic Tests (collectRefs + resolveSlots)', () => {
     describe('Edge Cases', () => {
-      it('should handle missing context paths gracefully', () => {
+      it('should handle missing slots during resolution', () => {
         const modelType = new DefinitionEntityType('model', 'model');
         const fieldType = new DefinitionEntityType('field', 'field', modelType);
         const modelSlot = createRefContextSlot('modelSlot', modelType);
         const missingSlot = createRefContextSlot('missingSlot', modelType);
-
-        const context: ZodRefContext = {
-          context: {
-            pathMap: new Map([
-              [modelSlot._slotId, { path: ['models', 0], type: modelType }],
-            ]),
-          },
-          references: [],
-          entitiesWithNameResolver: [],
-        };
 
         const referenceWithMissingContext = new DefinitionReferenceMarker(
           'field:missing-context-field',
           {
             type: fieldType,
             onDelete: 'RESTRICT',
-            parentRef: missingSlot,
+            parentSlot: missingSlot,
           },
         );
 
-        expect(() =>
-          extractDefinitionRefsRecursive(referenceWithMissingContext, context, [
-            'field',
-            'ref',
-          ]),
-        ).toThrow('Could not find context for slot (model) from field.ref');
+        // Collect refs - this should succeed
+        const collected = collectRefs({ ref: referenceWithMissingContext }, []);
+
+        // Add the modelSlot to slotPaths, but not missingSlot
+        collected.slotPaths.set(modelSlot.id, [
+          { path: ['models', 0], type: modelType },
+        ]);
+
+        // Resolution should fail because missingSlot is not in slotPaths
+        expect(() => resolveSlots(collected)).toThrow(
+          'Could not find slot "missingSlot"',
+        );
       });
 
-      it('should return primitive values unchanged', () => {
-        const context: ZodRefContext = {
-          context: { pathMap: new Map() },
+      it('should collect nothing from primitive values', () => {
+        expect(collectRefs('string', [])).toEqual({
+          entities: [],
           references: [],
-          entitiesWithNameResolver: [],
-        };
-
-        expect(extractDefinitionRefsRecursive('string', context, [])).toBe(
-          'string',
-        );
-        expect(extractDefinitionRefsRecursive(42, context, [])).toBe(42);
-        expect(extractDefinitionRefsRecursive(true, context, [])).toBe(true);
-        expect(extractDefinitionRefsRecursive(null, context, [])).toBe(null);
-        expect(extractDefinitionRefsRecursive(undefined, context, [])).toBe(
-          undefined,
-        );
+          slotPaths: new Map(),
+        });
+        expect(collectRefs(42, [])).toEqual({
+          entities: [],
+          references: [],
+          slotPaths: new Map(),
+        });
+        expect(collectRefs(true, [])).toEqual({
+          entities: [],
+          references: [],
+          slotPaths: new Map(),
+        });
+        expect(collectRefs(null, [])).toEqual({
+          entities: [],
+          references: [],
+          slotPaths: new Map(),
+        });
+        expect(collectRefs(undefined, [])).toEqual({
+          entities: [],
+          references: [],
+          slotPaths: new Map(),
+        });
       });
 
       it('should handle empty objects and arrays', () => {
-        const context: ZodRefContext = {
-          context: { pathMap: new Map() },
+        expect(collectRefs({}, [])).toEqual({
+          entities: [],
           references: [],
-          entitiesWithNameResolver: [],
-        };
-
-        expect(extractDefinitionRefsRecursive({}, context, [])).toEqual({});
-        expect(extractDefinitionRefsRecursive([], context, [])).toEqual([]);
+          slotPaths: new Map(),
+        });
+        expect(collectRefs([], [])).toEqual({
+          entities: [],
+          references: [],
+          slotPaths: new Map(),
+        });
       });
     });
 
@@ -798,13 +803,7 @@ describe('extract-definition-refs', () => {
       const testEntityType = new DefinitionEntityType('test', 'test');
       const testRefEntityType = new DefinitionEntityType('testref', 'testref');
 
-      it('should extract reference markers and return clean values', () => {
-        const context: ZodRefContext = {
-          context: { pathMap: new Map() },
-          references: [],
-          entitiesWithNameResolver: [],
-        };
-
+      it('should collect reference markers', () => {
         const referenceMarker = new DefinitionReferenceMarker(
           'testref:test-id',
           {
@@ -813,15 +812,11 @@ describe('extract-definition-refs', () => {
           },
         );
 
-        const result = extractDefinitionRefsRecursive(
-          referenceMarker,
-          context,
-          ['field'],
-        );
+        const collected = collectRefs({ field: referenceMarker }, []);
+        const resolved = resolveSlots(collected);
 
-        expect(result).toBe('testref:test-id');
-        expect(context.references).toHaveLength(1);
-        expect(context.references[0]).toEqual({
+        expect(resolved.references).toHaveLength(1);
+        expect(resolved.references[0]).toEqual({
           type: testRefEntityType,
           path: ['field'],
           onDelete: 'RESTRICT',
@@ -829,13 +824,7 @@ describe('extract-definition-refs', () => {
         });
       });
 
-      it('should extract entity annotations and return clean objects', () => {
-        const context: ZodRefContext = {
-          context: { pathMap: new Map() },
-          references: [],
-          entitiesWithNameResolver: [],
-        };
-
+      it('should collect entity annotations', () => {
         const inputWithAnnotations = {
           id: 'test:test-id',
           name: 'Test Entity',
@@ -851,18 +840,11 @@ describe('extract-definition-refs', () => {
           },
         };
 
-        const result = extractDefinitionRefsRecursive(
-          inputWithAnnotations,
-          context,
-          ['entity'],
-        );
+        const collected = collectRefs({ entity: inputWithAnnotations }, []);
+        const resolved = resolveSlots(collected);
 
-        expect(result).toEqual({
-          id: 'test:test-id',
-          name: 'Test Entity',
-        });
-        expect(context.entitiesWithNameResolver).toHaveLength(1);
-        expect(context.entitiesWithNameResolver[0]).toMatchObject({
+        expect(resolved.entities).toHaveLength(1);
+        expect(resolved.entities[0]).toMatchObject({
           id: 'test:test-id',
           type: testEntityType,
           path: ['entity'],

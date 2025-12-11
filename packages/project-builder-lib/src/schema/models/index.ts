@@ -63,7 +63,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
                     .withRef({
                       type: modelEnumValueEntityType,
                       onDelete: 'RESTRICT',
-                      parentRef: enumSlot,
+                      parentSlot: enumSlot,
                     })
                     .optional(),
                 })
@@ -76,7 +76,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
         }),
         {
           type: modelScalarFieldEntityType,
-          parentRef: modelSlot,
+          parentSlot: modelSlot,
         },
       )
       .superRefine((arg, ctx) => {
@@ -130,47 +130,47 @@ export const createModelRelationFieldSchema = definitionSchemaWithSlots(
     ctx.refContext(
       { foreignModelSlot: modelEntityType },
       ({ foreignModelSlot }) =>
-        ctx.withRefBuilder(
-          z.object({
-            id: z.string(),
-            foreignId: z
-              .string()
-              .default(() => modelForeignRelationEntityType.generateNewId()),
-            name: VALIDATORS.CAMEL_CASE_STRING,
-            references: z.array(
-              z.object({
-                localRef: ctx.withRef({
-                  type: modelScalarFieldEntityType,
-                  onDelete: 'RESTRICT',
-                  parentRef: modelSlot,
+        ctx.withEnt(
+          ctx.withEnt(
+            z.object({
+              id: z.string(),
+              foreignId: z
+                .string()
+                .default(() => modelForeignRelationEntityType.generateNewId()),
+              name: VALIDATORS.CAMEL_CASE_STRING,
+              references: z.array(
+                z.object({
+                  localRef: ctx.withRef({
+                    type: modelScalarFieldEntityType,
+                    onDelete: 'RESTRICT',
+                    parentSlot: modelSlot,
+                  }),
+                  foreignRef: ctx.withRef({
+                    type: modelScalarFieldEntityType,
+                    onDelete: 'RESTRICT',
+                    parentSlot: modelSlot,
+                  }),
                 }),
-                foreignRef: ctx.withRef({
-                  type: modelScalarFieldEntityType,
-                  onDelete: 'RESTRICT',
-                  parentRef: modelSlot,
-                }),
+              ),
+              modelRef: ctx.withRef({
+                type: modelEntityType,
+                onDelete: 'RESTRICT',
+                provides: foreignModelSlot,
               }),
-            ),
-            modelRef: ctx.withRef({
-              type: modelEntityType,
-              onDelete: 'RESTRICT',
-              provides: foreignModelSlot,
+              foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
+              onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
+              onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
             }),
-            foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
-            onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
-            onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
-          }),
-          (builder) => {
-            builder.addEntity({
+            {
               type: modelLocalRelationEntityType,
-              parentRef: modelSlot,
-            });
-            builder.addEntity({
-              type: modelForeignRelationEntityType,
-              idPath: 'foreignId',
-              getNameResolver: (entity) => entity.foreignRelationName,
-              parentRef: foreignModelSlot,
-            });
+              parentSlot: modelSlot,
+            },
+          ),
+          {
+            type: modelForeignRelationEntityType,
+            idPath: 'foreignId',
+            getNameResolver: (entity) => entity.foreignRelationName,
+            parentSlot: foreignModelSlot,
           },
         ),
     ),
@@ -195,14 +195,14 @@ export const createModelUniqueConstraintSchema = definitionSchemaWithSlots(
             fieldRef: ctx.withRef({
               type: modelScalarFieldEntityType,
               onDelete: 'RESTRICT',
-              parentRef: modelSlot,
+              parentSlot: modelSlot,
             }),
           }),
         ),
       }),
       {
         type: modelUniqueConstraintEntityType,
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
         getNameResolver(value) {
           return createDefinitionEntityNameResolver({
             idsToResolve: { fields: value.fields.map((f) => f.fieldRef) },
@@ -233,7 +233,7 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelScalarFieldEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             )
             .optional(),
@@ -242,7 +242,7 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelTransformerEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             )
             .optional(),
@@ -256,7 +256,7 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelScalarFieldEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             )
             .optional(),
@@ -265,7 +265,7 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelTransformerEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             )
             .optional(),
@@ -308,7 +308,7 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
             ctx.withRef({
               type: modelScalarFieldEntityType,
               onDelete: 'RESTRICT',
-              parentRef: slots.modelSlot,
+              parentSlot: slots.modelSlot,
             }),
           )
           .min(1),

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ZodRefPayload } from './definition-ref-builder.js';
+import type { ExtractDefinitionRefsPayload } from './extract-definition-refs.js';
 
-import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
+import { resolveExtractDefinitionRefsPayloadNames } from './resolve-zod-ref-payload-names.js';
 import { createEntityType } from './types.js';
 
-describe('resolveZodRefPayloadNames', () => {
+describe('resolveExtractDefinitionRefsPayloadNames', () => {
   it('should resolve simple entity names without dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -16,7 +16,6 @@ describe('resolveZodRefPayloadNames', () => {
           id: 'test-1',
           type: entityType,
           path: ['test'],
-          idPath: ['test', 'id'],
           nameResolver: {
             resolveName: () => 'Test Entity',
           },
@@ -24,7 +23,7 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload);
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
     expect(resolved.entities).toHaveLength(1);
     expect(resolved.entities[0]).toEqual({
       id: 'test-1',
@@ -37,7 +36,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should resolve entity names with dependencies in correct order', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -63,7 +62,7 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload);
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
     expect(resolved.entities).toHaveLength(2);
     expect(resolved.entities.find((e) => e.id === 'parent-1')?.name).toBe(
       'Parent Entity',
@@ -75,7 +74,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should handle array dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -111,7 +110,7 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload);
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
     expect(resolved.entities).toHaveLength(3);
     expect(resolved.entities.find((e) => e.id === 'collection-1')?.name).toBe(
       'Collection of Item One and Item Two',
@@ -120,7 +119,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should throw error for unresolvable dependencies', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -137,14 +136,14 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    expect(() => resolveZodRefPayloadNames(payload)).toThrow(
+    expect(() => resolveExtractDefinitionRefsPayloadNames(payload)).toThrow(
       'Could not resolve entity name for id: non-existent',
     );
   });
 
   it('should allow invalid references when allowInvalidReferences is true', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -161,7 +160,7 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload, {
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload, {
       allowInvalidReferences: true,
     });
     expect(resolved.entities).toHaveLength(1);
@@ -170,7 +169,7 @@ describe('resolveZodRefPayloadNames', () => {
 
   it('should skip reference name resolution when skipReferenceNameResolution is true', () => {
     const entityType = createEntityType('test');
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
       entitiesWithNameResolver: [
@@ -187,7 +186,7 @@ describe('resolveZodRefPayloadNames', () => {
       ],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload, {
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload, {
       skipReferenceNameResolution: true,
     });
     expect(resolved.entities).toHaveLength(1);
@@ -203,25 +202,25 @@ describe('resolveZodRefPayloadNames', () => {
         onDelete: 'RESTRICT' as const,
       },
     ];
-    const payload: ZodRefPayload<unknown> = {
+    const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references,
       entitiesWithNameResolver: [],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload);
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
     expect(resolved.references).toBe(references);
   });
 
   it('should preserve input data in the output', () => {
     const data = { test: 'value' };
-    const payload: ZodRefPayload<typeof data> = {
+    const payload: ExtractDefinitionRefsPayload<typeof data> = {
       data,
       references: [],
       entitiesWithNameResolver: [],
     };
 
-    const resolved = resolveZodRefPayloadNames(payload);
+    const resolved = resolveExtractDefinitionRefsPayloadNames(payload);
     expect(resolved.data).toBe(data);
   });
 });

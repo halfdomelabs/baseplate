@@ -23,7 +23,7 @@ export const createFileTransformerSchema = definitionSchemaWithSlots(
         fileRelationRef: ctx.withRef({
           type: modelLocalRelationEntityType,
           onDelete: 'DELETE_PARENT',
-          parentRef: modelSlot,
+          parentSlot: modelSlot,
         }),
         category: z.object({
           name: CASE_VALIDATORS.CONSTANT_CASE,
@@ -45,7 +45,7 @@ export const createFileTransformerSchema = definitionSchemaWithSlots(
       }),
       {
         type: modelTransformerEntityType,
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
         getNameResolver: (entity) =>
           createDefinitionEntityNameResolver({
             idsToResolve: { fileRelation: entity.fileRelationRef },

@@ -41,7 +41,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelScalarFieldEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             ),
             [],
@@ -51,7 +51,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelLocalRelationEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             ),
             [],
@@ -61,7 +61,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               ctx.withRef({
                 type: modelForeignRelationEntityType,
                 onDelete: 'DELETE',
-                parentRef: modelSlot,
+                parentSlot: modelSlot,
               }),
             ),
             [],

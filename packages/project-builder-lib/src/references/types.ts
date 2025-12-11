@@ -83,16 +83,12 @@ export interface DefinitionEntity {
    */
   path: ReferencePath;
   /**
-   * The path to the entity's ID.
-   */
-  idPath: ReferencePath;
-  /**
    * The path to the entity's parent in the definition.
    */
   parentPath?: ReferencePath;
 }
 
-type ReferenceOnDeleteAction =
+export type ReferenceOnDeleteAction =
   /**
    * Set the reference to undefined. Cannot be used for references inside arrays.
    */

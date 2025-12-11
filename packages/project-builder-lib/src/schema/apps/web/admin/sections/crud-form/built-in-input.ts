@@ -31,7 +31,7 @@ export const createAdminCrudTextInputSchema = definitionSchemaWithSlots(
       modelFieldRef: ctx.withRef({
         type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
       validation: z.string().optional(),
     }),
@@ -55,7 +55,7 @@ export const createAdminCrudForeignInputSchema = definitionSchemaWithSlots(
       localRelationRef: ctx.withRef({
         type: modelLocalRelationEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
       labelExpression: z.string().min(1),
       valueExpression: z.string().min(1),
@@ -82,7 +82,7 @@ export const createAdminCrudEnumInputSchema = definitionSchemaWithSlots(
       modelFieldRef: ctx.withRef({
         type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
     }),
 );
@@ -105,11 +105,11 @@ export const createAdminCrudEmbeddedInputSchema = definitionSchemaWithSlots(
       modelRelationRef: ctx.withRef({
         type: modelForeignRelationEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
       embeddedFormRef: ctx.withRef({
         type: adminCrudEmbeddedFormEntityType,
-        parentRef: adminSectionSlot,
+        parentSlot: adminSectionSlot,
         onDelete: 'RESTRICT',
       }),
     }),
@@ -134,11 +134,11 @@ export const createAdminCrudEmbeddedLocalInputSchema =
         localRelationRef: ctx.withRef({
           type: modelLocalRelationEntityType,
           onDelete: 'RESTRICT',
-          parentRef: modelSlot,
+          parentSlot: modelSlot,
         }),
         embeddedFormRef: ctx.withRef({
           type: adminCrudEmbeddedFormEntityType,
-          parentRef: adminSectionSlot,
+          parentSlot: adminSectionSlot,
           onDelete: 'RESTRICT',
         }),
       }),

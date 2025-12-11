@@ -1,5 +1,6 @@
 import type { Paths } from 'type-fest';
 
+import { get } from 'es-toolkit/compat';
 import { z } from 'zod';
 
 import type { DefinitionEntityType } from '#src/index.js';
@@ -8,15 +9,13 @@ import type { DefinitionSchemaCreatorOptions } from '#src/schema/index.js';
 import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
-  ZodBuilderFunction,
-  ZodRefBuilderInterface,
 } from './definition-ref-builder.js';
 import type {
-  AnyDefinitionEntityInput,
+  DefinitionEntityAnnotation,
   DefinitionRefAnnotations,
-  SlotContextPath,
 } from './markers.js';
 import type {
+  RefContextSlot,
   RefContextSlotDefinition,
   RefContextSlotMap,
 } from './ref-context-slot.js';
@@ -26,6 +25,7 @@ import {
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
 import { createRefContextSlotMap } from './ref-context-slot.js';
+import { stripRefMarkers } from './strip-ref-markers.js';
 
 type ZodTypeWithOptional<T extends z.ZodType> = T extends z.ZodOptional
   ? z.ZodOptional<z.ZodType<z.output<T>, z.input<T>>>
@@ -42,18 +42,14 @@ export type WithRefType = <TEntityType extends DefinitionEntityType>(
 type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 export type WithEntType = <
-  TObject extends z.ZodObject,
+  TType extends z.ZodType,
   TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<z.input<TObject>>,
+  TPath extends PathInput<z.output<TType>>,
+  TIdKey extends PathInput<z.output<TType>>,
 >(
-  schema: TObject,
-  entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-) => ZodTypeWithOptional<TObject>;
-
-export type WithRefBuilder = <T extends z.ZodType>(
-  schema: T,
-  builder?: ZodBuilderFunction<z.TypeOf<T>>,
-) => ZodTypeWithOptional<T>;
+  schema: TType,
+  entity: DefinitionEntityInput<z.output<TType>, TEntityType, TPath, TIdKey>,
+) => ZodTypeWithOptional<TType>;
 
 /**
  * Creates ref context slots for use within a schema definition.
@@ -65,150 +61,173 @@ export type RefContextType = <
 >(
   slotDefinition: TSlotDef,
   schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
-) => TSchema;
+) => ZodTypeWithOptional<TSchema>;
 
 export function extendParserContextWithRefs({
   transformReferences,
 }: DefinitionSchemaCreatorOptions): {
   withRef: WithRefType;
   withEnt: WithEntType;
-  withRefBuilder: WithRefBuilder;
   refContext: RefContextType;
 } {
-  function withRef<TEntityType extends DefinitionEntityType>(
-    reference: DefinitionReferenceInput<string, TEntityType>,
-  ): z.ZodType<string, string> {
-    return z.string().transform((value) => {
-      if (transformReferences && value) {
-        return new DefinitionReferenceMarker(
-          value,
-          reference,
-        ) as unknown as string;
-      }
-
+  function modifyAnnotations(
+    value: unknown,
+    ctx: z.RefinementCtx,
+    modifier: (
+      annotations: DefinitionRefAnnotations,
+    ) => DefinitionRefAnnotations,
+  ): unknown {
+    if (value === null || value === undefined) return value;
+    if (typeof value !== 'object') {
+      ctx.addIssue({
+        code: 'invalid_type',
+        expected: 'object',
+        message: `Entity must be an object`,
+        input: value,
+      });
       return value;
-    });
-  }
-
-  function withEnt<
-    TObject extends z.ZodObject,
-    TEntityType extends DefinitionEntityType,
-    TPath extends PathInput<z.input<TObject>>,
-  >(
-    schema: TObject,
-    entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-  ): ZodTypeWithOptional<TObject> {
-    if (!('id' in schema.shape)) {
-      throw new Error(
-        `Entity must have an id field. Entity type: ${entity.type.name}. Schema keys: ${Object.keys(
-          schema.shape,
-        ).join(', ')}`,
-      );
     }
-    return schema.transform((value) => {
-      // Check if the id is valid
-      if (!('id' in value) || !entity.type.isId(value.id as string)) {
-        throw new Error(
-          `Invalid id for entity ${entity.type.name}. Id: ${value.id as string}`,
-        );
-      }
-      if (transformReferences) {
-        const existingAnnotations =
-          REF_ANNOTATIONS_MARKER_SYMBOL in value
-            ? (value[REF_ANNOTATIONS_MARKER_SYMBOL] as DefinitionRefAnnotations)
-            : undefined;
-        return {
-          ...value,
-          [REF_ANNOTATIONS_MARKER_SYMBOL]: {
-            entities: [...(existingAnnotations?.entities ?? []), entity],
-            references: existingAnnotations?.references ?? [],
-            slotContextPaths: existingAnnotations?.slotContextPaths ?? [],
-          },
-        };
-      }
-      return value;
-    }) as unknown as ZodTypeWithOptional<TObject>;
-  }
-
-  function withRefBuilder<T extends z.ZodType>(
-    schema: T,
-    builder?: ZodBuilderFunction<z.output<T>>,
-  ): ZodTypeWithOptional<T> {
-    return schema.transform((value) => {
-      if (!value) {
-        return value;
-      }
-      if (typeof value !== 'object') {
-        throw new TypeError(
-          `refBuilder requires an object, but got ${typeof value}`,
-        );
-      }
+    if (transformReferences) {
       const existingAnnotations =
         REF_ANNOTATIONS_MARKER_SYMBOL in value
           ? (value[REF_ANNOTATIONS_MARKER_SYMBOL] as DefinitionRefAnnotations)
-          : undefined;
-      const entities = existingAnnotations?.entities ?? [];
-      const references = existingAnnotations?.references ?? [];
-      const slotContextPaths: SlotContextPath[] =
-        existingAnnotations?.slotContextPaths ?? [];
-      const refBuilder: ZodRefBuilderInterface<z.output<T>> = {
-        addReference: (reference) => {
-          references.push(reference);
-        },
-        addEntity: (entity) => {
-          entities.push(entity as AnyDefinitionEntityInput);
-        },
-        addPathToContext: (path, slot) => {
-          slotContextPaths.push({ path, type: slot.entityType, slot });
-        },
+          : { entities: [], references: [], slots: [] };
+      return {
+        ...value,
+        [REF_ANNOTATIONS_MARKER_SYMBOL]: modifier(existingAnnotations),
       };
-      builder?.(refBuilder, value as z.output<T>);
-      if (transformReferences) {
-        return {
-          ...value,
-          [REF_ANNOTATIONS_MARKER_SYMBOL]: {
-            entities,
-            references,
-            slotContextPaths,
-          },
-        };
-      }
+    }
+    return value;
+  }
 
+  function withRef<TEntityType extends DefinitionEntityType>(
+    reference: DefinitionReferenceInput<string, TEntityType>,
+  ): z.ZodType<string, string> {
+    return z
+      .string()
+      .refine((val) => reference.type.isId(val), {
+        error: `Invalid id for entity ${reference.type.name}`,
+      })
+      .transform((value) => {
+        if (transformReferences && value) {
+          return new DefinitionReferenceMarker(value, {
+            path: [],
+            type: reference.type,
+            onDelete: reference.onDelete,
+            parentSlot: reference.parentSlot,
+            provides: reference.provides,
+          }) as unknown as string;
+        }
+
+        return value;
+      });
+  }
+
+  function withEnt<
+    TType extends z.ZodType,
+    TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<z.output<TType>>,
+    TIdKey extends PathInput<z.output<TType>>,
+  >(
+    schema: TType,
+    entity: DefinitionEntityInput<z.output<TType>, TEntityType, TPath, TIdKey>,
+  ): ZodTypeWithOptional<TType> {
+    return schema.transform((value, ctx) => {
+      if (value === null || value === undefined) return value;
+      if (transformReferences) {
+        if (typeof value !== 'object') {
+          ctx.addIssue({
+            code: 'invalid_type',
+            expected: 'object',
+            message: `Entity must be an object`,
+            input: value,
+          });
+          return value;
+        }
+        // Check if the id is valid
+        const id = get(value, entity.idPath ?? 'id');
+        if (typeof id !== 'string' || !id || !entity.type.isId(id)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `Unable to find string id field '${entity.idPath ?? 'id'}' in entity ${entity.type.name}`,
+            input: value,
+          });
+          return value;
+        }
+
+        const nameResolver = (() => {
+          if (entity.getNameResolver) {
+            return entity.getNameResolver(stripRefMarkers(value));
+          }
+          if (!('name' in value) || typeof value.name !== 'string') {
+            ctx.addIssue({
+              code: 'custom',
+              message: `Unable to find string name field in entity ${entity.type.name}`,
+              input: value,
+            });
+            return 'invalid';
+          }
+          return value.name;
+        })();
+
+        const newEntity: DefinitionEntityAnnotation = {
+          id,
+          path: [],
+          type: entity.type,
+          nameResolver,
+          parentSlot: entity.parentSlot,
+          provides: entity.provides,
+        };
+        return modifyAnnotations(value, ctx, (annotations) => ({
+          ...annotations,
+          entities: [...annotations.entities, newEntity],
+        }));
+      }
       return value;
-    }) as unknown as ZodTypeWithOptional<T>;
+    }) as unknown as ZodTypeWithOptional<TType>;
+  }
+
+  /**
+   * Creates ref context slots for use within a schema definition.
+   * Slots provide type-safe context for parent-child entity relationships.
+   *
+   * @example
+   * ```typescript
+   * ctx.refContext(
+   *   { modelSlot: modelEntityType },
+   *   ({ modelSlot }) =>
+   *     ctx.withEnt(schema, {
+   *       type: modelEntityType,
+   *       provides: modelSlot,
+   *     }),
+   * );
+   * ```
+   */
+  function refContext<
+    TSlotDef extends RefContextSlotDefinition,
+    TSchema extends z.ZodType,
+  >(
+    slotDefinition: TSlotDef,
+    schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
+  ): ZodTypeWithOptional<TSchema> {
+    const slots = createRefContextSlotMap(slotDefinition);
+    return schemaBuilder(slots).transform((value, ctx) =>
+      modifyAnnotations(value, ctx, (annotations) => ({
+        ...annotations,
+        slots: [
+          ...annotations.slots,
+          ...Object.values(slots).map((slot: RefContextSlot) => ({
+            path: [],
+            slot,
+          })),
+        ],
+      })),
+    ) as unknown as ZodTypeWithOptional<TSchema>;
   }
 
   return {
     withRef,
     withEnt,
-    withRefBuilder,
     refContext,
   };
-}
-
-/**
- * Creates ref context slots for use within a schema definition.
- * Slots provide type-safe context for parent-child entity relationships.
- *
- * @example
- * ```typescript
- * ctx.refContext(
- *   { modelSlot: modelEntityType },
- *   ({ modelSlot }) =>
- *     ctx.withEnt(schema, {
- *       type: modelEntityType,
- *       provides: modelSlot,
- *     }),
- * );
- * ```
- */
-function refContext<
-  TSlotDef extends RefContextSlotDefinition,
-  TSchema extends z.ZodType,
->(
-  slotDefinition: TSlotDef,
-  schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
-): TSchema {
-  const slots = createRefContextSlotMap(slotDefinition);
-  return schemaBuilder(slots);
 }

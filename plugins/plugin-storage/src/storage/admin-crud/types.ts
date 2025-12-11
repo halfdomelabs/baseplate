@@ -16,7 +16,7 @@ export const createAdminCrudFileInputSchema = definitionSchemaWithSlots(
       modelRelationRef: ctx.withRef({
         type: modelTransformerEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
     }),
 );

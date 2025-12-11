@@ -139,7 +139,7 @@ describe('serializeSchema', () => {
                     id: z.string(),
                     name: z.string(),
                   }),
-                  { type: fieldType, parentRef: modelSlot },
+                  { type: fieldType, parentSlot: modelSlot },
                 ),
               ),
               relations: z.array(
@@ -153,7 +153,7 @@ describe('serializeSchema', () => {
                     ctx.withRef({
                       type: fieldType,
                       onDelete: 'RESTRICT',
-                      parentRef: foreignModelSlot,
+                      parentSlot: foreignModelSlot,
                     }),
                   ),
                 }),

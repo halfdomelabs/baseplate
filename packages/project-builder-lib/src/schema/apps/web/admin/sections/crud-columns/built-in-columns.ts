@@ -25,7 +25,7 @@ export const createAdminCrudTextColumnSchema = definitionSchemaWithSlots(
       modelFieldRef: ctx.withRef({
         type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
     }),
 );
@@ -52,7 +52,7 @@ export const createAdminCrudForeignColumnSchema = definitionSchemaWithSlots(
       localRelationRef: ctx.withRef({
         type: modelLocalRelationEntityType,
         onDelete: 'RESTRICT',
-        parentRef: modelSlot,
+        parentSlot: modelSlot,
       }),
       labelExpression: z.string().min(1),
       valueExpression: z.string().min(1),

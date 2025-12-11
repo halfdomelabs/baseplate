@@ -14,16 +14,14 @@ import { createSettingsSchema } from './settings/index.js';
 
 export const createAppSchema = definitionSchema((ctx) =>
   ctx.refContext({ appSlot: appEntityType }, ({ appSlot }) =>
-    ctx.withRefBuilder(
+    ctx.withEnt(
       z.discriminatedUnion('type', [
         createBackendAppSchema(ctx, { appSlot }),
         createWebAppSchema(ctx, { appSlot }),
       ]),
-      (builder) => {
-        builder.addEntity({
-          type: appEntityType,
-          provides: appSlot,
-        });
+      {
+        type: appEntityType,
+        provides: appSlot,
       },
     ),
   ),
