@@ -148,7 +148,7 @@ export const createModelRelationFieldSchema = definitionSchemaWithSlots(
                   foreignRef: ctx.withRef({
                     type: modelScalarFieldEntityType,
                     onDelete: 'RESTRICT',
-                    parentSlot: modelSlot,
+                    parentSlot: foreignModelSlot,
                   }),
                 }),
               ),
