@@ -89,6 +89,7 @@
     "eslint": "catalog:",
     "memfs": "4.15.1",
     "prettier": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
