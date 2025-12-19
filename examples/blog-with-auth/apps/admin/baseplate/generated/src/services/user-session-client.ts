@@ -25,16 +25,22 @@ export class UserSessionClient {
    * @param userId - The user ID to sign in
    */
   signIn(userId: string): void {
+    const existingUserId = this.getUserId();
     this.setUserId(userId);
-    this.notifyCallbacks();
+    if (existingUserId !== userId) {
+      this.notifyCallbacks();
+    }
   }
 
   /**
    * Sign out the current user
    */
   signOut(): void {
+    const existingUserId = this.getUserId();
     this.setUserId(null);
-    this.notifyCallbacks();
+    if (existingUserId) {
+      this.notifyCallbacks();
+    }
   }
 
   /**

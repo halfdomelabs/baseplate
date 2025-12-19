@@ -61,6 +61,23 @@ export function UserSessionProvider({
     return unsubscribe;
   }, [cachedUserId, apolloClient]);
 
+  useEffect(() => {
+    // Once we have server session data, sync it with the client
+    if (sessionQueryData) {
+      const serverUserId = sessionQueryData.currentUserSession?.userId;
+      const clientUserId = userSessionClient.getUserId();
+
+      // If server says different user (or no user), update the client
+      if (serverUserId !== clientUserId) {
+        if (serverUserId) {
+          userSessionClient.signIn(serverUserId);
+        } else {
+          userSessionClient.signOut();
+        }
+      }
+    }
+  }, [sessionQueryData]);
+
   if (!session) {
     return <ErrorableLoader error={sessionError} />;
   }
