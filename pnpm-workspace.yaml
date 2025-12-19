@@ -31,7 +31,10 @@ ignoredBuiltDependencies:
   - ssh2
   - unrs-resolver
 
-publishBranch: main
 linkWorkspacePackages: true
-saveWorkspaceProtocol: rolling
+
 minimumReleaseAge: 1440
+
+publishBranch: main
+
+saveWorkspaceProtocol: rolling

@@ -6,6 +6,13 @@ import { Worker } from 'node:worker_threads';
 import type { ServiceAction, ServiceActionContext } from '../types.js';
 import type { WorkerData, WorkerMessage } from './worker-script.js';
 
+const WORKER_SCRIPT_PATH = path.join(
+  import.meta.dirname,
+  process.env.NODE_ENV === 'test'
+    ? 'worker-script.test-helper.ts'
+    : 'worker-script.js',
+);
+
 /**
  * Executes an action in a new worker thread.
  * Each execution gets a fresh worker thread that loads the latest version of the action file.
@@ -33,16 +40,13 @@ export async function runActionInWorker<
       name: serviceAction.name,
     });
 
-    const worker = new Worker(
-      path.join(import.meta.dirname, 'worker-script.js'),
-      {
-        workerData: {
-          actionName: serviceAction.name,
-          input,
-          context: restContext,
-        } satisfies WorkerData,
-      },
-    );
+    const worker = new Worker(WORKER_SCRIPT_PATH, {
+      workerData: {
+        actionName: serviceAction.name,
+        input,
+        context: restContext,
+      } satisfies WorkerData,
+    });
 
     const timeout = setTimeout(() => {
       worker.terminate().catch((err: unknown) => {
