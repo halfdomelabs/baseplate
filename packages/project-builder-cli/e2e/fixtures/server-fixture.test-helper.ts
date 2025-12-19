@@ -240,7 +240,7 @@ export const test = base.extend<
       });
     } finally {
       // Remove all services from the server
-      server.builderServiceManager.removeAllServices();
+      await server.builderServiceManager.removeAllServices();
 
       // Clean up the temp directory
       try {
