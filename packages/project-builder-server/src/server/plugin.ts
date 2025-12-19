@@ -143,7 +143,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     },
   });
 
-  fastify.addHook('onClose', () => {
-    serviceManager.removeAllServices();
+  fastify.addHook('onClose', async () => {
+    await serviceManager.removeAllServices();
   });
 };
