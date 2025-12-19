@@ -50,19 +50,19 @@ export class BuilderServiceManager {
     return [...this.services.values()];
   }
 
-  removeService(id: string): void {
+  async removeService(id: string): Promise<void> {
     const service = this.services.get(id);
     if (!service) {
       throw new Error(`Service with id ${id} not found`);
     }
-    service.close();
+    await service.close();
     this.services.delete(id);
   }
 
-  removeAllServices(): void {
-    for (const service of this.services.values()) {
-      service.close();
-    }
+  async removeAllServices(): Promise<void> {
+    await Promise.all(
+      [...this.services.values()].map((service) => service.close()),
+    );
     this.services.clear();
   }
 }

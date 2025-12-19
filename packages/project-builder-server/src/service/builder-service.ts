@@ -136,6 +136,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private cliFilePath: string | undefined;
 
+  private pendingSyncPromise: Promise<void> | undefined;
+
   public readonly project: ProjectInfo;
 
   public readonly id: string;
@@ -279,10 +281,23 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   /**
    * Closes the project builder service.
+   * Aborts any pending sync operation and waits for it to complete.
    */
-  public close(): void {
+  public async close(): Promise<void> {
+    // Abort any pending sync operation
+    this.abortController?.abort();
+
+    // Wait for the pending sync to complete
+    if (this.pendingSyncPromise) {
+      try {
+        await this.pendingSyncPromise;
+      } catch {
+        // Ignore errors - the sync was cancelled
+      }
+    }
+
     if (this.watcher) {
-      this.watcher.close().catch((err: unknown) => {
+      await this.watcher.close().catch((err: unknown) => {
         this.logger.error(err);
       });
     }
@@ -351,29 +366,36 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
    * Initiates a new build operation.
    */
   public async buildProject(): Promise<void> {
-    try {
-      if (this.abortController) {
-        throw new Error('Build process is already running');
-      }
-      const syncMetadata = await this.getSyncMetadata();
-      if (
-        Object.values(syncMetadata.packages).some(
-          (p) => p.status === 'conflicts',
-        )
-      ) {
-        throw new Error('Conflicts must be resolved before building');
-      }
-      this.abortController = new AbortController();
-      this.currentSyncConsoleOutput = [];
-      this.emit('sync-started', { id: this.id });
+    if (this.abortController) {
+      throw new Error('Build process is already running');
+    }
+    const syncMetadata = await this.getSyncMetadata();
+    if (
+      Object.values(syncMetadata.packages).some((p) => p.status === 'conflicts')
+    ) {
+      throw new Error('Conflicts must be resolved before building');
+    }
+    this.abortController = new AbortController();
+    this.currentSyncConsoleOutput = [];
+    this.emit('sync-started', { id: this.id });
 
+    this.pendingSyncPromise = this.runSync();
+    try {
+      await this.pendingSyncPromise;
+    } finally {
+      this.pendingSyncPromise = undefined;
+    }
+  }
+
+  private async runSync(): Promise<void> {
+    try {
       await syncProject({
         directory: this.directory,
         logger: this.logger,
         context: await this.getSchemaParserContext(),
         userConfig: this.userConfig,
         syncMetadataController: this.syncMetadataController,
-        abortSignal: this.abortController.signal,
+        abortSignal: this.abortController?.signal,
         skipCommands: this.skipCommands,
         cliFilePath: this.cliFilePath,
       });

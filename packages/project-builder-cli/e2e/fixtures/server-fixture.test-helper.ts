@@ -180,17 +180,24 @@ export const test = base.extend<
         await fs.mkdir(path.join(tempDir, 'baseplate'), { recursive: true });
 
         // Write package.json for the project
+        const rootPackageJson = JSON.stringify(
+          {
+            name: 'test-project',
+            version: '0.0.1',
+            private: true,
+          },
+          null,
+          2,
+        );
+        await fs.writeFile(path.join(tempDir, 'package.json'), rootPackageJson);
+
+        // Write clean package JSON for the project
+        await fs.mkdir(path.join(tempDir, 'baseplate/generated'), {
+          recursive: true,
+        });
         await fs.writeFile(
-          path.join(tempDir, 'package.json'),
-          JSON.stringify(
-            {
-              name: 'test-project',
-              version: '0.0.1',
-              private: true,
-            },
-            null,
-            2,
-          ),
+          path.join(tempDir, 'baseplate/generated/package.json'),
+          rootPackageJson,
         );
 
         async function writeProjectDefinition(
