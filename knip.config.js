@@ -69,6 +69,11 @@ export default {
         '#src/*': ['./src/*'],
       },
     },
+    'packages/project-builder-server': {
+      entry: ['src/index.{ts,tsx}', 'src/**/*worker-script*.ts'],
+      project: 'src/**/*.{ts,tsx}',
+      ignore: ['src/tests/*.ts'],
+    },
     'packages/project-builder-test': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
