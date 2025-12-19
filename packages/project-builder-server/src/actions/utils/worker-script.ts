@@ -2,7 +2,6 @@ import type { LogLevel } from '@baseplate-dev/sync';
 
 import { createEventedLogger } from '@baseplate-dev/sync';
 import { parentPort, workerData } from 'node:worker_threads';
-import z from 'zod';
 
 import type { ServiceAction, ServiceActionContext } from '../types.js';
 
@@ -80,7 +79,7 @@ try {
   });
 
   const result = await action.handler(input, contextWithLogger);
-  const validatedResult = z.object(action.outputSchema).parse(result);
+  const validatedResult = action.outputSchema.parse(result);
   sendMessage({ type: 'success', result: validatedResult });
 } catch (error) {
   // Send error details with stack trace
