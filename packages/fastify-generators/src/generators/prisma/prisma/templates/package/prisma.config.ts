@@ -2,7 +2,7 @@
 
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
 // Only load .env file if it exists
 if (existsSync('.env')) {
