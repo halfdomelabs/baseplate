@@ -457,10 +457,9 @@ export function applyModelMergerDiff(
           }
           return field.id;
         }
-        const model = ModelUtils.byIdOrThrow(
-          definitionContainer.definition,
-          modelId,
-        );
+        const model =
+          ModelUtils.byName(definitionContainer.definition, modelId) ??
+          ModelUtils.byIdOrThrow(definitionContainer.definition, modelId);
         const field = model.model.fields.find((f) => f.name === fieldName);
         if (!field) {
           throw new Error(
@@ -510,7 +509,10 @@ export function applyModelMergerDiff(
           return siblingModel.id;
         }
 
-        return modelRef;
+        const model =
+          ModelUtils.byName(definitionContainer.definition, modelRef) ??
+          ModelUtils.byIdOrThrow(definitionContainer.definition, modelRef);
+        return model.id;
       },
     ),
   };
