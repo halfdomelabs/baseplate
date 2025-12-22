@@ -14,6 +14,6 @@ export default defineConfig({
     seed: 'tsx --env-file-if-exists=.env --env-file-if-exists=.seed.env src/prisma/seed.ts',
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    url: process.env.DATABASE_URL,
   },
 });

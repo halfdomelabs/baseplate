@@ -16,6 +16,6 @@ export default defineConfig({
     seed: TPL_SEED_COMMAND,
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    url: process.env.DATABASE_URL,
   },
 });
