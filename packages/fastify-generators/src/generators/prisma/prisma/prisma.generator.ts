@@ -296,7 +296,6 @@ export const prismaGenerator = createGenerator({
           createPrismaSchemaDatasourceBlock({
             name: 'db',
             provider: 'postgresql',
-            url: 'env("DATABASE_URL")',
           }),
         );
 
