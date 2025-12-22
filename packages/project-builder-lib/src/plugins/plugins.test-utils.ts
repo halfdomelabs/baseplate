@@ -1,12 +1,6 @@
 import type { PluginMetadataWithPaths } from './metadata/types.js';
 import type { PluginConfigMigration } from './spec/config-spec.js';
 
-import { PluginImplementationStore } from './schema/store.js';
-import {
-  createPluginConfigImplementation,
-  pluginConfigSpec,
-} from './spec/config-spec.js';
-
 /**
  * Creates a test plugin metadata object with sensible defaults.
  *
@@ -32,29 +26,6 @@ export function createTestPluginMetadata(
     webModulePaths: [],
     ...overrides,
   };
-}
-
-/**
- * Creates a test plugin implementation store with optional migration configurations.
- *
- * @param migrations - Record of plugin keys to their migration arrays
- * @returns A PluginImplementationStore configured for testing
- */
-export function createTestPluginImplementationStore(
-  migrations: Record<string, PluginConfigMigration[]> = {},
-): PluginImplementationStore {
-  const pluginImplementationStore = new PluginImplementationStore({});
-  const configImplementation = createPluginConfigImplementation();
-
-  // Register migrations for each plugin
-  for (const [pluginKey, pluginMigrations] of Object.entries(migrations)) {
-    configImplementation.registerMigrations(pluginKey, pluginMigrations);
-  }
-
-  pluginImplementationStore.implementations[pluginConfigSpec.name] =
-    configImplementation;
-
-  return pluginImplementationStore;
 }
 
 /**
