@@ -91,7 +91,7 @@ export function Auth0DefinitionEditor({
           draftConfig,
           metadata,
           updatedData,
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
       },
       {

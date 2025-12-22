@@ -91,7 +91,7 @@ export function PlaceholderAuthDefinitionEditor({
           draftConfig,
           metadata,
           updatedData,
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
       },
       {

@@ -100,7 +100,7 @@ export function LocalAuthDefinitionEditor({
           draftConfig,
           metadata,
           updatedData,
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
       },
       {

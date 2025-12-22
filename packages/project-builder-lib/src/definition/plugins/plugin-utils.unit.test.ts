@@ -1,13 +1,65 @@
 import { describe, expect, test } from 'vitest';
 
-import { createTestProjectDefinition } from '#src/definition/project-definition-container.test-utils.js';
+import type {
+  PluginConfigMigration,
+  PluginConfigSpec,
+} from '#src/plugins/spec/config-spec.js';
+import type { BasePluginDefinition } from '#src/schema/plugins/definition.js';
+
+import {
+  createTestProjectDefinition,
+  createTestProjectDefinitionContainer,
+} from '#src/definition/project-definition-container.test-utils.js';
 import {
   createTestMigration,
-  createTestPluginImplementationStore,
   createTestPluginMetadata,
 } from '#src/plugins/plugins.test-utils.js';
+import { pluginConfigSpec } from '#src/plugins/spec/config-spec.js';
 
 import { PluginUtils } from './plugin-utils.js';
+
+/**
+ * Creates a test ProjectDefinitionContainer with plugins available in the parserContext.pluginStore.
+ * When a plugin is added, its module will be initialized and migrations registered.
+ */
+function createTestContainerWithAvailablePlugins(
+  availablePlugins: {
+    metadata: ReturnType<typeof createTestPluginMetadata>;
+    migrations?: PluginConfigMigration[];
+  }[],
+  existingPlugins?: BasePluginDefinition[],
+): ReturnType<typeof createTestProjectDefinitionContainer> {
+  const container = createTestProjectDefinitionContainer({
+    plugins: existingPlugins,
+  });
+
+  // Add available plugins to the parserContext.pluginStore
+  // These plugins will be used when createPluginImplementationStoreWithNewPlugins is called
+  container.parserContext.pluginStore.availablePlugins = availablePlugins.map(
+    ({ metadata, migrations = [] }) => ({
+      metadata,
+      modules: [
+        {
+          key: 'common',
+          module: {
+            dependencies: { pluginConfigSpec },
+            initialize: (deps: Record<string, unknown>) => {
+              if (migrations.length > 0) {
+                (deps.pluginConfigSpec as PluginConfigSpec).registerMigrations(
+                  metadata.key,
+                  migrations,
+                );
+              }
+              return {};
+            },
+          },
+        },
+      ],
+    }),
+  );
+
+  return container;
+}
 
 describe('PluginUtils.setPluginConfig', () => {
   test('should set configSchemaVersion when adding new plugin', () => {
@@ -19,20 +71,23 @@ describe('PluginUtils.setPluginConfig', () => {
       packageName: '@test/plugin',
     });
 
-    // Create plugin implementation store with migrations
-    const pluginImplementationStore = createTestPluginImplementationStore({
-      'test-plugin': [
-        createTestMigration(1, 'test-migration-1'),
-        createTestMigration(2, 'test-migration-2'),
-      ],
-    });
+    // Create container with plugin available in pluginStore (with migrations)
+    const container = createTestContainerWithAvailablePlugins([
+      {
+        metadata: mockPlugin,
+        migrations: [
+          createTestMigration(1, 'test-migration-1'),
+          createTestMigration(2, 'test-migration-2'),
+        ],
+      },
+    ]);
 
     // Set plugin config
     PluginUtils.setPluginConfig(
       projectDefinition,
       mockPlugin,
       { setting: 'value' },
-      pluginImplementationStore,
+      container,
     );
 
     // Verify plugin was added with correct schema version
@@ -55,15 +110,20 @@ describe('PluginUtils.setPluginConfig', () => {
       packageName: '@test/no-migrations',
     });
 
-    // Create plugin implementation store without migrations
-    const pluginImplementationStore = createTestPluginImplementationStore();
+    // Create container with plugin available but no migrations
+    const container = createTestContainerWithAvailablePlugins([
+      {
+        metadata: mockPlugin,
+        migrations: [],
+      },
+    ]);
 
     // Set plugin config
     PluginUtils.setPluginConfig(
       projectDefinition,
       mockPlugin,
       { setting: 'value' },
-      pluginImplementationStore,
+      container,
     );
 
     // Verify plugin was added with undefined schema version
@@ -78,6 +138,28 @@ describe('PluginUtils.setPluginConfig', () => {
   });
 
   test('should update existing plugin config and preserve schema version', () => {
+    const mockPlugin = createTestPluginMetadata({
+      key: 'existing-plugin',
+      name: 'ExistingPlugin',
+      packageName: '@test/existing',
+    });
+
+    // Create container with existing plugin in definition
+    const container = createTestContainerWithAvailablePlugins(
+      [{ metadata: mockPlugin }],
+      [
+        {
+          id: 'plugin:existing-plugin',
+          name: 'ExistingPlugin',
+          packageName: '@test/existing',
+          version: '1.0.0',
+          config: { oldSetting: 'oldValue' },
+          configSchemaVersion: 5,
+        },
+      ],
+    );
+
+    // Use a mutable copy of the definition for the update
     const projectDefinition = createTestProjectDefinition({
       plugins: [
         {
@@ -91,20 +173,12 @@ describe('PluginUtils.setPluginConfig', () => {
       ],
     });
 
-    const mockPlugin = createTestPluginMetadata({
-      key: 'existing-plugin',
-      name: 'ExistingPlugin',
-      packageName: '@test/existing',
-    });
-
-    const pluginImplementationStore = createTestPluginImplementationStore();
-
     // Update plugin config
     PluginUtils.setPluginConfig(
       projectDefinition,
       mockPlugin,
       { newSetting: 'newValue' },
-      pluginImplementationStore,
+      container,
     );
 
     // Verify plugin was updated but still only one plugin exists

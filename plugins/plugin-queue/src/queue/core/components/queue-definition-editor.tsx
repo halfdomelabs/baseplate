@@ -107,7 +107,7 @@ export function QueueDefinitionEditor({
           draftConfig,
           metadata,
           data,
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
 
         // Make sure we disable other plugins that are not the selected implementation

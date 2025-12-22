@@ -121,7 +121,7 @@ export function AuthDefinitionEditor({
             ...data,
             authFeatureRef: featureRef,
           },
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
 
         // Make sure we disable other plugins that are not the selected implementation
