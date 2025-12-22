@@ -27,7 +27,7 @@ export const FASTIFY_PACKAGES = {
   '@pothos/core': '4.10.0',
   '@pothos/plugin-simple-objects': '4.1.3',
   '@pothos/plugin-relay': '4.6.2',
-  '@pothos/plugin-prisma': '4.12.0',
+  '@pothos/plugin-prisma': '4.14.1',
   '@pothos/plugin-validation': '4.2.0',
   'graphql-scalars': '1.23.0',
 
@@ -39,9 +39,9 @@ export const FASTIFY_PACKAGES = {
   '@bull-board/fastify': '6.5.3',
 
   // Prisma
-  '@prisma/client': '6.17.1',
-  prisma: '6.17.1',
-  '@prisma/adapter-pg': '6.17.1',
+  '@prisma/client': '7.2.0',
+  prisma: '7.2.0',
+  '@prisma/adapter-pg': '7.2.0',
 
   // Utils
   ms: '2.1.3',

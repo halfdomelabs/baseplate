@@ -52,7 +52,6 @@ export function createPrismaSchemaGeneratorBlock({
 interface PrismaDatasourceBlockOptions {
   name: string;
   provider: 'postgresql' | 'mysql' | 'sqlite';
-  url: string;
 }
 
 function printEnumBlock(block: PrismaOutputEnum): PrismaEnumBlock {
@@ -66,14 +65,12 @@ function printEnumBlock(block: PrismaOutputEnum): PrismaEnumBlock {
 export function createPrismaSchemaDatasourceBlock({
   name,
   provider,
-  url,
 }: PrismaDatasourceBlockOptions): PrismaDatasourceBlock {
   return {
     name,
     type: 'datasource',
     contents: mapObjectToContents({
       provider: `"${provider}"`,
-      url,
     }),
   };
 }
