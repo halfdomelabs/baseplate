@@ -15,6 +15,31 @@ const globalSetup = createTsTemplateFile({
   variables: { TPL_OPERATIONS: {} },
 });
 
+const loggerTestHelper = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'test-helpers',
+  importMapProviders: {},
+  name: 'logger-test-helper',
+  projectExports: {
+    createMockLogger: { isTypeOnly: false },
+    expectLogged: { isTypeOnly: false },
+    expectNotLogged: { isTypeOnly: false },
+    getLogCallCount: { isTypeOnly: false },
+    getLogCalls: { isTypeOnly: false },
+    MockLogger: { isTypeOnly: true },
+    resetMockLogger: { isTypeOnly: false },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/tests/helpers/logger.test-helper.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const testHelpersGroup = { loggerTestHelper };
+
 const vitestConfig = createTsTemplateFile({
   fileOptions: {
     generatorTemplatePath: 'vitest.config.ts',
@@ -29,4 +54,8 @@ const vitestConfig = createTsTemplateFile({
   variables: { TPL_CONFIG: {} },
 });
 
-export const NODE_VITEST_TEMPLATES = { globalSetup, vitestConfig };
+export const NODE_VITEST_TEMPLATES = {
+  globalSetup,
+  testHelpersGroup,
+  vitestConfig,
+};

@@ -2,7 +2,6 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreFastifyRedisPaths {
-  mockRedis: string;
   redis: string;
 }
 
@@ -18,10 +17,7 @@ const coreFastifyRedisPathsTask = createGeneratorTask({
 
     return {
       providers: {
-        coreFastifyRedisPaths: {
-          mockRedis: `${srcRoot}/tests/scripts/mock-redis.ts`,
-          redis: `${srcRoot}/services/redis.ts`,
-        },
+        coreFastifyRedisPaths: { redis: `${srcRoot}/services/redis.ts` },
       },
     };
   },

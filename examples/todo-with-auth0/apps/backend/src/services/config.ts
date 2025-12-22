@@ -29,6 +29,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   POSTMARK_API_TOKEN: z.string().min(1),
   // Connection URL of Redis
   REDIS_URL: z.string().min(1),
+  // Redis key prefix for namespace isolation (optional)
+  REDIS_KEY_PREFIX: z.string().default(''),
   // Sentry DSN
   SENTRY_DSN: z.string().optional(),
   // Hostname to bind the server to

@@ -85,5 +85,5 @@ export const FASTIFY_PACKAGES = {
   stripe: '14.5.0',
 
   // BullMQ
-  bullmq: '5.1.1',
+  bullmq: '5.61.2',
 } as const;

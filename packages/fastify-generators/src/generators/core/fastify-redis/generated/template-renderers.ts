@@ -10,16 +10,6 @@ import { CORE_FASTIFY_REDIS_PATHS } from './template-paths.js';
 import { CORE_FASTIFY_REDIS_TEMPLATES } from './typed-templates.js';
 
 export interface CoreFastifyRedisRenderers {
-  mockRedis: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof CORE_FASTIFY_REDIS_TEMPLATES.mockRedis
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   redis: {
     render: (
       options: Omit<
@@ -47,14 +37,6 @@ const coreFastifyRedisRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreFastifyRedisRenderers: {
-          mockRedis: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_REDIS_TEMPLATES.mockRedis,
-                destination: paths.mockRedis,
-                ...options,
-              }),
-          },
           redis: {
             render: (options) =>
               typescriptFile.renderTemplateFile({

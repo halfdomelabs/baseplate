@@ -25,5 +25,10 @@ export default async function setup(): Promise<void> {
     console.info('\nDatabase migrations ran!');
   }
 
+  // Set Redis key prefix for test isolation
+  // This ensures all BullMQ keys are prefixed with 'test:' to avoid conflicts
+  process.env.REDIS_KEY_PREFIX = 'test';
+  console.info('Redis key prefix set to "test" for isolation');
+
   /* TPL_OPERATIONS:END */
 }

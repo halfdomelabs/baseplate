@@ -3,6 +3,7 @@ import {
   extractPackageVersions,
   tsCodeFragment,
   tsImportBuilder,
+  tsTemplate,
   typescriptFileProvider,
   vitestConfigProvider,
 } from '@baseplate-dev/core-generators';
@@ -36,6 +37,18 @@ export const fastifyRedisGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis-mock']),
+    }),
+    prefixEnv: createGeneratorTask({
+      dependencies: {
+        configService: configServiceProvider,
+      },
+      run({ configService }) {
+        configService.configFields.set('REDIS_KEY_PREFIX', {
+          validator: tsCodeFragment("z.string().default('')"),
+          comment: 'Redis key prefix for namespace isolation (optional)',
+          exampleValue: 'test',
+        });
+      },
     }),
     configService: createProviderTask(
       configServiceProvider,
@@ -85,14 +98,15 @@ export const fastifyRedisGenerator = createGenerator({
             );
 
             if (vitestConfig) {
-              await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template: CORE_FASTIFY_REDIS_GENERATED.templates.mockRedis,
-                  destination: paths.mockRedis,
-                  importMapProviders: {},
-                }),
+              vitestConfig.globalSetupOperations.set(
+                'redis-prefix',
+                tsTemplate`
+                // Set Redis key prefix for test isolation
+                // This ensures all BullMQ keys are prefixed with 'test:' to avoid conflicts
+                process.env.REDIS_KEY_PREFIX = 'test';
+                console.info('Redis key prefix set to "test" for isolation');
+                `,
               );
-              vitestConfig.setupFiles.push('tests/scripts/mock-redis.ts');
             }
           },
         };
