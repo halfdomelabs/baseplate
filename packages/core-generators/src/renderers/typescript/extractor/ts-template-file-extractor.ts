@@ -158,36 +158,43 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         await Promise.all(
           files.map((file) =>
             limit(async () => {
-              if (file.metadata.projectExportsOnly) return;
+              try {
+                if (file.metadata.projectExportsOnly) return;
 
-              const contents = await api.readOutputFile(
-                file.sourceAbsolutePath,
-              );
-              const result = await renderTsTemplateFile(
-                file.sourceAbsolutePath,
-                contents,
-                writeContext,
-              );
-              await api.writeTemplateFile(
-                file.generator,
-                file.metadata.sourceFile,
-                result.contents,
-              );
-              // update the extractor config with the new variables and import providers
-              context.configLookup.updateExtractorTemplateConfig(
-                file.generator,
-                file.templateName,
-                {
-                  ...file.metadata,
-                  variables: result.variables,
-                  importMapProviders: result.importProviders,
-                  referencedGeneratorTemplates:
-                    result.referencedGeneratorTemplates.size > 0
-                      ? [...result.referencedGeneratorTemplates].toSorted()
-                      : undefined,
-                } as TsTemplateMetadata,
-              );
-              return result;
+                const contents = await api.readOutputFile(
+                  file.sourceAbsolutePath,
+                );
+                const result = await renderTsTemplateFile(
+                  file.sourceAbsolutePath,
+                  contents,
+                  writeContext,
+                );
+                await api.writeTemplateFile(
+                  file.generator,
+                  file.metadata.sourceFile,
+                  result.contents,
+                );
+                // update the extractor config with the new variables and import providers
+                context.configLookup.updateExtractorTemplateConfig(
+                  file.generator,
+                  file.templateName,
+                  {
+                    ...file.metadata,
+                    variables: result.variables,
+                    importMapProviders: result.importProviders,
+                    referencedGeneratorTemplates:
+                      result.referencedGeneratorTemplates.size > 0
+                        ? [...result.referencedGeneratorTemplates].toSorted()
+                        : undefined,
+                  } as TsTemplateMetadata,
+                );
+                return result;
+              } catch (error) {
+                throw enhanceErrorWithContext(
+                  error,
+                  `Error writing template file for ${file.sourceAbsolutePath}`,
+                );
+              }
             }),
           ),
         );
