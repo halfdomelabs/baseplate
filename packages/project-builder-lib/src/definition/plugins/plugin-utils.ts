@@ -1,18 +1,18 @@
 import type { SchemaParserContext } from '#src/parser/types.js';
-import type {
-  PluginImplementationStore,
-  PluginMetadataWithPaths,
-} from '#src/plugins/index.js';
+import type { PluginMetadataWithPaths } from '#src/plugins/index.js';
 import type {
   BasePluginDefinition,
   ProjectDefinition,
 } from '#src/schema/index.js';
 
+import { createPluginImplementationStoreWithNewPlugins } from '#src/parser/parser.js';
 import {
   getPluginMetadataByKeyOrThrow,
   pluginConfigSpec,
 } from '#src/plugins/index.js';
 import { pluginEntityType } from '#src/schema/index.js';
+
+import type { ProjectDefinitionContainer } from '../project-definition-container.js';
 
 function byKey(
   projectDefinition: ProjectDefinition,
@@ -56,32 +56,44 @@ function setPluginConfig(
   projectDefinition: ProjectDefinition,
   plugin: PluginMetadataWithPaths,
   pluginConfig: unknown,
-  pluginImplementationStore: PluginImplementationStore,
+  definitionContainer: ProjectDefinitionContainer,
 ): void {
   const plugins = projectDefinition.plugins ?? [];
   const pluginEntityId = pluginEntityType.idFromKey(plugin.key);
+  const isNewPlugin = !plugins.some((p) => p.id === pluginEntityId);
 
-  const pluginConfigService =
-    pluginImplementationStore.getPluginSpec(pluginConfigSpec);
-  const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
-    plugin.key,
-  );
+  if (isNewPlugin) {
+    // When adding a new plugin, we need to create an implementation store
+    // that includes this plugin so its migrations are properly registered
+    const pluginImplementationStore =
+      createPluginImplementationStoreWithNewPlugins(
+        definitionContainer.parserContext.pluginStore,
+        [plugin],
+        definitionContainer.definition,
+      );
+    const pluginConfigService =
+      pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+    const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
+      plugin.key,
+    );
 
-  projectDefinition.plugins = plugins.some((p) => p.id === pluginEntityId)
-    ? plugins.map((p) =>
-        pluginEntityId === p.id ? { ...p, config: pluginConfig } : p,
-      )
-    : [
-        ...plugins,
-        {
-          id: pluginEntityId,
-          name: plugin.name,
-          version: plugin.version,
-          packageName: plugin.packageName,
-          config: pluginConfig,
-          configSchemaVersion: lastMigrationVersion,
-        },
-      ];
+    projectDefinition.plugins = [
+      ...plugins,
+      {
+        id: pluginEntityId,
+        name: plugin.name,
+        version: plugin.version,
+        packageName: plugin.packageName,
+        config: pluginConfig,
+        configSchemaVersion: lastMigrationVersion,
+      },
+    ];
+  } else {
+    // When updating an existing plugin, just update the config
+    projectDefinition.plugins = plugins.map((p) =>
+      pluginEntityId === p.id ? { ...p, config: pluginConfig } : p,
+    );
+  }
 }
 
 /**

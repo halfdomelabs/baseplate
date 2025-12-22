@@ -103,8 +103,8 @@ export function StorageDefinitionEditor({
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
-          data,
-          definitionContainer.pluginStore,
+          updatedData,
+          definitionContainer,
         );
       },
       {

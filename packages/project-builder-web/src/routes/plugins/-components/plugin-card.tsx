@@ -67,7 +67,7 @@ export function PluginCard({
         );
 
         // Add the plugin with proper schema version
-        PluginUtils.setPluginConfig(draft, plugin, {}, implementations);
+        PluginUtils.setPluginConfig(draft, plugin, {}, definitionContainer);
       },
       {
         successMessage: `Enabled ${plugin.displayName}!`,

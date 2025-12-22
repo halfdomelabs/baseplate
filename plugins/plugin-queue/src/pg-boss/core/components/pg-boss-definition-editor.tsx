@@ -66,7 +66,7 @@ export function PgBossDefinitionEditor({
           draftConfig,
           metadata,
           data,
-          definitionContainer.pluginStore,
+          definitionContainer,
         );
       },
       {
