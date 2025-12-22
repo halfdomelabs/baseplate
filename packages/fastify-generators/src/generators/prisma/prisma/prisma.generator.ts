@@ -121,7 +121,7 @@ export const prismaGenerator = createGenerator({
         prettier: prettierProvider,
       },
       run({ eslintConfig, prettier }) {
-        eslintConfig.tsDefaultProjectFiles.push('prisma.config.mts');
+        eslintConfig.tsDefaultProjectFiles.push('prisma.config.ts');
         eslintConfig.eslintIgnore.push('src/generated/prisma/**/*.ts');
         prettier.addPrettierIgnore('src/generated/prisma/**/*.ts');
       },

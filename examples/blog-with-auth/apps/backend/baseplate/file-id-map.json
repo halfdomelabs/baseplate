@@ -73,7 +73,7 @@
   "@baseplate-dev/fastify-generators#prisma/data-utils:relation-helpers": "src/utils/data-operations/relation-helpers.ts",
   "@baseplate-dev/fastify-generators#prisma/data-utils:types": "src/utils/data-operations/types.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:client": "src/generated/prisma/client.ts",
-  "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.mts",
+  "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-schema": "prisma/schema.prisma",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-seed-env": ".seed.env",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-seed-env-example": ".seed.env.example",

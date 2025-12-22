@@ -11,7 +11,7 @@
     "instanceData": {},
     "template": "eslint-config"
   },
-  "prisma.config.mts": {
+  "prisma.config.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
     "instanceData": {},
     "template": "prisma-config"

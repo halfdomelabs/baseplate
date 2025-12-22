@@ -22,7 +22,7 @@ const prismaConfig = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/package/prisma.config.mts',
+      '../templates/package/prisma.config.ts',
     ),
   },
   variables: { TPL_SEED_COMMAND: {} },

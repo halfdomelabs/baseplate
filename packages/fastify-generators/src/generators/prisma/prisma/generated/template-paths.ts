@@ -23,7 +23,7 @@ const prismaPrismaPathsTask = createGeneratorTask({
       providers: {
         prismaPrismaPaths: {
           client: `${srcRoot}/generated/prisma/client.ts`,
-          prismaConfig: `${packageRoot}/prisma.config.mts`,
+          prismaConfig: `${packageRoot}/prisma.config.ts`,
           seed: `${srcRoot}/prisma/seed.ts`,
           service: `${srcRoot}/services/prisma.ts`,
         },
