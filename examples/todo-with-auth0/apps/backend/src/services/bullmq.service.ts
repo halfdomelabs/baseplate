@@ -1,11 +1,6 @@
-import type {
-  Queue as BullMQQueueBase,
-  Job,
-  JobsOptions,
-  Worker,
-} from 'bullmq';
+import type { Job, JobsOptions, Worker } from 'bullmq';
 
-import { Worker as BullMQWorker, Queue } from 'bullmq';
+import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
 import type {
   EnqueueOptions,
@@ -206,7 +201,7 @@ export class BullMQQueue<T> implements QueueInterface<T> {
     const redis = getBullMQRedis();
     const prefix = config.REDIS_KEY_PREFIX;
 
-    this.queue = new Queue<T>(name, {
+    this.queue = new BullMQQueueBase<T>(name, {
       connection: redis,
       prefix,
       defaultJobOptions: mapEnqueueOptions(

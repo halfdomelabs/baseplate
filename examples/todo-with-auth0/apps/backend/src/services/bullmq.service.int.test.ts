@@ -18,7 +18,7 @@ import {
   getScheduledJobs,
   initializeBullMQ,
   shutdownBullMQ,
-} from './bull-mq.service.js';
+} from './bullmq.service.js';
 
 // Mock the logger module to avoid log output during tests
 vi.mock('@src/services/logger.js', () => ({
