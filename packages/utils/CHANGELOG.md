@@ -1,5 +1,13 @@
 # @baseplate-dev/utils
 
+## 0.4.2
+
+### Patch Changes
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#694](https://github.com/halfdomelabs/baseplate/pull/694) [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f) Thanks [@kingston](https://github.com/kingston)! - Add stable compareStrings utility to replace localeCompare for deterministic sorting. The new compareStrings function provides consistent, locale-independent string comparison across all operating systems and environments, ensuring stable code generation and preventing merge conflicts caused by locale-dependent sorting.
+
 ## 0.4.1
 
 ## 0.4.0

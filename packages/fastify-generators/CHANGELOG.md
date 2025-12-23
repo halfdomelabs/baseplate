@@ -1,5 +1,43 @@
 # @baseplate-dev/fastify-generators
 
+## 0.4.2
+
+### Patch Changes
+
+- [#711](https://github.com/halfdomelabs/baseplate/pull/711) [`bde61e3`](https://github.com/halfdomelabs/baseplate/commit/bde61e3e5dfc4d6d19c0d2a71491de4605cd2c20) Thanks [@kingston](https://github.com/kingston)! - Add BullMQ plugin as managed child of queue plugin
+  - Create new BullMQ plugin (`@baseplate-dev/plugin-queue/bullmq`) following the pg-boss plugin pattern
+  - Add migration (021) to migrate `enableBullQueue` from backend app config to queue/bullmq plugin config
+  - Remove old `bullMqGenerator` and `fastifyBullBoardGenerator` from fastify-generators
+  - Remove Bull Board integration (to be replaced with local alternative in the future)
+  - Remove `enableBullQueue` option from backend app schema and UI
+
+- [#701](https://github.com/halfdomelabs/baseplate/pull/701) [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220) Thanks [@kingston](https://github.com/kingston)! - Upgrade Fastify to 5.6.2 and fastify-plugin to 5.1.0
+
+- [#701](https://github.com/halfdomelabs/baseplate/pull/701) [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Zod v4
+
+- [#700](https://github.com/halfdomelabs/baseplate/pull/700) [`5d4ae05`](https://github.com/halfdomelabs/baseplate/commit/5d4ae05b1781100ee21c5a60784f0107014bade4) Thanks [@kingston](https://github.com/kingston)! - Pass service context to create/update/delete operations in data operations
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#713](https://github.com/halfdomelabs/baseplate/pull/713) [`74529e7`](https://github.com/halfdomelabs/baseplate/commit/74529e7fffae8a70f8cfe801a1897204d010e291) Thanks [@kingston](https://github.com/kingston)! - Migrate Vitest global setup from single merged file to individual files per generator
+  - Replace `globalSetupOperations` Map with `globalSetupFiles` array in vitest config provider
+  - Vitest generator now always renders `global-setup-env.ts` for environment loading
+  - Each generator (Redis, Prisma) now creates its own global setup file
+  - Vitest config outputs `globalSetup` as an array with env file first, then sorted additional files
+
+- [#714](https://github.com/halfdomelabs/baseplate/pull/714) [`2395821`](https://github.com/halfdomelabs/baseplate/commit/239582148fe92d80457a31021036fa1e2c51cf5d) Thanks [@kingston](https://github.com/kingston)! - Fix handling of data operations with falsy update values
+
+- [#710](https://github.com/halfdomelabs/baseplate/pull/710) [`e426b52`](https://github.com/halfdomelabs/baseplate/commit/e426b52d37f04f71ca960eb4cad2246af0603bd3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to v7
+  - prisma: 6.17.1 → 7.2.0
+  - @prisma/client: 6.17.1 → 7.2.0
+  - @prisma/adapter-pg: 6.17.1 → 7.2.0
+  - @pothos/plugin-prisma: 4.12.0 → 4.14.1
+
+- Updated dependencies [[`795ee4c`](https://github.com/halfdomelabs/baseplate/commit/795ee4c18e7b393fb9247ced23a12de5e219ab15), [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220), [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`74529e7`](https://github.com/halfdomelabs/baseplate/commit/74529e7fffae8a70f8cfe801a1897204d010e291), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f)]:
+  - @baseplate-dev/sync@0.4.2
+  - @baseplate-dev/core-generators@0.4.2
+  - @baseplate-dev/utils@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes
