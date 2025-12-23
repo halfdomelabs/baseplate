@@ -46,7 +46,7 @@ export const fastifyRedisGenerator = createGenerator({
         configService.configFields.set('REDIS_KEY_PREFIX', {
           validator: tsCodeFragment("z.string().default('')"),
           comment: 'Redis key prefix for namespace isolation (optional)',
-          exampleValue: 'test',
+          exampleValue: '',
         });
       },
     }),
@@ -101,10 +101,9 @@ export const fastifyRedisGenerator = createGenerator({
               vitestConfig.globalSetupOperations.set(
                 'redis-prefix',
                 tsTemplate`
-                // Set Redis key prefix for test isolation
-                // This ensures all BullMQ keys are prefixed with 'test:' to avoid conflicts
-                process.env.REDIS_KEY_PREFIX = 'test';
-                console.info('Redis key prefix set to "test" for isolation');
+                  // Set Redis key prefix for test isolation
+                  process.env.REDIS_KEY_PREFIX = 'test:';
+                  console.info('Redis key prefix set to "test:" for isolation');
                 `,
               );
             }

@@ -34,10 +34,6 @@ export const FASTIFY_PACKAGES = {
   '@graphql-yoga/redis-event-target': '2.0.0',
   'graphql-ws': '5.16.0',
 
-  // Bull Board
-  '@bull-board/api': '6.15.0',
-  '@bull-board/fastify': '6.15.0',
-
   // Prisma
   '@prisma/client': '6.17.1',
   prisma: '6.17.1',

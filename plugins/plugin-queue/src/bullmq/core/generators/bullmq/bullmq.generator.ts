@@ -62,9 +62,8 @@ export const bullmqGenerator = createGenerator({
             'dev',
           ),
           'start:workers': fastifyOutput.getNodeCommand(
-            'src/scripts/run-workers.ts',
+            'dist/scripts/run-workers.ts',
             'prod',
-            { executable: 'tsx' },
           ),
         });
 
