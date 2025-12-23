@@ -36,7 +36,6 @@ export const fastifyRedisGenerator = createGenerator({
     imports: CORE_FASTIFY_REDIS_GENERATED.imports.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis']),
-      dev: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis-mock']),
     }),
     prefixEnv: createGeneratorTask({
       dependencies: {

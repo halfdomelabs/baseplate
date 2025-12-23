@@ -32,7 +32,7 @@ export function AppSidebar(): React.ReactElement {
               {/* TPL_SIDEBAR_LINKS:START */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/admin">
+                  <Link to="/admin" activeOptions={{ exact: true }}>
                     <MdHome />
                     <span>Home</span>
                   </Link>

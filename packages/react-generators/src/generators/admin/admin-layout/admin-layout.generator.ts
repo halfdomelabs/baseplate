@@ -14,6 +14,11 @@ const linkItemSchema = z.object({
   label: z.string().min(1),
   icon: z.string().min(1),
   path: z.string().min(1),
+  activeOptions: z
+    .object({
+      exact: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export type AdminLayoutLinkItem = z.infer<typeof linkItemSchema>;
@@ -83,7 +88,7 @@ export const adminLayoutGenerator = createGenerator({
                 ])`
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link to="${link.path}">
+                    <Link to="${link.path}" ${link.activeOptions ? `activeOptions={${JSON.stringify(link.activeOptions)}}` : ''}>
                       <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
                       <span>${link.label}</span>
                     </Link>

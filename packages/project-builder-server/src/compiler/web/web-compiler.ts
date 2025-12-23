@@ -88,6 +88,9 @@ function buildAdminRoutes(
             label: 'Home',
             icon: 'MdHome',
             path: adminApp.pathPrefix,
+            activeOptions: {
+              exact: true,
+            },
           },
           ...buildAdminNavigationLinks(builder),
         ],
