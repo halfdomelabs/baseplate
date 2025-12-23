@@ -1,7 +1,0 @@
-{
-  "authenticate.mutations.ts": {
-    "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
-    "instanceData": {},
-    "template": "schema-authenticate-mutations"
-  }
-}

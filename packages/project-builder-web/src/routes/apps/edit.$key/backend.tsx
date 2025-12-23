@@ -94,12 +94,6 @@ function BackendAppEditPage(): React.JSX.Element {
               />
               <SwitchFieldController
                 control={control}
-                name="enableBullQueue"
-                label="Bull Queue"
-                description="Enable Bull Queue for background job processing (requires Redis to be enabled in infrastructure settings)"
-              />
-              <SwitchFieldController
-                control={control}
                 name="enableSubscriptions"
                 label="GraphQL Subscriptions"
                 description="Enable GraphQL Subscriptions for real-time updates"

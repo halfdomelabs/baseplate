@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "axios"
   },
+  "bullmq.service.ts": {
+    "generator": "@baseplate-dev/plugin-queue#bullmq/core/bullmq",
+    "instanceData": {},
+    "template": "bullmq-service"
+  },
   "config.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/config-service",
     "instanceData": {},

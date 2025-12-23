@@ -6,7 +6,9 @@
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/constants/queues.constants.ts",
-      "projectExports": { "QUEUE_REGISTRY": {} },
+      "projectExports": {
+        "QUEUE_REGISTRY": { "isTypeOnly": false, "name": "QUEUE_REGISTRY" }
+      },
       "referencedGeneratorTemplates": ["queue-types"],
       "sourceFile": "src/constants/queues.constants.ts",
       "variables": { "TPL_QUEUE_LIST": {} }

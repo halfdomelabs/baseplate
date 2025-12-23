@@ -86,7 +86,6 @@
     },
     {
       "enableAxios": false,
-      "enableBullQueue": false,
       "enablePostmark": false,
       "enableStripe": false,
       "enableSubscriptions": false,
@@ -753,7 +752,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 20,
+  "schemaVersion": 21,
   "settings": {
     "general": {
       "name": "blog-with-auth",

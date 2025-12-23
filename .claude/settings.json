@@ -24,6 +24,7 @@
     ]
   },
   "env": {
-    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
+    "BASEPLATE_KEEP_UNUSED_IMPORTS": "true"
   }
 }

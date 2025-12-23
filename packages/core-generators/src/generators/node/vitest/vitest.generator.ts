@@ -10,8 +10,7 @@ import { packageScope } from '#src/providers/scopes.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { eslintConfigProvider } from '../eslint/index.js';
-import { createNodePackagesTask, nodeProvider } from '../node/index.js';
-import { typescriptFileProvider } from '../typescript/index.js';
+import { createNodePackagesTask } from '../node/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -19,7 +18,6 @@ import { stringifyPrettyStable } from '@baseplate-dev/utils';
 
 import type { TsCodeFragment } from '#src/renderers/index.js';
 
-import { packageInfoProvider } from '#src/providers/project.js';
 import {
   tsCodeFragment,
   TsCodeUtils,
@@ -47,30 +45,8 @@ export const vitestGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: createGeneratorTask({
-      dependencies: {
-        node: nodeProvider,
-        packageInfo: packageInfoProvider,
-      },
-      exports: {
-        paths: NODE_VITEST_GENERATED.paths.provider.export(),
-      },
-      run: ({ node, packageInfo }) => {
-        const srcRoot = packageInfo.getPackageSrcPath();
-        const packageRoot = packageInfo.getPackageRoot();
-
-        return {
-          providers: {
-            paths: {
-              globalSetup: `${srcRoot}/tests/scripts/global-setup.ts`,
-              vitestConfig: `${packageRoot}/${
-                node.isEsm ? 'vitest.config.ts' : 'vitest.config.mts'
-              }`,
-            },
-          },
-        };
-      },
-    }),
+    paths: NODE_VITEST_GENERATED.paths.task,
+    renderers: NODE_VITEST_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, [
         'vitest',
@@ -80,22 +56,18 @@ export const vitestGenerator = createGenerator({
     setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
-        node: nodeProvider,
-        typescriptFile: typescriptFileProvider,
+        renderers: NODE_VITEST_GENERATED.renderers.provider,
         eslintConfig: eslintConfigProvider,
         vitestConfigValues: vitestConfigValuesProvider,
         paths: NODE_VITEST_GENERATED.paths.provider,
       },
       run({
-        node,
-        typescriptFile,
         eslintConfig,
         vitestConfigValues: { globalSetupOperations, setupFiles },
         paths,
+        renderers,
       }) {
-        const vitestConfigFilename = node.isEsm
-          ? 'vitest.config.ts'
-          : 'vitest.config.mts';
+        const vitestConfigFilename = 'vitest.config.ts';
 
         eslintConfig.tsDefaultProjectFiles.push(vitestConfigFilename);
 
@@ -104,18 +76,11 @@ export const vitestGenerator = createGenerator({
             const hasGlobalSetup = globalSetupOperations.size > 0;
             if (hasGlobalSetup) {
               await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template: NODE_VITEST_GENERATED.templates.globalSetup,
-                  destination: paths.globalSetup,
+                renderers.globalSetup.render({
                   variables: {
                     TPL_OPERATIONS: TsCodeUtils.mergeFragments(
                       globalSetupOperations,
                     ),
-                  },
-                  writeOptions: {
-                    alternateFullIds: [
-                      '@baseplate-dev/core-generators#node/vitest:src/tests/scripts/globalSetup.ts',
-                    ],
                   },
                 }),
               );
@@ -142,9 +107,7 @@ export const vitestGenerator = createGenerator({
             });
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: NODE_VITEST_GENERATED.templates.vitestConfig,
-                destination: vitestConfigFilename,
+              renderers.vitestConfig.render({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
                     plugins,
@@ -153,6 +116,7 @@ export const vitestGenerator = createGenerator({
                 },
               }),
             );
+            await builder.apply(renderers.testHelpersGroup.render({}));
           },
         };
       },

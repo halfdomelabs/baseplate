@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import type { RenderTsTemplateFileActionInput } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
+import type { RenderTsTemplateGroupActionInput } from '#src/renderers/typescript/actions/render-ts-template-group-action.js';
 
 import { typescriptFileProvider } from '#src/generators/node/typescript/typescript.generator.js';
 
@@ -17,6 +18,16 @@ export interface NodeVitestRenderers {
           typeof NODE_VITEST_TEMPLATES.globalSetup
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  testHelpersGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof NODE_VITEST_TEMPLATES.testHelpersGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -51,6 +62,14 @@ const nodeVitestRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: NODE_VITEST_TEMPLATES.globalSetup,
                 destination: paths.globalSetup,
+                ...options,
+              }),
+          },
+          testHelpersGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: NODE_VITEST_TEMPLATES.testHelpersGroup,
+                paths,
                 ...options,
               }),
           },

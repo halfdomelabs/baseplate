@@ -18,6 +18,9 @@ import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependenc
  * @property {string[]} [extraDefaultProjectFiles] - Additional default project files
  */
 
+const KEEP_UNUSED_IMPORTS =
+  process.env.BASEPLATE_KEEP_UNUSED_IMPORTS === 'true';
+
 /**
  * Generates a Typescript ESLint configuration
  * @param {GenerateTypescriptEslintConfigOptions[]} [options=[]] - Configuration options
@@ -138,8 +141,14 @@ export function generateTypescriptEslintConfig(options = []) {
         'unused-imports': unusedImports,
       },
       rules: {
-        '@typescript-eslint/no-unused-vars': 'off',
-        'unused-imports/no-unused-imports': 'error',
+        // Prevent unused imports from being auto-removed if the environment variable is set to true
+        // This is useful when AI agents are editing code part by part
+        '@typescript-eslint/no-unused-vars': KEEP_UNUSED_IMPORTS
+          ? 'error'
+          : 'off',
+        'unused-imports/no-unused-imports': KEEP_UNUSED_IMPORTS
+          ? 'off'
+          : 'error',
         'unused-imports/no-unused-vars': [
           'error',
           {

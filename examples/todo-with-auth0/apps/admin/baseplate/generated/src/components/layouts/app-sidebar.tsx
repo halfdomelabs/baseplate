@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { AiOutlineOrderedList } from 'react-icons/ai';
 import { BsCardChecklist } from 'react-icons/bs';
 import { FaUserAlt } from 'react-icons/fa';
 import { MdHome, MdLogout } from 'react-icons/md';
@@ -44,14 +43,6 @@ export function AppSidebar(): React.ReactElement {
                   <Link to="/admin/accounts/users/user">
                     <FaUserAlt />
                     <span>User</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/admin/bull-board">
-                    <AiOutlineOrderedList />
-                    <span>Queues</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -1,5 +1,4 @@
 import { groupBy } from 'es-toolkit';
-import ms from 'ms';
 
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
@@ -11,7 +10,7 @@ import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { FILE_CATEGORIES } from '../config/categories.config.js';
 
 // How long to keep files that were uploaded but never referenced
-const UNREFERENCED_UPLOAD_EXPIRY_TIME_MS = ms('1 day');
+const UNREFERENCED_UPLOAD_EXPIRY_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 // Maximum number of files to delete in a single operation
 const CLEAN_JOB_LIMIT = 100;
 

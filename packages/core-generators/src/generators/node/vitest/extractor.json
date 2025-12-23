@@ -1,6 +1,5 @@
 {
   "name": "node/vitest",
-  "plugins": { "template-paths": { "skipTaskGeneration": true } },
   "templates": {
     "global-setup": {
       "type": "ts",
@@ -10,6 +9,24 @@
       "pathRootRelativePath": "{src-root}/tests/scripts/global-setup.ts",
       "sourceFile": "src/tests/scripts/global-setup.ts",
       "variables": { "TPL_OPERATIONS": {} }
+    },
+    "logger-test-helper": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "test-helpers",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/helpers/logger.test-helper.ts",
+      "projectExports": {
+        "createMockLogger": { "isTypeOnly": false, "name": "createMockLogger" },
+        "expectLogged": { "isTypeOnly": false, "name": "expectLogged" },
+        "expectNotLogged": { "isTypeOnly": false, "name": "expectNotLogged" },
+        "getLogCallCount": { "isTypeOnly": false, "name": "getLogCallCount" },
+        "getLogCalls": { "isTypeOnly": false, "name": "getLogCalls" },
+        "MockLogger": { "isTypeOnly": true, "name": "MockLogger" },
+        "resetMockLogger": { "isTypeOnly": false, "name": "resetMockLogger" }
+      },
+      "sourceFile": "src/tests/helpers/logger.test-helper.ts",
+      "variables": {}
     },
     "vitest-config": {
       "type": "ts",

@@ -1,7 +1,6 @@
 import type { FastifyInstance, FastifyServerOptions } from 'fastify';
 
 import fastifyCookie from '@fastify/cookie';
-import formBodyPlugin from '@fastify/formbody';
 import helmet from '@fastify/helmet';
 import * as Sentry from '@sentry/node';
 import Fastify from 'fastify';
@@ -10,6 +9,7 @@ import rawBodyPlugin from 'fastify-raw-body';
 import { nanoid } from 'nanoid';
 
 import { rootModule } from './modules/index.js';
+import { bullMQPlugin } from './plugins/bullmq.plugin.js';
 import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
 import { graphqlPlugin } from './plugins/graphql/index.js';
@@ -39,12 +39,12 @@ export async function buildServer(
   /* TPL_PLUGINS:START */
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
+  await fastify.register(bullMQPlugin);
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyAuth0Verify, {
     domain: config.AUTH0_DOMAIN,
     audience: config.AUTH0_AUDIENCE,
   });
-  await fastify.register(formBodyPlugin);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);

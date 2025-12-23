@@ -2,8 +2,7 @@
   "files": {
     "added": [
       "src/modules/accounts/utils/cookie-signer.unit.test.ts",
-      "src/services/pg-boss.service.int.test.ts",
-      "src/tests/helpers/logger.test-helper.ts"
+      "src/services/pg-boss.service.int.test.ts"
     ],
     "deleted": [],
     "modified": []

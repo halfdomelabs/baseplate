@@ -5,7 +5,7 @@ const queueRegistry = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'queue-registry',
-  projectExports: { QUEUE_REGISTRY: {} },
+  projectExports: { QUEUE_REGISTRY: { isTypeOnly: false } },
   referencedGeneratorTemplates: { queueTypes: {} },
   source: {
     path: path.join(

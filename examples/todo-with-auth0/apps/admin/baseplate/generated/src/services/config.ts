@@ -8,8 +8,6 @@ const configSchema = z.object(
     VITE_AUTH0_CLIENT_ID: z.string().min(1),
     // Auth0 Domain
     VITE_AUTH0_DOMAIN: z.string().min(1),
-    // Base path for bull-board site
-    VITE_BULL_BOARD_BASE: z.string().min(1),
     // Environment the app is running in
     VITE_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
     // URL for the GraphQL API endpoint

@@ -7,6 +7,7 @@
       "src/modules/storage/services/clean-unused-files.ts",
       "src/modules/storage/utils/mime.unit.test.ts",
       "src/modules/todos/services/todo-item-service.int.test.ts",
+      "src/services/bullmq.service.int.test.ts",
       "src/services/sentry.e2e.test.ts",
       "src/services/sentry.instrument.test-helper.ts",
       "src/services/sentry.test-kit.test-helper.ts"

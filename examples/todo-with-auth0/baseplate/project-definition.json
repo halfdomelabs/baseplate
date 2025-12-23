@@ -167,7 +167,6 @@
     },
     {
       "enableAxios": true,
-      "enableBullQueue": true,
       "enablePostmark": true,
       "enableStripe": true,
       "enableSubscriptions": false,
@@ -1447,9 +1446,25 @@
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
       "version": "1.0.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-queue_bullmq"
+      },
+      "id": "plugin:baseplate-dev_plugin-queue_queue",
+      "name": "queue",
+      "packageName": "@baseplate-dev/plugin-queue",
+      "version": "1.0.0"
+    },
+    {
+      "config": { "bullmqOptions": { "deleteAfterDays": 7 } },
+      "id": "plugin:baseplate-dev_plugin-queue_bullmq",
+      "name": "bullmq",
+      "packageName": "@baseplate-dev/plugin-queue",
+      "version": "1.0.0"
     }
   ],
-  "schemaVersion": 20,
+  "schemaVersion": 21,
   "settings": {
     "general": {
       "name": "todo-with-auth0",

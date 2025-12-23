@@ -13,7 +13,6 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AdminBullBoardIndexRouteImport } from './routes/admin/bull-board/index'
 import { Route as AdminTodosTodoListRouteRouteImport } from './routes/admin/todos/todo-list/route'
 import { Route as AdminTodosTodoListIndexRouteImport } from './routes/admin/todos/todo-list/index'
 import { Route as AdminTodosTodoListNewRouteImport } from './routes/admin/todos/todo-list/new'
@@ -41,11 +40,6 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminBullBoardIndexRoute = AdminBullBoardIndexRouteImport.update({
-  id: '/bull-board/',
-  path: '/bull-board/',
-  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminTodosTodoListRouteRoute = AdminTodosTodoListRouteRouteImport.update({
   id: '/todos/todo-list',
@@ -92,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren
-  '/admin/bull-board': typeof AdminBullBoardIndexRoute
   '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren
   '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
   '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
@@ -104,7 +97,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/admin': typeof AdminIndexRoute
-  '/admin/bull-board': typeof AdminBullBoardIndexRoute
   '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
   '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
   '/admin/todos/todo-list': typeof AdminTodosTodoListIndexRoute
@@ -118,7 +110,6 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren
-  '/admin/bull-board/': typeof AdminBullBoardIndexRoute
   '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren
   '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
   '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
@@ -134,7 +125,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/admin/'
     | '/admin/todos/todo-list'
-    | '/admin/bull-board'
     | '/admin/accounts/users/user'
     | '/admin/todos/todo-list/$id'
     | '/admin/todos/todo-list/new'
@@ -146,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/admin'
-    | '/admin/bull-board'
     | '/admin/todos/todo-list/$id'
     | '/admin/todos/todo-list/new'
     | '/admin/todos/todo-list'
@@ -159,7 +148,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/admin/'
     | '/admin/todos/todo-list'
-    | '/admin/bull-board/'
     | '/admin/accounts/users/user'
     | '/admin/todos/todo-list/$id'
     | '/admin/todos/todo-list/new'
@@ -203,13 +191,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/bull-board/': {
-      id: '/admin/bull-board/'
-      path: '/bull-board'
-      fullPath: '/admin/bull-board'
-      preLoaderRoute: typeof AdminBullBoardIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
     }
     '/admin/todos/todo-list': {
       id: '/admin/todos/todo-list'
@@ -300,14 +281,12 @@ const AdminAccountsUsersUserRouteRouteWithChildren =
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminTodosTodoListRouteRoute: typeof AdminTodosTodoListRouteRouteWithChildren
-  AdminBullBoardIndexRoute: typeof AdminBullBoardIndexRoute
   AdminAccountsUsersUserRouteRoute: typeof AdminAccountsUsersUserRouteRouteWithChildren
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminTodosTodoListRouteRoute: AdminTodosTodoListRouteRouteWithChildren,
-  AdminBullBoardIndexRoute: AdminBullBoardIndexRoute,
   AdminAccountsUsersUserRouteRoute:
     AdminAccountsUsersUserRouteRouteWithChildren,
 }
