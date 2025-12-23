@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
+import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
@@ -26,6 +27,10 @@ const syncProjectOutputSchema = z.object({
   status: z
     .enum(['success', 'error', 'cancelled'])
     .describe('The status of the sync operation.'),
+  packageSyncResults: z
+    .record(z.string(), packageSyncResultSchema.optional())
+    .optional()
+    .describe('The results of the sync for each package.'),
   message: z.string().describe('Human-readable result message.'),
 });
 
@@ -98,6 +103,7 @@ export const syncProjectAction = createServiceAction({
       return {
         status: actionStatus,
         message: `${statusMessage}: ${project.name}`,
+        packageSyncResults: result.packageSyncResults,
       };
     } catch (error) {
       logger.error(

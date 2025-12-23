@@ -73,6 +73,10 @@ export interface SyncProjectResult {
    * The status of the sync.
    */
   status: SyncStatus;
+  /**
+   * The results of the sync for each package.
+   */
+  packageSyncResults: Record<string, PackageSyncResult | undefined> | undefined;
 }
 
 /**
@@ -217,6 +221,12 @@ export async function syncProject({
       completedAt: new Date().toISOString(),
     }));
 
+    const metadata = await syncMetadataController?.getMetadata();
+
+    const packageSyncResults = Object.fromEntries(
+      apps.map((app) => [app.id, metadata?.packages[app.id].result]),
+    );
+
     if (wasCancelled) {
       logger.info('Project sync cancelled.');
     } else if (hasErrors) {
@@ -225,7 +235,7 @@ export async function syncProject({
       logger.info(`Project written to ${directory}!`);
     }
 
-    return { status };
+    return { status, packageSyncResults };
   } catch (err) {
     await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
