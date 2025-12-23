@@ -10,7 +10,6 @@ export default defineConfig(
       maxWorkers: 1,
       passWithNoTests: true,
       root: './src',
-      setupFiles: ['tests/scripts/mock-redis.ts'],
     },
   } /* TPL_CONFIG:END */,
 );

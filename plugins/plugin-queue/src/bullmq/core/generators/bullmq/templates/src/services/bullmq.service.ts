@@ -2,8 +2,8 @@
 
 import type {
   EnqueueOptions,
+  Queue,
   QueueDefinition,
-  Queue as QueueInterface,
   QueueJob,
   RepeatableConfig,
 } from '%queuesImports';
@@ -175,7 +175,7 @@ async function setupRepeatableJobs(
 /**
  * Implementation of Queue interface backed by BullMQ.
  */
-export class BullMQQueue<T> implements QueueInterface<T> {
+export class BullMQQueue<T> implements Queue<T> {
   private bullQueue: BullMQQueueBase | undefined = undefined;
   private worker?: BullMQWorker<T>;
   private isWorkerStarted = false;

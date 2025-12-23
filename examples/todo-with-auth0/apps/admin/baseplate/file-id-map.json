@@ -17,8 +17,6 @@
   "@baseplate-dev/plugin-storage#react/upload-components:file-input-field": "src/components/ui/file-input-field.tsx",
   "@baseplate-dev/plugin-storage#react/upload-components:file-input-upload-gql": "src/components/ui/file-input.gql",
   "@baseplate-dev/plugin-storage#react/upload-components:hooks-use-upload": "src/hooks/use-upload.ts",
-  "@baseplate-dev/react-generators#admin/admin-bull-board:bull-board": "src/routes/admin/bull-board/bull-board.gql",
-  "@baseplate-dev/react-generators#admin/admin-bull-board:bull-board-page": "src/routes/admin/bull-board/index.tsx",
   "@baseplate-dev/react-generators#admin/admin-components:embedded-list-field": "src/components/admin/embedded-list-field.tsx",
   "@baseplate-dev/react-generators#admin/admin-components:embedded-list-input": "src/components/admin/embedded-list-input.tsx",
   "@baseplate-dev/react-generators#admin/admin-components:embedded-object-field": "src/components/admin/embedded-object-field.tsx",
