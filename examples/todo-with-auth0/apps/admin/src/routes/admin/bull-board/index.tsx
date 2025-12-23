@@ -5,8 +5,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import { CreateBullBoardAuthCodeDocument } from '@src/generated/graphql';
-import { config } from '@src/services/config';
+import { AuthenticateBullBoardDocument } from '@src/generated/graphql';
+import { config } from '@src/services/config.js';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 export const Route = createFileRoute(
@@ -16,39 +16,40 @@ export const Route = createFileRoute(
 });
 
 function BullBoardPage(): ReactElement {
-  const [createBullBoardAuthCode] = useMutation(
-    CreateBullBoardAuthCodeDocument,
-  );
+  const [authenticateBullBoard] = useMutation(AuthenticateBullBoardDocument);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const bullBoardUrl = `/api/bull-board/ui`;
 
   useEffect(() => {
-    async function createPath(): Promise<void> {
-      const { data } = await createBullBoardAuthCode();
-      if (!data) {
-        throw new Error('Failed to create bull board auth code');
+    async function authenticateBullBoardAction(): Promise<void> {
+      const { data } = await authenticateBullBoard();
+      if (!data?.authenticateBullBoard.success) {
+        throw new Error('Failed to authenticate bull board');
       }
 
-      const { code } = data.createBullBoardAuthCode;
-
-      // submit auth code
-      const form = document.createElement('form');
-      const codeInput = document.createElement('input');
-
-      form.method = 'POST';
-      form.action = `${config.VITE_BULL_BOARD_BASE}/bull-board/auth`;
-
-      codeInput.value = code;
-      codeInput.name = 'code';
-      form.append(codeInput);
-
-      document.body.append(form);
-
-      form.submit();
+      setIsAuthenticated(true);
     }
-    createPath().catch((err: unknown) => {
+    authenticateBullBoardAction().catch((err: unknown) => {
       setError(logAndFormatError(err));
     });
-  }, [createBullBoardAuthCode]);
+  }, [authenticateBullBoard]);
 
-  return <ErrorableLoader error={error} />;
+  if (error) {
+    return <ErrorableLoader error={error} />;
+  }
+
+  if (!isAuthenticated) {
+    return <ErrorableLoader />;
+  }
+
+  return (
+    <div className="-m-4 h-[calc(100%+2rem)]">
+      <iframe
+        src={bullBoardUrl}
+        className="h-full w-full border-0"
+        title="Bull Board Dashboard"
+      />
+    </div>
+  );
 }

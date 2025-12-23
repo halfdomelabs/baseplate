@@ -25,12 +25,6 @@ export type Scalars = {
   Uuid: { input: string; output: string; }
 };
 
-/** Payload type for createBullBoardAuthCode mutation */
-export type CreateBullBoardAuthCodePayload = {
-  __typename?: 'CreateBullBoardAuthCodePayload';
-  code: Scalars['String']['output'];
-};
-
 /** Input type for createPresignedDownloadUrl mutation */
 export type CreatePresignedDownloadUrlInput = {
   fileId: Scalars['Uuid']['input'];
@@ -215,7 +209,6 @@ export type FileInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createBullBoardAuthCode: CreateBullBoardAuthCodePayload;
   createPresignedDownloadUrl: CreatePresignedDownloadUrlPayload;
   createPresignedUploadUrl: CreatePresignedUploadUrlPayload;
   createTodoItem: CreateTodoItemPayload;

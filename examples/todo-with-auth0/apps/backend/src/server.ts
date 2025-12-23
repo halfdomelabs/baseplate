@@ -10,6 +10,7 @@ import rawBodyPlugin from 'fastify-raw-body';
 import { nanoid } from 'nanoid';
 
 import { rootModule } from './modules/index.js';
+import { bullMQPlugin } from './plugins/bullmq.plugin.js';
 import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
 import { graphqlPlugin } from './plugins/graphql/index.js';
@@ -51,6 +52,7 @@ export async function buildServer(
   await fastify.register(rawBodyPlugin);
   await fastify.register(requestContextPlugin);
   await fastify.register(stripeWebhookPlugin);
+  await fastify.register(bullMQPlugin);
   /* TPL_PLUGINS:END */
 
   // register app plugins

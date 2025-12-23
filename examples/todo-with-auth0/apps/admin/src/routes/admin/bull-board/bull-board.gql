@@ -1,5 +1,5 @@
-mutation CreateBullBoardAuthCode {
-  createBullBoardAuthCode {
-    code
+mutation AuthenticateBullBoard {
+  authenticateBullBoard {
+    success
   }
 }

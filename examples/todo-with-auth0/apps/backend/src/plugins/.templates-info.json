@@ -1,4 +1,9 @@
 {
+  "bullmq.plugin.ts": {
+    "generator": "@baseplate-dev/plugin-queue#bullmq/core/bullmq",
+    "instanceData": {},
+    "template": "bullmq-plugin"
+  },
   "error-handler.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
     "instanceData": {},

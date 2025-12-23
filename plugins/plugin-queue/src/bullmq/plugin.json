@@ -1,0 +1,9 @@
+{
+  "name": "bullmq",
+  "displayName": "BullMQ",
+  "icon": "icon.svg",
+  "description": "Redis-based job queue implementation using BullMQ for reliable background processing.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "managedBy": "@baseplate-dev/plugin-queue:queue"
+}

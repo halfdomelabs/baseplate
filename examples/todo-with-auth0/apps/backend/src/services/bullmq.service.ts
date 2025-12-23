@@ -1,4 +1,4 @@
-import type { Job, JobsOptions, Worker } from 'bullmq';
+import type { Job, JobsOptions } from 'bullmq';
 
 import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
@@ -19,7 +19,7 @@ import { createRedisClient } from './redis.js';
  * Global registry of active queues and workers.
  */
 const activeQueues = new Map<string, BullMQQueueBase>();
-const activeWorkers = new Map<string, Worker>();
+const activeWorkers = new Map<string, BullMQWorker>();
 
 /**
  * Redis connection for BullMQ operations.
@@ -42,13 +42,6 @@ export function initializeBullMQ(): void {
 
   // Create dedicated Redis connection for BullMQ
   bullMQRedisClient = createRedisClient({ usePrefix: false });
-
-  logger.info(
-    {
-      event: 'bullmq-initialized',
-    },
-    'BullMQ initialized',
-  );
 }
 
 /**
@@ -71,13 +64,6 @@ export async function shutdownBullMQ(): Promise<void> {
     await bullMQRedisClient.quit();
     bullMQRedisClient = undefined;
   }
-
-  logger.info(
-    {
-      event: 'bullmq-shutdown',
-    },
-    'BullMQ shutdown complete',
-  );
 }
 
 /**
@@ -190,33 +176,38 @@ async function setupRepeatableJobs(
  * Implementation of Queue interface backed by BullMQ.
  */
 export class BullMQQueue<T> implements QueueInterface<T> {
-  private queue: BullMQQueueBase;
-  private worker?: Worker<T>;
+  private bullQueue: BullMQQueueBase | undefined = undefined;
+  private worker?: BullMQWorker<T>;
   private isWorkerStarted = false;
+
+  public getBullQueue(): BullMQQueueBase {
+    if (!this.bullQueue) {
+      const redis = getBullMQRedis();
+      const prefix = config.REDIS_KEY_PREFIX;
+
+      this.bullQueue = new BullMQQueueBase<T>(this.name, {
+        connection: redis,
+        prefix,
+        defaultJobOptions: mapEnqueueOptions(
+          this.definition.options?.defaultJobOptions,
+        ),
+      });
+
+      // Register in active queues
+      activeQueues.set(this.name, this.bullQueue);
+
+      // Set up error handling
+      this.bullQueue.on('error', (error: Error) => {
+        logError(error, { source: 'bullmq-queue', queueName: this.name });
+      });
+    }
+    return this.bullQueue;
+  }
 
   constructor(
     public readonly name: string,
     private readonly definition: QueueDefinition<T>,
-  ) {
-    const redis = getBullMQRedis();
-    const prefix = config.REDIS_KEY_PREFIX;
-
-    this.queue = new BullMQQueueBase<T>(name, {
-      connection: redis,
-      prefix,
-      defaultJobOptions: mapEnqueueOptions(
-        definition.options?.defaultJobOptions,
-      ),
-    });
-
-    // Register in active queues
-    activeQueues.set(name, this.queue);
-
-    // Set up error handling
-    this.queue.on('error', (error: Error) => {
-      logError(error, { source: 'bullmq-queue', queueName: name });
-    });
-  }
+  ) {}
 
   async enqueue(
     data: T,
@@ -229,7 +220,7 @@ export class BullMQQueue<T> implements QueueInterface<T> {
     };
 
     const bullMQOptions = mapEnqueueOptions(mergedOptions);
-    const job = await this.queue.add(this.name, data, bullMQOptions);
+    const job = await this.getBullQueue().add(this.name, data, bullMQOptions);
 
     return job.id;
   }
@@ -246,7 +237,7 @@ export class BullMQQueue<T> implements QueueInterface<T> {
     // Set up repeatable jobs if configured
     if (this.definition.repeatable) {
       await setupRepeatableJobs(
-        this.queue,
+        this.getBullQueue(),
         this.name,
         this.definition.repeatable,
       ).catch((err: unknown) => {

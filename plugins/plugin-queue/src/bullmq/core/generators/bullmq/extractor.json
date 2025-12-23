@@ -1,0 +1,81 @@
+{
+  "name": "bullmq/core/bullmq",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/plugin-queue:queueServiceImportsProvider"
+      ]
+    }
+  },
+  "templates": {
+    "bullmq-plugin": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/plugins/bullmq.plugin.ts",
+      "referencedGeneratorTemplates": ["bullmq-service"],
+      "sourceFile": "src/plugins/bullmq.plugin.ts",
+      "variables": {}
+    },
+    "bullmq-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/bullmq.service.ts",
+      "projectExports": {
+        "createQueue": { "isTypeOnly": false, "name": "createQueue" },
+        "getScheduledJobs": { "isTypeOnly": false, "name": "getScheduledJobs" },
+        "initializeBullMQ": { "isTypeOnly": false, "name": "initializeBullMQ" },
+        "shutdownBullMQ": { "isTypeOnly": false, "name": "shutdownBullMQ" }
+      },
+      "sourceFile": "src/services/bullmq.service.ts",
+      "variables": { "TPL_DELETE_AFTER_DAYS": {} }
+    },
+    "run-workers": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{package-root}/scripts/run-workers.ts",
+      "referencedGeneratorTemplates": ["bullmq-service"],
+      "sourceFile": "package/scripts/run-workers.ts",
+      "variables": {}
+    }
+  }
+}

@@ -4,10 +4,8 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import {
   appModuleGenerator,
   axiosGenerator,
-  bullMqGenerator,
   composeFastifyApplication,
   dataUtilsGenerator,
-  fastifyBullBoardGenerator,
   fastifyPostmarkGenerator,
   fastifyRedisGenerator,
   fastifySentryGenerator,
@@ -71,12 +69,6 @@ export function buildFastify(
               defaultUrl: getRedisSettings(projectDefinition).url,
             })
           : undefined,
-        ...(app.enableBullQueue
-          ? {
-              bull: bullMqGenerator({}),
-              bullBoard: fastifyBullBoardGenerator({}),
-            }
-          : {}),
         postmark: app.enablePostmark ? fastifyPostmarkGenerator({}) : undefined,
         axios: app.enableAxios ? axiosGenerator({}) : undefined,
         prisma: prismaGenerator({

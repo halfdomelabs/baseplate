@@ -1,48 +1,100 @@
 #!/usr/bin/env node
 
-import type { Worker } from 'bullmq';
-
+import { QUEUE_REGISTRY } from '@src/constants/queues.constants.js';
+import {
+  initializeBullMQ,
+  shutdownBullMQ,
+} from '@src/services/bullmq.service.js';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 
-type WorkerCreator = () => Worker;
+/**
+ * Worker script for running BullMQ queue workers.
+ * This script:
+ * 1. Initializes BullMQ
+ * 2. Starts all queue workers
+ * 3. Handles graceful shutdown
+ */
 
-const WORKER_CREATORS: WorkerCreator[] =
-  /* TPL_WORKERS:START */ []; /* TPL_WORKERS:END */
+/**
+ * Start all queue workers.
+ */
+async function startWorkers(): Promise<void> {
+  // Start workers for all registered queues
+  const startPromises = QUEUE_REGISTRY.map(async (queue) => {
+    try {
+      await queue.work();
+    } catch (error: unknown) {
+      logError(error, { source: 'run-workers', queueName: queue.name });
+    }
+  });
 
-function handleError(err: unknown): void {
-  logError(err);
-  process.exit(1);
+  await Promise.all(startPromises);
 }
 
-const TIMEOUT = 10_000; // time out if shutdown takes longer than 10 seconds
+/**
+ * Main entry point for the worker script.
+ */
+async function main(): Promise<void> {
+  logger.info('Starting queue worker process...');
 
-try {
-  const workers = WORKER_CREATORS.map((creator) => creator());
+  // Initialize BullMQ
+  initializeBullMQ();
+  logger.info('BullMQ initialized in worker mode', {
+    event: 'bullmq-initialized',
+  });
 
-  Promise.all(workers.map((worker) => worker.waitUntilReady()))
+  const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
+
+  // Get active queue names from registry
+  logger.info(
+    {
+      queues: activeQueueNames,
+      count: activeQueueNames.length,
+      event: 'active-queues-from-registry',
+    },
+    'Active queues from registry',
+  );
+
+  // Start all workers
+  await startWorkers();
+
+  logger.info('Queue worker process started successfully', {
+    event: 'queue-worker-process-started',
+  });
+  logger.info('Workers are now processing jobs. Press Ctrl+C to stop.');
+}
+
+/**
+ * Handle graceful shutdown.
+ */
+function shutdown(): void {
+  logger.info('Received shutdown signal, stopping workers...');
+
+  shutdownBullMQ()
     .then(() => {
-      logger.info(`Workers initialized for ${workers.length} queue(s)!`);
-    })
-    .catch(handleError);
-
-  const shutdownWorkers: NodeJS.SignalsListener = (signal): void => {
-    setTimeout(() => {
-      logError(new Error('Shutdown timed out'));
-      process.exit(1);
-    }, TIMEOUT).unref();
-
-    logger.info(`Received ${signal} signal. Shutting down...`);
-
-    Promise.all(workers.map((worker) => worker.close()))
-      .then(() => process.exit(0))
-      .catch((err: unknown) => {
-        handleError(err);
+      logger.info('Workers stopped successfully', {
+        event: 'workers-stopped',
       });
-  };
-
-  process.on('SIGINT', shutdownWorkers);
-  process.on('SIGTERM', shutdownWorkers);
-} catch (err) {
-  handleError(err);
+      process.exit(0);
+    })
+    .catch((error: unknown) => {
+      logError(error, { source: 'run-workers' });
+      process.exit(1);
+    });
 }
+
+// Register shutdown handlers
+process.on('SIGTERM', () => {
+  shutdown();
+});
+
+process.on('SIGINT', () => {
+  shutdown();
+});
+
+// Start the worker process
+main().catch((error: unknown) => {
+  logError(error, { source: 'run-workers' });
+  process.exit(1);
+});

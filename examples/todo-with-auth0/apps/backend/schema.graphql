@@ -1,8 +1,3 @@
-"""Payload type for createBullBoardAuthCode mutation"""
-type CreateBullBoardAuthCodePayload {
-  code: String!
-}
-
 """Input type for createPresignedDownloadUrl mutation"""
 input CreatePresignedDownloadUrlInput {
   fileId: Uuid!
@@ -199,7 +194,6 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 scalar JSONObject
 
 type Mutation {
-  createBullBoardAuthCode: CreateBullBoardAuthCodePayload!
   createPresignedDownloadUrl(input: CreatePresignedDownloadUrlInput!): CreatePresignedDownloadUrlPayload!
   createPresignedUploadUrl(input: CreatePresignedUploadUrlInput!): CreatePresignedUploadUrlPayload!
   createTodoItem(input: CreateTodoItemInput!): CreateTodoItemPayload!

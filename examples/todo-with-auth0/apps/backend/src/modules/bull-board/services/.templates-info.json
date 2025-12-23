@@ -1,7 +1,0 @@
-{
-  "auth.service.ts": {
-    "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
-    "instanceData": {},
-    "template": "services-auth-service"
-  }
-}

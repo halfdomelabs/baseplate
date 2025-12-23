@@ -9,7 +9,6 @@ import {
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  adminBullBoardGenerator,
   adminComponentsGenerator,
   adminHomeGenerator,
   adminLayoutGenerator,
@@ -67,20 +66,17 @@ function buildAdminNavigationLinks(
 /**
  * Build admin routes generator if admin panel is enabled
  *
- * Includes admin layout, home page, and optional Bull Board integration
+ * Includes admin layout and home page
  */
 function buildAdminRoutes(
   builder: AppEntryBuilder<WebAppConfig>,
 ): GeneratorBundle | undefined {
   const { adminApp } = builder.appConfig;
-  const { projectDefinition, definitionContainer } = builder;
+  const { definitionContainer } = builder;
 
   if (!adminApp?.enabled) {
     return undefined;
   }
-
-  const backendApp = AppUtils.getBackendApp(projectDefinition);
-  const generalSettings = projectDefinition.settings.general;
 
   return reactRoutesGenerator({
     name: 'admin',
@@ -94,16 +90,6 @@ function buildAdminRoutes(
             path: adminApp.pathPrefix,
           },
           ...buildAdminNavigationLinks(builder),
-          ...(backendApp.enableBullQueue
-            ? [
-                {
-                  type: 'link' as const,
-                  label: 'Queues',
-                  icon: 'AiOutlineOrderedList',
-                  path: `${adminApp.pathPrefix}/bull-board`,
-                },
-              ]
-            : []),
         ],
         requiredRoles:
           adminApp.allowedRoles?.map((roleId) =>
@@ -111,11 +97,6 @@ function buildAdminRoutes(
           ) ?? [],
       }),
       admin: adminHomeGenerator({}),
-      adminRoutes: backendApp.enableBullQueue
-        ? adminBullBoardGenerator({
-            bullBoardUrl: `http://localhost:${generalSettings.portOffset + 1}`,
-          })
-        : undefined,
       routes: compileAdminSections(builder),
     },
   });

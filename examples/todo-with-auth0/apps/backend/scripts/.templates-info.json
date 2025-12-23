@@ -1,13 +1,8 @@
 {
   "run-workers.ts": {
-    "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+    "generator": "@baseplate-dev/plugin-queue#bullmq/core/bullmq",
     "instanceData": {},
-    "template": "scripts-run-workers"
-  },
-  "synchronize-repeat-jobs.ts": {
-    "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
-    "instanceData": {},
-    "template": "scripts-synchronize-repeat-jobs"
+    "template": "run-workers"
   },
   "tsconfig.json": {
     "generator": "@baseplate-dev/fastify-generators#core/fastify-scripts",
