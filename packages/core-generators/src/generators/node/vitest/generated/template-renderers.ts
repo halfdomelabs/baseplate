@@ -11,11 +11,11 @@ import { NODE_VITEST_PATHS } from './template-paths.js';
 import { NODE_VITEST_TEMPLATES } from './typed-templates.js';
 
 export interface NodeVitestRenderers {
-  globalSetup: {
+  globalSetupEnv: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof NODE_VITEST_TEMPLATES.globalSetup
+          typeof NODE_VITEST_TEMPLATES.globalSetupEnv
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -57,11 +57,11 @@ const nodeVitestRenderersTask = createGeneratorTask({
     return {
       providers: {
         nodeVitestRenderers: {
-          globalSetup: {
+          globalSetupEnv: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: NODE_VITEST_TEMPLATES.globalSetup,
-                destination: paths.globalSetup,
+                template: NODE_VITEST_TEMPLATES.globalSetupEnv,
+                destination: paths.globalSetupEnv,
                 ...options,
               }),
           },

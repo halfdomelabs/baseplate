@@ -22,6 +22,16 @@
       "sourceFile": "src/tests/helpers/db.test-helper.ts",
       "variables": { "TPL_TEST_DB": {} }
     },
+    "global-setup-prisma": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/scripts/global-setup-prisma.ts",
+      "referencedGeneratorTemplates": ["db-test-helper"],
+      "sourceFile": "src/tests/scripts/global-setup-prisma.ts",
+      "variables": {}
+    },
     "prisma-test-helper": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

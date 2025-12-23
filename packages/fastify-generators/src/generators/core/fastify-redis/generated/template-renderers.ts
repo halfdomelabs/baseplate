@@ -10,6 +10,16 @@ import { CORE_FASTIFY_REDIS_PATHS } from './template-paths.js';
 import { CORE_FASTIFY_REDIS_TEMPLATES } from './typed-templates.js';
 
 export interface CoreFastifyRedisRenderers {
+  globalSetupRedis: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_FASTIFY_REDIS_TEMPLATES.globalSetupRedis
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   redis: {
     render: (
       options: Omit<
@@ -37,6 +47,14 @@ const coreFastifyRedisRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreFastifyRedisRenderers: {
+          globalSetupRedis: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_FASTIFY_REDIS_TEMPLATES.globalSetupRedis,
+                destination: paths.globalSetupRedis,
+                ...options,
+              }),
+          },
           redis: {
             render: (options) =>
               typescriptFile.renderTemplateFile({

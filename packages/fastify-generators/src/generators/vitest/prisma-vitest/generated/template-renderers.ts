@@ -21,6 +21,16 @@ export interface VitestPrismaVitestRenderers {
       >,
     ) => BuilderAction;
   };
+  globalSetupPrisma: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof VITEST_PRISMA_VITEST_TEMPLATES.globalSetupPrisma
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   prismaTestHelper: {
     render: (
       options: Omit<
@@ -60,6 +70,15 @@ const vitestPrismaVitestRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   prismaGeneratedImports,
                 },
+                ...options,
+              }),
+          },
+          globalSetupPrisma: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: VITEST_PRISMA_VITEST_TEMPLATES.globalSetupPrisma,
+                destination: paths.globalSetupPrisma,
+                generatorPaths: paths,
                 ...options,
               }),
           },

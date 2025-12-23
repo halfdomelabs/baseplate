@@ -3,7 +3,6 @@ import {
   extractPackageVersions,
   tsCodeFragment,
   tsImportBuilder,
-  tsTemplate,
   typescriptFileProvider,
   vitestConfigProvider,
 } from '@baseplate-dev/core-generators';
@@ -77,14 +76,22 @@ export const fastifyRedisGenerator = createGenerator({
         );
       },
     }),
+    renderers: CORE_FASTIFY_REDIS_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
         configServiceImports: configServiceImportsProvider,
         typescriptFile: typescriptFileProvider,
         vitestConfig: vitestConfigProvider.dependency().optional(),
         paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
+        renderers: CORE_FASTIFY_REDIS_GENERATED.renderers.provider,
       },
-      run({ configServiceImports, typescriptFile, vitestConfig, paths }) {
+      run({
+        configServiceImports,
+        typescriptFile,
+        vitestConfig,
+        paths,
+        renderers,
+      }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -98,13 +105,9 @@ export const fastifyRedisGenerator = createGenerator({
             );
 
             if (vitestConfig) {
-              vitestConfig.globalSetupOperations.set(
-                'redis-prefix',
-                tsTemplate`
-                  // Set Redis key prefix for test isolation
-                  process.env.REDIS_KEY_PREFIX = 'test:';
-                  console.info('Redis key prefix set to "test:" for isolation');
-                `,
+              await builder.apply(renderers.globalSetupRedis.render({}));
+              vitestConfig.globalSetupFiles.push(
+                `./${paths.globalSetupRedis.replace('@/src/', '')}`,
               );
             }
           },
