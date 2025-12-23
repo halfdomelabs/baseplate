@@ -26,8 +26,8 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {},
-      "pathRootRelativePath": "{package-root}/prisma.config.mts",
-      "sourceFile": "package/prisma.config.mts",
+      "pathRootRelativePath": "{package-root}/prisma.config.ts",
+      "sourceFile": "package/prisma.config.ts",
       "variables": { "TPL_SEED_COMMAND": {} }
     },
     "seed": {

@@ -50,7 +50,7 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "@prisma/internals": "6.17.1",
+    "@prisma/internals": "7.2.0",
     "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
     "indent-string": "5.0.0",

@@ -35,7 +35,7 @@ const IGNORE_FILES = [
 // Specifies which files should use the default tsconfig.json project
 // This is useful for certain files outside the src directory, e.g. config files
 const TS_DEFAULT_PROJECT_FILES = [
-  'prisma.config.mts',
+  'prisma.config.ts',
   'vitest.config.ts',
   'vitest.config.ts',
 ];

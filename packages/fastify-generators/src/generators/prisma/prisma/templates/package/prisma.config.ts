@@ -1,17 +1,21 @@
 // @ts-nocheck
 
-import type { PrismaConfig } from 'prisma';
-
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
+import { defineConfig } from 'prisma/config';
 
 // Only load .env file if it exists
 if (existsSync('.env')) {
   loadEnvFile();
 }
 
-export default {
+export default defineConfig({
+  schema: './prisma/schema.prisma',
   migrations: {
+    path: './prisma/migrations',
     seed: TPL_SEED_COMMAND,
   },
-} satisfies PrismaConfig;
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
+});
