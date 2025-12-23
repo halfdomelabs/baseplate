@@ -1,8 +1,4 @@
-import { loadEnvFile } from 'node:process';
-
 import { createTestDatabase } from '../helpers/db.test-helper.js';
-
-loadEnvFile('.env');
 
 export default async function setup(): Promise<void> {
   const { TEST_MODE } = process.env;

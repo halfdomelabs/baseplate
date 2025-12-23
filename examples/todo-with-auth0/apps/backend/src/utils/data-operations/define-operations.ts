@@ -145,7 +145,7 @@ export async function transformFields<
       loadExisting,
     });
 
-    if (result.data) {
+    if (result.data !== undefined) {
       data[fieldKey as keyof TFields] = result.data as FieldDataOrFunction<
         TFields[keyof TFields]
       >;
@@ -173,7 +173,7 @@ export async function transformFields<
         create[key as keyof TFields] =
           value.create as InferFieldsCreateOutput<TFields>[keyof TFields];
       }
-      if (value.update) {
+      if (value.update !== undefined) {
         update[key as keyof TFields] =
           value.update as InferFieldsUpdateOutput<TFields>[keyof TFields];
       }
