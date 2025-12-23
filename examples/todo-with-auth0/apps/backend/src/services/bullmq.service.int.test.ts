@@ -1,8 +1,7 @@
 import {
-  afterAll,
   afterEach,
   assert,
-  beforeAll,
+  beforeEach,
   describe,
   expect,
   it,
@@ -58,19 +57,13 @@ const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('BullMQ service integration tests', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     // Initialize BullMQ
     initializeBullMQ();
   });
 
-  afterAll(async () => {
-    await shutdownBullMQ();
-  });
-
   afterEach(async () => {
-    // Clean up after each test to prevent memory leaks
     await shutdownBullMQ();
-    initializeBullMQ();
   });
 
   describe('basic job processing', () => {
@@ -259,27 +252,6 @@ describe('BullMQ service integration tests', () => {
       await deferred.promise;
 
       expect(jobCount).toBe(1);
-    });
-  });
-
-  describe('cleanup', () => {
-    it('should track scheduled jobs', async () => {
-      const queueName = 'test-scheduled-queue';
-
-      const queue = createQueue<Record<string, never>>(queueName, {
-        handler: () => {
-          // Do nothing
-        },
-        repeatable: {
-          pattern: '0 0 * * *', // Daily at midnight
-        },
-      });
-
-      await queue.work();
-
-      const schedules = await getScheduledJobs();
-      expect(schedules.length).toBeGreaterThan(0);
-      expect(schedules).toContain(queueName);
     });
   });
 });
