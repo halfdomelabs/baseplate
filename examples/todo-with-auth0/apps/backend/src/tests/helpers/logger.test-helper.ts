@@ -23,15 +23,13 @@ export interface MockLogger {
 export function createMockLogger(): MockLogger {
   const showConsole = !!process.env.TEST_SHOW_CONSOLE;
 
-  const makeLoggerFn = (level: keyof MockLogger): MockedLogFn => {
-    if (showConsole) {
-      return ((...args: unknown[]) => {
+  const makeLoggerFn = (level: keyof MockLogger): MockedLogFn =>
+    vi.fn((...args: unknown[]) => {
+      if (showConsole) {
         // eslint-disable-next-line no-console
         console[level](...args);
-      }) as MockedLogFn;
-    }
-    return vi.fn();
-  };
+      }
+    });
 
   return {
     info: makeLoggerFn('info'),

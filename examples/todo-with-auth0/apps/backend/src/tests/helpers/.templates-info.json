@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "db-test-helper"
   },
+  "logger.test-helper.ts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "logger-test-helper"
+  },
   "prisma.test-helper.ts": {
     "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
     "instanceData": {},

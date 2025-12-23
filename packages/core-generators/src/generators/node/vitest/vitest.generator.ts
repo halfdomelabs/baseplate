@@ -11,7 +11,6 @@ import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { eslintConfigProvider } from '../eslint/index.js';
 import { createNodePackagesTask } from '../node/index.js';
-import { typescriptFileProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -47,6 +46,7 @@ export const vitestGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     paths: NODE_VITEST_GENERATED.paths.task,
+    renderers: NODE_VITEST_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, [
         'vitest',
@@ -56,16 +56,16 @@ export const vitestGenerator = createGenerator({
     setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
+        renderers: NODE_VITEST_GENERATED.renderers.provider,
         eslintConfig: eslintConfigProvider,
         vitestConfigValues: vitestConfigValuesProvider,
         paths: NODE_VITEST_GENERATED.paths.provider,
       },
       run({
-        typescriptFile,
         eslintConfig,
         vitestConfigValues: { globalSetupOperations, setupFiles },
         paths,
+        renderers,
       }) {
         const vitestConfigFilename = 'vitest.config.ts';
 
@@ -76,18 +76,11 @@ export const vitestGenerator = createGenerator({
             const hasGlobalSetup = globalSetupOperations.size > 0;
             if (hasGlobalSetup) {
               await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template: NODE_VITEST_GENERATED.templates.globalSetup,
-                  destination: paths.globalSetup,
+                renderers.globalSetup.render({
                   variables: {
                     TPL_OPERATIONS: TsCodeUtils.mergeFragments(
                       globalSetupOperations,
                     ),
-                  },
-                  writeOptions: {
-                    alternateFullIds: [
-                      '@baseplate-dev/core-generators#node/vitest:src/tests/scripts/globalSetup.ts',
-                    ],
                   },
                 }),
               );
@@ -114,9 +107,7 @@ export const vitestGenerator = createGenerator({
             });
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: NODE_VITEST_GENERATED.templates.vitestConfig,
-                destination: vitestConfigFilename,
+              renderers.vitestConfig.render({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
                     plugins,
@@ -125,6 +116,7 @@ export const vitestGenerator = createGenerator({
                 },
               }),
             );
+            await builder.apply(renderers.testHelpersGroup.render({}));
           },
         };
       },
