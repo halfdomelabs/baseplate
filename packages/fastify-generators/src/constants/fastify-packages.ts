@@ -55,7 +55,6 @@ export const FASTIFY_PACKAGES = {
 
   // Redis
   ioredis: '5.8.1',
-  'ioredis-mock': '8.13.0',
 
   // Sentry
   '@sentry/core': '9.17.0',
