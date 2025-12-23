@@ -15,7 +15,6 @@ const bullmqCoreBullmqPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
   exports: { bullmqCoreBullmqPaths: bullmqCoreBullmqPaths.export() },
   run({ packageInfo }) {
-    const packageRoot = packageInfo.getPackageRoot();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
@@ -23,7 +22,7 @@ const bullmqCoreBullmqPathsTask = createGeneratorTask({
         bullmqCoreBullmqPaths: {
           bullmqPlugin: `${srcRoot}/plugins/bullmq.plugin.ts`,
           bullmqService: `${srcRoot}/services/bullmq.service.ts`,
-          runWorkers: `${packageRoot}/scripts/run-workers.ts`,
+          runWorkers: `${srcRoot}/scripts/run-workers.ts`,
         },
       },
     };

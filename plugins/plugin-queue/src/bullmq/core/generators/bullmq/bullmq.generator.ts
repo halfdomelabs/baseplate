@@ -36,8 +36,8 @@ export const bullmqGenerator = createGenerator({
       run({ fastifyServerConfig, paths }) {
         fastifyServerConfig.plugins.set('bullmqPlugin', {
           plugin: tsCodeFragment(
-            'bullmqPlugin',
-            tsImportBuilder(['bullmqPlugin']).from(paths.bullmqPlugin),
+            'bullMQPlugin',
+            tsImportBuilder(['bullMQPlugin']).from(paths.bullmqPlugin),
           ),
         });
       },

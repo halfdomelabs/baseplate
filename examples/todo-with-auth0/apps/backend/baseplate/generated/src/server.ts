@@ -9,7 +9,7 @@ import rawBodyPlugin from 'fastify-raw-body';
 import { nanoid } from 'nanoid';
 
 import { rootModule } from './modules/index.js';
-import { bullmqPlugin } from './plugins/bullmq.plugin.js';
+import { bullMQPlugin } from './plugins/bullmq.plugin.js';
 import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
 import { graphqlPlugin } from './plugins/graphql/index.js';
@@ -39,7 +39,7 @@ export async function buildServer(
   /* TPL_PLUGINS:START */
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
-  await fastify.register(bullmqPlugin);
+  await fastify.register(bullMQPlugin);
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyAuth0Verify, {
     domain: config.AUTH0_DOMAIN,

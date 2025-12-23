@@ -1,0 +1,7 @@
+{
+  "run-workers.ts": {
+    "generator": "@baseplate-dev/plugin-queue#bullmq/core/bullmq",
+    "instanceData": {},
+    "template": "run-workers"
+  }
+}

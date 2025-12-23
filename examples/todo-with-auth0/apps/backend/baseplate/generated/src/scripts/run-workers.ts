@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { QUEUE_REGISTRY } from '@src/constants/queues.constants.js';
+import { QUEUE_REGISTRY } from '../constants/queues.constants.js';
 import {
   initializeBullMQ,
   shutdownBullMQ,
-} from '@src/services/bullmq.service.js';
-import { logError } from '@src/services/error-logger.js';
-import { logger } from '@src/services/logger.js';
+} from '../services/bullmq.service.js';
+import { logError } from '../services/error-logger.js';
+import { logger } from '../services/logger.js';
 
 /**
  * Worker script for running BullMQ queue workers.

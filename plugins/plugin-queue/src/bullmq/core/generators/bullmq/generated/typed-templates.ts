@@ -63,7 +63,7 @@ const runWorkers = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/package/scripts/run-workers.ts',
+      '../templates/src/scripts/run-workers.ts',
     ),
   },
   variables: {},

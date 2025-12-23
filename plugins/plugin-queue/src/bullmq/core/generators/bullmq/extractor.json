@@ -72,9 +72,9 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{package-root}/scripts/run-workers.ts",
+      "pathRootRelativePath": "{src-root}/scripts/run-workers.ts",
       "referencedGeneratorTemplates": ["bullmq-service"],
-      "sourceFile": "package/scripts/run-workers.ts",
+      "sourceFile": "src/scripts/run-workers.ts",
       "variables": {}
     }
   }

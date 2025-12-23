@@ -113,7 +113,7 @@
   "@baseplate-dev/plugin-auth#auth0/auth0-module:user-session-service": "src/modules/accounts/auth/services/user-session.service.ts",
   "@baseplate-dev/plugin-queue#bullmq/core/bullmq:bullmq-plugin": "src/plugins/bullmq.plugin.ts",
   "@baseplate-dev/plugin-queue#bullmq/core/bullmq:bullmq-service": "src/services/bullmq.service.ts",
-  "@baseplate-dev/plugin-queue#bullmq/core/bullmq:run-workers": "scripts/run-workers.ts",
+  "@baseplate-dev/plugin-queue#bullmq/core/bullmq:run-workers": "src/scripts/run-workers.ts",
   "@baseplate-dev/plugin-queue#queue/core/queues:queue-registry": "src/constants/queues.constants.ts",
   "@baseplate-dev/plugin-queue#queue/core/queues:queue-types": "src/types/queue.types.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:adapters-s-3": "src/modules/storage/adapters/s3.ts",

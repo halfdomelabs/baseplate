@@ -1,9 +1,4 @@
 {
-  "run-workers.ts": {
-    "generator": "@baseplate-dev/plugin-queue#bullmq/core/bullmq",
-    "instanceData": {},
-    "template": "run-workers"
-  },
   "tsconfig.json": {
     "generator": "@baseplate-dev/fastify-generators#core/fastify-scripts",
     "instanceData": {},
