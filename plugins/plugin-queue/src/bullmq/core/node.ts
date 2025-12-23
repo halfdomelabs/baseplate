@@ -4,7 +4,7 @@ import {
   createPlatformPluginExport,
 } from '@baseplate-dev/project-builder-lib';
 
-import { bullmqGenerator } from './generators/bullmq/bullmq.generator.js';
+import { bullmqGenerator } from './generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {
