@@ -9,6 +9,9 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   FormActionBar,
   InputFieldController,
   SectionList,
@@ -19,6 +22,7 @@ import {
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
 import { QueueConfigTabs } from '#src/common/index.js';
@@ -80,6 +84,10 @@ export function BullmqDefinitionEditor({
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
+  const isRedisEnabled =
+    definitionContainer.definition.settings.infrastructure?.redis?.enabled ??
+    false;
+
   return (
     <div className="queue:relative queue:flex queue:h-full queue:flex-1 queue:flex-col queue:gap-4 queue:overflow-hidden">
       <QueueConfigTabs />
@@ -93,6 +101,23 @@ export function BullmqDefinitionEditor({
       >
         <form onSubmit={onSubmit} className="queue:max-w-6xl queue:flex-1">
           <div className="queue:pb-16">
+            {!isRedisEnabled && (
+              <Alert variant="warning" className="queue:mb-4">
+                <AlertTitle>Redis Not Enabled</AlertTitle>
+                <AlertDescription>
+                  <p>
+                    BullMQ requires Redis to be enabled. Please{' '}
+                    <Link
+                      to="/settings/infrastructure"
+                      className="queue:inline-block queue:font-medium"
+                    >
+                      enable Redis in infrastructure settings
+                    </Link>{' '}
+                    before syncing.
+                  </p>
+                </AlertDescription>
+              </Alert>
+            )}
             <SectionList>
               <SectionListSection>
                 <SectionListSectionHeader>
