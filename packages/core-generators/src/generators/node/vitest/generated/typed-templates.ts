@@ -2,17 +2,17 @@ import path from 'node:path';
 
 import { createTsTemplateFile } from '#src/renderers/typescript/templates/types.js';
 
-const globalSetup = createTsTemplateFile({
+const globalSetupEnv = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
-  name: 'global-setup',
+  name: 'global-setup-env',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/tests/scripts/global-setup.ts',
+      '../templates/src/tests/scripts/global-setup-env.ts',
     ),
   },
-  variables: { TPL_OPERATIONS: {} },
+  variables: {},
 });
 
 const loggerTestHelper = createTsTemplateFile({
@@ -55,7 +55,7 @@ const vitestConfig = createTsTemplateFile({
 });
 
 export const NODE_VITEST_TEMPLATES = {
-  globalSetup,
+  globalSetupEnv,
   testHelpersGroup,
   vitestConfig,
 };

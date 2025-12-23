@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
+import type { PackageSyncResult } from '#src/sync/sync-metadata.js';
+
 import { createServiceAction } from '#src/actions/types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
+import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
 const syncAllProjectsInputSchema = z.object({
   overwrite: z
@@ -28,6 +31,10 @@ const syncAllProjectsOutputSchema = z.object({
           .enum(['success', 'error', 'cancelled'])
           .describe('The status of the sync operation for this project.'),
         message: z.string().describe('Human-readable result message.'),
+        packageSyncResults: z
+          .record(z.string(), packageSyncResultSchema.optional())
+          .optional()
+          .describe('The results of the sync for each package.'),
       }),
     )
     .describe('Results for each individual project.'),
@@ -52,6 +59,9 @@ export const syncAllProjectsAction = createServiceAction({
       projectName: string;
       status: 'success' | 'error' | 'cancelled';
       message: string;
+      packageSyncResults:
+        | Record<string, PackageSyncResult | undefined>
+        | undefined;
     }[] = [];
 
     let successCount = 0;
@@ -108,6 +118,7 @@ export const syncAllProjectsAction = createServiceAction({
           projectName: project.name,
           status: actionStatus,
           message: statusMessage,
+          packageSyncResults: result.packageSyncResults,
         });
 
         if (actionStatus === 'success') {
@@ -129,6 +140,7 @@ export const syncAllProjectsAction = createServiceAction({
           projectName: project.name,
           status: 'error',
           message: errorMessage,
+          packageSyncResults: undefined,
         });
 
         errorCount++;

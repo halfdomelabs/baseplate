@@ -2,7 +2,6 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   packageInfoProvider,
-  tsCodeFragment,
   typescriptFileProvider,
   vitestConfigProvider,
 } from '@baseplate-dev/core-generators';
@@ -14,7 +13,6 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/index.js';
 
 import { VITEST_PRISMA_VITEST_GENERATED } from './generated/index.js';
-import { prismaVitestImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -32,48 +30,23 @@ export const prismaVitestGenerator = createGenerator({
     paths: VITEST_PRISMA_VITEST_GENERATED.paths.task,
     imports: VITEST_PRISMA_VITEST_GENERATED.imports.task,
     renderers: VITEST_PRISMA_VITEST_GENERATED.renderers.task,
-    vitestConfig: createGeneratorTask({
-      dependencies: {
-        vitestConfig: vitestConfigProvider,
-        prismaVitestImports: prismaVitestImportsProvider,
-      },
-      run({ vitestConfig, prismaVitestImports }) {
-        vitestConfig.globalSetupOperations.set(
-          'prisma',
-          tsCodeFragment(
-            `
-const { TEST_MODE } = process.env;
-
-// don't run database set-up if only running unit tests
-if (TEST_MODE !== 'unit') {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is not set');
-  }
-
-  // create separate test DB
-  const testDatabaseUrl = await createTestDatabase(process.env.DATABASE_URL);
-
-  // back up original database URL
-  process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
-  process.env.DATABASE_URL = testDatabaseUrl;
-
-  console.info('\\nDatabase migrations ran!');
-}
-`,
-            prismaVitestImports.createTestDatabase.declaration(),
-          ),
-        );
-      },
-    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         prismaImports: prismaImportsProvider,
         packageInfo: packageInfoProvider,
+        vitestConfig: vitestConfigProvider,
         paths: VITEST_PRISMA_VITEST_GENERATED.paths.provider,
         renderers: VITEST_PRISMA_VITEST_GENERATED.renderers.provider,
       },
-      run({ packageInfo, typescriptFile, prismaImports, paths, renderers }) {
+      run({
+        packageInfo,
+        typescriptFile,
+        prismaImports,
+        vitestConfig,
+        paths,
+        renderers,
+      }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -97,6 +70,12 @@ if (TEST_MODE !== 'unit') {
                   ),
                 },
               }),
+            );
+
+            // Render the global setup file and register it with vitest
+            await builder.apply(renderers.globalSetupPrisma.render({}));
+            vitestConfig.globalSetupFiles.push(
+              `./${paths.globalSetupPrisma.replace('@/src/', '')}`,
             );
           },
         };

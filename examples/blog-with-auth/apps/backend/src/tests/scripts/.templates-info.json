@@ -1,7 +1,12 @@
 {
-  "global-setup.ts": {
+  "global-setup-env.ts": {
     "generator": "@baseplate-dev/core-generators#node/vitest",
     "instanceData": {},
-    "template": "global-setup"
+    "template": "global-setup-env"
+  },
+  "global-setup-prisma.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "global-setup-prisma"
   }
 }

@@ -1,12 +1,6 @@
-import { loadEnvFile } from 'node:process';
-
 import { createTestDatabase } from '../helpers/db.test-helper.js';
 
-loadEnvFile('.env');
-
 export default async function setup(): Promise<void> {
-  /* TPL_OPERATIONS:START */
-
   const { TEST_MODE } = process.env;
 
   // don't run database set-up if only running unit tests
@@ -24,6 +18,4 @@ export default async function setup(): Promise<void> {
 
     console.info('\nDatabase migrations ran!');
   }
-
-  /* TPL_OPERATIONS:END */
 }

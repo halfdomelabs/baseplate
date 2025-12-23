@@ -6,7 +6,11 @@ export default defineConfig(
     plugins: [tsconfigPaths()],
     test: {
       clearMocks: true,
-      globalSetup: './tests/scripts/global-setup.ts',
+      globalSetup: [
+        './tests/scripts/global-setup-env.ts',
+        './tests/scripts/global-setup-prisma.ts',
+        './tests/scripts/global-setup-redis.ts',
+      ],
       maxWorkers: 1,
       passWithNoTests: true,
       root: './src',

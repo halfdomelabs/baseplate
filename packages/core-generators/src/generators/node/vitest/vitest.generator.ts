@@ -16,8 +16,6 @@ const descriptorSchema = z.object({});
 
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 
-import type { TsCodeFragment } from '#src/renderers/index.js';
-
 import {
   tsCodeFragment,
   TsCodeUtils,
@@ -29,7 +27,7 @@ import { NODE_VITEST_GENERATED } from './generated/index.js';
 const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
-      globalSetupOperations: t.map<string, TsCodeFragment>(),
+      globalSetupFiles: t.array<string>(),
       setupFiles: t.array<string>(),
     }),
     {
@@ -63,7 +61,7 @@ export const vitestGenerator = createGenerator({
       },
       run({
         eslintConfig,
-        vitestConfigValues: { globalSetupOperations, setupFiles },
+        vitestConfigValues: { globalSetupFiles, setupFiles },
         paths,
         renderers,
       }) {
@@ -73,26 +71,20 @@ export const vitestGenerator = createGenerator({
 
         return {
           build: async (builder) => {
-            const hasGlobalSetup = globalSetupOperations.size > 0;
-            if (hasGlobalSetup) {
-              await builder.apply(
-                renderers.globalSetup.render({
-                  variables: {
-                    TPL_OPERATIONS: TsCodeUtils.mergeFragments(
-                      globalSetupOperations,
-                    ),
-                  },
-                }),
-              );
-            }
+            // Always render the env setup file
+            await builder.apply(renderers.globalSetupEnv.render({}));
+
+            // Build globalSetup array with env file first, then sorted additional files
+            const globalSetupArray = [
+              `./${paths.globalSetupEnv.replace('@/src/', '')}`,
+              ...globalSetupFiles.toSorted(),
+            ];
 
             const configValues = {
               clearMocks: true,
               passWithNoTests: true,
               root: './src',
-              globalSetup: hasGlobalSetup
-                ? `./${paths.globalSetup.replace('@/src/', '')}`
-                : undefined,
+              globalSetup: globalSetupArray,
               setupFiles:
                 setupFiles.length > 0 ? setupFiles.toSorted() : undefined,
               maxWorkers: 1,

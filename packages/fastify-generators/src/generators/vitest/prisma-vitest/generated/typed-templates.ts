@@ -26,6 +26,20 @@ const dbTestHelper = createTsTemplateFile({
   variables: { TPL_TEST_DB: {} },
 });
 
+const globalSetupPrisma = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'global-setup-prisma',
+  referencedGeneratorTemplates: { dbTestHelper: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/tests/scripts/global-setup-prisma.ts',
+    ),
+  },
+  variables: {},
+});
+
 const prismaTestHelper = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -45,5 +59,6 @@ const prismaTestHelper = createTsTemplateFile({
 
 export const VITEST_PRISMA_VITEST_TEMPLATES = {
   dbTestHelper,
+  globalSetupPrisma,
   prismaTestHelper,
 };
