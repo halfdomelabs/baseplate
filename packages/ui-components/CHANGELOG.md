@@ -1,5 +1,19 @@
 # @baseplate-dev/ui-components
 
+## 0.4.2
+
+### Patch Changes
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#705](https://github.com/halfdomelabs/baseplate/pull/705) [`a173074`](https://github.com/halfdomelabs/baseplate/commit/a1730748bbbc21ea22d9d91bf28e34d2c351425b) Thanks [@kingston](https://github.com/kingston)! - Upgrade dependencies:
+  - Storybook 9.0.18 → 10.1.10
+  - TRPC 11.7.2 → 11.8.0
+  - MCP SDK 1.23.0 → 1.25.1
+  - eslint-plugin-storybook 9.0.18 → 10.1.10
+- Updated dependencies [[`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f)]:
+  - @baseplate-dev/utils@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes

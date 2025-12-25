@@ -1,5 +1,15 @@
 # @baseplate-dev/tools
 
+## 0.4.2
+
+### Patch Changes
+
+- [#705](https://github.com/halfdomelabs/baseplate/pull/705) [`a173074`](https://github.com/halfdomelabs/baseplate/commit/a1730748bbbc21ea22d9d91bf28e34d2c351425b) Thanks [@kingston](https://github.com/kingston)! - Upgrade dependencies:
+  - Storybook 9.0.18 → 10.1.10
+  - TRPC 11.7.2 → 11.8.0
+  - MCP SDK 1.23.0 → 1.25.1
+  - eslint-plugin-storybook 9.0.18 → 10.1.10
+
 ## 0.4.1
 
 ## 0.4.0

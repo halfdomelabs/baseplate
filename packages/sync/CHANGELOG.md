@@ -1,5 +1,16 @@
 # @baseplate-dev/sync
 
+## 0.4.2
+
+### Patch Changes
+
+- [#706](https://github.com/halfdomelabs/baseplate/pull/706) [`795ee4c`](https://github.com/halfdomelabs/baseplate/commit/795ee4c18e7b393fb9247ced23a12de5e219ab15) Thanks [@kingston](https://github.com/kingston)! - Add test helper for creating console loggers
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- Updated dependencies [[`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f)]:
+  - @baseplate-dev/utils@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes

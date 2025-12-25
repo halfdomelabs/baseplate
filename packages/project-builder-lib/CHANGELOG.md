@@ -1,5 +1,27 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.4.2
+
+### Patch Changes
+
+- [#711](https://github.com/halfdomelabs/baseplate/pull/711) [`bde61e3`](https://github.com/halfdomelabs/baseplate/commit/bde61e3e5dfc4d6d19c0d2a71491de4605cd2c20) Thanks [@kingston](https://github.com/kingston)! - Add BullMQ plugin as managed child of queue plugin
+  - Create new BullMQ plugin (`@baseplate-dev/plugin-queue/bullmq`) following the pg-boss plugin pattern
+  - Add migration (021) to migrate `enableBullQueue` from backend app config to queue/bullmq plugin config
+  - Remove old `bullMqGenerator` and `fastifyBullBoardGenerator` from fastify-generators
+  - Remove Bull Board integration (to be replaced with local alternative in the future)
+  - Remove `enableBullQueue` option from backend app schema and UI
+
+- [#709](https://github.com/halfdomelabs/baseplate/pull/709) [`6828918`](https://github.com/halfdomelabs/baseplate/commit/6828918121bb244fdc84758d28a87370cbc70992) Thanks [@kingston](https://github.com/kingston)! - Fix plugin config migration version not being set correctly when enabling a new plugin via web config editor
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#702](https://github.com/halfdomelabs/baseplate/pull/702) [`18c7cf1`](https://github.com/halfdomelabs/baseplate/commit/18c7cf19c0d171b734eb9bcc53320ccf02baa08a) Thanks [@kingston](https://github.com/kingston)! - Refactor reference extraction to use functional approach with `refContext` and `provides` instead of `withRefBuilder`
+
+- Updated dependencies [[`795ee4c`](https://github.com/halfdomelabs/baseplate/commit/795ee4c18e7b393fb9247ced23a12de5e219ab15), [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f), [`a173074`](https://github.com/halfdomelabs/baseplate/commit/a1730748bbbc21ea22d9d91bf28e34d2c351425b)]:
+  - @baseplate-dev/sync@0.4.2
+  - @baseplate-dev/ui-components@0.4.2
+  - @baseplate-dev/utils@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes

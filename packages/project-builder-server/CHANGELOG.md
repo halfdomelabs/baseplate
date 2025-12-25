@@ -1,5 +1,35 @@
 # @baseplate-dev/project-builder-server
 
+## 0.4.2
+
+### Patch Changes
+
+- [#711](https://github.com/halfdomelabs/baseplate/pull/711) [`bde61e3`](https://github.com/halfdomelabs/baseplate/commit/bde61e3e5dfc4d6d19c0d2a71491de4605cd2c20) Thanks [@kingston](https://github.com/kingston)! - Add BullMQ plugin as managed child of queue plugin
+  - Create new BullMQ plugin (`@baseplate-dev/plugin-queue/bullmq`) following the pg-boss plugin pattern
+  - Add migration (021) to migrate `enableBullQueue` from backend app config to queue/bullmq plugin config
+  - Remove old `bullMqGenerator` and `fastifyBullBoardGenerator` from fastify-generators
+  - Remove Bull Board integration (to be replaced with local alternative in the future)
+  - Remove `enableBullQueue` option from backend app schema and UI
+
+- [#701](https://github.com/halfdomelabs/baseplate/pull/701) [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220) Thanks [@kingston](https://github.com/kingston)! - Upgrade Fastify to 5.6.2 and fastify-plugin to 5.1.0
+
+- [#697](https://github.com/halfdomelabs/baseplate/pull/697) [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54) Thanks [@kingston](https://github.com/kingston)! - Ignore \*.map files from built output in package.json
+
+- [#706](https://github.com/halfdomelabs/baseplate/pull/706) [`795ee4c`](https://github.com/halfdomelabs/baseplate/commit/795ee4c18e7b393fb9247ced23a12de5e219ab15) Thanks [@kingston](https://github.com/kingston)! - Fix MCP output parsing to conform to new output schema format for service actions
+
+- [#705](https://github.com/halfdomelabs/baseplate/pull/705) [`a173074`](https://github.com/halfdomelabs/baseplate/commit/a1730748bbbc21ea22d9d91bf28e34d2c351425b) Thanks [@kingston](https://github.com/kingston)! - Upgrade dependencies:
+  - Storybook 9.0.18 → 10.1.10
+  - TRPC 11.7.2 → 11.8.0
+  - MCP SDK 1.23.0 → 1.25.1
+  - eslint-plugin-storybook 9.0.18 → 10.1.10
+- Updated dependencies [[`bde61e3`](https://github.com/halfdomelabs/baseplate/commit/bde61e3e5dfc4d6d19c0d2a71491de4605cd2c20), [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220), [`795ee4c`](https://github.com/halfdomelabs/baseplate/commit/795ee4c18e7b393fb9247ced23a12de5e219ab15), [`6828918`](https://github.com/halfdomelabs/baseplate/commit/6828918121bb244fdc84758d28a87370cbc70992), [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220), [`5d4ae05`](https://github.com/halfdomelabs/baseplate/commit/5d4ae05b1781100ee21c5a60784f0107014bade4), [`11fa86f`](https://github.com/halfdomelabs/baseplate/commit/11fa86fb8e7a209175f132b1b3d59cd24cf13d54), [`74529e7`](https://github.com/halfdomelabs/baseplate/commit/74529e7fffae8a70f8cfe801a1897204d010e291), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f), [`ae2aba1`](https://github.com/halfdomelabs/baseplate/commit/ae2aba1f31c35c306cc459e0efe5e3612ece5c94), [`2395821`](https://github.com/halfdomelabs/baseplate/commit/239582148fe92d80457a31021036fa1e2c51cf5d), [`4be6c7d`](https://github.com/halfdomelabs/baseplate/commit/4be6c7dc7d900c37585b93cf5bb7198de6a41f1f), [`18c7cf1`](https://github.com/halfdomelabs/baseplate/commit/18c7cf19c0d171b734eb9bcc53320ccf02baa08a), [`e8576b9`](https://github.com/halfdomelabs/baseplate/commit/e8576b9ba5912acf9d81bcc1b18a0fbc8df91220), [`e426b52`](https://github.com/halfdomelabs/baseplate/commit/e426b52d37f04f71ca960eb4cad2246af0603bd3)]:
+  - @baseplate-dev/project-builder-lib@0.4.2
+  - @baseplate-dev/fastify-generators@0.4.2
+  - @baseplate-dev/sync@0.4.2
+  - @baseplate-dev/react-generators@0.4.2
+  - @baseplate-dev/core-generators@0.4.2
+  - @baseplate-dev/utils@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes
