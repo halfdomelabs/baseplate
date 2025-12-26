@@ -6,7 +6,7 @@ import type { SessionData } from '../hooks/use-session';
 
 export interface RootRouteContext {
   /* TPL_ROOT_ROUTE_CONTEXT:START */
-  apolloClient: ApolloClient<object>;
+  apolloClient: ApolloClient;
   session: SessionData;
   userId?: string | undefined;
   /* TPL_ROOT_ROUTE_CONTEXT:END */

@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
