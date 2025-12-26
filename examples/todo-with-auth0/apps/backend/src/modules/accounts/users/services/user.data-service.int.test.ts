@@ -257,6 +257,66 @@ describe('updateUser', () => {
       email: 'jane@example.com',
     });
   });
+
+  it('should delete nested one-to-one relation when set to null', async () => {
+    // Create user with customer
+    const user = await prisma.user.create({
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        customer: {
+          create: {
+            stripeCustomerId: 'cus_123456789',
+          },
+        },
+      },
+      include: { customer: true },
+    });
+
+    expect(user.customer).not.toBeNull();
+
+    // Update with null to delete the customer
+    await updateUser({
+      where: { id: user.id },
+      data: {
+        customer: null,
+      },
+      context,
+    });
+
+    const userCheck = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { customer: true },
+    });
+
+    expect(userCheck?.customer).toBeNull();
+  });
+
+  it('should not error when setting nested one-to-one to null when it does not exist', async () => {
+    // Create user without customer
+    const user = await prisma.user.create({
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+      },
+    });
+
+    // Update with null should not error even though customer doesn't exist
+    await updateUser({
+      where: { id: user.id },
+      data: {
+        customer: null,
+      },
+      context,
+    });
+
+    const userCheck = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { customer: true },
+    });
+
+    expect(userCheck?.customer).toBeNull();
+  });
 });
 
 describe('deleteUser', () => {
