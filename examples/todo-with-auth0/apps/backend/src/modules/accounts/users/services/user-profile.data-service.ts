@@ -19,9 +19,11 @@ export const userProfileInputFields = {
 
 export const deleteUserProfile = defineDeleteOperation({
   model: 'userProfile',
-  delete: ({ tx, where, query }) =>
-    tx.userProfile.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.userProfile.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });

@@ -18,22 +18,29 @@ export const todoListShareInputFields = {
 export const createTodoListShare = defineCreateOperation({
   model: 'todoListShare',
   fields: todoListShareInputFields,
-  create: ({ tx, data: { todoListId, userId, ...data }, query }) =>
-    tx.todoListShare.create({
+  create: async ({ tx, data: { todoListId, userId, ...data }, query }) => {
+    const item = await tx.todoListShare.create({
       data: {
         ...data,
         todoList: relationHelpers.connectCreate({ id: todoListId }),
         user: relationHelpers.connectCreate({ id: userId }),
       },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const updateTodoListShare = defineUpdateOperation({
   model: 'todoListShare',
   fields: todoListShareInputFields,
-  update: ({ tx, where, data: { todoListId, userId, ...data }, query }) =>
-    tx.todoListShare.update({
+  update: async ({
+    tx,
+    where,
+    data: { todoListId, userId, ...data },
+    query,
+  }) => {
+    const item = await tx.todoListShare.update({
       where,
       data: {
         ...data,
@@ -41,14 +48,18 @@ export const updateTodoListShare = defineUpdateOperation({
         user: relationHelpers.connectUpdate({ id: userId }),
       },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const deleteTodoListShare = defineDeleteOperation({
   model: 'todoListShare',
-  delete: ({ tx, where, query }) =>
-    tx.todoListShare.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.todoListShare.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });

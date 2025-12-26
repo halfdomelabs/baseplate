@@ -43,22 +43,29 @@ export const todoItemInputFields = {
 export const createTodoItem = defineCreateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
-  create: ({ tx, data: { assigneeId, todoListId, ...data }, query }) =>
-    tx.todoItem.create({
+  create: async ({ tx, data: { assigneeId, todoListId, ...data }, query }) => {
+    const item = await tx.todoItem.create({
       data: {
         ...data,
         assignee: relationHelpers.connectCreate({ id: assigneeId }),
         todoList: relationHelpers.connectCreate({ id: todoListId }),
       },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const updateTodoItem = defineUpdateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
-  update: ({ tx, where, data: { assigneeId, todoListId, ...data }, query }) =>
-    tx.todoItem.update({
+  update: async ({
+    tx,
+    where,
+    data: { assigneeId, todoListId, ...data },
+    query,
+  }) => {
+    const item = await tx.todoItem.update({
       where,
       data: {
         ...data,
@@ -66,14 +73,18 @@ export const updateTodoItem = defineUpdateOperation({
         todoList: relationHelpers.connectUpdate({ id: todoListId }),
       },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const deleteTodoItem = defineDeleteOperation({
   model: 'todoItem',
-  delete: ({ tx, where, query }) =>
-    tx.todoItem.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.todoItem.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });

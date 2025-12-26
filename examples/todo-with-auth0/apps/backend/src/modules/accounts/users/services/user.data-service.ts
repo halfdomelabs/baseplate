@@ -68,29 +68,35 @@ export const userInputFields = {
 export const createUser = defineCreateOperation({
   model: 'user',
   fields: userInputFields,
-  create: ({ tx, data, query }) =>
-    tx.user.create({
+  create: async ({ tx, data, query }) => {
+    const item = await tx.user.create({
       data,
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const updateUser = defineUpdateOperation({
   model: 'user',
   fields: userInputFields,
-  update: ({ tx, where, data, query }) =>
-    tx.user.update({
+  update: async ({ tx, where, data, query }) => {
+    const item = await tx.user.update({
       where,
       data,
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const deleteUser = defineDeleteOperation({
   model: 'user',
-  delete: ({ tx, where, query }) =>
-    tx.user.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.user.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });
