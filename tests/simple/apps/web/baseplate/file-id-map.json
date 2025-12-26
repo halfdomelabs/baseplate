@@ -5,6 +5,8 @@
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
   "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.app.json",
+  "@baseplate-dev/core-generators#node/vitest:logger-test-helper": "src/tests/helpers/logger.test-helper.ts",
+  "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts",
   "@baseplate-dev/react-generators#apollo/apollo-error:apollo-error": "src/utils/apollo-error.ts",
   "@baseplate-dev/react-generators#apollo/apollo-sentry:apollo-sentry-link": "src/services/apollo/apollo-sentry-link.ts",
   "@baseplate-dev/react-generators#apollo/react-apollo:app-apollo-provider": "src/app/app-apollo-provider.tsx",

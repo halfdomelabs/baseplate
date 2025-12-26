@@ -122,7 +122,9 @@ describe('Apollo Client Error Handling', () => {
       expect(vi.mocked(logError)).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Test GraphQL error',
-          extensions: expect.objectContaining({ code: 'TEST_ERROR' }) as unknown,
+          extensions: expect.objectContaining({
+            code: 'TEST_ERROR',
+          }) as unknown,
         }),
       );
     });
