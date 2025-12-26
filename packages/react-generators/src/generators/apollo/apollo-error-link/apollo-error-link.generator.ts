@@ -3,7 +3,6 @@ import {
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
-  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
