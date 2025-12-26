@@ -42,7 +42,7 @@ export const auth0ApolloGenerator = createGenerator({
             reactApolloConfig.apolloLinks.add({
               name: 'authLink',
               bodyFragment: tsCodeFragment(authLink, [
-                tsImportBuilder(['setContext']).from(
+                tsImportBuilder(['SetContextLink']).from(
                   '@apollo/client/link/context',
                 ),
               ]),

@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
 import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
-import { setContext } from '@apollo/client/link/context';
+import { SetContextLink } from '@apollo/client/link/context';
 import { ErrorLink } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
@@ -67,7 +67,7 @@ export function createApolloClient(
     }
   });
 
-  const authLink = setContext(async () => {
+  const authLink = new SetContextLink(async () => {
     const accessToken = await getAccessToken();
     if (!accessToken) {
       return {};

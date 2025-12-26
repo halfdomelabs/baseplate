@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 // AUTH_LINK:START
-const authLink = setContext(async () => {
+const authLink = new SetContextLink(async () => {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return {};
