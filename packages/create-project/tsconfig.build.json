@@ -19,6 +19,15 @@
       "path": "../project-builder-cli/tsconfig.build.json"
     },
     {
+      "path": "../project-builder-lib/tsconfig.build.json"
+    },
+    {
+      "path": "../project-builder-server/tsconfig.build.json"
+    },
+    {
+      "path": "../sync/tsconfig.build.json"
+    },
+    {
       "path": "../utils/tsconfig.build.json"
     }
   ]

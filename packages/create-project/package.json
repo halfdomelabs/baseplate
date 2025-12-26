@@ -47,10 +47,12 @@
   },
   "dependencies": {
     "@baseplate-dev/project-builder-cli": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/project-builder-server": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "chalk": "5.3.0",
     "commander": "^12.1.0",
-    "execa": "9.3.0",
     "ora": "^8.0.1"
   },
   "devDependencies": {
