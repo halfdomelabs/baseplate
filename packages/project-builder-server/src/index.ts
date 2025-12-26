@@ -1,4 +1,6 @@
+export * from './actions/index.js';
 export * from './api/index.js';
+export * from './compiler/index.js';
 export * from './constants/index.js';
 export * from './diff/index.js';
 export * from './plugins/index.js';
