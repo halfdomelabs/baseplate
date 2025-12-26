@@ -1,6 +1,6 @@
 import type { GraphQLFormattedError } from 'graphql';
 
-import { ApolloError } from '@apollo/client';
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import * as Sentry from '@sentry/react';
 import { GraphQLError } from 'graphql';
 
@@ -63,8 +63,8 @@ export function logErrorToSentry(
   Sentry.withScope((scope) => {
     /* TPL_SENTRY_SCOPE_ACTIONS:START */
 
-    if (error instanceof ApolloError && error.graphQLErrors.length === 1) {
-      const graphqlError = error.graphQLErrors[0];
+    if (CombinedGraphQLErrors.is(error) && error.errors.length === 1) {
+      const graphqlError = error.errors[0];
       configureSentryScopeForGraphqlError(scope, graphqlError);
     }
 

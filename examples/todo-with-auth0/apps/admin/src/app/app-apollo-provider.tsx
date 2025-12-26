@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useMemo } from 'react';
 

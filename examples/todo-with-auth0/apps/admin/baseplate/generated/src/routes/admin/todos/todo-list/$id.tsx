@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -31,6 +31,7 @@ export const Route = createFileRoute(
       query: TodoListEditByIdDocument,
       variables: { id },
     });
+    if (!data) throw new Error('No data received from query');
     return {
       crumb: /* TPL_CRUMB_EXPRESSION:START */ data.todoList.name
         ? data.todoList.name
