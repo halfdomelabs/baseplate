@@ -16,7 +16,6 @@ export const fastifyVitestGenerator = createGenerator({
   buildTasks: () => ({
     node: createNodeTask((node) => {
       node.scripts.mergeObj({
-        test: 'vitest run',
         'test:unit': 'cross-env TEST_MODE=unit vitest run .unit.',
       });
       node.packages.addDevPackages(

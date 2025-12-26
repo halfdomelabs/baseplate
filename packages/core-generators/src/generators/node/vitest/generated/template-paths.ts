@@ -3,7 +3,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { packageInfoProvider } from '#src/providers/project.js';
 
 export interface NodeVitestPaths {
-  globalSetupEnv: string;
   loggerTestHelper: string;
   vitestConfig: string;
 }
@@ -21,7 +20,6 @@ const nodeVitestPathsTask = createGeneratorTask({
     return {
       providers: {
         nodeVitestPaths: {
-          globalSetupEnv: `${srcRoot}/tests/scripts/global-setup-env.ts`,
           loggerTestHelper: `${srcRoot}/tests/helpers/logger.test-helper.ts`,
           vitestConfig: `${packageRoot}/vitest.config.ts`,
         },

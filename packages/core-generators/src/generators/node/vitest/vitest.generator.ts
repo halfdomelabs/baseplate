@@ -10,11 +10,11 @@ import { packageScope } from '#src/providers/scopes.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { eslintConfigProvider } from '../eslint/index.js';
-import { createNodePackagesTask } from '../node/index.js';
+import { createNodePackagesTask, createNodeTask } from '../node/index.js';
 
 const descriptorSchema = z.object({});
 
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { quot } from '@baseplate-dev/utils';
 
 import {
   tsCodeFragment,
@@ -48,47 +48,52 @@ export const vitestGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, [
         'vitest',
+        'vite',
         'vite-tsconfig-paths',
       ]),
     }),
     setup: setupTask,
+    node: createNodeTask((node) => {
+      node.scripts.mergeObj({
+        test: 'vitest run',
+      });
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: NODE_VITEST_GENERATED.renderers.provider,
         eslintConfig: eslintConfigProvider,
         vitestConfigValues: vitestConfigValuesProvider,
-        paths: NODE_VITEST_GENERATED.paths.provider,
       },
       run({
         eslintConfig,
         vitestConfigValues: { globalSetupFiles, setupFiles },
-        paths,
         renderers,
       }) {
         const vitestConfigFilename = 'vitest.config.ts';
 
         eslintConfig.tsDefaultProjectFiles.push(vitestConfigFilename);
+        eslintConfig.enableVitest.set(true);
 
         return {
           build: async (builder) => {
-            // Always render the env setup file
-            await builder.apply(renderers.globalSetupEnv.render({}));
-
-            // Build globalSetup array with env file first, then sorted additional files
-            const globalSetupArray = [
-              `./${paths.globalSetupEnv.replace('@/src/', '')}`,
-              ...globalSetupFiles.toSorted(),
-            ];
-
-            const configValues = {
-              clearMocks: true,
-              passWithNoTests: true,
-              root: './src',
-              globalSetup: globalSetupArray,
+            const configValues = TsCodeUtils.mergeFragmentsAsObject({
+              clearMocks: 'true',
+              passWithNoTests: 'true',
+              root: quot('./src'),
+              globalSetup:
+                globalSetupFiles.length > 0
+                  ? JSON.stringify(globalSetupFiles.toSorted())
+                  : undefined,
               setupFiles:
-                setupFiles.length > 0 ? setupFiles.toSorted() : undefined,
-              maxWorkers: 1,
-            };
+                setupFiles.length > 0
+                  ? JSON.stringify(setupFiles.toSorted())
+                  : undefined,
+              maxWorkers: '1',
+              env: tsCodeFragment(
+                "loadEnv('development', process.cwd(), '')",
+                tsImportBuilder(['loadEnv']).from('vite'),
+              ),
+            });
 
             const plugins = TsCodeUtils.mergeFragmentsAsArray({
               tsconfigPaths: tsCodeFragment('tsconfigPaths()', [
@@ -103,7 +108,7 @@ export const vitestGenerator = createGenerator({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
                     plugins,
-                    test: stringifyPrettyStable(configValues),
+                    test: configValues,
                   }),
                 },
               }),

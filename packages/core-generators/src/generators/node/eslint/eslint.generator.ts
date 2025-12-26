@@ -39,7 +39,7 @@ const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
         '*.{js,ts,mjs,mts,cjs,cts}',
         '.*.{js,ts,mjs,mts,cjs,cts}',
       ]),
-      disableVitest: t.scalar<boolean>(),
+      enableVitest: t.scalar<boolean>(),
       tsDefaultProjectFiles: t.array<string>(),
     }),
     {
@@ -81,7 +81,7 @@ export const eslintGenerator = createGenerator({
         node: nodeProvider,
         eslintConfigValues: eslintConfigValuesProvider,
       },
-      run({ node, eslintConfigValues: { react, disableVitest } }) {
+      run({ node, eslintConfigValues: { react, enableVitest } }) {
         node.packages.addDevPackages({
           ...extractPackageVersions(CORE_PACKAGES, [
             '@eslint/js',
@@ -101,9 +101,9 @@ export const eslintGenerator = createGenerator({
                 'eslint-plugin-react-hooks',
               ])
             : {}),
-          ...(disableVitest
-            ? {}
-            : extractPackageVersions(CORE_PACKAGES, ['@vitest/eslint-plugin'])),
+          ...(enableVitest
+            ? extractPackageVersions(CORE_PACKAGES, ['@vitest/eslint-plugin'])
+            : {}),
         });
         node.scripts.mergeObj({
           lint: 'eslint .',
@@ -122,16 +122,13 @@ export const eslintGenerator = createGenerator({
           react,
           eslintIgnore,
           tsDefaultProjectFiles,
-          disableVitest,
+          enableVitest,
           devDependencies,
         },
         typescriptFile,
         paths,
       }) {
         const defaultProjectFiles = [...tsDefaultProjectFiles];
-        if (!disableVitest) {
-          defaultProjectFiles.push('vitest.config.ts');
-        }
         return {
           build: async (builder) => {
             await builder.apply(
@@ -153,7 +150,7 @@ export const eslintGenerator = createGenerator({
                   TPL_EXTRA_CONFIGS: TsCodeUtils.mergeFragments(
                     {
                       react: react ? REACT_ESLINT_RULES : undefined,
-                      vitest: disableVitest ? undefined : VITEST_ESLINT_RULES,
+                      vitest: enableVitest ? VITEST_ESLINT_RULES : undefined,
                     },
                     '\n\n',
                   ),

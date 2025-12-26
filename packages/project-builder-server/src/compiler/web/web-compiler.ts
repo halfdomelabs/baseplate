@@ -2,7 +2,10 @@ import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
 import type { AdminLayoutLinkItem } from '@baseplate-dev/react-generators';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { composeNodeGenerator } from '@baseplate-dev/core-generators';
+import {
+  composeNodeGenerator,
+  vitestGenerator,
+} from '@baseplate-dev/core-generators';
 import {
   AppUtils,
   FeatureUtils,
@@ -191,6 +194,7 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
       version: '1.0.0',
       children: {
         react: buildReact(appBuilder),
+        vitest: vitestGenerator({}),
       },
     });
 
