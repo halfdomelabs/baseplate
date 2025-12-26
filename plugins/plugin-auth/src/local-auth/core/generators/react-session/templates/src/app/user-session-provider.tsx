@@ -8,7 +8,7 @@ import { GetCurrentUserSessionDocument } from '%generatedGraphqlImports';
 import { AuthSessionContext } from '%localAuthHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
-import { useApolloClient, useQuery } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client/react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface UserSessionProviderProps {

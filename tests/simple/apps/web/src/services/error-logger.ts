@@ -1,6 +1,6 @@
 import type { GraphQLFormattedError } from 'graphql';
 
-import { ApolloError } from '@apollo/client';
+import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
 import { GraphQLError } from 'graphql';
 
 import { logger } from './logger';
@@ -47,27 +47,12 @@ export function logError(
     annotateGraphQLError(error, context);
   }
 
-  if (error instanceof ApolloError) {
-    if (error.graphQLErrors.length > 0) {
-      annotateGraphQLError(error.graphQLErrors[0], context);
-    }
-    if (error.networkError && 'result' in error.networkError) {
-      const { result } = error.networkError;
-      const message =
-        typeof result === 'string'
-          ? result
-          : ((
-              result.errors as
-                | {
-                    message?: string;
-                  }[]
-                | undefined
-            )?.[0]?.message ?? JSON.stringify(result));
-
-      context.networkErrorResponse = message;
+  if (CombinedGraphQLErrors.is(error)) {
+    if (error.errors.length > 0) {
+      annotateGraphQLError(error.errors[0], context);
     }
     // it's more useful to log the current stack trace than the one from
-    // ApolloError which is always the same
+    // CombinedGraphQLErrors which is always the same
     const currentStack = new Error('stack').stack?.split('\n');
     error.stack = [
       error.stack?.split('\n')[0],
@@ -77,6 +62,10 @@ export function logError(
     ]
       .filter(Boolean)
       .join('\n');
+  }
+
+  if (ServerError.is(error)) {
+    context.networkErrorResponse = error.bodyText;
   }
 
   context.errorId = logErrorToSentry(error, context);

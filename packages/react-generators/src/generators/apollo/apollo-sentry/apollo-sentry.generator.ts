@@ -62,18 +62,20 @@ export const apolloSentryGenerator = createGenerator({
               'apollo',
               tsCodeFragment(
                 `
-                if (error instanceof ApolloError && error.graphQLErrors.length === 1) {
-                  const graphqlError = error.graphQLErrors[0];
+                if (CombinedGraphQLErrors.is(error) && error.errors.length === 1) {
+                  const graphqlError = error.errors[0];
                   configureSentryScopeForGraphqlError(scope, graphqlError);
                 }
-            
+
                 if (error instanceof GraphQLError) {
                   configureSentryScopeForGraphqlError(scope, error);
                 }
             `,
                 [
                   tsImportBuilder(['GraphQLError']).from('graphql'),
-                  tsImportBuilder(['ApolloError']).from('@apollo/client'),
+                  tsImportBuilder(['CombinedGraphQLErrors']).from(
+                    '@apollo/client/errors',
+                  ),
                 ],
                 {
                   hoistedFragments: [headerFragment],

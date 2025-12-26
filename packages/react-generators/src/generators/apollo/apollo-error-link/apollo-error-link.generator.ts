@@ -42,54 +42,50 @@ export const apolloErrorLinkGenerator = createGenerator({
           name: 'errorLink',
           priority: 'error',
           bodyFragment: tsCodeFragment(
-            `const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+            `const errorLink = new ErrorLink(({ error, operation }) => {
           // log query/subscription errors but not mutations since it should be handled by caller
           const definition = getMainDefinition(operation.query);
           const shouldLogErrors =
             definition.kind === Kind.OPERATION_DEFINITION &&
             ['query', 'subscription'].includes(definition.operation);
-      
+
           if (!shouldLogErrors) {
             return;
           }
-      
-          if (graphQLErrors?.length) {
-            for (const error of graphQLErrors) {
-              const { message, path } = error;
+
+          if (CombinedGraphQLErrors.is(error)) {
+            for (const graphQLError of error.errors) {
+              const { message, path } = graphQLError;
               logger.error(
                 \`[GraphQL Error] Message: \${message}, Path: \${
                   path?.join(',') ?? ''
                 }, Operation: \${operation.operationName ? operation.operationName : 'Anonymous'}\`,
               );
             }
-      
+
             // we just record the first error (usually only one) in order to avoid over-reporting
             // e.g. if a sub-resolver fails for each item in a large array
-            const graphQLError = graphQLErrors[0];
+            const graphQLError = error.errors[0];
             logError(new GraphQLError(graphQLError.message, graphQLError));
-          }
-      
-          if (networkError) {
-            if ((networkError as ServerError).statusCode) {
-              // report and log network errors with a status code
-              // we don't care about connection errors, e.g. client doesn't have internet
-              logError(networkError);
-            } else {
-              // otherwise just log but don't report network error
-              logger.error(networkError);
-            }
+          } else if (ServerError.is(error)) {
+            // report and log network errors with a status code
+            // we don't care about connection errors, e.g. client doesn't have internet
+            logError(error);
+          } else {
+            // otherwise just log but don't report network error
+            logger.error(error);
           }
         });`,
             [
               reactErrorImports.logError.declaration(),
               reactLoggerImports.logger.declaration(),
-              tsImportBuilder(['onError']).from('@apollo/client/link/error'),
+              tsImportBuilder(['ErrorLink']).from('@apollo/client/link/error'),
               tsImportBuilder(['getMainDefinition']).from(
                 '@apollo/client/utilities',
               ),
               tsImportBuilder(['GraphQLError', 'Kind']).from('graphql'),
-              tsTypeImportBuilder(['ServerError']).from(
-                '@apollo/client/link/utils',
+              tsImportBuilder(['CombinedGraphQLErrors', 'ServerError']).from(
+                '@apollo/client/errors',
               ),
             ],
             {

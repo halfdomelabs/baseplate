@@ -1,6 +1,6 @@
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient } from '@apollo/client/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef } from 'react';
 

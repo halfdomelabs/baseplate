@@ -1,8 +1,6 @@
-import type { NormalizedCacheObject } from '@apollo/client';
-import type { ServerError } from '@apollo/client/link/utils';
-
-import { ApolloClient, from, HttpLink } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
+import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
+import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
+import { ErrorLink } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
 
@@ -19,8 +17,8 @@ export interface ErrorExtensions {
   reqId?: string;
 }
 
-export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
-  const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+export function createApolloClient(): ApolloClient {
+  const errorLink = new ErrorLink(({ error, operation }) => {
     // log query/subscription errors but not mutations since it should be handled by caller
     const definition = getMainDefinition(operation.query);
     const shouldLogErrors =
@@ -31,9 +29,9 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
       return;
     }
 
-    if (graphQLErrors?.length) {
-      for (const error of graphQLErrors) {
-        const { message, path } = error;
+    if (CombinedGraphQLErrors.is(error)) {
+      for (const graphQLError of error.errors) {
+        const { message, path } = graphQLError;
         logger.error(
           `[GraphQL Error] Message: ${message}, Path: ${
             path?.join(',') ?? ''
@@ -43,19 +41,15 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
 
       // we just record the first error (usually only one) in order to avoid over-reporting
       // e.g. if a sub-resolver fails for each item in a large array
-      const graphQLError = graphQLErrors[0];
+      const graphQLError = error.errors[0];
       logError(new GraphQLError(graphQLError.message, graphQLError));
-    }
-
-    if (networkError) {
-      if ((networkError as ServerError).statusCode) {
-        // report and log network errors with a status code
-        // we don't care about connection errors, e.g. client doesn't have internet
-        logError(networkError);
-      } else {
-        // otherwise just log but don't report network error
-        logger.error(networkError);
-      }
+    } else if (ServerError.is(error)) {
+      // report and log network errors with a status code
+      // we don't care about connection errors, e.g. client doesn't have internet
+      logError(error);
+    } else {
+      // otherwise just log but don't report network error
+      logger.error(error);
     }
   });
 
@@ -63,7 +57,7 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     uri: config.VITE_GRAPH_API_ENDPOINT,
   });
   const client = new ApolloClient({
-    link: from([errorLink, apolloSentryLink, httpLink]),
+    link: ApolloLink.from([errorLink, apolloSentryLink, httpLink]),
     cache: createApolloCache(),
   });
 

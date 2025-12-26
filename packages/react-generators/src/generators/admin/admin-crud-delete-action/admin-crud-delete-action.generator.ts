@@ -67,7 +67,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
 
         const modelTitle = titleizeCamel(modelName);
         const hookContent = tsTemplateWithImports([
-          tsImportBuilder(['useMutation']).from('@apollo/client'),
+          tsImportBuilder(['useMutation']).from('@apollo/client/react'),
           reactComponentsImports.useConfirmDialog.declaration(),
           tsImportBuilder(['toast']).from('sonner'),
           reactErrorImports.logAndFormatError.declaration(),

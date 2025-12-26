@@ -108,7 +108,7 @@ export const adminCrudListGenerator = createGenerator({
 
             const useQuery = TsCodeUtils.importFragment(
               'useQuery',
-              '@apollo/client',
+              '@apollo/client/react',
             );
 
             const listPageLoader: DataLoader = {

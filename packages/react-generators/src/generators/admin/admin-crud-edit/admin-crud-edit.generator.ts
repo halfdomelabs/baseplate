@@ -263,7 +263,7 @@ export const adminCrudEditGenerator = createGenerator({
                 },
                 [
                   tsImportBuilder(['useMemo']).from('react'),
-                  tsImportBuilder(['useQuery']).from('@apollo/client'),
+                  tsImportBuilder(['useQuery']).from('@apollo/client/react'),
                 ],
               ),
               loaderErrorName: 'error',

@@ -38,7 +38,10 @@ export const authApolloGenerator = createGenerator({
             reactApolloConfig.apolloLinks.add({
               name: 'sessionErrorLink',
               bodyFragment: tsCodeFragment(sessionErrorLink, [
-                tsImportBuilder(['onError']).from('@apollo/client/link/error'),
+                tsImportBuilder(['ErrorLink']).from(
+                  '@apollo/client/link/error',
+                ),
+                tsImportBuilder(['ServerError']).from('@apollo/client/errors'),
                 reactSession.userSessionClient.declaration(),
               ]),
               priority: 'error',

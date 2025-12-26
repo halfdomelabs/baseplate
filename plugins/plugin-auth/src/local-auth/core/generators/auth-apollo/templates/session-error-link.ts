@@ -1,15 +1,17 @@
 // @ts-nocheck
 
 // SESSION_ERROR_LINK:START
-const sessionErrorLink = onError(({ networkError }) => {
-  const serverError = networkError as ServerError | undefined;
-  if (
-    typeof serverError === 'object' &&
-    serverError.statusCode === 401 &&
-    typeof serverError.result === 'object' &&
-    serverError.result.code === 'invalid-session'
-  ) {
-    userSessionClient.signOut();
+const sessionErrorLink = new ErrorLink(({ error }) => {
+  if (ServerError.is(error) && error.statusCode === 401) {
+    // Try to parse the body as JSON to check for invalid-session
+    try {
+      const body = JSON.parse(error.bodyText) as { code?: string };
+      if (body.code === 'invalid-session') {
+        userSessionClient.signOut();
+      }
+    } catch {
+      // Body is not JSON, ignore
+    }
   }
   return;
 });
