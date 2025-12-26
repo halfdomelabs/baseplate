@@ -270,17 +270,34 @@ export function nestedOneToOneField<
 ): FieldDefinition<
   z.ZodOptional<z.ZodNullable<InferInputSchema<TFields>>>,
   undefined,
-  undefined | { delete: true }
+  undefined
 > {
   return {
     schema: generateCreateSchema(config.fields).nullish(),
     processInput: async (value, processCtx) => {
-      // Handle null - delete the relation
+      // Handle null - delete the relation if it exists
       if (value === null) {
         return {
           data: {
             create: undefined,
-            update: { delete: true },
+            update: undefined,
+          },
+          hooks: {
+            afterExecute: [
+              async (ctx) => {
+                const whereUnique = config.getWhereUnique(
+                  ctx.result as GetPayload<TParentModelName>,
+                );
+                const prismaDelegate = makeGenericPrismaDelegate(
+                  ctx.tx,
+                  config.model,
+                );
+                // Use deleteMany which is idempotent - won't error if no record exists
+                await prismaDelegate.deleteMany({
+                  where: expandWhereUnique(whereUnique),
+                });
+              },
+            ],
           },
         };
       }
