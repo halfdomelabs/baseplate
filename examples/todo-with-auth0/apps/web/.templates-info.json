@@ -30,5 +30,10 @@
     "generator": "@baseplate-dev/react-generators#core/react",
     "instanceData": {},
     "template": "vite-config"
+  },
+  "vitest.config.ts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "vitest-config"
   }
 }

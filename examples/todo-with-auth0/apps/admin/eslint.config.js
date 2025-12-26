@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import eslintPluginImportX, { importX } from 'eslint-plugin-import-x';
@@ -37,8 +38,9 @@ const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
 
 // Specifies which files should use the default tsconfig.json project
 // This is useful for certain files outside the src directory, e.g. config files
-const TS_DEFAULT_PROJECT_FILES =
-  /* TPL_DEFAULT_PROJECT_FILES:START */ []; /* TPL_DEFAULT_PROJECT_FILES:END */
+const TS_DEFAULT_PROJECT_FILES = /* TPL_DEFAULT_PROJECT_FILES:START */ [
+  'vitest.config.ts',
+]; /* TPL_DEFAULT_PROJECT_FILES:END */
 
 export default tsEslint.config(
   // ESLint Configs for all files
@@ -304,6 +306,21 @@ export default tsEslint.config(
     },
   },
 
+  // Vitest Configs
+  {
+    files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
+    plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      // Helpful in dev but should flag as errors when linting
+      'vitest/no-focused-tests': 'error',
+    },
+    settings: {
+      vitest: {
+        typecheck: true,
+      },
+    },
+  },
   /* TPL_EXTRA_CONFIGS:COMMENT:END */
 
   // Global Ignores

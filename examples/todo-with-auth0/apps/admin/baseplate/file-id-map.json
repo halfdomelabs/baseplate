@@ -6,6 +6,8 @@
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
   "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.app.json",
+  "@baseplate-dev/core-generators#node/vitest:logger-test-helper": "src/tests/helpers/logger.test-helper.ts",
+  "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts",
   "@baseplate-dev/plugin-auth#auth0/auth0-hooks:use-current-user": "src/hooks/use-current-user.ts",
   "@baseplate-dev/plugin-auth#auth0/auth0-hooks:use-current-user-gql": "src/hooks/use-current-user.gql",
   "@baseplate-dev/plugin-auth#auth0/auth0-hooks:use-log-out": "src/hooks/use-log-out.ts",

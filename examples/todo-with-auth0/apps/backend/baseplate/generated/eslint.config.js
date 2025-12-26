@@ -37,7 +37,6 @@ const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
 const TS_DEFAULT_PROJECT_FILES = /* TPL_DEFAULT_PROJECT_FILES:START */ [
   'prisma.config.ts',
   'vitest.config.ts',
-  'vitest.config.ts',
 ]; /* TPL_DEFAULT_PROJECT_FILES:END */
 
 export default tsEslint.config(
