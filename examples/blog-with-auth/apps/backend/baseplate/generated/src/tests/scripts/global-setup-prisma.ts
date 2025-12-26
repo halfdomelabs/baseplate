@@ -15,8 +15,8 @@ export default async function setup(project: TestProject): Promise<void> {
     const testDatabaseUrl = await createTestDatabase(DATABASE_URL);
 
     // back up original database URL
-    process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
-    process.env.DATABASE_URL = testDatabaseUrl;
+    project.config.env.ORIGINAL_DATABASE_URL = project.config.env.DATABASE_URL;
+    project.config.env.DATABASE_URL = testDatabaseUrl;
 
     console.info('\nDatabase migrations ran!');
   }
