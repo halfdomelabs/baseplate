@@ -93,7 +93,6 @@ export const reactGenerator = createGenerator({
     }),
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
       eslintConfig.react.set(true);
-      eslintConfig.disableVitest.set(true);
     }),
     defaultConfig: createProviderTask(
       reactBaseConfigProvider,

@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { logError } from '%reactErrorImports';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -15,6 +15,7 @@ export const Route = createFileRoute(TPL_ROUTE_PATH)({
       query: TPL_USER_QUERY,
       variables: { id },
     });
+    if (!data) throw new Error('No data received from query');
     return {
       crumb: TPL_CRUMB_EXPRESSION,
     };

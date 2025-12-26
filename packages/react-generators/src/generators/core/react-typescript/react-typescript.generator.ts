@@ -32,7 +32,7 @@ export const reactTypescriptGenerator = createGenerator({
         reactTypescript: reactTypescriptProvider.export(packageScope),
       },
       run({ typescriptSetup }) {
-        const nodeTsFiles: string[] = ['vite.config.ts'];
+        const nodeTsFiles: string[] = ['vite.config.ts', 'vitest.config.ts'];
         typescriptSetup.compilerOptions.set(
           {
             /* Compilation */

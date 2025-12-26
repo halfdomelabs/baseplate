@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';

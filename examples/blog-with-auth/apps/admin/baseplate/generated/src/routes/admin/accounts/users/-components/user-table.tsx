@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import {

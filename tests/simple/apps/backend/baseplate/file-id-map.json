@@ -6,7 +6,6 @@
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
   "@baseplate-dev/core-generators#node/ts-utils:string": "src/utils/string.ts",
   "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.json",
-  "@baseplate-dev/core-generators#node/vitest:global-setup-env": "src/tests/scripts/global-setup-env.ts",
   "@baseplate-dev/core-generators#node/vitest:logger-test-helper": "src/tests/helpers/logger.test-helper.ts",
   "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts",
   "@baseplate-dev/fastify-generators#core/app-module-setup:app-modules": "src/utils/app-modules.ts",

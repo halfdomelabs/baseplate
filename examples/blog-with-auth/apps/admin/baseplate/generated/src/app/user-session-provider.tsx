@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useApolloClient, useQuery } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client/react';
 import { useEffect, useMemo, useState } from 'react';
 
 import type { SessionData } from '../hooks/use-session';

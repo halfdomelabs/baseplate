@@ -39,9 +39,10 @@ export const REACT_PACKAGES = {
   'date-fns': '4.1.0',
 
   // GraphQL
-  '@apollo/client': '3.13.8',
+  '@apollo/client': '4.0.11',
   graphql: '16.11.0',
   'graphql-ws': '5.16.0',
+  rxjs: '7.8.2',
   '@graphql-codegen/cli': '5.0.7',
   '@graphql-codegen/typescript': '4.1.6',
   '@graphql-codegen/typescript-operations': '4.6.1',

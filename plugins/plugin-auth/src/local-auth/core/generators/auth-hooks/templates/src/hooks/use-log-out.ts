@@ -3,7 +3,7 @@
 import { LogOutDocument } from '%generatedGraphqlImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 

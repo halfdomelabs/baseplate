@@ -1,8 +1,6 @@
-import type { NormalizedCacheObject } from '@apollo/client';
-import type { ServerError } from '@apollo/client/link/utils';
-
-import { ApolloClient, from, HttpLink } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
+import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
+import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
+import { ErrorLink } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
 
@@ -22,9 +20,9 @@ export interface ErrorExtensions {
 }
 /* HOISTED:error-extensions:END */
 
-export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient<NormalizedCacheObject> {
+export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
   /* TPL_LINK_BODIES:START */
-  const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  const errorLink = new ErrorLink(({ error, operation }) => {
     // log query/subscription errors but not mutations since it should be handled by caller
     const definition = getMainDefinition(operation.query);
     const shouldLogErrors =
@@ -35,9 +33,9 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient<N
       return;
     }
 
-    if (graphQLErrors?.length) {
-      for (const error of graphQLErrors) {
-        const { message, path } = error;
+    if (CombinedGraphQLErrors.is(error)) {
+      for (const graphQLError of error.errors) {
+        const { message, path } = graphQLError;
         logger.error(
           `[GraphQL Error] Message: ${message}, Path: ${
             path?.join(',') ?? ''
@@ -47,31 +45,29 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient<N
 
       // we just record the first error (usually only one) in order to avoid over-reporting
       // e.g. if a sub-resolver fails for each item in a large array
-      const graphQLError = graphQLErrors[0];
+      const graphQLError = error.errors[0];
       logError(new GraphQLError(graphQLError.message, graphQLError));
-    }
-
-    if (networkError) {
-      if ((networkError as ServerError).statusCode) {
-        // report and log network errors with a status code
-        // we don't care about connection errors, e.g. client doesn't have internet
-        logError(networkError);
-      } else {
-        // otherwise just log but don't report network error
-        logger.error(networkError);
-      }
+    } else if (ServerError.is(error)) {
+      // report and log network errors with a status code
+      // we don't care about connection errors, e.g. client doesn't have internet
+      logError(error);
+    } else {
+      // otherwise just log but don't report network error
+      logger.error(error);
     }
   });
 
-  const sessionErrorLink = onError(({ networkError }) => {
-    const serverError = networkError as ServerError | undefined;
-    if (
-      typeof serverError === 'object' &&
-      serverError.statusCode === 401 &&
-      typeof serverError.result === 'object' &&
-      serverError.result.code === 'invalid-session'
-    ) {
-      userSessionClient.signOut();
+  const sessionErrorLink = new ErrorLink(({ error }) => {
+    if (ServerError.is(error) && error.statusCode === 401) {
+      // Try to parse the body as JSON to check for invalid-session
+      try {
+        const body = JSON.parse(error.bodyText) as { code?: string };
+        if (body.code === 'invalid-session') {
+          userSessionClient.signOut();
+        }
+      } catch {
+        // Body is not JSON, ignore
+      }
     }
     return;
   });
@@ -81,7 +77,7 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient<N
   });
   /* TPL_LINK_BODIES:END */
   const client = new ApolloClient({
-    link: from(
+    link: ApolloLink.from(
       /* TPL_LINKS:START */ [
         errorLink,
         apolloSentryLink,

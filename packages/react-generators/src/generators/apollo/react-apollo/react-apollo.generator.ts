@@ -262,7 +262,7 @@ export const reactApolloGenerator = createGenerator({
           name: 'apolloClient',
           type: tsTemplateWithImports([
             tsImportBuilder(['ApolloClient']).typeOnly().from('@apollo/client'),
-          ])`ApolloClient<object>`,
+          ])`ApolloClient`,
           optional: false,
           routerProviderInitializer: {
             code: tsTemplate`apolloClient`,
@@ -273,7 +273,7 @@ export const reactApolloGenerator = createGenerator({
         reactRouterConfig.routerSetupFragments.set(
           'apollo-client',
           tsTemplateWithImports([
-            tsImportBuilder(['useApolloClient']).from('@apollo/client'),
+            tsImportBuilder(['useApolloClient']).from('@apollo/client/react'),
           ])`const apolloClient = useApolloClient();`,
         );
       },
@@ -412,15 +412,15 @@ export const reactApolloGenerator = createGenerator({
                   return linkNames[0];
                 }
                 return TsCodeUtils.templateWithImports([
-                  tsImportBuilder(['from']).from('@apollo/client'),
-                ])`from(${TsCodeUtils.mergeFragmentsPresorted(linkNames)})`;
+                  tsImportBuilder(['ApolloLink']).from('@apollo/client'),
+                ])`ApolloLink.from(${TsCodeUtils.mergeFragmentsPresorted(linkNames)})`;
               };
 
               sortedLinks.push({
                 name: 'splitLink',
                 priority: 'network',
                 bodyFragment: TsCodeUtils.templateWithImports([
-                  tsImportBuilder(['split']).from('@apollo/client'),
+                  tsImportBuilder(['ApolloLink']).from('@apollo/client'),
                   tsImportBuilder(['getMainDefinition']).from(
                     '@apollo/client/utilities',
                   ),
@@ -428,7 +428,7 @@ export const reactApolloGenerator = createGenerator({
                     'graphql',
                   ),
                 ])`
-                const splitLink = split(
+                const splitLink = ApolloLink.split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return (
@@ -590,28 +590,13 @@ export const reactApolloGenerator = createGenerator({
             if (error instanceof GraphQLError) {
               annotateGraphQLError(error, context);
             }
-          
-            if (error instanceof ApolloError) {
-              if (error.graphQLErrors.length > 0) {
-                annotateGraphQLError(error.graphQLErrors[0], context);
-              }
-              if (error.networkError && 'result' in error.networkError) {
-                const { result } = error.networkError;
-                const message =
-                  typeof result === 'string'
-                    ? result
-                    : (
-                      result.errors as
-                        | {
-                            message?: string;
-                          }[]
-                        | undefined
-                    )?.[0]?.message ?? JSON.stringify(result);
-          
-                context.networkErrorResponse = message;
+
+            if (CombinedGraphQLErrors.is(error)) {
+              if (error.errors.length > 0) {
+                annotateGraphQLError(error.errors[0], context);
               }
               // it's more useful to log the current stack trace than the one from
-              // ApolloError which is always the same
+              // CombinedGraphQLErrors which is always the same
               const currentStack = new Error('stack').stack?.split('\\n');
               error.stack = [
                 error.stack?.split('\\n')[0],
@@ -622,10 +607,16 @@ export const reactApolloGenerator = createGenerator({
                 .filter(Boolean)
                 .join('\\n');
             }
+
+            if (ServerError.is(error)) {
+              context.networkErrorResponse = error.bodyText;
+            }
           `,
             [
               tsImportBuilder(['GraphQLError']).from('graphql'),
-              tsImportBuilder(['ApolloError']).from('@apollo/client'),
+              tsImportBuilder(['CombinedGraphQLErrors', 'ServerError']).from(
+                '@apollo/client/errors',
+              ),
               tsTypeImportBuilder(['GraphQLFormattedError']).from('graphql'),
             ],
             {

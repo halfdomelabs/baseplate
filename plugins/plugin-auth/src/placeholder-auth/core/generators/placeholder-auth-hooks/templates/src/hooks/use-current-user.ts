@@ -2,9 +2,10 @@
 
 import type { CurrentUserFragment } from '%generatedGraphqlImports';
 
-import { useSession } from '$useSession';
+import { useQuery } from '@apollo/client/react';
+
 import { GetUserByIdDocument } from '%generatedGraphqlImports';
-import { useQuery } from '@apollo/client';
+import { useSession } from '$useSession';
 
 interface UseCurrentUserResult {
   user?: CurrentUserFragment;

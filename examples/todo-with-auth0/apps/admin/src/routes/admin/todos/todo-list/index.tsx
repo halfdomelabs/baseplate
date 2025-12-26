@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 

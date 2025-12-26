@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { createApolloClient } from '$service';
-import { ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client/react';
 import { useMemo } from 'react';
 
 interface Props {

@@ -1,15 +1,6 @@
 {
   "name": "node/vitest",
   "templates": {
-    "global-setup-env": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/core-generators#node/vitest",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/tests/scripts/global-setup-env.ts",
-      "sourceFile": "src/tests/scripts/global-setup-env.ts",
-      "variables": {}
-    },
     "logger-test-helper": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

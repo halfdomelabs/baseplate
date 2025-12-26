@@ -11,16 +11,6 @@ import { NODE_VITEST_PATHS } from './template-paths.js';
 import { NODE_VITEST_TEMPLATES } from './typed-templates.js';
 
 export interface NodeVitestRenderers {
-  globalSetupEnv: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof NODE_VITEST_TEMPLATES.globalSetupEnv
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   testHelpersGroup: {
     render: (
       options: Omit<
@@ -57,14 +47,6 @@ const nodeVitestRenderersTask = createGeneratorTask({
     return {
       providers: {
         nodeVitestRenderers: {
-          globalSetupEnv: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: NODE_VITEST_TEMPLATES.globalSetupEnv,
-                destination: paths.globalSetupEnv,
-                ...options,
-              }),
-          },
           testHelpersGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({

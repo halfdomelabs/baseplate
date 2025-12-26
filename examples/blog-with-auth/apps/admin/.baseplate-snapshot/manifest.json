@@ -1,0 +1,8 @@
+{
+  "files": {
+    "added": ["src/services/apollo/apollo.unit.test.ts"],
+    "deleted": [],
+    "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]
+  },
+  "version": "1"
+}

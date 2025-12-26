@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { logError } from '%reactErrorImports';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 

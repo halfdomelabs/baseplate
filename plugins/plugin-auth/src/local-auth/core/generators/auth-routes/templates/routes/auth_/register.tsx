@@ -13,7 +13,7 @@ import {
 } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createFileRoute,
