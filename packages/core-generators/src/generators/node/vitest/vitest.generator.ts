@@ -69,9 +69,6 @@ export const vitestGenerator = createGenerator({
         vitestConfigValues: { globalSetupFiles, setupFiles },
         renderers,
       }) {
-        const vitestConfigFilename = 'vitest.config.ts';
-
-        eslintConfig.tsDefaultProjectFiles.push(vitestConfigFilename);
         eslintConfig.enableVitest.set(true);
 
         return {

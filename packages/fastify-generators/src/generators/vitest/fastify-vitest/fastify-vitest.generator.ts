@@ -1,8 +1,9 @@
 import {
   createNodeTask,
+  eslintConfigProvider,
   extractPackageVersions,
 } from '@baseplate-dev/core-generators';
-import { createGenerator } from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
@@ -21,6 +22,14 @@ export const fastifyVitestGenerator = createGenerator({
       node.packages.addDevPackages(
         extractPackageVersions(FASTIFY_PACKAGES, ['cross-env']),
       );
+    }),
+    eslint: createGeneratorTask({
+      dependencies: {
+        eslintConfig: eslintConfigProvider,
+      },
+      run({ eslintConfig }) {
+        eslintConfig.tsDefaultProjectFiles.push('vitest.config.ts');
+      },
     }),
   }),
 });
