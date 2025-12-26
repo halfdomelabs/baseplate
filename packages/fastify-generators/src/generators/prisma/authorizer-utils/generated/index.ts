@@ -1,0 +1,11 @@
+import { PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
+import { PRISMA_AUTHORIZER_UTILS_RENDERERS } from './template-renderers.js';
+import { PRISMA_AUTHORIZER_UTILS_IMPORTS } from './ts-import-providers.js';
+import { PRISMA_AUTHORIZER_UTILS_TEMPLATES } from './typed-templates.js';
+
+export const PRISMA_AUTHORIZER_UTILS_GENERATED = {
+  imports: PRISMA_AUTHORIZER_UTILS_IMPORTS,
+  paths: PRISMA_AUTHORIZER_UTILS_PATHS,
+  renderers: PRISMA_AUTHORIZER_UTILS_RENDERERS,
+  templates: PRISMA_AUTHORIZER_UTILS_TEMPLATES,
+};

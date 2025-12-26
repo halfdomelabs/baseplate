@@ -7,7 +7,6 @@ import ValidationPlugin from '@pothos/plugin-validation';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
 
 import type PrismaTypes from '@src/generated/prisma/pothos-prisma-types.js';
-import type { AuthRole } from '@src/modules/accounts/auth/constants/auth-roles.constants.js';
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
 import { getDatamodel } from '@src/generated/prisma/pothos-prisma-types.js';
@@ -27,7 +26,6 @@ const traceResolver = createSentryWrapper({
 
 export const builder = new SchemaBuilder<{
   /* TPL_SCHEMA_TYPE_OPTIONS:START */
-  AuthRole: AuthRole;
   Context: RequestServiceContext;
   DefaultEdgesNullability: false;
   DefaultFieldNullability: false;
@@ -45,10 +43,7 @@ export const builder = new SchemaBuilder<{
   /* TPL_SCHEMA_TYPE_OPTIONS:END */
 }>(
   /* TPL_SCHEMA_BUILDER_OPTIONS:START */ {
-    authorizeByRoles: {
-      extractRoles: (context) => context.auth.roles,
-      requireOnRootFields: true,
-    },
+    authorizeByRoles: { requireOnRootFields: true },
     defaultFieldNullability: false,
     plugins: [
       PrismaPlugin,

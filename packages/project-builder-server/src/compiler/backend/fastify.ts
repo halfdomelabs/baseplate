@@ -3,6 +3,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appModuleGenerator,
+  authorizerUtilsGenerator,
   axiosGenerator,
   composeFastifyApplication,
   dataUtilsGenerator,
@@ -76,6 +77,7 @@ export function buildFastify(
         }),
         prismaVitest: prismaVitestGenerator({}),
         dataUtils: dataUtilsGenerator({}),
+        authorizerUtils: authorizerUtilsGenerator({}),
         yoga: yogaPluginGenerator({
           enableSubscriptions: app.enableSubscriptions,
         }),

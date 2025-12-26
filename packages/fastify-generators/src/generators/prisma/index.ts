@@ -13,3 +13,4 @@ export * from './prisma-model-unique/index.js';
 export * from './prisma-model/index.js';
 export * from './prisma-relation-field/index.js';
 export * from './prisma/index.js';
+export * from './authorizer-utils/index.js';

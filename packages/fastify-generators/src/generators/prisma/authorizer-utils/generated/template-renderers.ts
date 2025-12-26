@@ -7,16 +7,17 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
 
-import { POTHOS_POTHOS_AUTH_PATHS } from './template-paths.js';
-import { POTHOS_POTHOS_AUTH_TEMPLATES } from './typed-templates.js';
+import { PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
+import { PRISMA_AUTHORIZER_UTILS_TEMPLATES } from './typed-templates.js';
 
-export interface PothosPothosAuthRenderers {
-  fieldAuthorizePluginGroup: {
+export interface PrismaAuthorizerUtilsRenderers {
+  mainGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof POTHOS_POTHOS_AUTH_TEMPLATES.fieldAuthorizePluginGroup
+          typeof PRISMA_AUTHORIZER_UTILS_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -24,21 +25,26 @@ export interface PothosPothosAuthRenderers {
   };
 }
 
-const pothosPothosAuthRenderers = createProviderType<PothosPothosAuthRenderers>(
-  'pothos-pothos-auth-renderers',
-);
+const prismaAuthorizerUtilsRenderers =
+  createProviderType<PrismaAuthorizerUtilsRenderers>(
+    'prisma-authorizer-utils-renderers',
+  );
 
-const pothosPothosAuthRenderersTask = createGeneratorTask({
+const prismaAuthorizerUtilsRenderersTask = createGeneratorTask({
   dependencies: {
     authRolesImports: authRolesImportsProvider,
+    dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    paths: POTHOS_POTHOS_AUTH_PATHS.provider,
+    paths: PRISMA_AUTHORIZER_UTILS_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
-  exports: { pothosPothosAuthRenderers: pothosPothosAuthRenderers.export() },
+  exports: {
+    prismaAuthorizerUtilsRenderers: prismaAuthorizerUtilsRenderers.export(),
+  },
   run({
     authRolesImports,
+    dataUtilsImports,
     errorHandlerServiceImports,
     paths,
     serviceContextImports,
@@ -46,18 +52,18 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
   }) {
     return {
       providers: {
-        pothosPothosAuthRenderers: {
-          fieldAuthorizePluginGroup: {
+        prismaAuthorizerUtilsRenderers: {
+          mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: POTHOS_POTHOS_AUTH_TEMPLATES.fieldAuthorizePluginGroup,
+                group: PRISMA_AUTHORIZER_UTILS_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
                   authRolesImports,
+                  dataUtilsImports,
                   errorHandlerServiceImports,
                   serviceContextImports,
                 },
-                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -67,7 +73,7 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
   },
 });
 
-export const POTHOS_POTHOS_AUTH_RENDERERS = {
-  provider: pothosPothosAuthRenderers,
-  task: pothosPothosAuthRenderersTask,
+export const PRISMA_AUTHORIZER_UTILS_RENDERERS = {
+  provider: prismaAuthorizerUtilsRenderers,
+  task: prismaAuthorizerUtilsRenderersTask,
 };

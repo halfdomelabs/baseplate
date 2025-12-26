@@ -1,11 +1,9 @@
 // @ts-nocheck
 
-import type {
-  AuthorizeRoleRuleFunction,
-  AuthorizeRoleRuleOption,
-} from '$fieldAuthorizeTypes';
+import type { AuthorizeRoleRuleOption } from '$fieldAuthorizeTypes';
+import type { ServiceContext } from '%serviceContextImports';
 import type { PothosOutputFieldConfig, SchemaTypes } from '@pothos/core';
-import type { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
+import type { GraphQLFieldResolver } from 'graphql';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
 import SchemaBuilder, { BasePlugin } from '@pothos/core';
@@ -37,56 +35,21 @@ export class PothosAuthorizeByRolesPlugin<
 
   async authorizeAccess(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    authorize: AuthorizeRoleRuleOption<any, any, Types>,
+    authorize: AuthorizeRoleRuleOption<any>,
     root: unknown,
-    args: object,
     context: Types['Context'],
-    info: GraphQLResolveInfo,
   ): Promise<void> {
     const rules = Array.isArray(authorize) ? authorize : [authorize];
-    const roles = this.builder.options.authorizeByRoles.extractRoles(context);
+    const ctx = context as ServiceContext;
 
-    // process all string rules first
-    const stringRules = rules.filter(
-      (rule): rule is Types['AuthRole'] => typeof rule === 'string',
-    );
-
-    if (stringRules.some((rule) => roles.includes(rule))) {
-      return;
-    }
-
-    const ruleFunctions = rules.filter(
-      (rule): rule is AuthorizeRoleRuleFunction<unknown, unknown, Types> =>
-        typeof rule === 'function',
-    );
-
-    // try all rules and see if any match
-    const results = await Promise.allSettled(
-      ruleFunctions.map((func) => func(root, args, context, info)),
-    );
-
-    // if any check passed, return success
-    if (results.some((r) => r.status === 'fulfilled' && r.value)) {
-      return;
-    }
-
-    // if a check threw an unexpected error, throw that since it may mean
-    // the authorization rule may have been valid but failed to run
-    const unexpectedError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
-    ) as PromiseRejectedResult | undefined;
-
-    if (unexpectedError) {
-      throw unexpectedError.reason;
-    }
-
-    // if a check threw a forbidden error with a message, throw that
-    const forbiddenError = results.find(
-      (r) => r.status === 'rejected' && r.reason instanceof ForbiddenError,
-    ) as PromiseRejectedResult | undefined;
-
-    if (forbiddenError) {
-      throw forbiddenError.reason;
+    // Check rules sequentially in user-specified order for early return
+    for (const check of rules) {
+      // String = global role, function = instance role
+      if (typeof check === 'string') {
+        if (ctx.auth.hasRole(check)) return;
+      } else {
+        if (await check(ctx, root)) return;
+      }
     }
 
     throw new ForbiddenError('Forbidden');
@@ -102,7 +65,7 @@ export class PothosAuthorizeByRolesPlugin<
     }
 
     return async (source, args, context, info) => {
-      await this.authorizeAccess(authorize, source, args, context, info);
+      await this.authorizeAccess(authorize, source, context);
       return resolver(source, args, context, info);
     };
   }
@@ -117,7 +80,7 @@ export class PothosAuthorizeByRolesPlugin<
     }
 
     return async (source, args, context, info) => {
-      await this.authorizeAccess(authorize, source, args, context, info);
+      await this.authorizeAccess(authorize, source, context);
       return subscriber(source, args, context, info);
     };
   }
