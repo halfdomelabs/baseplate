@@ -60,6 +60,7 @@
     "nanoid": "5.1.6",
     "pg-boss": "11.1.1",
     "pino": "9.5.0",
+    "prisma": "7.2.0",
     "zod": "4.1.13"
   },
   "devDependencies": {
@@ -80,7 +81,6 @@
     "pino-pretty": "13.0.0",
     "prettier": "3.6.2",
     "prettier-plugin-packagejson": "2.5.19",
-    "prisma": "7.2.0",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
     "typescript": "5.8.3",
