@@ -3,7 +3,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appModuleGenerator,
-  authorizerUtilsGenerator,
+  authorizerUtilsStubGenerator,
   axiosGenerator,
   composeFastifyApplication,
   dataUtilsGenerator,
@@ -55,6 +55,8 @@ export function buildFastify(
     },
   });
 
+  const rootChildren = appCompiler.getRootChildren();
+
   return composeFastifyApplication({
     children: safeMergeAll(
       {
@@ -77,7 +79,9 @@ export function buildFastify(
         }),
         prismaVitest: prismaVitestGenerator({}),
         dataUtils: dataUtilsGenerator({}),
-        authorizerUtils: authorizerUtilsGenerator({}),
+        ...('authorizerUtils' in rootChildren
+          ? {}
+          : { authorizerUtils: authorizerUtilsStubGenerator({}) }),
         yoga: yogaPluginGenerator({
           enableSubscriptions: app.enableSubscriptions,
         }),

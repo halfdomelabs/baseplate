@@ -13,10 +13,6 @@
       "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {
-        "dataUtilsImportsProvider": {
-          "importName": "dataUtilsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
-        },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"

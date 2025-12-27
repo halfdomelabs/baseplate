@@ -1,8 +1,6 @@
-// @ts-nocheck
+import type { ServiceContext } from './service-context.js';
 
-import type { ServiceContext } from '%serviceContextImports';
-
-import { ForbiddenError } from '%errorHandlerServiceImports';
+import { ForbiddenError } from './http-errors.js';
 
 /**
  * Global role check.

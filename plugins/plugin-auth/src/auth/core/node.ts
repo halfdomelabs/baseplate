@@ -3,6 +3,7 @@ import {
   authPluginGenerator,
   authRolesGenerator,
   pothosAuthGenerator,
+  prismaAuthorizerUtilsGenerator,
   userSessionTypesGenerator,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -50,6 +51,7 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           pothosAuth: pothosAuthGenerator({}),
+          authorizerUtils: prismaAuthorizerUtilsGenerator({}),
         });
       },
     });

@@ -7,7 +7,7 @@ import { createGeneratorTask } from '@baseplate-dev/sync';
 import {
   authorizerUtilsImportsProvider,
   authorizerUtilsImportsSchema,
-} from '#src/generators/prisma/_providers/authorizer-utils-imports.js';
+} from '#src/generators/auth/_providers/authorizer-utils-imports.js';
 
 import { PRISMA_AUTHORIZER_UTILS_STUB_PATHS } from './template-paths.js';
 

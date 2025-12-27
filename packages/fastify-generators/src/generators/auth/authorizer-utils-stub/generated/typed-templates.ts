@@ -3,13 +3,11 @@ import path from 'node:path';
 
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
-import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
 
 const utilsAuthorizers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
-    dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },

@@ -6,7 +6,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
-import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
 
 import { PRISMA_AUTHORIZER_UTILS_STUB_PATHS } from './template-paths.js';
 import { PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES } from './typed-templates.js';
@@ -31,7 +30,6 @@ const prismaAuthorizerUtilsStubRenderers =
 
 const prismaAuthorizerUtilsStubRenderersTask = createGeneratorTask({
   dependencies: {
-    dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: PRISMA_AUTHORIZER_UTILS_STUB_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
@@ -42,7 +40,6 @@ const prismaAuthorizerUtilsStubRenderersTask = createGeneratorTask({
       prismaAuthorizerUtilsStubRenderers.export(),
   },
   run({
-    dataUtilsImports,
     errorHandlerServiceImports,
     paths,
     serviceContextImports,
@@ -57,7 +54,6 @@ const prismaAuthorizerUtilsStubRenderersTask = createGeneratorTask({
                 group: PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
-                  dataUtilsImports,
                   errorHandlerServiceImports,
                   serviceContextImports,
                 },

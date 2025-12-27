@@ -11,7 +11,7 @@ const descriptorSchema = z.object({});
 /**
  * Generator for prisma/prisma-authorizer-utils
  */
-export const authorizerUtilsGenerator = createGenerator({
+export const prismaAuthorizerUtilsGenerator = createGenerator({
   name: 'prisma/prisma-authorizer-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
