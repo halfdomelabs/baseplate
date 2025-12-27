@@ -1,17 +1,4 @@
 {
-  "authorizer-utils-imports.ts": {
-    "authorizerUtilsImportsProvider": {
-      "type": "ts-imports",
-      "providerExport": "authorizerUtilsImportsProvider",
-      "schemaExport": "authorizerUtilsImportsSchema",
-      "projectExports": {
-        "checkGlobalAuthorization": {},
-        "checkInstanceAuthorization": {},
-        "GlobalRoleCheck": { "isTypeOnly": true },
-        "InstanceRoleCheck": { "isTypeOnly": true }
-      }
-    }
-  },
   "prisma-generated-imports.ts": {
     "prismaGeneratedImportsProvider": {
       "type": "ts-imports",

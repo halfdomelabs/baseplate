@@ -13,7 +13,7 @@ import {
 import {
   authorizerUtilsImportsProvider,
   authorizerUtilsImportsSchema,
-} from '#src/generators/prisma/_providers/authorizer-utils-imports.js';
+} from '#src/generators/auth/_providers/authorizer-utils-imports.js';
 
 import { PRISMA_PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
 

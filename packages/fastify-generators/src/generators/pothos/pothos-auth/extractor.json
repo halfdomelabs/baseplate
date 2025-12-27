@@ -23,7 +23,7 @@
       "importMapProviders": {
         "authorizerUtilsImportsProvider": {
           "importName": "authorizerUtilsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/authorizer-utils-imports.ts"
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/authorizer-utils-imports.ts"
         },
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
@@ -43,7 +43,7 @@
       "importMapProviders": {
         "authorizerUtilsImportsProvider": {
           "importName": "authorizerUtilsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/authorizer-utils-imports.ts"
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/authorizer-utils-imports.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/types.ts",

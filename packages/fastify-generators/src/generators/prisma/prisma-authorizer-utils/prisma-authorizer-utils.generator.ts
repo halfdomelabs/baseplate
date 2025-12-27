@@ -9,10 +9,10 @@ import { PRISMA_PRISMA_AUTHORIZER_UTILS_GENERATED as GENERATED_TEMPLATES } from 
 const descriptorSchema = z.object({});
 
 /**
- * Generator for prisma/authorizer-utils
+ * Generator for prisma/prisma-authorizer-utils
  */
 export const authorizerUtilsGenerator = createGenerator({
-  name: 'prisma/authorizer-utils',
+  name: 'prisma/prisma-authorizer-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

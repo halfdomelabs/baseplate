@@ -5,7 +5,7 @@
     "template": "app-modules"
   },
   "authorizers.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/authorizer-utils",
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
     "instanceData": {},
     "template": "utils-authorizers"
   },
