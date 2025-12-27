@@ -20,6 +20,7 @@ const utilsAuthorizers = createTsTemplateFile({
     checkGlobalAuthorization: { isTypeOnly: false },
     checkInstanceAuthorization: { isTypeOnly: false },
     createModelAuthorizer: { isTypeOnly: false },
+    GlobalRoleCheck: { isTypeOnly: true },
     InstanceRoleCheck: { isTypeOnly: true },
     ModelAuthorizer: { isTypeOnly: true },
     ModelAuthorizerConfig: { isTypeOnly: true },

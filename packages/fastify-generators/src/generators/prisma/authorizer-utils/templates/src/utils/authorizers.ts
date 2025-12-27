@@ -11,6 +11,16 @@ import { ForbiddenError } from '%errorHandlerServiceImports';
 // ============================================================================
 
 /**
+ * Global role check - a string matching an AuthRole.
+ *
+ * @example
+ * ```typescript
+ * const adminCheck: GlobalRoleCheck = 'admin';
+ * ```
+ */
+export type GlobalRoleCheck = AuthRole;
+
+/**
  * Instance role check - requires the model instance.
  * Used for checking ownership or other instance-specific permissions.
  *

@@ -1,7 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
-import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
@@ -13,7 +12,6 @@ const defineOperations = createTsTemplateFile({
   group: 'data-operations',
   importMapProviders: {
     authorizerUtilsImports: authorizerUtilsImportsProvider,
-    authRolesImports: authRolesImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,

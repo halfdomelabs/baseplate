@@ -1,9 +1,8 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
-import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/prisma/authorizer-utils/generated/ts-import-providers.js';
 
 const fieldAuthorizeGlobalTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -27,7 +26,7 @@ const fieldAuthorizePlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'field-authorize-plugin',
   importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'field-authorize-plugin',
@@ -45,8 +44,7 @@ const fieldAuthorizeTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'field-authorize-plugin',
   importMapProviders: {
-    authRolesImports: authRolesImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
   },
   name: 'field-authorize-types',
   source: {

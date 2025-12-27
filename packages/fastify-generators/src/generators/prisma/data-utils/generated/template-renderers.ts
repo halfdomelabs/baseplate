@@ -4,7 +4,6 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
@@ -34,7 +33,6 @@ const prismaDataUtilsRenderers = createProviderType<PrismaDataUtilsRenderers>(
 const prismaDataUtilsRenderersTask = createGeneratorTask({
   dependencies: {
     authorizerUtilsImports: authorizerUtilsImportsProvider,
-    authRolesImports: authRolesImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: PRISMA_DATA_UTILS_PATHS.provider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
@@ -44,7 +42,6 @@ const prismaDataUtilsRenderersTask = createGeneratorTask({
   },
   exports: { prismaDataUtilsRenderers: prismaDataUtilsRenderers.export() },
   run({
-    authRolesImports,
     authorizerUtilsImports,
     errorHandlerServiceImports,
     paths,
@@ -62,7 +59,6 @@ const prismaDataUtilsRenderersTask = createGeneratorTask({
                 group: PRISMA_DATA_UTILS_TEMPLATES.dataOperationsGroup,
                 paths,
                 importMapProviders: {
-                  authRolesImports,
                   authorizerUtilsImports,
                   errorHandlerServiceImports,
                   prismaGeneratedImports,

@@ -21,8 +21,10 @@ import type {
   PrismaTransaction,
   TransactionalOperationContext,
 } from '$types';
-import type { InstanceRoleCheck } from '%authorizerUtilsImports';
-import type { AuthRole } from '%authRolesImports';
+import type {
+  GlobalRoleCheck,
+  InstanceRoleCheck,
+} from '%authorizerUtilsImports';
 import type { Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 import type { Result } from '@prisma/client/runtime/client';
@@ -299,7 +301,7 @@ export interface CreateOperationConfig<
    * authorize: ['admin', 'system']
    * ```
    */
-  authorize?: AuthRole[];
+  authorize?: GlobalRoleCheck[];
 
   /**
    * Optional step to prepare computed fields based off the raw input
@@ -579,7 +581,7 @@ export interface UpdateOperationConfig<
    * authorize: ['admin', userAuthorizer.roles.owner]
    * ```
    */
-  authorize?: (AuthRole | InstanceRoleCheck<GetPayload<TModelName>>)[];
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 
   /**
    * Optional prepare step - runs BEFORE transaction
@@ -883,7 +885,7 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
    * authorize: ['admin', userAuthorizer.roles.owner]
    * ```
    */
-  authorize?: (AuthRole | InstanceRoleCheck<GetPayload<TModelName>>)[];
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 
   /**
    * Execute the delete operation. This function receives the where clause

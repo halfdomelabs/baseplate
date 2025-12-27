@@ -1,23 +1,9 @@
 // @ts-nocheck
 
-import type { AuthRole } from '%authRolesImports';
-import type { ServiceContext } from '%serviceContextImports';
-
-/**
- * Role check function for GraphQL field authorization.
- * Instance role check - requires the root (parent) object.
- *
- * @example
- * ```typescript
- * // Instance role - uses root (parent) object
- * const ownerCheck: AuthorizeRoleRuleFunction<User> = (ctx, root) =>
- *   root.id === ctx.auth.userId;
- * ```
- */
-export type AuthorizeRoleRuleFunction<RootType> = (
-  ctx: ServiceContext,
-  root: RootType,
-) => boolean | Promise<boolean>;
+import type {
+  GlobalRoleCheck,
+  InstanceRoleCheck,
+} from '%authorizerUtilsImports';
 
 /**
  * Single authorization rule - either a string (global role) or function (instance role).
@@ -33,8 +19,8 @@ export type AuthorizeRoleRuleFunction<RootType> = (
  * ```
  */
 export type AuthorizeRoleRule<RootType> =
-  | AuthRole
-  | AuthorizeRoleRuleFunction<RootType>;
+  | GlobalRoleCheck
+  | InstanceRoleCheck<RootType>;
 
 /**
  * Authorization option - can be a single rule or array of rules.

@@ -10,10 +10,6 @@
           "importName": "authorizerUtilsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/authorizer-utils/generated/ts-import-providers.ts"
         },
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"

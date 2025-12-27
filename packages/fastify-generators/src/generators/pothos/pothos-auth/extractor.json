@@ -21,9 +21,9 @@
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
       "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        "authorizerUtilsImportsProvider": {
+          "importName": "authorizerUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/authorizer-utils/generated/ts-import-providers.ts"
         },
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
@@ -41,13 +41,9 @@
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
       "importMapProviders": {
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
-        "serviceContextImportsProvider": {
-          "importName": "serviceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        "authorizerUtilsImportsProvider": {
+          "importName": "authorizerUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/authorizer-utils/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/types.ts",

@@ -4,9 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/prisma/authorizer-utils/generated/ts-import-providers.js';
 
 import { POTHOS_POTHOS_AUTH_PATHS } from './template-paths.js';
 import { POTHOS_POTHOS_AUTH_TEMPLATES } from './typed-templates.js';
@@ -30,16 +29,14 @@ const pothosPothosAuthRenderers = createProviderType<PothosPothosAuthRenderers>(
 
 const pothosPothosAuthRenderersTask = createGeneratorTask({
   dependencies: {
-    authRolesImports: authRolesImportsProvider,
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
     paths: POTHOS_POTHOS_AUTH_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { pothosPothosAuthRenderers: pothosPothosAuthRenderers.export() },
   run({
-    authRolesImports,
-    errorHandlerServiceImports,
+    authorizerUtilsImports,
     paths,
     serviceContextImports,
     typescriptFile,
@@ -53,8 +50,7 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
                 group: POTHOS_POTHOS_AUTH_TEMPLATES.fieldAuthorizePluginGroup,
                 paths,
                 importMapProviders: {
-                  authRolesImports,
-                  errorHandlerServiceImports,
+                  authorizerUtilsImports,
                   serviceContextImports,
                 },
                 generatorPaths: paths,

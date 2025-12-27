@@ -37,6 +37,7 @@
           "isTypeOnly": false,
           "name": "createModelAuthorizer"
         },
+        "GlobalRoleCheck": { "isTypeOnly": true, "name": "GlobalRoleCheck" },
         "InstanceRoleCheck": {
           "isTypeOnly": true,
           "name": "InstanceRoleCheck"
