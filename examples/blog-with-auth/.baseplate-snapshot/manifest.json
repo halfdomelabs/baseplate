@@ -1,6 +1,6 @@
 {
   "files": {
-    "added": ["CLAUDE.md", "Dockerfile"],
+    "added": ["CLAUDE.md", "Dockerfile", "build.sh"],
     "deleted": [],
     "modified": []
   },
