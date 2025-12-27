@@ -1,0 +1,11 @@
+import { PRISMA_AUTHORIZER_UTILS_STUB_PATHS } from './template-paths.js';
+import { PRISMA_AUTHORIZER_UTILS_STUB_RENDERERS } from './template-renderers.js';
+import { PRISMA_AUTHORIZER_UTILS_STUB_IMPORTS } from './ts-import-providers.js';
+import { PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES } from './typed-templates.js';
+
+export const PRISMA_AUTHORIZER_UTILS_STUB_GENERATED = {
+  imports: PRISMA_AUTHORIZER_UTILS_STUB_IMPORTS,
+  paths: PRISMA_AUTHORIZER_UTILS_STUB_PATHS,
+  renderers: PRISMA_AUTHORIZER_UTILS_STUB_RENDERERS,
+  templates: PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES,
+};

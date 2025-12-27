@@ -2,7 +2,7 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
-import { authorizerUtilsImportsProvider } from '#src/generators/prisma/authorizer-utils/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/prisma/_providers/authorizer-utils-imports.js';
 
 const fieldAuthorizeGlobalTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

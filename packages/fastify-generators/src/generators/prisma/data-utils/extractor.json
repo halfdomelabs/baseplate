@@ -8,7 +8,7 @@
       "importMapProviders": {
         "authorizerUtilsImportsProvider": {
           "importName": "authorizerUtilsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/authorizer-utils/generated/ts-import-providers.ts"
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/authorizer-utils-imports.ts"
         },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",

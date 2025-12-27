@@ -6,8 +6,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/prisma/_providers/authorizer-utils-imports.js';
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
-import { authorizerUtilsImportsProvider } from '#src/generators/prisma/authorizer-utils/generated/ts-import-providers.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
 import { PRISMA_DATA_UTILS_PATHS } from './template-paths.js';

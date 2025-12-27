@@ -4,20 +4,19 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
 
-import { PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
-import { PRISMA_AUTHORIZER_UTILS_TEMPLATES } from './typed-templates.js';
+import { PRISMA_AUTHORIZER_UTILS_STUB_PATHS } from './template-paths.js';
+import { PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES } from './typed-templates.js';
 
-export interface PrismaAuthorizerUtilsRenderers {
+export interface PrismaAuthorizerUtilsStubRenderers {
   mainGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof PRISMA_AUTHORIZER_UTILS_TEMPLATES.mainGroup
+          typeof PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -25,25 +24,24 @@ export interface PrismaAuthorizerUtilsRenderers {
   };
 }
 
-const prismaAuthorizerUtilsRenderers =
-  createProviderType<PrismaAuthorizerUtilsRenderers>(
-    'prisma-authorizer-utils-renderers',
+const prismaAuthorizerUtilsStubRenderers =
+  createProviderType<PrismaAuthorizerUtilsStubRenderers>(
+    'prisma-authorizer-utils-stub-renderers',
   );
 
-const prismaAuthorizerUtilsRenderersTask = createGeneratorTask({
+const prismaAuthorizerUtilsStubRenderersTask = createGeneratorTask({
   dependencies: {
-    authRolesImports: authRolesImportsProvider,
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    paths: PRISMA_AUTHORIZER_UTILS_PATHS.provider,
+    paths: PRISMA_AUTHORIZER_UTILS_STUB_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
-    prismaAuthorizerUtilsRenderers: prismaAuthorizerUtilsRenderers.export(),
+    prismaAuthorizerUtilsStubRenderers:
+      prismaAuthorizerUtilsStubRenderers.export(),
   },
   run({
-    authRolesImports,
     dataUtilsImports,
     errorHandlerServiceImports,
     paths,
@@ -52,14 +50,13 @@ const prismaAuthorizerUtilsRenderersTask = createGeneratorTask({
   }) {
     return {
       providers: {
-        prismaAuthorizerUtilsRenderers: {
+        prismaAuthorizerUtilsStubRenderers: {
           mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: PRISMA_AUTHORIZER_UTILS_TEMPLATES.mainGroup,
+                group: PRISMA_AUTHORIZER_UTILS_STUB_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
-                  authRolesImports,
                   dataUtilsImports,
                   errorHandlerServiceImports,
                   serviceContextImports,
@@ -73,7 +70,7 @@ const prismaAuthorizerUtilsRenderersTask = createGeneratorTask({
   },
 });
 
-export const PRISMA_AUTHORIZER_UTILS_RENDERERS = {
-  provider: prismaAuthorizerUtilsRenderers,
-  task: prismaAuthorizerUtilsRenderersTask,
+export const PRISMA_AUTHORIZER_UTILS_STUB_RENDERERS = {
+  provider: prismaAuthorizerUtilsStubRenderers,
+  task: prismaAuthorizerUtilsStubRenderersTask,
 };

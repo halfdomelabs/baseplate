@@ -1,15 +1,18 @@
 {
-  "name": "prisma/authorizer-utils",
+  "name": "prisma/authorizer-utils-stub",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:authorizerUtilsImportsProvider"
+      ]
+    }
+  },
   "templates": {
     "utils-authorizers": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
         "dataUtilsImportsProvider": {
           "importName": "dataUtilsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
@@ -33,19 +36,10 @@
           "isTypeOnly": false,
           "name": "checkInstanceAuthorization"
         },
-        "createModelAuthorizer": {
-          "isTypeOnly": false,
-          "name": "createModelAuthorizer"
-        },
         "GlobalRoleCheck": { "isTypeOnly": true, "name": "GlobalRoleCheck" },
         "InstanceRoleCheck": {
           "isTypeOnly": true,
           "name": "InstanceRoleCheck"
-        },
-        "ModelAuthorizer": { "isTypeOnly": true, "name": "ModelAuthorizer" },
-        "ModelAuthorizerConfig": {
-          "isTypeOnly": true,
-          "name": "ModelAuthorizerConfig"
         }
       },
       "sourceFile": "src/utils/authorizers.ts",

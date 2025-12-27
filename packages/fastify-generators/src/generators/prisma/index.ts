@@ -1,6 +1,6 @@
 export * from './_providers/index.js';
-export * from './authorizer-utils/index.js';
 export * from './data-utils/index.js';
+export * from './prisma-authorizer-utils/index.js';
 export * from './prisma-data-create/index.js';
 export * from './prisma-data-delete/index.js';
 export * from './prisma-data-nested-field/index.js';

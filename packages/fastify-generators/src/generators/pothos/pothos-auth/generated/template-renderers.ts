@@ -5,7 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
-import { authorizerUtilsImportsProvider } from '#src/generators/prisma/authorizer-utils/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/prisma/_providers/authorizer-utils-imports.js';
 
 import { POTHOS_POTHOS_AUTH_PATHS } from './template-paths.js';
 import { POTHOS_POTHOS_AUTH_TEMPLATES } from './typed-templates.js';

@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { serviceContextConfigProvider } from '#src/generators/core/service-context/index.js';
 
-import { PRISMA_AUTHORIZER_UTILS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { PRISMA_PRISMA_AUTHORIZER_UTILS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
