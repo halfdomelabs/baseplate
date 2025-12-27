@@ -5,7 +5,7 @@ import SchemaBuilder, { BasePlugin } from '@pothos/core';
 
 import type { ServiceContext } from '@src/utils/service-context.js';
 
-import { ForbiddenError } from '@src/utils/http-errors.js';
+import { checkInstanceAuthorization } from '@src/utils/authorizers.js';
 
 import type { AuthorizeRoleRuleOption } from './types.js';
 
@@ -43,17 +43,7 @@ export class PothosAuthorizeByRolesPlugin<
     const rules = Array.isArray(authorize) ? authorize : [authorize];
     const ctx = context as ServiceContext;
 
-    // Check rules sequentially in user-specified order for early return
-    for (const check of rules) {
-      // String = global role, function = instance role
-      if (typeof check === 'string') {
-        if (ctx.auth.hasRole(check)) return;
-      } else {
-        if (await check(ctx, root)) return;
-      }
-    }
-
-    throw new ForbiddenError('Forbidden');
+    await checkInstanceAuthorization(ctx, root, rules);
   }
 
   override wrapResolve(
