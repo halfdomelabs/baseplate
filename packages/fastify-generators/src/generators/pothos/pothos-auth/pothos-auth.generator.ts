@@ -12,8 +12,6 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { authRolesImportsProvider } from '#src/generators/auth/index.js';
-
 import { pothosConfigProvider, pothosSchemaProvider } from '../pothos/index.js';
 import { POTHOS_POTHOS_AUTH_GENERATED } from './generated/index.js';
 
@@ -49,9 +47,8 @@ export const pothosAuthGenerator = createGenerator({
     pothosConfig: createGeneratorTask({
       dependencies: {
         pothosConfig: pothosConfigProvider,
-        authRolesImports: authRolesImportsProvider,
       },
-      run({ pothosConfig, authRolesImports }) {
+      run({ pothosConfig }) {
         pothosConfig.pothosPlugins.set(
           'pothosAuthorizeByRolesPlugin',
           TsCodeUtils.importFragment(
@@ -60,16 +57,10 @@ export const pothosAuthGenerator = createGenerator({
           ),
         );
 
-        pothosConfig.schemaTypeOptions.set(
-          'AuthRole',
-          authRolesImports.AuthRole.typeFragment(),
-        );
-
         pothosConfig.schemaBuilderOptions.set(
           'authorizeByRoles',
           TsCodeUtils.mergeFragmentsAsObject({
             requireOnRootFields: requireOnRootFields.toString(),
-            extractRoles: '(context) => context.auth.roles',
           }),
         );
       },

@@ -5,6 +5,8 @@ import { createSystemAuthContext } from '../modules/accounts/utils/auth-context.
 export interface ServiceContext {
   /* TPL_CONTEXT_INTERFACE:START */
   auth: AuthContext;
+  authorizerCache: Map<string, boolean>;
+  authorizerModelCache: Map<string, unknown>;
   /* TPL_CONTEXT_INTERFACE:END */
 }
 
@@ -15,7 +17,11 @@ export function createServiceContext(
     auth: AuthContext;
   } /* TPL_CREATE_CONTEXT_ARGS:END */,
 ): ServiceContext {
-  return /* TPL_CONTEXT_OBJECT:START */ { auth } /* TPL_CONTEXT_OBJECT:END */;
+  return /* TPL_CONTEXT_OBJECT:START */ {
+    auth,
+    authorizerCache: new Map<string, boolean>(),
+    authorizerModelCache: new Map<string, unknown>(),
+  } /* TPL_CONTEXT_OBJECT:END */;
 }
 
 /**

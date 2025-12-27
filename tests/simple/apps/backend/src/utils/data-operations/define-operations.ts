@@ -6,6 +6,7 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 
 import { prisma } from '@src/services/prisma.js';
 
+import type { GlobalRoleCheck, InstanceRoleCheck } from '../authorizers.js';
 import type { ServiceContext } from '../service-context.js';
 import type {
   GetPayload,
@@ -29,6 +30,10 @@ import type {
   TransactionalOperationContext,
 } from './types.js';
 
+import {
+  checkGlobalAuthorization,
+  checkInstanceAuthorization,
+} from '../authorizers.js';
 import { NotFoundError } from '../http-errors.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
@@ -287,12 +292,15 @@ export interface CreateOperationConfig<
   fields: TFields;
 
   /**
-   * Optional authorization check before creating
+   * Optional authorization check before creating.
+   * Only global roles (strings) are allowed since there is no model instance.
+   *
+   * @example
+   * ```typescript
+   * authorize: ['admin', 'system']
+   * ```
    */
-  authorize?: (
-    data: InferInput<TFields>,
-    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
-  ) => Promise<void>;
+  authorize?: GlobalRoleCheck[];
 
   /**
    * Optional step to prepare computed fields based off the raw input
@@ -446,8 +454,8 @@ export function defineCreateOperation<
     };
 
     // Authorization
-    if (config.authorize) {
-      await config.authorize(validatedData, baseOperationContext);
+    if (config.authorize && config.authorize.length > 0) {
+      checkGlobalAuthorization(context, config.authorize);
     }
 
     // Step 1: Transform fields (OUTSIDE TRANSACTION)
@@ -563,12 +571,16 @@ export interface UpdateOperationConfig<
   fields: TFields;
 
   /**
-   * Optional authorization check before updating
+   * Optional authorization check before updating.
+   * Both global roles (strings) and instance roles (functions) are allowed.
+   * Discrimination: `typeof check === 'string'` for global roles.
+   *
+   * @example
+   * ```typescript
+   * authorize: ['admin', userAuthorizer.roles.owner]
+   * ```
    */
-  authorize?: (
-    data: Partial<InferInput<TFields>>,
-    ctx: OperationContext<GetPayload<TModelName>, { hasResult: false }>,
-  ) => Promise<void>;
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 
   /**
    * Optional prepare step - runs BEFORE transaction
@@ -743,9 +755,16 @@ export function defineUpdateOperation<
       },
       result: undefined,
     };
-    // Authorization
-    if (config.authorize) {
-      await config.authorize(validatedData, baseOperationContext);
+
+    // Authorization - check roles, lazy loading instance only if needed
+    if (config.authorize && config.authorize.length > 0) {
+      await checkInstanceAuthorization(
+        context,
+        baseOperationContext.loadExisting as () => Promise<
+          GetPayload<TModelName>
+        >,
+        config.authorize,
+      );
     }
 
     // Step 1: Transform fields (outside transaction)
@@ -856,14 +875,16 @@ export interface DeleteOperationConfig<TModelName extends ModelPropName> {
   model: TModelName;
 
   /**
-   * Optional authorization check before deleting
+   * Optional authorization check before deleting.
+   * Both global roles (strings) and instance roles (functions) are allowed.
+   * Discrimination: `typeof check === 'string'` for global roles.
+   *
+   * @example
+   * ```typescript
+   * authorize: ['admin', userAuthorizer.roles.owner]
+   * ```
    */
-  authorize?: (
-    ctx: OperationContext<
-      GetPayload<TModelName> | undefined,
-      { hasResult: false }
-    >,
-  ) => Promise<void>;
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 
   /**
    * Execute the delete operation. This function receives the where clause
@@ -987,9 +1008,15 @@ export function defineDeleteOperation<TModelName extends ModelPropName>(
       result: undefined,
     };
 
-    // Authorization
-    if (config.authorize) {
-      await config.authorize(baseOperationContext);
+    // Authorization - check roles, lazy loading instance only if needed
+    if (config.authorize && config.authorize.length > 0) {
+      await checkInstanceAuthorization(
+        context,
+        baseOperationContext.loadExisting as () => Promise<
+          GetPayload<TModelName>
+        >,
+        config.authorize,
+      );
     }
 
     const allHooks: AnyOperationHooks = {

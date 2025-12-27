@@ -1,0 +1,45 @@
+{
+  "name": "prisma/authorizer-utils-stub",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:authorizerUtilsImportsProvider"
+      ]
+    }
+  },
+  "templates": {
+    "utils-authorizers": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/authorizers.ts",
+      "projectExports": {
+        "checkGlobalAuthorization": {
+          "isTypeOnly": false,
+          "name": "checkGlobalAuthorization"
+        },
+        "checkInstanceAuthorization": {
+          "isTypeOnly": false,
+          "name": "checkInstanceAuthorization"
+        },
+        "GlobalRoleCheck": { "isTypeOnly": true, "name": "GlobalRoleCheck" },
+        "InstanceRoleCheck": {
+          "isTypeOnly": true,
+          "name": "InstanceRoleCheck"
+        }
+      },
+      "sourceFile": "src/utils/authorizers.ts",
+      "variables": {}
+    }
+  }
+}

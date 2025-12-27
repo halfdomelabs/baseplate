@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import { GetBlogPostsDocument} from '@src/generated/graphql';
+import { GetBlogPostsDocument } from '@src/generated/graphql';
 
 export const Route = createFileRoute('/')({
   component: HomePage,

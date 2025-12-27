@@ -4,7 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
+import { authorizerUtilsImportsProvider } from '#src/generators/auth/_providers/authorizer-utils-imports.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 
 import { POTHOS_POTHOS_AUTH_PATHS } from './template-paths.js';
 import { POTHOS_POTHOS_AUTH_TEMPLATES } from './typed-templates.js';
@@ -28,12 +29,18 @@ const pothosPothosAuthRenderers = createProviderType<PothosPothosAuthRenderers>(
 
 const pothosPothosAuthRenderersTask = createGeneratorTask({
   dependencies: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
     paths: POTHOS_POTHOS_AUTH_PATHS.provider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { pothosPothosAuthRenderers: pothosPothosAuthRenderers.export() },
-  run({ errorHandlerServiceImports, paths, typescriptFile }) {
+  run({
+    authorizerUtilsImports,
+    paths,
+    serviceContextImports,
+    typescriptFile,
+  }) {
     return {
       providers: {
         pothosPothosAuthRenderers: {
@@ -43,7 +50,8 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
                 group: POTHOS_POTHOS_AUTH_TEMPLATES.fieldAuthorizePluginGroup,
                 paths,
                 importMapProviders: {
-                  errorHandlerServiceImports,
+                  authorizerUtilsImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,

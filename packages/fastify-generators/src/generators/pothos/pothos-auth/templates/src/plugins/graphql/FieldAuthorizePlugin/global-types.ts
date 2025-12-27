@@ -8,7 +8,6 @@ import type {
 import type {
   FieldNullability,
   InputFieldMap,
-  InputShapeFromFields,
   SchemaTypes,
   TypeParam,
 } from '@pothos/core';
@@ -22,18 +21,8 @@ declare global {
       authorizeByRoles: PothosAuthorizeByRolesPlugin<Types>;
     }
 
-    export interface UserSchemaTypes {
-      AuthRole: string;
-    }
-
-    export interface ExtendDefaultTypes<
-      PartialTypes extends Partial<UserSchemaTypes>,
-    > {
-      AuthRole: PartialTypes['AuthRole'] & string;
-    }
-
     export interface SchemaBuilderOptions<Types extends SchemaTypes> {
-      authorizeByRoles: AuthorizeRolePluginOptions<Types>;
+      authorizeByRoles: AuthorizeRolePluginOptions;
     }
 
     export interface FieldOptions<
@@ -45,11 +34,7 @@ declare global {
       ResolveShape,
       ResolveReturnShape,
     > {
-      authorize?: AuthorizeRoleRuleOption<
-        ParentShape,
-        InputShapeFromFields<Args>,
-        Types
-      >;
+      authorize?: AuthorizeRoleRuleOption<ParentShape>;
     }
   }
 }

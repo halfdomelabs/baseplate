@@ -6,6 +6,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "data-operations",
       "importMapProviders": {
+        "authorizerUtilsImportsProvider": {
+          "importName": "authorizerUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/authorizer-utils-imports.ts"
+        },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
@@ -104,6 +108,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-types.ts",
+      "projectExports": {
+        "GetPayload": { "isTypeOnly": true, "name": "GetPayload" },
+        "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" }
+      },
       "sourceFile": "src/utils/data-operations/prisma-types.ts",
       "variables": {}
     },

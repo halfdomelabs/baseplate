@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { authorizerUtilsImportsProvider } from '#src/generators/auth/_providers/authorizer-utils-imports.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
@@ -10,6 +11,7 @@ const defineOperations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
   importMapProviders: {
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -68,6 +70,10 @@ const prismaTypes = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'prisma-types',
+  projectExports: {
+    GetPayload: { isTypeOnly: true },
+    ModelPropName: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,
