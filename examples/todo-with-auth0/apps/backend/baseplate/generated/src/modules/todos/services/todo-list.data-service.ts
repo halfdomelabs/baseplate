@@ -28,29 +28,35 @@ export const todoListInputFields = {
 export const createTodoList = defineCreateOperation({
   model: 'todoList',
   fields: todoListInputFields,
-  create: ({ tx, data: { ownerId, ...data }, query }) =>
-    tx.todoList.create({
+  create: async ({ tx, data: { ownerId, ...data }, query }) => {
+    const item = await tx.todoList.create({
       data: { ...data, owner: relationHelpers.connectCreate({ id: ownerId }) },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const updateTodoList = defineUpdateOperation({
   model: 'todoList',
   fields: todoListInputFields,
-  update: ({ tx, where, data: { ownerId, ...data }, query }) =>
-    tx.todoList.update({
+  update: async ({ tx, where, data: { ownerId, ...data }, query }) => {
+    const item = await tx.todoList.update({
       where,
       data: { ...data, owner: relationHelpers.connectUpdate({ id: ownerId }) },
       ...query,
-    }),
+    });
+    return item;
+  },
 });
 
 export const deleteTodoList = defineDeleteOperation({
   model: 'todoList',
-  delete: ({ tx, where, query }) =>
-    tx.todoList.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.todoList.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });

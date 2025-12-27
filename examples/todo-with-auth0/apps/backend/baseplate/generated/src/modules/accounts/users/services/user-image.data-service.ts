@@ -17,9 +17,11 @@ export const userImageInputFields = {
 
 export const deleteUserImage = defineDeleteOperation({
   model: 'userImage',
-  delete: ({ tx, where, query }) =>
-    tx.userImage.delete({
+  delete: async ({ tx, where, query }) => {
+    const item = await tx.userImage.delete({
       where,
       ...query,
-    }),
+    });
+    return item;
+  },
 });

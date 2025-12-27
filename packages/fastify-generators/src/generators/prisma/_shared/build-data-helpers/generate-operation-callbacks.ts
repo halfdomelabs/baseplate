@@ -26,7 +26,7 @@ interface GenerateCreateCallbackConfig {
  * Result of generating create operation callback
  */
 interface GenerateCreateCallbackResult {
-  /** Complete create callback fragment: ({ tx, data, query }) => tx.model.create({...}) */
+  /** Complete create callback fragment: async ({ tx, data, query }) => { const item = await tx.model.create({...}); return item; } */
   createCallbackFragment: TsCodeFragment;
 }
 
@@ -39,20 +39,25 @@ interface GenerateCreateCallbackResult {
  * @example
  * // No relations
  * generateCreateCallback({...})
- * // Returns: ({ tx, data, query }) => tx.user.create({ data, ...query })
+ * // Returns: async ({ tx, data, query }) => {
+ * //   const item = await tx.user.create({ data, ...query });
+ * //   return item;
+ * // }
  *
  * @example
  * // With relations
  * generateCreateCallback({...})
- * // Returns: ({ tx, data, query }) =>
- * //   tx.todoItem.create({
+ * // Returns: async ({ tx, data: { assigneeId, todoListId, ...data }, query }) => {
+ * //   const item = await tx.todoItem.create({
  * //     data: {
  * //       ...data,
- * //       assignee: relationHelpers.connectCreate({ id: data.assigneeId }),
- * //       todoList: relationHelpers.connectCreate({ id: data.todoListId }),
+ * //       assignee: relationHelpers.connectCreate({ id: assigneeId }),
+ * //       todoList: relationHelpers.connectCreate({ id: todoListId }),
  * //     },
  * //     ...query,
- * //   })
+ * //   });
+ * //   return item;
+ * // }
  */
 export function generateCreateCallback(
   config: GenerateCreateCallbackConfig,
@@ -71,22 +76,26 @@ export function generateCreateCallback(
   if (passthrough) {
     return {
       createCallbackFragment: tsTemplate`
-        ({ tx, data, query }) =>
-          tx.${modelVariableName}.create({
+        async ({ tx, data, query }) => {
+          const item = await tx.${modelVariableName}.create({
             data,
             ...query,
-          })
+          });
+          return item;
+        }
       `,
     };
   }
 
   return {
     createCallbackFragment: tsTemplate`
-      ({ tx, data: ${argumentFragment}, query }) =>
-        tx.${modelVariableName}.create({
+      async ({ tx, data: ${argumentFragment}, query }) => {
+        const item = await tx.${modelVariableName}.create({
           data: ${returnFragment},
           ...query,
-        })
+        });
+        return item;
+      }
     `,
   };
 }
@@ -109,7 +118,7 @@ interface GenerateUpdateCallbackConfig {
  * Result of generating update operation callback
  */
 interface GenerateUpdateCallbackResult {
-  /** Complete update callback fragment: ({ tx, where, data, query }) => tx.model.update({...}) */
+  /** Complete update callback fragment: async ({ tx, where, data, query }) => { const item = await tx.model.update({...}); return item; } */
   updateCallbackFragment: TsCodeFragment;
 }
 
@@ -122,21 +131,26 @@ interface GenerateUpdateCallbackResult {
  * @example
  * // No relations
  * generateUpdateCallback({...})
- * // Returns: ({ tx, where, data, query }) => tx.user.update({ where, data, ...query })
+ * // Returns: async ({ tx, where, data, query }) => {
+ * //   const item = await tx.user.update({ where, data, ...query });
+ * //   return item;
+ * // }
  *
  * @example
  * // With relations
  * generateUpdateCallback({...})
- * // Returns: ({ tx, where, data, query }) =>
- * //   tx.todoItem.update({
+ * // Returns: async ({ tx, where, data: { assigneeId, todoListId, ...data }, query }) => {
+ * //   const item = await tx.todoItem.update({
  * //     where,
  * //     data: {
  * //       ...data,
- * //       assignee: relationHelpers.connectUpdate({ id: data.assigneeId }),
- * //       todoList: relationHelpers.connectUpdate({ id: data.todoListId }),
+ * //       assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+ * //       todoList: relationHelpers.connectUpdate({ id: todoListId }),
  * //     },
  * //     ...query,
- * //   })
+ * //   });
+ * //   return item;
+ * // }
  */
 export function generateUpdateCallback(
   config: GenerateUpdateCallbackConfig,
@@ -155,24 +169,28 @@ export function generateUpdateCallback(
   if (passthrough) {
     return {
       updateCallbackFragment: tsTemplate`
-        ({ tx, where, data, query }) =>
-          tx.${modelVariableName}.update({
+        async ({ tx, where, data, query }) => {
+          const item = await tx.${modelVariableName}.update({
             where,
             data,
             ...query,
-          })
+          });
+          return item;
+        }
       `,
     };
   }
 
   return {
     updateCallbackFragment: tsTemplate`
-      ({ tx, where, data: ${argumentFragment}, query }) =>
-        tx.${modelVariableName}.update({
+      async ({ tx, where, data: ${argumentFragment}, query }) => {
+        const item = await tx.${modelVariableName}.update({
           where,
           data: ${returnFragment},
           ...query,
-        })
+        });
+        return item;
+      }
     `,
   };
 }
@@ -189,7 +207,7 @@ interface GenerateDeleteCallbackConfig {
  * Result of generating delete operation callback
  */
 interface GenerateDeleteCallbackResult {
-  /** Complete delete callback fragment: ({ tx, where, query }) => tx.model.delete({...}) */
+  /** Complete delete callback fragment: async ({ tx, where, query }) => { const item = await tx.model.delete({...}); return item; } */
   deleteCallbackFragment: TsCodeFragment;
 }
 
@@ -204,7 +222,10 @@ interface GenerateDeleteCallbackResult {
  *
  * @example
  * generateDeleteCallback({ modelVariableName: 'todoItem' })
- * // Returns: ({ tx, where, query }) => tx.todoItem.delete({ where, ...query })
+ * // Returns: async ({ tx, where, query }) => {
+ * //   const item = await tx.todoItem.delete({ where, ...query });
+ * //   return item;
+ * // }
  */
 export function generateDeleteCallback(
   config: GenerateDeleteCallbackConfig,
@@ -213,11 +234,13 @@ export function generateDeleteCallback(
 
   return {
     deleteCallbackFragment: tsTemplate`
-      ({ tx, where, query }) =>
-        tx.${modelVariableName}.delete({
+      async ({ tx, where, query }) => {
+        const item = await tx.${modelVariableName}.delete({
           where,
           ...query,
-        })
+        });
+        return item;
+      }
     `,
   };
 }
