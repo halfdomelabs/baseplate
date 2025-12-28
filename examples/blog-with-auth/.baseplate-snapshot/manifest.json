@@ -1,4 +1,8 @@
 {
-  "files": { "added": ["CLAUDE.md"], "deleted": [], "modified": [] },
+  "files": {
+    "added": ["CLAUDE.md", "Dockerfile", "build.sh"],
+    "deleted": [],
+    "modified": []
+  },
   "version": "1"
 }
