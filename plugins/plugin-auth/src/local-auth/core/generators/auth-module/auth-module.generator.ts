@@ -93,6 +93,10 @@ export const authModuleGenerator = createGenerator({
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,
                   },
+                  schemaUserSessionQueries: {
+                    TPL_USER_OBJECT_TYPE:
+                      userObjectType.getTypeReference().fragment,
+                  },
                   userRolesMutations: {
                     TPL_ADMIN_ROLES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
                       userAdminRoles.map(quot).sort(),

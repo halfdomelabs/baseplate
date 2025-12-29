@@ -113,6 +113,7 @@
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:graphql-plugin": "src/plugins/graphql/index.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:use-graph-logger": "src/plugins/graphql/use-graph-logger.ts",
   "@baseplate-dev/plugin-auth#auth0/auth0-module:management": "src/modules/accounts/auth/services/management.ts",
+  "@baseplate-dev/plugin-auth#auth0/auth0-module:user-session-queries": "src/modules/accounts/auth/schema/user-session.queries.ts",
   "@baseplate-dev/plugin-auth#auth0/auth0-module:user-session-service": "src/modules/accounts/auth/services/user-session.service.ts",
   "@baseplate-dev/plugin-queue#bullmq/core/bullmq:bullmq-plugin": "src/plugins/bullmq.plugin.ts",
   "@baseplate-dev/plugin-queue#bullmq/core/bullmq:bullmq-service": "src/services/bullmq.service.ts",

@@ -6,6 +6,8 @@ import {
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
+  pothosImportsProvider,
+  prismaImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -19,6 +21,16 @@ export interface Auth0Auth0ModuleRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof AUTH0_AUTH0_MODULE_TEMPLATES.management
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  userSessionQueries: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH0_AUTH0_MODULE_TEMPLATES.userSessionQueries
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -46,6 +58,8 @@ const auth0Auth0ModuleRenderersTask = createGeneratorTask({
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     paths: AUTH0_AUTH0_MODULE_PATHS.provider,
+    pothosImports: pothosImportsProvider,
+    prismaImports: prismaImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
@@ -55,6 +69,8 @@ const auth0Auth0ModuleRenderersTask = createGeneratorTask({
     authRolesImports,
     configServiceImports,
     paths,
+    pothosImports,
+    prismaImports,
     typescriptFile,
     userSessionTypesImports,
   }) {
@@ -68,6 +84,18 @@ const auth0Auth0ModuleRenderersTask = createGeneratorTask({
                 destination: paths.management,
                 importMapProviders: {
                   configServiceImports,
+                },
+                ...options,
+              }),
+          },
+          userSessionQueries: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH0_AUTH0_MODULE_TEMPLATES.userSessionQueries,
+                destination: paths.userSessionQueries,
+                importMapProviders: {
+                  pothosImports,
+                  prismaImports,
                 },
                 ...options,
               }),

@@ -79,6 +79,10 @@
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
@@ -86,7 +90,7 @@
         "schema-user-session-payload-object-type"
       ],
       "sourceFile": "module/schema/user-session.queries.ts",
-      "variables": {}
+      "variables": { "TPL_USER_OBJECT_TYPE": {} }
     },
     "session-cookie": {
       "type": "ts",

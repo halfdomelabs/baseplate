@@ -80,7 +80,10 @@ const schemaUserSessionPayloadObjectType = createTsTemplateFile({
 const schemaUserSessionQueries = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
-  importMapProviders: { pothosImports: pothosImportsProvider },
+  importMapProviders: {
+    pothosImports: pothosImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
   name: 'schema-user-session-queries',
   referencedGeneratorTemplates: { schemaUserSessionPayloadObjectType: {} },
   source: {
@@ -89,7 +92,7 @@ const schemaUserSessionQueries = createTsTemplateFile({
       '../templates/module/schema/user-session.queries.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_USER_OBJECT_TYPE: {} },
 });
 
 const userRolesMutations = createTsTemplateFile({
