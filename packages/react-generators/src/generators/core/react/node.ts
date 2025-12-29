@@ -39,4 +39,5 @@ export const viteNodeTask = createNodeTask((node) => {
     },
     'vite',
   );
+  node.files.push('build/**/*');
 });
