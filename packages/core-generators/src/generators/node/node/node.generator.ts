@@ -58,6 +58,10 @@ const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
     preinstall: 'npx only-allow pnpm',
   }),
   /**
+   * The files that the package.json will have
+   */
+  files: t.array<string>([], { stripDuplicates: true }),
+  /**
    * Extra properties that the package.json will have
    */
   extraProperties: t.object({}),
@@ -201,6 +205,10 @@ export const nodeGenerator = createGenerator({
               version: descriptor.version,
               private: descriptor.private,
               ...packageJsonValues.extraProperties,
+              files:
+                packageJsonValues.files.length > 0
+                  ? packageJsonValues.files.toSorted()
+                  : undefined,
               scripts: Object.fromEntries(packageJsonValues.scripts),
               dependencies: packageJsonValues.packages.prod,
               devDependencies: packageJsonValues.packages.dev,

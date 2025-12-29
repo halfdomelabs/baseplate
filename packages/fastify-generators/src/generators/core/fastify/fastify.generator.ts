@@ -113,9 +113,9 @@ export const fastifyGenerator = createGenerator({
           '@types/node',
         ]),
       );
+      node.files.push('dist/**/*');
       node.extraProperties.merge({
         main: 'dist/index.js',
-        files: ['dist/**/*', 'package.json', 'README.md'],
       });
     }),
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
