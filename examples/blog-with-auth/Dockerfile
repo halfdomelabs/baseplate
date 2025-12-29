@@ -38,6 +38,7 @@ WORKDIR /app
 
 # Copy the deployed app from the build stage
 COPY --from=build /prod/backend .
+COPY apps/backend/migrate.sh ./migrate.sh
 
 # Set the user to node
 USER node

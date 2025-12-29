@@ -1,13 +1,14 @@
+import type { PrismaConfig } from 'prisma';
+
 import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
-import { defineConfig } from 'prisma/config';
 
 // Only load .env file if it exists
 if (existsSync('.env')) {
   loadEnvFile();
 }
 
-export default defineConfig({
+export default {
   schema: './prisma/schema.prisma',
   migrations: {
     path: './prisma/migrations',
@@ -16,4 +17,4 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
   },
-});
+} satisfies PrismaConfig;
