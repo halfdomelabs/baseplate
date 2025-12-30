@@ -1,5 +1,33 @@
 # @baseplate-dev/plugin-auth
 
+## 3.0.3
+
+### Patch Changes
+
+- [#725](https://github.com/halfdomelabs/baseplate/pull/725) [`b26e6e9`](https://github.com/halfdomelabs/baseplate/commit/b26e6e99d60aa5682ef1846d78ba37a571472215) Thanks [@kingston](https://github.com/kingston)! - Add ALLOWED_ORIGINS environment variable for CSRF protection
+  - Add optional `ALLOWED_ORIGINS` config field that accepts a comma-separated list of additional allowed origins
+  - Enables use cases with hosting providers like Render that use rewrites where the host header doesn't match the origin header
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Upgrade Apollo Client to v4
+  - @apollo/client: 3.13.8 → 4.0.11
+  - Add rxjs 7.8.2 as peer dependency (required by Apollo Client v4)
+
+  Breaking changes in generated code:
+  - React hooks (useQuery, useMutation, useApolloClient, etc.) now import from `@apollo/client/react` instead of `@apollo/client`
+  - ApolloProvider now imports from `@apollo/client/react`
+  - Error handling uses new `CombinedGraphQLErrors` and `ServerError` classes from `@apollo/client/errors`
+  - `ErrorLink` class replaces deprecated `onError` function
+  - `ApolloClient` is no longer generic (use `ApolloClient` instead of `ApolloClient<NormalizedCacheObject>`)
+
+- Updated dependencies [[`12d1e62`](https://github.com/halfdomelabs/baseplate/commit/12d1e625bc04256eeb2704faa3f36dfda00545f9), [`6e23a6f`](https://github.com/halfdomelabs/baseplate/commit/6e23a6f2ff99954eebcb78b450d0c18618aa0b54), [`f1bab33`](https://github.com/halfdomelabs/baseplate/commit/f1bab3310fa8c00c645a6d9aca0a6a757cb661f1), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d), [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d)]:
+  - @baseplate-dev/fastify-generators@0.4.3
+  - @baseplate-dev/react-generators@0.4.3
+  - @baseplate-dev/core-generators@0.4.3
+  - @baseplate-dev/project-builder-lib@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/ui-components@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 3.0.2
 
 ### Patch Changes
