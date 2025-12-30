@@ -11,7 +11,6 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "generate": "graphql-codegen",
     "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -61,7 +60,6 @@
   "devDependencies": {
     "@eslint/js": "9.32.0",
     "@graphql-eslint/eslint-plugin": "4.4.0",
-    "@parcel/watcher": "2.5.1",
     "@tailwindcss/vite": "4.1.13",
     "@tanstack/router-plugin": "1.139.7",
     "@types/node": "^22.0.0",

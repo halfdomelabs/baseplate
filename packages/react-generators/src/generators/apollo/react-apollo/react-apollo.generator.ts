@@ -5,7 +5,6 @@ import type {
 
 import {
   createNodePackagesTask,
-  createNodeTask,
   eslintConfigProvider,
   extractPackageVersions,
   packageScope,
@@ -180,24 +179,8 @@ export const reactApolloGenerator = createGenerator({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@apollo/client',
         'graphql',
+        'gql.tada',
       ]),
-      dev: extractPackageVersions(REACT_PACKAGES, [
-        '@graphql-codegen/cli',
-        '@graphql-codegen/typescript',
-        '@graphql-codegen/typescript-operations',
-        '@graphql-codegen/typed-document-node',
-        '@graphql-typed-document-node/core',
-        '@parcel/watcher',
-      ]),
-    }),
-    codegen: createNodeTask((node) => {
-      node.scripts.mergeObj(
-        {
-          generate: 'graphql-codegen',
-          'watch:gql': 'graphql-codegen --watch',
-        },
-        'graphql-codegen',
-      );
     }),
     reactTypescript: createProviderTask(
       reactTypescriptProvider,
@@ -211,10 +194,10 @@ export const reactApolloGenerator = createGenerator({
         })
       : undefined,
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
-      eslintConfig.eslintIgnore.push('src/generated/graphql.tsx');
+      eslintConfig.eslintIgnore.push('src/graphql-env.d.ts');
     }),
     prettier: createProviderTask(prettierProvider, (prettier) => {
-      prettier.addPrettierIgnore('src/generated/graphql.tsx');
+      prettier.addPrettierIgnore('src/graphql-env.d.ts');
     }),
     reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
       if (enableSubscriptions) {
