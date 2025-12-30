@@ -25,6 +25,10 @@ interface GenerateTemplatesOptions {
   skipClean?: boolean;
 }
 
+interface CreateGeneratorOptions {
+  includeTemplates?: boolean;
+}
+
 /**
  * Adds template management commands to the program.
  * @param program - The program to add the commands to.
@@ -104,6 +108,26 @@ export function addTemplatesCommand(program: Command): void {
         options: GenerateTemplatesOptions,
       ) => {
         await handleGenerateTemplates(directory, options);
+      },
+    );
+
+  // Templates create subcommand
+  templatesCommand
+    .command('create <name> <directory>')
+    .description(
+      'Create a new generator with boilerplate code (e.g., "baseplate templates create email/sendgrid packages/fastify-generators/src/generators")',
+    )
+    .option(
+      '--no-include-templates',
+      'Skip creating placeholder template setup (generated/, extractor.json)',
+    )
+    .action(
+      async (
+        name: string,
+        directory: string,
+        options: CreateGeneratorOptions,
+      ) => {
+        await handleCreateGenerator(name, directory, options);
       },
     );
 }
@@ -257,4 +281,38 @@ async function handleGenerateTemplates(
   await generateTypedTemplateFiles(resolvedDirectory, defaultPlugins, logger, {
     skipClean: options.skipClean,
   });
+}
+
+async function handleCreateGenerator(
+  name: string,
+  directory: string,
+  options: CreateGeneratorOptions,
+): Promise<void> {
+  const { createGenerator } = await import(
+    '@baseplate-dev/project-builder-server/actions'
+  );
+
+  const resolvedDirectory = expandPathWithTilde(directory);
+
+  try {
+    const result = createGenerator({
+      name,
+      directory: resolvedDirectory,
+      includeTemplates: options.includeTemplates ?? true,
+    });
+
+    console.info(`✅ ${result.message}`);
+    console.info(`📁 Generator path: ${result.generatorPath}`);
+    if (result.filesCreated.length > 0) {
+      console.info(`📄 Files created:`);
+      for (const file of result.filesCreated) {
+        console.info(`   - ${file}`);
+      }
+    }
+  } catch (error) {
+    logger.error(
+      `Failed to create generator: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    throw error;
+  }
 }
