@@ -34,7 +34,7 @@ const fieldTypeSchemas = Object.entries(PRISMA_SCALAR_FIELD_TYPES).map(
       options:
         'optionsSchema' in config
           ? config.optionsSchema
-          : z.undefined().optional(),
+          : z.object({}).optional(),
     }),
 ) as unknown as [typeof baseFieldSchema, ...(typeof baseFieldSchema)[]];
 
