@@ -292,11 +292,7 @@ async function handleCreateGenerator(
     '@baseplate-dev/project-builder-server/actions'
   );
 
-  // Resolve to absolute path from user's current working directory
-  const expandedDirectory = expandPathWithTilde(directory);
-  const resolvedDirectory = path.isAbsolute(expandedDirectory)
-    ? expandedDirectory
-    : path.resolve(process.cwd(), expandedDirectory);
+  const resolvedDirectory = expandPathWithTilde(directory);
 
   try {
     const result = createGenerator({

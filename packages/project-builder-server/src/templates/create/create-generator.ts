@@ -3,6 +3,8 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { findMonorepoRoot } from '#src/utils/find-monorepo-root.js';
+
 export interface CreateGeneratorInput {
   name: string;
   directory: string;
@@ -147,9 +149,19 @@ export function createGenerator(
   const parsed = parseGeneratorName(name);
 
   // Resolve the absolute directory path
-  const absoluteDirectory = path.isAbsolute(directory)
-    ? directory
-    : path.resolve(process.cwd(), directory);
+  let absoluteDirectory: string;
+  if (path.isAbsolute(directory)) {
+    absoluteDirectory = directory;
+  } else {
+    // For relative paths, resolve against monorepo root
+    const monorepoRoot = findMonorepoRoot();
+    if (!monorepoRoot) {
+      throw new Error(
+        'Could not find monorepo root. Please run from within a pnpm workspace or provide an absolute path.',
+      );
+    }
+    absoluteDirectory = path.resolve(monorepoRoot, directory);
+  }
 
   // Validate the directory exists
   if (!fs.existsSync(absoluteDirectory)) {
