@@ -141,7 +141,7 @@ function DateTimePickerField({
           id={id}
           ref={ref}
           className={cn(
-            'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
+            'data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal',
             className,
           )}
         >

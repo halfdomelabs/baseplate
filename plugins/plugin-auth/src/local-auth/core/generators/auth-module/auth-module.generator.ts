@@ -31,6 +31,13 @@ export const authModuleGenerator = createGenerator({
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
+      configService.configFields.set('ALLOWED_ORIGINS', {
+        validator: tsCodeFragment(
+          "z.string().optional().transform((val) => (val ? val.split(',').map((s) => s.trim()) : []))",
+        ),
+        comment:
+          'Comma-separated list of additional allowed origins for CSRF protection (e.g. https://example.com,https://app.example.com)',
+      });
       configService.configFields.set('AUTH_SECRET', {
         validator: tsCodeFragment(
           'z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/)',

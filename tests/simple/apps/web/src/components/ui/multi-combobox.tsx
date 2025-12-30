@@ -180,11 +180,11 @@ function MultiComboboxInput({
                 <Badge
                   variant="secondary"
                   key={option.value}
-                  className="flex items-center gap-1 rounded-xs px-1 font-normal"
+                  className="rounded-xs flex items-center gap-1 px-1 font-normal"
                 >
                   <div>{option.label}</div>
                   <button
-                    className="-mr-1 rounded-full p-0.5 hover:bg-secondary-hover"
+                    className="hover:bg-secondary-hover -mr-1 rounded-full p-0.5"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         onSelect(option.value, option.label, false);
@@ -312,7 +312,7 @@ function MultiComboboxItem({
     >
       <div
         className={cn(
-          'mr-2 flex h-4 w-4 items-center justify-center rounded-xs border',
+          'rounded-xs mr-2 flex h-4 w-4 items-center justify-center border',
           isSelected ? 'opacity-100' : '[&_svg]:invisible',
         )}
       >
