@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/core-generators",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Core generators for Baseplate",
   "keywords": [
     "code-generation",
