@@ -6,9 +6,9 @@ import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import { GetUsersDocument } from '@src/generated/graphql';
 
 import { UserTable } from './-components/user-table';
+import { usersQuery } from './queries';
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/' /* TPL_ROUTE_PATH:END */,
@@ -18,7 +18,7 @@ export const Route = createFileRoute(
 
 function /* TPL_PAGE_NAME:START */ UserListPage /* TPL_PAGE_NAME:END */(): ReactElement {
   /* TPL_DATA_LOADER:START */
-  const { data, error } = useQuery(GetUsersDocument);
+  const { data, error } = useQuery(usersQuery);
   /* TPL_DATA_LOADER:END */
 
   return (

@@ -6,10 +6,7 @@ import { useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import {
-  UpdateUserDocument,
-  UserEditByIdDocument,
-} from '@src/generated/graphql';
+import { graphql, readFragment } from '@src/graphql';
 import { logError } from '@src/services/error-logger';
 
 import type { UserFormData } from './-schemas/user-schema';
@@ -18,7 +15,44 @@ import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
-/* TPL_USER_QUERY=UserEditByIdDocument */
+
+/* TPL_USER_EDIT_FRAGMENT:START */
+export const userEditFragment = graphql(`
+  fragment UserEdit on User {
+    email
+    id
+    name
+  }
+`);
+/* TPL_USER_EDIT_FRAGMENT:END */
+
+/* TPL_USER_EDIT_QUERY:START */
+export const userEditByIdQuery = graphql(
+  `
+    query UserEditById($id: Uuid!) {
+      user(id: $id) {
+        ...UserEdit
+      }
+    }
+  `,
+  [userEditFragment],
+);
+/* TPL_USER_EDIT_QUERY:END */
+
+/* TPL_UPDATE_USER_MUTATION:START */
+const updateUserMutation = graphql(
+  `
+    mutation UpdateUser($input: UpdateUserInput!) {
+      updateUser(input: $input) {
+        user {
+          ...UserEdit
+        }
+      }
+    }
+  `,
+  [userEditFragment],
+);
+/* TPL_UPDATE_USER_MUTATION:END */
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/$id' /* TPL_ROUTE_PATH:END */,
@@ -27,13 +61,14 @@ export const Route = createFileRoute(
   loader: async ({ context: { apolloClient }, params }) => {
     const { id } = params;
     const { data } = await apolloClient.query({
-      query: UserEditByIdDocument,
+      query: userEditByIdQuery,
       variables: { id },
     });
     if (!data) throw new Error('No data received from query');
+    const user = readFragment(userEditFragment, data.user);
     return {
-      crumb: /* TPL_CRUMB_EXPRESSION:START */ data.user.name
-        ? data.user.name
+      crumb: /* TPL_CRUMB_EXPRESSION:START */ user.name
+        ? user.name
         : 'Unnamed User' /* TPL_CRUMB_EXPRESSION:END */,
     };
   },
@@ -45,20 +80,20 @@ function UserEditPage(): ReactElement {
 
   /* TPL_DATA_LOADER:START */
 
-  const { data, error } = useQuery(UserEditByIdDocument, {
+  const { data, error } = useQuery(userEditByIdQuery, {
     variables: { id },
   });
 
   const initialData: UserFormData | undefined = useMemo(() => {
     if (!data?.user) return undefined;
-    return data.user;
+    return readFragment(userEditFragment, data.user);
   }, [data]);
 
   /* TPL_DATA_LOADER:END */
 
   const [/* TPL_MUTATION_NAME:START */ updateUser /* TPL_MUTATION_NAME:END */] =
     useMutation(
-      /* TPL_UPDATE_MUTATION:START */ UpdateUserDocument /* TPL_UPDATE_MUTATION:END */,
+      /* TPL_UPDATE_MUTATION:START */ updateUserMutation /* TPL_UPDATE_MUTATION:END */,
     );
   const navigate = useNavigate();
 

@@ -16,8 +16,7 @@
     "prettier:write": "prettier -w .",
     "preview": "vite preview",
     "test": "vitest run",
-    "typecheck": "tsc -b --noEmit",
-    "watch:gql": "graphql-codegen --watch"
+    "typecheck": "tsc -b --noEmit"
   },
   "browserslist": {
     "production": [
@@ -40,6 +39,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
+    "gql.tada": "1.9.0",
     "graphql": "16.11.0",
     "loglevel": "1.9.1",
     "nanoid": "5.1.6",
@@ -57,11 +57,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.32.0",
-    "@graphql-codegen/cli": "5.0.7",
-    "@graphql-codegen/typed-document-node": "5.1.2",
-    "@graphql-codegen/typescript": "4.1.6",
-    "@graphql-codegen/typescript-operations": "4.6.1",
-    "@graphql-typed-document-node/core": "3.2.0",
+    "@graphql-eslint/eslint-plugin": "4.4.0",
     "@parcel/watcher": "2.5.1",
     "@tailwindcss/vite": "4.1.13",
     "@tanstack/router-plugin": "1.139.7",

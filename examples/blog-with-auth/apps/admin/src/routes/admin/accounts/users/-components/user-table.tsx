@@ -12,8 +12,6 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { UserRowFragment } from '@src/generated/graphql';
-
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
 import { Button } from '@src/components/ui/button';
@@ -31,18 +29,62 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { DeleteUserDocument, GetUsersDocument } from '@src/generated/graphql';
+import {
+  type FragmentOf,
+  graphql,
+  readFragment,
+  type ResultOf,
+} from '@src/graphql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import { PasswordResetDialog } from './password-reset-dialog';
-import { RoleManagerDialog } from './role-manager-dialog';
+import { usersQuery } from '../queries';
+import {
+  PasswordResetDialog,
+  passwordResetDialogUserFragment,
+} from './password-reset-dialog';
+import {
+  RoleManagerDialog,
+  roleManagerDialogUserFragment,
+} from './role-manager-dialog';
 
 /* TPL_COMPONENT_NAME=UserTable */
-/* TPL_ROW_FRAGMENT=UserRowFragment */
+
+/* TPL_ROW_FRAGMENT:START */
+export const userRowFragment = graphql(
+  `
+    fragment UserTable_items on User {
+      email
+      id
+      name
+      roles {
+        role
+      }
+      ...RoleManagerDialog_user
+      ...PasswordResetDialog_user
+    }
+  `,
+  [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
+);
+/* TPL_ROW_FRAGMENT:END */
+
+/** UserRow fragment type for component props */
+type UserRowFragment = ResultOf<typeof userRowFragment>;
+
+/* TPL_DELETE_MUTATION:START */
+const deleteUserMutation = graphql(`
+  mutation DeleteUser($input: DeleteUserInput!) {
+    deleteUser(input: $input) {
+      user {
+        id
+      }
+    }
+  }
+`);
+/* TPL_DELETE_MUTATION:END */
 
 interface Props {
-  items: UserRowFragment[];
+  items: FragmentOf<typeof userRowFragment>[];
   /* TPL_EXTRA_PROPS:BLOCK */
 }
 
@@ -52,23 +94,23 @@ export function UserTable(
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
   /* TPL_ACTION_HOOKS:START */
-  const [roleDialogUser, setRoleDialogUser] = useState<UserRowFragment | null>(
-    null,
-  );
+  const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<
+    typeof roleManagerDialogUserFragment
+  > | null>(null);
   const [passwordResetUser, setPasswordResetUser] =
     useState<UserRowFragment | null>(null);
   const { requestConfirm } = useConfirmDialog();
-  const [deleteUser] = useMutation(DeleteUserDocument, {
-    refetchQueries: [{ query: GetUsersDocument }],
+  const [deleteUser] = useMutation(deleteUserMutation, {
+    refetchQueries: [{ query: usersQuery }],
   });
 
-  function handleDelete(item: UserRowFragment): void {
+  function handleDelete(user: UserRowFragment): void {
     requestConfirm({
       title: 'Delete User',
-      content: `Are you sure you want to delete user ${item.name ? item.name : 'unnamed user'}?`,
+      content: `Are you sure you want to delete user ${user.name ? user.name : 'unnamed user'}?`,
       onConfirm: () => {
         deleteUser({
-          variables: { input: { id: item.id } },
+          variables: { input: { id: user.id } },
         })
           .then(() => {
             toast.success('Successfully deleted user!');
@@ -83,7 +125,10 @@ export function UserTable(
   }
   /* TPL_ACTION_HOOKS:END */
 
-  if (items.length === 0) {
+  // Unmask the fragment data for rendering
+  const users = readFragment(userRowFragment, items);
+
+  if (users.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -109,7 +154,7 @@ export function UserTable(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
+          {users.map((item) => (
             <TableRow key={item.id}>
               {/* TPL_CELLS:START */}
               <TableCell>{item.name}</TableCell>

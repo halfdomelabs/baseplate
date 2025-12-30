@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method -- see https://github.com/vitest-dev/eslint-plugin-vitest/issues/591 */
+
 import { gql } from '@apollo/client';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -53,6 +54,8 @@ vi.mock('../config', () => ({
 }));
 
 const TEST_QUERY = gql`
+  # eslint-disable @graphql-eslint/naming-convention -- these are test queries
+  # eslint-disable @graphql-eslint/fields-on-correct-type -- these are test queries
   query TestQuery {
     test {
       id
@@ -61,6 +64,8 @@ const TEST_QUERY = gql`
 `;
 
 const TEST_MUTATION = gql`
+  # eslint-disable @graphql-eslint/naming-convention -- these are test queries
+  # eslint-disable @graphql-eslint/fields-on-correct-type -- these are test queries
   mutation TestMutation {
     doSomething {
       success
