@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-server
 
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies [[`ec2f1e9`](https://github.com/halfdomelabs/baseplate/commit/ec2f1e9716e84cd4a901c071eacf4971436962d9)]:
+  - @baseplate-dev/fastify-generators@0.4.4
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/project-builder-lib@0.4.4
+  - @baseplate-dev/react-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
 ## 0.4.3
 
 ### Patch Changes

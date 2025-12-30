@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.4.4
+
+### Patch Changes
+
+- [#726](https://github.com/halfdomelabs/baseplate/pull/726) [`ec2f1e9`](https://github.com/halfdomelabs/baseplate/commit/ec2f1e9716e84cd4a901c071eacf4971436962d9) Thanks [@kingston](https://github.com/kingston)! - Fix handling of Prisma scalar fields without options
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
 ## 0.4.3
 
 ### Patch Changes
