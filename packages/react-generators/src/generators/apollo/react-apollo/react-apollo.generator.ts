@@ -23,7 +23,6 @@ import {
   createGeneratorTask,
   createProviderTask,
   createProviderType,
-  POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
 import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -185,7 +184,7 @@ export const reactApolloGenerator = createGenerator({
     reactTypescript: createProviderTask(
       reactTypescriptProvider,
       (reactTypescript) => {
-        reactTypescript.addNodeTsFile('codegen.ts');
+        reactTypescript.addNodeTsFile('graphql.config.ts');
       },
     ),
     websocketPackages: enableSubscriptions
@@ -526,11 +525,6 @@ export const reactApolloGenerator = createGenerator({
 
             // generated/graphql.tsx
             await builder.apply(renderers.graphql.render({}));
-
-            builder.addPostWriteCommand('pnpm generate', {
-              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
-              onlyIfChanged: ['codegen.ts', 'src/**/*.gql'],
-            });
           },
         };
       },
