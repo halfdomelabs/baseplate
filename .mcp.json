@@ -3,6 +3,18 @@
     "baseplate-dev-server": {
       "command": "mise",
       "args": ["exec", "--", "pnpm", "--silent", "start", "mcp"]
+    },
+    "baseplate-docs": {
+      "command": "mise",
+      "args": [
+        "exec",
+        "--cd",
+        "../doc-sync",
+        "--",
+        "pnpm",
+        "outline-sync",
+        "mcp"
+      ]
     }
   }
 }

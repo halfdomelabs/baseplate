@@ -21,6 +21,163 @@ Baseplate follows a **code-first** development approach:
 - `examples/blog-with-auth` - Blog application with authentication
 - `examples/todo-with-auth0` - Todo application with Auth0 integration
 
+## Documentation References
+
+For detailed documentation on generators, consult these guides via the baseplate-docs MCP:
+
+| Guide | Document ID | Description |
+|-------|-------------|-------------|
+| Generator Development Guide | `df804c4d-72f1-4b30-bb4a-cdafac7608d2` | Comprehensive guide covering core providers, template rendering, and generator patterns |
+| React Generators Guide | `8687772b-b258-4241-9cbe-e73e9d13a203` | React-specific providers, Vite configuration, component generation |
+| Fastify Generators Guide | `862dcef2-7ff8-4de1-9840-fc73d89f32eb` | Backend providers, API generation, configuration management |
+| Core Providers Reference | `200cfab4-56ea-4f60-880c-fa6b8a18048c` | Detailed reference for nodeProvider, typescriptFileProvider, etc. |
+
+To fetch a guide:
+```javascript
+mcp__baseplate_docs__get_document_by_id({ documentId: 'df804c4d-72f1-4b30-bb4a-cdafac7608d2' });
+```
+
+## Generator Architecture
+
+### Generator Packages
+
+Generators are organized into three main packages:
+
+| Package | Location | Purpose |
+|---------|----------|---------|
+| `@baseplate-dev/core-generators` | `packages/core-generators/src/generators/` | Node.js, TypeScript, ESLint, Prettier, Vitest |
+| `@baseplate-dev/react-generators` | `packages/react-generators/src/generators/` | React, Vite, Apollo, admin UI |
+| `@baseplate-dev/fastify-generators` | `packages/fastify-generators/src/generators/` | Fastify, Prisma, Pothos, auth, email |
+
+### Generator Structure
+
+Every generator follows this pattern:
+
+```typescript
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { z } from 'zod';
+
+export const myGenerator = createGenerator({
+  name: 'category/my-generator',
+  generatorFileUrl: import.meta.url,
+  descriptorSchema: z.object({
+    // Configuration options
+  }),
+  buildTasks: (descriptor) => ({
+    // Add auto-generated tasks for templates
+    paths: MY_GENERATOR_GENERATED.paths.task,
+    imports: MY_GENERATOR_GENERATED.imports.task,
+    renderers: MY_GENERATOR_GENERATED.renderers.task,
+
+    main: createGeneratorTask({
+      dependencies: {
+        renderers: MY_GENERATOR_GENERATED.renderers.provider,
+      },
+      run({ renderers }) {
+        return {
+          build: async (builder) => {
+            await builder.apply(renderers.myTemplate.render());
+          },
+        };
+      },
+    }),
+  }),
+});
+```
+
+### Key Providers
+
+**Core Providers (from `@baseplate-dev/core-generators`):**
+
+| Provider | Purpose |
+|----------|---------|
+| `nodeProvider` | Package.json, dependencies, scripts |
+| `typescriptFileProvider` | TypeScript file generation with imports |
+| `packageInfoProvider` | Package name, root path, src path |
+| `eslintConfigProvider` | ESLint configuration |
+| `nodeGitIgnoreProvider` | .gitignore management |
+
+**React Providers (from `@baseplate-dev/react-generators`):**
+
+| Provider | Purpose |
+|----------|---------|
+| `reactBaseConfigProvider` | Vite plugins, server options, app configuration |
+| `reactPathsProvider` | React-specific paths (components folder, etc.) |
+
+**Fastify Providers (from `@baseplate-dev/fastify-generators`):**
+
+| Provider | Purpose |
+|----------|---------|
+| `fastifyProvider` | Node flags, dev output formatter |
+| `fastifyOutputProvider` | Runtime config (node commands, flags) |
+| `configServiceProvider` | Environment variables with Zod validation |
+
+### Shared Providers and Scopes
+
+Providers communicate between tasks using scopes:
+
+```typescript
+import { packageScope } from '@baseplate-dev/core-generators';
+
+// Export a provider to package scope (available to entire package)
+exports: {
+  myProvider: myProviderType.export(packageScope),
+}
+
+// Consume a provider from dependencies
+dependencies: {
+  someProvider: someProviderType,
+}
+```
+
+### Template Rendering with Renderers
+
+The modern pattern uses auto-generated renderers:
+
+```typescript
+// Renderers are generated from templates in ./templates/ directory
+import { MY_GENERATOR_GENERATED } from './generated/index.js';
+
+// Use in tasks
+buildTasks: () => ({
+  paths: MY_GENERATOR_GENERATED.paths.task,
+  imports: MY_GENERATOR_GENERATED.imports.task,
+  renderers: MY_GENERATOR_GENERATED.renderers.task,
+
+  main: createGeneratorTask({
+    dependencies: {
+      renderers: MY_GENERATOR_GENERATED.renderers.provider,
+    },
+    run({ renderers }) {
+      return {
+        build: async (builder) => {
+          // Simple render
+          await builder.apply(renderers.myTemplate.render());
+
+          // Render with variables
+          await builder.apply(renderers.service.render({
+            variables: {
+              TPL_SERVICE_NAME: 'UserService',
+            },
+          }));
+        },
+      };
+    },
+  }),
+})
+```
+
+### Creating New Generators
+
+When creating a new generator:
+
+1. Create directory under appropriate package: `packages/<pkg>-generators/src/generators/<category>/<name>/`
+2. Add `<name>.generator.ts` with generator definition
+3. Add `index.ts` barrel export
+4. Add `templates/` directory for template files
+5. Run `pnpm generate:templates` to generate typed template helpers
+6. Export from parent `index.ts`
+
 ## Step-by-Step Process
 
 ### 1. Code Development
