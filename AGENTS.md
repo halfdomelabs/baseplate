@@ -462,6 +462,32 @@ mcp__baseplate_dev_server__generate_templates({
 });
 ```
 
+#### `create-generator`
+
+Create a new generator with boilerplate code, including generator file, index, and optional template setup.
+
+**Parameters:**
+
+- `name` (required): Generator name in format "category/name" (e.g., "email/sendgrid")
+- `directory` (required): Directory to create generator in (e.g., "packages/fastify-generators/src/generators")
+- `includeTemplates` (optional, default: true): Include placeholder template setup
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__create_generator({
+  name: 'email/sendgrid',
+  directory: 'packages/fastify-generators/src/generators',
+  includeTemplates: true,
+});
+```
+
+**Example directories:**
+- `packages/core-generators/src/generators`
+- `packages/fastify-generators/src/generators`
+- `packages/react-generators/src/generators`
+- `plugins/plugin-storage/src/generators/fastify`
+
 #### `list-templates`
 
 List all available generators with their templates.
