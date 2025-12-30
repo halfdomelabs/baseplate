@@ -12,13 +12,13 @@ See @.cursor/rules/code-style.mdc for code style guidelines.
 
 ## UI Development Guidelines
 
-See @.cursor/rules/ui-rules.mdc for UI development guidelines.
+See .cursor/rules/ui-rules.mdc for UI development guidelines.
 
-See @.cursor/rules/ui-components.mdc for the full UI component reference.
+See .cursor/rules/ui-components.mdc for the full UI component reference.
 
 ## Testing Best Practices
 
-See @.cursor/rules/testing.mdc for testing best practices.
+See .cursor/rules/testing.mdc for testing best practices.
 
 ## Repository Structure
 
@@ -202,7 +202,7 @@ If `~/baseplate-docs` is not accessible, use the baseplate-docs MCP server:
 
 ## Baseplate Development Server MCP
 
-See @.cursor/rules/mcp-actions.mdc for detailed MCP action documentation.
+See .cursor/rules/mcp-actions.mdc for detailed MCP action documentation.
 
 The MCP server provides programmatic access to:
 
