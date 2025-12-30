@@ -113,6 +113,7 @@ export const prismaGenerator = createGenerator({
         node.scripts.mergeObj({
           postinstall: 'prisma generate',
         });
+        node.files.push('prisma/**/*', 'prisma.config.ts');
       },
     }),
     eslint: createGeneratorTask({

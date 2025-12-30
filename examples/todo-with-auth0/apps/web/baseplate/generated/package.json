@@ -5,6 +5,9 @@
   "description": "Web app for todo-with-auth0",
   "license": "UNLICENSED",
   "type": "module",
+  "files": [
+    "build/**/*"
+  ],
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",

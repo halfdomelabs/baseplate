@@ -5,6 +5,9 @@
   "description": "Web app for simple",
   "license": "UNLICENSED",
   "type": "module",
+  "files": [
+    "build/**/*"
+  ],
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",

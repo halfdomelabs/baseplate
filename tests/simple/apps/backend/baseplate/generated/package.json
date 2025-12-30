@@ -8,8 +8,8 @@
   "main": "dist/index.js",
   "files": [
     "dist/**/*",
-    "package.json",
-    "README.md"
+    "prisma.config.ts",
+    "prisma/**/*"
   ],
   "scripts": {
     "build": "tsc && tsc-alias",

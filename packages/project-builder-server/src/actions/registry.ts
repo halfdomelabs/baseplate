@@ -1,4 +1,5 @@
 import { diffProjectAction } from './diff/diff-project.action.js';
+import { createGeneratorAction } from './generators/index.js';
 import {
   snapshotAddAction,
   snapshotRemoveAction,
@@ -27,6 +28,7 @@ export const ALL_SERVICE_ACTIONS = [
   discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,
+  createGeneratorAction,
   configureTsTemplateAction,
   configureTextTemplateAction,
   configureRawTemplateAction,
