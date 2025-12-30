@@ -7,8 +7,13 @@ import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import { collectRefs } from './collect-refs.js';
 import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
+import {
+  stubParser,
+  StubParserWithSlots,
+} from './expression-stub-parser.test-helper.js';
 import { extractDefinitionRefs } from './extract-definition-refs.js';
 import {
+  DefinitionExpressionMarker,
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
@@ -747,26 +752,31 @@ describe('extract-definition-refs', () => {
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
         expect(collectRefs(42)).toEqual({
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
         expect(collectRefs(true)).toEqual({
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
         expect(collectRefs(null)).toEqual({
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
         expect(collectRefs(undefined)).toEqual({
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
       });
 
@@ -775,11 +785,13 @@ describe('extract-definition-refs', () => {
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
         expect(collectRefs([])).toEqual({
           entities: [],
           references: [],
           slots: [],
+          expressions: [],
         });
       });
     });
@@ -823,6 +835,7 @@ describe('extract-definition-refs', () => {
             ],
             references: [],
             slots: [],
+            expressions: [],
           },
         };
 
@@ -856,6 +869,7 @@ describe('extract-definition-refs', () => {
               ],
               references: [],
               slots: [],
+              expressions: [],
             },
           },
           entity2: {
@@ -872,6 +886,7 @@ describe('extract-definition-refs', () => {
               ],
               references: [],
               slots: [],
+              expressions: [],
             },
           },
         };
@@ -901,6 +916,7 @@ describe('extract-definition-refs', () => {
           ],
           references: [],
           slots: [],
+          expressions: [],
         },
       };
 
@@ -938,6 +954,7 @@ describe('extract-definition-refs', () => {
             ],
             references: [],
             slots: [],
+            expressions: [],
           },
         },
         ref: new DefinitionReferenceMarker('ref:ref-id', {
@@ -962,6 +979,428 @@ describe('extract-definition-refs', () => {
         type: refEntityType,
         path: ['ref'],
         onDelete: 'RESTRICT',
+      });
+    });
+  });
+
+  describe('Expression Collection', () => {
+    describe('collectRefs with DefinitionExpressionMarker', () => {
+      it('should collect a single expression marker', () => {
+        const marker = new DefinitionExpressionMarker(
+          'model.userId === auth.userId',
+          {
+            path: [],
+            value: 'model.userId === auth.userId',
+            parser: stubParser,
+          },
+        );
+
+        const result = collectRefs({ expression: marker });
+
+        expect(result.expressions).toHaveLength(1);
+        expect(result.expressions[0].path).toEqual(['expression']);
+        expect(result.expressions[0].value).toBe(
+          'model.userId === auth.userId',
+        );
+        expect(result.expressions[0].parser).toBe(stubParser);
+      });
+
+      it('should collect nested expression markers', () => {
+        const marker1 = new DefinitionExpressionMarker('expr1', {
+          path: [],
+          value: 'expr1',
+          parser: stubParser,
+        });
+        const marker2 = new DefinitionExpressionMarker('expr2', {
+          path: [],
+          value: 'expr2',
+          parser: stubParser,
+        });
+
+        const result = collectRefs({
+          level1: {
+            level2: {
+              expression: marker1,
+            },
+          },
+          other: marker2,
+        });
+
+        expect(result.expressions).toHaveLength(2);
+        const paths = result.expressions.map((e) => e.path);
+        expect(paths).toContainEqual(['level1', 'level2', 'expression']);
+        expect(paths).toContainEqual(['other']);
+      });
+
+      it('should collect expression markers in arrays', () => {
+        const marker1 = new DefinitionExpressionMarker('expr1', {
+          path: [],
+          value: 'expr1',
+          parser: stubParser,
+        });
+        const marker2 = new DefinitionExpressionMarker('expr2', {
+          path: [],
+          value: 'expr2',
+          parser: stubParser,
+        });
+
+        const result = collectRefs({
+          items: [{ expression: marker1 }, { expression: marker2 }],
+        });
+
+        expect(result.expressions).toHaveLength(2);
+        expect(result.expressions[0].path).toEqual(['items', 0, 'expression']);
+        expect(result.expressions[1].path).toEqual(['items', 1, 'expression']);
+      });
+
+      it('should return empty expressions array when no markers present', () => {
+        const result = collectRefs({
+          name: 'test',
+          value: 42,
+          nested: { foo: 'bar' },
+        });
+
+        expect(result.expressions).toEqual([]);
+      });
+
+      it('should handle null and undefined values', () => {
+        const result = collectRefs({
+          nullValue: null,
+          undefinedValue: undefined,
+          expression: new DefinitionExpressionMarker('test', {
+            path: [],
+            value: 'test',
+            parser: stubParser,
+          }),
+        });
+
+        expect(result.expressions).toHaveLength(1);
+        expect(result.expressions[0].path).toEqual(['expression']);
+      });
+    });
+
+    describe('Integration with schema parsing', () => {
+      it('should collect expressions through withExpression in schema', () => {
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            name: z.string(),
+            condition: ctx.withExpression(stubParser),
+          }),
+        );
+
+        const input = {
+          name: 'test',
+          condition: 'model.active === true',
+        };
+
+        const result = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          input,
+          {
+            plugins: new PluginImplementationStore({}),
+          },
+        );
+
+        expect(result.expressions).toHaveLength(1);
+        expect(result.expressions[0].path).toEqual(['condition']);
+        expect(result.expressions[0].value).toBe('model.active === true');
+        expect(result.expressions[0].parser).toBe(stubParser);
+        expect(result.expressions[0].resolvedSlots).toEqual({});
+      });
+
+      it('should collect multiple expressions in nested schema', () => {
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            rules: z.array(
+              z.object({
+                name: z.string(),
+                condition: ctx.withExpression(stubParser),
+              }),
+            ),
+          }),
+        );
+
+        const input = {
+          rules: [
+            { name: 'rule1', condition: 'model.a === 1' },
+            { name: 'rule2', condition: 'model.b === 2' },
+          ],
+        };
+
+        const result = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          input,
+          {
+            plugins: new PluginImplementationStore({}),
+          },
+        );
+
+        expect(result.expressions).toHaveLength(2);
+        expect(result.expressions[0].path).toEqual(['rules', 0, 'condition']);
+        expect(result.expressions[0].value).toBe('model.a === 1');
+        expect(result.expressions[1].path).toEqual(['rules', 1, 'condition']);
+        expect(result.expressions[1].value).toBe('model.b === 2');
+      });
+
+      it('should handle optional expressions', () => {
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            name: z.string(),
+            condition: ctx.withExpression(stubParser).optional(),
+          }),
+        );
+
+        const pluginStore = new PluginImplementationStore({});
+
+        // With expression
+        const inputWithExpr = {
+          name: 'test',
+          condition: 'model.active',
+        };
+
+        const resultWithExpr = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          inputWithExpr,
+          { plugins: pluginStore },
+        );
+
+        expect(resultWithExpr.expressions).toHaveLength(1);
+
+        // Without expression
+        const inputWithoutExpr = {
+          name: 'test',
+        };
+
+        const resultWithoutExpr = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          inputWithoutExpr,
+          { plugins: pluginStore },
+        );
+
+        expect(resultWithoutExpr.expressions).toHaveLength(0);
+      });
+    });
+
+    describe('Expression slot resolution', () => {
+      it('should resolve expression slots to their ancestor entity paths', () => {
+        const modelType = createEntityType('model');
+        const parserWithSlots = new StubParserWithSlots<{
+          model: typeof modelType;
+        }>();
+
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            models: z.array(
+              ctx.refContext({ modelSlot: modelType }, ({ modelSlot }) =>
+                ctx.withEnt(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    condition: ctx.withExpression(parserWithSlots, {
+                      model: modelSlot,
+                    }),
+                  }),
+                  { type: modelType, provides: modelSlot },
+                ),
+              ),
+            ),
+          }),
+        );
+
+        const input = {
+          models: [
+            {
+              id: modelType.generateNewId(),
+              name: 'User',
+              condition: 'model.active === true',
+            },
+            {
+              id: modelType.generateNewId(),
+              name: 'Post',
+              condition: 'model.published === true',
+            },
+          ],
+        };
+
+        const result = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          input,
+          { plugins: new PluginImplementationStore({}) },
+        );
+
+        expect(result.expressions).toHaveLength(2);
+
+        // First expression should have model slot resolved to first model's id path
+        expect(result.expressions[0].path).toEqual(['models', 0, 'condition']);
+        expect(result.expressions[0].resolvedSlots).toEqual({
+          model: ['models', 0, 'id'],
+        });
+
+        // Second expression should have model slot resolved to second model's id path
+        expect(result.expressions[1].path).toEqual(['models', 1, 'condition']);
+        expect(result.expressions[1].resolvedSlots).toEqual({
+          model: ['models', 1, 'id'],
+        });
+      });
+
+      it('should resolve multiple slots in a single expression', () => {
+        const modelType = createEntityType('model');
+        const fieldType = createEntityType('field', { parentType: modelType });
+        const parserWithSlots = new StubParserWithSlots<{
+          model: typeof modelType;
+          field: typeof fieldType;
+        }>();
+
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            models: z.array(
+              ctx.refContext({ modelSlot: modelType }, ({ modelSlot }) =>
+                ctx.withEnt(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    fields: z.array(
+                      ctx.refContext(
+                        { fieldSlot: fieldType },
+                        ({ fieldSlot }) =>
+                          ctx.withEnt(
+                            z.object({
+                              id: z.string(),
+                              name: z.string(),
+                              validation: ctx.withExpression(parserWithSlots, {
+                                model: modelSlot,
+                                field: fieldSlot,
+                              }),
+                            }),
+                            {
+                              type: fieldType,
+                              parentSlot: modelSlot,
+                              provides: fieldSlot,
+                            },
+                          ),
+                      ),
+                    ),
+                  }),
+                  { type: modelType, provides: modelSlot },
+                ),
+              ),
+            ),
+          }),
+        );
+
+        const input = {
+          models: [
+            {
+              id: modelType.generateNewId(),
+              name: 'User',
+              fields: [
+                {
+                  id: fieldType.generateNewId(),
+                  name: 'email',
+                  validation: 'field.value.includes("@")',
+                },
+              ],
+            },
+          ],
+        };
+
+        const result = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          input,
+          { plugins: new PluginImplementationStore({}) },
+        );
+
+        expect(result.expressions).toHaveLength(1);
+        expect(result.expressions[0].path).toEqual([
+          'models',
+          0,
+          'fields',
+          0,
+          'validation',
+        ]);
+        expect(result.expressions[0].resolvedSlots).toEqual({
+          model: ['models', 0, 'id'],
+          field: ['models', 0, 'fields', 0, 'id'],
+        });
+      });
+
+      it('should resolve slots from foreign references', () => {
+        const modelType = createEntityType('model');
+        const parserWithSlots = new StubParserWithSlots<{
+          foreignModel: typeof modelType;
+        }>();
+
+        const schemaCreator = definitionSchema((ctx) =>
+          z.object({
+            models: z.array(
+              ctx.refContext({ modelSlot: modelType }, ({ modelSlot }) =>
+                ctx.withEnt(
+                  z.object({
+                    id: z.string(),
+                    name: z.string(),
+                    relations: z.array(
+                      ctx.refContext(
+                        { foreignModelSlot: modelType },
+                        ({ foreignModelSlot }) =>
+                          z.object({
+                            targetModel: ctx.withRef({
+                              type: modelType,
+                              onDelete: 'RESTRICT',
+                              provides: foreignModelSlot,
+                            }),
+                            joinCondition: ctx.withExpression(parserWithSlots, {
+                              foreignModel: foreignModelSlot,
+                            }),
+                          }),
+                      ),
+                    ),
+                  }),
+                  { type: modelType, provides: modelSlot },
+                ),
+              ),
+            ),
+          }),
+        );
+
+        const input = {
+          models: [
+            {
+              id: modelType.generateNewId(),
+              name: 'User',
+              relations: [
+                {
+                  targetModel: 'Post',
+                  joinCondition: 'foreignModel.authorId === model.id',
+                },
+              ],
+            },
+            {
+              id: modelType.generateNewId(),
+              name: 'Post',
+              relations: [],
+            },
+          ],
+        };
+
+        const result = parseSchemaWithTransformedReferences(
+          schemaCreator,
+          input,
+          { plugins: new PluginImplementationStore({}) },
+        );
+
+        expect(result.expressions).toHaveLength(1);
+        expect(result.expressions[0].path).toEqual([
+          'models',
+          0,
+          'relations',
+          0,
+          'joinCondition',
+        ]);
+        // foreignModel slot should resolve to the referenced model's id path
+        // The reference resolves to models[1] (Post)
+        expect(result.expressions[0].resolvedSlots).toEqual({
+          foreignModel: ['models', 0, 'relations', 0, 'targetModel'],
+        });
       });
     });
   });

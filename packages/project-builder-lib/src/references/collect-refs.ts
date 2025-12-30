@@ -1,5 +1,6 @@
 import type {
   DefinitionEntityAnnotation,
+  DefinitionExpressionAnnotation,
   DefinitionRefAnnotations,
   DefinitionReferenceAnnotation,
   DefinitionSlotAnnotation,
@@ -7,6 +8,7 @@ import type {
 import type { ReferencePath } from './types.js';
 
 import {
+  DefinitionExpressionMarker,
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
@@ -27,6 +29,10 @@ export interface CollectedRefs {
    * All slots from the definition.
    */
   slots: DefinitionSlotAnnotation[];
+  /**
+   * All expression annotations from the definition.
+   */
+  expressions: DefinitionExpressionAnnotation[];
 }
 
 function collectRefAnnotationsRecursive(
@@ -41,13 +47,29 @@ function collectRefAnnotationsRecursive(
         { ...value.reference, path: [...pathPrefix, ...value.reference.path] },
       ],
       slots: [],
+      expressions: [],
     };
   }
-  const collected = {
+  if (value instanceof DefinitionExpressionMarker) {
+    return {
+      entities: [],
+      references: [],
+      slots: [],
+      expressions: [
+        {
+          ...value.expression,
+          value: value.value,
+          path: [...pathPrefix, ...value.expression.path],
+        },
+      ],
+    };
+  }
+  const collected: CollectedRefs = {
     entities: [],
     references: [],
     slots: [],
-  } as CollectedRefs;
+    expressions: [],
+  };
   if (Array.isArray(value)) {
     for (const [i, element] of value.entries()) {
       const childCollected = collectRefAnnotationsRecursive(
@@ -58,6 +80,7 @@ function collectRefAnnotationsRecursive(
         collected.entities.push(...childCollected.entities);
         collected.references.push(...childCollected.references);
         collected.slots.push(...childCollected.slots);
+        collected.expressions.push(...childCollected.expressions);
       }
     }
     return collected;
@@ -96,6 +119,7 @@ function collectRefAnnotationsRecursive(
         collected.entities.push(...childCollected.entities);
         collected.references.push(...childCollected.references);
         collected.slots.push(...childCollected.slots);
+        collected.expressions.push(...childCollected.expressions);
       }
     }
     return collected;
@@ -109,6 +133,7 @@ export function collectRefs(value: unknown): CollectedRefs {
       entities: [],
       references: [],
       slots: [],
+      expressions: [],
     }
   );
 }

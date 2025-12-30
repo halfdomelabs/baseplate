@@ -4,6 +4,7 @@ import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
   RefContextType,
   WithEntType,
+  WithExpressionType,
   WithRefType,
 } from '#src/references/extend-parser-context-with-refs.js';
 import type {
@@ -74,6 +75,11 @@ export interface DefinitionSchemaParserContext {
    * Slots provide type-safe context for parent-child entity relationships.
    */
   refContext: RefContextType;
+  /**
+   * Wraps a value with a ref expression parser for deferred validation.
+   * The parser handles all parsing, validation, rename handling, and code generation.
+   */
+  withExpression: WithExpressionType;
 }
 
 export type DefinitionSchemaCreator<T extends z.ZodType = z.ZodType> = (
