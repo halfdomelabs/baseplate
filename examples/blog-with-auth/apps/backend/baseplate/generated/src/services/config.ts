@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
+  // Comma-separated list of additional allowed origins for CSRF protection (e.g. https://example.com,https://app.example.com)
+  ALLOWED_ORIGINS: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.split(',').map((s) => s.trim()) : [])),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
   // Secret key for signing auth cookie (at least 20 alphanumeric characters)

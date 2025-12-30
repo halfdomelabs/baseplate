@@ -184,7 +184,7 @@ export class CookieUserSessionService implements UserSessionService {
       (req.method !== 'GET' ||
         req.headers.upgrade?.toLowerCase() === 'websocket') &&
       req.method !== 'HEAD' &&
-      !verifyRequestOrigin(req, [req.host])
+      !verifyRequestOrigin(req, [req.host, ...config.ALLOWED_ORIGINS])
     ) {
       throw new ForbiddenError('Invalid Origin header');
     }
