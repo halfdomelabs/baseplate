@@ -228,6 +228,8 @@ Before proceeding with template extraction, pause and allow the user to review t
 - Any issues can be caught early before they propagate to generators
 - The user understands what will be extracted
 
+> **IMPORTANT:** At this stage, you should ONLY have modified files in the example project (e.g., `examples/blog-with-auth`). Do NOT modify any generator code (`*.generator.ts`), template files in `templates/` directories, or plugin code until AFTER the user has reviewed and approved the example project changes. Generator modifications happen in Step 5 after template extraction.
+
 ### 3. Template Metadata Management (Optional)
 
 **For most cases: Skip this step!** Template metadata is automatically preserved when modifying existing template files.
@@ -396,6 +398,34 @@ mcp__baseplate_dev_server__sync_all_projects({
   overwrite: true,
 });
 ```
+
+### 11. Create Changeset
+
+Add a changeset to document the changes for the changelog:
+
+```bash
+# Create a new changeset file in .changeset/ directory
+```
+
+Example changeset format:
+
+```markdown
+---
+'@baseplate-dev/plugin-auth': patch
+---
+
+Brief description of the change
+
+- Bullet point details of what changed
+- Another detail if needed
+```
+
+**Changeset types:**
+- `patch`: Bug fixes, minor changes (most common)
+- `minor`: New features, non-breaking changes
+- `major`: Breaking changes
+
+**Package names** should match the package that was modified (e.g., `@baseplate-dev/plugin-auth`, `@baseplate-dev/fastify-generators`, `@baseplate-dev/react-generators`).
 
 ## Advanced: Snapshot Management
 

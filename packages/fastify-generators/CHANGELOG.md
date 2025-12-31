@@ -1,5 +1,40 @@
 # @baseplate-dev/fastify-generators
 
+## 0.4.4
+
+### Patch Changes
+
+- [#726](https://github.com/halfdomelabs/baseplate/pull/726) [`ec2f1e9`](https://github.com/halfdomelabs/baseplate/commit/ec2f1e9716e84cd4a901c071eacf4971436962d9) Thanks [@kingston](https://github.com/kingston)! - Fix handling of Prisma scalar fields without options
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- [#720](https://github.com/halfdomelabs/baseplate/pull/720) [`12d1e62`](https://github.com/halfdomelabs/baseplate/commit/12d1e625bc04256eeb2704faa3f36dfda00545f9) Thanks [@kingston](https://github.com/kingston)! - Use block syntax instead of arrow function implicit returns in generated data operation callbacks for better error diagnostics
+
+- [#718](https://github.com/halfdomelabs/baseplate/pull/718) [`6e23a6f`](https://github.com/halfdomelabs/baseplate/commit/6e23a6f2ff99954eebcb78b450d0c18618aa0b54) Thanks [@kingston](https://github.com/kingston)! - Fix nestedOneToOneField to not error when setting to null on non-existent relation
+
+  Previously, setting a nested one-to-one field to `null` would throw an error if the related record didn't exist, because Prisma's `delete: true` syntax requires the record to exist. Now the deletion is performed via an `afterExecute` hook using `deleteMany`, which is idempotent and won't error if no record exists.
+
+- [#719](https://github.com/halfdomelabs/baseplate/pull/719) [`f1bab33`](https://github.com/halfdomelabs/baseplate/commit/f1bab3310fa8c00c645a6d9aca0a6a757cb661f1) Thanks [@kingston](https://github.com/kingston)! - Refactor authorization system to use ABAC pattern with string-based roles
+  - Add `authorizerCache` and `authorizerModelCache` fields to ServiceContext via the `authorizer-utils` generator for caching authorization decisions
+  - Remove `AuthRole` type and `extractRoles` config from pothos-auth generator as authorization now uses string-based roles with instance role functions
+  - Add new authorizer utilities including `checkGlobalAuthorization`, `checkInstanceAuthorization`, and `createModelAuthorizer` for flexible authorization patterns
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Add support for generating vitest on web apps
+
+- [#722](https://github.com/halfdomelabs/baseplate/pull/722) [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed) Thanks [@kingston](https://github.com/kingston)! - Add support for generating files in package.json
+
+- Updated dependencies [[`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d), [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed)]:
+  - @baseplate-dev/core-generators@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

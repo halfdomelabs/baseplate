@@ -1,5 +1,29 @@
 # @baseplate-dev/project-builder-test
 
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.4.4
+  - @baseplate-dev/project-builder-common@0.4.4
+  - @baseplate-dev/project-builder-web@0.4.4
+  - @baseplate-dev/project-builder-lib@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies [[`9638baf`](https://github.com/halfdomelabs/baseplate/commit/9638baf19fa0f68bed961daa0fe889822246c11a), [`68ab5bd`](https://github.com/halfdomelabs/baseplate/commit/68ab5bdbc98a0b4bbc46059bfabd84666a2ab18b), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d)]:
+  - @baseplate-dev/project-builder-server@0.4.3
+  - @baseplate-dev/project-builder-common@0.4.3
+  - @baseplate-dev/project-builder-web@0.4.3
+  - @baseplate-dev/project-builder-lib@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes
