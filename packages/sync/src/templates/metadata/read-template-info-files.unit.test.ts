@@ -52,10 +52,11 @@ describe('readTemplateMetadataFiles', () => {
     const result = await readTemplateInfoFiles('/project');
 
     // Assert
-    expect(result).toHaveLength(3);
+    expect(result.entries).toHaveLength(3);
+    expect(result.orphanedEntries).toHaveLength(0);
 
     // Check auth service entry
-    const authEntry = result.find(
+    const authEntry = result.entries.find(
       (e) => e.templateInfo.template === 'auth-service',
     );
     expect(authEntry).toBeDefined();
@@ -66,7 +67,7 @@ describe('readTemplateMetadataFiles', () => {
     expect(authEntry?.modifiedTime).toEqual(now);
 
     // Check user service entry
-    const userEntry = result.find(
+    const userEntry = result.entries.find(
       (e) => e.templateInfo.template === 'user-service',
     );
     expect(userEntry).toBeDefined();
@@ -77,7 +78,7 @@ describe('readTemplateMetadataFiles', () => {
     expect(userEntry?.modifiedTime).toEqual(later);
 
     // Check config entry
-    const configEntry = result.find(
+    const configEntry = result.entries.find(
       (e) => e.templateInfo.template === 'config',
     );
     expect(configEntry).toBeDefined();
@@ -96,10 +97,11 @@ describe('readTemplateMetadataFiles', () => {
     const result = await readTemplateInfoFiles('/empty-project');
 
     // Assert
-    expect(result).toEqual([]);
+    expect(result.entries).toEqual([]);
+    expect(result.orphanedEntries).toEqual([]);
   });
 
-  it('should throw error when source file is missing', async () => {
+  it('should return orphaned entry when source file is missing', async () => {
     // Arrange
     const metadata = {
       'missing.ts': {
@@ -113,10 +115,18 @@ describe('readTemplateMetadataFiles', () => {
       // Note: missing.ts file is not created
     });
 
-    // Act & Assert
-    await expect(readTemplateInfoFiles('/project')).rejects.toThrow(
-      'Could not find source file (missing.ts) specified in templates info file: /project/.templates-info.json',
-    );
+    // Act
+    const result = await readTemplateInfoFiles('/project');
+
+    // Assert
+    expect(result.entries).toHaveLength(0);
+    expect(result.orphanedEntries).toHaveLength(1);
+    expect(result.orphanedEntries[0]).toEqual({
+      absolutePath: '/project/missing.ts',
+      templateInfo: metadata['missing.ts'],
+      metadataFilePath: '/project/.templates-info.json',
+      fileName: 'missing.ts',
+    });
   });
 
   it('should handle invalid metadata file gracefully', async () => {
@@ -177,9 +187,10 @@ describe('readTemplateMetadataFiles', () => {
     const result = await readTemplateInfoFiles('/project');
 
     // Assert
-    expect(result).toHaveLength(2);
+    expect(result.entries).toHaveLength(2);
+    expect(result.orphanedEntries).toHaveLength(0);
 
-    const paths = result.map((e) => e.absolutePath).sort();
+    const paths = result.entries.map((e) => e.absolutePath).sort();
     expect(paths).toEqual([
       '/project/src/file1.ts',
       '/project/src/nested/deep/file2.ts',
@@ -214,9 +225,10 @@ describe('readTemplateMetadataFiles', () => {
     const result = await readTemplateInfoFiles('/project');
 
     // Assert
-    expect(result).toHaveLength(3);
+    expect(result.entries).toHaveLength(3);
+    expect(result.orphanedEntries).toHaveLength(0);
 
-    const names = result.map((e) => e.templateInfo.template).sort();
+    const names = result.entries.map((e) => e.templateInfo.template).sort();
     expect(names).toEqual(['file-one', 'file-three', 'file-two']);
   });
 });
