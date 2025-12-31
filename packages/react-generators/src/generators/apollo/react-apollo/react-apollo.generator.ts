@@ -441,90 +441,70 @@ export const reactApolloGenerator = createGenerator({
                 tsCodeFragment(apolloLink.name, apolloLink.nameImport),
               );
 
-            // services/apollo/index.ts
             await builder.apply(
-              renderers.service.render({
+              renderers.mainGroup.render({
                 variables: {
-                  TPL_CREATE_ARGS:
-                    createApolloClientArguments.length === 0
-                      ? ''
-                      : tsCodeFragment(
-                          `{${createArgNames}}: CreateApolloClientOptions`,
-                          undefined,
-                          {
-                            hoistedFragments: [
-                              tsHoistedFragment(
-                                'create-apollo-client-options',
-                                tsTemplate`
-                              interface CreateApolloClientOptions {
-                                ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
-                                  Object.fromEntries(
-                                    createApolloClientArguments.map((arg) => [
-                                      arg.name,
-                                      arg.type,
-                                    ]),
-                                  ),
-                                )}
-                              }
-                              `,
-                              ),
-                            ],
-                          },
-                        ),
-                  TPL_LINK_BODIES: TsCodeUtils.mergeFragmentsPresorted(
-                    sortedLinks
-                      .map((link) => link.bodyFragment)
-                      .filter(notEmpty),
-                    '\n\n',
-                  ),
-                  TPL_LINKS:
-                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      apolloLinkFragments,
+                  appApolloProvider: {
+                    TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
+                      createApolloClientArguments.map(
+                        (arg) => arg.reactRenderBody,
+                      ),
+                      '\n\n',
                     ),
-                },
-              }),
-            );
-
-            // services/apollo/cache.ts
-            await builder.apply(renderers.cache.render({}));
-
-            // codegen.ts
-            await builder.apply(
-              renderers.codegenConfig.render({
-                variables: {
-                  TPL_BACKEND_SCHEMA: quot(schemaLocation),
-                },
-              }),
-            );
-
-            // app/AppApolloProvider.tsx
-            await builder.apply(
-              renderers.appApolloProvider.render({
-                variables: {
-                  TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
-                    createApolloClientArguments.map(
-                      (arg) => arg.reactRenderBody,
+                    TPL_CREATE_ARGS:
+                      createApolloClientArguments.length > 0
+                        ? `{ ${createApolloClientArguments
+                            .map((arg) => arg.name)
+                            .join(', ')} }`
+                        : '',
+                    TPL_MEMO_DEPENDENCIES: createApolloClientArguments
+                      .map((arg) => arg.name)
+                      .join(', '),
+                  },
+                  graphqlConfig: {
+                    TPL_BACKEND_SCHEMA_PATH: quot(schemaLocation),
+                  },
+                  service: {
+                    TPL_CREATE_ARGS:
+                      createApolloClientArguments.length === 0
+                        ? ''
+                        : tsCodeFragment(
+                            `{${createArgNames}}: CreateApolloClientOptions`,
+                            undefined,
+                            {
+                              hoistedFragments: [
+                                tsHoistedFragment(
+                                  'create-apollo-client-options',
+                                  tsTemplate`
+                                interface CreateApolloClientOptions {
+                                  ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                                    Object.fromEntries(
+                                      createApolloClientArguments.map((arg) => [
+                                        arg.name,
+                                        arg.type,
+                                      ]),
+                                    ),
+                                  )}
+                                }
+                                `,
+                                ),
+                              ],
+                            },
+                          ),
+                    TPL_LINK_BODIES: TsCodeUtils.mergeFragmentsPresorted(
+                      sortedLinks
+                        .map((link) => link.bodyFragment)
+                        .filter(notEmpty),
+                      '\n\n',
                     ),
-                    '\n\n',
-                  ),
-                  TPL_CREATE_ARGS:
-                    createApolloClientArguments.length > 0
-                      ? `{ ${createApolloClientArguments
-                          .map((arg) => arg.name)
-                          .join(', ')} }`
-                      : '',
-                  TPL_MEMO_DEPENDENCIES: createApolloClientArguments
-                    .map((arg) => arg.name)
-                    .join(', '),
+                    TPL_LINKS:
+                      TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                        apolloLinkFragments,
+                      ),
+                  },
                 },
               }),
             );
-
-            // write a pseudo-file so that the template extractor can infer metadata for the
-            // generated graphql file
-
-            // generated/graphql.tsx
-            await builder.apply(renderers.graphql.render({}));
           },
         };
       },

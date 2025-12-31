@@ -6,9 +6,9 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-home",
       "importMapProviders": {
-        "authHooksImportsProvider": {
-          "importName": "authHooksImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",

@@ -1,12 +1,16 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const createPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'create.tsx', kind: 'instance' },
-  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
+  importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
   name: 'create-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/create.tsx'),
@@ -49,7 +53,10 @@ const editForm = createTsTemplateFile({
 
 const editPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit.tsx', kind: 'instance' },
-  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
+  importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
   name: 'edit-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit.tsx'),
@@ -64,7 +71,9 @@ const editPage = createTsTemplateFile({
     TPL_MUTATION_NAME: {},
     TPL_ROUTE_PATH: {},
     TPL_UPDATE_MUTATION: {},
-    TPL_USER_QUERY: { type: 'replacement' },
+    TPL_UPDATE_USER_MUTATION: {},
+    TPL_USER_EDIT_FRAGMENT: {},
+    TPL_USER_EDIT_QUERY: {},
   },
 });
 

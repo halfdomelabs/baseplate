@@ -5,9 +5,9 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",

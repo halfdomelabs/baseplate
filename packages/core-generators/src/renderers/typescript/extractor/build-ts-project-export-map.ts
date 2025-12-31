@@ -92,7 +92,7 @@ export function buildTsProjectExportMap(
           externalImportProvidersMap.get(importProvider);
         if (!externalImportProvider) {
           throw new Error(
-            `Import provider ${importProvider} not found in external import providers map.`,
+            `Import provider ${importProvider} not found in external import providers map for generator ${generatorName} in ${packagePath}.`,
           );
         }
         return externalImportProvider;

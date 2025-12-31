@@ -2,7 +2,7 @@ import { graphql } from '@src/graphql';
 
 import { userRowFragment } from './-components/user-table';
 
-/* TPL_GET_USERS_QUERY:START */
+/* TPL_GET_ITEMS_QUERY:START */
 export const usersQuery = graphql(
   `
     query Users {
@@ -13,4 +13,4 @@ export const usersQuery = graphql(
   `,
   [userRowFragment],
 );
-/* TPL_GET_USERS_QUERY:END */
+/* TPL_GET_ITEMS_QUERY:END */

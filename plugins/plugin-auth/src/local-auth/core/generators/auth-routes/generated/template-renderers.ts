@@ -1,16 +1,10 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   apolloErrorImportsProvider,
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -32,16 +26,6 @@ export interface AuthCoreAuthRoutesRenderers {
       >,
     ) => BuilderAction;
   };
-  queriesGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.queriesGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
 }
 
 const authCoreAuthRoutesRenderers =
@@ -52,7 +36,7 @@ const authCoreAuthRoutesRenderers =
 const authCoreAuthRoutesRenderersTask = createGeneratorTask({
   dependencies: {
     apolloErrorImports: apolloErrorImportsProvider,
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     paths: AUTH_CORE_AUTH_ROUTES_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
@@ -64,7 +48,7 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
   },
   run({
     apolloErrorImports,
-    generatedGraphqlImports,
+    graphqlImports,
     paths,
     reactComponentsImports,
     reactErrorImports,
@@ -81,19 +65,11 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   apolloErrorImports,
-                  generatedGraphqlImports,
+                  graphqlImports,
                   reactComponentsImports,
                   reactErrorImports,
                   reactSessionImports,
                 },
-                ...options,
-              }),
-          },
-          queriesGql: {
-            render: (options) =>
-              renderTextTemplateFileAction({
-                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.queriesGql,
-                destination: paths.queriesGql,
                 ...options,
               }),
           },

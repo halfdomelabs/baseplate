@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { getApolloErrorCode } from '%apolloErrorImports';
-import { LoginWithEmailPasswordDocument } from '%generatedGraphqlImports';
+import { graphql } from '%graphqlImports';
 import {
   Button,
   Card,
@@ -49,6 +49,16 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const loginWithEmailPasswordMutation = graphql(`
+  mutation LoginWithEmailPassword($input: LoginWithEmailPasswordInput!) {
+    loginWithEmailPassword(input: $input) {
+      session {
+        userId
+      }
+    }
+  }
+`);
+
 function LoginPage(): React.JSX.Element {
   const {
     control,
@@ -60,7 +70,7 @@ function LoginPage(): React.JSX.Element {
     reValidateMode: 'onBlur',
   });
   const [loginWithEmailPassword, { loading }] = useMutation(
-    LoginWithEmailPasswordDocument,
+    loginWithEmailPasswordMutation,
   );
   const navigate = useNavigate();
   const { return_to } = Route.useSearch();

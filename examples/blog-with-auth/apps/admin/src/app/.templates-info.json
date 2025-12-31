@@ -14,11 +14,6 @@
     "instanceData": {},
     "template": "router"
   },
-  "user-session-provider.gql": {
-    "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
-    "instanceData": { "variables": {} },
-    "template": "user-session-provider-gql"
-  },
   "user-session-provider.tsx": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
     "instanceData": {},

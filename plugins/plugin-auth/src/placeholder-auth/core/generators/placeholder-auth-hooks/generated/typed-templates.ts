@@ -2,14 +2,14 @@ import {
   createTextTemplateFile,
   createTsTemplateFile,
 } from '@baseplate-dev/core-generators';
-import { generatedGraphqlImportsProvider } from '@baseplate-dev/react-generators';
+import { graphqlImportsProvider } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
 const useCurrentUser = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
   importMapProviders: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    generatedGraphqlImports: graphqlImportsProvider,
   },
   name: 'use-current-user',
   projectExports: { useCurrentUser: {} },

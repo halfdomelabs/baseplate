@@ -1,15 +1,9 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateFileActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -28,16 +22,6 @@ export interface LocalAuthAdminAdminCrudManageRolesActionRenderers {
       >,
     ) => BuilderAction;
   };
-  roleManagerDialogGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_TEMPLATES.roleManagerDialogGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
 }
 
 const localAuthAdminAdminCrudManageRolesActionRenderers =
@@ -48,7 +32,7 @@ const localAuthAdminAdminCrudManageRolesActionRenderers =
 const localAuthAdminAdminCrudManageRolesActionRenderersTask =
   createGeneratorTask({
     dependencies: {
-      generatedGraphqlImports: generatedGraphqlImportsProvider,
+      graphqlImports: graphqlImportsProvider,
       paths: LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_PATHS.provider,
       reactComponentsImports: reactComponentsImportsProvider,
       typescriptFile: typescriptFileProvider,
@@ -57,12 +41,7 @@ const localAuthAdminAdminCrudManageRolesActionRenderersTask =
       localAuthAdminAdminCrudManageRolesActionRenderers:
         localAuthAdminAdminCrudManageRolesActionRenderers.export(),
     },
-    run({
-      generatedGraphqlImports,
-      paths,
-      reactComponentsImports,
-      typescriptFile,
-    }) {
+    run({ graphqlImports, paths, reactComponentsImports, typescriptFile }) {
       return {
         providers: {
           localAuthAdminAdminCrudManageRolesActionRenderers: {
@@ -73,18 +52,9 @@ const localAuthAdminAdminCrudManageRolesActionRenderersTask =
                     LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_TEMPLATES.roleManagerDialog,
                   destination: paths.roleManagerDialog,
                   importMapProviders: {
-                    generatedGraphqlImports,
+                    graphqlImports,
                     reactComponentsImports,
                   },
-                  ...options,
-                }),
-            },
-            roleManagerDialogGql: {
-              render: (options) =>
-                renderTextTemplateFileAction({
-                  template:
-                    LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_TEMPLATES.roleManagerDialogGql,
-                  destination: paths.roleManagerDialogGql,
                   ...options,
                 }),
             },

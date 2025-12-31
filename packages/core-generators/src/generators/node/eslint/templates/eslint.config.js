@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import eslint from '@eslint/js';
+import graphqlPlugin from '@graphql-eslint/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import { importX } from 'eslint-plugin-import-x';
@@ -99,6 +100,40 @@ export default tsEslint.config(
       '@typescript-eslint/prefer-nullish-coalescing': [
         'error',
         { ignoreTernaryTests: true },
+      ],
+    },
+  },
+
+  // GraphQL Configs
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    processor: graphqlPlugin.processor,
+  },
+  {
+    files: ['**/*.graphql'],
+    languageOptions: { parser: graphqlPlugin.parser },
+    plugins: { '@graphql-eslint': graphqlPlugin },
+    rules: {
+      ...graphqlPlugin.configs['flat/operations-recommended'].rules,
+      '@graphql-eslint/naming-convention': [
+        'error',
+        {
+          VariableDefinition: 'camelCase',
+          OperationDefinition: {
+            style: 'PascalCase',
+            forbiddenPrefixes: ['Query', 'Mutation', 'Subscription', 'Get'],
+            forbiddenSuffixes: ['Query', 'Mutation', 'Subscription'],
+          },
+          FragmentDefinition: {
+            // Use a regex that allows "Pascal" OR "Pascal_camel"
+            // It checks:
+            //   - Starts with Uppercase (Pascal part)
+            //   - Optionally follows with _lowercase (camel part)
+            requiredPattern: /^[A-Z][a-zA-Z0-9]*(_[a-z][a-zA-Z0-9]*)?$/,
+            forbiddenPrefixes: ['Fragment'],
+            forbiddenSuffixes: ['Fragment'],
+          },
+        },
       ],
     },
   },

@@ -2,20 +2,28 @@
 
 import type { ReactElement } from 'react';
 
+import { readFragment } from '%graphqlImports';
 import { logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
+
+TPL_USER_EDIT_FRAGMENT;
+
+TPL_USER_EDIT_QUERY;
+
+TPL_UPDATE_USER_MUTATION;
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
   loader: async ({ context: { apolloClient }, params }) => {
     const { id } = params;
     const { data } = await apolloClient.query({
-      query: TPL_USER_QUERY,
+      query: userEditByIdQuery,
       variables: { id },
     });
     if (!data) throw new Error('No data received from query');
+    const user = readFragment(userEditFragment, data.user);
     return {
       crumb: TPL_CRUMB_EXPRESSION,
     };

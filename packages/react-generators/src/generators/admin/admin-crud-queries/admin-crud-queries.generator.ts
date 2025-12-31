@@ -53,9 +53,6 @@ export interface AdminCrudQueriesProvider {
   getEditFragmentExpression: () => TsCodeFragment;
   getListQueryHookInfo: () => ApolloHookInfo;
   getEditQueryHookInfo: () => ApolloHookInfo;
-  getCreateHookInfo: () => ApolloHookInfo;
-  getUpdateHookInfo: () => ApolloHookInfo;
-  getDeleteHookInfo: () => ApolloHookInfo;
   getListDocumentExpression: () => TsCodeFragment;
   addRoot: (root: GraphQLRoot) => void;
   addFragment: (fragment: GraphQLFragment) => void;
@@ -319,10 +316,10 @@ export const adminCrudQueriesGenerator = createGenerator({
             if (queries.length > 0) {
               const filePath = path.join(
                 reactRoutes.getOutputRelativePath(),
-                'queries.gql',
+                'queries.ts',
               );
               builder.writeFile({
-                id: `${modelId}-crud-queries`,
+                id: `${modelId}-admin-queries`,
                 destination: filePath,
                 contents: queries.join('\n\n'),
               });

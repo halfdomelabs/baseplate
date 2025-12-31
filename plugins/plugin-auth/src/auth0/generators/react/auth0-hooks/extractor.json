@@ -9,32 +9,6 @@
     }
   },
   "templates": {
-    "use-current-user": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
-      "group": "hooks",
-      "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/hooks/use-current-user.ts",
-      "projectExports": { "useCurrentUser": {} },
-      "referencedGeneratorTemplates": ["use-session"],
-      "sourceFile": "src/hooks/use-current-user.ts",
-      "variables": { "TPL_USER": {} }
-    },
-    "use-current-user-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/hooks/use-current-user.gql",
-      "sourceFile": "src/hooks/use-current-user.gql",
-      "variables": {
-        "TPL_USER_QUERY_NAME": { "description": "The name of the user query" }
-      }
-    },
     "use-log-out": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

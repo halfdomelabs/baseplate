@@ -11,9 +11,9 @@
           "importName": "apolloErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/apollo-error/generated/ts-import-providers.ts"
         },
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
@@ -32,13 +32,6 @@
       "sourceFile": "routes/auth_/login.tsx",
       "variables": {}
     },
-    "queries-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{routes-root}/auth_/queries.gql",
-      "sourceFile": "routes/auth_/queries.gql",
-      "variables": {}
-    },
     "register": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -49,9 +42,9 @@
           "importName": "apolloErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/apollo-error/generated/ts-import-providers.ts"
         },
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",

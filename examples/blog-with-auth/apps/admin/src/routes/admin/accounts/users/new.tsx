@@ -12,7 +12,6 @@ import type { UserFormData } from './-schemas/user-schema';
 import { UserEditForm } from './-components/user-edit-form';
 import { usersQuery } from './queries';
 
-/* TPL_CREATE_USER_MUTATION:START */
 const createUserMutation = graphql(`
   mutation CreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
@@ -22,7 +21,6 @@ const createUserMutation = graphql(`
     }
   }
 `);
-/* TPL_CREATE_USER_MUTATION:END */
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/new' /* TPL_ROUTE_PATH:END */,

@@ -1,10 +1,7 @@
-import {
-  createTextTemplateFile,
-  createTsTemplateFile,
-} from '@baseplate-dev/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   apolloErrorImportsProvider,
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -17,7 +14,7 @@ const login = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     apolloErrorImports: apolloErrorImportsProvider,
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
@@ -34,7 +31,7 @@ const register = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     apolloErrorImports: apolloErrorImportsProvider,
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
@@ -62,16 +59,4 @@ const route = createTsTemplateFile({
 
 export const mainGroup = { login, register, route };
 
-const queriesGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'queries-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/routes/auth_/queries.gql',
-    ),
-  },
-  variables: {},
-});
-
-export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup, queriesGql };
+export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup };

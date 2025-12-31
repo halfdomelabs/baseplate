@@ -9,6 +9,10 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
@@ -65,6 +69,10 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
@@ -81,7 +89,9 @@
         "TPL_MUTATION_NAME": {},
         "TPL_ROUTE_PATH": {},
         "TPL_UPDATE_MUTATION": {},
-        "TPL_USER_QUERY": { "type": "replacement" }
+        "TPL_UPDATE_USER_MUTATION": {},
+        "TPL_USER_EDIT_FRAGMENT": {},
+        "TPL_USER_EDIT_QUERY": {}
       }
     },
     "route": {

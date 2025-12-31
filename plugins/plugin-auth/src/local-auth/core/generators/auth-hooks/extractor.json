@@ -40,9 +40,9 @@
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
       "group": "hooks",
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
@@ -84,9 +84,9 @@
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
       "group": "hooks",
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/hooks/use-session.ts",

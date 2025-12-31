@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
 const listPage = createTsTemplateFile({
@@ -27,6 +28,7 @@ const listPage = createTsTemplateFile({
 const table = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'table.tsx', kind: 'instance' },
   importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
   },
   name: 'table',
@@ -38,11 +40,12 @@ const table = createTsTemplateFile({
     TPL_ACTION_SIBLING_COMPONENTS: {},
     TPL_CELLS: {},
     TPL_COMPONENT_NAME: { type: 'replacement' },
+    TPL_DELETE_MUTATION: {},
     TPL_DESTRUCTURED_PROPS: {},
     TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
     TPL_PLURAL_MODEL: {},
-    TPL_ROW_FRAGMENT: { type: 'replacement' },
+    TPL_ROW_FRAGMENT: {},
   },
 });
 

@@ -4,7 +4,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface LocalAuthCoreReactSessionPaths {
   userSessionClient: string;
   userSessionProvider: string;
-  userSessionProviderGql: string;
 }
 
 const localAuthCoreReactSessionPaths =
@@ -25,7 +24,6 @@ const localAuthCoreReactSessionPathsTask = createGeneratorTask({
         localAuthCoreReactSessionPaths: {
           userSessionClient: `${srcRoot}/services/user-session-client.ts`,
           userSessionProvider: `${srcRoot}/app/user-session-provider.tsx`,
-          userSessionProviderGql: `${srcRoot}/app/user-session-provider.gql`,
         },
       },
     };

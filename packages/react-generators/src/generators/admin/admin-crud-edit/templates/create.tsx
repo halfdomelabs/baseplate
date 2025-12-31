@@ -2,10 +2,21 @@
 
 import type { ReactElement } from 'react';
 
+import { graphql } from '%graphqlImports';
 import { logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
+
+const createUserMutation = graphql(`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      user {
+        id
+      }
+    }
+  }
+`);
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,

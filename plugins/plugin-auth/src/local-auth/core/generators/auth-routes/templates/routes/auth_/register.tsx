@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { getApolloErrorCode } from '%apolloErrorImports';
-import { RegisterWithEmailPasswordDocument } from '%generatedGraphqlImports';
+import { graphql } from '%graphqlImports';
 import {
   Button,
   Card,
@@ -49,6 +49,16 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const registerWithEmailPasswordMutation = graphql(`
+  mutation RegisterWithEmailPassword($input: RegisterWithEmailPasswordInput!) {
+    registerWithEmailPassword(input: $input) {
+      session {
+        userId
+      }
+    }
+  }
+`);
+
 function RegisterPage(): React.JSX.Element {
   const {
     control,
@@ -59,7 +69,7 @@ function RegisterPage(): React.JSX.Element {
     reValidateMode: 'onBlur',
   });
   const [registerWithEmailPassword, { loading }] = useMutation(
-    RegisterWithEmailPasswordDocument,
+    registerWithEmailPasswordMutation,
   );
   const navigate = useNavigate();
   const { return_to } = Route.useSearch();

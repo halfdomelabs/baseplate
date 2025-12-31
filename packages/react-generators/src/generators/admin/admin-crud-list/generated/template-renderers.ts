@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
 import { ADMIN_ADMIN_CRUD_LIST_TEMPLATES } from './typed-templates.js';
@@ -38,13 +39,14 @@ const adminAdminCrudListRenderers =
 
 const adminAdminCrudListRenderersTask = createGeneratorTask({
   dependencies: {
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     adminAdminCrudListRenderers: adminAdminCrudListRenderers.export(),
   },
-  run({ reactComponentsImports, typescriptFile }) {
+  run({ graphqlImports, reactComponentsImports, typescriptFile }) {
     return {
       providers: {
         adminAdminCrudListRenderers: {
@@ -63,6 +65,7 @@ const adminAdminCrudListRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_LIST_TEMPLATES.table,
                 importMapProviders: {
+                  graphqlImports,
                   reactComponentsImports,
                 },
                 ...options,

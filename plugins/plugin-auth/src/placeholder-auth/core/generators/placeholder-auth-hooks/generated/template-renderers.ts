@@ -8,7 +8,7 @@ import {
   renderTextTemplateFileAction,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
-import { generatedGraphqlImportsProvider } from '@baseplate-dev/react-generators';
+import { graphqlImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS } from './template-paths.js';
@@ -45,7 +45,7 @@ const placeholderAuthCorePlaceholderAuthHooksRenderers =
 const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
   createGeneratorTask({
     dependencies: {
-      generatedGraphqlImports: generatedGraphqlImportsProvider,
+      generatedGraphqlImports: graphqlImportsProvider,
       paths: PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS.provider,
       typescriptFile: typescriptFileProvider,
     },

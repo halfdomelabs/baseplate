@@ -3,7 +3,7 @@ import {
   createTsTemplateFile,
 } from '@baseplate-dev/core-generators';
 import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -12,7 +12,7 @@ import path from 'node:path';
 const fileInputComponent = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    generatedGraphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },

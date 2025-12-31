@@ -9,7 +9,7 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -68,7 +68,7 @@ const reactUploadComponentsRenderers =
 
 const reactUploadComponentsRenderersTask = createGeneratorTask({
   dependencies: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    generatedGraphqlImports: graphqlImportsProvider,
     paths: REACT_UPLOAD_COMPONENTS_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
