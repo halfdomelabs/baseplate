@@ -5,15 +5,15 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 import { graphql } from '@src/graphql';
+import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
 import type { UserFormData } from './-schemas/user-schema';
 
 import { UserEditForm } from './-components/user-edit-form';
-import { usersQuery } from './queries';
 
-const createUserMutation = graphql(`
-  mutation CreateUser($input: CreateUserInput!) {
+const userCreatePageCreateUserMutation = graphql(`
+  mutation UserCreatePageCreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
       user {
         id
@@ -35,31 +35,24 @@ export const Route = createFileRoute(
 function /* TPL_COMPONENT_NAME:START */ UserCreatePage /* TPL_COMPONENT_NAME:END */(): ReactElement {
   /* TPL_DATA_LOADER:BLOCK */
 
-  const [/* TPL_MUTATION_NAME:START */ createUser /* TPL_MUTATION_NAME:END */] =
-    useMutation(
-      /* TPL_CREATE_MUTATION:START */ createUserMutation /* TPL_CREATE_MUTATION:END */,
-      {
-        refetchQueries: [
-          {
-            query:
-              /* TPL_REFETCH_DOCUMENT:START */ usersQuery /* TPL_REFETCH_DOCUMENT:END */,
-          },
-        ],
-      },
-    );
-
+  const [createUser] = useMutation(userCreatePageCreateUserMutation, {
+    update: (cache) => {
+      cache.evict({ fieldName: 'users' });
+      cache.gc();
+    },
+  });
   const navigate = useNavigate();
 
   const submitData = async (
     formData: /* TPL_FORM_DATA_NAME:START */ UserFormData /* TPL_FORM_DATA_NAME:END */,
   ): Promise<void> => {
-    await /* TPL_MUTATION_NAME:START */ createUser(
-      /* TPL_MUTATION_NAME:END */ {
-        variables: { input: { data: formData } },
-      },
-    );
-    toast.success('Successfully created item!');
-    navigate({ to: '..' }).catch(logError);
+    try {
+      await createUser({ variables: { input: { data: formData } } });
+      toast.success('Successfully created user!');
+      navigate({ to: '..' }).catch(logError);
+    } catch (err: unknown) {
+      toast.error(logAndFormatError(err, 'Sorry, we could not create user.'));
+    }
   };
 
   /* TPL_DATA_GATE:BLOCK */

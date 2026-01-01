@@ -38,7 +38,6 @@ import {
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import { usersQuery } from '../queries';
 import {
   PasswordResetDialog,
   passwordResetDialogUserFragment,
@@ -50,8 +49,8 @@ import {
 
 /* TPL_COMPONENT_NAME=UserTable */
 
-/* TPL_ROW_FRAGMENT:START */
-export const userRowFragment = graphql(
+/* TPL_ITEMS_FRAGMENT:START */
+export const userTableItemsFragment = graphql(
   `
     fragment UserTable_items on User {
       email
@@ -66,14 +65,10 @@ export const userRowFragment = graphql(
   `,
   [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
 );
-/* TPL_ROW_FRAGMENT:END */
+/* TPL_ITEMS_FRAGMENT:END */
 
-/** UserRow fragment type for component props */
-type UserRowFragment = ResultOf<typeof userRowFragment>;
-
-/* TPL_DELETE_MUTATION:START */
-const deleteUserMutation = graphql(`
-  mutation DeleteUser($input: DeleteUserInput!) {
+const userTableDeleteUserMutation = graphql(`
+  mutation UserTableDeleteUser($input: DeleteUserInput!) {
     deleteUser(input: $input) {
       user {
         id
@@ -81,10 +76,9 @@ const deleteUserMutation = graphql(`
     }
   }
 `);
-/* TPL_DELETE_MUTATION:END */
 
 interface Props {
-  items: FragmentOf<typeof userRowFragment>[];
+  items: FragmentOf<typeof userTableItemsFragment>[];
   /* TPL_EXTRA_PROPS:BLOCK */
 }
 
@@ -97,27 +91,31 @@ export function UserTable(
   const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<
     typeof roleManagerDialogUserFragment
   > | null>(null);
-  const [passwordResetUser, setPasswordResetUser] =
-    useState<UserRowFragment | null>(null);
+  const [passwordResetUser, setPasswordResetUser] = useState<ResultOf<
+    typeof userTableItemsFragment
+  > | null>(null);
   const { requestConfirm } = useConfirmDialog();
-  const [deleteUser] = useMutation(deleteUserMutation, {
-    refetchQueries: [{ query: usersQuery }],
+  const [deleteUser] = useMutation(userTableDeleteUserMutation, {
+    update: (cache, result) => {
+      if (!result.data?.deleteUser.user) return;
+      const itemId = cache.identify(result.data.deleteUser.user);
+      cache.evict({ id: itemId });
+      cache.gc();
+    },
   });
 
-  function handleDelete(user: UserRowFragment): void {
+  function handleDelete(user: ResultOf<typeof userTableItemsFragment>): void {
     requestConfirm({
       title: 'Delete User',
       content: `Are you sure you want to delete user ${user.name ? user.name : 'unnamed user'}?`,
       onConfirm: () => {
-        deleteUser({
-          variables: { input: { id: user.id } },
-        })
+        deleteUser({ variables: { input: { id: user.id } } })
           .then(() => {
             toast.success('Successfully deleted user!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry we could not delete user.'),
+              logAndFormatError(err, 'Sorry, we could not delete user.'),
             );
           });
       },
@@ -126,7 +124,7 @@ export function UserTable(
   /* TPL_ACTION_HOOKS:END */
 
   // Unmask the fragment data for rendering
-  const users = readFragment(userRowFragment, items);
+  const users = readFragment(userTableItemsFragment, items);
 
   if (users.length === 0) {
     return (
