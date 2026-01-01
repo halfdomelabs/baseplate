@@ -1,5 +1,3 @@
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
-
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { DefinitionEntityType, ReferencePath } from './types.js';
 
@@ -102,10 +100,10 @@ export abstract class RefExpressionParser<
    * The result is cached on the marker for subsequent operations.
    *
    * @param value - The raw expression value
-   * @param projectDef - The project definition for context
+   * @param projectDef - The project definition for context (typed as unknown to avoid circular reference)
    * @returns The parsed result (type determined by parser)
    */
-  abstract parse(value: TValue, projectDef: ProjectDefinition): TParseResult;
+  abstract parse(value: TValue, projectDef: unknown): TParseResult;
 
   /**
    * Get validation warnings for the expression.
@@ -113,14 +111,14 @@ export abstract class RefExpressionParser<
    *
    * @param value - The raw expression value
    * @param parseResult - The cached parse result
-   * @param projectDef - The project definition for validation context
+   * @param projectDef - The project definition for validation context (typed as unknown to avoid circular reference)
    * @param resolvedSlots - The resolved slot paths for this expression
    * @returns Array of warnings (empty if valid)
    */
   abstract getWarnings(
     value: TValue,
     parseResult: TParseResult,
-    projectDef: ProjectDefinition,
+    projectDef: unknown,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionWarning[];
 

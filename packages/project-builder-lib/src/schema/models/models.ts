@@ -11,6 +11,7 @@ import { SCALAR_FIELD_TYPES } from '#src/types/field-types.js';
 
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
+import { createModelAuthorizerSchema } from './authorizer/authorizer.js';
 import { createModelGraphqlSchema } from './graphql.js';
 import { createTransformerSchema } from './transformers/transformers.js';
 import {
@@ -320,6 +321,10 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
       graphql: ctx.withDefault(
         createModelGraphqlSchema(ctx, slots).optional(),
         {},
+      ),
+      authorizer: ctx.withDefault(
+        createModelAuthorizerSchema(ctx, slots).optional(),
+        { roles: [] },
       ),
     }),
 );
