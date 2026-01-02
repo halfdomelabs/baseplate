@@ -40,6 +40,7 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "test": "vitest",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "pnpm build:templates --watch"
@@ -51,6 +52,7 @@
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
     "prettier-plugin-tailwindcss": "0.6.14",
+    "vitest": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
