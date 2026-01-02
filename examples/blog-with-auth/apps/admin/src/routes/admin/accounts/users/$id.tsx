@@ -14,8 +14,11 @@ import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
+/* TPL_UPDATE_MUTATION_NAME=userEditPageUpdateUserMutation */
+/* TPL_UPDATE_OPERATION_NAME=updateUser */
+/* TPL_ROUTE_PATH=/admin/accounts/users/$id */
 
-/* TPL_USER_EDIT_FRAGMENT:START */
+/* TPL_EDIT_FRAGMENT:START */
 export const userEditItemFragment = graphql(`
   fragment UserEdit_item on User {
     email
@@ -23,9 +26,9 @@ export const userEditItemFragment = graphql(`
     name
   }
 `);
-/* TPL_USER_EDIT_FRAGMENT:END */
+/* TPL_EDIT_FRAGMENT:END */
 
-/* TPL_USER_EDIT_QUERY:START */
+/* TPL_EDIT_QUERY:START */
 export const userEditUserQuery = graphql(
   `
     query UserEditUser($id: Uuid!) {
@@ -37,8 +40,9 @@ export const userEditUserQuery = graphql(
   `,
   [userEditItemFragment],
 );
-/* TPL_USER_EDIT_QUERY:END */
+/* TPL_EDIT_QUERY:END */
 
+/* TPL_UPDATE_MUTATION:START */
 const userEditPageUpdateUserMutation = graphql(
   `
     mutation UserEditPageUpdateUser($input: UpdateUserInput!) {
@@ -51,15 +55,15 @@ const userEditPageUpdateUserMutation = graphql(
   `,
   [userEditItemFragment],
 );
+/* TPL_UPDATE_MUTATION:END */
 
-export const Route = createFileRoute(
-  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/$id' /* TPL_ROUTE_PATH:END */,
-)({
+export const Route = createFileRoute('/admin/accounts/users/$id')({
   component: UserEditPage,
   loader: async ({ context: { apolloClient }, params }) => {
     const { id } = params;
     const { data } = await apolloClient.query({
-      query: userEditUserQuery,
+      query:
+        /* TPL_EDIT_QUERY_NAME:START */ userEditUserQuery /* TPL_EDIT_QUERY_NAME:END */,
       variables: { id },
     });
     if (!data) throw new Error('No data received from query');
@@ -94,10 +98,17 @@ function UserEditPage(): ReactElement {
   const submitData = async (formData: UserFormData): Promise<void> => {
     try {
       await updateUser({ variables: { input: { id, data: formData } } });
-      toast.success('Successfully updated user!');
+      toast.success(
+        /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully updated user!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
+      );
       navigate({ to: '..' }).catch(logError);
     } catch (err: unknown) {
-      toast.error(logAndFormatError(err, 'Sorry, we could not update user.'));
+      toast.error(
+        logAndFormatError(
+          err,
+          /* TPL_MUTATION_ERROR_MESSAGE:START */ 'Sorry, we could not update user.' /* TPL_MUTATION_ERROR_MESSAGE:END */,
+        ),
+      );
     }
   };
 

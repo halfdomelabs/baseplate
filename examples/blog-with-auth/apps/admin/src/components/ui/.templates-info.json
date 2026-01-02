@@ -5,7 +5,7 @@
     "template": "alert"
   },
   "async-boundary.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "generator": "@baseplate-dev/react-generators#core/react-error-boundary",
     "instanceData": {},
     "template": "async-boundary"
   },

@@ -48,6 +48,7 @@ import {
 } from './role-manager-dialog';
 
 /* TPL_COMPONENT_NAME=UserTable */
+/* TPL_ITEMS_FRAGMENT_NAME=userTableItemsFragment */
 
 /* TPL_ITEMS_FRAGMENT:START */
 export const userTableItemsFragment = graphql(
@@ -67,6 +68,7 @@ export const userTableItemsFragment = graphql(
 );
 /* TPL_ITEMS_FRAGMENT:END */
 
+/* TPL_DELETE_MUTATION:START */
 const userTableDeleteUserMutation = graphql(`
   mutation UserTableDeleteUser($input: DeleteUserInput!) {
     deleteUser(input: $input) {
@@ -76,6 +78,7 @@ const userTableDeleteUserMutation = graphql(`
     }
   }
 `);
+/* TPL_DELETE_MUTATION:END */
 
 interface Props {
   items: FragmentOf<typeof userTableItemsFragment>[];
@@ -94,6 +97,9 @@ export function UserTable(
   const [passwordResetUser, setPasswordResetUser] = useState<ResultOf<
     typeof userTableItemsFragment
   > | null>(null);
+  /* TPL_ACTION_HOOKS:END */
+
+  /* TPL_DELETE_HOOK:START */
   const { requestConfirm } = useConfirmDialog();
   const [deleteUser] = useMutation(userTableDeleteUserMutation, {
     update: (cache, result) => {
@@ -120,13 +126,12 @@ export function UserTable(
           });
       },
     });
-  }
-  /* TPL_ACTION_HOOKS:END */
+  } /* TPL_DELETE_HOOK:END */
 
   // Unmask the fragment data for rendering
-  const users = readFragment(userTableItemsFragment, items);
+  const itemsData = readFragment(userTableItemsFragment, items);
 
-  if (users.length === 0) {
+  if (itemsData.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -152,7 +157,7 @@ export function UserTable(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((item) => (
+          {itemsData.map((item) => (
             <TableRow key={item.id}>
               {/* TPL_CELLS:START */}
               <TableCell>{item.name}</TableCell>

@@ -12,6 +12,11 @@ import type { UserFormData } from './-schemas/user-schema';
 
 import { UserEditForm } from './-components/user-edit-form';
 
+/* TPL_ROUTE_PATH=/admin/accounts/users/new */
+/* TPL_CREATE_MUTATION_NAME=userCreatePageCreateUserMutation */
+/* TPL_COMPONENT_NAME=UserCreatePage */
+
+/* TPL_CREATE_MUATION:START */
 const userCreatePageCreateUserMutation = graphql(`
   mutation UserCreatePageCreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
@@ -21,18 +26,16 @@ const userCreatePageCreateUserMutation = graphql(`
     }
   }
 `);
+/* TPL_CREATE_MUATION:END */
 
-export const Route = createFileRoute(
-  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/new' /* TPL_ROUTE_PATH:END */,
-)({
-  component:
-    /* TPL_COMPONENT_NAME:START */ UserCreatePage /* TPL_COMPONENT_NAME:END */,
+export const Route = createFileRoute('/admin/accounts/users/new')({
+  component: UserCreatePage,
   loader: () => ({
-    crumb: 'New',
+    crumb: /* TPL_PAGE_CRUMB:START */ 'New' /* TPL_PAGE_CRUMB:END */,
   }),
 });
 
-function /* TPL_COMPONENT_NAME:START */ UserCreatePage /* TPL_COMPONENT_NAME:END */(): ReactElement {
+function UserCreatePage(): ReactElement {
   /* TPL_DATA_LOADER:BLOCK */
 
   const [createUser] = useMutation(userCreatePageCreateUserMutation, {
@@ -48,14 +51,19 @@ function /* TPL_COMPONENT_NAME:START */ UserCreatePage /* TPL_COMPONENT_NAME:END
   ): Promise<void> => {
     try {
       await createUser({ variables: { input: { data: formData } } });
-      toast.success('Successfully created user!');
+      toast.success(
+        /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully created user!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
+      );
       navigate({ to: '..' }).catch(logError);
     } catch (err: unknown) {
-      toast.error(logAndFormatError(err, 'Sorry, we could not create user.'));
+      toast.error(
+        logAndFormatError(
+          err,
+          /* TPL_MUTATION_ERROR_MESSAGE:START */ 'Sorry, we could not create user.' /* TPL_MUTATION_ERROR_MESSAGE:END */,
+        ),
+      );
     }
   };
-
-  /* TPL_DATA_GATE:BLOCK */
 
   return (
     <div className="space-y-4">
