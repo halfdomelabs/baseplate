@@ -3,6 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactErrorBoundaryPaths {
+  asyncBoundary: string;
   component: string;
 }
 
@@ -22,6 +23,7 @@ const coreReactErrorBoundaryPathsTask = createGeneratorTask({
     return {
       providers: {
         coreReactErrorBoundaryPaths: {
+          asyncBoundary: `${componentsRoot}/ui/async-boundary.tsx`,
           component: `${componentsRoot}/ui/error-boundary.tsx`,
         },
       },
