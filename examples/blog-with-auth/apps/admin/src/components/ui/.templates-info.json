@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "alert"
   },
+  "async-boundary.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "async-boundary"
+  },
   "badge.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},

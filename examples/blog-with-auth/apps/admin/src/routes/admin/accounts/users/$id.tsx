@@ -1,11 +1,9 @@
 import type { ReactElement } from 'react';
 
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useMutation, useSuspenseQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { toast } from 'sonner';
 
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { graphql, readFragment } from '@src/graphql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
@@ -33,6 +31,7 @@ export const userEditUserQuery = graphql(
     query UserEditUser($id: Uuid!) {
       user(id: $id) {
         ...UserEdit_item
+        name
       }
     }
   `,
@@ -64,10 +63,9 @@ export const Route = createFileRoute(
       variables: { id },
     });
     if (!data) throw new Error('No data received from query');
-    const item = readFragment(userEditItemFragment, data.user);
     return {
-      crumb: /* TPL_CRUMB_EXPRESSION:START */ item.name
-        ? item.name
+      crumb: /* TPL_CRUMB_EXPRESSION:START */ data.user.name
+        ? data.user.name
         : 'Unnamed User' /* TPL_CRUMB_EXPRESSION:END */,
     };
   },
@@ -79,25 +77,19 @@ function UserEditPage(): ReactElement {
 
   /* TPL_DATA_LOADER:START */
 
-  const { data, error } = useQuery(userEditUserQuery, {
+  const { data } = useSuspenseQuery(userEditUserQuery, {
     variables: { id },
   });
 
-  const initialData: UserFormData | undefined = useMemo(() => {
-    if (!data?.user) return undefined;
-    return readFragment(userEditItemFragment, data.user);
-  }, [data]);
+  const initialData: UserFormData = readFragment(
+    userEditItemFragment,
+    data.user,
+  );
 
   /* TPL_DATA_LOADER:END */
 
   const [updateUser] = useMutation(userEditPageUpdateUserMutation);
   const navigate = useNavigate();
-
-  /* TPL_DATA_GATE:START */
-  if (!initialData) {
-    return <ErrorableLoader error={error} />;
-  }
-  /* TPL_DATA_GATE:END */
 
   const submitData = async (formData: UserFormData): Promise<void> => {
     try {

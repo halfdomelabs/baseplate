@@ -1,20 +1,13 @@
 import type { ReactElement } from 'react';
 
-import { useQuery } from '@apollo/client/react';
+import { useReadQuery } from '@apollo/client/react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { graphql } from '@src/graphql';
 
 import { UserTable, userTableItemsFragment } from './-components/user-table';
-
-export const Route = createFileRoute(
-  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/' /* TPL_ROUTE_PATH:END */,
-)({
-  component: /* TPL_PAGE_NAME:START */ UserListPage /* TPL_PAGE_NAME:END */,
-});
 
 /* TPL_GET_ITEMS_QUERY:START */
 export const userListUsersQuery = graphql(
@@ -29,9 +22,19 @@ export const userListUsersQuery = graphql(
 );
 /* TPL_GET_ITEMS_QUERY:END */
 
+export const Route = createFileRoute(
+  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/' /* TPL_ROUTE_PATH:END */,
+)({
+  component: /* TPL_PAGE_NAME:START */ UserListPage /* TPL_PAGE_NAME:END */,
+  loader: ({ context: { preloadQuery } }) => ({
+    queryRef: preloadQuery(userListUsersQuery),
+  }),
+});
+
 function /* TPL_PAGE_NAME:START */ UserListPage /* TPL_PAGE_NAME:END */(): ReactElement {
   /* TPL_DATA_LOADER:START */
-  const { data, error } = useQuery(userListUsersQuery);
+  const { queryRef } = Route.useLoaderData();
+  const { data } = useReadQuery(queryRef);
   /* TPL_DATA_LOADER:END */
 
   return (
@@ -54,17 +57,9 @@ function /* TPL_PAGE_NAME:START */ UserListPage /* TPL_PAGE_NAME:END */(): React
         </div>
         {/* TPL_CREATE_BUTTON:END */}
       </div>
-      {
-        /* TPL_DATA_PARTS:START */ !data /* TPL_DATA_PARTS:END */ ? (
-          <ErrorableLoader
-            error={/* TPL_ERROR_PARTS:START */ error /* TPL_ERROR_PARTS:END */}
-          />
-        ) : (
-          /* TPL_TABLE_COMPONENT:START */ <UserTable
-            items={data.users}
-          /> /* TPL_TABLE_COMPONENT:END */
-        )
-      }
+      {/* TPL_TABLE_COMPONENT:START */}
+      <UserTable items={data.users} />
+      {/* TPL_TABLE_COMPONENT:END */}
     </div>
   );
 }
