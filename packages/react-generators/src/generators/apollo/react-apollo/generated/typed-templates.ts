@@ -1,21 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
-const graphql = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'graphql',
-  projectExports: {
-    FragmentOf: { isTypeOnly: false },
-    graphql: { isTypeOnly: false },
-    readFragment: { isTypeOnly: false },
-    ResultOf: { isTypeOnly: false },
-    VariablesOf: { isTypeOnly: false },
-  },
-  projectExportsOnly: true,
-  source: { contents: '' },
-  variables: {},
-});
-
 const appApolloProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -47,6 +32,22 @@ const cache = createTsTemplateFile({
       '../templates/src/services/apollo/cache.ts',
     ),
   },
+  variables: {},
+});
+
+const graphql = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  name: 'graphql',
+  projectExports: {
+    FragmentOf: { isTypeOnly: false },
+    graphql: { isTypeOnly: false },
+    readFragment: { isTypeOnly: false },
+    ResultOf: { isTypeOnly: false },
+    VariablesOf: { isTypeOnly: false },
+  },
+  projectExportsOnly: true,
+  source: { contents: '' },
   variables: {},
 });
 
@@ -97,9 +98,10 @@ const service = createTsTemplateFile({
 export const mainGroup = {
   appApolloProvider,
   cache,
+  graphql,
   graphqlConfig,
   graphqlEnvD,
   service,
 };
 
-export const APOLLO_REACT_APOLLO_TEMPLATES = { graphql, mainGroup };
+export const APOLLO_REACT_APOLLO_TEMPLATES = { mainGroup };

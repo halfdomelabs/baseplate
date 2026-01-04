@@ -38,6 +38,7 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "group": "main",
       "pathRootRelativePath": "{src-root}/graphql.ts",
       "projectExports": {
         "FragmentOf": { "isTypeOnly": false, "name": "FragmentOf" },
