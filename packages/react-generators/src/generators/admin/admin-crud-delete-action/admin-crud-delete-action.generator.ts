@@ -53,7 +53,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
         const itemsFragmentVariable =
           adminCrudActionContainer.getItemsFragmentVariable();
         const itemsFragment = tsTemplateWithImports([
-          graphqlImports.FragmentOf.typeDeclaration(),
+          graphqlImports.ResultOf.typeDeclaration(),
         ])`ResultOf<typeof ${itemsFragmentVariable}>`;
         const modelNameVariants = getModelNameVariants(modelName);
         const modelTitle = modelNameVariants.title;
@@ -102,7 +102,12 @@ export const adminCrudDeleteActionGenerator = createGenerator({
                   value: { type: 'variable', variable: 'input' },
                 },
               ],
-              fields: [{ name: idField }],
+              fields: [
+                {
+                  name: modelNameVariants.camel,
+                  fields: [{ name: idField }, { name: nameField }],
+                },
+              ],
             },
           ],
         };
@@ -143,15 +148,15 @@ export const adminCrudDeleteActionGenerator = createGenerator({
       title: 'Delete ${modelTitle}',
       content: \`Are you sure you want to delete ${modelNameVariants.lowercaseWords} \${item.${nameField} ? item.${nameField} : 'unnamed ${modelNameVariants.lowercaseWords}'}?\`,
       onConfirm: () => {
-        ${deleteMutationVariable}({
+        ${graphqlDeleteFieldName}({
           variables: { input: { ${idField}: item.${idField} } },
         })
           .then(() => {
-            toast.success('Successfully deleted ${modelNameVariants.lowercaseWords}!');
+            toast.success('Successfully deleted the ${modelNameVariants.lowercaseWords}!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry we could not delete ${modelNameVariants.lowercaseWords}.'),
+              logAndFormatError(err, 'Sorry, we could not delete the ${modelNameVariants.lowercaseWords}.'),
             );
           });
       },

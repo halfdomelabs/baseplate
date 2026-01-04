@@ -12,6 +12,8 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
+import type { FragmentOf, ResultOf } from '@src/graphql';
+
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
 import { Button } from '@src/components/ui/button';
@@ -29,12 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import {
-  type FragmentOf,
-  graphql,
-  readFragment,
-  type ResultOf,
-} from '@src/graphql';
+import { graphql, readFragment } from '@src/graphql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
@@ -47,6 +44,19 @@ import {
   roleManagerDialogUserFragment,
 } from './role-manager-dialog';
 
+/* HOISTED:delete-action-mutation:START */
+const userListPageDeleteUserMutation = graphql(`
+  mutation UserListPageDeleteUser($input: DeleteUserInput!) {
+    deleteUser(input: $input) {
+      user {
+        id
+        name
+      }
+    }
+  }
+`);
+/* HOISTED:delete-action-mutation:END */
+
 /* TPL_COMPONENT_NAME=UserTable */
 /* TPL_ITEMS_FRAGMENT_NAME=userTableItemsFragment */
 
@@ -57,28 +67,16 @@ export const userTableItemsFragment = graphql(
       email
       id
       name
+      ...PasswordResetDialog_user
+      ...RoleManagerDialog_user
       roles {
         role
       }
-      ...RoleManagerDialog_user
-      ...PasswordResetDialog_user
     }
   `,
   [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
 );
 /* TPL_ITEMS_FRAGMENT:END */
-
-/* HOISTED:delete-user-mutation:START */
-const userTableDeleteUserMutation = graphql(`
-  mutation UserTableDeleteUser($input: DeleteUserInput!) {
-    deleteUser(input: $input) {
-      user {
-        id
-      }
-    }
-  }
-`);
-/* HOISTED:delete-user-mutation:END */
 
 interface Props {
   /* TPL_PROPS:START */
@@ -98,9 +96,8 @@ export function UserTable(
   const [passwordResetUser, setPasswordResetUser] = useState<FragmentOf<
     typeof passwordResetDialogUserFragment
   > | null>(null);
-
   const { requestConfirm } = useConfirmDialog();
-  const [deleteUser] = useMutation(userTableDeleteUserMutation, {
+  const [deleteUser] = useMutation(userListPageDeleteUserMutation, {
     update: (cache, result) => {
       if (!result.data?.deleteUser.user) return;
       const itemId = cache.identify(result.data.deleteUser.user);
@@ -109,18 +106,20 @@ export function UserTable(
     },
   });
 
-  function handleDelete(user: ResultOf<typeof userTableItemsFragment>): void {
+  function handleDelete(item: ResultOf<typeof userTableItemsFragment>): void {
     requestConfirm({
       title: 'Delete User',
-      content: `Are you sure you want to delete user ${user.name ? user.name : 'unnamed user'}?`,
+      content: `Are you sure you want to delete user ${item.name ? item.name : 'unnamed user'}?`,
       onConfirm: () => {
-        deleteUser({ variables: { input: { id: user.id } } })
+        deleteUser({
+          variables: { input: { id: item.id } },
+        })
           .then(() => {
-            toast.success('Successfully deleted user!');
+            toast.success('Successfully deleted the user!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry, we could not delete user.'),
+              logAndFormatError(err, 'Sorry, we could not delete the user.'),
             );
           });
       },
