@@ -1,10 +1,12 @@
+import type { GraphQLFragment } from '@baseplate-dev/react-generators/dist/writers/graphql/graphql.js';
+
 import {
   tsImportBuilder,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
   adminCrudActionContainerProvider,
-  adminCrudQueriesProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -15,7 +17,6 @@ import { LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_GENERATED as GENERATE
 const descriptorSchema = z.object({
   order: z.int().nonnegative(),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
-  userModelName: z.string().min(1),
 });
 
 /**
@@ -26,7 +27,7 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: () => 'reset-password',
-  buildTasks: ({ order, position, userModelName }) => ({
+  buildTasks: ({ order, position }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -35,13 +36,13 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
         paths: GENERATED_TEMPLATES.paths.provider,
-        adminCrudQueries: adminCrudQueriesProvider,
+        graphqlImports: graphqlImportsProvider,
       },
       run({
         adminCrudActionContainer,
         reactComponentsImports,
         renderers,
-        adminCrudQueries,
+        graphqlImports,
         paths,
       }) {
         // Create the action fragment based on position
@@ -79,11 +80,15 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
         // Hook content for managing the password reset dialog state
         const hookContent = tsTemplateWithImports([
           tsImportBuilder(['useState']).from('react'),
+          graphqlImports.FragmentOf.typeDeclaration(),
+          tsImportBuilder(['passwordResetDialogUserFragment']).from(
+            paths.passwordResetDialog,
+          ),
         ])`
-          const [passwordResetUser, setPasswordResetUser] = useState<${adminCrudQueries.getRowFragmentExpression()} | null>(
-            null,
-          );
-        `;
+          const [passwordResetUser, setPasswordResetUser] = useState<FragmentOf<typeof passwordResetDialogUserFragment> | null>(
+          null,
+        );
+      `;
 
         // Sibling component for the password reset dialog
         const siblingContent = tsTemplateWithImports([
@@ -91,16 +96,25 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
             paths.passwordResetDialog,
           ),
         ])`
-          {passwordResetUser && (
-            <PasswordResetDialog
-              user={passwordResetUser}
-              open={!!passwordResetUser}
-              onOpenChange={(open) => {
-                if (!open) setPasswordResetUser(null);
-              }}
-            />
-          )}
-        `;
+                {passwordResetUser && (
+                  <PasswordResetDialog
+                    user={passwordResetUser}
+                    open={!!passwordResetUser}
+                    onOpenChange={(open) => {
+                      if (!open) setPasswordResetUser(null);
+                    }}
+                  />
+                )}
+              `;
+
+        const passwordResetDialogUserFragment: GraphQLFragment = {
+          variableName: 'passwordResetDialogUserFragment',
+          fragmentName: 'PasswordResetDialog_user',
+          onType: 'User',
+          // fields are not needed here
+          fields: [],
+          path: paths.passwordResetDialog,
+        };
 
         // Add the action to the container
         adminCrudActionContainer.addAction({
@@ -111,19 +125,17 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
           action: actionFragment,
           hookContent,
           siblingContent,
-          graphQLFields: [], // No additional fields needed for password reset
+          graphQLFields: [
+            {
+              type: 'spread',
+              fragment: passwordResetDialogUserFragment,
+            },
+          ],
         });
 
         return {
           build: async (builder) => {
-            await builder.apply(
-              renderers.mainGroup.render({}),
-              renderers.passwordResetDialogGql.render({
-                variables: {
-                  TPL_USER_ROW_FRAGMENT: `${userModelName}Row`,
-                },
-              }),
-            );
+            await builder.apply(renderers.mainGroup.render({}));
           },
         };
       },

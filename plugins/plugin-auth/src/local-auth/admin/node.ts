@@ -37,13 +37,10 @@ function buildManageRolesActionCompiler(
 ): AdminCrudActionCompiler<AdminCrudManageRolesActionDefinition> {
   return {
     name: 'manage-roles',
-    compileAction(definition, { order, model, definitionContainer }) {
-      const userModelName = definitionContainer.nameFromId(model.id);
-
+    compileAction(definition, { order, definitionContainer }) {
       return adminCrudManageRolesActionGenerator({
         order,
         position: definition.position,
-        userModelName,
         availableRoles: authConfig
           .getAuthRoles(definitionContainer.definition)
           .filter((r) => !r.builtIn),
@@ -55,13 +52,10 @@ function buildManageRolesActionCompiler(
 function buildResetPasswordActionCompiler(): AdminCrudActionCompiler<AdminCrudResetPasswordActionDefinition> {
   return {
     name: 'reset-password',
-    compileAction(definition, { order, model, definitionContainer }) {
-      const userModelName = definitionContainer.nameFromId(model.id);
-
+    compileAction(definition, { order }) {
       return adminCrudResetPasswordActionGenerator({
         order,
         position: definition.position,
-        userModelName,
       });
     },
   };

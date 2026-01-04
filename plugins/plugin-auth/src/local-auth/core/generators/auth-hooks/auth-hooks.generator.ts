@@ -26,7 +26,6 @@ export const authHooksGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(renderers.hooksGroup.render({}));
-            await builder.apply(renderers.hooksGqlGroup.render({}));
           },
         };
       },

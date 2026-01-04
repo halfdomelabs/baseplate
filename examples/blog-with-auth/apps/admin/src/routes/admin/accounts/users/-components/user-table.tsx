@@ -95,8 +95,8 @@ export function UserTable(
   const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<
     typeof roleManagerDialogUserFragment
   > | null>(null);
-  const [passwordResetUser, setPasswordResetUser] = useState<ResultOf<
-    typeof userTableItemsFragment
+  const [passwordResetUser, setPasswordResetUser] = useState<FragmentOf<
+    typeof passwordResetDialogUserFragment
   > | null>(null);
 
   const { requestConfirm } = useConfirmDialog();
