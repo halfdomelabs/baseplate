@@ -11,7 +11,6 @@ import { UserTable, userTableItemsFragment } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
 /* TPL_ROUTE_PATH=/admin/accounts/users/ */
-/* TPL_ITEMS_QUERY_VARIABLE=userListUsersQuery */
 
 /* TPL_ITEMS_QUERY:START */
 const userListUsersQuery = graphql(

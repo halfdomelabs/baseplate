@@ -274,7 +274,6 @@ export const adminCrudListGenerator = createGenerator({
                 variables: {
                   TPL_COMPONENT_NAME: listPageComponentName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
-                  TPL_ITEMS_QUERY_VARIABLE: itemsQueryVariable,
                   TPL_ITEMS_QUERY: renderTadaOperation(itemsQuery, {
                     currentPath: listPagePath,
                   }),

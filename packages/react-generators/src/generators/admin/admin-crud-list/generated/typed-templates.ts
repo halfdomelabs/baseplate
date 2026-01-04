@@ -16,7 +16,6 @@ const listPage = createTsTemplateFile({
     TPL_CREATE_BUTTON: {},
     TPL_DATA_LOADERS: {},
     TPL_ITEMS_QUERY: {},
-    TPL_ITEMS_QUERY_VARIABLE: { type: 'replacement' },
     TPL_PAGE_TITLE: {},
     TPL_ROUTE_PATH: { type: 'replacement' },
     TPL_ROUTE_PROPS: {},
