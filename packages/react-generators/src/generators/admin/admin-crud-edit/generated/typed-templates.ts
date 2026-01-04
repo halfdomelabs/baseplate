@@ -15,7 +15,6 @@ const createPage = createTsTemplateFile({
   variables: {
     TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_CREATE_MUTATION: {},
-    TPL_CREATE_MUTATION_NAME: { type: 'replacement' },
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
     TPL_FORM_DATA_NAME: {},

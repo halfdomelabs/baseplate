@@ -13,7 +13,6 @@ import type { UserFormData } from './-schemas/user-schema';
 import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserCreatePage */
-/* TPL_CREATE_MUTATION_NAME=userCreatePageCreateUserMutation */
 
 /* TPL_CREATE_MUTATION:START */
 const userCreatePageCreateUserMutation = graphql(`

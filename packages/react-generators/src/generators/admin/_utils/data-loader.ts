@@ -58,13 +58,15 @@ function renderRouteLoaderFunction(
     routeLoaderFields.flatMap((r) => r.contextFields ?? []),
   );
   const contextArg =
-    contextFields.length === 0 ? '' : `context: { ${contextFields.join(' ')} }`;
+    contextFields.length === 0
+      ? ''
+      : `context: { ${contextFields.join(', ')} }`;
 
   const paramsFields = uniq(
     routeLoaderFields.flatMap((r) => r.paramsFields ?? []),
   );
   const paramsArg =
-    paramsFields.length === 0 ? '' : `params: { ${paramsFields.join(' ')} }`;
+    paramsFields.length === 0 ? '' : `params: { ${paramsFields.join(', ')} }`;
 
   const loaderArgs =
     contextArg || paramsArg
