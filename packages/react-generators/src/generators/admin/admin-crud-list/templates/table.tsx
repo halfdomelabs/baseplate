@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import type { FragmentOf, ResultOf } from '%graphqlImports';
 import type { ReactElement } from 'react';
 
 import { readFragment } from '%graphqlImports';
@@ -13,16 +12,10 @@ import {
   TableRow,
 } from '%reactComponentsImports';
 
-TPL_ROW_FRAGMENT;
-
-/** UserRow fragment type for component props */
-type UserRowFragment = ResultOf<typeof userRowFragment>;
-
-TPL_DELETE_MUTATION;
+TPL_ITEMS_FRAGMENT;
 
 interface Props {
-  items: FragmentOf<typeof userRowFragment>[];
-  TPL_EXTRA_PROPS;
+  TPL_PROPS;
 }
 
 export function TPL_COMPONENT_NAME(
@@ -31,9 +24,9 @@ export function TPL_COMPONENT_NAME(
   TPL_ACTION_HOOKS;
 
   // Unmask the fragment data for rendering
-  const users = readFragment(userRowFragment, items);
+  const itemsData = readFragment(TPL_ITEMS_FRAGMENT_NAME, items);
 
-  if (users.length === 0) {
+  if (itemsData.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -52,7 +45,7 @@ export function TPL_COMPONENT_NAME(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((item) => (
+          {itemsData.map((item) => (
             <TableRow key={item.id}>
               <TPL_CELLS />
             </TableRow>

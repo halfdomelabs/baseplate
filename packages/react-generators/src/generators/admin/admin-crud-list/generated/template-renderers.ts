@@ -54,9 +54,6 @@ const adminAdminCrudListRenderersTask = createGeneratorTask({
             render: (options) =>
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_LIST_TEMPLATES.listPage,
-                importMapProviders: {
-                  reactComponentsImports,
-                },
                 ...options,
               }),
           },

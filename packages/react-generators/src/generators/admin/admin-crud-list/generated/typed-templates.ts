@@ -6,22 +6,21 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 
 const listPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'index.tsx', kind: 'instance' },
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-  },
+  importMapProviders: {},
   name: 'list-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/index.tsx'),
   },
   variables: {
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_CREATE_BUTTON: {},
-    TPL_DATA_LOADER: {},
-    TPL_DATA_PARTS: {},
-    TPL_ERROR_PARTS: {},
-    TPL_PAGE_NAME: {},
-    TPL_ROUTE_PATH: {},
+    TPL_DATA_LOADERS: {},
+    TPL_ITEMS_QUERY: {},
+    TPL_ITEMS_QUERY_VARIABLE: { type: 'replacement' },
+    TPL_PAGE_TITLE: {},
+    TPL_ROUTE_PATH: { type: 'replacement' },
+    TPL_ROUTE_PROPS: {},
     TPL_TABLE_COMPONENT: {},
-    TPL_TITLE: {},
   },
 });
 
@@ -40,12 +39,12 @@ const table = createTsTemplateFile({
     TPL_ACTION_SIBLING_COMPONENTS: {},
     TPL_CELLS: {},
     TPL_COMPONENT_NAME: { type: 'replacement' },
-    TPL_DELETE_MUTATION: {},
     TPL_DESTRUCTURED_PROPS: {},
-    TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
+    TPL_ITEMS_FRAGMENT: {},
+    TPL_ITEMS_FRAGMENT_NAME: { type: 'replacement' },
     TPL_PLURAL_MODEL: {},
-    TPL_ROW_FRAGMENT: {},
+    TPL_PROPS: {},
   },
 });
 
