@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import { createTsImportMapSchema } from '@baseplate-dev/core-generators';
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
-export const graphQLImportsSchema = createTsImportMapSchema({
+export const graphqlImportsSchema = createTsImportMapSchema({
   graphql: {},
   readFragment: {},
   FragmentOf: { isTypeOnly: true },
@@ -12,7 +12,7 @@ export const graphQLImportsSchema = createTsImportMapSchema({
 });
 
 export type GraphqlImportsProvider = TsImportMapProviderFromSchema<
-  typeof graphQLImportsSchema
+  typeof graphqlImportsSchema
 >;
 
 export const graphqlImportsProvider =
