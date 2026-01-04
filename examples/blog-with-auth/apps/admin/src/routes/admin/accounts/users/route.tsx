@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-/* TPL_ROUTE_PATH=/admin/accounts/users/ */
-
-export const Route = createFileRoute('/admin/accounts/users')({
+export const Route = createFileRoute(
+  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users' /* TPL_ROUTE_PATH:END */,
+)({
   loader: () => ({
     crumb: /* TPL_CRUMB:START */ 'Users' /* TPL_CRUMB:END */,
   }),

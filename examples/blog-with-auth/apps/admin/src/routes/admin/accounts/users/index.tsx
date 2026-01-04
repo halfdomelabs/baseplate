@@ -10,7 +10,6 @@ import { graphql } from '@src/graphql';
 import { UserTable, userTableItemsFragment } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
-/* TPL_ROUTE_PATH=/admin/accounts/users/ */
 
 /* TPL_ITEMS_QUERY:START */
 const userListUsersQuery = graphql(
@@ -25,7 +24,9 @@ const userListUsersQuery = graphql(
 );
 /* TPL_ITEMS_QUERY:END */
 
-export const Route = createFileRoute('/admin/accounts/users/')({
+export const Route = createFileRoute(
+  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/' /* TPL_ROUTE_PATH:END */,
+)({
   component: UserListPage,
   /* TPL_ROUTE_PROPS:START */
   loader: ({ context: { preloadQuery } }) => ({

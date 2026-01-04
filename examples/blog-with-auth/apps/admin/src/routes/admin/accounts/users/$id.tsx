@@ -19,7 +19,6 @@ import {
 /* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
 /* TPL_UPDATE_MUTATION_NAME=updateUser */
-/* TPL_ROUTE_PATH=/admin/accounts/users/$id */
 
 /* TPL_EDIT_QUERY:START */
 export const userEditPageQuery = graphql(
@@ -50,7 +49,9 @@ const userEditPageUpdateMutation = graphql(
 );
 /* TPL_UPDATE_MUTATION:END */
 
-export const Route = createFileRoute('/admin/accounts/users/$id')({
+export const Route = createFileRoute(
+  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/$id' /* TPL_ROUTE_PATH:END */,
+)({
   component: UserEditPage,
   /* TPL_ROUTE_PROPS:START */
   loader: ({ context: { apolloClient, preloadQuery }, params: { id } }) => ({

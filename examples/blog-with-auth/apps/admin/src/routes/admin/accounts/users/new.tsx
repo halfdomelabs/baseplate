@@ -13,7 +13,6 @@ import type { UserFormData } from './-schemas/user-schema';
 import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserCreatePage */
-/* TPL_ROUTE_PATH=/admin/accounts/users/new */
 /* TPL_CREATE_MUTATION_NAME=userCreatePageCreateUserMutation */
 
 /* TPL_CREATE_MUTATION:START */
@@ -28,7 +27,9 @@ const userCreatePageCreateUserMutation = graphql(`
 `);
 /* TPL_CREATE_MUTATION:END */
 
-export const Route = createFileRoute('/admin/accounts/users/new')({
+export const Route = createFileRoute(
+  /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/new' /* TPL_ROUTE_PATH:END */,
+)({
   component: UserCreatePage,
   loader: () => ({
     crumb: 'New',

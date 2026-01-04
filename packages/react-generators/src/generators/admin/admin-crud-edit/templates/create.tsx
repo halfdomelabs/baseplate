@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 TPL_CREATE_MUTATION;
 
-export const Route = createFileRoute('TPL_ROUTE_PATH')({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
   loader: () => ({
     crumb: 'New',

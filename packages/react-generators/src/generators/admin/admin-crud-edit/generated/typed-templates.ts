@@ -23,7 +23,7 @@ const createPage = createTsTemplateFile({
     TPL_MUTATION_ERROR_MESSAGE: {},
     TPL_MUTATION_HOOK: {},
     TPL_MUTATION_SUCCESS_MESSAGE: {},
-    TPL_ROUTE_PATH: { type: 'replacement' },
+    TPL_ROUTE_PATH: {},
   },
 });
 
@@ -65,7 +65,7 @@ const editPage = createTsTemplateFile({
     TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_MUTATION_ERROR_MESSAGE: {},
     TPL_MUTATION_SUCCESS_MESSAGE: {},
-    TPL_ROUTE_PATH: { type: 'replacement' },
+    TPL_ROUTE_PATH: {},
     TPL_ROUTE_PROPS: {},
     TPL_UPDATE_MUTATION: {},
     TPL_UPDATE_MUTATION_NAME: { type: 'replacement' },
@@ -81,7 +81,7 @@ const route = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/route.tsx'),
   },
-  variables: { TPL_CRUMB: {}, TPL_ROUTE_PATH: { type: 'replacement' } },
+  variables: { TPL_CRUMB: {}, TPL_ROUTE_PATH: {} },
 });
 
 const schema = createTsTemplateFile({

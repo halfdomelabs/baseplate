@@ -11,7 +11,7 @@ TPL_EDIT_QUERY;
 
 TPL_UPDATE_MUTATION;
 
-export const Route = createFileRoute('TPL_ROUTE_PATH')({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
   TPL_ROUTE_PROPS,
 });

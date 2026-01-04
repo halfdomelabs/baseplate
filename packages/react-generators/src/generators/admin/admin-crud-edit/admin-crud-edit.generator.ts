@@ -330,7 +330,7 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_FORM_DATA_NAME: formDataExpression,
                   TPL_UPDATE_MUTATION_VARIABLE: updateMutationVariable,
                   TPL_UPDATE_MUTATION_NAME: updateMutationName,
-                  TPL_ROUTE_PATH: `${routeFilePath}/$id`,
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_EDIT_QUERY: renderTadaOperation(editQuery, {
                     currentPath: editPagePath,
                   }),
@@ -433,7 +433,7 @@ export const adminCrudEditGenerator = createGenerator({
                 id: `route-${modelId}`,
                 destination: routePath,
                 variables: {
-                  TPL_ROUTE_PATH: routeFilePath,
+                  TPL_ROUTE_PATH: quot(routeFilePath),
                   TPL_CRUMB: quot(pluralize(titleizeCamel(modelName))),
                 },
               }),
