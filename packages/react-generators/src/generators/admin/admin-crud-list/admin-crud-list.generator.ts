@@ -81,8 +81,9 @@ export const adminCrudListGenerator = createGenerator({
 
         const tableItemsFragmentVariable = `${modelNameVariants.camel}TableItemsFragment`;
 
-        const pagePrefix = `${modelNameVariants.pluralPascal}List`;
-        const itemsQueryName = `${pagePrefix}${modelNameVariants.pluralPascal}`;
+        const pagePrefix = `${modelNameVariants.pascal}ListPage`;
+        const itemsQueryName = pagePrefix;
+        const itemsQueryVariable = `${lowercaseFirstChar(itemsQueryName)}Query`;
         const listPageComponentName = `${modelName}ListPage`;
 
         return {
@@ -108,7 +109,7 @@ export const adminCrudListGenerator = createGenerator({
               routeLoaderFields: [
                 {
                   key: 'queryRef',
-                  value: tsTemplate`preloadQuery(${itemsQueryName})`,
+                  value: tsTemplate`preloadQuery(${itemsQueryVariable})`,
                   contextFields: ['preloadQuery'],
                 },
               ],
@@ -126,7 +127,7 @@ export const adminCrudListGenerator = createGenerator({
             ];
 
             // Render table component
-            const tableItemsFragmentName = `${modelNameVariants.pascal}_items`;
+            const tableItemsFragmentName = `${tableComponentName}_items`;
 
             const tableItemsFragment: GraphQLFragment = {
               fragmentName: tableItemsFragmentName,
@@ -253,7 +254,6 @@ export const adminCrudListGenerator = createGenerator({
               routeLoader,
             } = renderDataLoaders(dataLoaders);
 
-            const itemsQueryVariable = `${lowercaseFirstChar(itemsQueryName)}Query`;
             const itemsQuery: GraphQLOperation = {
               type: 'query',
               variableName: itemsQueryVariable,

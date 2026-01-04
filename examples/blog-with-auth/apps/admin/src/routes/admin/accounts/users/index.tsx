@@ -12,9 +12,9 @@ import { UserTable, userTableItemsFragment } from './-components/user-table';
 /* TPL_COMPONENT_NAME=UserListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const userListUsersQuery = graphql(
+const userListPageQuery = graphql(
   `
-    query UserListUsers {
+    query UserListPage {
       users {
         ...UserTable_items
       }
@@ -28,16 +28,15 @@ export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/' /* TPL_ROUTE_PATH:END */,
 )({
   component: UserListPage,
-  /* TPL_ROUTE_PROPS:START */
-  loader: ({ context: { preloadQuery } }) => ({
-    queryRef: preloadQuery(userListUsersQuery),
-  }),
-  /* TPL_ROUTE_PROPS:END */
+  /* TPL_ROUTE_PROPS:START */ loader: ({ context: { preloadQuery } }) => ({
+    queryRef: preloadQuery(userListPageQuery),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
 function UserListPage(): ReactElement {
   /* TPL_DATA_LOADERS:START */
   const { queryRef } = Route.useLoaderData();
+
   const { data } = useReadQuery(queryRef);
   /* TPL_DATA_LOADERS:END */
 
@@ -46,10 +45,11 @@ function UserListPage(): ReactElement {
       <div className="flex items-center justify-between gap-4">
         <h1>
           {/* TPL_PAGE_TITLE:START */}
-          User Management
+          Users
           {/* TPL_PAGE_TITLE:END */}
         </h1>
         {/* TPL_CREATE_BUTTON:START */}
+
         <div className="block">
           <Link to="/admin/accounts/users/new">
             <Button>

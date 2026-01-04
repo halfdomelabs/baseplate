@@ -4,10 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
+import type { FragmentOf } from '@src/graphql';
+
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
-import { type FragmentOf, graphql, readFragment } from '@src/graphql';
+import { graphql, readFragment } from '@src/graphql';
 
 import type { UserFormData } from '../-schemas/user-schema';
 
@@ -40,8 +42,8 @@ interface Props {
 export function UserEditForm(
   /* TPL_DESTRUCTURED_PROPS:START */ {
     className,
-    defaultValues,
     submitData,
+    defaultValues,
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
   const initialValuesData = readFragment(
