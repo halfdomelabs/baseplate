@@ -10,7 +10,6 @@ import {
   adminCrudEditGenerator,
   adminCrudEmbeddedFormGenerator,
   adminCrudListGenerator,
-  adminCrudQueriesGenerator,
   adminCrudSectionGenerator,
   reactRoutesGenerator,
 } from '@baseplate-dev/react-generators';
@@ -99,6 +98,27 @@ export function compileAdminCrudSection(
   const crudSectionId = `${parentId}.${sectionName}.$section`;
   const modelName = builder.nameFromId(crudSection.modelRef);
   const { disableCreate } = crudSection;
+
+  const model = ModelUtils.byIdOrThrow(
+    builder.projectDefinition,
+    crudSection.modelRef,
+  );
+  const idFieldRefs = model.model.primaryKeyFieldRefs;
+  if (idFieldRefs.length !== 1) {
+    throw new Error(
+      `Section ${crudSection.name} has ${idFieldRefs.length} primary keys, but only one is allowed`,
+    );
+  }
+  const idField = idFieldRefs[0];
+  const idFieldType = model.model.fields.find(
+    (field) => field.id === idFieldRefs[0],
+  )?.type;
+  if (!idFieldType || (idFieldType !== 'uuid' && idFieldType !== 'string')) {
+    throw new Error(
+      `Section ${crudSection.name} has a primary key that is not a Uuid or String`,
+    );
+  }
+
   return reactRoutesGenerator({
     name: sectionName,
     children: {
@@ -109,6 +129,8 @@ export function compileAdminCrudSection(
             modelName,
             disableCreate,
             nameField: builder.nameFromId(crudSection.nameFieldRef),
+            idField,
+            idFieldGraphqlType: idFieldType === 'uuid' ? 'Uuid' : 'String',
             children: {
               inputs: crudSection.form.fields.map((field, idx) =>
                 compileAdminCrudInput(
@@ -148,10 +170,6 @@ export function compileAdminCrudSection(
                 ),
               ),
             },
-          }),
-          queries: adminCrudQueriesGenerator({
-            modelId: crudSection.modelRef,
-            modelName,
           }),
         },
       }),

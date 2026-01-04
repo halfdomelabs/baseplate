@@ -47,7 +47,7 @@ const descriptorSchema = z.object({
   disableCreate: z.boolean().optional(),
   nameField: z.string(),
   idField: z.string(),
-  idFieldGraphqlType: z.string(),
+  idFieldGraphqlType: z.enum(['Uuid', 'String']),
 });
 
 export interface AdminCrudEmbeddedForm {

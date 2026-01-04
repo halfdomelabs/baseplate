@@ -51,7 +51,6 @@ export const adminCrudListGenerator = createGenerator({
   getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelId, modelName, disableCreate }) => ({
     renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.task,
-
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -248,8 +247,11 @@ export const adminCrudListGenerator = createGenerator({
             );
 
             // Render list page
-            const { tableProps, componentBody, routeLoader } =
-              renderDataLoaders(dataLoaders);
+            const {
+              childProps: tableProps,
+              componentBody,
+              routeLoader,
+            } = renderDataLoaders(dataLoaders);
 
             const itemsQueryVariable = `${lowercaseFirstChar(itemsQueryName)}Query`;
             const itemsQuery: GraphQLOperation = {
