@@ -17,16 +17,17 @@ import {
 
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
-/* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
 /* TPL_UPDATE_MUTATION_FIELD_NAME=updateUser */
+/* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
 
 /* TPL_EDIT_QUERY:START */
-export const userEditPageQuery = graphql(
+const userEditPageQuery = graphql(
   `
     query UserEditPage($id: Uuid!) {
       user(id: $id) {
-        ...UserEditForm_defaultValues
+        id
         name
+        ...UserEditForm_defaultValues
       }
     }
   `,
@@ -40,6 +41,8 @@ const userEditPageUpdateMutation = graphql(
     mutation UserEditPageUpdate($input: UpdateUserInput!) {
       updateUser(input: $input) {
         user {
+          id
+          name
           ...UserEditForm_defaultValues
         }
       }
@@ -53,9 +56,10 @@ export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/$id' /* TPL_ROUTE_PATH:END */,
 )({
   component: UserEditPage,
-  /* TPL_ROUTE_PROPS:START */
-  loader: ({ context: { apolloClient, preloadQuery }, params: { id } }) => ({
-    queryRef: preloadQuery(userEditPageQuery, { variables: { id } }),
+  /* TPL_ROUTE_PROPS:START */ loader: ({
+    context: { preloadQuery, apolloClient },
+    params: { id },
+  }) => ({
     crumb: apolloClient
       .query({
         query: userEditPageQuery,
@@ -63,15 +67,15 @@ export const Route = createFileRoute(
       })
       .then(({ data }) => (data?.user.name ? data.user.name : 'Edit User'))
       .catch(() => 'Edit User'),
-  }),
-  /* TPL_ROUTE_PROPS:END */
+    queryRef: preloadQuery(userEditPageQuery, { variables: { id } }),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
 function UserEditPage(): ReactElement {
   const { id } = Route.useParams();
 
   /* TPL_DATA_LOADER:START */
-  const { crumb, queryRef } = Route.useLoaderData();
+  const { queryRef, crumb } = Route.useLoaderData();
 
   const { data } = useReadQuery(queryRef);
   /* TPL_DATA_LOADER:END */
@@ -81,7 +85,9 @@ function UserEditPage(): ReactElement {
 
   const submitData = async (formData: UserFormData): Promise<void> => {
     try {
-      await updateUser({ variables: { input: { id, data: formData } } });
+      await updateUser({
+        variables: { input: { id, data: formData } },
+      });
       toast.success(
         /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully updated user!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
       );

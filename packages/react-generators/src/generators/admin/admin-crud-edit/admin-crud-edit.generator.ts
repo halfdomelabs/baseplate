@@ -152,12 +152,13 @@ export const adminCrudEditGenerator = createGenerator({
           },
           build: async (builder) => {
             // Data loaders
+            const editQueryVariable = `${lowercaseFirstChar(editPagePrefix)}Query`;
             const editPageLoader: DataLoader = {
               propName: 'defaultValues',
               routeLoaderFields: [
                 {
                   key: 'queryRef',
-                  value: tsTemplate`preloadQuery(${editFormDefaultValuesFragmentVariable})`,
+                  value: tsTemplate`preloadQuery(${editQueryVariable}, { variables: { id } })`,
                   contextFields: ['preloadQuery'],
                 },
               ],
@@ -241,20 +242,19 @@ export const adminCrudEditGenerator = createGenerator({
             );
 
             // Edit Page
-            const editQueryVariable = `${lowercaseFirstChar(editPagePrefix)}Query`;
             const editQueryName = editPagePrefix;
             const editQuery: GraphQLOperation = {
               type: 'query',
               variableName: editQueryVariable,
               operationName: editQueryName,
-              variables: [{ name: 'id', type: idFieldGraphqlType }],
+              variables: [{ name: 'id', type: `${idFieldGraphqlType}!` }],
               fields: [
                 {
                   name: modelGraphqlById,
                   args: [
                     {
                       name: 'id',
-                      value: { type: 'variable', variable: '$id' },
+                      value: { type: 'variable', variable: 'id' },
                     },
                   ],
                   fields: mergeGraphqlFields([
