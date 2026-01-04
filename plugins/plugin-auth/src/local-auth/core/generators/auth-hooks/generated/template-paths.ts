@@ -2,7 +2,6 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthHooksPaths {
-  useCurrentUser: string;
   useLogOut: string;
   useRequiredUserId: string;
   useSession: string;
@@ -24,7 +23,6 @@ const localAuthCoreAuthHooksPathsTask = createGeneratorTask({
     return {
       providers: {
         localAuthCoreAuthHooksPaths: {
-          useCurrentUser: `${srcRoot}/hooks/use-current-user.ts`,
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
           useRequiredUserId: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
           useSession: `${srcRoot}/hooks/use-session.ts`,

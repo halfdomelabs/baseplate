@@ -1,30 +1,11 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
-  generatedGraphqlImportsProvider,
   graphqlImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
-
-const useCurrentUser = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
-  },
-  name: 'use-current-user',
-  projectExports: { useCurrentUser: {} },
-  referencedGeneratorTemplates: { useSession: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/hooks/use-current-user.ts',
-    ),
-  },
-  variables: {},
-});
 
 const useLogOut = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -81,11 +62,6 @@ const useSession = createTsTemplateFile({
   variables: {},
 });
 
-export const hooksGroup = {
-  useCurrentUser,
-  useLogOut,
-  useRequiredUserId,
-  useSession,
-};
+export const hooksGroup = { useLogOut, useRequiredUserId, useSession };
 
 export const LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES = { hooksGroup };
