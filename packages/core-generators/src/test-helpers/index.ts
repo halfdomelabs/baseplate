@@ -35,6 +35,12 @@ export {
   type ToMatchTsFragmentOptions,
 } from './matchers.js';
 
+// Export snapshot serializer
+export {
+  extendFragmentSerializer,
+  tsFragmentSerializer,
+} from './snapshot-serializer.js';
+
 // Export utility functions
 export {
   areFragmentsEqual,
