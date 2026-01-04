@@ -111,8 +111,12 @@ export class RootPackageCompiler extends PackageCompiler {
       private: true,
       rootPackage: true,
       scripts: {
-        build: `turbo run ${buildTasks}`,
-        'build:affected': `turbo run ${buildTasks} --affected`,
+        ...(buildTasks.length > 0
+          ? {
+              build: `turbo run ${buildTasks}`,
+              'build:affected': `turbo run ${buildTasks} --affected`,
+            }
+          : {}),
         typecheck: `turbo run typecheck`,
         lint: `turbo run lint`,
         'lint:affected': `turbo run lint --affected`,
@@ -121,8 +125,8 @@ export class RootPackageCompiler extends PackageCompiler {
         'prettier:check': `turbo run prettier:check && pnpm run prettier:check:root`,
         'prettier:check:affected': `turbo run prettier:check --affected`,
         'prettier:write': `turbo run prettier:write && pnpm run prettier:write:root`,
-        dev: `turbo run ${devTasks}`,
-        watch: `turbo run ${watchTasks}`,
+        ...(devTasks.length > 0 ? { dev: `turbo run ${devTasks}` } : {}),
+        ...(watchTasks.length > 0 ? { watch: `turbo run ${watchTasks}` } : {}),
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
         'prettier:check:root': `prettier --check . "!${appsFolder}/**"`,
