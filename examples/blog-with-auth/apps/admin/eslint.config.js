@@ -240,6 +240,7 @@ export default tsEslint.config(
   },
 
   /* TPL_EXTRA_CONFIGS:COMMENT:START */
+
   // GraphQL Configs
   {
     files: ['**/*.{js,jsx,ts,tsx}'],

@@ -38,6 +38,7 @@ import { reactProxyProvider } from '#src/generators/core/react-proxy/index.js';
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
 import { APOLLO_REACT_APOLLO_GENERATED } from './generated/index.js';
+import { GRAPHQL_ESLINT_RULES } from './graphql-eslint-rules.js';
 
 const descriptorSchema = z.object({
   /**
@@ -181,7 +182,25 @@ export const reactApolloGenerator = createGenerator({
       : undefined,
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
       eslintConfig.eslintIgnore.push('src/graphql-env.d.ts');
+      eslintConfig.extraConfigs.set('graphql', GRAPHQL_ESLINT_RULES);
     }),
+    eslintPackages: createNodePackagesTask({
+      dev: extractPackageVersions(REACT_PACKAGES, [
+        '@graphql-eslint/eslint-plugin',
+      ]),
+    }),
+    typescriptPlugin: createProviderTask(
+      reactTypescriptProvider,
+      (reactTypescript) => {
+        reactTypescript.addCompilerPlugin({
+          name: 'gql.tada/ts-plugin',
+          schema: schemaLocation,
+          tadaOutputLocation: './src/graphql-env.d.ts',
+          trackFieldUsage: false,
+          shouldCheckForColocatedFragments: false,
+        });
+      },
+    ),
     prettier: createProviderTask(prettierProvider, (prettier) => {
       prettier.addPrettierIgnore('src/graphql-env.d.ts');
     }),

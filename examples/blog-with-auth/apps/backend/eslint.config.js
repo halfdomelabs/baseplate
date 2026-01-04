@@ -28,7 +28,6 @@ const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
   'build',
   'dist',
   'node_modules',
-  'src/generated/graphql.tsx',
   'src/generated/prisma/**/*.ts',
 ]; /* TPL_IGNORE_FILES:END */
 

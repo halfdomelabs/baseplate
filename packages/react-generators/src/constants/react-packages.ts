@@ -44,6 +44,7 @@ export const REACT_PACKAGES = {
   'graphql-ws': '5.16.0',
   rxjs: '7.8.2',
   'gql.tada': '1.9.0',
+  '@graphql-eslint/eslint-plugin': '4.4.0',
 
   // Utils
   nanoid: '5.1.6',
