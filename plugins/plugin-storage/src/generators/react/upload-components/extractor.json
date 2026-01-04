@@ -6,8 +6,8 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#react/upload-components",
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
         },
         "reactComponentsImportsProvider": {

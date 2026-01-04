@@ -15,8 +15,8 @@
       "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
       "group": "hooks",
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
         }
       },

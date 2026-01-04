@@ -9,7 +9,7 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -46,7 +46,7 @@ const auth0Auth0HooksRenderers = createProviderType<Auth0Auth0HooksRenderers>(
 
 const auth0Auth0HooksRenderersTask = createGeneratorTask({
   dependencies: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    generatedGraphqlImports: graphqlImportsProvider,
     paths: AUTH0_AUTH0_HOOKS_PATHS.provider,
     reactErrorImports: reactErrorImportsProvider,
     typescriptFile: typescriptFileProvider,
