@@ -97,9 +97,7 @@ export function UserTable(
   const [passwordResetUser, setPasswordResetUser] = useState<ResultOf<
     typeof userTableItemsFragment
   > | null>(null);
-  /* TPL_ACTION_HOOKS:END */
 
-  /* TPL_DELETE_HOOK:START */
   const { requestConfirm } = useConfirmDialog();
   const [deleteUser] = useMutation(userTableDeleteUserMutation, {
     update: (cache, result) => {
@@ -126,7 +124,8 @@ export function UserTable(
           });
       },
     });
-  } /* TPL_DELETE_HOOK:END */
+  }
+  /* TPL_ACTION_HOOKS:END */
 
   // Unmask the fragment data for rendering
   const itemsData = readFragment(userTableItemsFragment, items);

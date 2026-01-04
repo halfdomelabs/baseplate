@@ -9,7 +9,7 @@ import { graphql } from '@src/graphql';
 
 import { UserTable, userTableItemsFragment } from './-components/user-table';
 
-/* TPL_PAGE_NAME=UserListPage */
+/* TPL_COMPONENT_NAME=UserListPage */
 /* TPL_ROUTE_PATH=/admin/accounts/users/ */
 /* TPL_GET_ITEMS_QUERY_NAME=userListUsersQuery */
 
