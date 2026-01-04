@@ -388,7 +388,9 @@ export const adminCrudEditGenerator = createGenerator({
               const createPageRenderedLoaders = renderDataLoaders(
                 inputFields.flatMap((c) => c.dataLoaders ?? []),
               );
-              const componentMutationHook = tsTemplate`const [${createMutationFieldName}] = useMutation(${createMutationVariable}, {
+              const componentMutationHook = tsTemplateWithImports([
+                tsImportBuilder(['useMutation']).from('@apollo/client/react'),
+              ])`const [${createMutationFieldName}] = useMutation(${createMutationVariable}, {
                 update: (cache) => {
                   cache.evict({ fieldName: '${modelNameVariants.graphqlList}' });
                   cache.gc();

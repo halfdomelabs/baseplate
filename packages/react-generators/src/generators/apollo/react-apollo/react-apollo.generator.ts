@@ -258,11 +258,31 @@ export const reactApolloGenerator = createGenerator({
           },
         });
 
+        reactRouterConfig.rootContextFields.add({
+          name: 'preloadQuery',
+          type: tsTemplateWithImports([
+            tsTypeImportBuilder(['PreloadQueryFunction']).from(
+              '@apollo/client/react',
+            ),
+          ])`PreloadQueryFunction`,
+          optional: false,
+          routerProviderInitializer: {
+            code: tsTemplate`preloadQuery`,
+            dependencies: ['preloadQuery'],
+          },
+        });
+
         reactRouterConfig.routerSetupFragments.set(
           'apollo-client',
           tsTemplateWithImports([
-            tsImportBuilder(['useApolloClient']).from('@apollo/client/react'),
-          ])`const apolloClient = useApolloClient();`,
+            tsImportBuilder(['createQueryPreloader', 'useApolloClient']).from(
+              '@apollo/client/react',
+            ),
+          ])`const apolloClient = useApolloClient();
+const preloadQuery = useMemo(
+  () => createQueryPreloader(apolloClient),
+  [apolloClient],
+);`,
         );
       },
     }),
