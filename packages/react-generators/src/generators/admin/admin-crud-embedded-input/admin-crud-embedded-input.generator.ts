@@ -6,7 +6,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
+import { mergeGraphqlFields } from '#src/writers/graphql/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { adminComponentsImportsProvider } from '../admin-components/index.js';
@@ -59,7 +59,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
         const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
         const {
           embeddedFormComponent,
-          dataDependencies,
+          dataLoaders,
           graphQLFields,
           validationExpression,
         } = formInfo;
@@ -107,7 +107,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
           order,
           content,
           graphQLFields: [
-            { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
+            { name: modelRelation, fields: mergeGraphqlFields(graphQLFields) },
           ],
           validation: [
             {
@@ -117,7 +117,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
               }`,
             },
           ],
-          dataDependencies,
+          dataLoaders,
         });
 
         return {
