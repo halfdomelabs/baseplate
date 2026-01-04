@@ -22,7 +22,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
 } from '@baseplate-dev/sync';
 import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -153,18 +152,6 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
 
 export { reactApolloConfigProvider };
 
-export interface ReactApolloProvider {
-  /**
-   * Get the path to the generated graphql file
-   *
-   * @returns The path to the generated graphql file
-   */
-  getGeneratedFilePath(): string;
-}
-
-export const reactApolloProvider =
-  createProviderType<ReactApolloProvider>('react-apollo');
-
 export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
@@ -264,11 +251,7 @@ export const reactApolloGenerator = createGenerator({
       dependencies: {
         reactConfigImports: reactConfigImportsProvider,
         reactApolloConfigValues: reactApolloConfigValuesProvider,
-        paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
         renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.provider,
-      },
-      exports: {
-        reactApollo: reactApolloProvider.export(packageScope),
       },
       run({
         reactConfigImports,
@@ -277,17 +260,9 @@ export const reactApolloGenerator = createGenerator({
           apolloLinks,
           websocketOptions,
         },
-        paths,
         renderers,
       }) {
         return {
-          providers: {
-            reactApollo: {
-              getGeneratedFilePath() {
-                return paths.graphql;
-              },
-            },
-          },
           build: async (builder) => {
             const findLink = (name: string): ApolloLink => {
               const link = apolloLinks.find((link) => link.name === name);
