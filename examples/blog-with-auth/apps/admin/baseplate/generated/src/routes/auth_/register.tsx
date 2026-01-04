@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
-import { RegisterWithEmailPasswordDocument } from '@src/generated/graphql';
+import { graphql } from '@src/graphql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 import { userSessionClient } from '@src/services/user-session-client';
@@ -49,6 +49,16 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+const registerWithEmailPasswordMutation = graphql(`
+  mutation RegisterWithEmailPassword($input: RegisterWithEmailPasswordInput!) {
+    registerWithEmailPassword(input: $input) {
+      session {
+        userId
+      }
+    }
+  }
+`);
+
 function RegisterPage(): React.JSX.Element {
   const {
     control,
@@ -59,7 +69,7 @@ function RegisterPage(): React.JSX.Element {
     reValidateMode: 'onBlur',
   });
   const [registerWithEmailPassword, { loading }] = useMutation(
-    RegisterWithEmailPasswordDocument,
+    registerWithEmailPasswordMutation,
   );
   const navigate = useNavigate();
   const { return_to } = Route.useSearch();

@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import type { FragmentOf } from '@src/graphql';
+
 import { Button } from '@src/components/ui/button';
 import {
   Dialog,
@@ -17,7 +19,7 @@ import {
   DialogTitle,
 } from '@src/components/ui/dialog';
 import { InputFieldController } from '@src/components/ui/input-field';
-import { type FragmentOf, graphql, readFragment } from '@src/graphql';
+import { graphql, readFragment } from '@src/graphql';
 
 const PASSWORD_MIN_LENGTH = 8;
 
