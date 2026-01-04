@@ -23,6 +23,8 @@ export interface AdminCrudInput {
 export interface AdminCrudInputContainer {
   addInput: (input: AdminCrudInput) => void;
   getModelName: () => string;
+  getParentComponentName: () => string;
+  getParentComponentPath: () => string;
   isInModal: () => boolean;
 }
 

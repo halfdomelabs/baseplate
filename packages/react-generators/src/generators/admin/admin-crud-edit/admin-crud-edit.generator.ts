@@ -145,6 +145,8 @@ export const adminCrudEditGenerator = createGenerator({
                 inputFields.push(input);
               },
               getModelName: () => modelName,
+              getParentComponentName: () => editFormComponentName,
+              getParentComponentPath: () => editFormComponentPath,
               isInModal: () => false,
             },
           },

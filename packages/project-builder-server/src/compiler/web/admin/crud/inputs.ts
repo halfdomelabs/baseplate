@@ -88,6 +88,19 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         relation.references[0].localRef,
       );
 
+      const localFieldType = model.model.fields.find(
+        (f) => f.id === relation.references[0].localRef,
+      )?.type;
+
+      if (
+        !localFieldType ||
+        (localFieldType !== 'string' && localFieldType !== 'uuid')
+      ) {
+        throw new Error(
+          `Only string and uuid primary keys are supported for foreign inputs`,
+        );
+      }
+
       return adminCrudForeignInputGenerator({
         order,
         label: definition.label,
@@ -97,6 +110,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         foreignModelName: definitionContainer.nameFromId(relation.modelRef),
         labelExpression: definition.labelExpression,
         valueExpression: definition.valueExpression,
+        valueType: localFieldType,
         defaultLabel: definition.defaultLabel,
         nullLabel: definition.nullLabel,
       });
