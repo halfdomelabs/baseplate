@@ -21,12 +21,14 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   TPL_DATA_LOADER;
 
-  const [TPL_UPDATE_MUTATION_NAME] = useMutation(TPL_UPDATE_MUTATION_VARIABLE);
+  const [TPL_UPDATE_MUTATION_FIELD_NAME] = useMutation(
+    TPL_UPDATE_MUTATION_VARIABLE,
+  );
   const navigate = useNavigate();
 
   const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {
     try {
-      await TPL_UPDATE_MUTATION_NAME({
+      await TPL_UPDATE_MUTATION_FIELD_NAME({
         variables: { input: { id, data: formData } },
       });
       toast.success(TPL_MUTATION_SUCCESS_MESSAGE);

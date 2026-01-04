@@ -119,8 +119,10 @@ export function renderDataLoaders(
     ...extraRouteLoaderFields,
   ]);
 
-  const loaderFieldsToDestructure = loaders
-    .flatMap((l) => l.routeLoaderFields ?? [])
+  const loaderFieldsToDestructure = [
+    ...loaders.flatMap((l) => l.routeLoaderFields ?? []),
+    ...extraRouteLoaderFields,
+  ]
     .filter((r) => !r.skipDestructure)
     .map((r) => r.key);
   const useLoaderDataFragment =

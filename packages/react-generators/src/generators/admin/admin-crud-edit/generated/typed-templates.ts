@@ -67,7 +67,7 @@ const editPage = createTsTemplateFile({
     TPL_ROUTE_PATH: {},
     TPL_ROUTE_PROPS: {},
     TPL_UPDATE_MUTATION: {},
-    TPL_UPDATE_MUTATION_NAME: { type: 'replacement' },
+    TPL_UPDATE_MUTATION_FIELD_NAME: { type: 'replacement' },
     TPL_UPDATE_MUTATION_VARIABLE: { type: 'replacement' },
   },
 });

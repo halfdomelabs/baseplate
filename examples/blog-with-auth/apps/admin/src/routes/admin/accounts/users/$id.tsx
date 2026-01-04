@@ -18,7 +18,7 @@ import {
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
-/* TPL_UPDATE_MUTATION_NAME=updateUser */
+/* TPL_UPDATE_MUTATION_FIELD_NAME=updateUser */
 
 /* TPL_EDIT_QUERY:START */
 export const userEditPageQuery = graphql(

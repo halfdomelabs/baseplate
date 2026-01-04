@@ -165,7 +165,7 @@ export const adminCrudEditGenerator = createGenerator({
               pageComponentBody: tsTemplateWithImports([
                 tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
               ])`const { data } = useReadQuery(queryRef);`,
-              propPageValue: tsTemplate`data.${editFormDefaultValuesFragmentVariable}`,
+              propPageValue: tsTemplate`data.${modelNameVariants.camel}`,
             };
             const dataLoaders = [
               editPageLoader,
@@ -242,7 +242,7 @@ export const adminCrudEditGenerator = createGenerator({
 
             // Edit Page
             const editQueryVariable = `${lowercaseFirstChar(editPagePrefix)}Query`;
-            const editQueryName = `${editPagePrefix}Query`;
+            const editQueryName = editPagePrefix;
             const editQuery: GraphQLOperation = {
               type: 'query',
               variableName: editQueryVariable,
@@ -269,7 +269,7 @@ export const adminCrudEditGenerator = createGenerator({
               ],
             };
 
-            const updateMutationVariable = `${lowercaseFirstChar(editPagePrefix)}Input`;
+            const updateMutationVariable = `${lowercaseFirstChar(editPagePrefix)}UpdateMutation`;
             const updateMutationName = `${editPagePrefix}Update`;
             const updateMutationFieldName = `update${modelNameVariants.pascal}`;
             const updateMutation: GraphQLOperation = {
@@ -316,7 +316,7 @@ export const adminCrudEditGenerator = createGenerator({
         query: ${editQueryVariable},
         variables: { id },
       })
-      .then(({ data }) => (data?.${modelGraphqlById}?.name ? data.${modelGraphqlById}.name : ${defaultCrumbExpression}))
+      .then(({ data }) => (data?.${modelGraphqlById}.name ? data.${modelGraphqlById}.name : ${defaultCrumbExpression}))
       .catch(() => ${defaultCrumbExpression})`,
               contextFields: ['apolloClient'],
               paramsFields: ['id'],
@@ -337,7 +337,7 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_COMPONENT_NAME: editPageName,
                   TPL_FORM_DATA_NAME: formDataExpression,
                   TPL_UPDATE_MUTATION_VARIABLE: updateMutationVariable,
-                  TPL_UPDATE_MUTATION_NAME: updateMutationName,
+                  TPL_UPDATE_MUTATION_FIELD_NAME: updateMutationFieldName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_EDIT_QUERY: renderTadaOperation(editQuery, {
                     currentPath: editPagePath,
@@ -358,7 +358,7 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_EDIT_FORM: TsCodeUtils.mergeFragmentsAsJsxElement(
                     editFormComponentExpression,
                     {
-                      submitData: 'submitData',
+                      submitData: tsTemplate`submitData`,
                       ...editPageRenderedLoaders.childProps,
                     },
                   ),
