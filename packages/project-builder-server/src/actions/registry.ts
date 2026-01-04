@@ -6,7 +6,11 @@ import {
   snapshotSaveAction,
   snapshotShowAction,
 } from './snapshot/index.js';
-import { syncAllProjectsAction, syncProjectAction } from './sync/index.js';
+import {
+  syncAllProjectsAction,
+  syncFileAction,
+  syncProjectAction,
+} from './sync/index.js';
 import {
   discoverGeneratorsAction,
   extractTemplatesAction,
@@ -25,6 +29,7 @@ export const ALL_SERVICE_ACTIONS = [
   diffProjectAction,
   syncProjectAction,
   syncAllProjectsAction,
+  syncFileAction,
   discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,

@@ -332,9 +332,24 @@ mcp__baseplate_dev_server__diff_project({
 
 Analyze the diff results:
 
-- **Acceptable differences** (import aliases, minor formatting): Can be ignored
+- **Acceptable differences** (import aliases, minor formatting): Can be incrementally fixed using `sync-file` or ignored
 - **Significant differences**: Update generators to match written code
 - **Intentional differences**: Use snapshot system
+
+**Incremental fixes with sync-file:**
+
+For acceptable differences that you want to eliminate before the final sync, use the `sync-file` command to apply individual files:
+
+```javascript
+// Apply specific files from generated output
+mcp__baseplate_dev_server__sync_file({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/routes/users.ts', 'src/models/*.ts'],
+});
+```
+
+This writes the generated version directly to both the working directory and `baseplate/generated/` folder without performing a full sync. Use this to incrementally clear diffs before running the final overwrite sync in step 8.
 
 **Intentional differences** are changes that should exist in the example project but NOT be extracted into generators. Common examples:
 
