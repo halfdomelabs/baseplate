@@ -80,13 +80,20 @@ export const adminCrudListGenerator = createGenerator({
         const tableComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-table.tsx`;
         const tableComponentName = `${modelNameVariants.pascal}Table`;
 
+        const tableItemsFragmentVariable = `${modelNameVariants.camel}TableItemsFragment`;
+
         const pagePrefix = `${modelNameVariants.pluralPascal}List`;
+        const itemsQueryName = `${pagePrefix}${modelNameVariants.pluralPascal}`;
+        const listPageComponentName = `${modelName}ListPage`;
 
         return {
           providers: {
             adminCrudActionContainer: {
               addAction: (action) => actions.push(action),
               getModelName: () => modelName,
+              getParentComponentName: () => listPageComponentName,
+              getParentComponentPath: () => listPagePath,
+              getItemsFragmentVariable: () => tableItemsFragmentVariable,
             },
             adminCrudColumnContainer: {
               addColumn: (input) => columns.push(input),
@@ -96,9 +103,6 @@ export const adminCrudListGenerator = createGenerator({
           build: async (builder) => {
             const sortedActions = actions.sort((a, b) => a.order - b.order);
             const sortedColumns = columns.sort((a, b) => a.order - b.order);
-
-            const itemsQueryName = `${pagePrefix}${modelNameVariants.pluralPascal}`;
-            const tableItemsFragmentVariable = `${modelNameVariants.camel}TableItemsFragment`;
 
             const listPageLoader: DataLoader = {
               propName: 'items',
@@ -260,7 +264,6 @@ export const adminCrudListGenerator = createGenerator({
               ],
             };
 
-            const listPageComponentName = `${modelName}ListPage`;
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `list-${modelId}`,
