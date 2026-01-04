@@ -15,8 +15,8 @@ import { UserEditForm } from './-components/user-edit-form';
 /* TPL_COMPONENT_NAME=UserCreatePage */
 
 /* TPL_CREATE_MUTATION:START */
-const userCreatePageCreateUserMutation = graphql(`
-  mutation UserCreatePageCreateUser($input: CreateUserInput!) {
+const userCreatePageCreateMutation = graphql(`
+  mutation UserCreatePageCreate($input: CreateUserInput!) {
     createUser(input: $input) {
       user {
         id
@@ -39,7 +39,7 @@ function UserCreatePage(): ReactElement {
   /* TPL_DATA_LOADER:BLOCK */
 
   /* TPL_MUTATION_HOOK:START */
-  const [createUser] = useMutation(userCreatePageCreateUserMutation, {
+  const [createUser] = useMutation(userCreatePageCreateMutation, {
     update: (cache) => {
       cache.evict({ fieldName: 'users' });
       cache.gc();

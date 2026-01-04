@@ -133,7 +133,7 @@ export function renderTadaOperation(
   operation: GraphQLOperation,
   options: RenderOptions,
 ): TsCodeFragment {
-  const { exported = true, currentPath } = options;
+  const { exported, currentPath } = options;
 
   // Collect all fragment dependencies from fields
   const dependencies = collectFragmentDependencies(operation.fields);

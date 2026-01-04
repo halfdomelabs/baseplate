@@ -288,13 +288,21 @@ export const adminCrudEditGenerator = createGenerator({
                   args: [
                     {
                       name: 'input',
-                      value: { type: 'variable', variable: '$input' },
+                      value: { type: 'variable', variable: 'input' },
                     },
                   ],
                   fields: [
-                    { name: idField },
-                    { name: nameField },
-                    { type: 'spread', fragment: editFormDefaultValuesFragment },
+                    {
+                      name: modelNameVariants.camel,
+                      fields: [
+                        { name: idField },
+                        { name: nameField },
+                        {
+                          type: 'spread',
+                          fragment: editFormDefaultValuesFragment,
+                        },
+                      ],
+                    },
                   ],
                 },
               ],
@@ -378,10 +386,15 @@ export const adminCrudEditGenerator = createGenerator({
                     args: [
                       {
                         name: 'input',
-                        value: { type: 'variable', variable: '$input' },
+                        value: { type: 'variable', variable: 'input' },
                       },
                     ],
-                    fields: [{ name: idField }],
+                    fields: [
+                      {
+                        name: modelNameVariants.camel,
+                        fields: [{ name: idField }],
+                      },
+                    ],
                   },
                 ],
               };
@@ -419,8 +432,8 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_EDIT_FORM: TsCodeUtils.mergeFragmentsAsJsxElement(
                       editFormComponentExpression,
                       {
-                        submitData: 'submitData',
-                        defaultValues: 'undefined',
+                        submitData: tsTemplate`submitData`,
+                        defaultValues: tsTemplate`undefined`,
                         ...createPageRenderedLoaders.childProps,
                       },
                     ),

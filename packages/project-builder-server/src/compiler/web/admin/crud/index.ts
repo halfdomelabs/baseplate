@@ -109,7 +109,7 @@ export function compileAdminCrudSection(
       `Section ${crudSection.name} has ${idFieldRefs.length} primary keys, but only one is allowed`,
     );
   }
-  const idField = idFieldRefs[0];
+  const idField = builder.nameFromId(idFieldRefs[0]);
   const idFieldType = model.model.fields.find(
     (field) => field.id === idFieldRefs[0],
   )?.type;
