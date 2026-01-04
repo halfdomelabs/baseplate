@@ -22,6 +22,7 @@ export const reactErrorBoundaryGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-error-boundary']),
     }),
+    imports: CORE_REACT_ERROR_BOUNDARY_GENERATED.imports.task,
     paths: CORE_REACT_ERROR_BOUNDARY_GENERATED.paths.task,
     renderers: CORE_REACT_ERROR_BOUNDARY_GENERATED.renderers.task,
     reactAppConfig: createGeneratorTask({
