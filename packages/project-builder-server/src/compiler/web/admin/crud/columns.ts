@@ -54,21 +54,21 @@ const BUILT_IN_COLUMN_COMPILERS = [
         throw new Error(`Only relations with a single reference are supported`);
       }
 
-      const localField = definitionContainer.nameFromId(
-        relation.references[0].localRef,
-      );
-      const foreignModelName = definitionContainer.nameFromId(
+      const foreignModelIdFields = ModelUtils.byIdOrThrow(
+        definitionContainer.definition,
         relation.modelRef,
+      ).model.primaryKeyFieldRefs.map((ref) =>
+        definitionContainer.nameFromId(ref),
       );
+
       return adminCrudForeignColumnGenerator({
         id: column.id,
         label: column.label,
         order,
-        localField,
+        relationName: localRelationName,
+        foreignModelIdFields,
         isOptional: ModelFieldUtils.isRelationOptional(model, relation),
-        foreignModelName,
         labelExpression: column.labelExpression,
-        valueExpression: column.valueExpression,
       });
     },
   }),
