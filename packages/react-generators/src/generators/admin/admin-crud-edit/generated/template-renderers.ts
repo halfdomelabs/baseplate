@@ -92,7 +92,6 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.createPage,
                 importMapProviders: {
-                  graphqlImports,
                   reactErrorImports,
                 },
                 ...options,
@@ -103,8 +102,8 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.editForm,
                 importMapProviders: {
+                  graphqlImports,
                   reactComponentsImports,
-                  reactErrorImports,
                 },
                 ...options,
               }),
@@ -114,7 +113,6 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.editPage,
                 importMapProviders: {
-                  graphqlImports,
                   reactErrorImports,
                 },
                 ...options,

@@ -25,6 +25,10 @@ export interface RouteLoaderField {
    */
   contextFields?: string[];
   /**
+   * Any fields that need to be destructured from the params
+   */
+  paramsFields?: string[];
+  /**
    * Skip destructure (avoids destructuring in the component - useful for crumb)
    */
   skipDestructure?: boolean;
@@ -44,10 +48,8 @@ export interface DataLoader {
 }
 
 function renderRouteLoaderFunction(
-  loaders: DataLoader[],
+  routeLoaderFields: RouteLoaderField[],
 ): TsCodeFragment | undefined {
-  const routeLoaderFields = loaders.flatMap((l) => l.routeLoaderFields ?? []);
-
   if (routeLoaderFields.length === 0) return undefined;
 
   assertNoDuplicates(routeLoaderFields, 'route loader fields');
@@ -55,11 +57,19 @@ function renderRouteLoaderFunction(
   const contextFields = uniq(
     routeLoaderFields.flatMap((r) => r.contextFields ?? []),
   );
+  const contextArg =
+    contextFields.length === 0 ? '' : `context: { ${contextFields.join(' ')} }`;
+
+  const paramsFields = uniq(
+    routeLoaderFields.flatMap((r) => r.paramsFields ?? []),
+  );
+  const paramsArg =
+    paramsFields.length === 0 ? '' : `params: { ${paramsFields.join(' ')} }`;
 
   const loaderArgs =
-    contextFields.length === 0
-      ? ''
-      : `{ context: { ${contextFields.join(' ')} } }`;
+    contextArg || paramsArg
+      ? `{ ${[contextArg, paramsArg].filter(notEmpty).join(', ')} }`
+      : '';
 
   const bodyFragments = Object.fromEntries(
     routeLoaderFields
@@ -94,12 +104,18 @@ function renderRouteLoaderFunction(
   }`;
 }
 
-export function renderDataLoaders(loaders: DataLoader[]): {
+export function renderDataLoaders(
+  loaders: DataLoader[],
+  extraRouteLoaderFields: RouteLoaderField[] = [],
+): {
   routeLoader: TsCodeFragment | undefined;
   componentBody: TsCodeFragment;
-  tableProps: Record<string, TsCodeFragment>;
+  childProps: Record<string, TsCodeFragment>;
 } {
-  const routeLoader = renderRouteLoaderFunction(loaders);
+  const routeLoader = renderRouteLoaderFunction([
+    ...loaders.flatMap((l) => l.routeLoaderFields ?? []),
+    ...extraRouteLoaderFields,
+  ]);
 
   const loaderFieldsToDestructure = loaders
     .flatMap((l) => l.routeLoaderFields ?? [])
@@ -129,7 +145,7 @@ export function renderDataLoaders(loaders: DataLoader[]): {
       [useLoaderDataFragment, componentBody],
       '\n\n',
     ),
-    tableProps: Object.fromEntries(
+    childProps: Object.fromEntries(
       loaders.map((l) => [l.propName, l.propPageValue]),
     ),
   };

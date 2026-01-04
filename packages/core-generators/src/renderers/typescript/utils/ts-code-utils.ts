@@ -503,7 +503,7 @@ export const TsCodeUtils = {
    * @returns The merged code fragment as a JSX element.
    */
   mergeFragmentsAsJsxElement(
-    name: string,
+    name: string | TsCodeFragment,
     attributes: Record<string, TsCodeFragment | string | boolean | undefined>,
     imports?: TsImportDeclaration[] | TsImportDeclaration,
   ): TsCodeFragment {
@@ -536,16 +536,19 @@ export const TsCodeUtils = {
       throw new TypeError('children must be an expression');
     }
 
+    const tagName = typeof name === 'string' ? name : name.contents;
+
     const contents = children
-      ? `<${name} ${attributesStr}>${
+      ? `<${tagName} ${attributesStr}>${
           typeof children === 'string' ? children : children.contents
-        }</${name}>`
-      : `<${name} ${attributesStr} />`;
+        }</${tagName}>`
+      : `<${tagName} ${attributesStr} />`;
 
     return {
       contents,
       ...mergeFragmentImportsAndHoistedFragments([
         ...fragments,
+        ...(typeof name === 'string' ? [] : [name]),
         {
           contents: '',
           imports: Array.isArray(imports) ? imports : imports ? [imports] : [],

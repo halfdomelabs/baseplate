@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
+import { type FragmentOf, graphql, readFragment } from '@src/graphql';
 
 import type { UserFormData } from '../-schemas/user-schema';
 
@@ -16,20 +17,37 @@ import { userEditFormSchema } from '../-schemas/user-schema';
 /* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_LIST_ROUTE=/admin/accounts/users */
 
+/* TPL_EDIT_FRAGMENT:START */
+export const userEditFormDefaultValuesFragment = graphql(`
+  fragment UserEditForm_defaultValues on User {
+    email
+    id
+    name
+  }
+`);
+/* TPL_EDIT_FRAGMENT:END */
+
 interface Props {
   className?: string;
-  initialData?: UserFormData;
   submitData: (data: UserFormData) => Promise<void>;
-  /* TPL_EXTRA_PROPS:BLOCK */
+  /* TPL_PROPS:START */
+  defaultValues:
+    | FragmentOf<typeof userEditFormDefaultValuesFragment>
+    | undefined;
+  /* TPL_PROPS:END */
 }
 
 export function UserEditForm(
   /* TPL_DESTRUCTURED_PROPS:START */ {
     className,
-    initialData,
+    defaultValues,
     submitData,
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
+  const initialValuesData = readFragment(
+    userEditFormDefaultValuesFragment,
+    defaultValues,
+  );
   const {
     handleSubmit,
     control,
@@ -38,7 +56,7 @@ export function UserEditForm(
     resolver: zodResolver(
       /* TPL_EDIT_SCHEMA:START */ userEditFormSchema /* TPL_EDIT_SCHEMA:END */,
     ),
-    defaultValues: initialData,
+    defaultValues: initialValuesData,
   });
 
   /* TPL_HEADER:BLOCK */

@@ -9,10 +9,6 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
-        "graphqlImportsProvider": {
-          "importName": "graphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
-        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
@@ -20,16 +16,17 @@
       },
       "sourceFile": "create.tsx",
       "variables": {
-        "TPL_COMPONENT_NAME": {},
+        "TPL_COMPONENT_NAME": { "type": "replacement" },
         "TPL_CREATE_MUTATION": {},
-        "TPL_DATA_GATE": {},
+        "TPL_CREATE_MUTATION_NAME": { "type": "replacement" },
         "TPL_DATA_LOADER": {},
         "TPL_EDIT_FORM": {},
         "TPL_FORM_DATA_NAME": {},
         "TPL_MODEL_NAME": {},
-        "TPL_MUTATION_NAME": {},
-        "TPL_REFETCH_DOCUMENT": {},
-        "TPL_ROUTE_PATH": {}
+        "TPL_MUTATION_ERROR_MESSAGE": {},
+        "TPL_MUTATION_HOOK": {},
+        "TPL_MUTATION_SUCCESS_MESSAGE": {},
+        "TPL_ROUTE_PATH": { "type": "replacement" }
       }
     },
     "edit-form": {
@@ -40,25 +37,26 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
-        },
-        "reactErrorImportsProvider": {
-          "importName": "reactErrorImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
       "sourceFile": "edit-form.tsx",
       "variables": {
-        "TPL_COMPONENT_NAME": {},
+        "TPL_COMPONENT_NAME": { "type": "replacement" },
         "TPL_DESTRUCTURED_PROPS": {},
+        "TPL_EDIT_FRAGMENT": {},
         "TPL_EDIT_SCHEMA": {},
-        "TPL_EXTRA_PROPS": {},
         "TPL_FORM_DATA_NAME": { "type": "replacement" },
         "TPL_HEADER": {},
         "TPL_INPUTS": {},
-        "TPL_LIST_ROUTE": { "type": "replacement" }
+        "TPL_LIST_ROUTE": { "type": "replacement" },
+        "TPL_PROPS": {}
       }
     },
     "edit-page": {
@@ -69,10 +67,6 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {
-        "graphqlImportsProvider": {
-          "importName": "graphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
-        },
         "reactErrorImportsProvider": {
           "importName": "reactErrorImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
@@ -81,17 +75,17 @@
       "sourceFile": "edit.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": { "type": "replacement" },
-        "TPL_CRUMB_EXPRESSION": {},
-        "TPL_DATA_GATE": {},
         "TPL_DATA_LOADER": {},
         "TPL_EDIT_FORM": {},
+        "TPL_EDIT_QUERY": {},
         "TPL_FORM_DATA_NAME": { "type": "replacement" },
-        "TPL_MUTATION_NAME": {},
-        "TPL_ROUTE_PATH": {},
+        "TPL_MUTATION_ERROR_MESSAGE": {},
+        "TPL_MUTATION_SUCCESS_MESSAGE": {},
+        "TPL_ROUTE_PATH": { "type": "replacement" },
+        "TPL_ROUTE_PROPS": {},
         "TPL_UPDATE_MUTATION": {},
-        "TPL_UPDATE_USER_MUTATION": {},
-        "TPL_USER_EDIT_FRAGMENT": {},
-        "TPL_USER_EDIT_QUERY": {}
+        "TPL_UPDATE_MUTATION_NAME": { "type": "replacement" },
+        "TPL_UPDATE_MUTATION_VARIABLE": { "type": "replacement" }
       }
     },
     "route": {
@@ -103,7 +97,10 @@
       "importMapProviders": {},
       "projectExports": {},
       "sourceFile": "route.tsx",
-      "variables": { "TPL_CRUMB": {}, "TPL_ROUTE": {} }
+      "variables": {
+        "TPL_CRUMB": {},
+        "TPL_ROUTE_PATH": { "type": "replacement" }
+      }
     },
     "schema": {
       "type": "ts",
@@ -115,8 +112,8 @@
       "importMapProviders": {},
       "sourceFile": "schema.ts",
       "variables": {
-        "TPL_FORM_DATA_NAME": {},
-        "TPL_SCHEMA_NAME": {},
+        "TPL_FORM_DATA_NAME": { "type": "replacement" },
+        "TPL_SCHEMA_NAME": { "type": "replacement" },
         "TPL_SCHEMA_OBJECT": {}
       }
     }

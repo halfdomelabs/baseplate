@@ -7,73 +7,69 @@ import { reactErrorImportsProvider } from '#src/generators/core/react-error/gene
 
 const createPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'create.tsx', kind: 'instance' },
-  importMapProviders: {
-    graphqlImports: graphqlImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-  },
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'create-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/create.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_CREATE_MUTATION: {},
-    TPL_DATA_GATE: {},
+    TPL_CREATE_MUTATION_NAME: { type: 'replacement' },
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
     TPL_FORM_DATA_NAME: {},
     TPL_MODEL_NAME: {},
-    TPL_MUTATION_NAME: {},
-    TPL_REFETCH_DOCUMENT: {},
-    TPL_ROUTE_PATH: {},
+    TPL_MUTATION_ERROR_MESSAGE: {},
+    TPL_MUTATION_HOOK: {},
+    TPL_MUTATION_SUCCESS_MESSAGE: {},
+    TPL_ROUTE_PATH: { type: 'replacement' },
   },
 });
 
 const editForm = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit-form.tsx', kind: 'instance' },
   importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
   name: 'edit-form',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit-form.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EDIT_FRAGMENT: {},
     TPL_EDIT_SCHEMA: {},
-    TPL_EXTRA_PROPS: {},
     TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_HEADER: {},
     TPL_INPUTS: {},
     TPL_LIST_ROUTE: { type: 'replacement' },
+    TPL_PROPS: {},
   },
 });
 
 const editPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit.tsx', kind: 'instance' },
-  importMapProviders: {
-    graphqlImports: graphqlImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-  },
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'edit-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: { type: 'replacement' },
-    TPL_CRUMB_EXPRESSION: {},
-    TPL_DATA_GATE: {},
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
+    TPL_EDIT_QUERY: {},
     TPL_FORM_DATA_NAME: { type: 'replacement' },
-    TPL_MUTATION_NAME: {},
-    TPL_ROUTE_PATH: {},
+    TPL_MUTATION_ERROR_MESSAGE: {},
+    TPL_MUTATION_SUCCESS_MESSAGE: {},
+    TPL_ROUTE_PATH: { type: 'replacement' },
+    TPL_ROUTE_PROPS: {},
     TPL_UPDATE_MUTATION: {},
-    TPL_UPDATE_USER_MUTATION: {},
-    TPL_USER_EDIT_FRAGMENT: {},
-    TPL_USER_EDIT_QUERY: {},
+    TPL_UPDATE_MUTATION_NAME: { type: 'replacement' },
+    TPL_UPDATE_MUTATION_VARIABLE: { type: 'replacement' },
   },
 });
 
@@ -85,7 +81,7 @@ const route = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/route.tsx'),
   },
-  variables: { TPL_CRUMB: {}, TPL_ROUTE: {} },
+  variables: { TPL_CRUMB: {}, TPL_ROUTE_PATH: { type: 'replacement' } },
 });
 
 const schema = createTsTemplateFile({
@@ -96,8 +92,8 @@ const schema = createTsTemplateFile({
     path: path.join(import.meta.dirname, '../templates/schema.ts'),
   },
   variables: {
-    TPL_FORM_DATA_NAME: {},
-    TPL_SCHEMA_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
+    TPL_SCHEMA_NAME: { type: 'replacement' },
     TPL_SCHEMA_OBJECT: {},
   },
 });

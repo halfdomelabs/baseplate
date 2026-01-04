@@ -12,11 +12,11 @@ import type { UserFormData } from './-schemas/user-schema';
 
 import { UserEditForm } from './-components/user-edit-form';
 
+/* TPL_COMPONENT_NAME=UserCreatePage */
 /* TPL_ROUTE_PATH=/admin/accounts/users/new */
 /* TPL_CREATE_MUTATION_NAME=userCreatePageCreateUserMutation */
-/* TPL_COMPONENT_NAME=UserCreatePage */
 
-/* TPL_CREATE_MUATION:START */
+/* TPL_CREATE_MUTATION:START */
 const userCreatePageCreateUserMutation = graphql(`
   mutation UserCreatePageCreateUser($input: CreateUserInput!) {
     createUser(input: $input) {
@@ -26,24 +26,26 @@ const userCreatePageCreateUserMutation = graphql(`
     }
   }
 `);
-/* TPL_CREATE_MUATION:END */
+/* TPL_CREATE_MUTATION:END */
 
 export const Route = createFileRoute('/admin/accounts/users/new')({
   component: UserCreatePage,
   loader: () => ({
-    crumb: /* TPL_PAGE_CRUMB:START */ 'New' /* TPL_PAGE_CRUMB:END */,
+    crumb: 'New',
   }),
 });
 
 function UserCreatePage(): ReactElement {
   /* TPL_DATA_LOADER:BLOCK */
 
+  /* TPL_MUTATION_HOOK:START */
   const [createUser] = useMutation(userCreatePageCreateUserMutation, {
     update: (cache) => {
       cache.evict({ fieldName: 'users' });
       cache.gc();
     },
   });
+  /* TPL_MUTATION_HOOK:END */
   const navigate = useNavigate();
 
   const submitData = async (
@@ -69,13 +71,13 @@ function UserCreatePage(): ReactElement {
     <div className="space-y-4">
       <h1 className="flex space-x-2">
         <span>
-          Create New {/* TPL_MODEL_NAME:START */}
+          New {/* TPL_MODEL_NAME:START */}
           User
           {/* TPL_MODEL_NAME:END */}
         </span>
       </h1>
       {/* TPL_EDIT_FORM:START */}
-      <UserEditForm submitData={submitData} />
+      <UserEditForm submitData={submitData} defaultValues={undefined} />
       {/* TPL_EDIT_FORM:END */}
     </div>
   );

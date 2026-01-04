@@ -2,23 +2,13 @@
 
 import type { ReactElement } from 'react';
 
-import { graphql } from '%graphqlImports';
-import { logError } from '%reactErrorImports';
-import { useMutation } from '@apollo/client/react';
+import { logAndFormatError, logError } from '%reactErrorImports';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-const createUserMutation = graphql(`
-  mutation CreateUser($input: CreateUserInput!) {
-    createUser(input: $input) {
-      user {
-        id
-      }
-    }
-  }
-`);
+TPL_CREATE_MUTATION;
 
-export const Route = createFileRoute(TPL_ROUTE_PATH)({
+export const Route = createFileRoute('TPL_ROUTE_PATH')({
   component: TPL_COMPONENT_NAME,
   loader: () => ({
     crumb: 'New',
@@ -28,31 +18,24 @@ export const Route = createFileRoute(TPL_ROUTE_PATH)({
 function TPL_COMPONENT_NAME(): ReactElement {
   TPL_DATA_LOADER;
 
-  const [TPL_MUTATION_NAME] = useMutation(TPL_CREATE_MUTATION, {
-    refetchQueries: [
-      {
-        query: TPL_REFETCH_DOCUMENT,
-      },
-    ],
-  });
-
+  TPL_MUTATION_HOOK;
   const navigate = useNavigate();
 
   const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {
-    await TPL_MUTATION_NAME({
-      variables: { input: { data: formData } },
-    });
-    toast.success('Successfully created item!');
-    navigate({ to: '..' }).catch(logError);
+    try {
+      await createUser({ variables: { input: { data: formData } } });
+      toast.success(TPL_MUTATION_SUCCESS_MESSAGE);
+      navigate({ to: '..' }).catch(logError);
+    } catch (err: unknown) {
+      toast.error(logAndFormatError(err, TPL_MUTATION_ERROR_MESSAGE));
+    }
   };
-
-  TPL_DATA_GATE;
 
   return (
     <div className="space-y-4">
       <h1 className="flex space-x-2">
         <span>
-          Create New <TPL_MODEL_NAME />
+          New <TPL_MODEL_NAME />
         </span>
       </h1>
       <TPL_EDIT_FORM />
