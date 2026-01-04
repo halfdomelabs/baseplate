@@ -11,10 +11,10 @@ import { UserTable, userTableItemsFragment } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
 /* TPL_ROUTE_PATH=/admin/accounts/users/ */
-/* TPL_GET_ITEMS_QUERY_NAME=userListUsersQuery */
+/* TPL_ITEMS_QUERY_VARIABLE=userListUsersQuery */
 
-/* TPL_GET_ITEMS_QUERY:START */
-export const userListUsersQuery = graphql(
+/* TPL_ITEMS_QUERY:START */
+const userListUsersQuery = graphql(
   `
     query UserListUsers {
       users {
@@ -24,20 +24,22 @@ export const userListUsersQuery = graphql(
   `,
   [userTableItemsFragment],
 );
-/* TPL_GET_ITEMS_QUERY:END */
+/* TPL_ITEMS_QUERY:END */
 
 export const Route = createFileRoute('/admin/accounts/users/')({
   component: UserListPage,
+  /* TPL_ROUTE_PROPS:START */
   loader: ({ context: { preloadQuery } }) => ({
     queryRef: preloadQuery(userListUsersQuery),
   }),
+  /* TPL_ROUTE_PROPS:END */
 });
 
 function UserListPage(): ReactElement {
-  /* TPL_DATA_LOADER:START */
+  /* TPL_DATA_LOADERS:START */
   const { queryRef } = Route.useLoaderData();
   const { data } = useReadQuery(queryRef);
-  /* TPL_DATA_LOADER:END */
+  /* TPL_DATA_LOADERS:END */
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">

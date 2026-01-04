@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { useMutation, useSuspenseQuery } from '@apollo/client/react';
+import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -59,37 +59,31 @@ const userEditPageUpdateUserMutation = graphql(
 
 export const Route = createFileRoute('/admin/accounts/users/$id')({
   component: UserEditPage,
-  loader: async ({ context: { apolloClient }, params }) => {
-    const { id } = params;
-    const { data } = await apolloClient.query({
-      query:
-        /* TPL_EDIT_QUERY_NAME:START */ userEditUserQuery /* TPL_EDIT_QUERY_NAME:END */,
-      variables: { id },
-    });
-    if (!data) throw new Error('No data received from query');
-    return {
-      crumb: /* TPL_CRUMB_EXPRESSION:START */ data.user.name
-        ? data.user.name
-        : 'Unnamed User' /* TPL_CRUMB_EXPRESSION:END */,
-    };
-  },
+  /* TPL_ROUTE_LOADER:START */
+  loader: ({ context: { apolloClient, preloadQuery }, params: { id } }) => ({
+    queryRef: preloadQuery(userEditUserQuery, { variables: { id } }),
+    crumb: apolloClient
+      .query({
+        query: userEditUserQuery,
+        variables: { id },
+      })
+      .then(({ data }) => (data?.user.name ? data.user.name : 'Edit User'))
+      .catch(() => 'Edit User'),
+  }),
+  /* TPL_ROUTE_LOADER:END */
 });
 
 function UserEditPage(): ReactElement {
   const { id } = Route.useParams();
-  const { crumb } = Route.useLoaderData();
+  const { crumb, queryRef } = Route.useLoaderData();
 
   /* TPL_DATA_LOADER:START */
-
-  const { data } = useSuspenseQuery(userEditUserQuery, {
-    variables: { id },
-  });
+  const { data } = useReadQuery(queryRef);
 
   const initialData: UserFormData = readFragment(
     userEditItemFragment,
     data.user,
   );
-
   /* TPL_DATA_LOADER:END */
 
   const [updateUser] = useMutation(userEditPageUpdateUserMutation);

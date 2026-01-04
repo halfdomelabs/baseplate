@@ -68,7 +68,7 @@ export const userTableItemsFragment = graphql(
 );
 /* TPL_ITEMS_FRAGMENT:END */
 
-/* TPL_DELETE_MUTATION:START */
+/* HOISTED:delete-user-mutation:START */
 const userTableDeleteUserMutation = graphql(`
   mutation UserTableDeleteUser($input: DeleteUserInput!) {
     deleteUser(input: $input) {
@@ -78,11 +78,12 @@ const userTableDeleteUserMutation = graphql(`
     }
   }
 `);
-/* TPL_DELETE_MUTATION:END */
+/* HOISTED:delete-user-mutation:END */
 
 interface Props {
+  /* TPL_PROPS:START */
   items: FragmentOf<typeof userTableItemsFragment>[];
-  /* TPL_EXTRA_PROPS:BLOCK */
+  /* TPL_PROPS:END */
 }
 
 export function UserTable(
