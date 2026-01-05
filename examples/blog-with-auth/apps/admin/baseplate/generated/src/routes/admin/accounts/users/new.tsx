@@ -13,6 +13,7 @@ import type { UserFormData } from './-schemas/user-schema';
 import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserCreatePage */
+/* TPL_CREATE_MUTATION_FIELD_NAME=createUser */
 
 /* TPL_CREATE_MUTATION:START */
 const userCreatePageCreateMutation = graphql(`
@@ -30,9 +31,9 @@ export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/new' /* TPL_ROUTE_PATH:END */,
 )({
   component: UserCreatePage,
-  loader: () => ({
+  /* TPL_ROUTE_PROPS:START */ loader: () => ({
     crumb: 'New',
-  }),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
 function UserCreatePage(): ReactElement {
@@ -52,7 +53,9 @@ function UserCreatePage(): ReactElement {
     formData: /* TPL_FORM_DATA_NAME:START */ UserFormData /* TPL_FORM_DATA_NAME:END */,
   ): Promise<void> => {
     try {
-      await createUser({ variables: { input: { data: formData } } });
+      await createUser({
+        variables: { input: { data: formData } },
+      });
       toast.success(
         /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully created user!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
       );

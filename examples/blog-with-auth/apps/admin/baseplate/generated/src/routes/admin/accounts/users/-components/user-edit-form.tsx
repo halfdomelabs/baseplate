@@ -16,6 +16,7 @@ import type { UserFormData } from '../-schemas/user-schema';
 import { userEditFormSchema } from '../-schemas/user-schema';
 
 /* TPL_COMPONENT_NAME=UserEditForm */
+/* TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE=userEditFormDefaultValuesFragment */
 /* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_LIST_ROUTE=/admin/accounts/users */
 
@@ -23,7 +24,6 @@ import { userEditFormSchema } from '../-schemas/user-schema';
 export const userEditFormDefaultValuesFragment = graphql(`
   fragment UserEditForm_defaultValues on User {
     email
-    id
     name
   }
 `);
@@ -54,7 +54,7 @@ export function UserEditForm(
     handleSubmit,
     control,
     formState: { isSubmitting },
-  } = useForm({
+  } = useForm<UserFormData>({
     resolver: zodResolver(
       /* TPL_EDIT_SCHEMA:START */ userEditFormSchema /* TPL_EDIT_SCHEMA:END */,
     ),

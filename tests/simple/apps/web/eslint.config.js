@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import graphqlPlugin from '@graphql-eslint/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
@@ -31,8 +32,7 @@ const IGNORE_FILES = [
   'build',
   'dist',
   'node_modules',
-  'src/generated/graphql.tsx',
-  'src/generated/graphql.tsx',
+  'src/graphql-env.d.ts',
   'src/route-tree.gen.ts',
 ];
 
@@ -235,6 +235,42 @@ export default tsEslint.config(
       'perfectionist/sort-exports': ['error'],
       'perfectionist/sort-named-imports': ['error'],
       'perfectionist/sort-named-exports': ['error'],
+    },
+  },
+
+  // GraphQL Configs
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    processor: graphqlPlugin.processor,
+  },
+  {
+    files: ['**/*.graphql'],
+    languageOptions: { parser: graphqlPlugin.parser },
+    plugins: { '@graphql-eslint': graphqlPlugin },
+    rules: {
+      ...graphqlPlugin.configs['flat/operations-recommended'].rules,
+      '@graphql-eslint/known-directives': ['off'],
+      '@graphql-eslint/naming-convention': [
+        'error',
+        {
+          allowLeadingUnderscore: true,
+          VariableDefinition: 'camelCase',
+          OperationDefinition: {
+            style: 'PascalCase',
+            forbiddenPrefixes: ['Query', 'Mutation', 'Subscription', 'Get'],
+            forbiddenSuffixes: ['Query', 'Mutation', 'Subscription'],
+          },
+          FragmentDefinition: {
+            // Use a regex that allows "Pascal" OR "Pascal_camel"
+            // It checks:
+            //   - Starts with Uppercase (Pascal part)
+            //   - Optionally follows with _lowercase (camel part)
+            requiredPattern: /^[A-Z][a-zA-Z0-9]*(_[a-z][a-zA-Z0-9]*)?$/,
+            forbiddenPrefixes: ['Fragment'],
+            forbiddenSuffixes: ['Fragment'],
+          },
+        },
+      ],
     },
   },
 

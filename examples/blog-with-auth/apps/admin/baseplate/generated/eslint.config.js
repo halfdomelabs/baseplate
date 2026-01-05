@@ -252,9 +252,11 @@ export default tsEslint.config(
     plugins: { '@graphql-eslint': graphqlPlugin },
     rules: {
       ...graphqlPlugin.configs['flat/operations-recommended'].rules,
+      '@graphql-eslint/known-directives': ['off'],
       '@graphql-eslint/naming-convention': [
         'error',
         {
+          allowLeadingUnderscore: true,
           VariableDefinition: 'camelCase',
           OperationDefinition: {
             style: 'PascalCase',

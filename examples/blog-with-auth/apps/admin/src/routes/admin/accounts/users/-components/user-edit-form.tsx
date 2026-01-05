@@ -16,15 +16,14 @@ import type { UserFormData } from '../-schemas/user-schema';
 import { userEditFormSchema } from '../-schemas/user-schema';
 
 /* TPL_COMPONENT_NAME=UserEditForm */
-/* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE=userEditFormDefaultValuesFragment */
+/* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_LIST_ROUTE=/admin/accounts/users */
 
 /* TPL_EDIT_FRAGMENT:START */
 export const userEditFormDefaultValuesFragment = graphql(`
   fragment UserEditForm_defaultValues on User {
     email
-    id
     name
   }
 `);
