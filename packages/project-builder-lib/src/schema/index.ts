@@ -3,6 +3,7 @@ export * from './auth/index.js';
 export * from './creator/index.js';
 export * from './features/index.js';
 export * from './models/index.js';
+export * from './packages/index.js';
 export * from './plugins/index.js';
 export * from './project-definition.js';
 export * from './settings/index.js';

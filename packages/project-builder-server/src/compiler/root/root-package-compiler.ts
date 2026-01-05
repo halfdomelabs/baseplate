@@ -62,7 +62,8 @@ export class RootPackageCompiler extends PackageCompiler {
 
     // Build workspace patterns from monorepo settings
     const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
-    const workspacePackages = [`${appsFolder}/*`];
+    const packagesFolder = monorepoSettings?.packagesFolder ?? 'packages';
+    const workspacePackages = [`${appsFolder}/*`, `${packagesFolder}/*`];
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
     const mergedTasks = {
@@ -129,8 +130,8 @@ export class RootPackageCompiler extends PackageCompiler {
         ...(watchTasks.length > 0 ? { watch: `turbo run ${watchTasks}` } : {}),
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
-        'prettier:check:root': `prettier --check . "!${appsFolder}/**"`,
-        'prettier:write:root': `prettier --write . "!${appsFolder}/**"`,
+        'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${packagesFolder}/**"`,
+        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${packagesFolder}/**"`,
       },
       additionalPackages: {
         dev: {

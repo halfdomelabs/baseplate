@@ -94,7 +94,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.4.1",
+  "cliVersion": "0.4.4",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
@@ -689,6 +689,13 @@
         "transformers": [],
         "update": { "enabled": false }
       }
+    }
+  ],
+  "packages": [
+    {
+      "id": "package:NVH6noPe4b8z",
+      "name": "shared-utils",
+      "type": "node-library"
     }
   ],
   "plugins": [
