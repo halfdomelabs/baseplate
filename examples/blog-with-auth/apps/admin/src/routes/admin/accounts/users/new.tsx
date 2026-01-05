@@ -31,9 +31,11 @@ export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/new' /* TPL_ROUTE_PATH:END */,
 )({
   component: UserCreatePage,
+  /* TPL_ROUTE_PROPS:START */
   loader: () => ({
     crumb: 'New',
   }),
+  /* TPL_ROUTE_PROPS:END */
 });
 
 function UserCreatePage(): ReactElement {
