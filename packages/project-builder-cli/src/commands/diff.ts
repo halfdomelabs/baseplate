@@ -19,7 +19,7 @@ export function addDiffCommand(program: Command): void {
       'Show diff between generated output and project (name or directory)',
     )
     .option('--compact', 'Show compact diff format instead of unified diff')
-    .option('--package <packages...>', 'Filter by specific package names')
+    .option('--packages <packages...>', 'Filter by specific package names')
     .option('--include <patterns...>', 'Filter files by glob patterns')
     .option(
       '--fail-on-differences',
