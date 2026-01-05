@@ -10,6 +10,10 @@
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorBoundaryImportsProvider": {
+          "importName": "reactErrorBoundaryImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error-boundary/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{components-root}/layouts/admin-layout.tsx",
@@ -49,6 +53,10 @@
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{components-root}/layouts/app-breadcrumbs.tsx",

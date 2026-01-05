@@ -25,11 +25,8 @@ export const adminCrudTextColumnGenerator = createGenerator({
         adminCrudColumnContainer.addColumn({
           label,
           order,
-          display: {
-            content: (itemName) =>
-              tsCodeFragment(`{${itemName}.${modelField}}`),
-            graphQLFields: [{ name: modelField }],
-          },
+          content: (itemName) => tsCodeFragment(`{${itemName}.${modelField}}`),
+          graphQLFields: [{ name: modelField }],
         });
         return {};
       },

@@ -32,15 +32,24 @@ const adminCrudDeleteActionCompiler: AdminCrudActionCompiler<AdminCrudDeleteActi
     compileAction: (
       definition,
       { order, model, modelCrudSection, definitionContainer },
-    ) =>
-      adminCrudDeleteActionGenerator({
+    ) => {
+      if (model.model.primaryKeyFieldRefs.length !== 1) {
+        throw new Error(
+          `Model ${model.name} must have exactly one primary key field`,
+        );
+      }
+      return adminCrudDeleteActionGenerator({
         order,
         position: definition.position,
         modelName: model.name,
         nameField: definitionContainer.nameFromId(
           modelCrudSection.nameFieldRef,
         ),
-      }),
+        idField: definitionContainer.nameFromId(
+          model.model.primaryKeyFieldRefs[0],
+        ),
+      });
+    },
   };
 
 const builtInCompilers = [

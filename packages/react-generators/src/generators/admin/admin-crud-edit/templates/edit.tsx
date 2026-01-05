@@ -2,43 +2,40 @@
 
 import type { ReactElement } from 'react';
 
-import { logError } from '%reactErrorImports';
+import { logAndFormatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
+TPL_EDIT_QUERY;
+
+TPL_UPDATE_MUTATION;
+
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
-  loader: async ({ context: { apolloClient }, params }) => {
-    const { id } = params;
-    const { data } = await apolloClient.query({
-      query: TPL_USER_QUERY,
-      variables: { id },
-    });
-    if (!data) throw new Error('No data received from query');
-    return {
-      crumb: TPL_CRUMB_EXPRESSION,
-    };
-  },
+  TPL_ROUTE_PROPS,
 });
 
 function TPL_COMPONENT_NAME(): ReactElement {
   const { id } = Route.useParams();
-  const { crumb } = Route.useLoaderData();
 
   TPL_DATA_LOADER;
 
-  const [TPL_MUTATION_NAME] = useMutation(TPL_UPDATE_MUTATION);
+  const [TPL_UPDATE_MUTATION_FIELD_NAME] = useMutation(
+    TPL_UPDATE_MUTATION_VARIABLE,
+  );
   const navigate = useNavigate();
 
-  TPL_DATA_GATE;
-
   const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {
-    await TPL_MUTATION_NAME({
-      variables: { input: { id, data: formData } },
-    });
-    toast.success('Successfully updated item!');
-    navigate({ to: '..' }).catch(logError);
+    try {
+      await TPL_UPDATE_MUTATION_FIELD_NAME({
+        variables: { input: { id, data: formData } },
+      });
+      toast.success(TPL_MUTATION_SUCCESS_MESSAGE);
+      navigate({ to: '..' }).catch(logError);
+    } catch (err: unknown) {
+      toast.error(logAndFormatError(err, TPL_MUTATION_ERROR_MESSAGE));
+    }
   };
 
   return (

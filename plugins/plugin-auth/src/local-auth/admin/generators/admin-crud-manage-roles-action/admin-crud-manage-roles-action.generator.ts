@@ -1,10 +1,12 @@
+import type { GraphQLFragment } from '@baseplate-dev/react-generators/dist/writers/graphql/graphql.js';
+
 import {
   tsImportBuilder,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
   adminCrudActionContainerProvider,
-  adminCrudQueriesProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -15,7 +17,6 @@ import { LOCAL_AUTH_ADMIN_ADMIN_CRUD_MANAGE_ROLES_ACTION_GENERATED as GENERATED_
 const descriptorSchema = z.object({
   order: z.int().nonnegative(),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
-  userModelName: z.string().min(1),
   availableRoles: z.array(
     z.object({
       name: z.string(),
@@ -29,7 +30,7 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: () => 'manage-roles',
-  buildTasks: ({ order, position, userModelName, availableRoles }) => ({
+  buildTasks: ({ order, position, availableRoles }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -38,14 +39,14 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
         paths: GENERATED_TEMPLATES.paths.provider,
-        adminCrudQueries: adminCrudQueriesProvider,
+        graphqlImports: graphqlImportsProvider,
       },
       run({
         adminCrudActionContainer,
         reactComponentsImports,
         renderers,
-        adminCrudQueries,
         paths,
+        graphqlImports,
       }) {
         // Create the action fragment based on position
         const actionFragment =
@@ -82,8 +83,12 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
         // Hook content for managing the role dialog state
         const hookContent = tsTemplateWithImports([
           tsImportBuilder(['useState']).from('react'),
+          graphqlImports.FragmentOf.typeDeclaration(),
+          tsImportBuilder(['roleManagerDialogUserFragment']).from(
+            paths.roleManagerDialog,
+          ),
         ])`
-          const [roleDialogUser, setRoleDialogUser] = useState<${adminCrudQueries.getRowFragmentExpression()} | null>(
+          const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<typeof roleManagerDialogUserFragment> | null>(
             null,
           );
         `;
@@ -103,6 +108,14 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
           )}
         `;
 
+        const roleManagerDialogUserFragment: GraphQLFragment = {
+          variableName: 'roleManagerDialogUserFragment',
+          fragmentName: 'RoleManagerDialog_user',
+          onType: 'User',
+          fields: [],
+          path: paths.roleManagerDialog,
+        };
+
         // Add the action to the container
         adminCrudActionContainer.addAction({
           name: 'Manage Roles',
@@ -114,10 +127,9 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
           siblingContent,
           graphQLFields: [
             {
-              name: 'roles',
-              fields: [{ name: 'role' }],
+              type: 'spread',
+              fragment: roleManagerDialogUserFragment,
             },
-            { name: 'name' },
           ],
         });
 
@@ -133,11 +145,6 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
                       description: role.comment,
                     })),
                   ),
-                },
-              }),
-              renderers.roleManagerDialogGql.render({
-                variables: {
-                  TPL_USER_ROW_FRAGMENT: `${userModelName}Row`,
                 },
               }),
             );

@@ -4,6 +4,8 @@ import path from 'node:path';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { authErrorsImportsProvider } from '#src/generators/auth/auth-errors/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
+import { reactErrorBoundaryImportsProvider } from '#src/generators/core/react-error-boundary/generated/ts-import-providers.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const adminRoute = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -29,6 +31,7 @@ const adminLayout = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorBoundaryImports: reactErrorBoundaryImportsProvider,
   },
   name: 'admin-layout',
   referencedGeneratorTemplates: { appBreadcrumbs: {}, appSidebar: {} },
@@ -46,6 +49,7 @@ const appBreadcrumbs = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
   },
   name: 'app-breadcrumbs',
   projectExports: {},

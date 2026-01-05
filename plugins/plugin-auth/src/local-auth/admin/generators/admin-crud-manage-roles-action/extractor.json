@@ -5,9 +5,9 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
@@ -18,13 +18,6 @@
       "projectExports": {},
       "sourceFile": "routes/-components/role-manager-dialog.tsx",
       "variables": { "TPL_AVAILABLE_ROLES": {} }
-    },
-    "role-manager-dialog-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{routes-root}/-components/role-manager-dialog.gql",
-      "sourceFile": "routes/-components/role-manager-dialog.gql",
-      "variables": { "TPL_USER_ROW_FRAGMENT": {} }
     }
   }
 }

@@ -1,6 +1,7 @@
 import type { Command } from 'commander';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
@@ -258,10 +259,10 @@ async function handleExtractTemplates(
       },
     );
   } catch (error) {
-    logger.error(
-      `Failed to extract templates: ${error instanceof Error ? error.message : String(error)}`,
+    throw enhanceErrorWithContext(
+      error,
+      `Failed to extract templates from project ${project}`,
     );
-    throw error;
   }
 }
 

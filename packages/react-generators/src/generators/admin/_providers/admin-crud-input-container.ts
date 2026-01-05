@@ -4,7 +4,7 @@ import { createProviderType } from '@baseplate-dev/sync';
 
 import type { GraphQLField } from '#src/writers/graphql/index.js';
 
-import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
+import type { DataLoader } from '../_utils/data-loader.js';
 
 export interface AdminCrudInputValidation {
   key: string;
@@ -16,13 +16,15 @@ export interface AdminCrudInput {
   content: TsCodeFragment;
   graphQLFields: GraphQLField[];
   validation: AdminCrudInputValidation[];
-  dataDependencies?: AdminCrudDataDependency[];
+  dataLoaders?: DataLoader[];
   header?: TsCodeFragment;
 }
 
 export interface AdminCrudInputContainer {
   addInput: (input: AdminCrudInput) => void;
   getModelName: () => string;
+  getParentComponentName: () => string;
+  getParentComponentPath: () => string;
   isInModal: () => boolean;
 }
 

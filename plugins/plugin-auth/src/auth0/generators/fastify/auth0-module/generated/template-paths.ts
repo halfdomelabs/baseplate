@@ -3,6 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface Auth0Auth0ModulePaths {
   management: string;
+  userSessionQueries: string;
   userSessionService: string;
 }
 
@@ -20,6 +21,7 @@ const auth0Auth0ModulePathsTask = createGeneratorTask({
       providers: {
         auth0Auth0ModulePaths: {
           management: `${moduleRoot}/services/management.ts`,
+          userSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,
           userSessionService: `${moduleRoot}/services/user-session.service.ts`,
         },
       },

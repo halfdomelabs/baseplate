@@ -6,7 +6,6 @@
       "schemaExport": "authHooksImportsSchema",
       "projectExports": {
         "SessionData": { "isTypeOnly": true },
-        "useCurrentUser": {},
         "useLogOut": {},
         "useRequiredUserId": {},
         "useSession": {},

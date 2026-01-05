@@ -47,7 +47,6 @@ export const reactSessionGenerator = createGenerator({
                 variables: {},
               }),
             );
-            await builder.apply(renderers.userSessionProviderGql.render({}));
           },
         };
       },

@@ -27,11 +27,8 @@ export const adminCrudRolesColumnGenerator = createGenerator({
         adminCrudColumnContainer.addColumn({
           label,
           order,
-          display: {
-            content: (itemName) =>
-              tsTemplateWithImports([
-                reactComponentsImports.Badge.declaration(),
-              ])`
+          content: (itemName) =>
+            tsTemplateWithImports([reactComponentsImports.Badge.declaration()])`
                 <div className="flex flex-wrap gap-1">
                   {${itemName}.roles.map((userRole) => (
                     <Badge
@@ -48,13 +45,12 @@ export const adminCrudRolesColumnGenerator = createGenerator({
                   )}
                 </div>
               `,
-            graphQLFields: [
-              {
-                name: 'roles',
-                fields: [{ name: 'role' }],
-              },
-            ],
-          },
+          graphQLFields: [
+            {
+              name: 'roles',
+              fields: [{ name: 'role' }],
+            },
+          ],
         });
         return {};
       },

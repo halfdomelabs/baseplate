@@ -16,5 +16,7 @@
   "search.exclude": {
     "**/route-tree.gen.ts": true,
     "**/baseplate/generated/**": true
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

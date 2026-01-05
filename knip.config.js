@@ -7,7 +7,7 @@ export default {
       entry: ['.workspace-meta/config.ts', 'scripts/*.{js,ts}'],
     },
     'packages/*': {
-      entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
+      entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       ignore: ['__mocks__/**'],
       paths: {
@@ -89,8 +89,8 @@ export default {
       },
     },
     'packages/project-builder-common': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
+      // project-builder-common has no src directory - it's a config package
+      project: ['*.js', '*.ts'],
       ignoreDependencies: [
         // we load the plugins dynamically from the package.json
         '@baseplate-dev/plugin-*',
@@ -112,7 +112,7 @@ export default {
     },
     'packages/code-morph': {
       entry: ['src/index.{ts,tsx}', 'src/morphers/**/*.morpher.{ts,tsx}'],
-      project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
       paths: {
         '#src/*': ['./src/*'],
       },
@@ -125,7 +125,9 @@ export default {
       },
     },
     'packages/tools': {
-      project: 'src/**/*.{ts,tsx}',
+      // tools package has no src directory - it's a config package
+      entry: ['*.js'],
+      project: ['*.js', 'eslint-configs/*.js'],
     },
     'packages/create-project': {
       entry: ['src/create-baseplate-project.{ts,tsx}'],
@@ -133,10 +135,6 @@ export default {
       paths: {
         '#src/*': ['./src/*'],
       },
-      ignoreDependencies: [
-        // used for versioning
-        '@baseplate-dev/project-builder-cli',
-      ],
     },
   },
   ignore: [

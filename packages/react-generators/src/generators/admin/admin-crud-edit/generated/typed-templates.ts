@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
@@ -12,38 +13,42 @@ const createPage = createTsTemplateFile({
     path: path.join(import.meta.dirname, '../templates/create.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_CREATE_MUTATION: {},
-    TPL_DATA_GATE: {},
+    TPL_CREATE_MUTATION_FIELD_NAME: { type: 'replacement' },
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
     TPL_FORM_DATA_NAME: {},
     TPL_MODEL_NAME: {},
-    TPL_MUTATION_NAME: {},
-    TPL_REFETCH_DOCUMENT: {},
+    TPL_MUTATION_ERROR_MESSAGE: {},
+    TPL_MUTATION_HOOK: {},
+    TPL_MUTATION_SUCCESS_MESSAGE: {},
     TPL_ROUTE_PATH: {},
+    TPL_ROUTE_PROPS: {},
   },
 });
 
 const editForm = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit-form.tsx', kind: 'instance' },
   importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
   name: 'edit-form',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit-form.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
+    TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EDIT_FRAGMENT: {},
     TPL_EDIT_SCHEMA: {},
-    TPL_EXTRA_PROPS: {},
     TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_HEADER: {},
     TPL_INPUTS: {},
     TPL_LIST_ROUTE: { type: 'replacement' },
+    TPL_PROPS: {},
   },
 });
 
@@ -56,15 +61,17 @@ const editPage = createTsTemplateFile({
   },
   variables: {
     TPL_COMPONENT_NAME: { type: 'replacement' },
-    TPL_CRUMB_EXPRESSION: {},
-    TPL_DATA_GATE: {},
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
+    TPL_EDIT_QUERY: {},
     TPL_FORM_DATA_NAME: { type: 'replacement' },
-    TPL_MUTATION_NAME: {},
+    TPL_MUTATION_ERROR_MESSAGE: {},
+    TPL_MUTATION_SUCCESS_MESSAGE: {},
     TPL_ROUTE_PATH: {},
+    TPL_ROUTE_PROPS: {},
     TPL_UPDATE_MUTATION: {},
-    TPL_USER_QUERY: { type: 'replacement' },
+    TPL_UPDATE_MUTATION_FIELD_NAME: { type: 'replacement' },
+    TPL_UPDATE_MUTATION_VARIABLE: { type: 'replacement' },
   },
 });
 
@@ -76,7 +83,7 @@ const route = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/route.tsx'),
   },
-  variables: { TPL_CRUMB: {}, TPL_ROUTE: {} },
+  variables: { TPL_CRUMB: {}, TPL_ROUTE_PATH: {} },
 });
 
 const schema = createTsTemplateFile({
@@ -87,8 +94,8 @@ const schema = createTsTemplateFile({
     path: path.join(import.meta.dirname, '../templates/schema.ts'),
   },
   variables: {
-    TPL_FORM_DATA_NAME: {},
-    TPL_SCHEMA_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
+    TPL_SCHEMA_NAME: { type: 'replacement' },
     TPL_SCHEMA_OBJECT: {},
   },
 });

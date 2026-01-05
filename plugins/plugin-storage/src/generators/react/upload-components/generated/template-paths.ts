@@ -5,7 +5,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface ReactUploadComponentsPaths {
   fileInputComponent: string;
   fileInputField: string;
-  fileInputUploadGql: string;
   hooksUseUpload: string;
 }
 
@@ -29,7 +28,6 @@ const reactUploadComponentsPathsTask = createGeneratorTask({
         reactUploadComponentsPaths: {
           fileInputComponent: `${componentsRoot}/ui/file-input.tsx`,
           fileInputField: `${componentsRoot}/ui/file-input-field.tsx`,
-          fileInputUploadGql: `${componentsRoot}/ui/file-input.gql`,
           hooksUseUpload: `${srcRoot}/hooks/use-upload.ts`,
         },
       },

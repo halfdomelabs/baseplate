@@ -4,11 +4,6 @@
     "instanceData": {},
     "template": "login"
   },
-  "queries.gql": {
-    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
-    "instanceData": { "variables": {} },
-    "template": "queries-gql"
-  },
   "register.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},

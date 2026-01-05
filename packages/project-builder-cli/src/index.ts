@@ -8,6 +8,7 @@ import { addProjectsCommand } from './commands/projects.js';
 import { addServeCommand } from './commands/server.js';
 import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncExamplesCommand } from './commands/sync-examples.js';
+import { addSyncFileCommand } from './commands/sync-file.js';
 import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
@@ -29,6 +30,7 @@ export async function runCli(): Promise<void> {
   }
 
   addSyncCommand(program);
+  addSyncFileCommand(program);
   addSyncExamplesCommand(program);
   addDiffCommand(program);
   addServeCommand(program);

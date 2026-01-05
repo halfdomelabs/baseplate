@@ -3,7 +3,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthRoutesPaths {
   login: string;
-  queriesGql: string;
   register: string;
   route: string;
 }
@@ -22,7 +21,6 @@ const authCoreAuthRoutesPathsTask = createGeneratorTask({
       providers: {
         authCoreAuthRoutesPaths: {
           login: `${routesRoot}/auth_/login.tsx`,
-          queriesGql: `${routesRoot}/auth_/queries.gql`,
           register: `${routesRoot}/auth_/register.tsx`,
           route: `${routesRoot}/auth_/route.tsx`,
         },

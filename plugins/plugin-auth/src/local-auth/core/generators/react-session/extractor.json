@@ -27,9 +27,9 @@
           "importName": "authHooksImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
         },
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "localAuthHooksImportsProvider": {
           "importName": "localAuthHooksImportsProvider",
@@ -47,13 +47,6 @@
       "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
       "referencedGeneratorTemplates": ["user-session-client"],
       "sourceFile": "src/app/user-session-provider.tsx",
-      "variables": {}
-    },
-    "user-session-provider-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/app/user-session-provider.gql",
-      "sourceFile": "src/app/user-session-provider.gql",
       "variables": {}
     }
   }

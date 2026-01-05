@@ -1,5 +1,3 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import {
   tsCodeFragment,
   TsCodeUtils,
@@ -9,25 +7,35 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { notEmpty, quot } from '@baseplate-dev/utils';
+import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 import { kebabCase } from 'es-toolkit';
-import { pluralize } from 'inflection';
 import { z } from 'zod';
 
+import type {
+  GraphQLFragment,
+  GraphQLOperation,
+} from '#src/writers/graphql/index.js';
+
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import {
+  graphqlImportsProvider,
+  renderDataLoaders,
+} from '#src/generators/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
-import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
+import {
+  mergeGraphqlFields,
+  renderTadaFragment,
+  renderTadaOperation,
+} from '#src/writers/graphql/index.js';
 
 import type { AdminCrudAction } from '../_providers/admin-crud-action-container.js';
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
-import type { DataLoader } from '../_providers/admin-loader.js';
+import type { DataLoader } from '../_utils/data-loader.js';
 
 import { adminCrudActionContainerProvider } from '../_providers/admin-crud-action-container.js';
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
-import { printDataLoaders } from '../_providers/admin-loader.js';
-import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
+import { getModelNameVariants } from '../_utils/get-model-name-variants.js';
 import { ADMIN_ADMIN_CRUD_LIST_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -43,14 +51,13 @@ export const adminCrudListGenerator = createGenerator({
   getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelId, modelName, disableCreate }) => ({
     renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.task,
-
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
-        adminCrudQueries: adminCrudQueriesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.provider,
+        graphqlImports: graphqlImportsProvider,
       },
       exports: {
         adminCrudActionContainer: adminCrudActionContainerProvider.export(),
@@ -58,26 +65,35 @@ export const adminCrudListGenerator = createGenerator({
       },
       run({
         typescriptFile,
-        adminCrudQueries,
         reactRoutes,
         reactComponentsImports,
         renderers,
+        graphqlImports,
       }) {
+        const modelNameVariants = getModelNameVariants(modelName);
         const routePrefix = reactRoutes.getRoutePrefix();
         const routeFilePath = reactRoutes.getRouteFilePath();
         const actions: AdminCrudAction[] = [];
         const columns: AdminCrudColumn[] = [];
         const listPagePath = `${reactRoutes.getOutputRelativePath()}/index.tsx`;
         const tableComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-table.tsx`;
-        const tableComponentName = `${modelName}Table`;
+        const tableComponentName = `${modelNameVariants.pascal}Table`;
 
-        const listInfo = adminCrudQueries.getListQueryHookInfo();
+        const tableItemsFragmentVariable = `${modelNameVariants.camel}TableItemsFragment`;
+
+        const pagePrefix = `${modelNameVariants.pascal}ListPage`;
+        const itemsQueryName = pagePrefix;
+        const itemsQueryVariable = `${lowercaseFirstChar(itemsQueryName)}Query`;
+        const listPageComponentName = `${modelName}ListPage`;
 
         return {
           providers: {
             adminCrudActionContainer: {
               addAction: (action) => actions.push(action),
               getModelName: () => modelName,
+              getParentComponentName: () => listPageComponentName,
+              getParentComponentPath: () => listPagePath,
+              getItemsFragmentVariable: () => tableItemsFragmentVariable,
             },
             adminCrudColumnContainer: {
               addColumn: (input) => columns.push(input),
@@ -87,124 +103,43 @@ export const adminCrudListGenerator = createGenerator({
           build: async (builder) => {
             const sortedActions = actions.sort((a, b) => a.order - b.order);
             const sortedColumns = columns.sort((a, b) => a.order - b.order);
-            const dataDependencies = mergeAdminCrudDataDependencies(
-              sortedColumns
-                .flatMap((c) => c.display.dataDependencies)
-                .filter(notEmpty),
-            );
-
-            for (const dep of dataDependencies) {
-              if (dep.graphFragments)
-                for (const frag of dep.graphFragments) {
-                  adminCrudQueries.addFragment(frag);
-                }
-              if (dep.graphRoots)
-                for (const root of dep.graphRoots) {
-                  adminCrudQueries.addRoot(root);
-                }
-            }
-
-            const inputLoaders = dataDependencies.map((d) => d.loader);
-
-            const useQuery = TsCodeUtils.importFragment(
-              'useQuery',
-              '@apollo/client/react',
-            );
 
             const listPageLoader: DataLoader = {
-              loader: tsTemplate`const { data, error } = ${useQuery}(${listInfo.documentExpression});`,
-              loaderErrorName: 'error',
-              loaderValueName: 'data',
+              propName: 'items',
+              routeLoaderFields: [
+                {
+                  key: 'queryRef',
+                  value: tsTemplate`preloadQuery(${itemsQueryVariable})`,
+                  contextFields: ['preloadQuery'],
+                },
+              ],
+              propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${tableItemsFragmentVariable}>[]`,
+              pageComponentBody: tsTemplateWithImports([
+                tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
+              ])`const { data } = useReadQuery(queryRef);`,
+              propPageValue: tsTemplate`data.${modelNameVariants.graphqlList}`,
             };
 
-            const loaderOutput = printDataLoaders(
-              [listPageLoader, ...inputLoaders],
-              reactComponentsImports,
-            );
-
-            adminCrudQueries.setRowFields(
-              mergeGraphQLFields([
-                { name: 'id' },
-                ...sortedColumns.flatMap((c) => c.display.graphQLFields),
-                ...sortedActions.flatMap((a) => a.graphQLFields ?? []),
-              ]),
-            );
-            const tableLoaderExtraProps = dataDependencies
-              .map(
-                (d) =>
-                  `${d.propName}={${d.propLoaderValueGetter(
-                    d.loader.loaderValueName,
-                  )}}`,
-              )
-              .join(' ');
-
-            const listPageComponentName = `${modelName}ListPage`;
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                id: `list-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
-                destination: listPagePath,
-                variables: {
-                  TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
-                  TPL_PAGE_NAME: listPageComponentName,
-                  TPL_TITLE: `${titleizeCamel(modelName)} Management`,
-                  TPL_TABLE_COMPONENT: tsCodeFragment(
-                    `<${tableComponentName} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
-                    TsCodeUtils.importBuilder([tableComponentName]).from(
-                      tableComponentPath,
-                    ),
-                  ),
-                  TPL_CREATE_BUTTON: disableCreate
-                    ? tsCodeFragment('')
-                    : tsCodeFragment(
-                        `
-            <div className="block">
-            <Link to="${routePrefix}/new">
-              <Button>
-                <MdAdd />
-                Create ${titleizeCamel(modelName)}
-              </Button>
-            </Link>
-          </div>`,
-                        [
-                          tsImportBuilder(['Link']).from(
-                            '@tanstack/react-router',
-                          ),
-                          tsImportBuilder(['MdAdd']).from('react-icons/md'),
-                          reactComponentsImports.Button.declaration(),
-                        ],
-                      ),
-                  TPL_DATA_LOADER: loaderOutput.loader,
-                  TPL_DATA_PARTS: loaderOutput.dataParts,
-                  TPL_ERROR_PARTS: loaderOutput.errorParts,
-                },
-                importMapProviders: {
-                  reactComponentsImports,
-                },
-              }),
-            );
-
-            const headers = [
-              ...sortedColumns.map(
-                (column) =>
-                  tsTemplateWithImports(
-                    reactComponentsImports.TableHead.declaration(),
-                  )`<TableHead>${column.label}</TableHead>`,
-              ),
-              ...(sortedActions.length > 0
-                ? [
-                    tsTemplateWithImports(
-                      reactComponentsImports.TableHead.declaration(),
-                    )`<TableHead className="w-12">Actions</TableHead>`,
-                  ]
-                : []),
+            const dataLoaders = [
+              listPageLoader,
+              ...columns.flatMap((c) => c.dataLoaders ?? []),
+              ...actions.flatMap((a) => a.dataLoaders ?? []),
             ];
-            const cells = sortedColumns.map(
-              (column) =>
-                tsTemplateWithImports(
-                  reactComponentsImports.TableCell.declaration(),
-                )`<TableCell>${column.display.content('item')}</TableCell>`,
-            );
+
+            // Render table component
+            const tableItemsFragmentName = `${tableComponentName}_items`;
+
+            const tableItemsFragment: GraphQLFragment = {
+              fragmentName: tableItemsFragmentName,
+              fields: mergeGraphqlFields([
+                ...actions.flatMap((a) => a.graphQLFields ?? []),
+                ...columns.flatMap((c) => c.graphQLFields),
+              ]),
+              onType: modelNameVariants.graphqlObjectType,
+              variableName: tableItemsFragmentVariable,
+              path: tableComponentPath,
+            };
+
             const inlineActions = sortedActions.filter(
               (c) => c.position === 'inline',
             );
@@ -253,13 +188,49 @@ export const adminCrudListGenerator = createGenerator({
             `
                 : undefined;
 
+            const TableHead = reactComponentsImports.TableHead.fragment();
+
+            const headers = [
+              ...sortedColumns.map(
+                (column) =>
+                  tsTemplate`<${TableHead}>${column.label}</${TableHead}>`,
+              ),
+              ...(sortedActions.length > 0
+                ? [
+                    tsTemplate`<${TableHead} className="w-12">Actions</${TableHead}>`,
+                  ]
+                : []),
+            ];
+            const cells = sortedColumns.map(
+              (column) =>
+                tsTemplateWithImports(
+                  reactComponentsImports.TableCell.declaration(),
+                )`<TableCell>${column.content('item')}</TableCell>`,
+            );
+
             await builder.apply(
               renderers.table.render({
                 id: `table-${modelId}`,
                 destination: tableComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: tableComponentName,
-                  TPL_ROW_FRAGMENT: adminCrudQueries.getRowFragmentExpression(),
+                  TPL_ITEMS_FRAGMENT_NAME: tableItemsFragmentVariable,
+                  TPL_ITEMS_FRAGMENT: renderTadaFragment(tableItemsFragment, {
+                    currentPath: tableComponentPath,
+                    exported: true,
+                  }),
+                  TPL_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                    Object.fromEntries(
+                      dataLoaders.map((d) => [d.propName, d.propType]),
+                    ),
+                  ),
+                  TPL_DESTRUCTURED_PROPS: `{${dataLoaders
+                    .map((d) => d.propName)
+                    .join(', ')}}`,
+                  TPL_ACTION_HOOKS: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedActions.map((a) => a.hookContent),
+                  ),
+                  TPL_PLURAL_MODEL: modelNameVariants.pluralTitle,
                   TPL_HEADERS: TsCodeUtils.mergeFragmentsPresorted(
                     headers,
                     '\n',
@@ -268,26 +239,78 @@ export const adminCrudListGenerator = createGenerator({
                     [...cells, actionCellFragment],
                     '\n',
                   ),
-                  TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
-                  TPL_EXTRA_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
-                    Object.fromEntries(
-                      dataDependencies.map((d): [string, TsCodeFragment] => [
-                        d.propName,
-                        d.propType,
-                      ]),
-                    ),
-                  ),
-                  TPL_DESTRUCTURED_PROPS: `{
-                    items,
-                    ${dataDependencies.map((d) => d.propName).join(',\n')}
-                  }`,
-                  TPL_ACTION_HOOKS: TsCodeUtils.mergeFragmentsPresorted(
-                    sortedActions.map((a) => a.hookContent),
-                  ),
                   TPL_ACTION_SIBLING_COMPONENTS:
                     TsCodeUtils.mergeFragmentsPresorted(
                       sortedActions.map((a) => a.siblingContent),
                     ),
+                },
+              }),
+            );
+
+            // Render list page
+            const {
+              childProps: tableProps,
+              componentBody,
+              routeLoader,
+            } = renderDataLoaders(dataLoaders);
+
+            const itemsQuery: GraphQLOperation = {
+              type: 'query',
+              variableName: itemsQueryVariable,
+              operationName: itemsQueryName,
+              fields: [
+                {
+                  name: modelNameVariants.graphqlList,
+                  fields: [{ type: 'spread', fragment: tableItemsFragment }],
+                },
+              ],
+            };
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                id: `list-${modelId}`,
+                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
+                destination: listPagePath,
+                variables: {
+                  TPL_COMPONENT_NAME: listPageComponentName,
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
+                  TPL_ITEMS_QUERY: renderTadaOperation(itemsQuery, {
+                    currentPath: listPagePath,
+                  }),
+                  TPL_ROUTE_PROPS: routeLoader
+                    ? tsTemplate`loader: ${routeLoader}`
+                    : '',
+                  TPL_PAGE_TITLE: modelNameVariants.pluralTitle,
+                  TPL_DATA_LOADERS: componentBody,
+                  TPL_CREATE_BUTTON: disableCreate
+                    ? tsCodeFragment('')
+                    : tsCodeFragment(
+                        `
+            <div className="block">
+            <Link to="${routePrefix}/new">
+              <Button>
+                <MdAdd />
+                Create ${titleizeCamel(modelName)}
+              </Button>
+            </Link>
+          </div>`,
+                        [
+                          tsImportBuilder(['Link']).from(
+                            '@tanstack/react-router',
+                          ),
+                          tsImportBuilder(['MdAdd']).from('react-icons/md'),
+                          reactComponentsImports.Button.declaration(),
+                        ],
+                      ),
+                  TPL_TABLE_COMPONENT: TsCodeUtils.mergeFragmentsAsJsxElement(
+                    tableComponentName,
+                    tableProps,
+                    [
+                      TsCodeUtils.importBuilder([tableComponentName]).from(
+                        tableComponentPath,
+                      ),
+                    ],
+                  ),
                 },
               }),
             );

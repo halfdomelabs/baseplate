@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import type { UserRowFragment } from '@src/generated/graphql';
+import type { FragmentOf } from '@src/graphql';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -19,10 +19,7 @@ import {
   DialogTitle,
 } from '@src/components/ui/dialog';
 import { InputFieldController } from '@src/components/ui/input-field';
-import {
-  GetUsersDocument,
-  ResetUserPasswordDocument,
-} from '@src/generated/graphql';
+import { graphql, readFragment } from '@src/graphql';
 
 const PASSWORD_MIN_LENGTH = 8;
 
@@ -44,8 +41,29 @@ const passwordResetSchema = z
 
 type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
+export const passwordResetDialogUserFragment = graphql(`
+  fragment PasswordResetDialog_user on User {
+    id
+    name
+    email
+  }
+`);
+
+const resetUserPasswordMutation = graphql(
+  `
+    mutation ResetUserPassword($input: ResetUserPasswordInput!) {
+      resetUserPassword(input: $input) {
+        user {
+          ...PasswordResetDialog_user
+        }
+      }
+    }
+  `,
+  [passwordResetDialogUserFragment],
+);
+
 interface PasswordResetDialogProps {
-  user: UserRowFragment;
+  user: FragmentOf<typeof passwordResetDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -68,9 +86,10 @@ export function PasswordResetDialog({
 }: PasswordResetDialogProps): ReactElement {
   const [isSaving, setIsSaving] = useState(false);
 
-  const [resetUserPassword] = useMutation(ResetUserPasswordDocument, {
-    refetchQueries: [{ query: GetUsersDocument }],
-  });
+  // Unmask the fragment data
+  const userData = readFragment(passwordResetDialogUserFragment, user);
+
+  const [resetUserPassword] = useMutation(resetUserPasswordMutation);
 
   const form = useForm<PasswordResetFormData>({
     resolver: zodResolver(passwordResetSchema),
@@ -86,7 +105,7 @@ export function PasswordResetDialog({
       await resetUserPassword({
         variables: {
           input: {
-            userId: user.id,
+            userId: userData.id,
             newPassword: data.newPassword,
           },
         },
@@ -107,7 +126,7 @@ export function PasswordResetDialog({
         <DialogHeader>
           <DialogTitle>Reset Password</DialogTitle>
           <DialogDescription>
-            Set a new password for {user.name ?? user.email}
+            Set a new password for {userData.name ?? userData.email}
           </DialogDescription>
         </DialogHeader>
 

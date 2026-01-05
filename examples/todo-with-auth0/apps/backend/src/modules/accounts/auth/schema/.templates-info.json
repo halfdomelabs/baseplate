@@ -1,0 +1,7 @@
+{
+  "user-session.queries.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+    "instanceData": {},
+    "template": "user-session-queries"
+  }
+}

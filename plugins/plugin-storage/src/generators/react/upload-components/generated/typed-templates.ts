@@ -1,9 +1,6 @@
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
-  createTextTemplateFile,
-  createTsTemplateFile,
-} from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -12,12 +9,16 @@ import path from 'node:path';
 const fileInputComponent = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'file-input-component',
-  projectExports: { FileInput: { exportedAs: 'default' } },
+  projectExports: {
+    FileCategory: { isTypeOnly: true },
+    FileInput: { isTypeOnly: false },
+    fileInputValueFragment: { isTypeOnly: false },
+  },
   referencedGeneratorTemplates: { hooksUseUpload: {} },
   source: {
     path: path.join(
@@ -45,18 +46,6 @@ const fileInputField = createTsTemplateFile({
   variables: {},
 });
 
-const fileInputUploadGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'file-input-upload-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/components/ui/file-input.gql',
-    ),
-  },
-  variables: { TPL_FILE_TYPE: {} },
-});
-
 const hooksUseUpload = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
@@ -74,6 +63,5 @@ const hooksUseUpload = createTsTemplateFile({
 export const REACT_UPLOAD_COMPONENTS_TEMPLATES = {
   fileInputComponent,
   fileInputField,
-  fileInputUploadGql,
   hooksUseUpload,
 };

@@ -1,0 +1,63 @@
+/* eslint-disable */
+/* prettier-ignore */
+
+export type introspection_types = {
+    'AuthRole': { name: 'AuthRole'; enumValues: 'admin' | 'public' | 'system' | 'user'; };
+    'Blog': { kind: 'OBJECT'; name: 'Blog'; fields: { 'id': { name: 'id'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'ID'; ofType: null; }; } }; 'name': { name: 'name'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; } }; 'userId': { name: 'userId'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; } }; }; };
+    'Boolean': unknown;
+    'ChangePasswordInput': { kind: 'INPUT_OBJECT'; name: 'ChangePasswordInput'; isOneOf: false; inputFields: [{ name: 'currentPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }, { name: 'newPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }]; };
+    'ChangePasswordPayload': { kind: 'OBJECT'; name: 'ChangePasswordPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'CreateUserData': { kind: 'INPUT_OBJECT'; name: 'CreateUserData'; isOneOf: false; inputFields: [{ name: 'email'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; }; defaultValue: null }, { name: 'emailVerified'; type: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; defaultValue: null }, { name: 'name'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; }; defaultValue: null }]; };
+    'CreateUserInput': { kind: 'INPUT_OBJECT'; name: 'CreateUserInput'; isOneOf: false; inputFields: [{ name: 'data'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'INPUT_OBJECT'; name: 'CreateUserData'; ofType: null; }; }; defaultValue: null }]; };
+    'CreateUserPayload': { kind: 'OBJECT'; name: 'CreateUserPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'Date': unknown;
+    'DateTime': unknown;
+    'DeleteUserInput': { kind: 'INPUT_OBJECT'; name: 'DeleteUserInput'; isOneOf: false; inputFields: [{ name: 'id'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; }; defaultValue: null }]; };
+    'DeleteUserPayload': { kind: 'OBJECT'; name: 'DeleteUserPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'ID': unknown;
+    'JSON': unknown;
+    'JSONObject': unknown;
+    'LogOutPayload': { kind: 'OBJECT'; name: 'LogOutPayload'; fields: { 'success': { name: 'success'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; } }; }; };
+    'LoginWithEmailPasswordInput': { kind: 'INPUT_OBJECT'; name: 'LoginWithEmailPasswordInput'; isOneOf: false; inputFields: [{ name: 'email'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }, { name: 'password'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }]; };
+    'LoginWithEmailPasswordPayload': { kind: 'OBJECT'; name: 'LoginWithEmailPasswordPayload'; fields: { 'session': { name: 'session'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'UserSessionPayload'; ofType: null; }; } }; }; };
+    'Mutation': { kind: 'OBJECT'; name: 'Mutation'; fields: { 'changePassword': { name: 'changePassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'ChangePasswordPayload'; ofType: null; }; } }; 'createUser': { name: 'createUser'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'CreateUserPayload'; ofType: null; }; } }; 'deleteUser': { name: 'deleteUser'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'DeleteUserPayload'; ofType: null; }; } }; 'logOut': { name: 'logOut'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'LogOutPayload'; ofType: null; }; } }; 'loginWithEmailPassword': { name: 'loginWithEmailPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'LoginWithEmailPasswordPayload'; ofType: null; }; } }; 'registerWithEmailPassword': { name: 'registerWithEmailPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'RegisterWithEmailPasswordPayload'; ofType: null; }; } }; 'resetUserPassword': { name: 'resetUserPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'ResetUserPasswordPayload'; ofType: null; }; } }; 'updateUser': { name: 'updateUser'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'UpdateUserPayload'; ofType: null; }; } }; 'updateUserRoles': { name: 'updateUserRoles'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'UpdateUserRolesPayload'; ofType: null; }; } }; }; };
+    'Query': { kind: 'OBJECT'; name: 'Query'; fields: { 'blog': { name: 'blog'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'Blog'; ofType: null; }; } }; 'blogs': { name: 'blogs'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'Blog'; ofType: null; }; }; }; } }; 'currentUserSession': { name: 'currentUserSession'; type: { kind: 'OBJECT'; name: 'UserSessionPayload'; ofType: null; } }; 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; 'users': { name: 'users'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; }; }; } }; 'viewer': { name: 'viewer'; type: { kind: 'OBJECT'; name: 'User'; ofType: null; } }; }; };
+    'RegisterWithEmailPasswordInput': { kind: 'INPUT_OBJECT'; name: 'RegisterWithEmailPasswordInput'; isOneOf: false; inputFields: [{ name: 'email'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }, { name: 'password'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }]; };
+    'RegisterWithEmailPasswordPayload': { kind: 'OBJECT'; name: 'RegisterWithEmailPasswordPayload'; fields: { 'session': { name: 'session'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'UserSessionPayload'; ofType: null; }; } }; }; };
+    'ResetUserPasswordInput': { kind: 'INPUT_OBJECT'; name: 'ResetUserPasswordInput'; isOneOf: false; inputFields: [{ name: 'newPassword'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }, { name: 'userId'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; }; defaultValue: null }]; };
+    'ResetUserPasswordPayload': { kind: 'OBJECT'; name: 'ResetUserPasswordPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'String': unknown;
+    'UpdateUserData': { kind: 'INPUT_OBJECT'; name: 'UpdateUserData'; isOneOf: false; inputFields: [{ name: 'email'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; }; defaultValue: null }, { name: 'emailVerified'; type: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; defaultValue: null }, { name: 'name'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; }; defaultValue: null }]; };
+    'UpdateUserInput': { kind: 'INPUT_OBJECT'; name: 'UpdateUserInput'; isOneOf: false; inputFields: [{ name: 'data'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'INPUT_OBJECT'; name: 'UpdateUserData'; ofType: null; }; }; defaultValue: null }, { name: 'id'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; }; defaultValue: null }]; };
+    'UpdateUserPayload': { kind: 'OBJECT'; name: 'UpdateUserPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'UpdateUserRolesInput': { kind: 'INPUT_OBJECT'; name: 'UpdateUserRolesInput'; isOneOf: false; inputFields: [{ name: 'roles'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; }; }; defaultValue: null }, { name: 'userId'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; }; defaultValue: null }]; };
+    'UpdateUserRolesPayload': { kind: 'OBJECT'; name: 'UpdateUserRolesPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
+    'User': { kind: 'OBJECT'; name: 'User'; fields: { 'email': { name: 'email'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; } }; 'emailVerified': { name: 'emailVerified'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; } }; 'id': { name: 'id'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'ID'; ofType: null; }; } }; 'name': { name: 'name'; type: { kind: 'SCALAR'; name: 'String'; ofType: null; } }; 'roles': { name: 'roles'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'UserRole'; ofType: null; }; }; }; } }; }; };
+    'UserRole': { kind: 'OBJECT'; name: 'UserRole'; fields: { 'role': { name: 'role'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; } }; 'userId': { name: 'userId'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; } }; }; };
+    'UserSessionPayload': { kind: 'OBJECT'; name: 'UserSessionPayload'; fields: { 'expiresAt': { name: 'expiresAt'; type: { kind: 'SCALAR'; name: 'DateTime'; ofType: null; } }; 'roles': { name: 'roles'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'ENUM'; name: 'AuthRole'; ofType: null; }; }; }; } }; 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; 'userId': { name: 'userId'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; } }; }; };
+    'Uuid': unknown;
+};
+
+/** An IntrospectionQuery representation of your schema.
+ *
+ * @remarks
+ * This is an introspection of your schema saved as a file by GraphQLSP.
+ * It will automatically be used by `gql.tada` to infer the types of your GraphQL documents.
+ * If you need to reuse this data or update your `scalars`, update `tadaOutputLocation` to
+ * instead save to a .ts instead of a .d.ts file.
+ */
+export type introspection = {
+  name: never;
+  query: 'Query';
+  mutation: 'Mutation';
+  subscription: never;
+  types: introspection_types;
+};
+
+import * as gqlTada from 'gql.tada';
+
+declare module 'gql.tada' {
+  interface setupSchema {
+    introspection: introspection
+  }
+}

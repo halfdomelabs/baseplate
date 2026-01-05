@@ -1,85 +1,111 @@
 import type { ReactElement } from 'react';
 
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { toast } from 'sonner';
 
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import {
-  GetTodoListUserOptionsDocument,
-  TodoListEditByIdDocument,
-  UpdateTodoListDocument,
-} from '@src/generated/graphql';
+import { graphql } from '@src/graphql';
+import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
 import type { TodoListFormData } from './-schemas/todo-list-schema';
 
-import { TodoListEditForm } from './-components/todo-list-edit-form';
+import {
+  TodoListEditForm,
+  todoListEditFormDefaultValuesFragment,
+  todoListEditFormOwnerOptionsQuery,
+} from './-components/todo-list-edit-form';
 
 /* TPL_COMPONENT_NAME=TodoListEditPage */
 /* TPL_FORM_DATA_NAME=TodoListFormData */
-/* TPL_USER_QUERY=TodoListEditByIdDocument */
+/* TPL_UPDATE_MUTATION_FIELD_NAME=updateTodoList */
+/* TPL_UPDATE_MUTATION_VARIABLE=todoListEditPageUpdateMutation */
+
+/* TPL_EDIT_QUERY:START */
+const todoListEditPageQuery = graphql(
+  `
+    query TodoListEditPage($id: Uuid!) {
+      todoList(id: $id) {
+        id
+        name
+        ...TodoListEditForm_defaultValues
+      }
+    }
+  `,
+  [todoListEditFormDefaultValuesFragment],
+);
+/* TPL_EDIT_QUERY:END */
+
+/* TPL_UPDATE_MUTATION:START */
+const todoListEditPageUpdateMutation = graphql(
+  `
+    mutation TodoListEditPageUpdate($input: UpdateTodoListInput!) {
+      updateTodoList(input: $input) {
+        todoList {
+          id
+          name
+          ...TodoListEditForm_defaultValues
+        }
+      }
+    }
+  `,
+  [todoListEditFormDefaultValuesFragment],
+);
+/* TPL_UPDATE_MUTATION:END */
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/todos/todo-list/$id' /* TPL_ROUTE_PATH:END */,
 )({
   component: TodoListEditPage,
-  loader: async ({ context: { apolloClient }, params }) => {
-    const { id } = params;
-    const { data } = await apolloClient.query({
-      query: TodoListEditByIdDocument,
-      variables: { id },
-    });
-    if (!data) throw new Error('No data received from query');
-    return {
-      crumb: /* TPL_CRUMB_EXPRESSION:START */ data.todoList.name
-        ? data.todoList.name
-        : 'Unnamed Todo List' /* TPL_CRUMB_EXPRESSION:END */,
-    };
-  },
+  /* TPL_ROUTE_PROPS:START */ loader: ({
+    context: { preloadQuery, apolloClient },
+    params: { id },
+  }) => ({
+    crumb: apolloClient
+      .query({
+        query: todoListEditPageQuery,
+        variables: { id },
+      })
+      .then(({ data }) =>
+        data?.todoList.name ? data.todoList.name : 'Edit Todo List',
+      )
+      .catch(() => 'Edit Todo List'),
+    ownerOptionsRef: preloadQuery(todoListEditFormOwnerOptionsQuery),
+    queryRef: preloadQuery(todoListEditPageQuery, { variables: { id } }),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
 function TodoListEditPage(): ReactElement {
   const { id } = Route.useParams();
-  const { crumb } = Route.useLoaderData();
 
   /* TPL_DATA_LOADER:START */
+  const { queryRef, ownerOptionsRef, crumb } = Route.useLoaderData();
 
-  const { data, error } = useQuery(TodoListEditByIdDocument, {
-    variables: { id },
-  });
+  const { data } = useReadQuery(queryRef);
 
-  const initialData: TodoListFormData | undefined = useMemo(() => {
-    if (!data?.todoList) return undefined;
-    return data.todoList;
-  }, [data]);
-
-  const { data: todoListUserOptionsData, error: todoListUserOptionsError } =
-    useQuery(GetTodoListUserOptionsDocument);
+  const ownerOptions = useReadQuery(ownerOptionsRef).data.users;
   /* TPL_DATA_LOADER:END */
 
-  const [
-    /* TPL_MUTATION_NAME:START */ updateTodoList /* TPL_MUTATION_NAME:END */,
-  ] = useMutation(
-    /* TPL_UPDATE_MUTATION:START */ UpdateTodoListDocument /* TPL_UPDATE_MUTATION:END */,
-  );
+  const [updateTodoList] = useMutation(todoListEditPageUpdateMutation);
   const navigate = useNavigate();
 
-  /* TPL_DATA_GATE:START */
-  if (!initialData || !todoListUserOptionsData) {
-    return <ErrorableLoader error={error ?? todoListUserOptionsError} />;
-  }
-  /* TPL_DATA_GATE:END */
-
   const submitData = async (formData: TodoListFormData): Promise<void> => {
-    await /* TPL_MUTATION_NAME:START */ updateTodoList(
-      /* TPL_MUTATION_NAME:END */ {
+    try {
+      await updateTodoList({
         variables: { input: { id, data: formData } },
-      },
-    );
-    toast.success('Successfully updated item!');
-    navigate({ to: '..' }).catch(logError);
+      });
+      toast.success(
+        /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully updated todo list!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
+      );
+      navigate({ to: '..' }).catch(logError);
+    } catch (err: unknown) {
+      toast.error(
+        logAndFormatError(
+          err,
+          /* TPL_MUTATION_ERROR_MESSAGE:START */ 'Sorry, we could not update todo list.' /* TPL_MUTATION_ERROR_MESSAGE:END */,
+        ),
+      );
+    }
   };
 
   return (
@@ -88,8 +114,8 @@ function TodoListEditPage(): ReactElement {
       {/* TPL_EDIT_FORM:START */}
       <TodoListEditForm
         submitData={submitData}
-        initialData={initialData}
-        todoListUserOptions={todoListUserOptionsData.users}
+        defaultValues={data.todoList}
+        ownerOptions={ownerOptions}
       />
       {/* TPL_EDIT_FORM:END */}
     </div>

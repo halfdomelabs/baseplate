@@ -25,12 +25,14 @@ export function addSyncCommand(program: Command): void {
       '--snapshot <directory>',
       'Apply diffs from snapshot directory (requires --overwrite)',
     )
+    .option('--packages <packages...>', 'Only sync specific packages by name.')
     .action(
       async (
         project: string | undefined,
         options: {
           overwrite?: boolean;
           snapshot?: string;
+          packages?: string[];
         },
       ) => {
         const context = await createServiceActionContext();
@@ -48,6 +50,7 @@ export function addSyncCommand(program: Command): void {
             project: projectWithDefault,
             overwrite: options.overwrite,
             snapshotDirectory: options.snapshot,
+            packages: options.packages,
           },
           context,
         );

@@ -4,7 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
 import { ADMIN_ADMIN_HOME_PATHS } from './template-paths.js';
@@ -37,13 +37,13 @@ const adminAdminHomeRenderers = createProviderType<AdminAdminHomeRenderers>(
 
 const adminAdminHomeRenderersTask = createGeneratorTask({
   dependencies: {
-    authHooksImports: authHooksImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     paths: ADMIN_ADMIN_HOME_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { adminAdminHomeRenderers: adminAdminHomeRenderers.export() },
-  run({ authHooksImports, paths, reactComponentsImports, typescriptFile }) {
+  run({ graphqlImports, paths, reactComponentsImports, typescriptFile }) {
     return {
       providers: {
         adminAdminHomeRenderers: {
@@ -53,7 +53,7 @@ const adminAdminHomeRenderersTask = createGeneratorTask({
                 template: ADMIN_ADMIN_HOME_TEMPLATES.home,
                 destination: paths.home,
                 importMapProviders: {
-                  authHooksImports,
+                  graphqlImports,
                   reactComponentsImports,
                 },
                 ...options,

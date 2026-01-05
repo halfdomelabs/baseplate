@@ -1,4 +1,3 @@
-import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -19,20 +18,12 @@ export const authRoutesGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
-        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ renderers, paths }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
               renderers.mainGroup.render({
-                variables: {},
-              }),
-            );
-            await builder.apply(
-              renderTextTemplateFileAction({
-                destination: paths.queriesGql,
-                template: GENERATED_TEMPLATES.templates.queriesGql,
                 variables: {},
               }),
             );

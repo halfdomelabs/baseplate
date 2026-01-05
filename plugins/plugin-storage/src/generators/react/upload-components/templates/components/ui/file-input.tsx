@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-import type { FileCategory } from '%generatedGraphqlImports';
+import type { FragmentOf } from '%graphqlImports';
 import type { ReactElement } from 'react';
 
 import { useUpload } from '$hooksUseUpload';
-import { CreateUploadUrlDocument } from '%generatedGraphqlImports';
+import { graphql, readFragment } from '%graphqlImports';
 import {
   Button,
   CircularProgress,
@@ -17,11 +17,41 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
-export interface FileUploadInput {
-  id: string;
-  filename: string;
-  publicUrl?: string | null;
-}
+export type FileCategory = ReturnType<typeof graphql.scalar<'FileCategory'>>;
+
+// We unmask the fragment since it's used as a fragment inside form data so we don't
+// want to mask the data inside the form.
+export const fileInputValueFragment = graphql(`
+  fragment FileInput_value on File @_unmask {
+    id
+    filename
+    publicUrl
+  }
+`);
+
+const fileInputCreateUploadUrlMutation = graphql(
+  `
+    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {
+      createPresignedUploadUrl(input: $input) {
+        url
+        fields {
+          name
+          value
+        }
+        method
+        file {
+          id
+          filename
+          publicUrl
+          ...FileInput_value
+        }
+      }
+    }
+  `,
+  [fileInputValueFragment],
+);
+
+export type FileUploadInput = FragmentOf<typeof fileInputValueFragment>;
 
 export interface FileInputProps {
   className?: string;
@@ -57,7 +87,7 @@ export function FileInput({
   imagePreview,
   accept,
 }: FileInputProps): ReactElement {
-  const [createUploadUrl] = useMutation(CreateUploadUrlDocument);
+  const [createUploadUrl] = useMutation(fileInputCreateUploadUrlMutation);
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
@@ -129,44 +159,46 @@ export function FileInput({
     inputRef.current.value = '';
   };
 
+  const file = readFragment(fileInputValueFragment, value);
+
   return (
     <div className={cn('max-w-md', className)}>
       {(() => {
-        if (value) {
+        if (file) {
           return (
             <div
               className="flex h-12 w-full max-w-md items-center justify-between rounded-md border bg-background px-3 py-2 shadow-sm"
               role="group"
-              aria-label={`Uploaded file: ${value.filename}`}
+              aria-label={`Uploaded file: ${file.filename}`}
             >
               <div />
               <div className="flex items-center">
-                {imagePreview && value.publicUrl && (
+                {imagePreview && file.publicUrl && (
                   <a
-                    href={value.publicUrl}
+                    href={file.publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Preview ${value.filename}`}
+                    aria-label={`Preview ${file.filename}`}
                   >
                     <img
-                      src={value.publicUrl}
+                      src={file.publicUrl}
                       className="mr-4 h-8 w-8 rounded-lg bg-muted object-cover"
-                      alt={`Preview of ${value.filename}`}
+                      alt={`Preview of ${file.filename}`}
                     />
                   </a>
                 )}
                 <div className="text-sm font-medium">
-                  {value.publicUrl ? (
+                  {file.publicUrl ? (
                     <a
-                      href={value.publicUrl}
+                      href={file.publicUrl}
                       className="text-foreground hover:underline"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {truncateFilenameWithExtension(value.filename)}
+                      {truncateFilenameWithExtension(file.filename)}
                     </a>
                   ) : (
-                    truncateFilenameWithExtension(value.filename)
+                    truncateFilenameWithExtension(file.filename)
                   )}
                 </div>
               </div>

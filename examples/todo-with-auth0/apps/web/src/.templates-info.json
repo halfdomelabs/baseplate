@@ -1,4 +1,14 @@
 {
+  "graphql-env.d.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "graphql-env-d"
+  },
+  "graphql.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "graphql"
+  },
   "main.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react",
     "instanceData": {},

@@ -3,7 +3,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthAdminAdminCrudManageRolesActionPaths {
   roleManagerDialog: string;
-  roleManagerDialogGql: string;
 }
 
 const localAuthAdminAdminCrudManageRolesActionPaths =
@@ -24,7 +23,6 @@ const localAuthAdminAdminCrudManageRolesActionPathsTask = createGeneratorTask({
       providers: {
         localAuthAdminAdminCrudManageRolesActionPaths: {
           roleManagerDialog: `${routesRoot}/-components/role-manager-dialog.tsx`,
-          roleManagerDialogGql: `${routesRoot}/-components/role-manager-dialog.gql`,
         },
       },
     };

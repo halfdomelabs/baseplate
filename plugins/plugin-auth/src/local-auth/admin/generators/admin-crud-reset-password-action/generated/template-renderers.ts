@@ -1,15 +1,9 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -28,16 +22,6 @@ export interface LocalAuthAdminAdminCrudResetPasswordActionRenderers {
       >,
     ) => BuilderAction;
   };
-  passwordResetDialogGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_TEMPLATES.passwordResetDialogGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
 }
 
 const localAuthAdminAdminCrudResetPasswordActionRenderers =
@@ -48,7 +32,7 @@ const localAuthAdminAdminCrudResetPasswordActionRenderers =
 const localAuthAdminAdminCrudResetPasswordActionRenderersTask =
   createGeneratorTask({
     dependencies: {
-      generatedGraphqlImports: generatedGraphqlImportsProvider,
+      graphqlImports: graphqlImportsProvider,
       paths: LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_PATHS.provider,
       reactComponentsImports: reactComponentsImportsProvider,
       typescriptFile: typescriptFileProvider,
@@ -57,12 +41,7 @@ const localAuthAdminAdminCrudResetPasswordActionRenderersTask =
       localAuthAdminAdminCrudResetPasswordActionRenderers:
         localAuthAdminAdminCrudResetPasswordActionRenderers.export(),
     },
-    run({
-      generatedGraphqlImports,
-      paths,
-      reactComponentsImports,
-      typescriptFile,
-    }) {
+    run({ graphqlImports, paths, reactComponentsImports, typescriptFile }) {
       return {
         providers: {
           localAuthAdminAdminCrudResetPasswordActionRenderers: {
@@ -73,18 +52,9 @@ const localAuthAdminAdminCrudResetPasswordActionRenderersTask =
                     LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_TEMPLATES.mainGroup,
                   paths,
                   importMapProviders: {
-                    generatedGraphqlImports,
+                    graphqlImports,
                     reactComponentsImports,
                   },
-                  ...options,
-                }),
-            },
-            passwordResetDialogGql: {
-              render: (options) =>
-                renderTextTemplateFileAction({
-                  template:
-                    LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_TEMPLATES.passwordResetDialogGql,
-                  destination: paths.passwordResetDialogGql,
                   ...options,
                 }),
             },

@@ -3,7 +3,6 @@ import {
   extractPackageVersions,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -11,8 +10,6 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { reactAppConfigProvider } from '../react-app/index.js';
-import { reactComponentsImportsProvider } from '../react-components/index.js';
-import { reactErrorImportsProvider } from '../react-error/index.js';
 import { CORE_REACT_ERROR_BOUNDARY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -25,7 +22,9 @@ export const reactErrorBoundaryGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-error-boundary']),
     }),
+    imports: CORE_REACT_ERROR_BOUNDARY_GENERATED.imports.task,
     paths: CORE_REACT_ERROR_BOUNDARY_GENERATED.paths.task,
+    renderers: CORE_REACT_ERROR_BOUNDARY_GENERATED.renderers.task,
     reactAppConfig: createGeneratorTask({
       dependencies: {
         reactAppConfig: reactAppConfigProvider,
@@ -42,31 +41,13 @@ export const reactErrorBoundaryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        reactErrorImports: reactErrorImportsProvider,
-        reactComponentsImports: reactComponentsImportsProvider,
-        typescriptFile: typescriptFileProvider,
-        paths: CORE_REACT_ERROR_BOUNDARY_GENERATED.paths.provider,
+        renderers: CORE_REACT_ERROR_BOUNDARY_GENERATED.renderers.provider,
       },
-      run({
-        reactErrorImports,
-        reactComponentsImports,
-        typescriptFile,
-        paths,
-      }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  CORE_REACT_ERROR_BOUNDARY_GENERATED.templates.component,
-                destination: paths.component,
-                importMapProviders: {
-                  reactComponentsImports,
-                  reactErrorImports,
-                },
-                variables: {},
-              }),
-            );
+            await builder.apply(renderers.component.render({}));
+            await builder.apply(renderers.asyncBoundary.render({}));
           },
         };
       },

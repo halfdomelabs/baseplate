@@ -51,6 +51,17 @@ function getRelationLocalFields(
   });
 }
 
+function relationByIdOrThrow(
+  model: ModelConfig,
+  relationId: string,
+): ModelRelationFieldConfig {
+  const relation = model.model.relations?.find((r) => r.id === relationId);
+  if (!relation) {
+    throw new Error(`Relation ${relationId} not found in model ${model.name}`);
+  }
+  return relation;
+}
+
 function isRelationOptional(
   model: ModelConfig,
   relation: ModelRelationFieldConfig,
@@ -123,4 +134,5 @@ export const ModelFieldUtils = {
   isRelationOptional,
   isRelationOneToOne,
   getModelFieldValidation,
+  relationByIdOrThrow,
 };

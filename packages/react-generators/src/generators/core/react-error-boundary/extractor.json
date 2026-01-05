@@ -1,6 +1,23 @@
 {
   "name": "core/react-error-boundary",
   "templates": {
+    "async-boundary": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/ui/async-boundary.tsx",
+      "projectExports": {
+        "AsyncBoundary": { "isTypeOnly": false, "name": "AsyncBoundary" }
+      },
+      "referencedGeneratorTemplates": ["component"],
+      "sourceFile": "components/ui/async-boundary.tsx",
+      "variables": {}
+    },
     "component": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

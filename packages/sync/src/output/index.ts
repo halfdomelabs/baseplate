@@ -5,6 +5,7 @@ export * from './format-generator-output.js';
 export type * from './formatter.js';
 export * from './generator-task-output.js';
 export * from './post-write-commands/types.js';
+export { formatOutputFileContents } from './prepare-generator-files/prepare-generator-file.js';
 export type * from './prepare-generator-files/types.js';
 export * from './string-merge-algorithms/index.js';
 export * from './write-generator-output.js';

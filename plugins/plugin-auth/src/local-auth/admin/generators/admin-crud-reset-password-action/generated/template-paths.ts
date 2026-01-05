@@ -3,7 +3,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthAdminAdminCrudResetPasswordActionPaths {
   passwordResetDialog: string;
-  passwordResetDialogGql: string;
 }
 
 const localAuthAdminAdminCrudResetPasswordActionPaths =
@@ -25,7 +24,6 @@ const localAuthAdminAdminCrudResetPasswordActionPathsTask = createGeneratorTask(
         providers: {
           localAuthAdminAdminCrudResetPasswordActionPaths: {
             passwordResetDialog: `${routesRoot}/-components/password-reset-dialog.tsx`,
-            passwordResetDialogGql: `${routesRoot}/-components/password-reset-dialog.gql`,
           },
         },
       };

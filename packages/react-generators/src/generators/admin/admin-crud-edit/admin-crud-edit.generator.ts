@@ -1,32 +1,44 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
+  tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { notEmpty, quot } from '@baseplate-dev/utils';
+import {
+  lowercaseFirstChar,
+  notEmpty,
+  quot,
+  uppercaseFirstChar,
+} from '@baseplate-dev/utils';
 import { kebabCase, sortBy } from 'es-toolkit';
 import { dasherize, pluralize, underscore } from 'inflection';
 import { z } from 'zod';
 
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import type {
+  GraphQLFragment,
+  GraphQLOperation,
+} from '#src/writers/graphql/index.js';
+
+import { graphqlImportsProvider } from '#src/generators/apollo/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst, titleizeCamel } from '#src/utils/case.js';
-import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
+import {
+  mergeGraphqlFields,
+  renderTadaFragment,
+  renderTadaOperation,
+} from '#src/writers/graphql/index.js';
 
 import type { AdminCrudInput } from '../_providers/admin-crud-input-container.js';
-import type { DataLoader } from '../_providers/admin-loader.js';
+import type { DataLoader, RouteLoaderField } from '../_utils/data-loader.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
-import { printDataLoaders } from '../_providers/admin-loader.js';
-import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
+import { renderDataLoaders } from '../_utils/data-loader.js';
+import { getModelNameVariants } from '../_utils/get-model-name-variants.js';
 import { ADMIN_ADMIN_CRUD_EDIT_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -34,6 +46,8 @@ const descriptorSchema = z.object({
   modelName: z.string(),
   disableCreate: z.boolean().optional(),
   nameField: z.string(),
+  idField: z.string(),
+  idFieldGraphqlType: z.enum(['Uuid', 'String']),
 });
 
 export interface AdminCrudEmbeddedForm {
@@ -54,25 +68,29 @@ export const adminCrudEditGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelId, modelName, disableCreate, nameField }) => ({
+  buildTasks: ({
+    modelId,
+    modelName,
+    disableCreate,
+    nameField,
+    idField,
+    idFieldGraphqlType,
+  }) => ({
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider,
-        adminCrudQueries: adminCrudQueriesProvider,
-        reactComponentsImports: reactComponentsImportsProvider,
+        graphqlImports: graphqlImportsProvider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
       },
       exports: {
         adminCrudEdit: adminCrudEditProvider.export(),
         adminCrudInputContainer: adminCrudInputContainerProvider.export(),
       },
-      run({
-        adminCrudQueries,
-        reactRoutes,
-        reactComponentsImports,
-        renderers,
-      }) {
+      run({ reactRoutes, renderers, graphqlImports }) {
+        const modelNameVariants = getModelNameVariants(modelName);
+        const modelGraphqlById = modelNameVariants.graphqlById;
+        const modelTitle = modelNameVariants.title;
         const routeFilePath = reactRoutes.getRouteFilePath();
         const editSchemaPath = `${reactRoutes.getOutputRelativePath()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
@@ -105,8 +123,13 @@ export const adminCrudEditGenerator = createGenerator({
 
         const routePath = `${reactRoutes.getOutputRelativePath()}/route.tsx`;
 
-        const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
-        const updateInfo = adminCrudQueries.getUpdateHookInfo();
+        const editFormPrefix = `${modelNameVariants.pascal}EditForm`;
+        const editFormDefaultValuesFragmentVariable = `${lowerCaseFirst(editFormPrefix)}DefaultValuesFragment`;
+        const editFormDefaultValuesFragmentName = `${editFormPrefix}_defaultValues`;
+
+        const editPagePrefix = `${modelNameVariants.pascal}EditPage`;
+
+        const createPagePrefix = `${modelNameVariants.pascal}CreatePage`;
 
         const inputFields: AdminCrudInput[] = [];
 
@@ -122,32 +145,35 @@ export const adminCrudEditGenerator = createGenerator({
                 inputFields.push(input);
               },
               getModelName: () => modelName,
+              getParentComponentName: () => editFormComponentName,
+              getParentComponentPath: () => editFormComponentPath,
               isInModal: () => false,
             },
           },
           build: async (builder) => {
-            adminCrudQueries.setFormFields(
-              mergeGraphQLFields([
-                { name: 'id' },
-                ...inputFields.flatMap((c) => c.graphQLFields),
-              ]),
-            );
+            // Data loaders
+            const editQueryVariable = `${lowercaseFirstChar(editPagePrefix)}Query`;
+            const editPageLoader: DataLoader = {
+              propName: 'defaultValues',
+              routeLoaderFields: [
+                {
+                  key: 'queryRef',
+                  value: tsTemplate`preloadQuery(${editQueryVariable}, { variables: { id } })`,
+                  contextFields: ['preloadQuery'],
+                },
+              ],
+              propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${editFormDefaultValuesFragmentVariable}> | undefined`,
+              pageComponentBody: tsTemplateWithImports([
+                tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
+              ])`const { data } = useReadQuery(queryRef);`,
+              propPageValue: tsTemplate`data.${modelNameVariants.camel}`,
+            };
+            const dataLoaders = [
+              editPageLoader,
+              ...inputFields.flatMap((c) => c.dataLoaders ?? []),
+            ];
 
-            const dataDependencies = mergeAdminCrudDataDependencies(
-              inputFields.flatMap((f) => f.dataDependencies ?? []),
-            );
-
-            for (const dep of dataDependencies) {
-              if (dep.graphFragments)
-                for (const frag of dep.graphFragments) {
-                  adminCrudQueries.addFragment(frag);
-                }
-              if (dep.graphRoots)
-                for (const root of dep.graphRoots) {
-                  adminCrudQueries.addRoot(root);
-                }
-            }
-
+            // Edit Form Schema
             const validations = inputFields.flatMap((c) => c.validation);
             await builder.apply(
               renderers.schema.render({
@@ -165,7 +191,20 @@ export const adminCrudEditGenerator = createGenerator({
               }),
             );
 
+            // Edit Form
+            const editFormDefaultValuesFragment: GraphQLFragment = {
+              variableName: editFormDefaultValuesFragmentVariable,
+              fragmentName: editFormDefaultValuesFragmentName,
+              onType: modelNameVariants.graphqlObjectType,
+              fields: mergeGraphqlFields([
+                { name: idField },
+                ...inputFields.flatMap((c) => c.graphQLFields),
+              ]),
+              path: editFormComponentPath,
+            };
+
             const sortedInputs = sortBy(inputFields, [(i) => i.order]);
+
             await builder.apply(
               renderers.editForm.render({
                 id: `edit-form-${modelId}`,
@@ -173,56 +212,211 @@ export const adminCrudEditGenerator = createGenerator({
                 variables: {
                   TPL_COMPONENT_NAME: editFormComponentName,
                   TPL_FORM_DATA_NAME: formDataExpression,
-                  TPL_EDIT_SCHEMA: editSchemaExpression,
-                  TPL_INPUTS: TsCodeUtils.mergeFragmentsPresorted(
-                    sortedInputs.map((input) => input.content),
-                    '\n',
+                  TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE:
+                    editFormDefaultValuesFragmentVariable,
+                  TPL_LIST_ROUTE: reactRoutes.getRoutePrefix(),
+                  TPL_EDIT_FRAGMENT: renderTadaFragment(
+                    editFormDefaultValuesFragment,
+                    { exported: true, currentPath: editFormComponentPath },
                   ),
-                  TPL_HEADER: TsCodeUtils.mergeFragmentsPresorted(
-                    sortedInputs.map((input) => input.header).filter(notEmpty),
-                    '\n',
-                  ),
-                  TPL_EXTRA_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                  TPL_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
                     Object.fromEntries(
-                      dataDependencies.map((d): [string, TsCodeFragment] => [
-                        d.propName,
-                        d.propType,
-                      ]),
+                      dataLoaders.map((d) => [d.propName, d.propType]),
                     ),
                   ),
                   TPL_DESTRUCTURED_PROPS: `{
                     className,
-                    initialData,
                     submitData,
-                    ${dataDependencies.map((d) => d.propName).join(',\n')}
+                    ${dataLoaders.map((d) => d.propName).join(',\n')}
                   }`,
-                  TPL_LIST_ROUTE: reactRoutes.getRoutePrefix(),
+                  TPL_EDIT_SCHEMA: editSchemaExpression,
+                  TPL_HEADER: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputs.map((input) => input.header).filter(notEmpty),
+                    '\n',
+                  ),
+                  TPL_INPUTS: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputs.map((input) => input.content),
+                    '\n',
+                  ),
                 },
               }),
             );
 
-            const inputLoaders = inputFields.flatMap(
-              (field) => field.dataDependencies?.map((d) => d.loader) ?? [],
+            // Edit Page
+            const editQueryName = editPagePrefix;
+            const editQuery: GraphQLOperation = {
+              type: 'query',
+              variableName: editQueryVariable,
+              operationName: editQueryName,
+              variables: [{ name: 'id', type: `${idFieldGraphqlType}!` }],
+              fields: [
+                {
+                  name: modelGraphqlById,
+                  args: [
+                    {
+                      name: 'id',
+                      value: { type: 'variable', variable: 'id' },
+                    },
+                  ],
+                  fields: mergeGraphqlFields([
+                    { name: idField },
+                    { name: nameField },
+                    {
+                      type: 'spread',
+                      fragment: editFormDefaultValuesFragment,
+                    },
+                  ]),
+                },
+              ],
+            };
+
+            const updateMutationVariable = `${lowercaseFirstChar(editPagePrefix)}UpdateMutation`;
+            const updateMutationName = `${editPagePrefix}Update`;
+            const updateMutationFieldName = `update${modelNameVariants.pascal}`;
+            const updateMutation: GraphQLOperation = {
+              type: 'mutation',
+              variableName: updateMutationVariable,
+              operationName: updateMutationName,
+              variables: [
+                {
+                  name: 'input',
+                  type: `${uppercaseFirstChar(updateMutationFieldName)}Input!`,
+                },
+              ],
+              fields: [
+                {
+                  name: updateMutationFieldName,
+                  args: [
+                    {
+                      name: 'input',
+                      value: { type: 'variable', variable: 'input' },
+                    },
+                  ],
+                  fields: [
+                    {
+                      name: modelNameVariants.camel,
+                      fields: [
+                        { name: idField },
+                        { name: nameField },
+                        {
+                          type: 'spread',
+                          fragment: editFormDefaultValuesFragment,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            };
+
+            const defaultCrumbExpression = tsTemplate`${quot(`Edit ${modelTitle}`)}`;
+            const crumbRouteLoaderField: RouteLoaderField = {
+              key: 'crumb',
+              value: tsTemplate`apolloClient
+      .query({
+        query: ${editQueryVariable},
+        variables: { id },
+      })
+      .then(({ data }) => (data?.${modelGraphqlById}.name ? data.${modelGraphqlById}.name : ${defaultCrumbExpression}))
+      .catch(() => ${defaultCrumbExpression})`,
+              contextFields: ['apolloClient'],
+              paramsFields: ['id'],
+            };
+            const editPageRenderedLoaders = renderDataLoaders(
+              [
+                editPageLoader,
+                ...inputFields.flatMap((c) => c.dataLoaders ?? []),
+              ],
+              [crumbRouteLoaderField],
             );
 
-            const inputLoaderExtraProps = inputFields
-              .flatMap((field) =>
-                field.dataDependencies?.map(
-                  (d) =>
-                    `${d.propName}={${d.propLoaderValueGetter(
-                      d.loader.loaderValueName,
-                    )}}`,
-                ),
-              )
-              .join(' ');
-
-            const createLoaderOutput = printDataLoaders(
-              inputLoaders,
-              reactComponentsImports,
+            await builder.apply(
+              renderers.editPage.render({
+                id: `edit-${modelId}`,
+                destination: editPagePath,
+                variables: {
+                  TPL_COMPONENT_NAME: editPageName,
+                  TPL_FORM_DATA_NAME: formDataExpression,
+                  TPL_UPDATE_MUTATION_VARIABLE: updateMutationVariable,
+                  TPL_UPDATE_MUTATION_FIELD_NAME: updateMutationFieldName,
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
+                  TPL_EDIT_QUERY: renderTadaOperation(editQuery, {
+                    currentPath: editPagePath,
+                  }),
+                  TPL_UPDATE_MUTATION: renderTadaOperation(updateMutation, {
+                    currentPath: editPagePath,
+                  }),
+                  TPL_ROUTE_PROPS: editPageRenderedLoaders.routeLoader
+                    ? tsTemplate`loader: ${editPageRenderedLoaders.routeLoader}`
+                    : '',
+                  TPL_DATA_LOADER: editPageRenderedLoaders.componentBody,
+                  TPL_MUTATION_SUCCESS_MESSAGE: quot(
+                    `Successfully updated ${modelNameVariants.lowercaseWords}!`,
+                  ),
+                  TPL_MUTATION_ERROR_MESSAGE: quot(
+                    `Sorry, we could not update ${modelNameVariants.lowercaseWords}.`,
+                  ),
+                  TPL_EDIT_FORM: TsCodeUtils.mergeFragmentsAsJsxElement(
+                    editFormComponentExpression,
+                    {
+                      submitData: tsTemplate`submitData`,
+                      ...editPageRenderedLoaders.childProps,
+                    },
+                  ),
+                },
+              }),
             );
 
             if (!disableCreate) {
-              const createInfo = adminCrudQueries.getCreateHookInfo();
+              const createMutationName = `${createPagePrefix}Create`;
+              const createMutationVariable = `${lowercaseFirstChar(createPagePrefix)}CreateMutation`;
+              const createMutationFieldName = `create${modelNameVariants.pascal}`;
+              const createMutation: GraphQLOperation = {
+                type: 'mutation',
+                variableName: createMutationVariable,
+                operationName: createMutationName,
+                variables: [
+                  {
+                    name: 'input',
+                    type: `${uppercaseFirstChar(createMutationFieldName)}Input!`,
+                  },
+                ],
+                fields: [
+                  {
+                    name: createMutationFieldName,
+                    args: [
+                      {
+                        name: 'input',
+                        value: { type: 'variable', variable: 'input' },
+                      },
+                    ],
+                    fields: [
+                      {
+                        name: modelNameVariants.camel,
+                        fields: [{ name: idField }],
+                      },
+                    ],
+                  },
+                ],
+              };
+              const createPageRenderedLoaders = renderDataLoaders(
+                inputFields.flatMap((c) => c.dataLoaders ?? []),
+                [
+                  {
+                    key: 'crumb',
+                    value: tsTemplate`${quot('New')}`,
+                    skipDestructure: true,
+                  },
+                ],
+              );
+              const componentMutationHook = tsTemplateWithImports([
+                tsImportBuilder(['useMutation']).from('@apollo/client/react'),
+              ])`const [${createMutationFieldName}] = useMutation(${createMutationVariable}, {
+                update: (cache) => {
+                  cache.evict({ fieldName: '${modelNameVariants.graphqlList}' });
+                  cache.gc();
+                },
+              });`;
               await builder.apply(
                 renderers.createPage.render({
                   id: `create-${modelId}`,
@@ -230,80 +424,42 @@ export const adminCrudEditGenerator = createGenerator({
                   variables: {
                     TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
-                    TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
-                    TPL_CREATE_MUTATION: createInfo.documentExpression,
-                    TPL_MUTATION_NAME: createInfo.fieldName,
+                    TPL_CREATE_MUTATION_FIELD_NAME: createMutationFieldName,
+                    TPL_CREATE_MUTATION: renderTadaOperation(createMutation, {
+                      currentPath: createPagePath,
+                    }),
+                    TPL_ROUTE_PROPS: createPageRenderedLoaders.routeLoader
+                      ? tsTemplate`loader: ${createPageRenderedLoaders.routeLoader}`
+                      : '',
+                    TPL_DATA_LOADER: createPageRenderedLoaders.componentBody,
+                    TPL_MUTATION_HOOK: componentMutationHook,
                     TPL_FORM_DATA_NAME: formDataExpression,
-                    TPL_MODEL_NAME: titleizeCamel(modelName),
-                    TPL_REFETCH_DOCUMENT:
-                      adminCrudQueries.getListDocumentExpression(),
-                    TPL_DATA_LOADER: createLoaderOutput.loader,
-                    TPL_DATA_GATE: createLoaderOutput.gate,
+                    TPL_MUTATION_SUCCESS_MESSAGE: quot(
+                      `Successfully created ${modelNameVariants.lowercaseWords}!`,
+                    ),
+                    TPL_MUTATION_ERROR_MESSAGE: quot(
+                      `Sorry, we could not create ${modelNameVariants.lowercaseWords}.`,
+                    ),
+                    TPL_MODEL_NAME: modelNameVariants.title,
+                    TPL_EDIT_FORM: TsCodeUtils.mergeFragmentsAsJsxElement(
+                      editFormComponentExpression,
+                      {
+                        submitData: tsTemplate`submitData`,
+                        defaultValues: tsTemplate`undefined`,
+                        ...createPageRenderedLoaders.childProps,
+                      },
+                    ),
                   },
                 }),
               );
             }
-
-            const editPageLoader: DataLoader = {
-              loader: TsCodeUtils.formatFragment(
-                `
-          const { data, error } = useQuery(GET_EDIT_BY_ID_QUERY, {
-            variables: { id },
-          });
-        
-          const initialData: FORM_DATA_NAME | undefined = useMemo(() => {
-            if (!data?.QUERY_FIELD_NAME) return undefined;
-            return data.QUERY_FIELD_NAME;
-          }, [data]);
-          `,
-                {
-                  GET_EDIT_BY_ID_QUERY: editQueryInfo.documentExpression,
-                  FORM_DATA_NAME: formDataExpression,
-                  QUERY_FIELD_NAME: editQueryInfo.fieldName,
-                },
-                [
-                  tsImportBuilder(['useMemo']).from('react'),
-                  tsImportBuilder(['useQuery']).from('@apollo/client/react'),
-                ],
-              ),
-              loaderErrorName: 'error',
-              loaderValueName: 'initialData',
-            };
-
-            const editPageLoaderOutput = printDataLoaders(
-              [editPageLoader, ...inputLoaders],
-              reactComponentsImports,
-            );
-
-            const nameFieldExpression = `data.${editQueryInfo.fieldName}.${nameField}`;
-            const modelNameExpression = titleizeCamel(modelName);
-            const crumbExpression = `${nameFieldExpression} ? ${nameFieldExpression} : 'Unnamed ${modelNameExpression}'`;
-
-            await builder.apply(
-              renderers.editPage.render({
-                id: `edit-${modelId}`,
-                destination: editPagePath,
-                variables: {
-                  TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
-                  TPL_COMPONENT_NAME: editPageName,
-                  TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
-                  TPL_UPDATE_MUTATION: updateInfo.documentExpression,
-                  TPL_MUTATION_NAME: updateInfo.fieldName,
-                  TPL_FORM_DATA_NAME: formDataExpression,
-                  TPL_DATA_LOADER: editPageLoaderOutput.loader,
-                  TPL_DATA_GATE: editPageLoaderOutput.gate,
-                  TPL_CRUMB_EXPRESSION: crumbExpression,
-                  TPL_USER_QUERY: editQueryInfo.documentExpression,
-                },
-              }),
-            );
 
             await builder.apply(
               renderers.route.render({
                 id: `route-${modelId}`,
                 destination: routePath,
                 variables: {
-                  TPL_ROUTE: quot(routeFilePath),
+                  TPL_ROUTE_PATH: quot(routeFilePath),
                   TPL_CRUMB: quot(pluralize(titleizeCamel(modelName))),
                 },
               }),

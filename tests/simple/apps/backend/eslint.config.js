@@ -28,7 +28,6 @@ const IGNORE_FILES = [
   'build',
   'dist',
   'node_modules',
-  'src/generated/graphql.tsx',
   'src/generated/prisma/**/*.ts',
 ];
 

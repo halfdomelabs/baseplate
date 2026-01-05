@@ -14,16 +14,6 @@
     "instanceData": {},
     "template": "hooks-use-controller-merged"
   },
-  "use-current-user.gql": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
-    "instanceData": { "variables": { "TPL_USER_QUERY_NAME": "user" } },
-    "template": "use-current-user-gql"
-  },
-  "use-current-user.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
-    "instanceData": {},
-    "template": "use-current-user"
-  },
   "use-log-out.ts": {
     "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
     "instanceData": {},

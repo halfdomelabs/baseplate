@@ -1,4 +1,3 @@
-import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -21,19 +20,12 @@ export const placeholderAuthHooksGenerator = createGenerator({
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        paths: GENERATED_TEMPLATES.paths.provider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
       },
-      run({ paths, renderers }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(renderers.hooksGroup.render({}));
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template: GENERATED_TEMPLATES.templates.useCurrentUserGql,
-                destination: paths.useCurrentUserGql,
-              }),
-            );
           },
         };
       },

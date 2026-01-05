@@ -3,11 +3,9 @@ import {
   createNodePackagesTask,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { capitalize } from 'inflection';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
-import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
 import { REACT_UPLOAD_COMPONENTS_GENERATED } from './generated/index.js';
 
@@ -40,14 +38,6 @@ export const uploadComponentsGenerator = createGenerator({
               renderers.fileInputComponent.render({}),
               renderers.fileInputField.render({}),
               renderers.hooksUseUpload.render({}),
-            );
-
-            await builder.apply(
-              renderers.fileInputUploadGql.render({
-                variables: {
-                  TPL_FILE_TYPE: capitalize(STORAGE_MODELS.file),
-                },
-              }),
             );
           },
         };

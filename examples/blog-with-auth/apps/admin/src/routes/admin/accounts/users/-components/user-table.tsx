@@ -12,7 +12,7 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { UserRowFragment } from '@src/generated/graphql';
+import type { FragmentOf, ResultOf } from '@src/graphql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
@@ -31,19 +31,57 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { DeleteUserDocument, GetUsersDocument } from '@src/generated/graphql';
+import { graphql, readFragment } from '@src/graphql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import { PasswordResetDialog } from './password-reset-dialog';
-import { RoleManagerDialog } from './role-manager-dialog';
+import {
+  PasswordResetDialog,
+  passwordResetDialogUserFragment,
+} from './password-reset-dialog';
+import {
+  RoleManagerDialog,
+  roleManagerDialogUserFragment,
+} from './role-manager-dialog';
+
+/* HOISTED:delete-action-mutation:START */
+const userListPageDeleteUserMutation = graphql(`
+  mutation UserListPageDeleteUser($input: DeleteUserInput!) {
+    deleteUser(input: $input) {
+      user {
+        id
+        name
+      }
+    }
+  }
+`);
+/* HOISTED:delete-action-mutation:END */
 
 /* TPL_COMPONENT_NAME=UserTable */
-/* TPL_ROW_FRAGMENT=UserRowFragment */
+/* TPL_ITEMS_FRAGMENT_NAME=userTableItemsFragment */
+
+/* TPL_ITEMS_FRAGMENT:START */
+export const userTableItemsFragment = graphql(
+  `
+    fragment UserTable_items on User {
+      email
+      id
+      name
+      ...PasswordResetDialog_user
+      ...RoleManagerDialog_user
+      roles {
+        role
+      }
+    }
+  `,
+  [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
+);
+/* TPL_ITEMS_FRAGMENT:END */
 
 interface Props {
-  items: UserRowFragment[];
-  /* TPL_EXTRA_PROPS:BLOCK */
+  /* TPL_PROPS:START */
+  items: FragmentOf<typeof userTableItemsFragment>[];
+  /* TPL_PROPS:END */
 }
 
 export function UserTable(
@@ -52,17 +90,23 @@ export function UserTable(
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
   /* TPL_ACTION_HOOKS:START */
-  const [roleDialogUser, setRoleDialogUser] = useState<UserRowFragment | null>(
-    null,
-  );
-  const [passwordResetUser, setPasswordResetUser] =
-    useState<UserRowFragment | null>(null);
+  const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<
+    typeof roleManagerDialogUserFragment
+  > | null>(null);
+  const [passwordResetUser, setPasswordResetUser] = useState<FragmentOf<
+    typeof passwordResetDialogUserFragment
+  > | null>(null);
   const { requestConfirm } = useConfirmDialog();
-  const [deleteUser] = useMutation(DeleteUserDocument, {
-    refetchQueries: [{ query: GetUsersDocument }],
+  const [deleteUser] = useMutation(userListPageDeleteUserMutation, {
+    update: (cache, result) => {
+      if (!result.data?.deleteUser.user) return;
+      const itemId = cache.identify(result.data.deleteUser.user);
+      cache.evict({ id: itemId });
+      cache.gc();
+    },
   });
 
-  function handleDelete(item: UserRowFragment): void {
+  function handleDelete(item: ResultOf<typeof userTableItemsFragment>): void {
     requestConfirm({
       title: 'Delete User',
       content: `Are you sure you want to delete user ${item.name ? item.name : 'unnamed user'}?`,
@@ -71,11 +115,11 @@ export function UserTable(
           variables: { input: { id: item.id } },
         })
           .then(() => {
-            toast.success('Successfully deleted user!');
+            toast.success('Successfully deleted the user!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry we could not delete user.'),
+              logAndFormatError(err, 'Sorry, we could not delete the user.'),
             );
           });
       },
@@ -83,7 +127,10 @@ export function UserTable(
   }
   /* TPL_ACTION_HOOKS:END */
 
-  if (items.length === 0) {
+  // Unmask the fragment data for rendering
+  const itemsData = readFragment(userTableItemsFragment, items);
+
+  if (itemsData.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -109,7 +156,7 @@ export function UserTable(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
+          {itemsData.map((item) => (
             <TableRow key={item.id}>
               {/* TPL_CELLS:START */}
               <TableCell>{item.name}</TableCell>
