@@ -19,6 +19,7 @@ export const GRAPHQL_ESLINT_RULES = tsCodeFragment(
       '@graphql-eslint/naming-convention': [
         'error',
         {
+          DirectiveDefinition: { ignorePattern: ['_unmask'] },
           VariableDefinition: 'camelCase',
           OperationDefinition: {
             style: 'PascalCase',

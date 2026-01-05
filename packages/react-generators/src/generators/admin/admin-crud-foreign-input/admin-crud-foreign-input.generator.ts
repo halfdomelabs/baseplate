@@ -108,7 +108,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
           ],
           propName: optionsName,
           propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<${optionFragmentVariable}>`,
-          propPageValue: tsTemplate`${loadOptionsQueryVariable}`,
+          propPageValue: tsTemplate`${optionsName}`,
         };
 
         const optionsCreator = tsCodeFragment(
