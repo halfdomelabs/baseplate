@@ -19,8 +19,10 @@ import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
 export type FileCategory = ReturnType<typeof graphql.scalar<'FileCategory'>>;
 
+// We unmask the fragment since it's used as a fragment inside form data so we don't
+// want to mask the data inside the form.
 export const fileInputValueFragment = graphql(`
-  fragment FileInput_value on File {
+  fragment FileInput_value on File @_unmask {
     id
     filename
     publicUrl
@@ -49,18 +51,14 @@ const fileInputCreateUploadUrlMutation = graphql(
   [fileInputValueFragment],
 );
 
-export interface FileUploadInput {
-  id: string;
-  filename: string;
-  publicUrl?: string | null;
-}
+export type FileUploadInput = FragmentOf<typeof fileInputValueFragment>;
 
 export interface FileInputProps {
   className?: string;
   disabled?: boolean;
   name?: string;
   onChange?: (value: FileUploadInput | null) => void;
-  value?: FragmentOf<typeof fileInputValueFragment>;
+  value?: FileUploadInput;
   placeholder?: string;
   category: FileCategory;
   imagePreview?: boolean;

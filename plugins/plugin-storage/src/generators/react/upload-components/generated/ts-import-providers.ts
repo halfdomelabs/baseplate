@@ -13,9 +13,11 @@ import {
 import { REACT_UPLOAD_COMPONENTS_PATHS } from './template-paths.js';
 
 export const uploadComponentsImportsSchema = createTsImportMapSchema({
-  FileInput: { exportedAs: 'default' },
+  FileCategory: { isTypeOnly: true },
+  FileInput: {},
   FileInputField: {},
   FileInputFieldController: {},
+  fileInputValueFragment: {},
   useUpload: {},
 });
 
@@ -42,9 +44,11 @@ const reactUploadComponentsImportsTask = createGeneratorTask({
         uploadComponentsImports: createTsImportMap(
           uploadComponentsImportsSchema,
           {
+            FileCategory: paths.fileInputComponent,
             FileInput: paths.fileInputComponent,
             FileInputField: paths.fileInputField,
             FileInputFieldController: paths.fileInputField,
+            fileInputValueFragment: paths.fileInputComponent,
             useUpload: paths.hooksUseUpload,
           },
         ),

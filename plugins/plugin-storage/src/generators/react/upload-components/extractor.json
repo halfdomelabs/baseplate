@@ -20,7 +20,14 @@
         }
       },
       "pathRootRelativePath": "{components-root}/ui/file-input.tsx",
-      "projectExports": { "FileInput": { "exportedAs": "default" } },
+      "projectExports": {
+        "FileCategory": { "isTypeOnly": true, "name": "FileCategory" },
+        "FileInput": { "isTypeOnly": false, "name": "FileInput" },
+        "fileInputValueFragment": {
+          "isTypeOnly": false,
+          "name": "fileInputValueFragment"
+        }
+      },
       "referencedGeneratorTemplates": ["hooks-use-upload"],
       "sourceFile": "components/ui/file-input.tsx",
       "variables": {}

@@ -14,7 +14,11 @@ const fileInputComponent = createTsTemplateFile({
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'file-input-component',
-  projectExports: { FileInput: { exportedAs: 'default' } },
+  projectExports: {
+    FileCategory: { isTypeOnly: true },
+    FileInput: { isTypeOnly: false },
+    fileInputValueFragment: { isTypeOnly: false },
+  },
   referencedGeneratorTemplates: { hooksUseUpload: {} },
   source: {
     path: path.join(
