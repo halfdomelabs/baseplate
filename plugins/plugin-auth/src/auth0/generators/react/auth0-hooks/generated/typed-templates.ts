@@ -52,10 +52,6 @@ const useSession = createTsTemplateFile({
   variables: { TPL_AUTH_ROLES: {} },
 });
 
-export const hooksGroup = {
-  useLogOut,
-  useRequiredUserId,
-  useSession,
-};
+export const hooksGroup = { useLogOut, useRequiredUserId, useSession };
 
 export const AUTH0_AUTH0_HOOKS_TEMPLATES = { hooksGroup };
