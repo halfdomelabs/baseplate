@@ -28,7 +28,7 @@ interface UnlinkSectionProps {
   name: string;
 }
 
-function UnlinkSection({
+export function UnlinkSection({
   entityType,
   entityId,
   name,
@@ -113,5 +113,3 @@ function UnlinkSection({
     </SectionListSection>
   );
 }
-
-export default UnlinkSection;

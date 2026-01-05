@@ -21,7 +21,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 
-import UnlinkSection from '../../-components/unlink-section.js';
+import { UnlinkSection } from '../../-components/unlink-section.js';
 
 export const Route = createFileRoute('/apps/edit/$key/web/')({
   component: WebAppGeneralForm,

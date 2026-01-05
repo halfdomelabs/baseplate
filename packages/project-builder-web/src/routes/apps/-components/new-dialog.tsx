@@ -45,7 +45,7 @@ interface NewDialogProps {
   defaultTab?: TabValue;
 }
 
-function NewDialog({
+export function NewDialog({
   children,
   open,
   onOpenChange,
@@ -257,5 +257,3 @@ function NewDialog({
     </Dialog>
   );
 }
-
-export default NewDialog;

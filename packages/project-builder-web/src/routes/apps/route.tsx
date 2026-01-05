@@ -18,7 +18,7 @@ import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdAdd } from 'react-icons/md';
 
-import NewDialog from './-components/new-dialog.js';
+import { NewDialog } from './-components/new-dialog.js';
 
 export const Route = createFileRoute('/apps')({
   component: AppsLayout,
