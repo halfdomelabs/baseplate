@@ -17,8 +17,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdApps } from 'react-icons/md';
 
-import NewAppDialog from './-components/new-app-dialog.js';
-import NewPackageDialog from './-components/new-package-dialog.js';
+import NewDialog from './-components/new-dialog.js';
 
 export const Route = createFileRoute('/apps/')({
   component: AppsListPage,
@@ -39,14 +38,9 @@ function AppsListPage(): React.JSX.Element {
         header="No Apps or Packages"
         subtitle="You haven't created any apps or packages yet"
         actions={
-          <div className="flex gap-2">
-            <NewAppDialog>
-              <Button>New App</Button>
-            </NewAppDialog>
-            <NewPackageDialog>
-              <Button variant="outline">New Package</Button>
-            </NewPackageDialog>
-          </div>
+          <NewDialog>
+            <Button>Create New</Button>
+          </NewDialog>
         }
       />
     );
@@ -55,45 +49,34 @@ function AppsListPage(): React.JSX.Element {
   return (
     <div className="space-y-6 p-4">
       {/* Apps Section */}
-      <section>
+      <section className="space-y-4">
         <h1>Apps</h1>
         <p className="text-muted-foreground">
           These are the apps that are defined in your project.
         </p>
-        <div className="mt-4">
-          <NewAppDialog>
-            <Button>New App</Button>
-          </NewAppDialog>
-        </div>
         {sortedApps.length > 0 ? (
-          <div className="mt-4 max-w-xl space-y-4">
+          <div className="mt-4 flex max-w-xl flex-col gap-4">
             {sortedApps.map((app) => {
               const appDirectory = AppUtils.getAppDirectory(
                 app,
                 monorepoSettings,
               );
               return (
-                <Card
+                <Link
                   key={app.id}
-                  className="flex justify-between space-x-4 p-4"
+                  to="/apps/edit/$key"
+                  params={{ key: appEntityType.keyFromId(app.id) }}
                 >
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
+                    <div className="flex items-center justify-between">
                       <h3>{app.name}</h3>
                       <Badge variant="secondary">{app.type}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Location: {appDirectory}
                     </p>
-                  </div>
-                  <Link
-                    to="/apps/edit/$key"
-                    params={{ key: appEntityType.keyFromId(app.id) }}
-                    className="inline-block"
-                  >
-                    <Button variant="secondary">Edit</Button>
-                  </Link>
-                </Card>
+                  </Card>
+                </Link>
               );
             })}
           </div>
@@ -103,45 +86,34 @@ function AppsListPage(): React.JSX.Element {
       </section>
 
       {/* Packages Section */}
-      <section>
+      <section className="space-y-4">
         <h2>Packages</h2>
         <p className="text-muted-foreground">
           Library packages that can be shared across apps.
         </p>
-        <div className="mt-4">
-          <NewPackageDialog>
-            <Button>New Package</Button>
-          </NewPackageDialog>
-        </div>
         {sortedPackages.length > 0 ? (
-          <div className="mt-4 max-w-xl space-y-4">
+          <div className="mt-4 flex max-w-xl flex-col gap-4">
             {sortedPackages.map((pkg) => {
               const pkgDirectory = PackageUtils.getPackageDirectory(
                 pkg,
                 monorepoSettings,
               );
               return (
-                <Card
+                <Link
                   key={pkg.id}
-                  className="flex justify-between space-x-4 p-4"
+                  to="/apps/packages/$key"
+                  params={{ key: packageEntityType.keyFromId(pkg.id) }}
                 >
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
+                    <div className="flex items-center justify-between">
                       <h3>{pkg.name}</h3>
                       <Badge variant="secondary">{pkg.type}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Location: {pkgDirectory}
                     </p>
-                  </div>
-                  <Link
-                    to="/apps/packages/$key"
-                    params={{ key: packageEntityType.keyFromId(pkg.id) }}
-                    className="inline-block"
-                  >
-                    <Button variant="secondary">Edit</Button>
-                  </Link>
-                </Card>
+                  </Card>
+                </Link>
               );
             })}
           </div>

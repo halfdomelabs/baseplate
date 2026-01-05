@@ -691,13 +691,7 @@
       }
     }
   ],
-  "packages": [
-    {
-      "id": "package:NVH6noPe4b8z",
-      "name": "shared-utils",
-      "type": "node-library"
-    }
-  ],
+  "packages": [],
   "plugins": [
     {
       "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },

@@ -20,6 +20,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
+import UnlinkSection from '../-components/unlink-section.js';
+
 export const Route = createFileRoute('/apps/packages/$key/node-library')({
   component: NodeLibraryEditPage,
   loader: ({ context: { pkg }, params: { key } }) => {
@@ -70,6 +72,12 @@ function NodeLibraryEditPage(): React.JSX.Element {
             <InputFieldController label="Name" control={control} name="name" />
           </SectionListSectionContent>
         </SectionListSection>
+
+        <UnlinkSection
+          entityType="package"
+          entityId={packageDefinition.id}
+          name={packageDefinition.name}
+        />
       </SectionList>
       <FormActionBar form={formProps} />
     </form>

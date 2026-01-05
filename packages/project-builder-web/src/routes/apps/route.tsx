@@ -18,8 +18,7 @@ import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdAdd } from 'react-icons/md';
 
-import NewAppDialog from './-components/new-app-dialog.js';
-import NewPackageDialog from './-components/new-package-dialog.js';
+import NewDialog from './-components/new-dialog.js';
 
 export const Route = createFileRoute('/apps')({
   component: AppsLayout,
@@ -38,20 +37,12 @@ function AppsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="space-y-4" width="sm">
-        <div className="flex flex-col gap-2">
-          <NewAppDialog>
-            <Button variant="secondary" className="w-full">
-              <MdAdd />
-              New App
-            </Button>
-          </NewAppDialog>
-          <NewPackageDialog>
-            <Button variant="secondary" className="w-full">
-              <MdAdd />
-              New Package
-            </Button>
-          </NewPackageDialog>
-        </div>
+        <NewDialog>
+          <Button variant="secondary" className="w-full">
+            <MdAdd />
+            New
+          </Button>
+        </NewDialog>
 
         {/* Apps Section */}
         {sortedApps.length > 0 && (
