@@ -416,6 +416,7 @@ export const adminCrudEditGenerator = createGenerator({
                   variables: {
                     TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
+                    TPL_CREATE_MUTATION_FIELD_NAME: createMutationFieldName,
                     TPL_CREATE_MUTATION: renderTadaOperation(createMutation, {
                       currentPath: createPagePath,
                     }),

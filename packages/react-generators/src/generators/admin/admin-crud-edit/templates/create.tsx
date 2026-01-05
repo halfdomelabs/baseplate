@@ -23,7 +23,9 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {
     try {
-      await createUser({ variables: { input: { data: formData } } });
+      await TPL_CREATE_MUTATION_FIELD_NAME({
+        variables: { input: { data: formData } },
+      });
       toast.success(TPL_MUTATION_SUCCESS_MESSAGE);
       navigate({ to: '..' }).catch(logError);
     } catch (err: unknown) {
