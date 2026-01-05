@@ -104,6 +104,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
                 loadOptionsQueryVariable,
                 parentComponentPath,
               )})`,
+              contextFields: ['preloadQuery'],
             },
           ],
           propName: optionsName,

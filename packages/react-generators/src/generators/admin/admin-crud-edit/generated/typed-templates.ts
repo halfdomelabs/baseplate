@@ -24,6 +24,7 @@ const createPage = createTsTemplateFile({
     TPL_MUTATION_HOOK: {},
     TPL_MUTATION_SUCCESS_MESSAGE: {},
     TPL_ROUTE_PATH: {},
+    TPL_ROUTE_PROPS: {},
   },
 });
 

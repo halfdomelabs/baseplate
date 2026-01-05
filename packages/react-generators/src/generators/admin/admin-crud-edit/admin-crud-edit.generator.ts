@@ -418,6 +418,9 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_CREATE_MUTATION: renderTadaOperation(createMutation, {
                       currentPath: createPagePath,
                     }),
+                    TPL_ROUTE_PROPS: createPageRenderedLoaders.routeLoader
+                      ? tsTemplate`loader: ${createPageRenderedLoaders.routeLoader}`
+                      : '',
                     TPL_DATA_LOADER: createPageRenderedLoaders.componentBody,
                     TPL_MUTATION_HOOK: componentMutationHook,
                     TPL_FORM_DATA_NAME: formDataExpression,

@@ -10,9 +10,7 @@ TPL_CREATE_MUTATION;
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
-  loader: () => ({
-    crumb: 'New',
-  }),
+  TPL_ROUTE_PROPS,
 });
 
 function TPL_COMPONENT_NAME(): ReactElement {
