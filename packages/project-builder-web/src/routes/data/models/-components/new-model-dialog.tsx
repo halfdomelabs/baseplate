@@ -25,10 +25,12 @@ import {
   useControlledState,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import { ModelInfoForm } from '../edit.$key/-components/model-info-form.js';
 
@@ -80,6 +82,7 @@ export function NewModelDialog({
 
   const defaultValues = useMemo(() => createNewModel(), []);
   const navigate = useNavigate();
+  const router = useRouter();
 
   const { handleSubmit, reset, setError, control } = useForm({
     resolver: zodResolver(baseModelSchema),
@@ -120,10 +123,15 @@ export function NewModelDialog({
           {
             successMessage: 'Successfully created model!',
             onSuccess: () => {
-              navigate({
-                to: '/data/models/edit/$key',
-                params: { key: modelEntityType.keyFromId(data.id) },
-              });
+              router
+                .invalidate()
+                .then(() =>
+                  navigate({
+                    to: '/data/models/edit/$key',
+                    params: { key: modelEntityType.keyFromId(data.id) },
+                  }),
+                )
+                .catch(logAndFormatError);
               reset(createNewModel());
               setIsOpen(false);
             },
@@ -138,6 +146,7 @@ export function NewModelDialog({
       navigate,
       definition,
       setIsOpen,
+      router,
     ],
   );
 

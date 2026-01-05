@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -82,10 +83,10 @@ export function UnlinkSection({
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Unlink {name}</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to unlink <strong>{name}</strong>?
+                  </DialogDescription>
                 </DialogHeader>
-                <p>
-                  Are you sure you want to unlink <strong>{name}</strong>?
-                </p>
                 <p className="text-style-muted">
                   This action will unlink the {entityType} from the generation
                   process, so it will no longer be updated or managed through

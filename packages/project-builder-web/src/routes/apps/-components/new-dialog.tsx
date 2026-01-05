@@ -29,7 +29,7 @@ import {
   useControlledState,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { sortBy, startCase } from 'es-toolkit';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -57,6 +57,7 @@ export function NewDialog({
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
   const navigate = useNavigate();
+  const router = useRouter();
 
   // App form
   const appForm = useForm({
@@ -106,9 +107,14 @@ export function NewDialog({
         successMessage: `Successfully created ${data.name}!`,
         onSuccess: () => {
           handleOpenChange(false);
-          navigate({
-            to: `/apps/edit/${appEntityType.keyFromId(newId)}`,
-          }).catch(logAndFormatError);
+          router
+            .invalidate()
+            .then(() => {
+              navigate({
+                to: `/apps/edit/${appEntityType.keyFromId(newId)}`,
+              });
+            })
+            .catch(logAndFormatError);
         },
       },
     );
@@ -133,10 +139,15 @@ export function NewDialog({
         successMessage: `Successfully created ${data.name}!`,
         onSuccess: () => {
           handleOpenChange(false);
-          navigate({
-            to: `/apps/packages/$key`,
-            params: { key: packageEntityType.keyFromId(newId) },
-          }).catch(logAndFormatError);
+          router
+            .invalidate()
+            .then(() => {
+              navigate({
+                to: `/apps/packages/$key`,
+                params: { key: packageEntityType.keyFromId(newId) },
+              });
+            })
+            .catch(logAndFormatError);
         },
       },
     );
