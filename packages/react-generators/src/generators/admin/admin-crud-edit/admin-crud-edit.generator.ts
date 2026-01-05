@@ -398,6 +398,13 @@ export const adminCrudEditGenerator = createGenerator({
               };
               const createPageRenderedLoaders = renderDataLoaders(
                 inputFields.flatMap((c) => c.dataLoaders ?? []),
+                [
+                  {
+                    key: 'crumb',
+                    value: tsTemplate`${quot('New')}`,
+                    skipDestructure: true,
+                  },
+                ],
               );
               const componentMutationHook = tsTemplateWithImports([
                 tsImportBuilder(['useMutation']).from('@apollo/client/react'),
