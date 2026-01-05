@@ -44,13 +44,6 @@
       "sourceFile": "components/ui/file-input-field.tsx",
       "variables": {}
     },
-    "file-input-upload-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{components-root}/ui/file-input.gql",
-      "sourceFile": "components/ui/file-input.gql",
-      "variables": { "TPL_FILE_TYPE": {} }
-    },
     "hooks-use-upload": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

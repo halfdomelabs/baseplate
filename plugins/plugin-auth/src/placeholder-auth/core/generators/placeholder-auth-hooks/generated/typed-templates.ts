@@ -51,11 +51,7 @@ const useSession = createTsTemplateFile({
   variables: {},
 });
 
-export const hooksGroup = {
-  useLogOut,
-  useRequiredUserId,
-  useSession,
-};
+export const hooksGroup = { useLogOut, useRequiredUserId, useSession };
 
 export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = {
   hooksGroup,

@@ -19,13 +19,6 @@
       "projectExports": {},
       "sourceFile": "routes/-components/password-reset-dialog.tsx",
       "variables": {}
-    },
-    "password-reset-dialog-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{routes-root}/-components/password-reset-dialog.gql",
-      "sourceFile": "routes/-components/password-reset-dialog.gql",
-      "variables": { "TPL_USER_ROW_FRAGMENT": {} }
     }
   }
 }

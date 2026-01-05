@@ -109,11 +109,6 @@
     "instanceData": {},
     "template": "file-input-field"
   },
-  "file-input.gql": {
-    "generator": "@baseplate-dev/plugin-storage#react/upload-components",
-    "instanceData": { "variables": { "TPL_FILE_TYPE": "File" } },
-    "template": "file-input-upload-gql"
-  },
   "file-input.tsx": {
     "generator": "@baseplate-dev/plugin-storage#react/upload-components",
     "instanceData": {},

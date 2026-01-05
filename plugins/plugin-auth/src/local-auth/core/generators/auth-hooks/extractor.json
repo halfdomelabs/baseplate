@@ -33,14 +33,6 @@
       "sourceFile": "src/hooks/use-log-out.ts",
       "variables": {}
     },
-    "use-log-out-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "group": "hooks-gql",
-      "pathRootRelativePath": "{src-root}/hooks/use-log-out.gql",
-      "sourceFile": "src/hooks/use-log-out.gql",
-      "variables": {}
-    },
     "use-required-user-id": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

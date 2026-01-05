@@ -46,6 +46,11 @@ function truncateFilenameWithExtension(filename: string, length = 20): string {
   return `${truncatedFilename}...${extension}`;
 }
 
+/**
+ *
+ *
+ */
+
 export function FileInput({
   className,
   disabled,
