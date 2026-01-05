@@ -1,14 +1,7 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import { graphqlImportsProvider } from '@baseplate-dev/react-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS } from './template-paths.js';
@@ -25,16 +18,6 @@ export interface PlaceholderAuthCorePlaceholderAuthHooksRenderers {
       >,
     ) => BuilderAction;
   };
-  useCurrentUserGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.useCurrentUserGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
 }
 
 const placeholderAuthCorePlaceholderAuthHooksRenderers =
@@ -45,7 +28,6 @@ const placeholderAuthCorePlaceholderAuthHooksRenderers =
 const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
   createGeneratorTask({
     dependencies: {
-      generatedGraphqlImports: graphqlImportsProvider,
       paths: PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS.provider,
       typescriptFile: typescriptFileProvider,
     },
@@ -53,7 +35,7 @@ const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
       placeholderAuthCorePlaceholderAuthHooksRenderers:
         placeholderAuthCorePlaceholderAuthHooksRenderers.export(),
     },
-    run({ generatedGraphqlImports, paths, typescriptFile }) {
+    run({ paths, typescriptFile }) {
       return {
         providers: {
           placeholderAuthCorePlaceholderAuthHooksRenderers: {
@@ -63,19 +45,7 @@ const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
                   group:
                     PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.hooksGroup,
                   paths,
-                  importMapProviders: {
-                    generatedGraphqlImports,
-                  },
                   generatorPaths: paths,
-                  ...options,
-                }),
-            },
-            useCurrentUserGql: {
-              render: (options) =>
-                renderTextTemplateFileAction({
-                  template:
-                    PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.useCurrentUserGql,
-                  destination: paths.useCurrentUserGql,
                   ...options,
                 }),
             },

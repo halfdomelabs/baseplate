@@ -1,27 +1,5 @@
-import {
-  createTextTemplateFile,
-  createTsTemplateFile,
-} from '@baseplate-dev/core-generators';
-import { graphqlImportsProvider } from '@baseplate-dev/react-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
-
-const useCurrentUser = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {
-    generatedGraphqlImports: graphqlImportsProvider,
-  },
-  name: 'use-current-user',
-  projectExports: { useCurrentUser: {} },
-  referencedGeneratorTemplates: { useSession: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/hooks/use-current-user.ts',
-    ),
-  },
-  variables: {},
-});
 
 const useLogOut = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -74,25 +52,11 @@ const useSession = createTsTemplateFile({
 });
 
 export const hooksGroup = {
-  useCurrentUser,
   useLogOut,
   useRequiredUserId,
   useSession,
 };
 
-const useCurrentUserGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'use-current-user-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/hooks/use-current-user.gql',
-    ),
-  },
-  variables: {},
-});
-
 export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = {
   hooksGroup,
-  useCurrentUserGql,
 };
