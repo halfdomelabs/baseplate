@@ -8,7 +8,7 @@
       "importMapProviders": {
         "graphqlImportsProvider": {
           "importName": "graphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
