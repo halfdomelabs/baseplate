@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 
 import { Outlet } from '@tanstack/react-router';
 
+import { AsyncBoundary } from '../ui/async-boundary';
 import { Separator } from '../ui/separator';
 import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import { AppBreadcrumbs } from './app-breadcrumbs';
@@ -25,7 +26,9 @@ export function AdminLayout({ className }: Props): ReactElement {
           <AppBreadcrumbs />
         </header>
         <main className="flex-1 p-4">
-          <Outlet />
+          <AsyncBoundary>
+            <Outlet />
+          </AsyncBoundary>
         </main>
       </div>
     </SidebarProvider>

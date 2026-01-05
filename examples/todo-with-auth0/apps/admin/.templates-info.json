@@ -6,15 +6,15 @@
     },
     "template": "readme"
   },
-  "codegen.ts": {
-    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
-    "instanceData": {},
-    "template": "codegen-config"
-  },
   "eslint.config.js": {
     "generator": "@baseplate-dev/core-generators#node/eslint",
     "instanceData": {},
     "template": "eslint-config"
+  },
+  "graphql.config.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "graphql-config"
   },
   "index.html": {
     "generator": "@baseplate-dev/react-generators#core/react",

@@ -211,6 +211,8 @@ export const adminCrudEditGenerator = createGenerator({
                 variables: {
                   TPL_COMPONENT_NAME: editFormComponentName,
                   TPL_FORM_DATA_NAME: formDataExpression,
+                  TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE:
+                    editFormDefaultValuesFragmentVariable,
                   TPL_LIST_ROUTE: reactRoutes.getRoutePrefix(),
                   TPL_EDIT_FRAGMENT: renderTadaFragment(
                     editFormDefaultValuesFragment,

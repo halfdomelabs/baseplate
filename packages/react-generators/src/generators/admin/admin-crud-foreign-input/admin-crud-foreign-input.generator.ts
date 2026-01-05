@@ -2,6 +2,7 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
+  tsImportBuilder,
   tsTemplate,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
@@ -74,7 +75,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
 
         const foreignModelNameVariants = getModelNameVariants(foreignModelName);
 
-        const optionFragmentVariable = `${parentComponentName}${uppercaseFirstChar(optionsName)}Fragment`;
+        const optionFragmentVariable = `${lowerCaseFirst(parentComponentName)}${uppercaseFirstChar(optionsName)}Fragment`;
         const optionFragment: GraphQLFragment = {
           fragmentName: `${parentComponentName}_${optionsName}`,
           variableName: optionFragmentVariable,
@@ -99,7 +100,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
         const dataLoader: DataLoader = {
           routeLoaderFields: [
             {
-              key: optionsName,
+              key: `${optionsName}Ref`,
               value: tsTemplate`preloadQuery(${TsCodeUtils.importFragment(
                 loadOptionsQueryVariable,
                 parentComponentPath,
@@ -107,19 +108,22 @@ export const adminCrudForeignInputGenerator = createGenerator({
               contextFields: ['preloadQuery'],
             },
           ],
+          pageComponentBody: tsTemplateWithImports([
+            tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
+          ])`const ${optionsName} = useReadQuery(${optionsName}Ref).data.${foreignModelNameVariants.graphqlList};`,
           propName: optionsName,
-          propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<${optionFragmentVariable}>`,
+          propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${optionFragmentVariable}>[]`,
           propPageValue: tsTemplate`${optionsName}`,
         };
 
-        const optionsCreator = tsCodeFragment(
-          `${optionsName}.map((option) => ({
+        const optionsCreator = tsTemplateWithImports([
+          graphqlImports.readFragment.declaration(),
+        ])`const ${optionsName}Data = readFragment(${optionFragmentVariable}, ${optionsName}).map((option) => ({
         label: option.${labelExpression}${
           defaultLabel ? ` ?? ${defaultLabel}` : ''
         },
         value: option.${valueExpression},
-      }))`,
-        );
+      }))`;
 
         const validationExpression =
           valueType === 'uuid' ? 'z.uuid()' : 'z.string()';
@@ -154,11 +158,12 @@ export const adminCrudForeignInputGenerator = createGenerator({
             nullLabel
               ? tsTemplate`[
               { label: ${quot(nullLabel)}, value: null },
-              ...${optionsCreator}
+              ...${optionsName}Data
             ]`
-              : optionsCreator
+              : `${optionsName}Data`
           }}
         />`,
+          header: optionsCreator,
           graphQLFields: [{ name: localField }],
           validation: [
             {

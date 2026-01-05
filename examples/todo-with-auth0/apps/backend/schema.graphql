@@ -226,6 +226,9 @@ type Query {
   todoLists: [TodoList!]!
   user(id: Uuid!): User!
   users: [User!]!
+
+  """The currently authenticated user"""
+  viewer: User
 }
 
 type TodoItem {

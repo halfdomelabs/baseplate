@@ -1,33 +1,55 @@
 import type { ReactElement } from 'react';
 
-import { useQuery } from '@apollo/client/react';
+import { useReadQuery } from '@apollo/client/react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import { GetTodoListsDocument } from '@src/generated/graphql';
+import { graphql } from '@src/graphql';
 
-import { TodoListTable } from './-components/todo-list-table';
+import {
+  TodoListTable,
+  todoListTableItemsFragment,
+} from './-components/todo-list-table';
+
+/* TPL_COMPONENT_NAME=TodoListListPage */
+
+/* TPL_ITEMS_QUERY:START */
+const todoListListPageQuery = graphql(
+  `
+    query TodoListListPage {
+      todoLists {
+        ...TodoListTable_items
+      }
+    }
+  `,
+  [todoListTableItemsFragment],
+);
+/* TPL_ITEMS_QUERY:END */
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/todos/todo-list/' /* TPL_ROUTE_PATH:END */,
 )({
-  component: /* TPL_PAGE_NAME:START */ TodoListListPage /* TPL_PAGE_NAME:END */,
+  component: TodoListListPage,
+  /* TPL_ROUTE_PROPS:START */ loader: ({ context: { preloadQuery } }) => ({
+    queryRef: preloadQuery(todoListListPageQuery),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
-function /* TPL_PAGE_NAME:START */ TodoListListPage /* TPL_PAGE_NAME:END */(): ReactElement {
-  /* TPL_DATA_LOADER:START */
-  const { data, error } = useQuery(GetTodoListsDocument);
-  /* TPL_DATA_LOADER:END */
+function TodoListListPage(): ReactElement {
+  /* TPL_DATA_LOADERS:START */
+  const { queryRef } = Route.useLoaderData();
+
+  const { data } = useReadQuery(queryRef);
+  /* TPL_DATA_LOADERS:END */
 
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h1>
-          {/* TPL_TITLE:START */}
-          Todo List Management
-          {/* TPL_TITLE:END */}
+          {/* TPL_PAGE_TITLE:START */}
+          Todo Lists
+          {/* TPL_PAGE_TITLE:END */}
         </h1>
         {/* TPL_CREATE_BUTTON:START */}
 
@@ -41,17 +63,9 @@ function /* TPL_PAGE_NAME:START */ TodoListListPage /* TPL_PAGE_NAME:END */(): R
         </div>
         {/* TPL_CREATE_BUTTON:END */}
       </div>
-      {
-        /* TPL_DATA_PARTS:START */ !data /* TPL_DATA_PARTS:END */ ? (
-          <ErrorableLoader
-            error={/* TPL_ERROR_PARTS:START */ error /* TPL_ERROR_PARTS:END */}
-          />
-        ) : (
-          /* TPL_TABLE_COMPONENT:START */ <TodoListTable
-            items={data.todoLists}
-          /> /* TPL_TABLE_COMPONENT:END */
-        )
-      }
+      {/* TPL_TABLE_COMPONENT:START */}
+      <TodoListTable items={data.todoLists} />
+      {/* TPL_TABLE_COMPONENT:END */}
     </div>
   );
 }

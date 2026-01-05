@@ -17,6 +17,7 @@ import { userEditFormSchema } from '../-schemas/user-schema';
 
 /* TPL_COMPONENT_NAME=UserEditForm */
 /* TPL_FORM_DATA_NAME=UserFormData */
+/* TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE=userEditFormDefaultValuesFragment */
 /* TPL_LIST_ROUTE=/admin/accounts/users */
 
 /* TPL_EDIT_FRAGMENT:START */
@@ -54,7 +55,7 @@ export function UserEditForm(
     handleSubmit,
     control,
     formState: { isSubmitting },
-  } = useForm({
+  } = useForm<UserFormData>({
     resolver: zodResolver(
       /* TPL_EDIT_SCHEMA:START */ userEditFormSchema /* TPL_EDIT_SCHEMA:END */,
     ),

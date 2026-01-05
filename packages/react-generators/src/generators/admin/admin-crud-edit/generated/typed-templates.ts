@@ -40,6 +40,7 @@ const editForm = createTsTemplateFile({
   },
   variables: {
     TPL_COMPONENT_NAME: { type: 'replacement' },
+    TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
     TPL_EDIT_FRAGMENT: {},
     TPL_EDIT_SCHEMA: {},

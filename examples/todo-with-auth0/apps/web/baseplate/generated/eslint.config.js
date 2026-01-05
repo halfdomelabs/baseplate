@@ -255,6 +255,7 @@ export default tsEslint.config(
       '@graphql-eslint/naming-convention': [
         'error',
         {
+          DirectiveDefinition: { ignorePattern: ['_unmask'] },
           VariableDefinition: 'camelCase',
           OperationDefinition: {
             style: 'PascalCase',

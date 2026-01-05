@@ -20,14 +20,14 @@ export function TPL_COMPONENT_NAME(
   TPL_DESTRUCTURED_PROPS: Props,
 ): ReactElement {
   const initialValuesData = readFragment(
-    userEditFormDefaultValuesFragment,
+    TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE,
     defaultValues,
   );
   const {
     handleSubmit,
     control,
     formState: { isSubmitting },
-  } = useForm({
+  } = useForm<TPL_FORM_DATA_NAME>({
     resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialValuesData,
   });
