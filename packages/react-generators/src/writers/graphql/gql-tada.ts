@@ -25,7 +25,7 @@ import {
 // Render Options
 // ============================================================================
 
-export interface RenderOptions {
+interface RenderOptions {
   /** Whether to export the fragment/operation (default: true) */
   exported?: boolean;
   /** The path of the file being rendered (to determine if fragments need imports) */

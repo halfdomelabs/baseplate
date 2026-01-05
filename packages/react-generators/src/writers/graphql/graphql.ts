@@ -19,9 +19,9 @@ interface GraphQLVariableValue {
   variable: string;
 }
 
-export type GraphQLArgumentValue = GraphQLScalarValue | GraphQLVariableValue;
+type GraphQLArgumentValue = GraphQLScalarValue | GraphQLVariableValue;
 
-export interface GraphQLArgument {
+interface GraphQLArgument {
   name: string;
   value: GraphQLArgumentValue;
 }
@@ -30,7 +30,7 @@ export interface GraphQLArgument {
 // Variable Types
 // ============================================================================
 
-export interface GraphQLVariable {
+interface GraphQLVariable {
   name: string;
   type: string;
 }
@@ -73,7 +73,7 @@ export interface GraphQLFragment {
 /**
  * A simple field with a name, optional arguments, and optional nested fields.
  */
-export interface GraphQLSimpleField {
+interface GraphQLSimpleField {
   type?: 'simple' | undefined;
   name: string;
   args?: GraphQLArgument[];
@@ -95,7 +95,7 @@ export interface GraphQLSimpleField {
  * // Renders as: ...UserTable_items
  * ```
  */
-export interface GraphQLSpreadField {
+interface GraphQLSpreadField {
   type: 'spread';
   fragment: GraphQLFragment;
 }

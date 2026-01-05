@@ -27,7 +27,6 @@
     "./eslint-configs/prettier": "./eslint-configs/prettier.js",
     "./eslint-configs/react": "./eslint-configs/react.js",
     "./eslint-configs/storybook": "./eslint-configs/storybook.js",
-    "./eslint-configs/tailwind": "./eslint-configs/tailwind.js",
     "./eslint-node": "./eslint.config.node.js",
     "./eslint-react": "./eslint.config.react.js",
     "./prettier-node": "./prettier.config.node.js",
