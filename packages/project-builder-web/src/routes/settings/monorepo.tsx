@@ -34,6 +34,7 @@ function MonorepoSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = definition.settings.monorepo ?? {
     appsFolder: 'apps',
+    packagesFolder: 'packages',
   };
 
   const form = useResettableForm({
@@ -77,6 +78,13 @@ function MonorepoSettingsPage(): React.JSX.Element {
                 description='Folder where apps are located. Apps will be placed in {appsFolder}/{app-name}, e.g. "apps" results in apps/backend, apps/web'
                 control={control}
                 placeholder="e.g. apps"
+              />
+              <InputFieldController
+                name="packagesFolder"
+                label="Packages Folder"
+                description='Folder where library packages are located. Packages will be placed in {packagesFolder}/{package-name}, e.g. "packages" results in packages/my-lib'
+                control={control}
+                placeholder="e.g. packages"
               />
             </SectionListSectionContent>
           </SectionListSection>

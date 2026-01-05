@@ -5,7 +5,6 @@ import { z } from 'zod';
  * Monorepo settings schema
  *
  * Configures the folder structure for monorepo packages.
- * In V1, only supports configuring the apps folder location.
  */
 export const monorepoSettingsSchema = z.object({
   /**
@@ -25,6 +24,24 @@ export const monorepoSettingsSchema = z.object({
         'Apps folder must contain only lowercase letters, numbers, and dashes (no slashes)',
     })
     .default('apps'),
+
+  /**
+   * The folder where library packages are located in the monorepo.
+   *
+   * Must be in kebab-case format (lowercase letters and dashes only).
+   * Packages will be placed in {packagesFolder}/{package-name}, e.g. "packages/shared-utils".
+   *
+   * @default "packages"
+   * @example "packages" → packages/shared-utils, packages/common
+   * @example "libs" → libs/shared-utils, libs/common
+   */
+  packagesFolder: CASE_VALIDATORS.KEBAB_CASE.min(1)
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, {
+      message:
+        'Packages folder must contain only lowercase letters, numbers, and dashes (no slashes)',
+    })
+    .default('packages'),
 });
 
 /**

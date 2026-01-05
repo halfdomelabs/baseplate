@@ -4,6 +4,7 @@ export * from './model/enum-utils.js';
 export * from './model/model-field-utils.js';
 export * from './model/model-transformer-utils.js';
 export * from './model/model-utils.js';
+export * from './packages/package-utils.js';
 export * from './plugins/index.js';
 export * from './project-definition-container.js';
 export * from './project-definition-container.test-utils.js';
