@@ -38,6 +38,7 @@ const cache = createTsTemplateFile({
 const graphql = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
+  importMapProviders: {},
   name: 'graphql',
   projectExports: {
     FragmentOf: { isTypeOnly: false },
@@ -46,8 +47,10 @@ const graphql = createTsTemplateFile({
     ResultOf: { isTypeOnly: false },
     VariablesOf: { isTypeOnly: false },
   },
-  projectExportsOnly: true,
-  source: { contents: '' },
+  referencedGeneratorTemplates: { graphqlEnvD: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/graphql.ts'),
+  },
   variables: {},
 });
 

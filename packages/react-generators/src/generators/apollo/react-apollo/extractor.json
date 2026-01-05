@@ -39,6 +39,7 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "group": "main",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/graphql.ts",
       "projectExports": {
         "FragmentOf": { "isTypeOnly": false, "name": "FragmentOf" },
@@ -47,8 +48,9 @@
         "ResultOf": { "isTypeOnly": false, "name": "ResultOf" },
         "VariablesOf": { "isTypeOnly": false, "name": "VariablesOf" }
       },
-      "projectExportsOnly": true,
-      "sourceFile": "src/graphql.ts"
+      "referencedGeneratorTemplates": ["graphql-env-d"],
+      "sourceFile": "src/graphql.ts",
+      "variables": {}
     },
     "graphql-config": {
       "type": "ts",

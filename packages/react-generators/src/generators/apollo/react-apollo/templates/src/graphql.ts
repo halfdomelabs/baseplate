@@ -1,6 +1,8 @@
-import { initGraphQLTada } from 'gql.tada';
+// @ts-nocheck
 
-import type { introspection } from './graphql-env.d.ts';
+import type { introspection } from '$graphqlEnvD';
+
+import { initGraphQLTada } from 'gql.tada';
 
 export const graphql = initGraphQLTada<{
   introspection: introspection;
