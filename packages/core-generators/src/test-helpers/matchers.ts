@@ -263,7 +263,7 @@ export function extendFragmentMatchers(): void {
  * TypeScript module augmentation for custom matchers
  * This provides type checking and autocomplete for the custom matchers
  */
-interface FragmentMatchers<R = unknown> {
+export interface FragmentMatchers<R = unknown> {
   /**
    * Asserts that a TypeScript fragment matches the expected fragment
    * Compares contents, imports (order-independent), and optionally hoisted fragments

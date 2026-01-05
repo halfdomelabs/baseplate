@@ -31,6 +31,7 @@ export { createTestTsImportMap } from './import-map-helpers.js';
 export {
   extendFragmentMatchers,
   fragmentMatchers,
+  type FragmentMatchers,
   type ToIncludeImportOptions,
   type ToMatchTsFragmentOptions,
 } from './matchers.js';

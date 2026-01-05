@@ -5,6 +5,6 @@ const baseConfig = createNodeVitestConfig(import.meta.dirname);
 
 export default mergeConfig(baseConfig, {
   test: {
-    setupFiles: ['./src/test-helpers/setup.ts'],
+    setupFiles: ['./src/test-helpers/setup.test-helper.ts'],
   },
 });

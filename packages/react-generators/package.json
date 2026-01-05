@@ -52,7 +52,6 @@
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
     "prettier-plugin-tailwindcss": "0.6.14",
-    "vitest": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -62,7 +61,8 @@
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": "^22.0.0"
