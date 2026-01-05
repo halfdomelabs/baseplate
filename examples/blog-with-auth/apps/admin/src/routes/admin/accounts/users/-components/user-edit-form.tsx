@@ -24,6 +24,7 @@ import { userEditFormSchema } from '../-schemas/user-schema';
 export const userEditFormDefaultValuesFragment = graphql(`
   fragment UserEditForm_defaultValues on User {
     email
+    id
     name
   }
 `);

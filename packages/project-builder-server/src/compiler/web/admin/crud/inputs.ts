@@ -25,7 +25,6 @@ import {
   adminCrudPasswordInputGenerator,
   adminCrudTextInputGenerator,
 } from '@baseplate-dev/react-generators';
-import { makeIdSafe } from '@baseplate-dev/sync';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
@@ -176,14 +175,27 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
 const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedInputConfig> =
   {
     name: 'embedded',
-    compileInput: (definition, { order, definitionContainer }) => {
+    compileInput: (definition, { order, definitionContainer, model }) => {
       const relationName = definitionContainer.nameFromId(
         definition.modelRelationRef,
       );
+      const relation = ModelUtils.getRelationsToModel(
+        definitionContainer.definition,
+        model.id,
+      ).find((r) => r.relation.foreignId === definition.modelRelationRef);
+      if (!relation) {
+        throw new Error(
+          `Could not find relation ${definition.modelRelationRef} in model ${model.name}`,
+        );
+      }
+      const idFields = ModelUtils.getPrimaryKeyFields(relation.model).map((f) =>
+        definitionContainer.nameFromId(f.id),
+      );
+
       return adminCrudEmbeddedInputGenerator({
         order,
-        // TODO: We should use an actual ID on the input
-        id: makeIdSafe(definition.label),
+        id: definition.modelRelationRef,
+        idFields,
         label: definition.label,
         modelRelation: relationName,
         embeddedFormRef: definition.embeddedFormRef,
@@ -195,15 +207,18 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
   {
     name: 'embeddedLocal',
     compileInput(definition, { order, definitionContainer, model }) {
-      const localRelation = model.model.relations?.find(
-        (r) => r.id === definition.localRelationRef,
+      const localRelation = ModelFieldUtils.relationByIdOrThrow(
+        model,
+        definition.localRelationRef,
       );
 
-      if (!localRelation) {
-        throw new Error(
-          `Could not find relation ${definition.localRelationRef} in model ${model.name}`,
-        );
-      }
+      const foreignModel = ModelUtils.byIdOrThrow(
+        definitionContainer.definition,
+        localRelation.modelRef,
+      );
+      const idFields = ModelUtils.getPrimaryKeyFields(foreignModel).map((f) =>
+        definitionContainer.nameFromId(f.id),
+      );
 
       const localRelationName = definitionContainer.nameFromId(
         definition.localRelationRef,
@@ -211,8 +226,8 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
 
       return adminCrudEmbeddedInputGenerator({
         order,
-        // TODO: We should use an actual ID on the input
-        id: makeIdSafe(definition.label),
+        id: definition.localRelationRef,
+        idFields,
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),

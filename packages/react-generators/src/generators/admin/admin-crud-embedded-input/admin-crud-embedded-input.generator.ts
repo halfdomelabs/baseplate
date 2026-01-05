@@ -19,6 +19,7 @@ const descriptorSchema = z.object({
   modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
   isRequired: z.boolean().optional(),
+  idFields: z.array(z.string()),
 });
 
 export type AdminCrudEmbeddedInputProvider = unknown;
@@ -39,6 +40,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
     embeddedFormRef,
     isRequired,
     order,
+    idFields,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -107,7 +109,13 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
           order,
           content,
           graphQLFields: [
-            { name: modelRelation, fields: mergeGraphqlFields(graphQLFields) },
+            {
+              name: modelRelation,
+              fields: mergeGraphqlFields([
+                ...idFields.map((id) => ({ name: id })),
+                ...graphQLFields,
+              ]),
+            },
           ],
           validation: [
             {

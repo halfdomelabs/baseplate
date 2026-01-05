@@ -28,12 +28,15 @@ import { EmbeddedRolesForm, EmbeddedRolesTable } from './embedded-roles-form';
 export const userEditFormDefaultValuesFragment = graphql(`
   fragment UserEditForm_defaultValues on User {
     email
+    id
     name
     customer {
+      id
       stripeCustomerId
     }
     roles {
       role
+      userId
     }
   }
 `);

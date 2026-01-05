@@ -196,9 +196,10 @@ export const adminCrudEditGenerator = createGenerator({
               variableName: editFormDefaultValuesFragmentVariable,
               fragmentName: editFormDefaultValuesFragmentName,
               onType: modelNameVariants.graphqlObjectType,
-              fields: mergeGraphqlFields(
-                inputFields.flatMap((c) => c.graphQLFields),
-              ),
+              fields: mergeGraphqlFields([
+                { name: idField },
+                ...inputFields.flatMap((c) => c.graphQLFields),
+              ]),
               path: editFormComponentPath,
             };
 
