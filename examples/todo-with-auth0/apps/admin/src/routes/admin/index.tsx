@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
 
-import { useQuery } from '@apollo/client/react';
+import { useSuspenseQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { graphql } from '@src/graphql';
 
 export const Route = createFileRoute(
@@ -22,11 +21,7 @@ const homePageQuery = graphql(`
 `);
 
 function HomePage(): ReactElement {
-  const { data, error } = useQuery(homePageQuery);
-
-  if (!data) {
-    return <ErrorableLoader error={error} />;
-  }
+  const { data } = useSuspenseQuery(homePageQuery);
 
   return (
     <div className="space-y-4">
