@@ -1,4 +1,4 @@
-import type { EnqueueOptions } from '../../types/queue.types.js';
+import type { EnqueueOptions } from '@src/types/queue.types.js';
 
 /**
  * Configuration for sending an email, including queue behavior.

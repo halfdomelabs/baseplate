@@ -25,8 +25,6 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   AWS_UPLOADS_URL: z.string().min(1),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
-  // Postmark API token
-  POSTMARK_API_TOKEN: z.string().min(1),
   // Redis key prefix for namespace isolation (optional)
   REDIS_KEY_PREFIX: z.string().default(''),
   // Connection URL of Redis

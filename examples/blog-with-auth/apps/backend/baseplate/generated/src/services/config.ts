@@ -12,8 +12,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   AUTH_SECRET: z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
-  // Default sender email address for outgoing emails
-  EMAIL_DEFAULT_FROM: z.string().email().default('noreply@example.com'),
+  // Default sender email address for transactional emails
+  EMAIL_DEFAULT_FROM: z.email().default('noreply@example.com'),
   // Postmark API server token for sending emails
   POSTMARK_SERVER_TOKEN: z.string().min(1),
   // Sentry DSN
