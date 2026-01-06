@@ -14,6 +14,8 @@ import { createNodePackagesTask, createNodeTask } from '../node/index.js';
 
 const descriptorSchema = z.object({});
 
+import { quot } from '@baseplate-dev/utils';
+
 import {
   tsCodeFragment,
   TsCodeUtils,
@@ -83,6 +85,7 @@ export const vitestGenerator = createGenerator({
                   ? JSON.stringify(setupFiles.toSorted())
                   : undefined,
               maxWorkers: '1',
+              dir: quot('src'),
               env: tsCodeFragment(
                 "loadEnv('development', process.cwd(), '')",
                 tsImportBuilder(['loadEnv']).from('vite'),

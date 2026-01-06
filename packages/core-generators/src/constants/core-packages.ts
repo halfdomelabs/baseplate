@@ -4,7 +4,7 @@ export const CORE_PACKAGES = {
 
   // Linting
   '@eslint/js': '9.32.0',
-  '@vitest/eslint-plugin': '1.3.4',
+  '@vitest/eslint-plugin': '1.6.5',
   eslint: '9.32.0',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
@@ -23,7 +23,7 @@ export const CORE_PACKAGES = {
 
   // Testing
   vite: '7.1.12',
-  vitest: '3.2.4',
+  vitest: '4.0.16',
   'vite-tsconfig-paths': '5.1.4',
 
   // Utils

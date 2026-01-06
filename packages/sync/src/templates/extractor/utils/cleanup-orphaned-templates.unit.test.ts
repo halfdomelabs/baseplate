@@ -1,6 +1,10 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { TestLogger } from '#src/tests/logger.test-utils.js';
+
+import { createTestLogger } from '#src/tests/logger.test-utils.js';
+
 import type { OrphanedTemplateEntry } from '../../metadata/read-template-info-files.js';
 
 import { TemplateExtractorConfigLookup } from '../configs/template-extractor-config-lookup.js';
@@ -10,26 +14,12 @@ vi.mock('node:fs');
 vi.mock('node:fs/promises');
 
 describe('cleanupOrphanedTemplates', () => {
-  let mockLogger: {
-    info: ReturnType<typeof vi.fn>;
-    warn: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    debug: ReturnType<typeof vi.fn>;
-    verbose: ReturnType<typeof vi.fn>;
-    on: ReturnType<typeof vi.fn>;
-  };
+  let mockLogger: TestLogger;
 
   beforeEach(() => {
     vol.reset();
     vi.clearAllMocks();
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      error: vi.fn(),
-      debug: vi.fn(),
-      verbose: vi.fn(),
-      on: vi.fn(),
-    };
+    mockLogger = createTestLogger();
   });
 
   it('should clean up orphaned templates and return modified generators', async () => {
@@ -135,7 +125,7 @@ describe('cleanupOrphanedTemplates', () => {
     expect(updatedMetadata['existing.ts']).toBeDefined();
 
     // Logger should have been called
-    expect(mockLogger.info).toHaveBeenCalledWith(
+    expect(mockLogger.getInfoOutput()).toContain(
       "Cleaned up orphaned template 'orphaned-template' for generator 'test-package#test-generator'",
     );
   });
@@ -178,7 +168,7 @@ describe('cleanupOrphanedTemplates', () => {
 
     // Assert
     expect(result).toEqual([]);
-    expect(mockLogger.warn).toHaveBeenCalledWith(
+    expect(mockLogger.getWarnOutput()).toContain(
       "Generator 'unknown-package#unknown-generator' not found in config lookup, skipping extractor.json cleanup for template 'orphaned-template'",
     );
 
@@ -197,8 +187,12 @@ describe('cleanupOrphanedTemplates', () => {
 
     // Assert
     expect(result).toEqual([]);
-    expect(mockLogger.info).not.toHaveBeenCalled();
-    expect(mockLogger.warn).not.toHaveBeenCalled();
+    expect(mockLogger.getInfoOutput()).not.toContain(
+      "Cleaned up orphaned template 'orphaned-template' for generator 'test-package#test-generator'",
+    );
+    expect(mockLogger.getWarnOutput()).not.toContain(
+      "Generator 'unknown-package#unknown-generator' not found in config lookup, skipping extractor.json cleanup for template 'orphaned-template'",
+    );
   });
 
   it('should delete metadata file when last entry is removed', async () => {
