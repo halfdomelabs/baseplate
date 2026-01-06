@@ -155,6 +155,8 @@ export default {
     'prettier-plugin-tailwindcss',
     // Tailwind v4 is not recognized as a dependency by Knip
     'tailwindcss',
+    // Needed for correct typings
+    '@baseplate-dev/utils',
   ],
   // Enable parsing of CSS
   compilers: {
