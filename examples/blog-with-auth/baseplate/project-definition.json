@@ -691,7 +691,13 @@
       }
     }
   ],
-  "packages": [],
+  "packages": [
+    {
+      "id": "package:X95tdAsNslUj",
+      "name": "transactional",
+      "type": "node-library"
+    }
+  ],
   "plugins": [
     {
       "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },
