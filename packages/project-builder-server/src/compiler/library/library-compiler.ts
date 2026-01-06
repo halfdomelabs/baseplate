@@ -71,7 +71,7 @@ export class NodeLibraryCompiler extends LibraryCompiler<BasePackageConfig> {
       version: '1.0.0',
       children: {
         library: nodeLibraryGenerator({ includePlaceholderIndexFile: true }),
-        vitest: vitestGenerator({}),
+        vitest: vitestGenerator({ includeTestHelpers: false }),
       },
     });
 
