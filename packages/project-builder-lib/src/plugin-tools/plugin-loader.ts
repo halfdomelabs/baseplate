@@ -178,7 +178,7 @@ function getWebEntrypointImport(
   const pathWithoutExtension = entrypointPath.replace(/\.[jt]sx?$/, '');
   const relativeEntrypoint = path
     .relative(pluginDirectory, pathWithoutExtension)
-    .replace(/\\/g, '/');
+    .replaceAll('\\', '/');
   return `${pluginName}/${relativeEntrypoint}`;
 }
 
@@ -201,8 +201,8 @@ async function populatePluginMetadataWithPaths(
       // URL safe key
       key: `${packageName
         .replace(/^@/, '')
-        .replace(/[^a-z0-9/]+/g, '-')
-        .replace(/\//g, '_')}_${metadata.name.replace(/[^a-z0-9]+/g, '-')}`,
+        .replaceAll(/[^a-z0-9/]+/g, '-')
+        .replaceAll('/', '_')}_${metadata.name.replaceAll(/[^a-z0-9]+/g, '-')}`,
       packageName,
       fullyQualifiedName: `${packageName}:${metadata.name}`,
       pluginDirectory,

@@ -1,7 +1,9 @@
 packages:
   - apps/*
+  - packages/*
 publishBranch: main
 savePrefix: ''
 linkWorkspacePackages: true
 saveWorkspaceProtocol: rolling
 minimumReleaseAge: 1440
+blockExoticSubdeps: true

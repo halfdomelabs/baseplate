@@ -3,6 +3,7 @@ import {
   createGenerator,
   createGeneratorTask,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/index.js';
@@ -83,6 +84,7 @@ export const vitestGenerator = createGenerator({
                   ? JSON.stringify(setupFiles.toSorted())
                   : undefined,
               maxWorkers: '1',
+              dir: quot('src'),
               env: tsCodeFragment(
                 "loadEnv('development', process.cwd(), '')",
                 tsImportBuilder(['loadEnv']).from('vite'),

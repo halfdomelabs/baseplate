@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Vite React Base Config",
-  "extends": "@tsconfig/vite-react/tsconfig.json"
+  "extends": "@tsconfig/vite-react/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+  }
 }

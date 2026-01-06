@@ -70,10 +70,10 @@
     "vitest": "catalog:",
     "workspace-meta": "0.1.4"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.27.0",
   "engines": {
     "node": "^22.0.0",
-    "pnpm": "^10.18.3"
+    "pnpm": "^10.27.0"
   },
   "volta": {
     "node": "22.18.0"

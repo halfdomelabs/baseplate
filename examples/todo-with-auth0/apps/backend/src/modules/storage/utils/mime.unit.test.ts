@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import {
   getEncodingFromContentType,
   getMimeTypeFromContentType,
-  InvalidMimeTypeError,
   validateFileExtensionWithMimeType,
 } from './mime.js';
 
@@ -105,16 +104,15 @@ describe('validateFileExtensionWithMimeType', () => {
   it('should throw InvalidExtensionError with expected extensions', () => {
     expect(() => {
       validateFileExtensionWithMimeType('image/jpeg', 'image.png');
-    }).toThrow(InvalidMimeTypeError);
-
-    try {
-      validateFileExtensionWithMimeType('image/jpeg', 'image.png');
-    } catch (error) {
-      if (error instanceof InvalidMimeTypeError) {
-        expect(error.expectedFileExtensions).toContain('jpg');
-        expect(error.expectedFileExtensions).toContain('jpeg');
-      }
-    }
+    }).toThrow(
+      expect.objectContaining({
+        name: 'InvalidMimeTypeError',
+        expectedFileExtensions: expect.arrayContaining([
+          'jpg',
+          'jpeg',
+        ]) as string[],
+      }) as Error,
+    );
   });
 
   it('should throw error for invalid mime type', () => {

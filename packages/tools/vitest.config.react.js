@@ -22,7 +22,7 @@ afterEach(() => {
  * Create a vitest config for a React project
  *
  * @param {string} dirname - The directory name of the project
- * @returns {import('vitest/config').UserConfig} - The vitest config
+ * @returns {import('vitest/config').ViteUserConfig} - The vitest config
  */
 export function createReactVitestConfig(dirname) {
   return defineConfig({
