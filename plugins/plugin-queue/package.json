@@ -43,7 +43,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "vite build --watch"
+    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
@@ -69,6 +69,7 @@
     "concurrently": "9.0.1",
     "cpx2": "catalog:",
     "eslint": "catalog:",
+    "nodemon": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
