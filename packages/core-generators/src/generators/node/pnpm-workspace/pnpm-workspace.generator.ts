@@ -46,9 +46,6 @@ export const pnpmWorkspaceGenerator = createGenerator({
               savePrefix: '',
               // defaults to saving as workspace:*
               saveWorkspaceProtocol: 'rolling',
-              // prevents automatic trust downgrades - maintains security trust levels
-              // and requires explicit action to reduce trust for packages
-              trustPolicy: 'no-downgrade',
             });
 
             builder.writeFile({

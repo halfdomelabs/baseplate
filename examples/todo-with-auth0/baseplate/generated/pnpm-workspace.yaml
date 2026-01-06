@@ -7,4 +7,3 @@ minimumReleaseAge: 1440
 publishBranch: main
 savePrefix: ''
 saveWorkspaceProtocol: rolling
-trustPolicy: no-downgrade
