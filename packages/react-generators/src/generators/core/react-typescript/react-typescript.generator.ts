@@ -61,7 +61,7 @@ export const reactTypescriptGenerator = createGenerator({
                 /* Compilation */
                 target: 'es2022',
                 useDefineForClassFields: true,
-                lib: ['dom', 'dom.iterable', 'es2022'],
+                lib: ['dom', 'dom.iterable', 'es2023'],
                 module: 'esnext',
                 skipLibCheck: true,
 
