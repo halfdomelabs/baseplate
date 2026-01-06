@@ -14,8 +14,6 @@ import { createNodePackagesTask, createNodeTask } from '../node/index.js';
 
 const descriptorSchema = z.object({});
 
-import { quot } from '@baseplate-dev/utils';
-
 import {
   tsCodeFragment,
   TsCodeUtils,
@@ -76,7 +74,6 @@ export const vitestGenerator = createGenerator({
             const configValues = TsCodeUtils.mergeFragmentsAsObject({
               clearMocks: 'true',
               passWithNoTests: 'true',
-              root: quot('./src'),
               globalSetup:
                 globalSetupFiles.length > 0
                   ? JSON.stringify(globalSetupFiles.toSorted())
