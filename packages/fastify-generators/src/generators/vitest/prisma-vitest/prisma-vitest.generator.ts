@@ -5,7 +5,11 @@ import {
   typescriptFileProvider,
   vitestConfigProvider,
 } from '@baseplate-dev/core-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  normalizePathToOutputPath,
+} from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
@@ -75,7 +79,7 @@ export const prismaVitestGenerator = createGenerator({
             // Render the global setup file and register it with vitest
             await builder.apply(renderers.globalSetupPrisma.render({}));
             vitestConfig.globalSetupFiles.push(
-              `./${paths.globalSetupPrisma.replace('@/src/', '')}`,
+              normalizePathToOutputPath(paths.globalSetupPrisma),
             );
           },
         };
