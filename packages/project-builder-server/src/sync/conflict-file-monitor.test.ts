@@ -128,7 +128,7 @@ describe('ConflictFileMonitor', () => {
     );
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 20);
+      setTimeout(resolve, 50);
     });
 
     // Verify metadata was not updated
@@ -150,7 +150,7 @@ describe('ConflictFileMonitor', () => {
     );
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 20);
+      setTimeout(resolve, 50);
     });
 
     // Verify metadata was updated
