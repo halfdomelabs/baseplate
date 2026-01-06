@@ -3,7 +3,6 @@ import {
   createGenerator,
   createGeneratorTask,
 } from '@baseplate-dev/sync';
-import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/index.js';
@@ -75,7 +74,6 @@ export const vitestGenerator = createGenerator({
             const configValues = TsCodeUtils.mergeFragmentsAsObject({
               clearMocks: 'true',
               passWithNoTests: 'true',
-              root: quot('./src'),
               globalSetup:
                 globalSetupFiles.length > 0
                   ? JSON.stringify(globalSetupFiles.toSorted())

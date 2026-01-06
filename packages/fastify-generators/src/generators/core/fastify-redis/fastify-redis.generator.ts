@@ -10,6 +10,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
+  normalizePathToOutputPath,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -106,7 +107,7 @@ export const fastifyRedisGenerator = createGenerator({
             if (vitestConfig) {
               await builder.apply(renderers.globalSetupRedis.render({}));
               vitestConfig.globalSetupFiles.push(
-                `./${paths.globalSetupRedis.replace('@/src/', '')}`,
+                normalizePathToOutputPath(paths.globalSetupRedis),
               );
             }
           },
