@@ -6,6 +6,7 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import { configServiceProvider } from '@baseplate-dev/fastify-generators';
+import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -50,15 +51,31 @@ export const emailModuleGenerator = createGenerator({
       configServiceProvider,
       (configService) => {
         configService.configFields.set('EMAIL_DEFAULT_FROM', {
-          comment: 'Default sender email address for outgoing emails',
+          comment: 'Default sender email address for transactional emails',
           validator: tsCodeFragment(
-            `z.string().email().default('noreply@example.com')`,
+            `z.email().default('noreply@example.com')`,
             tsImportBuilder().named('z').from('zod'),
           ),
           exampleValue: 'noreply@example.com',
         });
       },
     ),
+    // Register sendEmailQueue with the queue registry
+    queueConfig: createGeneratorTask({
+      dependencies: {
+        paths: GENERATED_TEMPLATES.paths.provider,
+        queueConfig: queueConfigProvider,
+      },
+      run({ paths, queueConfig }) {
+        queueConfig.queues.set(
+          'sendEmailQueue',
+          tsCodeFragment(
+            'sendEmailQueue',
+            tsImportBuilder(['sendEmailQueue']).from(paths.sendEmailQueue),
+          ),
+        );
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,

@@ -5,7 +5,7 @@
     "template": "emails-service"
   },
   "postmark.service.ts": {
-    "generator": "@baseplate-dev/plugin-email#postmark/postmark",
+    "generator": "@baseplate-dev/plugin-email#postmark/core/postmark",
     "instanceData": {},
     "template": "postmark-service"
   }

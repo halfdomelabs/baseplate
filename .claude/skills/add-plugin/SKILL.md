@@ -70,6 +70,18 @@ pnpm metadata:sync
 
 This command automatically updates TypeScript project references based on package dependencies.
 
+### Step 1.7: Add it to packages/project-builder-common/package.json
+
+Update `packages/project-builder-common/package.json` to include the new plugin:
+
+```json
+{
+  "dependencies": {
+    "@baseplate-dev/plugin-<name>": "workspace:*"
+  }
+}
+```
+
 ---
 
 ## CRITICAL CHECKPOINT: Restart Watch Process
@@ -81,6 +93,7 @@ This command automatically updates TypeScript project references based on packag
 > 1. **Run `pnpm install`** to register the new package in the workspace
 > 2. **Restart your watch process** (`pnpm watch` or similar) to pick up the new plugin
 > 3. The pnpm workspace needs to recognize `plugins/plugin-<name>` before we can continue
+> 4. Restart Claude Code plugin (the MCP server needs to be restarted to pick up the new plugin)
 >
 > Once you've restarted the watch process, let me know and we'll continue with the src/ customization.
 
@@ -366,18 +379,6 @@ Add exports for each implementation:
 ```typescript
 export * from './<plugin-name>/index.js';
 export type * from './<implementation-name>/index.js';
-```
-
-### Step 3.5: Add it to packages/project-builder-common/package.json
-
-Update `packages/project-builder-common/package.json` to include the new plugin:
-
-```json
-{
-  "dependencies": {
-    "@baseplate-dev/plugin-<name>": "workspace:*"
-  }
-}
 ```
 
 ---

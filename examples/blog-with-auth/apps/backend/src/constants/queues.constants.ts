@@ -1,6 +1,6 @@
-import { sendEmailQueue } from '@src/modules/emails/queues/send-email.queue.js';
-
 import type { Queue } from '../types/queue.types.js';
+
+import { sendEmailQueue } from '../modules/emails/queues/send-email.queue.js';
 
 /**
  * Central registry for all application queues.

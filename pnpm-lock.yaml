@@ -1454,6 +1454,9 @@ importers:
       '@baseplate-dev/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components
+      '@baseplate-dev/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.60.0(react@19.1.0))
