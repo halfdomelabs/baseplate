@@ -57,7 +57,7 @@ interface CookieStore {
               ),
             ],
           }),
-          body: (req, reply) =>
+          body: (_req, reply) =>
             tsCodeFragment(
               `function getReply(): FastifyReply {
           if (!${reply}) {

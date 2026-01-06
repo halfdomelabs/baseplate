@@ -62,14 +62,14 @@ export const appModuleSetupGenerator = createGenerator({
             const moduleInitializer = TsCodeUtils.mergeFragmentsAsObject(
               mapValuesOfMap(
                 moduleFields,
-                (field, key) => `[...(rootModule.${key} ?? [])]`,
+                (_field, key) => `[...(rootModule.${key} ?? [])]`,
               ),
             );
 
             const moduleMerger = TsCodeUtils.mergeFragments(
               mapValuesOfMap(
                 moduleFields,
-                (field, key) => `result.${key}.push(...(child.${key} ?? []))`,
+                (_field, key) => `result.${key}.push(...(child.${key} ?? []))`,
               ),
               '\n',
             );
