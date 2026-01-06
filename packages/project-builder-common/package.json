@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@baseplate-dev/plugin-auth": "workspace:*",
+    "@baseplate-dev/plugin-email": "workspace:*",
     "@baseplate-dev/plugin-queue": "workspace:*",
     "@baseplate-dev/plugin-storage": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",

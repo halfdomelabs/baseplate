@@ -30,6 +30,7 @@ cp -r plugins/plugin-queue plugins/plugin-<name>
 ### Step 1.2: Update package.json
 
 Edit `plugins/plugin-<name>/package.json`:
+
 - Change `"name"` to `"@baseplate-dev/plugin-<name>"`
 - Update `"description"`
 - Set `"version"` to `"0.1.0"`
@@ -38,6 +39,7 @@ Edit `plugins/plugin-<name>/package.json`:
 ### Step 1.3: Update vite.config.ts
 
 Change the federation name:
+
 ```typescript
 federation({
   name: 'plugin-<name>',  // <-- Update this
@@ -53,6 +55,7 @@ Replace content with appropriate description for the new plugin.
 ### Step 1.5: Clear CHANGELOG.md
 
 Create a fresh changelog:
+
 ```markdown
 # @baseplate-dev/plugin-<name>
 ```
@@ -60,6 +63,7 @@ Create a fresh changelog:
 ### Step 1.6: Sync workspace metadata
 
 Run from the repository root to auto-configure `tsconfig.build.json` references:
+
 ```bash
 pnpm metadata:sync
 ```
@@ -89,6 +93,7 @@ This command automatically updates TypeScript project references based on packag
 ### Step 2.1: Clean up src/ directory
 
 Remove the template implementation directories (we'll create fresh ones):
+
 ```bash
 rm -rf plugins/plugin-<name>/src/queue
 rm -rf plugins/plugin-<name>/src/pg-boss
@@ -109,6 +114,7 @@ mkdir -p plugins/plugin-<name>/src/<plugin-name>/static
 ### Step 2.3: Update styles.css
 
 Update the CSS prefix in `plugins/plugin-<name>/src/styles.css`:
+
 ```css
 @layer theme, base, components, utilities;
 
@@ -121,6 +127,7 @@ Update the CSS prefix in `plugins/plugin-<name>/src/styles.css`:
 ### Step 2.4: Update src/index.ts
 
 Create exports for your plugin:
+
 ```typescript
 export * from './<plugin-name>/index.js';
 ```
@@ -128,6 +135,7 @@ export * from './<plugin-name>/index.js';
 ### Step 2.5: Create plugin.json
 
 Create `plugins/plugin-<name>/src/<plugin-name>/plugin.json`:
+
 ```json
 {
   "name": "<plugin-name>",
@@ -146,6 +154,7 @@ Create or copy an SVG icon to `plugins/plugin-<name>/src/<plugin-name>/static/ic
 ### Step 2.7: Create core module files
 
 **common.ts** - Schema registration:
+
 ```typescript
 import {
   createPlatformPluginExport,
@@ -167,6 +176,7 @@ export default createPlatformPluginExport({
 ```
 
 **web.ts** - UI registration:
+
 ```typescript
 import {
   createPlatformPluginExport,
@@ -188,6 +198,7 @@ export default createPlatformPluginExport({
 ```
 
 **node.ts** - Generator registration:
+
 ```typescript
 import {
   appCompilerSpec,
@@ -218,11 +229,13 @@ export default createPlatformPluginExport({
 ```
 
 **index.ts** - Barrel exports:
+
 ```typescript
 export * from './core/index.js';
 ```
 
 **core/index.ts**:
+
 ```typescript
 // Re-export schema types
 export type * from './schema/plugin-definition.js';
@@ -231,6 +244,7 @@ export type * from './schema/plugin-definition.js';
 ### Step 2.8: Create schema
 
 Create `plugins/plugin-<name>/src/<plugin-name>/core/schema/plugin-definition.ts`:
+
 ```typescript
 import { definitionSchema } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
@@ -251,6 +265,7 @@ export type <PluginName>PluginDefinition = z.infer<
 ### Step 2.9: Create UI component
 
 Create `plugins/plugin-<name>/src/<plugin-name>/core/components/<plugin-name>-definition-editor.tsx`:
+
 ```typescript
 import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import {
@@ -325,6 +340,7 @@ mkdir -p plugins/plugin-<name>/src/<implementation-name>/static
 ### Step 3.2: Create implementation plugin.json
 
 Create `plugins/plugin-<name>/src/<implementation-name>/plugin.json`:
+
 ```json
 {
   "name": "<implementation-name>",
@@ -346,9 +362,22 @@ Follow the same pattern as the base plugin, but with implementation-specific log
 ### Step 3.4: Update src/index.ts
 
 Add exports for each implementation:
+
 ```typescript
 export * from './<plugin-name>/index.js';
 export type * from './<implementation-name>/index.js';
+```
+
+### Step 3.5: Add it to packages/project-builder-common/package.json
+
+Update `packages/project-builder-common/package.json` to include the new plugin:
+
+```json
+{
+  "dependencies": {
+    "@baseplate-dev/plugin-<name>": "workspace:*"
+  }
+}
 ```
 
 ---
@@ -385,19 +414,23 @@ pnpm lint --fix
 ## Troubleshooting
 
 ### Plugin not discovered
+
 - Ensure `plugin.json` exists in each plugin directory
 - Check that `moduleDirectories` points to valid directories with module files
 - Verify the package is in `pnpm-workspace.yaml` scope (`plugins/*`)
 
 ### CSS not applying
+
 - Check that all classes use the `<plugin-name>:` prefix
 - Verify `styles.css` has the correct prefix configuration
 
 ### Module federation errors
+
 - Ensure `vite.config.ts` has the correct federation name
 - Check that all shared dependencies match the host application
 
 ### Type errors
+
 - Run `pnpm typecheck` to identify issues
 - Ensure all imports use `.js` extensions for ESM compatibility
 

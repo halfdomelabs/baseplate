@@ -1,0 +1,22 @@
+{
+  "name": "postmark/postmark",
+  "templates": {
+    "postmark-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "emailModuleImportsProvider": {
+          "importName": "emailModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/emails/services/postmark.service.ts",
+      "sourceFile": "module/emails/services/postmark.service.ts",
+      "variables": {}
+    }
+  }
+}

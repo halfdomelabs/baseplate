@@ -1,8 +1,9 @@
-import { config } from '@src/services/config.js';
+// @ts-nocheck
 
-import type { EmailRawOptions } from '../emails.types.js';
+import type { EmailRawOptions } from '$emailsTypes';
 
-import { sendEmailQueue } from '../queues/send-email.queue.js';
+import { sendEmailQueue } from '$sendEmailQueue';
+import { config } from '%configServiceImports';
 
 function normalizeEmailAddresses(addresses: string | string[]): string[] {
   return Array.isArray(addresses) ? addresses : [addresses];
