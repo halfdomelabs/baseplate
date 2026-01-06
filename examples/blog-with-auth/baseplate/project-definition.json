@@ -757,6 +757,22 @@
       "name": "pg-boss",
       "packageName": "@baseplate-dev/plugin-queue",
       "version": "0.1.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
+      },
+      "id": "plugin:baseplate-dev_plugin-email_email",
+      "name": "email",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
     }
   ],
   "schemaVersion": 21,

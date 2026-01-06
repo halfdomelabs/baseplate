@@ -7,7 +7,6 @@ import {
   axiosGenerator,
   composeFastifyApplication,
   dataUtilsGenerator,
-  fastifyPostmarkGenerator,
   fastifyRedisGenerator,
   fastifySentryGenerator,
   fastifyServerGenerator,
@@ -72,7 +71,6 @@ export function buildFastify(
               defaultUrl: getRedisSettings(projectDefinition).url,
             })
           : undefined,
-        postmark: app.enablePostmark ? fastifyPostmarkGenerator({}) : undefined,
         axios: app.enableAxios ? axiosGenerator({}) : undefined,
         prisma: prismaGenerator({
           defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
