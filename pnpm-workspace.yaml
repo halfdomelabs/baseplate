@@ -31,6 +31,8 @@ ignoredBuiltDependencies:
   - ssh2
   - unrs-resolver
 
+blockExoticSubdeps: true
+
 linkWorkspacePackages: true
 
 minimumReleaseAge: 1440
@@ -38,3 +40,5 @@ minimumReleaseAge: 1440
 publishBranch: main
 
 saveWorkspaceProtocol: rolling
+
+trustPolicy: no-downgrade

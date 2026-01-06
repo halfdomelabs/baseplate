@@ -1,8 +1,10 @@
 packages:
   - apps/*
   - packages/*
+blockExoticSubdeps: true
+linkWorkspacePackages: true
+minimumReleaseAge: 1440
 publishBranch: main
 savePrefix: ''
-linkWorkspacePackages: true
 saveWorkspaceProtocol: rolling
-minimumReleaseAge: 1440
+trustPolicy: no-downgrade
