@@ -9,6 +9,5 @@ export default defineConfig({
     env: loadEnv('development', process.cwd(), ''),
     maxWorkers: 1,
     passWithNoTests: true,
-    root: './src',
   },
 });

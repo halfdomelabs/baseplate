@@ -29,10 +29,10 @@
     "prettier-plugin-packagejson": "2.5.19",
     "turbo": "2.5.0"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.27.0",
   "engines": {
     "node": "^22.18.0",
-    "pnpm": "^10.18.0"
+    "pnpm": "^10.27.0"
   },
   "volta": {
     "node": "22.18.0"
