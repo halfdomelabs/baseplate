@@ -16,9 +16,9 @@
     "lint:affected": "turbo run lint --affected",
     "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
     "prettier:check:affected": "turbo run prettier:check --affected",
-    "prettier:check:root": "prettier --check . \"!apps/**\"",
+    "prettier:check:root": "prettier --check . \"!apps/**\" \"!packages/**\"",
     "prettier:write": "turbo run prettier:write && pnpm run prettier:write:root",
-    "prettier:write:root": "prettier --write . \"!apps/**\"",
+    "prettier:write:root": "prettier --write . \"!apps/**\" \"!packages/**\"",
     "test": "turbo run test",
     "test:affected": "turbo run test --affected",
     "typecheck": "turbo run typecheck"
@@ -29,10 +29,10 @@
     "prettier-plugin-packagejson": "2.5.19",
     "turbo": "2.5.0"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.27.0",
   "engines": {
     "node": "^22.18.0",
-    "pnpm": "^10.18.0"
+    "pnpm": "^10.27.0"
   },
   "volta": {
     "node": "22.18.0"
