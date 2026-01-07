@@ -35,7 +35,6 @@
   "@baseplate-dev/fastify-generators#core/fastify-health-check:health-check": "src/plugins/health-check.ts",
   "@baseplate-dev/fastify-generators#core/fastify-redis:global-setup-redis": "src/tests/scripts/global-setup-redis.ts",
   "@baseplate-dev/fastify-generators#core/fastify-redis:redis": "src/services/redis.ts",
-  "@baseplate-dev/fastify-generators#core/fastify-scripts:tsconfig": "scripts/tsconfig.json",
   "@baseplate-dev/fastify-generators#core/fastify-sentry:instrument": "src/instrument.ts",
   "@baseplate-dev/fastify-generators#core/fastify-sentry:sentry": "src/services/sentry.ts",
   "@baseplate-dev/fastify-generators#core/fastify-server:index": "src/index.ts",
