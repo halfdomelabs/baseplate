@@ -1,5 +1,22 @@
 # @baseplate-dev/sync
 
+## 0.5.0
+
+### Patch Changes
+
+- [#728](https://github.com/halfdomelabs/baseplate/pull/728) [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe) Thanks [@kingston](https://github.com/kingston)! - Add automatic cleanup of orphaned templates during extraction. When a generated file is manually deleted but its metadata still exists in `.templates-info.json`, the extraction process now automatically detects this and cleans up the orphaned template entry from `extractor.json`, the template source file, and the metadata file.
+
+- [#734](https://github.com/halfdomelabs/baseplate/pull/734) [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 4.0.16
+  - vitest: 3.2.4 → 4.0.16
+  - @vitest/eslint-plugin: 1.3.4 → 1.6.5
+
+  Breaking changes addressed:
+  - Updated `UserConfig` type to `ViteUserConfig` in vitest config files
+  - Fixed mock type annotations for vitest 4.0 compatibility
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes
