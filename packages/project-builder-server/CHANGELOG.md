@@ -1,5 +1,32 @@
 # @baseplate-dev/project-builder-server
 
+## 0.5.0
+
+### Patch Changes
+
+- [#731](https://github.com/halfdomelabs/baseplate/pull/731) [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146) Thanks [@kingston](https://github.com/kingston)! - Add support for library packages in addition to apps
+  - Add `packages` array to ProjectDefinition schema with node-library type
+  - Add `packagesFolder` to MonorepoSettings (default: "packages")
+  - Create node-library generator with tsc build configuration
+  - Add library package compiler for code generation
+  - Update workspace patterns to include packages/\* folder
+  - Add UI for creating and managing library packages in the Apps section
+
+- [#730](https://github.com/halfdomelabs/baseplate/pull/730) [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9) Thanks [@kingston](https://github.com/kingston)! - Add `sync-file` command for incrementally applying generated files
+  - New CLI command: `pnpm baseplate sync-file <project> <app> <files...>`
+  - New MCP action: `sync-file` for programmatic access
+  - Allows applying specific generated files without performing a full sync
+  - Writes matching files to both working directory and generated folder
+  - Useful for incrementally fixing generators one file at a time
+
+- Updated dependencies [[`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797), [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9), [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599), [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`d09175d`](https://github.com/halfdomelabs/baseplate/commit/d09175dc41d33fb0a818d53c2e2da899430a48cd), [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`2d5abd5`](https://github.com/halfdomelabs/baseplate/commit/2d5abd53fccfc2b15f8142fc796c5e4ea4c2f92a), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/fastify-generators@0.5.0
+  - @baseplate-dev/core-generators@0.5.0
+  - @baseplate-dev/react-generators@0.5.0
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes

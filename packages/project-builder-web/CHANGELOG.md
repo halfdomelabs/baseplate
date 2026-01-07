@@ -1,5 +1,22 @@
 # @baseplate-dev/project-builder-web
 
+## 0.5.0
+
+### Patch Changes
+
+- [#731](https://github.com/halfdomelabs/baseplate/pull/731) [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146) Thanks [@kingston](https://github.com/kingston)! - Add support for library packages in addition to apps
+  - Add `packages` array to ProjectDefinition schema with node-library type
+  - Add `packagesFolder` to MonorepoSettings (default: "packages")
+  - Create node-library generator with tsc build configuration
+  - Add library package compiler for code generation
+  - Update workspace patterns to include packages/\* folder
+  - Add UI for creating and managing library packages in the Apps section
+
+- Updated dependencies [[`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146)]:
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/ui-components@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes
