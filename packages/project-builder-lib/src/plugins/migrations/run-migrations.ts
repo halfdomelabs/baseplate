@@ -12,8 +12,7 @@ export function runPluginMigrations(
   projectDefinition: ProjectDefinition,
   pluginImplementationStore: PluginSpecStore,
 ): ProjectDefinition {
-  const pluginConfigService =
-    pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+  const pluginConfigService = pluginImplementationStore.use(pluginConfigSpec);
   return produce(projectDefinition, (draft) => {
     for (const pluginDefinition of draft.plugins ?? []) {
       const pluginMigrations = pluginConfigService.getMigrations(

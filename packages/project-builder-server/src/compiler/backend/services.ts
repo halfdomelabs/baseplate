@@ -26,9 +26,7 @@ function buildVirtualInputField(
   model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { pluginStore } = appBuilder;
-  const compilerImplementation = pluginStore.getPluginSpec(
-    modelTransformerCompilerSpec,
-  );
+  const compilerImplementation = pluginStore.use(modelTransformerCompilerSpec);
 
   const compiler = compilerImplementation.transformers.get(transformer.type);
 

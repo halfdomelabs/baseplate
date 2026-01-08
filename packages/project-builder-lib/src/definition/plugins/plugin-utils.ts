@@ -71,8 +71,7 @@ function setPluginConfig(
         [plugin],
         definitionContainer.definition,
       );
-    const pluginConfigService =
-      pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+    const pluginConfigService = pluginImplementationStore.use(pluginConfigSpec);
     const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
       plugin.key,
     );

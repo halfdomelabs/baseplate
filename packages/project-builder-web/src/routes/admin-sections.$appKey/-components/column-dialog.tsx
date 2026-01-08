@@ -52,7 +52,7 @@ export function ColumnDialog({
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
-  const columnWeb = pluginContainer.getPluginSpec(adminCrudColumnWebSpec);
+  const columnWeb = pluginContainer.use(adminCrudColumnWebSpec);
 
   const columnTypeOptions = [...columnWeb.columns.values()]
     .filter(

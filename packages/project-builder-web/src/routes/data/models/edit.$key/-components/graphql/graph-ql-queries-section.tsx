@@ -34,7 +34,7 @@ export function GraphQLQueriesSection({
   });
 
   const roleOptions = pluginContainer
-    .getPluginSpec(authConfigSpec)
+    .use(authConfigSpec)
     .getAuthConfig(definition)
     ?.roles.map((role) => ({
       label: role.name,

@@ -79,8 +79,7 @@ export function createStorageModels(
   { storageFeatureRef }: { storageFeatureRef: string },
   projectDefinitionContainer: ProjectDefinitionContainer,
 ): Record<keyof typeof STORAGE_MODELS, ModelMergerModelInput> {
-  const authModels =
-    projectDefinitionContainer.pluginStore.getPluginSpec(authModelsSpec);
+  const authModels = projectDefinitionContainer.pluginStore.use(authModelsSpec);
   const userAccountModel = authModels.getAuthModelsOrThrow(
     projectDefinitionContainer.definition,
   ).user;

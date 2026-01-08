@@ -18,7 +18,7 @@ export function initializeOrderedModules(
 ): Map<string, PluginSpecInitializerResult> {
   const instances = new Map<string, PluginSpecInitializerResult>();
 
-  function getPluginSpec<TInit extends object, TUse extends object>(
+  function use<TInit extends object, TUse extends object>(
     spec: PluginSpec<TInit, TUse>,
   ): PluginSpecInitializerResult<TInit, TUse> {
     if (!instances.has(spec.name)) {
@@ -32,7 +32,7 @@ export function initializeOrderedModules(
     // Resolve dependencies by getting their setup interfaces
     const dependencies = module.dependencies
       ? stripUndefinedValues(
-          mapValues(module.dependencies, (spec) => getPluginSpec(spec).init),
+          mapValues(module.dependencies, (spec) => use(spec).init),
         )
       : {};
 

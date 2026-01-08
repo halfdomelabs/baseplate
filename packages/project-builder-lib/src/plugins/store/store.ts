@@ -8,6 +8,7 @@ import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
  */
 export class PluginSpecStore {
   private instances: Map<string, PluginSpecInitializerResult>;
+  private useInstances = new Map<string, object>();
 
   constructor(instances = new Map<string, PluginSpecInitializerResult>()) {
     this.instances = instances;
@@ -33,13 +34,12 @@ export class PluginSpecStore {
       this.instances.set(spec.name, specInstance);
     }
 
-    return specInstance.use();
-  }
+    let useInstance = this.useInstances.get(spec.name);
+    if (!useInstance) {
+      useInstance = specInstance.use();
+      this.useInstances.set(spec.name, useInstance);
+    }
 
-  // [TODO: 2026-06-01] Remove this method
-  getPluginSpec<TInit extends object, TUse extends object>(
-    spec: PluginSpec<TInit, TUse>,
-  ): TUse {
-    return this.use(spec);
+    return useInstance as TUse;
   }
 }

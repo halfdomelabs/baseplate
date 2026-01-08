@@ -54,7 +54,7 @@ export function FieldDialog({
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
-  const inputWeb = pluginContainer.getPluginSpec(adminCrudInputWebSpec);
+  const inputWeb = pluginContainer.use(adminCrudInputWebSpec);
 
   const fieldTypeOptions = [...inputWeb.inputs.values()].map((config) => ({
     label: config.label,

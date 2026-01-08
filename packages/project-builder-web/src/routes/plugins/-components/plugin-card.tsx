@@ -51,8 +51,7 @@ export function PluginCard({
       [plugin],
       definitionContainer.definition,
     );
-    const webConfigImplementation =
-      implementations.getPluginSpec(webConfigSpec);
+    const webConfigImplementation = implementations.use(webConfigSpec);
     const webConfig = webConfigImplementation.components.get(plugin.key);
     if (webConfig) {
       // redirect to plugin config page
@@ -86,7 +85,7 @@ export function PluginCard({
     );
   }
 
-  const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);
+  const webConfigImplementation = pluginContainer.use(webConfigSpec);
   const webConfig = webConfigImplementation.components.get(plugin.key);
 
   // For managed plugins, check if the manager plugin has a web config

@@ -55,7 +55,7 @@ function WebAdminPage(): React.JSX.Element {
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const roleOptions = pluginContainer
-    .getPluginSpec(authConfigSpec)
+    .use(authConfigSpec)
     .getAuthConfig(definition)
     ?.roles.map((role) => ({
       label: role.name,

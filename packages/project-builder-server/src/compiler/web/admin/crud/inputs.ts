@@ -18,9 +18,7 @@ export function compileAdminCrudInput(
   crudSectionId: string,
   order: number,
 ): GeneratorBundle {
-  const inputCompiler = builder.pluginStore.getPluginSpec(
-    adminCrudInputCompilerSpec,
-  );
+  const inputCompiler = builder.pluginStore.use(adminCrudInputCompilerSpec);
 
   const compiler = inputCompiler.inputs.get(field.type);
 

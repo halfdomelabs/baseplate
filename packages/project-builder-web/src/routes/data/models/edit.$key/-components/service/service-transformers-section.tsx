@@ -58,7 +58,7 @@ function ServiceTransformerRecord({
     name: `service.transformers.${idx}`,
   });
 
-  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
+  const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
   const transformerConfig = transformerWeb.getWebConfigOrThrow(field.type);
   const summary = transformerConfig.getSummary(field, definitionContainer);
   return (
@@ -116,7 +116,7 @@ export function ServiceTransformersSection({
 
   const { requestConfirm } = useConfirmDialog();
 
-  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
+  const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
 
   const modelConfig = useEditedModelConfig((model) => model);
 

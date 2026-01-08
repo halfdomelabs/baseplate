@@ -51,7 +51,7 @@ export function ActionDialog({
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
-  const actionWeb = pluginContainer.getPluginSpec(adminCrudActionWebSpec);
+  const actionWeb = pluginContainer.use(adminCrudActionWebSpec);
 
   const actionTypeOptions = [...actionWeb.actions.values()]
     .filter(

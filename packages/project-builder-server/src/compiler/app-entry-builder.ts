@@ -33,7 +33,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
 
     // initialize app compiler
     this.appCompiler = createAppCompiler();
-    const appCompilerStore = this.pluginStore.getPluginSpec(appCompilerSpec);
+    const appCompilerStore = this.pluginStore.use(appCompilerSpec);
 
     const pluginCompilers = appCompilerStore.getAppCompilers(appConfigType);
     for (const compiler of pluginCompilers) {

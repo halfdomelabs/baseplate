@@ -52,7 +52,7 @@ export function FileTransformerForm({
 
   // Get available auth roles
   const roleOptions = pluginContainer
-    .getPluginSpec(authConfigSpec)
+    .use(authConfigSpec)
     .getAuthConfigOrThrow(definition)
     .roles.map((role) => ({
       label: role.name,

@@ -34,7 +34,7 @@ export function GraphQLMutationsSection({
   const { definition, pluginContainer } = useProjectDefinition();
 
   const roleOptions = pluginContainer
-    .getPluginSpec(authConfigSpec)
+    .use(authConfigSpec)
     .getAuthConfig(definition)
     ?.roles.map((role) => ({
       label: role.name,
