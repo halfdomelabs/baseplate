@@ -1,7 +1,4 @@
-import type {
-  PluginModule,
-  PluginModuleWithKey,
-} from '@baseplate-dev/project-builder-lib';
+import type { PluginModuleWithKey } from '@baseplate-dev/project-builder-lib';
 
 import { actionWebConfigsCoreModule } from './action-web-configs.js';
 import { columnWebConfigsCoreModule } from './column-web-configs.js';
@@ -16,5 +13,5 @@ export const WEB_CORE_MODULES: PluginModuleWithKey[] = [
 ].map((mod) => ({
   key: `core/web/${mod.name}`,
   pluginKey: 'core',
-  module: mod as PluginModule,
+  module: mod,
 }));
