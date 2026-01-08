@@ -7,7 +7,7 @@ import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
 import type { PluginModuleWithKey } from './types.js';
 
 import { runInPluginContext } from '../context/plugin-context.js';
-import { PluginImplementationStore } from '../store/store.js';
+import { PluginSpecStore } from '../store/store.js';
 
 /**
  * Initialize ordered plugin modules.
@@ -51,10 +51,10 @@ export function initializeOrderedModules(
  */
 export function initializePlugins(
   pluginModules: PluginModuleWithKey[],
-): PluginImplementationStore {
+): PluginSpecStore {
   assertNoDuplicates(pluginModules, 'plugin modules', (m) => m.key);
 
   const instances = initializeOrderedModules(pluginModules);
 
-  return new PluginImplementationStore(instances);
+  return new PluginSpecStore(instances);
 }

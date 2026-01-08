@@ -1,14 +1,12 @@
 import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
 
-// [TODO: 2026-06-01] Rename PluginImplementationStore to PluginSpecStore
-
 /**
  * Store for managing plugin spec instances with lazy initialization.
  *
  * Each spec is initialized once on first access, and both its init and use
  * interfaces are cached for subsequent access.
  */
-export class PluginImplementationStore {
+export class PluginSpecStore {
   private instances: Map<string, PluginSpecInitializerResult>;
 
   constructor(instances = new Map<string, PluginSpecInitializerResult>()) {

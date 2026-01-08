@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { PluginImplementationStore } from '#src/plugins/index.js';
+import { PluginSpecStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
 import { createEntityType } from './types.js';
 
 describe('deserializeSchemaWithTransformedReferences', () => {
-  const pluginStore = new PluginImplementationStore();
+  const pluginStore = new PluginSpecStore();
 
   it('should work with a no-reference object', () => {
     const schemaCreator = definitionSchema((_ctx) =>

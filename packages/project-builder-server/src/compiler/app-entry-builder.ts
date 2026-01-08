@@ -3,7 +3,7 @@ import type {
   AppEntryType,
   BackendAppConfig,
   BaseAppConfig,
-  PluginImplementationStore,
+  PluginSpecStore,
   ProjectDefinition,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
@@ -19,7 +19,7 @@ import type { PackageEntry } from './package-entry.js';
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectDefinition: ProjectDefinition;
 
-  public pluginStore: PluginImplementationStore;
+  public pluginStore: PluginSpecStore;
 
   public appCompiler: AppCompiler;
 

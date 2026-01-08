@@ -5,8 +5,8 @@ import type {
   PluginStore,
 } from '#src/plugins/imports/types.js';
 import type {
-  PluginImplementationStore,
   PluginMetadataWithPaths,
+  PluginSpecStore,
 } from '#src/plugins/index.js';
 import type { ResolvedZodRefPayload } from '#src/references/types.js';
 import type {
@@ -25,8 +25,6 @@ import { createProjectDefinitionSchema } from '#src/schema/project-definition.js
 
 import type { SchemaParserContext } from './types.js';
 
-// [TODO: 2026-06-01] Rename createPluginImplementationStore to PluginImplementationStore
-
 /**
  * Creates a plugin implementation store from the project definition and plugin store,
  * initializing the set of plugins enabled in the project definition.
@@ -35,10 +33,10 @@ import type { SchemaParserContext } from './types.js';
  * @param projectDefinition The project definition to use
  * @returns The plugin implementation store
  */
-export function createPluginImplementationStore(
+export function createPluginSpecStore(
   pluginStore: PluginStore,
   projectDefinition: unknown,
-): PluginImplementationStore {
+): PluginSpecStore {
   const { availablePlugins, coreModules } = pluginStore;
   const pluginData = z
     .object({
@@ -76,7 +74,7 @@ export function createPluginImplementationStoreWithNewPlugins(
   pluginStore: PluginStore,
   plugins: PluginMetadataWithPaths[],
   projectDefinition: ProjectDefinition,
-): PluginImplementationStore {
+): PluginSpecStore {
   const newProjectDefinition: ProjectDefinition = {
     ...projectDefinition,
     plugins: [
@@ -97,7 +95,7 @@ export function createPluginImplementationStoreWithNewPlugins(
         })),
     ],
   };
-  return createPluginImplementationStore(pluginStore, newProjectDefinition);
+  return createPluginSpecStore(pluginStore, newProjectDefinition);
 }
 
 /**
@@ -112,7 +110,7 @@ export function createProjectDefinitionSchemaWithContext(
   context: SchemaParserContext,
 ): ProjectDefinitionSchema {
   const { pluginStore } = context;
-  const pluginImplementationStore = createPluginImplementationStore(
+  const pluginImplementationStore = createPluginSpecStore(
     pluginStore,
     projectDefinition,
   );
@@ -145,10 +143,10 @@ export function parseProjectDefinitionWithReferences(
   context: SchemaParserContext,
 ): {
   definition: ResolvedZodRefPayload<ProjectDefinition>;
-  pluginStore: PluginImplementationStore;
+  pluginStore: PluginSpecStore;
 } {
   const { pluginStore } = context;
-  const pluginImplementationStore = createPluginImplementationStore(
+  const pluginImplementationStore = createPluginSpecStore(
     pluginStore,
     projectDefinition,
   );

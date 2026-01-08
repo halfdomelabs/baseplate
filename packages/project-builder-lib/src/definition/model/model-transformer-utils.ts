@@ -1,4 +1,4 @@
-import type { PluginImplementationStore } from '#src/plugins/index.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type { TransformerConfig } from '#src/schema/index.js';
 
 import { modelTransformerSpec } from '#src/schema/index.js';
@@ -8,7 +8,7 @@ import type { ProjectDefinitionContainer } from '../project-definition-container
 function getTransformerName(
   definitionContainer: ProjectDefinitionContainer,
   transformer: TransformerConfig,
-  pluginStore: PluginImplementationStore,
+  pluginStore: PluginSpecStore,
 ): string {
   const { transformers } = pluginStore.use(modelTransformerSpec);
   const transformerType = transformers.get(transformer.type);

@@ -5,7 +5,7 @@ import type {
 } from '#src/schema/project-definition.js';
 
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
-import { createPluginImplementationStore } from '#src/parser/parser.js';
+import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
@@ -49,10 +49,9 @@ export function createTestProjectDefinitionContainer(
     availablePlugins: [],
     coreModules: [],
   };
-  const pluginImplementationStore = createPluginImplementationStore(
-    pluginStore,
-    { plugins: [] },
-  );
+  const pluginImplementationStore = createPluginSpecStore(pluginStore, {
+    plugins: [],
+  });
   const resolvedRefPayload = deserializeSchemaWithTransformedReferences(
     createProjectDefinitionSchema,
     createTestProjectDefinitionInput(input),

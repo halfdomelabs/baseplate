@@ -4,13 +4,13 @@ import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
 
-import type { PluginImplementationStore } from '../store/store.js';
+import type { PluginSpecStore } from '../store/store.js';
 
 import { pluginConfigSpec } from '../spec/config-spec.js';
 
 export function runPluginMigrations(
   projectDefinition: ProjectDefinition,
-  pluginImplementationStore: PluginImplementationStore,
+  pluginImplementationStore: PluginSpecStore,
 ): ProjectDefinition {
   const pluginConfigService =
     pluginImplementationStore.getPluginSpec(pluginConfigSpec);

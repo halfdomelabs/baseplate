@@ -74,7 +74,7 @@ describe('initializeOrderedModules', () => {
 });
 
 describe('initializePlugins', () => {
-  test('should return a PluginImplementationStore', () => {
+  test('should return a PluginSpecStore', () => {
     const modules: PluginModuleWithKey[] = [
       createPluginModule('plugin-1/main', 'plugin-1', { s1: spec1 }),
     ];

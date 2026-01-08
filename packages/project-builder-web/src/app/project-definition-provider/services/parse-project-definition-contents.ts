@@ -1,7 +1,7 @@
 import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
 import {
-  createPluginImplementationStore,
+  createPluginSpecStore,
   isMigrateableProjectDefinition,
   ProjectDefinitionContainer,
   runPluginMigrations,
@@ -27,7 +27,7 @@ export function parseProjectDefinitionContents(
     }
     const { migratedDefinition } = runSchemaMigrations(projectDefinition);
 
-    const pluginImplementationStore = createPluginImplementationStore(
+    const pluginImplementationStore = createPluginSpecStore(
       schemaParserContext.pluginStore,
       migratedDefinition,
     );

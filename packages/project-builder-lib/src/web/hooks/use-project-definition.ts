@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { SchemaParserContext } from '#src/parser/types.js';
-import type { PluginImplementationStore } from '#src/plugins/index.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type { DefinitionSchemaParserContext } from '#src/schema/index.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
@@ -63,7 +63,7 @@ export interface UseProjectDefinitionResult {
   /**
    * The plugin container.
    */
-  pluginContainer: PluginImplementationStore;
+  pluginContainer: PluginSpecStore;
   /**
    * The schema parser context.
    */

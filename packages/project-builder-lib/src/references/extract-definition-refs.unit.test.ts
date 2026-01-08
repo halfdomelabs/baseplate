@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { PluginImplementationStore } from '#src/plugins/index.js';
+import { PluginSpecStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { collectRefs } from './collect-refs.js';
@@ -18,7 +18,7 @@ import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {
   describe('Integration Tests (deserializeSchemaWithTransformedReferences)', () => {
-    const pluginStore = new PluginImplementationStore();
+    const pluginStore = new PluginSpecStore();
 
     describe('Basic Schema Patterns', () => {
       it('should handle schema with no references', () => {
