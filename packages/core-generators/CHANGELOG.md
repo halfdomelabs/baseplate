@@ -1,5 +1,35 @@
 # @baseplate-dev/core-generators
 
+## 0.5.0
+
+### Patch Changes
+
+- [#732](https://github.com/halfdomelabs/baseplate/pull/732) [`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797) Thanks [@kingston](https://github.com/kingston)! - Remove root: 'src/' from vitest.config.ts
+
+- [#735](https://github.com/halfdomelabs/baseplate/pull/735) [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599) Thanks [@kingston](https://github.com/kingston)! - Support ES2023 in Vite tsconfig generators and re-enable replaceAll ESLint rule for React apps
+
+- [#731](https://github.com/halfdomelabs/baseplate/pull/731) [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146) Thanks [@kingston](https://github.com/kingston)! - Add support for library packages in addition to apps
+  - Add `packages` array to ProjectDefinition schema with node-library type
+  - Add `packagesFolder` to MonorepoSettings (default: "packages")
+  - Create node-library generator with tsc build configuration
+  - Add library package compiler for code generation
+  - Update workspace patterns to include packages/\* folder
+  - Add UI for creating and managing library packages in the Apps section
+
+- [#733](https://github.com/halfdomelabs/baseplate/pull/733) [`2d5abd5`](https://github.com/halfdomelabs/baseplate/commit/2d5abd53fccfc2b15f8142fc796c5e4ea4c2f92a) Thanks [@kingston](https://github.com/kingston)! - Upgrade pnpm to 10.27.0 and add `blockExoticSubdeps: true` to generated pnpm-workspace.yaml
+
+- [#734](https://github.com/halfdomelabs/baseplate/pull/734) [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 4.0.16
+  - vitest: 3.2.4 → 4.0.16
+  - @vitest/eslint-plugin: 1.3.4 → 1.6.5
+
+  Breaking changes addressed:
+  - Updated `UserConfig` type to `ViteUserConfig` in vitest config files
+  - Fixed mock type annotations for vitest 4.0 compatibility
+
+- Updated dependencies [[`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes
