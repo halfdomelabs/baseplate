@@ -37,6 +37,6 @@ export const adminCrudInputWebSpec = createFieldMapSpec(
   'core/admin-crud-input-web',
   (t) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    inputs: t.map<string, AdminCrudInputWebConfig<any>>(),
+    inputs: t.namedArray<AdminCrudInputWebConfig<any>>(),
   }),
 );

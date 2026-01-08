@@ -18,10 +18,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
 
-import {
-  BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-  SCALAR_FIELD_TYPE_OPTIONS,
-} from '../../../-constants.js';
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../-constants.js';
 import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { BadgeWithTypeLabel } from '../badge-with-type-label.js';
 
@@ -142,10 +139,7 @@ export function ServiceMethodFieldsSection({
                 <td>
                   <BadgeWithTypeLabel
                     type={
-                      transformerWeb.getTransformerWebConfig(
-                        transformer.type,
-                        BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-                      ).label
+                      transformerWeb.getWebConfigOrThrow(transformer.type).label
                     }
                   >
                     {ModelTransformerUtils.getTransformerName(
