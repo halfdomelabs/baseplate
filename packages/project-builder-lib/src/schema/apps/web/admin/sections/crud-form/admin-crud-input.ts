@@ -8,9 +8,7 @@ import { baseAdminCrudInputSchema } from './types.js';
 export const createAdminCrudInputSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType, adminSectionSlot: adminSectionEntityType },
   (ctx, slots) => {
-    const adminCrudInputs = ctx.plugins
-      .getPluginSpec(adminCrudInputSpec)
-      .getAdminCrudInputs();
+    const adminCrudInputs = ctx.plugins.use(adminCrudInputSpec).inputs;
 
     return baseAdminCrudInputSchema.transform((data) => {
       const inputDef = adminCrudInputs.get(data.type);

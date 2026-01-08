@@ -1,3 +1,4 @@
+import type { PluginStore } from '#src/plugins/index.js';
 import type {
   ProjectDefinition,
   ProjectDefinitionInput,
@@ -44,8 +45,9 @@ export function createTestProjectDefinitionInput(
 export function createTestProjectDefinitionContainer(
   input: Partial<ProjectDefinitionInput> = {},
 ): ProjectDefinitionContainer {
-  const pluginStore = {
+  const pluginStore: PluginStore = {
     availablePlugins: [],
+    additionalCoreModules: [],
   };
   const pluginImplementationStore = createPluginImplementationStore(
     pluginStore,

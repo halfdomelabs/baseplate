@@ -1,5 +1,6 @@
 export * from './compiler/index.js';
 export * from './constants/index.js';
+export * from './core-modules/index.js';
 export * from './definition/index.js';
 export * from './feature-flags/index.js';
 export * from './migrations/index.js';

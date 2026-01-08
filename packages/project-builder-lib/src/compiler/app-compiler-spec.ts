@@ -3,14 +3,13 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import { safeMerge } from '@baseplate-dev/utils';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
-import type { PluginSpecImplementation } from '#src/plugins/index.js';
 import type {
   AppConfig,
   AppEntryType,
   ProjectDefinition,
 } from '#src/schema/index.js';
 
-import { createPluginSpec } from '#src/plugins/index.js';
+import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js';
 
 export interface AppCompiler {
   addChildrenToFeature: (
@@ -57,44 +56,24 @@ interface PluginAppCompilerOptions<TAppDefinition> {
   definitionContainer: ProjectDefinitionContainer;
 }
 
-interface PluginAppCompiler<TAppDefinition = AppConfig> {
+export interface PluginAppCompiler<TAppDefinition = AppConfig> {
   pluginKey: string;
   appType: AppEntryType<TAppDefinition>;
   compile: (options: PluginAppCompilerOptions<TAppDefinition>) => void;
 }
 
 /**
- * Spec for adding children to the compilation flow
+ * Spec for registering app compilers
  */
-export interface AppCompilerSpec extends PluginSpecImplementation {
-  registerAppCompiler: <TAppDefinition>(
-    compiler: PluginAppCompiler<TAppDefinition>,
-  ) => void;
-  getAppCompilers: (
-    appType: AppEntryType<unknown>,
-  ) => PluginAppCompiler<unknown>[];
-}
-
-export function createAppCompilerPlugin(): AppCompilerSpec {
-  const compilers = new Map<string, PluginAppCompiler<unknown>[]>();
-
-  return {
-    registerAppCompiler(compiler) {
-      const appCompilers = compilers.get(compiler.appType) ?? [];
-      if (!compilers.has(compiler.appType)) {
-        compilers.set(compiler.appType, appCompilers);
-      }
-      appCompilers.push(compiler as PluginAppCompiler<unknown>);
-    },
-    getAppCompilers(appType) {
-      return compilers.get(appType) ?? [];
-    },
-  };
-}
-
-/**
- * Spec for modifying the app compiler
- */
-export const appCompilerSpec = createPluginSpec('AppCompiler', {
-  defaultInitializer: createAppCompilerPlugin,
-});
+export const appCompilerSpec = createFieldMapSpec(
+  'core/app-compiler',
+  (t) => ({
+    compilers: t.array<PluginAppCompiler<unknown>>(),
+  }),
+  {
+    use: (values) => ({
+      getAppCompilers: (appType: AppEntryType<unknown>) =>
+        values.compilers.filter((c) => c.appType === appType),
+    }),
+  },
+);

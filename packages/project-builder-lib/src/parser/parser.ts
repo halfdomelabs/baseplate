@@ -1,13 +1,12 @@
 import { z } from 'zod';
 
-import type { PluginWithPlatformModules } from '#src/plugins/imports/loader.js';
-import type { PluginStore } from '#src/plugins/imports/types.js';
 import type {
-  InitializedPluginSpec,
+  PluginModuleWithKey,
+  PluginStore,
+} from '#src/plugins/imports/types.js';
+import type {
   PluginImplementationStore,
   PluginMetadataWithPaths,
-  PluginSpecImplementation,
-  PluginSpecWithInitializer,
 } from '#src/plugins/index.js';
 import type { ResolvedZodRefPayload } from '#src/references/types.js';
 import type {
@@ -15,15 +14,11 @@ import type {
   ProjectDefinitionSchema,
 } from '#src/schema/project-definition.js';
 
+import { LIB_CORE_MODULES } from '#src/core-modules/index.js';
 import { initializePlugins } from '#src/plugins/imports/loader.js';
-import { pluginConfigSpec } from '#src/plugins/index.js';
 import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
-  adminCrudActionSpec,
-  adminCrudColumnSpec,
-  adminCrudInputSpec,
   createDefinitionSchemaParserContext,
-  modelTransformerSpec,
   pluginEntityType,
 } from '#src/schema/index.js';
 import { basePluginDefinitionSchema } from '#src/schema/plugins/definition.js';
@@ -31,16 +26,7 @@ import { createProjectDefinitionSchema } from '#src/schema/project-definition.js
 
 import type { SchemaParserContext } from './types.js';
 
-const COMMON_SPEC_IMPLEMENTATIONS: (
-  | InitializedPluginSpec
-  | PluginSpecWithInitializer
-)[] = [
-  pluginConfigSpec,
-  modelTransformerSpec,
-  adminCrudInputSpec,
-  adminCrudActionSpec,
-  adminCrudColumnSpec,
-];
+// [TODO: 2025-01-01] Rename createPluginImplementationStore to PluginImplementationStore
 
 /**
  * Creates a plugin implementation store from the project definition and plugin store,
@@ -54,7 +40,7 @@ export function createPluginImplementationStore(
   pluginStore: PluginStore,
   projectDefinition: unknown,
 ): PluginImplementationStore {
-  const { availablePlugins, builtinSpecImplementations = [] } = pluginStore;
+  const { availablePlugins, additionalCoreModules } = pluginStore;
   const pluginData = z
     .object({
       plugins: z.array(basePluginDefinitionSchema).optional(),
@@ -62,40 +48,25 @@ export function createPluginImplementationStore(
     .parse(projectDefinition);
   const { plugins = [] } = pluginData;
   // initialize plugins
-  const initialImplementations = [
-    ...COMMON_SPEC_IMPLEMENTATIONS,
-    ...builtinSpecImplementations,
-  ];
-
-  const specImplementations: Record<string, PluginSpecImplementation> = {};
-  for (const spec of initialImplementations) {
-    if ('type' in spec) {
-      if (typeof spec.defaultInitializer !== 'function') {
-        throw new TypeError(
-          `Spec ${spec.type} does not have a defaultInitializer function!`,
-        );
-      }
-      specImplementations[spec.name] = spec.defaultInitializer();
-    } else {
-      specImplementations[spec.spec.name] = spec.implementation;
-    }
-  }
-  const pluginsWithModules = plugins.map((p): PluginWithPlatformModules => {
+  const modulesWithKey = plugins.flatMap((p): PluginModuleWithKey[] => {
     const plugin = availablePlugins.find(
       ({ metadata }) =>
         metadata.name === p.name && metadata.packageName === p.packageName,
     );
-    const pluginName = `${p.packageName}/${p.name}`;
     if (!plugin) {
-      throw new Error(`Unable to find plugin ${pluginName}!`);
+      throw new Error(`Unable to find plugin ${p.packageName}/${p.name}!`);
     }
-    return {
-      key: plugin.metadata.key,
-      name: pluginName,
-      pluginModules: plugin.modules,
-    };
+    return plugin.modules.map((m) => ({
+      key: `${plugin.metadata.key}/${m.directory}/${m.module.name}`,
+      pluginKey: plugin.metadata.key,
+      module: m.module,
+    }));
   });
-  return initializePlugins(pluginsWithModules, specImplementations);
+  return initializePlugins([
+    ...modulesWithKey,
+    ...LIB_CORE_MODULES,
+    ...additionalCoreModules,
+  ]);
 }
 
 /**

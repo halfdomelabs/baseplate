@@ -1,144 +1,60 @@
-import { toposortOrdered } from '@baseplate-dev/utils';
-import { keyBy, mapValues } from 'es-toolkit';
+import { assertNoDuplicates } from '@baseplate-dev/utils';
+import { mapValues } from 'es-toolkit';
 
 import { stripUndefinedValues } from '#src/utils/strip.js';
 
-import type { PluginSpecImplementation } from '../spec/types.js';
-import type { KeyedPluginPlatformModule } from './types.js';
+import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
+import type { PluginModuleWithKey } from './types.js';
 
-import { PluginImplementationStore } from '../schema/store.js';
+import { runInPluginContext } from '../context/plugin-context.js';
+import { PluginImplementationStore } from '../store/store.js';
 
-export interface PluginWithPlatformModules {
-  key: string;
-  name: string;
-  pluginModules: KeyedPluginPlatformModule[];
-}
+/**
+ * Initialize ordered plugin modules.
+ * Each module's initialize function is called within a plugin context.
+ */
+export function initializeOrderedModules(
+  orderedModules: PluginModuleWithKey[],
+): Map<string, PluginSpecInitializerResult> {
+  const instances = new Map<string, PluginSpecInitializerResult>();
 
-interface KeyedPlatformModuleWithPlugin extends KeyedPluginPlatformModule {
-  id: string;
-  name: string;
-  pluginKey: string;
-  pluginName: string;
-}
-
-export function extractPlatformModulesFromPlugins(
-  plugins: PluginWithPlatformModules[],
-): KeyedPlatformModuleWithPlugin[] {
-  return plugins.flatMap((plugin) =>
-    plugin.pluginModules.map((m) => ({
-      ...m,
-      id: `${plugin.key}/${m.key}`,
-      name: `${plugin.name}/${m.key}`,
-      pluginKey: plugin.key,
-      pluginName: plugin.name,
-    })),
-  );
-}
-
-export function getOrderedPluginModuleInitializationSteps(
-  pluginModules: KeyedPlatformModuleWithPlugin[],
-  initialSpecImplementations: Record<string, PluginSpecImplementation>,
-): string[] {
-  const pluginModulesById = keyBy(pluginModules, (p) => p.id);
-
-  // create export map of plugin ID to export spec name
-  const pluginModuleIdByExport: Record<string, string> = mapValues(
-    initialSpecImplementations,
-    () => 'built-in',
-  );
-  for (const { name, module, id } of pluginModules) {
-    for (const m of Object.values(module.exports ?? {})) {
-      const exportName = m.name;
-
-      if (exportName in pluginModuleIdByExport) {
-        const existingPlugin =
-          pluginModulesById[pluginModuleIdByExport[exportName]];
-        throw new Error(
-          `Duplicate export from plugins found ${exportName} (${name} and ${existingPlugin.name})`,
-        );
-      }
-
-      pluginModuleIdByExport[exportName] = id;
+  function getPluginSpec<TInit extends object, TUse extends object>(
+    spec: PluginSpec<TInit, TUse>,
+  ): PluginSpecInitializerResult<TInit, TUse> {
+    if (!instances.has(spec.name)) {
+      const instance = spec.initializer();
+      instances.set(spec.name, instance);
     }
+    return instances.get(spec.name) as PluginSpecInitializerResult<TInit, TUse>;
   }
 
-  // create list of plugin to plugin dependencies
-  const edges = pluginModules.flatMap(({ module, name, id }) =>
-    Object.values(module.dependencies ?? {})
-      .map((m): [string, string] | undefined => {
-        const resolvedDep = pluginModuleIdByExport[m.name];
-        if (!resolvedDep) {
-          if (m.isOptional) {
-            return undefined;
-          }
-          throw new Error(
-            `Cannot resolve plugin dependency for ${name} (${m.name})`,
-          );
-        }
-        if (resolvedDep === 'built-in') {
-          return undefined;
-        }
-        return [resolvedDep, id];
-      })
-      .filter((x) => x !== undefined),
-  );
-
-  const nodes = pluginModules.map((p) => p.id);
-
-  return toposortOrdered(nodes, edges);
-}
-
-export function initializeOrderedPluginModules(
-  orderedPluginModules: KeyedPlatformModuleWithPlugin[],
-  initialSpecImplementations: Partial<Record<string, PluginSpecImplementation>>,
-): Partial<Record<string, PluginSpecImplementation>> {
-  const specImplementations = { ...initialSpecImplementations };
-
-  for (const { name, module, pluginKey } of orderedPluginModules) {
+  for (const { module, key: moduleKey, pluginKey } of orderedModules) {
+    // Resolve dependencies by getting their setup interfaces
     const dependencies = module.dependencies
       ? stripUndefinedValues(
-          mapValues(module.dependencies, (dep) => {
-            const implementation = specImplementations[dep.name];
-            if (!implementation && !dep.isOptional) {
-              throw new Error(`Plugin ${name} missing dependency ${dep.name}`);
-            }
-            return implementation;
-          }),
+          mapValues(module.dependencies, (spec) => getPluginSpec(spec).init),
         )
       : {};
-    const context = { pluginKey };
-    const exports = module.initialize(dependencies, context);
-    Object.entries(module.exports ?? {}).map(([key, spec]) => {
-      const exportedImplementation = exports[key] as
-        | PluginSpecImplementation
-        | undefined;
-      if (!exportedImplementation) {
-        throw new Error(`Plugin ${name} did not return required export ${key}`);
-      }
-      specImplementations[spec.name] = exportedImplementation;
+
+    // Run initialize within plugin context for source tracking
+    runInPluginContext({ moduleKey, pluginKey }, () => {
+      module.initialize(dependencies, { moduleKey, pluginKey });
     });
   }
-  return specImplementations;
+
+  return instances;
 }
 
 /**
- * Initialize the plugins based on their interdependencies and creates a store of the plugin implementations
+ * Initialize the plugins based on their interdependencies.
+ * Returns a store that can be used to access spec implementations.
  */
 export function initializePlugins(
-  plugins: PluginWithPlatformModules[],
-  initialSpecImplementations: Record<string, PluginSpecImplementation>,
+  pluginModules: PluginModuleWithKey[],
 ): PluginImplementationStore {
-  const pluginModules = extractPlatformModulesFromPlugins(plugins);
+  assertNoDuplicates(pluginModules, 'plugin modules', (m) => m.key);
 
-  const pluginModulesById = keyBy(pluginModules, (p) => p.id);
-  const orderedModuleIds = getOrderedPluginModuleInitializationSteps(
-    pluginModules,
-    initialSpecImplementations,
-  );
+  const instances = initializeOrderedModules(pluginModules);
 
-  const specImplementations = initializeOrderedPluginModules(
-    orderedModuleIds.map((p) => pluginModulesById[p]),
-    initialSpecImplementations,
-  );
-  return new PluginImplementationStore(specImplementations);
+  return new PluginImplementationStore(instances);
 }

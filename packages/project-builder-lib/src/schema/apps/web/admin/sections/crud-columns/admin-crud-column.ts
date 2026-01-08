@@ -9,9 +9,7 @@ import { baseAdminCrudColumnSchema } from './types.js';
 export const createAdminCrudColumnSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType },
   (ctx, slots) => {
-    const adminCrudColumns = ctx.plugins
-      .getPluginSpec(adminCrudColumnSpec)
-      .getAdminCrudColumns();
+    const adminCrudColumns = ctx.plugins.use(adminCrudColumnSpec).columns;
 
     return baseAdminCrudColumnSchema.transform((data) => {
       const columnDef = adminCrudColumns.get(data.type);
