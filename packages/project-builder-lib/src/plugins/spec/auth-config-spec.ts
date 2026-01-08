@@ -11,9 +11,6 @@ export interface AuthRole {
 
 type AuthConfigGetter = (definition: ProjectDefinition) => {
   roles: AuthRole[];
-  modelNames: {
-    user: string;
-  };
 };
 
 /**
@@ -28,6 +25,13 @@ export const authConfigSpec = createFieldMapSpec(
     use: (values) => ({
       getAuthConfig: (definition: ProjectDefinition) =>
         values.getAuthConfig?.(definition),
+      getAuthConfigOrThrow: (definition: ProjectDefinition) => {
+        const config = values.getAuthConfig?.(definition);
+        if (!config) {
+          throw new Error('Auth config not found');
+        }
+        return config;
+      },
     }),
   },
 );

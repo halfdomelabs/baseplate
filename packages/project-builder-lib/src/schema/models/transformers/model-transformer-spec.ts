@@ -22,16 +22,8 @@ export interface ModelTransformerUse {
 export const modelTransformerSpec = createFieldMapSpec(
   'core/model-transformer',
   (t) => ({
-    transformers: t.map<
-      string,
+    transformers: t.namedArrayToMap<
       ModelTransformerType<ModelTransformerSchemaCreator>
-    >(
-      new Map(
-        BUILT_IN_TRANSFORMERS.map((transformer) => [
-          transformer.name,
-          transformer as unknown as ModelTransformerType<ModelTransformerSchemaCreator>,
-        ]),
-      ),
-    ),
+    >(BUILT_IN_TRANSFORMERS),
   }),
 );

@@ -30,9 +30,7 @@ function buildVirtualInputField(
     modelTransformerCompilerSpec,
   );
 
-  const compiler = compilerImplementation.transformers.find(
-    (c) => c.name === transformer.type,
-  );
+  const compiler = compilerImplementation.transformers.get(transformer.type);
 
   if (!compiler) {
     throw new Error(

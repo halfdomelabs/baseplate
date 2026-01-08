@@ -37,6 +37,6 @@ export const adminCrudColumnCompilerSpec = createFieldMapSpec(
   'core/admin-crud-column-compiler',
   (t) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    columns: t.namedArray<AdminCrudColumnCompiler<any>>(),
+    columns: t.namedArrayToMap<AdminCrudColumnCompiler<any>>(),
   }),
 );

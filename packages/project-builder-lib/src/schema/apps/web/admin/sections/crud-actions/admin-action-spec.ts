@@ -8,6 +8,6 @@ import type { AdminCrudActionType } from './types.js';
 export const adminCrudActionSpec = createFieldMapSpec(
   'core/admin-crud-action',
   (t) => ({
-    actions: t.map<string, AdminCrudActionType>(),
+    actions: t.namedArrayToMap<AdminCrudActionType>(),
   }),
 );

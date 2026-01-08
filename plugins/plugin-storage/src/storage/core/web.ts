@@ -8,12 +8,11 @@ import { StorageDefinitionEditor } from './components/storage-definition-editor.
 import '../../styles.css';
 
 export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, StorageDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, StorageDefinitionEditor);
   },
 });

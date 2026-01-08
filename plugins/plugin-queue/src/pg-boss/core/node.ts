@@ -7,12 +7,12 @@ import {
 import { pgBossGenerator } from './generators/pg-boss/pg-boss.generator.js';
 
 export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
-    appCompiler.registerAppCompiler({
+    appCompiler.compilers.push({
       pluginKey,
       appType: backendAppEntryType,
       compile: ({ appCompiler }) => {
@@ -21,7 +21,5 @@ export default createPluginModule({
         });
       },
     });
-
-    return {};
   },
 });

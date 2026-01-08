@@ -18,7 +18,7 @@ export function compileAdminCrudAction(
 ): GeneratorBundle {
   const actionCompiler = builder.pluginStore.use(adminCrudActionCompilerSpec);
 
-  const compiler = actionCompiler.actions.find((c) => c.name === action.type);
+  const compiler = actionCompiler.actions.get(action.type);
 
   if (!compiler) {
     throw new Error(`Compiler for action type ${action.type} not found`);

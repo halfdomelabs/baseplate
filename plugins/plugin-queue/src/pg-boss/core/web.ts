@@ -8,12 +8,11 @@ import { PgBossDefinitionEditor } from './components/pg-boss-definition-editor.j
 import '../../styles.css';
 
 export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, PgBossDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, PgBossDefinitionEditor);
   },
 });

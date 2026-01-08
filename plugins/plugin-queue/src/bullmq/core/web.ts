@@ -8,12 +8,11 @@ import { BullmqDefinitionEditor } from './components/bullmq-definition-editor.js
 import '../../styles.css';
 
 export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, BullmqDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, BullmqDefinitionEditor);
   },
 });

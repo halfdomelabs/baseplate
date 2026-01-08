@@ -46,12 +46,12 @@ function findNonTransformedFileRelations(
 }
 
 export default createPluginModule({
+  name: 'web',
   dependencies: {
     transformerWeb: modelTransformerWebSpec,
   },
-  exports: {},
   initialize: ({ transformerWeb }, { pluginKey }) => {
-    transformerWeb.registerTransformerWebConfig<FileTransformerDefinition>({
+    transformerWeb.transformers.add({
       name: 'file',
       label: 'File',
       description: 'Validates and associates file ID to field',
@@ -104,6 +104,5 @@ export default createPluginModule({
         },
       ],
     });
-    return {};
   },
 });

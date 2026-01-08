@@ -6,15 +6,14 @@ import {
 import { createAdminCrudFileInputSchema } from './types.js';
 
 export default createPluginModule({
+  name: 'common',
   dependencies: {
     adminCrudInput: adminCrudInputSpec,
   },
-  exports: {},
   initialize: ({ adminCrudInput }) => {
-    adminCrudInput.registerAdminCrudInput({
+    adminCrudInput.inputs.add({
       name: 'file',
       createSchema: createAdminCrudFileInputSchema,
     });
-    return {};
   },
 });

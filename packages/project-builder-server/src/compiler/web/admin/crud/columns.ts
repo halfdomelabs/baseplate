@@ -24,7 +24,7 @@ export function compileAdminCrudColumn(
 ): GeneratorBundle {
   const columnCompiler = builder.pluginStore.use(adminCrudColumnCompilerSpec);
 
-  const compiler = columnCompiler.columns.find((c) => c.name === column.type);
+  const compiler = columnCompiler.columns.get(column.type);
 
   if (!compiler) {
     throw new Error(`Compiler for column type ${column.type} not found`);

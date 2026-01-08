@@ -5,16 +5,12 @@ import {
 
 import { createPgBossPluginDefinitionSchema } from './schema/plugin-definition.js';
 
-// necessary for Typescript to infer the return type of the initialize function
-export type { PluginModule } from '@baseplate-dev/project-builder-lib';
-
 export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
+    pluginConfig: pluginConfigSpec,
   },
-  exports: {},
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(pluginKey, createPgBossPluginDefinitionSchema);
-    return {};
+  initialize: ({ pluginConfig }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, createPgBossPluginDefinitionSchema);
   },
 });

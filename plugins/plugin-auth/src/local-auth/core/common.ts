@@ -1,7 +1,6 @@
 import {
-  authModelConfigSpec,
+  authModelsSpec,
   createPluginModule,
-  ModelUtils,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -13,22 +12,15 @@ import { createLocalAuthPluginDefinitionSchema } from './schema/plugin-definitio
 export type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
 export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
+    pluginConfig: pluginConfigSpec,
+    authModels: authModelsSpec,
   },
-  exports: {
-    authModelConfig: authModelConfigSpec,
-  },
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(
-      pluginKey,
-      createLocalAuthPluginDefinitionSchema,
-    );
-    return {
-      authModelConfig: {
-        getUserModel: (definition) =>
-          ModelUtils.byNameOrThrow(definition, LOCAL_AUTH_MODELS.user),
-      },
-    };
+  initialize: ({ pluginConfig, authModels }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, createLocalAuthPluginDefinitionSchema);
+    authModels.getAuthModels.set(() => ({
+      user: LOCAL_AUTH_MODELS.user,
+    }));
   },
 });

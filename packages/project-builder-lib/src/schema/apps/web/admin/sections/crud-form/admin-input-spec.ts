@@ -8,6 +8,6 @@ import type { AdminCrudInputType } from './types.js';
 export const adminCrudInputSpec = createFieldMapSpec(
   'core/admin-crud-input',
   (t) => ({
-    inputs: t.namedArray<AdminCrudInputType>(),
+    inputs: t.namedArrayToMap<AdminCrudInputType>(),
   }),
 );

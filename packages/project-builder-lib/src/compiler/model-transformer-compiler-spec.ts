@@ -30,6 +30,6 @@ export const modelTransformerCompilerSpec = createFieldMapSpec(
   'core/model-transformer-compiler',
   (t) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformers: t.namedArray<ModelTransformerCompiler<any>>(),
+    transformers: t.namedArrayToMap<ModelTransformerCompiler<any>>(),
   }),
 );

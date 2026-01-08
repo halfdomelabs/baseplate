@@ -1,5 +1,3 @@
-import type { PluginModule } from '@baseplate-dev/project-builder-lib';
-
 import {
   adminCrudActionSpec,
   adminCrudColumnSpec,
@@ -13,14 +11,14 @@ import { createAdminCrudResetPasswordActionSchema } from './schema/reset-passwor
 import { createAdminCrudRolesColumnSchema } from './schema/roles-column.js';
 
 export default createPluginModule({
+  name: 'common',
   dependencies: {
     adminCrudAction: adminCrudActionSpec,
     adminCrudColumn: adminCrudColumnSpec,
   },
-  exports: {},
   initialize: ({ adminCrudAction, adminCrudColumn }) => {
     // Register the manage-roles action type
-    adminCrudAction.registerAdminCrudAction(
+    adminCrudAction.actions.add(
       createAdminCrudActionType({
         name: 'manage-roles',
         createSchema: createAdminCrudManageRolesActionSchema,
@@ -28,7 +26,7 @@ export default createPluginModule({
     );
 
     // Register the reset-password action type
-    adminCrudAction.registerAdminCrudAction(
+    adminCrudAction.actions.add(
       createAdminCrudActionType({
         name: 'reset-password',
         createSchema: createAdminCrudResetPasswordActionSchema,
@@ -36,13 +34,11 @@ export default createPluginModule({
     );
 
     // Register the roles column type
-    adminCrudColumn.registerAdminCrudColumn(
+    adminCrudColumn.columns.add(
       createAdminCrudColumnType({
         name: 'roles',
         createSchema: createAdminCrudRolesColumnSchema,
       }),
     );
-
-    return {};
   },
-}) as PluginModule;
+});

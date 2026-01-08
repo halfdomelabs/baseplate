@@ -53,12 +53,11 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
 }
 
 export default createPluginModule({
+  name: 'node',
   dependencies: {
     adminCrudInputCompiler: adminCrudInputCompilerSpec,
   },
-  exports: {},
   initialize: ({ adminCrudInputCompiler }) => {
-    adminCrudInputCompiler.registerCompiler(buildFileTransformerCompiler());
-    return {};
+    adminCrudInputCompiler.inputs.add(buildFileTransformerCompiler());
   },
 });

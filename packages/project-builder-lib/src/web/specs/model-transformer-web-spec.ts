@@ -61,12 +61,12 @@ export const modelTransformerWebSpec = createFieldMapSpec(
   'core/model-transformer-web',
   (t) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transformers: t.namedArray<ModelTransformerWebConfig<any>>(),
+    transformers: t.namedArrayToMap<ModelTransformerWebConfig<any>>(),
   }),
   {
     use: (values) => ({
       getWebConfigOrThrow(name: string) {
-        const transformer = values.transformers.find((t) => t.name === name);
+        const transformer = values.transformers.get(name);
         if (!transformer) {
           throw new Error(`Transformer ${name} not found`);
         }

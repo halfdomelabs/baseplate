@@ -36,14 +36,11 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
 }
 
 export default createPluginModule({
+  name: 'node',
   dependencies: {
     transformerCompiler: modelTransformerCompilerSpec,
   },
-  exports: {},
   initialize: ({ transformerCompiler }) => {
-    transformerCompiler.registerTransformerCompiler(
-      buildFileTransformerCompiler(),
-    );
-    return {};
+    transformerCompiler.transformers.add(buildFileTransformerCompiler());
   },
 });

@@ -22,7 +22,7 @@ export function compileAdminCrudInput(
     adminCrudInputCompilerSpec,
   );
 
-  const compiler = inputCompiler.inputs.find((c) => c.name === field.type);
+  const compiler = inputCompiler.inputs.get(field.type);
 
   if (!compiler) {
     throw new Error(`Compiler for input type ${field.type} not found`);

@@ -8,12 +8,11 @@ import { QueueDefinitionEditor } from './components/queue-definition-editor.js';
 import '../../styles.css';
 
 export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, QueueDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, QueueDefinitionEditor);
   },
 });

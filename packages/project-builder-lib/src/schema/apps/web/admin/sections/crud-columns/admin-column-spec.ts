@@ -8,6 +8,6 @@ import type { AdminCrudColumnType } from './types.js';
 export const adminCrudColumnSpec = createFieldMapSpec(
   'core/admin-crud-column',
   (t) => ({
-    columns: t.map<string, AdminCrudColumnType>(),
+    columns: t.namedArrayToMap<AdminCrudColumnType>(),
   }),
 );

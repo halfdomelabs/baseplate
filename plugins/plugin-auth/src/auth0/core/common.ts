@@ -1,7 +1,6 @@
 import {
-  authModelConfigSpec,
+  authModelsSpec,
   createPluginModule,
-  ModelUtils,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -13,20 +12,17 @@ import { createAuth0PluginDefinitionSchema } from './schema/plugin-definition.js
 export type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
 export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
+    pluginConfig: pluginConfigSpec,
+    authModels: authModelsSpec,
   },
-  exports: {
-    authModelConfig: authModelConfigSpec,
-  },
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(pluginKey, createAuth0PluginDefinitionSchema);
-    config.registerMigrations(pluginKey, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
-    return {
-      authModelConfig: {
-        getUserModel: (definition) =>
-          ModelUtils.byNameOrThrow(definition, AUTH0_MODELS.user),
-      },
-    };
+  initialize: ({ pluginConfig, authModels }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, createAuth0PluginDefinitionSchema);
+    pluginConfig.migrations.set(pluginKey, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
+
+    authModels.getAuthModels.set(() => ({
+      user: AUTH0_MODELS.user,
+    }));
   },
 });

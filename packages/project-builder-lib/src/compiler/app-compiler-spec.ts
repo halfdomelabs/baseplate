@@ -62,13 +62,20 @@ export interface PluginAppCompiler<TAppDefinition = AppConfig> {
   compile: (options: PluginAppCompilerOptions<TAppDefinition>) => void;
 }
 
+export function pluginAppCompiler<TAppDefinition = AppConfig>(
+  options: PluginAppCompiler<TAppDefinition>,
+): PluginAppCompiler<TAppDefinition> {
+  return options;
+}
+
 /**
  * Spec for registering app compilers
  */
 export const appCompilerSpec = createFieldMapSpec(
   'core/app-compiler',
   (t) => ({
-    compilers: t.array<PluginAppCompiler<unknown>>(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    compilers: t.array<PluginAppCompiler<any>>(),
   }),
   {
     use: (values) => ({

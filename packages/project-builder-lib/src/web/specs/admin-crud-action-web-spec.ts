@@ -42,6 +42,6 @@ export const adminCrudActionWebSpec = createFieldMapSpec(
   'core/admin-crud-action-web',
   (t) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    actions: t.map<string, AdminCrudActionWebConfig<any>>(),
+    actions: t.namedArrayToMap<AdminCrudActionWebConfig<any>>(),
   }),
 );
