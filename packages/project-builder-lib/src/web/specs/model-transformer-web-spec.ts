@@ -72,6 +72,7 @@ export const modelTransformerWebSpec = createFieldMapSpec(
         }
         return transformer;
       },
+      getWebConfigs: () => [...values.transformers.values()],
     }),
   },
 );

@@ -27,8 +27,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { BUILT_IN_ADMIN_CRUD_ACTION_WEB_CONFIGS } from './actions/index.js';
-
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -55,8 +53,7 @@ export function ActionDialog({
 
   const actionWeb = pluginContainer.getPluginSpec(adminCrudActionWebSpec);
 
-  const actionTypeOptions = actionWeb
-    .getActionWebConfigs(BUILT_IN_ADMIN_CRUD_ACTION_WEB_CONFIGS)
+  const actionTypeOptions = [...actionWeb.actions.values()]
     .filter(
       (config) => modelRef && config.isAvailableForModel(definition, modelRef),
     )
@@ -92,10 +89,7 @@ export function ActionDialog({
   const actionType = useWatch({ control, name: 'type' });
 
   const actionWebConfig = actionType
-    ? actionWeb.getActionWebConfig(
-        actionType,
-        BUILT_IN_ADMIN_CRUD_ACTION_WEB_CONFIGS,
-      )
+    ? actionWeb.actions.get(actionType)
     : undefined;
 
   const WebForm = actionWebConfig?.Form;
