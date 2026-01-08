@@ -1,6 +1,6 @@
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
-import { createFieldMapSpec } from '#src/index.js';
+import { createFieldMapSpec } from '../utils/create-field-map-spec.js';
 
 type AuthModelsGetter = (definition: ProjectDefinition) => {
   user: string;
