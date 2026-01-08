@@ -38,7 +38,7 @@ export function createAdminCrudColumnWebConfig<T extends AdminCrudColumnInput>(
 export const adminCrudColumnWebSpec = createFieldMapSpec(
   'core/admin-crud-column-web',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying column types at runtime
     columns: t.namedArrayToMap<AdminCrudColumnWebConfig<any>>(),
   }),
 );

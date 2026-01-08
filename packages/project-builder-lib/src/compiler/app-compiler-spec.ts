@@ -74,7 +74,7 @@ export function pluginAppCompiler<TAppDefinition = AppConfig>(
 export const appCompilerSpec = createFieldMapSpec(
   'core/app-compiler',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying app definition types at runtime
     compilers: t.array<PluginAppCompiler<any>>(),
   }),
   {

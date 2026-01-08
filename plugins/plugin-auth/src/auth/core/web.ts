@@ -14,6 +14,5 @@ export default createPluginModule({
   },
   initialize: ({ webConfig }, { pluginKey }) => {
     webConfig.components.set(pluginKey, AuthDefinitionEditor);
-    return {};
   },
 });

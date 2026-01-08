@@ -29,7 +29,7 @@ export interface ModelTransformerCompiler<
 export const modelTransformerCompilerSpec = createFieldMapSpec(
   'core/model-transformer-compiler',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying transformer types at runtime
     transformers: t.namedArrayToMap<ModelTransformerCompiler<any>>(),
   }),
 );

@@ -36,7 +36,7 @@ export function createAdminCrudInputWebConfig<T extends AdminCrudInputInput>(
 export const adminCrudInputWebSpec = createFieldMapSpec(
   'core/admin-crud-input-web',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying input types at runtime
     inputs: t.namedArrayToMap<AdminCrudInputWebConfig<any>>(),
   }),
 );

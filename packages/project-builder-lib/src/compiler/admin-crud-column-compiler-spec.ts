@@ -36,7 +36,7 @@ export function createAdminCrudColumnCompiler<
 export const adminCrudColumnCompilerSpec = createFieldMapSpec(
   'core/admin-crud-column-compiler',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying column types at runtime
     columns: t.namedArrayToMap<AdminCrudColumnCompiler<any>>(),
   }),
 );

@@ -67,7 +67,5 @@ export default createPluginModule({
         },
       },
     );
-
-    return {};
   },
 });

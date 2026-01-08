@@ -26,7 +26,7 @@ export interface AdminCrudInputCompiler<
 export const adminCrudInputCompilerSpec = createFieldMapSpec(
   'core/admin-crud-input-compiler',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying input types at runtime
     inputs: t.namedArrayToMap<AdminCrudInputCompiler<any>>(),
   }),
 );

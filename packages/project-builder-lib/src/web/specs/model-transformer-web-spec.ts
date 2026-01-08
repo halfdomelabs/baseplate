@@ -60,7 +60,7 @@ export interface ModelTransformerWebUse {
 export const modelTransformerWebSpec = createFieldMapSpec(
   'core/model-transformer-web',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying transformer types at runtime
     transformers: t.namedArrayToMap<ModelTransformerWebConfig<any>>(),
   }),
   {

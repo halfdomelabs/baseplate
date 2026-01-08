@@ -41,7 +41,7 @@ export function createAdminCrudActionWebConfig<T extends AdminCrudActionInput>(
 export const adminCrudActionWebSpec = createFieldMapSpec(
   'core/admin-crud-action-web',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying action types at runtime
     actions: t.namedArrayToMap<AdminCrudActionWebConfig<any>>(),
   }),
 );
