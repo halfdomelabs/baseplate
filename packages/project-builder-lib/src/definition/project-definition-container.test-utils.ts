@@ -49,13 +49,13 @@ export function createTestProjectDefinitionContainer(
     availablePlugins: [],
     coreModules: [],
   };
-  const pluginImplementationStore = createPluginSpecStore(pluginStore, {
+  const pluginSpecStore = createPluginSpecStore(pluginStore, {
     plugins: [],
   });
   const resolvedRefPayload = deserializeSchemaWithTransformedReferences(
     createProjectDefinitionSchema,
     createTestProjectDefinitionInput(input),
-    { plugins: pluginImplementationStore },
+    { plugins: pluginSpecStore },
   );
   return new ProjectDefinitionContainer(
     resolvedRefPayload,
@@ -69,6 +69,6 @@ export function createTestProjectDefinitionContainer(
         isInternalExample: false,
       },
     },
-    pluginImplementationStore,
+    pluginSpecStore,
   );
 }

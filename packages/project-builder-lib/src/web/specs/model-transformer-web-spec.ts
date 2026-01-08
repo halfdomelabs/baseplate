@@ -47,14 +47,6 @@ export function createModelTransformerWebConfig<T extends TransformerConfig>(
 }
 
 /**
- * Use interface for model transformer web spec.
- */
-export interface ModelTransformerWebUse {
-  getTransformerWebConfig: (name: string) => ModelTransformerWebConfig;
-  getTransformerWebConfigs: () => ModelTransformerWebConfig[];
-}
-
-/**
  * Spec for adding web config for transformers
  */
 export const modelTransformerWebSpec = createFieldMapSpec(

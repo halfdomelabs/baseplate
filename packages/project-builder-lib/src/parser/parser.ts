@@ -110,12 +110,9 @@ export function createProjectDefinitionSchemaWithContext(
   context: SchemaParserContext,
 ): ProjectDefinitionSchema {
   const { pluginStore } = context;
-  const pluginImplementationStore = createPluginSpecStore(
-    pluginStore,
-    projectDefinition,
-  );
+  const pluginSpecStore = createPluginSpecStore(pluginStore, projectDefinition);
   const definitionContext = createDefinitionSchemaParserContext({
-    plugins: pluginImplementationStore,
+    plugins: pluginSpecStore,
   });
   return createProjectDefinitionSchema(definitionContext);
 }
@@ -146,14 +143,11 @@ export function parseProjectDefinitionWithReferences(
   pluginStore: PluginSpecStore;
 } {
   const { pluginStore } = context;
-  const pluginImplementationStore = createPluginSpecStore(
-    pluginStore,
-    projectDefinition,
-  );
+  const pluginSpecStore = createPluginSpecStore(pluginStore, projectDefinition);
   const definition = parseSchemaWithTransformedReferences(
     createProjectDefinitionSchema,
     projectDefinition,
-    { plugins: pluginImplementationStore },
+    { plugins: pluginSpecStore },
   );
-  return { definition, pluginStore: pluginImplementationStore };
+  return { definition, pluginStore: pluginSpecStore };
 }

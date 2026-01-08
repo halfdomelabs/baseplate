@@ -27,14 +27,14 @@ export function parseProjectDefinitionContents(
     }
     const { migratedDefinition } = runSchemaMigrations(projectDefinition);
 
-    const pluginImplementationStore = createPluginSpecStore(
+    const pluginSpecStore = createPluginSpecStore(
       schemaParserContext.pluginStore,
       migratedDefinition,
     );
 
     const definitionWithPluginMigrations = runPluginMigrations(
       migratedDefinition,
-      pluginImplementationStore,
+      pluginSpecStore,
     );
 
     // validate config

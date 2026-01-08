@@ -54,14 +54,14 @@ export async function loadProjectDefinition(
       );
     }
 
-    const pluginImplementationStore = createPluginSpecStore(
+    const pluginSpecStore = createPluginSpecStore(
       context.pluginStore,
       migratedDefinition,
     );
 
     const definitionWithPluginMigrations = runPluginMigrations(
       migratedDefinition,
-      pluginImplementationStore,
+      pluginSpecStore,
     );
 
     return { definition: definitionWithPluginMigrations, hash };

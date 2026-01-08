@@ -10,9 +10,9 @@ import { pluginConfigSpec } from '../spec/config-spec.js';
 
 export function runPluginMigrations(
   projectDefinition: ProjectDefinition,
-  pluginImplementationStore: PluginSpecStore,
+  pluginSpecStore: PluginSpecStore,
 ): ProjectDefinition {
-  const pluginConfigService = pluginImplementationStore.use(pluginConfigSpec);
+  const pluginConfigService = pluginSpecStore.use(pluginConfigSpec);
   return produce(projectDefinition, (draft) => {
     for (const pluginDefinition of draft.plugins ?? []) {
       const pluginMigrations = pluginConfigService.getMigrations(
