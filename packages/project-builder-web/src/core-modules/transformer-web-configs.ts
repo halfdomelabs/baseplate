@@ -14,7 +14,7 @@ const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
   createModelTransformerWebConfig({
     name: 'password',
     label: 'Password',
-    description: "Hashes the input value of value 'password' using Argon2id",
+    description: 'Hashes the input value using Argon2id',
     getNewTransformer: () => ({
       id: modelTransformerEntityType.generateNewId(),
       type: 'password',
