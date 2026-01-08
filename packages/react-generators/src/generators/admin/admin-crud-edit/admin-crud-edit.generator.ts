@@ -317,7 +317,7 @@ export const adminCrudEditGenerator = createGenerator({
         query: ${editQueryVariable},
         variables: { id },
       })
-      .then(({ data }) => (data?.${modelGraphqlById}.name ? data.${modelGraphqlById}.name : ${defaultCrumbExpression}))
+      .then(({ data }) => (data?.${modelGraphqlById}.${nameField} ? data.${modelGraphqlById}.${nameField} : ${defaultCrumbExpression}))
       .catch(() => ${defaultCrumbExpression})`,
               contextFields: ['apolloClient'],
               paramsFields: ['id'],
