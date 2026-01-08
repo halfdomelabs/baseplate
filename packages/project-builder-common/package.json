@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-common",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "description": "Holds common packages for plugins and generators",
   "keywords": [
     "common",

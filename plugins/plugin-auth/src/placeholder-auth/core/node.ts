@@ -1,7 +1,7 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -13,37 +13,35 @@ import {
   placeholderReactAuthGenerator,
 } from './generators/index.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
-        const authDefinition = getAuthPluginDefinition(projectDefinition);
+    appCompiler.compilers.push(
+      {
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ projectDefinition, appCompiler }) => {
+          const authDefinition = getAuthPluginDefinition(projectDefinition);
 
-        appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
-          authModule: placeholderAuthModuleGenerator({}),
-        });
+          appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
+            authModule: placeholderAuthModuleGenerator({}),
+          });
+        },
       },
-    });
-
-    // register web compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: webAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          reactAuth: placeholderReactAuthGenerator({}),
-          authHooks: placeholderAuthHooksGenerator({}),
-        });
+      {
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler }) => {
+          appCompiler.addRootChildren({
+            reactAuth: placeholderReactAuthGenerator({}),
+            authHooks: placeholderAuthHooksGenerator({}),
+          });
+        },
       },
-    });
-
-    return {};
+    );
   },
 });

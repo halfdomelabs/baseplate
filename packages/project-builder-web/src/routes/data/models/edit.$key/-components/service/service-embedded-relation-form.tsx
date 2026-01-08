@@ -107,7 +107,7 @@ function ServiceEmbeddedRelationForm({
 
   const foreignTransformerOptions =
     relation?.model.service.transformers.map((transformer) => ({
-      label: ModelTransformerUtils.getTransformName(
+      label: ModelTransformerUtils.getTransformerName(
         definitionContainer,
         transformer,
         pluginContainer,

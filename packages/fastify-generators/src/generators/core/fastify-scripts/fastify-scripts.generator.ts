@@ -1,8 +1,4 @@
-import {
-  nodeProvider,
-  packageScope,
-  renderRawTemplateFileAction,
-} from '@baseplate-dev/core-generators';
+import { nodeProvider, packageScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -11,7 +7,6 @@ import {
 import { z } from 'zod';
 
 import { fastifyOutputProvider } from '../fastify/index.js';
-import { CORE_FASTIFY_SCRIPTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -27,17 +22,15 @@ export const fastifyScriptsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: CORE_FASTIFY_SCRIPTS_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
-        paths: CORE_FASTIFY_SCRIPTS_GENERATED.paths.provider,
       },
       exports: {
         fastifyScripts: fastifyScriptsProvider.export(packageScope),
       },
-      run({ node, fastifyOutput, paths }) {
+      run({ node, fastifyOutput }) {
         node.scripts.mergeObj({
           'script:run': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
           'script:dev': [
@@ -49,17 +42,9 @@ export const fastifyScriptsGenerator = createGenerator({
           providers: {
             fastifyScripts: {
               getScriptDirectory() {
-                return 'scripts';
+                return 'src/scripts';
               },
             },
-          },
-          build: async (builder) => {
-            await builder.apply(
-              renderRawTemplateFileAction({
-                template: CORE_FASTIFY_SCRIPTS_GENERATED.templates.tsconfig,
-                destination: paths.tsconfig,
-              }),
-            );
           },
         };
       },

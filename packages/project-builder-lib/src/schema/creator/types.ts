@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { PluginImplementationStore } from '#src/plugins/index.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type {
   RefContextType,
   WithEntType,
@@ -20,7 +20,7 @@ export interface DefinitionSchemaCreatorOptions {
   /**
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
-  plugins: PluginImplementationStore;
+  plugins: PluginSpecStore;
   /**
    * If true, the schema will be transformed to include references.
    *
@@ -45,7 +45,7 @@ export interface DefinitionSchemaParserContext {
   /**
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
-  plugins: PluginImplementationStore;
+  plugins: PluginSpecStore;
   /**
    * If true, the schema will be transformed to include references.
    */

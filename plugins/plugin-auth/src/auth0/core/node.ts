@@ -1,7 +1,7 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
@@ -16,50 +16,48 @@ import {
   reactAuth0Generator,
 } from '../generators/index.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
-        const auth = getAuthPluginDefinition(projectDefinition);
+    appCompiler.compilers.push(
+      {
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ projectDefinition, appCompiler }) => {
+          const auth = getAuthPluginDefinition(projectDefinition);
 
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          auth0Module: auth0ModuleGenerator({
-            includeManagement: true,
-          }),
-        });
+          appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+            auth0Module: auth0ModuleGenerator({
+              includeManagement: true,
+            }),
+          });
+        },
       },
-    });
+      {
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler, projectDefinition }) => {
+          const auth = getAuthPluginDefinition(projectDefinition);
 
-    // register web compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: webAppEntryType,
-      compile: ({ appCompiler, projectDefinition }) => {
-        const auth = getAuthPluginDefinition(projectDefinition);
-
-        appCompiler.addRootChildren({
-          auth: reactAuth0Generator({}),
-          authHooks: auth0HooksGenerator({
-            authRoles: auth.roles.map((role) => role.name),
-          }),
-          auth0Apollo: auth0ApolloGenerator({}),
-          auth0Callback: reactRoutesGenerator({
-            name: 'auth',
-            children: {
-              auth: auth0PagesGenerator({}),
-            },
-          }),
-        });
+          appCompiler.addRootChildren({
+            auth: reactAuth0Generator({}),
+            authHooks: auth0HooksGenerator({
+              authRoles: auth.roles.map((role) => role.name),
+            }),
+            auth0Apollo: auth0ApolloGenerator({}),
+            auth0Callback: reactRoutesGenerator({
+              name: 'auth',
+              children: {
+                auth: auth0PagesGenerator({}),
+              },
+            }),
+          });
+        },
       },
-    });
-
-    return {};
+    );
   },
 });

@@ -65,8 +65,8 @@ function PluginConfigPage(): React.JSX.Element {
       return;
     }
 
-    const pluginSpec = pluginContainer.getPluginSpec(webConfigSpec);
-    const webConfigComponent = pluginSpec.getWebConfigComponent(key);
+    const pluginSpec = pluginContainer.use(webConfigSpec);
+    const webConfigComponent = pluginSpec.components.get(key);
     if (webConfigComponent) {
       return webConfigComponent;
     }
@@ -76,9 +76,7 @@ function PluginConfigPage(): React.JSX.Element {
       definitionContainer.definition,
     );
 
-    return newPluginContainer
-      .getPluginSpec(webConfigSpec)
-      .getWebConfigComponent(key);
+    return newPluginContainer.use(webConfigSpec).components.get(key);
   }, [
     key,
     schemaParserContext,

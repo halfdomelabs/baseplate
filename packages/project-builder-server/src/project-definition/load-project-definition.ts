@@ -4,7 +4,7 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 
 import {
-  createPluginImplementationStore,
+  createPluginSpecStore,
   runPluginMigrations,
   runSchemaMigrations,
 } from '@baseplate-dev/project-builder-lib';
@@ -54,14 +54,14 @@ export async function loadProjectDefinition(
       );
     }
 
-    const pluginImplementationStore = createPluginImplementationStore(
+    const pluginSpecStore = createPluginSpecStore(
       context.pluginStore,
       migratedDefinition,
     );
 
     const definitionWithPluginMigrations = runPluginMigrations(
       migratedDefinition,
-      pluginImplementationStore,
+      pluginSpecStore,
     );
 
     return { definition: definitionWithPluginMigrations, hash };

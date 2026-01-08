@@ -4,13 +4,7 @@ import type {
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
-import { webConfigSpec } from '@baseplate-dev/project-builder-lib';
-import {
-  adminCrudActionWebSpec,
-  adminCrudColumnWebSpec,
-  adminCrudInputWebSpec,
-  modelTransformerWebSpec,
-} from '@baseplate-dev/project-builder-lib/web';
+import { WEB_CORE_MODULES } from '#src/core-modules/index.js';
 
 import { loadPluginModule } from './module-federation.js';
 
@@ -32,13 +26,7 @@ export async function createWebSchemaParserContext(
           };
         }),
       ),
-      builtinSpecImplementations: [
-        webConfigSpec,
-        modelTransformerWebSpec,
-        adminCrudInputWebSpec,
-        adminCrudActionWebSpec,
-        adminCrudColumnWebSpec,
-      ],
+      coreModules: WEB_CORE_MODULES,
     },
   };
 }

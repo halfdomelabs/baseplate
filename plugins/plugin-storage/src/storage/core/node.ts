@@ -1,7 +1,8 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
+  pluginAppCompiler,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -15,100 +16,100 @@ import type { StoragePluginDefinition } from './schema/plugin-definition.js';
 
 import { fileCategoriesGenerator } from './generators/file-categories/file-categories.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
-    // register backend compilers
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByKeyOrThrow(
-          projectDefinition,
-          pluginKey,
-        ) as StoragePluginDefinition;
+    appCompiler.compilers.push(
+      // register backend compilers
+      pluginAppCompiler({
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
+          const storage = PluginUtils.configByKeyOrThrow(
+            projectDefinition,
+            pluginKey,
+          ) as StoragePluginDefinition;
 
-        // add feature providers
-        appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
-          storage: storageModuleGenerator({
-            s3Adapters: storage.s3Adapters.map((a) => ({
-              name: a.name,
-              bucketConfigVar: a.bucketConfigVar,
-              hostedUrlConfigVar: a.hostedUrlConfigVar,
-            })),
-          }),
-        });
-
-        // Add file categories
-        const transformers = projectDefinition.models.flatMap((m) =>
-          m.service.transformers
-            .filter((m): m is FileTransformerDefinition => m.type === 'file')
-            .map((t) => {
-              const relation = m.model.relations?.find(
-                (r) => r.id === t.fileRelationRef,
-              );
-              if (!relation) {
-                throw new Error(`File transformer ${t.id} has no relation`);
-              }
-              return {
-                model: m,
-                transformer: t,
-                relation,
-              };
-            }),
-        );
-
-        const transformersByFeature = groupBy(
-          transformers,
-          (t) => t.model.featureRef,
-        );
-
-        for (const [featureId, transformers] of Object.entries(
-          transformersByFeature,
-        )) {
-          appCompiler.addChildrenToFeature(featureId, {
-            fileCategories: fileCategoriesGenerator({
-              featureId,
-              fileCategories: transformers.map((t) => ({
-                name: t.transformer.category.name,
-                maxFileSizeMb: t.transformer.category.maxFileSizeMb,
-                adapter: definitionContainer.nameFromId(
-                  t.transformer.category.adapterRef,
-                ),
-                authorize: {
-                  uploadRoles: t.transformer.category.authorize.uploadRoles.map(
-                    (r) => definitionContainer.nameFromId(r),
-                  ),
-                },
-                referencedByRelation: t.relation.foreignRelationName,
+          // add feature providers
+          appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
+            storage: storageModuleGenerator({
+              s3Adapters: storage.s3Adapters.map((a) => ({
+                name: a.name,
+                bucketConfigVar: a.bucketConfigVar,
+                hostedUrlConfigVar: a.hostedUrlConfigVar,
               })),
             }),
           });
-        }
-      },
-    });
 
-    // register web compilers
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: webAppEntryType,
-      compile: ({ appCompiler, appDefinition }) => {
-        if (
-          !appDefinition.includeUploadComponents &&
-          !appDefinition.adminApp?.enabled
-        ) {
-          return;
-        }
+          // Add file categories
+          const transformers = projectDefinition.models.flatMap((m) =>
+            m.service.transformers
+              .filter((m): m is FileTransformerDefinition => m.type === 'file')
+              .map((t) => {
+                const relation = m.model.relations?.find(
+                  (r) => r.id === t.fileRelationRef,
+                );
+                if (!relation) {
+                  throw new Error(`File transformer ${t.id} has no relation`);
+                }
+                return {
+                  model: m,
+                  transformer: t,
+                  relation,
+                };
+              }),
+          );
 
-        appCompiler.addRootChildren({
-          uploadComponents: uploadComponentsGenerator({}),
-        });
-      },
-    });
+          const transformersByFeature = groupBy(
+            transformers,
+            (t) => t.model.featureRef,
+          );
 
-    return {};
+          for (const [featureId, transformers] of Object.entries(
+            transformersByFeature,
+          )) {
+            appCompiler.addChildrenToFeature(featureId, {
+              fileCategories: fileCategoriesGenerator({
+                featureId,
+                fileCategories: transformers.map((t) => ({
+                  name: t.transformer.category.name,
+                  maxFileSizeMb: t.transformer.category.maxFileSizeMb,
+                  adapter: definitionContainer.nameFromId(
+                    t.transformer.category.adapterRef,
+                  ),
+                  authorize: {
+                    uploadRoles:
+                      t.transformer.category.authorize.uploadRoles.map((r) =>
+                        definitionContainer.nameFromId(r),
+                      ),
+                  },
+                  referencedByRelation: t.relation.foreignRelationName,
+                })),
+              }),
+            });
+          }
+        },
+      }),
+      // register web compilers
+      pluginAppCompiler({
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler, appDefinition }) => {
+          if (
+            !appDefinition.includeUploadComponents &&
+            !appDefinition.adminApp?.enabled
+          ) {
+            return;
+          }
+
+          appCompiler.addRootChildren({
+            uploadComponents: uploadComponentsGenerator({}),
+          });
+        },
+      }),
+    );
   },
 });

@@ -1,5 +1,23 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.5.0
+
+### Patch Changes
+
+- [#730](https://github.com/halfdomelabs/baseplate/pull/730) [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9) Thanks [@kingston](https://github.com/kingston)! - Add `sync-file` command for incrementally applying generated files
+  - New CLI command: `pnpm baseplate sync-file <project> <app> <files...>`
+  - New MCP action: `sync-file` for programmatic access
+  - Allows applying specific generated files without performing a full sync
+  - Writes matching files to both working directory and generated folder
+  - Useful for incrementally fixing generators one file at a time
+
+- Updated dependencies [[`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9)]:
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/project-builder-server@0.5.0
+  - @baseplate-dev/project-builder-web@0.5.0
+  - @baseplate-dev/project-builder-common@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes

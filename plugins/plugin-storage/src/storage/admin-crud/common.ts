@@ -1,20 +1,19 @@
 import {
   adminCrudInputSpec,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import { createAdminCrudFileInputSchema } from './types.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'common',
   dependencies: {
     adminCrudInput: adminCrudInputSpec,
   },
-  exports: {},
   initialize: ({ adminCrudInput }) => {
-    adminCrudInput.registerAdminCrudInput({
+    adminCrudInput.inputs.add({
       name: 'file',
       createSchema: createAdminCrudFileInputSchema,
     });
-    return {};
   },
 });

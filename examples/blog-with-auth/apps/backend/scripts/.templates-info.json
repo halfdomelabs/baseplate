@@ -1,7 +1,0 @@
-{
-  "tsconfig.json": {
-    "generator": "@baseplate-dev/fastify-generators#core/fastify-scripts",
-    "instanceData": {},
-    "template": "tsconfig"
-  }
-}

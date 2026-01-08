@@ -65,14 +65,12 @@ function setPluginConfig(
   if (isNewPlugin) {
     // When adding a new plugin, we need to create an implementation store
     // that includes this plugin so its migrations are properly registered
-    const pluginImplementationStore =
-      createPluginImplementationStoreWithNewPlugins(
-        definitionContainer.parserContext.pluginStore,
-        [plugin],
-        definitionContainer.definition,
-      );
-    const pluginConfigService =
-      pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+    const pluginSpecStore = createPluginImplementationStoreWithNewPlugins(
+      definitionContainer.parserContext.pluginStore,
+      [plugin],
+      definitionContainer.definition,
+    );
+    const pluginConfigService = pluginSpecStore.use(pluginConfigSpec);
     const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
       plugin.key,
     );
