@@ -8,7 +8,7 @@ import { deserializeSchemaWithTransformedReferences } from './deserialize-schema
 import { createEntityType } from './types.js';
 
 describe('deserializeSchemaWithTransformedReferences', () => {
-  const pluginStore = new PluginImplementationStore({});
+  const pluginStore = new PluginImplementationStore();
 
   it('should work with a no-reference object', () => {
     const schemaCreator = definitionSchema((_ctx) =>

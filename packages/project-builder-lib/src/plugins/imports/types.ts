@@ -59,8 +59,8 @@ export interface PluginModule<TImports extends PluginSpecMap = PluginSpecMap> {
  */
 export function createPluginModule<TImports extends PluginSpecMap>(
   config: PluginModule<TImports>,
-): PluginModule<TImports> {
-  return config;
+): PluginModule {
+  return config as PluginModule;
 }
 
 /**

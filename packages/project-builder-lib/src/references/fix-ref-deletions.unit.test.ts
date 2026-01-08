@@ -9,7 +9,7 @@ import { fixRefDeletions } from './fix-ref-deletions.js';
 import { createEntityType } from './types.js';
 
 describe('fixRefDeletions', () => {
-  const pluginStore = new PluginImplementationStore({});
+  const pluginStore = new PluginImplementationStore();
   it('should work with a no-reference object', () => {
     const schemaCreator = definitionSchema(() =>
       z.object({

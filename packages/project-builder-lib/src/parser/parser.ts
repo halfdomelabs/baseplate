@@ -25,7 +25,7 @@ import { createProjectDefinitionSchema } from '#src/schema/project-definition.js
 
 import type { SchemaParserContext } from './types.js';
 
-// [TODO: 2025-01-01] Rename createPluginImplementationStore to PluginImplementationStore
+// [TODO: 2026-06-01] Rename createPluginImplementationStore to PluginImplementationStore
 
 /**
  * Creates a plugin implementation store from the project definition and plugin store,

@@ -18,7 +18,7 @@ import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {
   describe('Integration Tests (deserializeSchemaWithTransformedReferences)', () => {
-    const pluginStore = new PluginImplementationStore({});
+    const pluginStore = new PluginImplementationStore();
 
     describe('Basic Schema Patterns', () => {
       it('should handle schema with no references', () => {

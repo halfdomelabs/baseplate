@@ -1,113 +1,95 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
-import type { PluginWithPlatformModules } from './loader.js';
-import type { PluginModule } from './types.js';
+import type { PluginModuleWithKey } from './types.js';
 
 import { createPluginSpec } from '../spec/types.js';
-import {
-  extractPlatformModulesFromPlugins,
-  getOrderedPluginModuleInitializationSteps,
-  initializeOrderedPluginModules,
-} from './loader.js';
+import { initializeOrderedModules, initializePlugins } from './loader.js';
 
-const builtInSpec = createPluginSpec('built-in-spec');
-const spec1 = createPluginSpec('spec-1');
-const spec2 = createPluginSpec('spec-2');
-const spec3 = createPluginSpec('spec-3');
+const spec1 = createPluginSpec('spec-1', {
+  initializer: () => ({
+    init: { value: 'spec1-init' },
+    use: () => ({ value: 'spec1-use' }),
+  }),
+});
 
-function createPlugin({
-  idx,
-  dependencies,
-  exports,
-  initialize,
-}: { idx: number } & Partial<PluginModule>): PluginWithPlatformModules {
+const spec2 = createPluginSpec('spec-2', {
+  initializer: () => ({
+    init: { value: 'spec2-init' },
+    use: () => ({ value: 'spec2-use' }),
+  }),
+});
+
+function createPluginModule(
+  key: string,
+  pluginKey: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dependencies?: Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initialize?: (deps: any, ctx: any) => void,
+): PluginModuleWithKey {
   return {
-    key: `plugin-${idx}`,
-    name: `Plugin ${idx}`,
-    pluginModules: [
-      {
-        key: 'main',
-        module: {
-          dependencies,
-          exports,
-          initialize: initialize ?? (() => ({})),
-        },
-      },
-    ],
+    key,
+    pluginKey,
+    module: {
+      name: key.split('/').pop() ?? key,
+      dependencies,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      initialize: initialize ?? (() => {}),
+    },
   };
 }
 
-describe('getOrderedPluginInitializationSteps', () => {
-  test('should return an array of plugin IDs in the correct order', () => {
-    const plugins = [
-      createPlugin({
-        idx: 1,
-        dependencies: { i1: spec1 },
-        exports: { i2: spec2 },
-      }),
-      createPlugin({
-        idx: 2,
-        dependencies: { built: builtInSpec },
-        exports: { spec: spec1 },
-      }),
-      createPlugin({
-        idx: 3,
-        dependencies: { i1: spec1, i2: spec2 },
-        exports: { i3: spec3 },
-      }),
+describe('initializeOrderedModules', () => {
+  test('should initialize modules and return spec instances', () => {
+    const modules: PluginModuleWithKey[] = [
+      createPluginModule('plugin-1/main', 'plugin-1', { s1: spec1 }),
+      createPluginModule('plugin-2/main', 'plugin-2', { s2: spec2 }),
     ];
-    const initialSpecImplementations = { [builtInSpec.name]: {} };
-    const expectedOrder = ['plugin-2/main', 'plugin-1/main', 'plugin-3/main'];
 
-    const pluginModules = extractPlatformModulesFromPlugins(plugins);
+    const instances = initializeOrderedModules(modules);
 
-    expect(
-      getOrderedPluginModuleInitializationSteps(
-        pluginModules,
-        initialSpecImplementations,
+    expect(instances.size).toBe(2);
+    expect(instances.has('spec-1')).toBe(true);
+    expect(instances.has('spec-2')).toBe(true);
+  });
+
+  test('should call initialize with resolved dependencies', () => {
+    const initializeSpy = vi.fn();
+    const modules: PluginModuleWithKey[] = [
+      createPluginModule(
+        'plugin-1/main',
+        'plugin-1',
+        { s1: spec1 },
+        initializeSpy,
       ),
-    ).toEqual(expectedOrder);
+    ];
+
+    initializeOrderedModules(modules);
+
+    expect(initializeSpy).toHaveBeenCalledWith(
+      { s1: { value: 'spec1-init' } },
+      { moduleKey: 'plugin-1/main', pluginKey: 'plugin-1' },
+    );
   });
 });
 
-describe('initializeOrderedPlugins', () => {
-  test('should initialize plugins and return the implementations', () => {
-    const builtInImplementation = { a: Symbol() };
-    const implementation1 = { a: Symbol() };
-    const implementation2 = { a: Symbol() };
-    const initialSpecImplementations = {
-      [builtInSpec.name]: builtInImplementation,
-    };
-    const plugins = [
-      createPlugin({
-        idx: 1,
-        dependencies: { builtIn: builtInSpec },
-        exports: { exp: spec1 },
-        initialize: (deps) => {
-          expect(deps.builtIn).toBe(builtInImplementation);
-          return { exp: implementation1 };
-        },
-      }),
-      createPlugin({
-        idx: 2,
-        dependencies: { i1: spec1 },
-        exports: { i2: spec2 },
-        initialize: (deps) => {
-          expect(deps.i1).toBe(implementation1);
-          return { i2: implementation2 };
-        },
-      }),
+describe('initializePlugins', () => {
+  test('should return a PluginImplementationStore', () => {
+    const modules: PluginModuleWithKey[] = [
+      createPluginModule('plugin-1/main', 'plugin-1', { s1: spec1 }),
     ];
-    const expectedStore = {
-      [builtInSpec.name]: builtInImplementation,
-      [spec1.name]: implementation1,
-      [spec2.name]: implementation2,
-    };
 
-    const pluginModules = extractPlatformModulesFromPlugins(plugins);
+    const store = initializePlugins(modules);
 
-    expect(
-      initializeOrderedPluginModules(pluginModules, initialSpecImplementations),
-    ).toEqual(expectedStore);
+    expect(store.use(spec1)).toEqual({ value: 'spec1-use' });
+  });
+
+  test('should throw on duplicate module keys', () => {
+    const modules: PluginModuleWithKey[] = [
+      createPluginModule('plugin-1/main', 'plugin-1'),
+      createPluginModule('plugin-1/main', 'plugin-1'), // Duplicate
+    ];
+
+    expect(() => initializePlugins(modules)).toThrow(/duplicate/i);
   });
 });

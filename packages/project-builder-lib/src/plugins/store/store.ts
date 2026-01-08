@@ -1,6 +1,6 @@
 import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
 
-// [TODO: 2025-01-01] Rename PluginImplementationStore to PluginSpecStore
+// [TODO: 2026-06-01] Rename PluginImplementationStore to PluginSpecStore
 
 /**
  * Store for managing plugin spec instances with lazy initialization.
@@ -38,7 +38,7 @@ export class PluginImplementationStore {
     return specInstance.use();
   }
 
-  // [TODO: 2025-01-01] Remove this method
+  // [TODO: 2026-06-01] Remove this method
   getPluginSpec<TInit extends object, TUse extends object>(
     spec: PluginSpec<TInit, TUse>,
   ): TUse {
