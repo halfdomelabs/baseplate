@@ -117,6 +117,270 @@ src/
 - Configuration changes should be made through Baseplate UI when possible
 - Look at similar features for implementation patterns
 
+## Module Conventions (Admin Users Example)
+
+This section documents the established patterns for building CRUD modules, using the admin users module as a reference.
+
+### Frontend Route Structure (`apps/admin-web/src/routes/admin/auth/users/`)
+
+```
+users/
+├── index.tsx              # List page (e.g., UserListPage)
+├── new.tsx                # Create page (e.g., UserCreatePage)
+├── $id.tsx                # Edit/detail page (e.g., UserEditPage)
+├── route.tsx              # Route config with breadcrumb
+├── -components/           # Private components (prefixed with -)
+│   ├── user-table.tsx     # Table component
+│   ├── user-edit-form.tsx # Shared form for create/edit
+│   └── *-dialog.tsx       # Modal dialogs (e.g., role-manager-dialog.tsx)
+└── -schemas/              # Private UI validation schemas (prefixed with -)
+    └── user-form.schema.ts # Zod schema for React Hook Form
+
+```
+
+**Naming Conventions:**
+
+- Private folders use `-` prefix (`-components/`, `-schemas/`) to exclude from routing
+- Component files use kebab-case: `user-table.tsx`, `password-reset-dialog.tsx`
+- Form schemas named `{entity}-schema.ts` with `{Entity}FormData` type export
+- Dialog components named `{action}-dialog.tsx` (e.g., `role-manager-dialog.tsx`)
+
+### GraphQL Fragment Naming Pattern (Relay Style)
+
+Fragments must strictly follow the convention `{ComponentName}_{propName}`. This ensures the fragment describes exactly the data required for a specific prop.
+
+```typescript
+// Component: UserTable (takes prop 'users')
+// File: user-table.tsx
+export const userTableUsersFragment = graphql(`
+  fragment UserTable_users on User { ... }
+`);
+
+// Component: UserEditForm (takes prop 'defaultValues')
+// File: user-edit-form.tsx
+export const userEditFormDefaultValuesFragment = graphql(`
+  fragment UserEditForm_defaultValues on User { ... }
+`);
+
+// Component: RoleManagerDialog (takes prop 'user')
+// File: role-manager-dialog.tsx
+export const roleManagerDialogUserFragment = graphql(`
+  fragment RoleManagerDialog_user on User { ... }
+`);
+```
+
+**Query/Mutation Naming:**
+
+- Queries: `{PageName}Query` → `UserListPage`, `UserEditPage`
+- Mutations: `{PageName}{Action}Mutation` → `UserListPageDeleteUser`, `UserEditPageUpdate`, `UserCreatePageCreate`
+
+### Fragment Composition Pattern
+
+Parent components must manually compose child fragments into their queries to avoid under-fetching.
+
+```typescript
+// user-table.tsx
+// Table fragment composes the fragments required by the dialogs it renders
+export const userTableUsersFragment = graphql(
+  `
+    fragment UserTable_users on User {
+      id
+      email
+      name
+      ...PasswordResetDialog_user
+      ...RoleManagerDialog_user
+    }
+  `,
+  [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
+);
+
+// user-list-page.tsx (index.tsx)
+// Page query composes the table fragment
+const userListPageQuery = graphql(
+  `
+    query UserListPageQuery {
+      users {
+        ...UserTable_users
+      }
+    }
+  `,
+  [userTableUsersFragment],
+);
+```
+
+### Form Component & Schema Pattern
+
+**Zod Schema Separation:**
+
+- **Frontend Schemas (`-schemas/`):** Define UI state validation (e.g., "confirm password matches", "accept terms checkbox"). These are passed to `useForm`.
+- **Backend Schemas (`services/`):** Define data integrity validation.
+
+```typescript
+// -schemas/user-form.schema.ts
+export const userFormSchema = z.object({
+  email: z.string().email(),
+  // UI-only validation that doesn't exist on backend model
+  confirmEmail: z.string()
+}).refine((data) => data.email === data.confirmEmail, { ... });
+
+export type UserFormData = z.infer<typeof userFormSchema>;
+
+```
+
+**Component Implementation:**
+Shared form components accept `submitData` callback and optional `defaultValues` fragment.
+
+```typescript
+interface UserEditFormProps {
+  submitData: (data: UserFormData) => Promise<void>;
+  // Prop name 'defaultValues' matches fragment 'UserEditForm_defaultValues'
+  defaultValues?: FragmentOf<typeof userEditFormDefaultValuesFragment>;
+}
+
+export function UserEditForm({
+  submitData,
+  defaultValues,
+}: UserEditFormProps): ReactElement {
+  // 1. Unmask data
+  const initialValuesData = readFragment(
+    userEditFormDefaultValuesFragment,
+    defaultValues,
+  );
+
+  // 2. Init form with UI Schema
+  const { handleSubmit } = useForm<UserFormData>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: initialValuesData,
+  });
+  // ...
+}
+```
+
+### Page Component Patterns
+
+**List Page (`index.tsx`):**
+
+```typescript
+const userListPageQuery = graphql(`...`, [userTableUsersFragment]);
+
+export const Route = createFileRoute('/admin/auth/users/')({
+  component: UserListPage,
+  loader: ({ context: { preloadQuery } }) => ({
+    // Start fetch immediately
+    queryRef: preloadQuery(userListPageQuery),
+  }),
+});
+
+function UserListPage(): ReactElement {
+  const { queryRef } = Route.useLoaderData();
+  const { data } = useReadQuery(queryRef);
+
+  // Pass data to component matching the fragment/prop name
+  return <UserTable users={data.users} />;
+}
+
+```
+
+**Create Page (`new.tsx`):**
+
+```typescript
+// Uses cache.evict for list invalidation after create
+const [createUser] = useMutation(createMutation, {
+  update: (cache) => {
+    cache.evict({ fieldName: 'users' });
+    cache.gc();
+  },
+});
+```
+
+### Dialog Component Pattern
+
+Self-contained dialogs define their own fragments and mutations:
+
+```typescript
+// Fragment Name: RoleManagerDialog_user
+// Prop Name: user
+export const roleManagerDialogUserFragment = graphql(`
+  fragment RoleManagerDialog_user on User {
+    id
+    name
+    roles {
+      role
+    }
+  }
+`);
+
+interface RoleManagerDialogProps {
+  user: FragmentOf<typeof roleManagerDialogUserFragment>;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function RoleManagerDialog({
+  user,
+  open,
+  onOpenChange,
+}: RoleManagerDialogProps): ReactElement {
+  const userData = readFragment(roleManagerDialogUserFragment, user);
+  // ...
+}
+```
+
+### Backend Module Structure (`apps/backend/src/modules/auth/`)
+
+```
+auth/
+├── index.ts                    # Module exports
+├── schema/
+│   └── ...                     # Pothos definitions
+├── services/
+│   └── user.data-service.ts    # Data operations
+
+```
+
+**Data Service Pattern (Backend Validation):**
+Backend services use Zod for input sanitization and DB constraints, distinct from UI schemas.
+
+```typescript
+// Backend Input Schema (no UI logic like 'confirmEmail')
+export const userInputFields = {
+  name: scalarField(z.string().nullish()),
+  email: scalarField(z.string()),
+};
+
+export const createUser = defineCreateOperation({
+  model: 'user',
+  fields: userInputFields,
+  create: async ({ tx, data, query }) => tx.user.create({ data, ...query }),
+});
+```
+
+**Mutation Pattern:**
+Adheres to Relay Mutation specs (Input/Payload objects).
+
+```typescript
+builder.mutationField('updateUser', (t) =>
+  t.fieldWithInputPayload({
+    input: {
+      id: t.input.field({ required: true, type: 'Uuid' }),
+      data: t.input.field({ required: true, type: updateUserDataInputType }),
+    },
+    payload: { user: t.payload.field({ type: userObjectType }) },
+    resolve: async (root, { input: { id, data } }, context, info) => {
+      // ... implementation
+    },
+  }),
+);
+```
+
+### Cache Update Strategies Summary
+
+| Action | Strategy                     | Example                                     |
+| ------ | ---------------------------- | ------------------------------------------- |
+| Update | Return entity with fragments | Mutation returns `{ user { ...Fragment } }` |
+| Create | `cache.evict` list field     | `cache.evict({ fieldName: 'users' })`       |
+| Delete | `cache.evict` + identify     | `cache.evict({ id: cache.identify(user) })` |
+
 ## Essential Commands
 
 ```bash

@@ -28,6 +28,7 @@ vi.mock('@baseplate-dev/project-builder-server', () => ({
     updateMetadataForPackage: vi.fn(),
     getMetadata: vi.fn(() => Promise.resolve({ packages: {} })),
   })),
+  SERVER_CORE_MODULES: [],
 }));
 
 // Mock sync

@@ -1,54 +1,98 @@
 import type { PluginMetadataWithPaths } from '../metadata/types.js';
-import type {
-  InitializedPluginSpec,
-  PluginSpec,
-  PluginSpecImplementationFromSpec,
-  PluginSpecWithInitializer,
-} from '../spec/types.js';
+import type { InferPluginSpecInit, PluginSpec } from '../spec/types.js';
 
-export type PluginSpecMap = Record<string, PluginSpec>;
+/**
+ * A map of spec names to plugin specs.
+ */
+type PluginSpecMap = Record<string, PluginSpec>;
 
-export type ExtractPluginImplementationFromSpecMap<T extends PluginSpecMap> = {
-  [TKey in keyof T]: PluginSpecImplementationFromSpec<T[TKey]>;
+/**
+ * Extracts init interfaces from a spec map.
+ * Used for providing dependencies to plugin initializers.
+ */
+type ExtractInitFromSpecMap<T extends PluginSpecMap> = {
+  [TKey in keyof T]: InferPluginSpecInit<T[TKey]>;
 };
 
-export interface PluginInitializerContext {
+/**
+ * Context provided to plugin module initializers.
+ */
+export interface ModuleContext {
+  /** Full module key: "{pluginKey}/{moduleDir}/{name}" or "core/{platform}/{name}" */
+  moduleKey: string;
+  /** The plugin key (or "core" for core modules) */
   pluginKey: string;
 }
 
-export interface PluginPlatformModule<
-  TImports extends PluginSpecMap = PluginSpecMap,
-  TExports extends PluginSpecMap = PluginSpecMap,
-> {
+/**
+ * A plugin module defines how a plugin initializes and registers with specs.
+ */
+export interface PluginModule<TImports extends PluginSpecMap = PluginSpecMap> {
+  /** Unique name for this module within its plugin/core directory */
+  name: string;
+  /** Specs this module depends on (will be resolved before initialize is called) */
   dependencies?: TImports;
-  exports?: TExports;
+  /**
+   * Initialize the plugin module and register with the dependent specs.
+   */
   initialize: (
-    dependencies: ExtractPluginImplementationFromSpecMap<TImports>,
-    context: PluginInitializerContext,
-  ) => ExtractPluginImplementationFromSpecMap<TExports>;
+    dependencies: ExtractInitFromSpecMap<TImports>,
+    context: ModuleContext,
+  ) => void;
 }
 
-export function createPlatformPluginExport<
-  TImports extends PluginSpecMap,
-  TExports extends PluginSpecMap,
->(
-  config: PluginPlatformModule<TImports, TExports>,
-): PluginPlatformModule<TImports, TExports> {
-  return config;
+/**
+ * Creates a plugin module export.
+ *
+ * @example
+ * ```typescript
+ * export default createPluginModule({
+ *   name: 'node',
+ *   dependencies: {
+ *     config: pluginConfigSpec,
+ *   },
+ *   initialize: ({ config }, ctx) => {
+ *     config.registerSchemaCreator(ctx.pluginKey, createSchema);
+ *   },
+ * });
+ * ```
+ */
+export function createPluginModule<TImports extends PluginSpecMap>(
+  config: PluginModule<TImports>,
+): PluginModule {
+  return config as PluginModule;
 }
 
-export interface KeyedPluginPlatformModule {
+/**
+ * A plugin module with a module directory.
+ */
+export interface PluginModuleWithDirectory {
+  /** The module directory within the plugin (e.g., "core", "admin") */
+  directory: string;
+  /** The module itself */
+  module: PluginModule;
+}
+
+/**
+ * A plugin module with a key and plugin key metadata.
+ */
+export interface PluginModuleWithKey {
+  /** The unique key for this module (e.g., "core/server/auth-compiler" or "auth/auth0/core/web") */
   key: string;
-  module: PluginPlatformModule;
+  /** The plugin key (or "core" for core modules) */
+  pluginKey: string;
+  /**
+   * The module itself
+   */
+  module: PluginModule;
 }
-
+/**
+ * The plugin store containing all available plugins and additional core modules (project-builder-lib core modules are always included).
+ */
 export interface PluginStore {
   availablePlugins: {
     metadata: PluginMetadataWithPaths;
-    modules: KeyedPluginPlatformModule[];
+    modules: PluginModuleWithDirectory[];
   }[];
-  builtinSpecImplementations?: (
-    | InitializedPluginSpec
-    | PluginSpecWithInitializer
-  )[];
+  coreModules: PluginModuleWithKey[];
 }

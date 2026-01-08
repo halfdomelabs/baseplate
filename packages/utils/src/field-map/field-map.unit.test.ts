@@ -371,6 +371,24 @@ describe('FieldMap', () => {
     });
   });
 
+  describe('NamedArrayToMapFieldContainer', () => {
+    it('should return a map keyed by name', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArrayToMap<{ name: string; value: string }>(),
+      }));
+
+      fieldMap.items.add({ name: 'item1', value: 'value1' }, 'source1');
+      fieldMap.items.add({ name: 'item2', value: 'value2' }, 'source1');
+
+      expect(fieldMap.getValues()).toEqual({
+        items: new Map([
+          ['item1', { name: 'item1', value: 'value1' }],
+          ['item2', { name: 'item2', value: 'value2' }],
+        ]),
+      });
+    });
+  });
+
   describe('Mixed field types', () => {
     it('should handle multiple field types together', () => {
       const fieldMap = createFieldMap((t) => ({

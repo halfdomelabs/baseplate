@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -7,13 +7,12 @@ import { StorageDefinitionEditor } from './components/storage-definition-editor.
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, StorageDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, StorageDefinitionEditor);
   },
 });

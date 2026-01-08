@@ -10,12 +10,10 @@ import { modelTransformerSpec } from './model-transformer-spec.js';
 export const createTransformerSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType },
   (ctx, slots) => {
-    const transformers = ctx.plugins
-      .getPluginSpec(modelTransformerSpec)
-      .getModelTransformers();
+    const { transformers } = ctx.plugins.use(modelTransformerSpec);
     return z.discriminatedUnion(
       'type',
-      Object.values(transformers).map((transformer) =>
+      [...transformers.values()].map((transformer) =>
         transformer.createSchema(ctx, slots),
       ) as [typeof baseTransformerSchema],
     );

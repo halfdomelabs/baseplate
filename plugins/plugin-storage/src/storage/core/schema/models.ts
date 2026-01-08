@@ -4,7 +4,7 @@ import type {
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
-import { authModelConfigSpec } from '@baseplate-dev/project-builder-lib';
+import { authModelsSpec } from '@baseplate-dev/project-builder-lib';
 
 import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
@@ -79,11 +79,10 @@ export function createStorageModels(
   { storageFeatureRef }: { storageFeatureRef: string },
   projectDefinitionContainer: ProjectDefinitionContainer,
 ): Record<keyof typeof STORAGE_MODELS, ModelMergerModelInput> {
-  const authModelConfig =
-    projectDefinitionContainer.pluginStore.getPluginSpec(authModelConfigSpec);
-  const userAccountModel = authModelConfig.getUserModel(
+  const authModels = projectDefinitionContainer.pluginStore.use(authModelsSpec);
+  const userAccountModel = authModels.getAuthModelsOrThrow(
     projectDefinitionContainer.definition,
-  );
+  ).user;
   return {
     file: {
       name: STORAGE_MODELS.file,
@@ -95,7 +94,7 @@ export function createStorageModels(
           {
             name: 'uploader',
             references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
-            modelRef: userAccountModel.name,
+            modelRef: userAccountModel,
             foreignRelationName: 'files',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',

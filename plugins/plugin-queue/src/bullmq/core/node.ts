@@ -1,18 +1,18 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import { bullmqGenerator } from './generators/index.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
-    appCompiler.registerAppCompiler({
+    appCompiler.compilers.push({
       pluginKey,
       appType: backendAppEntryType,
       compile: ({ appCompiler }) => {
@@ -21,7 +21,5 @@ export default createPlatformPluginExport({
         });
       },
     });
-
-    return {};
   },
 });

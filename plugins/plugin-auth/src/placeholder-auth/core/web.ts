@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -7,16 +7,12 @@ import { PlaceholderAuthDefinitionEditor } from './components/placeholder-auth-d
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(
-      pluginKey,
-      PlaceholderAuthDefinitionEditor,
-    );
-    return {};
+    webConfig.components.set(pluginKey, PlaceholderAuthDefinitionEditor);
   },
 });

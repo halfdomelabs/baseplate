@@ -28,8 +28,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs/index.js';
-
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -56,14 +54,12 @@ export function FieldDialog({
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
-  const inputWeb = pluginContainer.getPluginSpec(adminCrudInputWebSpec);
+  const inputWeb = pluginContainer.use(adminCrudInputWebSpec);
 
-  const fieldTypeOptions = inputWeb
-    .getInputWebConfigs(BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS)
-    .map((config) => ({
-      label: config.label,
-      value: config.name,
-    }));
+  const fieldTypeOptions = [...inputWeb.inputs.values()].map((config) => ({
+    label: config.label,
+    value: config.name,
+  }));
 
   const form = useForm({
     resolver: zodResolver(fieldSchema),
@@ -91,12 +87,7 @@ export function FieldDialog({
 
   const fieldType = useWatch({ control, name: 'type' });
 
-  const inputWebConfig = fieldType
-    ? inputWeb.getInputWebConfig(
-        fieldType,
-        BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS,
-      )
-    : undefined;
+  const inputWebConfig = fieldType ? inputWeb.inputs.get(fieldType) : undefined;
 
   const WebForm = inputWebConfig?.Form;
 

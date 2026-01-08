@@ -28,8 +28,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS } from './columns/index.js';
-
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -54,10 +52,9 @@ export function ColumnDialog({
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
-  const columnWeb = pluginContainer.getPluginSpec(adminCrudColumnWebSpec);
+  const columnWeb = pluginContainer.use(adminCrudColumnWebSpec);
 
-  const columnTypeOptions = columnWeb
-    .getColumnWebConfigs(BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS)
+  const columnTypeOptions = [...columnWeb.columns.values()]
     .filter(
       (config) => modelRef && config.isAvailableForModel(definition, modelRef),
     )
@@ -93,10 +90,7 @@ export function ColumnDialog({
   const columnType = useWatch({ control, name: 'type' });
 
   const columnWebConfig = columnType
-    ? columnWeb.getColumnWebConfig(
-        columnType,
-        BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS,
-      )
+    ? columnWeb.columns.get(columnType)
     : undefined;
 
   const WebForm = columnWebConfig?.Form;

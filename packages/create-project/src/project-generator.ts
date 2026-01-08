@@ -7,6 +7,7 @@ import type {
 import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
 import {
   generateProjectId,
+  SERVER_CORE_MODULES,
   SyncMetadataController,
   syncProject,
 } from '@baseplate-dev/project-builder-server';
@@ -84,7 +85,10 @@ export async function generateRootPackage(
   );
 
   // Create minimal plugin store (no plugins for initial project)
-  const pluginStore: PluginStore = { availablePlugins: [] };
+  const pluginStore: PluginStore = {
+    availablePlugins: [],
+    coreModules: SERVER_CORE_MODULES,
+  };
 
   // Create parser context
   const context: SchemaParserContext = {

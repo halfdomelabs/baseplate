@@ -81,11 +81,11 @@ function buildQueriesFileForModel(
   const { get, list } = queries;
 
   const authConfig =
-    appBuilder.definitionContainer.pluginStore.getPluginSpecOptional(
-      authConfigSpec,
-    );
+    appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
 
-  const isAuthEnabled = !!authConfig;
+  const isAuthEnabled = !!authConfig.getAuthConfig(
+    appBuilder.projectDefinition,
+  );
 
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
@@ -145,11 +145,11 @@ function buildMutationsFileForModel(
   const { create, update, delete: del } = mutations;
 
   const authConfig =
-    appBuilder.definitionContainer.pluginStore.getPluginSpecOptional(
-      authConfigSpec,
-    );
+    appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
 
-  const isAuthEnabled = !!authConfig;
+  const isAuthEnabled = !!authConfig.getAuthConfig(
+    appBuilder.projectDefinition,
+  );
 
   const sharedMutationConfig = {
     modelName: model.name,

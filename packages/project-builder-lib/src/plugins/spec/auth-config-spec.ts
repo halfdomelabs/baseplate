@@ -1,8 +1,6 @@
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
-import type { PluginSpecImplementation } from './types.js';
-
-import { createPluginSpec } from './types.js';
+import { createFieldMapSpec } from '../utils/create-field-map-spec.js';
 
 export interface AuthRole {
   id: string;
@@ -11,19 +9,29 @@ export interface AuthRole {
   builtIn: boolean;
 }
 
-type AuthRolesGetter = (definition: ProjectDefinition) => AuthRole[];
+type AuthConfigGetter = (definition: ProjectDefinition) => {
+  roles: AuthRole[];
+};
 
 /**
  * Spec for allowing plugins to declare standard auth configurations
  */
-export interface AuthConfigSpec extends PluginSpecImplementation {
-  getAuthRoles: AuthRolesGetter;
-}
-
-/**
- * Spec for adding config component for plugin
- */
-export const authConfigSpec = createPluginSpec<AuthConfigSpec>(
+export const authConfigSpec = createFieldMapSpec(
   'core/auth-config',
-  {},
+  (t) => ({
+    getAuthConfig: t.scalar<AuthConfigGetter>(),
+  }),
+  {
+    use: (values) => ({
+      getAuthConfig: (definition: ProjectDefinition) =>
+        values.getAuthConfig?.(definition),
+      getAuthConfigOrThrow: (definition: ProjectDefinition) => {
+        const config = values.getAuthConfig?.(definition);
+        if (!config) {
+          throw new Error('Auth config not found');
+        }
+        return config;
+      },
+    }),
+  },
 );

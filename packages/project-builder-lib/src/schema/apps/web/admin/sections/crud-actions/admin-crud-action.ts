@@ -6,9 +6,7 @@ import { adminCrudActionSpec } from './admin-action-spec.js';
 import { baseAdminCrudActionSchema } from './types.js';
 
 export const createAdminCrudActionSchema = definitionSchema((ctx) => {
-  const adminCrudActions = ctx.plugins
-    .getPluginSpec(adminCrudActionSpec)
-    .getAdminCrudActions();
+  const adminCrudActions = ctx.plugins.use(adminCrudActionSpec).actions;
 
   return baseAdminCrudActionSchema.transform((data) => {
     const actionDef = adminCrudActions.get(data.type);

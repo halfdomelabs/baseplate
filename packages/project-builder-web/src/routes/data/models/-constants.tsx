@@ -1,32 +1,5 @@
 import type { ScalarFieldType } from '@baseplate-dev/project-builder-lib';
 
-import { modelTransformerEntityType } from '@baseplate-dev/project-builder-lib';
-import { createNewModelTransformerWebConfig } from '@baseplate-dev/project-builder-lib/web';
-
-import { embeddedRelationTransformerWebConfig } from './edit.$key/-components/service/service-embedded-relation-form.js';
-
-export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
-  embeddedRelationTransformerWebConfig,
-  createNewModelTransformerWebConfig({
-    name: 'password',
-    label: 'Password',
-    description: "Hashes the input value of value 'password' using Argon2id",
-    getNewTransformer: () => ({
-      id: modelTransformerEntityType.generateNewId(),
-      type: 'password',
-    }),
-    allowNewTransformer(_, modelConfig) {
-      return (
-        !modelConfig.service?.transformers?.some(
-          (t) => t.type === 'password',
-        ) && modelConfig.model.fields.some((f) => f.name === 'passwordHash')
-      );
-    },
-    getSummary: () => [],
-    pluginKey: undefined,
-  }),
-];
-
 export interface ScalarFieldTypeOption {
   label: string;
   value: string;

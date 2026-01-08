@@ -5,7 +5,7 @@ import {
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -25,69 +25,67 @@ import {
 } from './generators/index.js';
 import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const localAuthDefinition = PluginUtils.configByKeyOrThrow(
-          projectDefinition,
-          pluginKey,
-        ) as LocalAuthPluginDefinition;
+    appCompiler.compilers.push(
+      {
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
+          const localAuthDefinition = PluginUtils.configByKeyOrThrow(
+            projectDefinition,
+            pluginKey,
+          ) as LocalAuthPluginDefinition;
 
-        const authDefinition = getAuthPluginDefinition(projectDefinition);
+          const authDefinition = getAuthPluginDefinition(projectDefinition);
 
-        appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
-          seedInitialUser: seedInitialUserGenerator({
-            initialUserRoles:
-              localAuthDefinition.initialUserRoles?.map((role) =>
-                definitionContainer.nameFromId(role),
-              ) ?? [],
-          }),
-          authModule: authModuleGenerator({
-            userAdminRoles:
-              localAuthDefinition.userAdminRoles?.map((role) =>
-                definitionContainer.nameFromId(role),
-              ) ?? [],
-          }),
-          emailPassword: appModuleGenerator({
-            id: 'email-password',
-            name: 'password',
-            children: {
-              module: authEmailPasswordGenerator({
-                adminRoles:
-                  localAuthDefinition.userAdminRoles?.map((role) =>
-                    definitionContainer.nameFromId(role),
-                  ) ?? [],
-              }),
-              hasher: passwordHasherServiceGenerator({}),
-            },
-          }),
-        });
+          appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
+            seedInitialUser: seedInitialUserGenerator({
+              initialUserRoles:
+                localAuthDefinition.initialUserRoles?.map((role) =>
+                  definitionContainer.nameFromId(role),
+                ) ?? [],
+            }),
+            authModule: authModuleGenerator({
+              userAdminRoles:
+                localAuthDefinition.userAdminRoles?.map((role) =>
+                  definitionContainer.nameFromId(role),
+                ) ?? [],
+            }),
+            emailPassword: appModuleGenerator({
+              id: 'email-password',
+              name: 'password',
+              children: {
+                module: authEmailPasswordGenerator({
+                  adminRoles:
+                    localAuthDefinition.userAdminRoles?.map((role) =>
+                      definitionContainer.nameFromId(role),
+                    ) ?? [],
+                }),
+                hasher: passwordHasherServiceGenerator({}),
+              },
+            }),
+          });
+        },
       },
-    });
-
-    // register web compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: webAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          authApollo: authApolloGenerator({}),
-          reactAuth: reactAuthGenerator({}),
-          authHooks: authHooksGenerator({}),
-          reactSession: reactSessionGenerator({}),
-          authRoutes: authRoutesGenerator({}),
-        });
+      {
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler }) => {
+          appCompiler.addRootChildren({
+            authApollo: authApolloGenerator({}),
+            reactAuth: reactAuthGenerator({}),
+            authHooks: authHooksGenerator({}),
+            reactSession: reactSessionGenerator({}),
+            authRoutes: authRoutesGenerator({}),
+          });
+        },
       },
-    });
-
-    return {};
+    );
   },
 });

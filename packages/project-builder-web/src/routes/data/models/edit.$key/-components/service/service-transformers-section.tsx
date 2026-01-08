@@ -31,8 +31,6 @@ import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';
 
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '#src/routes/data/models/-constants.js';
-
 import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { ServiceTransformerDialog } from './service-transformer-dialog.js';
 
@@ -60,11 +58,8 @@ function ServiceTransformerRecord({
     name: `service.transformers.${idx}`,
   });
 
-  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
-  const transformerConfig = transformerWeb.getTransformerWebConfig(
-    field.type,
-    BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-  );
+  const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
+  const transformerConfig = transformerWeb.getWebConfigOrThrow(field.type);
   const summary = transformerConfig.getSummary(field, definitionContainer);
   return (
     <RecordView>
@@ -121,12 +116,12 @@ export function ServiceTransformersSection({
 
   const { requestConfirm } = useConfirmDialog();
 
-  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
+  const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
 
   const modelConfig = useEditedModelConfig((model) => model);
 
   const addableTransformers = transformerWeb
-    .getTransformerWebConfigs(BUILT_IN_TRANSFORMER_WEB_CONFIGS)
+    .getWebConfigs()
     .filter((transformer) =>
       transformer.allowNewTransformer
         ? transformer.allowNewTransformer(definitionContainer, modelConfig)
@@ -190,7 +185,7 @@ export function ServiceTransformersSection({
                           transformer.getNewTransformer(
                             definitionContainer,
                             modelConfig,
-                          ),
+                          ) as TransformerConfig,
                         );
                       }
                     }}
@@ -209,9 +204,12 @@ export function ServiceTransformersSection({
         )}
         <ServiceTransformerDialog
           webConfig={addableTransformers[addableTransformerIdx]}
-          transformer={addableTransformers[
-            addableTransformerIdx
-          ]?.getNewTransformer(definitionContainer, modelConfig)}
+          transformer={
+            addableTransformers[addableTransformerIdx]?.getNewTransformer(
+              definitionContainer,
+              modelConfig,
+            ) as TransformerConfig
+          }
           onUpdate={(transformer) => {
             append(transformer);
           }}

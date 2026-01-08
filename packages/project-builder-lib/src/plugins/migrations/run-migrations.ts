@@ -4,16 +4,15 @@ import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
 
-import type { PluginImplementationStore } from '../schema/store.js';
+import type { PluginSpecStore } from '../store/store.js';
 
 import { pluginConfigSpec } from '../spec/config-spec.js';
 
 export function runPluginMigrations(
   projectDefinition: ProjectDefinition,
-  pluginImplementationStore: PluginImplementationStore,
+  pluginSpecStore: PluginSpecStore,
 ): ProjectDefinition {
-  const pluginConfigService =
-    pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+  const pluginConfigService = pluginSpecStore.use(pluginConfigSpec);
   return produce(projectDefinition, (draft) => {
     for (const pluginDefinition of draft.plugins ?? []) {
       const pluginMigrations = pluginConfigService.getMigrations(
