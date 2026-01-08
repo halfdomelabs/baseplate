@@ -47,7 +47,7 @@ export function createTestProjectDefinitionContainer(
 ): ProjectDefinitionContainer {
   const pluginStore: PluginStore = {
     availablePlugins: [],
-    additionalCoreModules: [],
+    coreModules: [],
   };
   const pluginImplementationStore = createPluginImplementationStore(
     pluginStore,

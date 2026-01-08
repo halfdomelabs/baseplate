@@ -37,7 +37,7 @@ export async function createNodePluginStore(
   );
   return {
     availablePlugins: pluginsWithModules,
-    additionalCoreModules: SERVER_CORE_MODULES,
+    coreModules: SERVER_CORE_MODULES,
   };
 }
 

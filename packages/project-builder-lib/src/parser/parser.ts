@@ -14,7 +14,6 @@ import type {
   ProjectDefinitionSchema,
 } from '#src/schema/project-definition.js';
 
-import { LIB_CORE_MODULES } from '#src/core-modules/index.js';
 import { initializePlugins } from '#src/plugins/imports/loader.js';
 import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
@@ -40,7 +39,7 @@ export function createPluginImplementationStore(
   pluginStore: PluginStore,
   projectDefinition: unknown,
 ): PluginImplementationStore {
-  const { availablePlugins, additionalCoreModules } = pluginStore;
+  const { availablePlugins, coreModules } = pluginStore;
   const pluginData = z
     .object({
       plugins: z.array(basePluginDefinitionSchema).optional(),
@@ -62,11 +61,7 @@ export function createPluginImplementationStore(
       module: m.module,
     }));
   });
-  return initializePlugins([
-    ...modulesWithKey,
-    ...LIB_CORE_MODULES,
-    ...additionalCoreModules,
-  ]);
+  return initializePlugins([...modulesWithKey, ...coreModules]);
 }
 
 /**

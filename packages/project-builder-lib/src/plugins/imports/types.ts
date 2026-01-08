@@ -94,5 +94,5 @@ export interface PluginStore {
     metadata: PluginMetadataWithPaths;
     modules: PluginModuleWithDirectory[];
   }[];
-  additionalCoreModules: PluginModuleWithKey[];
+  coreModules: PluginModuleWithKey[];
 }

@@ -87,7 +87,7 @@ export async function generateRootPackage(
   // Create minimal plugin store (no plugins for initial project)
   const pluginStore: PluginStore = {
     availablePlugins: [],
-    additionalCoreModules: SERVER_CORE_MODULES,
+    coreModules: SERVER_CORE_MODULES,
   };
 
   // Create parser context
