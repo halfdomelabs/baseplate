@@ -1,7 +1,7 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -15,7 +15,7 @@ import type { StoragePluginDefinition } from './schema/plugin-definition.js';
 
 import { fileCategoriesGenerator } from './generators/file-categories/file-categories.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     appCompiler: appCompilerSpec,
   },

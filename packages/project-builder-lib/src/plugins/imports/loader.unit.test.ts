@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import type { PluginWithPlatformModules } from './loader.js';
-import type { PluginPlatformModule } from './types.js';
+import type { PluginModule } from './types.js';
 
 import { createPluginSpec } from '../spec/types.js';
 import {
@@ -20,7 +20,7 @@ function createPlugin({
   dependencies,
   exports,
   initialize,
-}: { idx: number } & Partial<PluginPlatformModule>): PluginWithPlatformModules {
+}: { idx: number } & Partial<PluginModule>): PluginWithPlatformModules {
   return {
     key: `plugin-${idx}`,
     name: `Plugin ${idx}`,

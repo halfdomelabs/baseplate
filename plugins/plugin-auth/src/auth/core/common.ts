@@ -1,6 +1,6 @@
 import {
   authConfigSpec,
-  createPlatformPluginExport,
+  createPluginModule,
   pluginConfigSpec,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -9,28 +9,25 @@ import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
 import { createAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
-// necessary for Typescript to infer the return type of the initialize function
-export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
-
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
-  },
-  exports: {
+    pluginConfig: pluginConfigSpec,
     authConfig: authConfigSpec,
   },
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(pluginKey, createAuthPluginDefinitionSchema);
-    return {
-      authConfig: {
-        getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByKeyOrThrow(
-            definition,
-            pluginKey,
-          ) as AuthPluginDefinition;
-          return pluginConfig.roles;
+  initialize: ({ authConfig, pluginConfig }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, createAuthPluginDefinitionSchema);
+    authConfig.getAuthConfig.set((definition) => {
+      const pluginConfig = PluginUtils.configByKeyOrThrow(
+        definition,
+        pluginKey,
+      ) as AuthPluginDefinition;
+      return {
+        roles: pluginConfig.roles,
+        modelNames: {
+          user: pluginConfig.authFeatureRef,
         },
-      },
-    };
+      };
+    });
   },
 });

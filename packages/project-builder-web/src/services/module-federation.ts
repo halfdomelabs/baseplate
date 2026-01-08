@@ -1,7 +1,7 @@
 import type {
-  KeyedPluginPlatformModule,
   PluginMetadataWithPaths,
-  PluginPlatformModule,
+  PluginModule,
+  PluginModuleWithDirectory,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
@@ -23,7 +23,7 @@ export function resetPluginModuleSeed(): void {
 export async function loadPluginModule(
   projectId: string,
   pluginMetadata: PluginMetadataWithPaths,
-): Promise<KeyedPluginPlatformModule[]> {
+): Promise<PluginModuleWithDirectory[]> {
   const pluginKey = `${projectId}/${pluginMetadata.key}`;
   // use random entry to bust cache
   const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.key}/web/assets/remoteEntry.js?rnd=${randomSeed}`;
@@ -42,12 +42,11 @@ export async function loadPluginModule(
     ),
   );
   const modules = wrappedModules.map(
-    (module) =>
-      __federation_method_unwrapDefault(module) as PluginPlatformModule,
+    (module) => __federation_method_unwrapDefault(module) as PluginModule,
   );
 
   const pluginModules = modules.map((module, index) => ({
-    key: pluginMetadata.webModulePaths[index],
+    directory: pluginMetadata.webModulePaths[index],
     module,
   }));
 

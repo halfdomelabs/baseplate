@@ -1,18 +1,18 @@
-import type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+import type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
 import {
   adminCrudActionSpec,
   adminCrudColumnSpec,
   createAdminCrudActionType,
   createAdminCrudColumnType,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import { createAdminCrudManageRolesActionSchema } from './schema/manage-role-action.js';
 import { createAdminCrudResetPasswordActionSchema } from './schema/reset-password-action.js';
 import { createAdminCrudRolesColumnSchema } from './schema/roles-column.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     adminCrudAction: adminCrudActionSpec,
     adminCrudColumn: adminCrudColumnSpec,
@@ -45,4 +45,4 @@ export default createPlatformPluginExport({
 
     return {};
   },
-}) as PluginPlatformModule;
+}) as PluginModule;

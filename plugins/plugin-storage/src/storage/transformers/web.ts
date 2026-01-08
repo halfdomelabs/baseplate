@@ -4,7 +4,7 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   modelTransformerEntityType,
   ModelUtils,
   PluginUtils,
@@ -45,7 +45,7 @@ function findNonTransformedFileRelations(
   );
 }
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     transformerWeb: modelTransformerWebSpec,
   },

@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -7,7 +7,7 @@ import { QueueDefinitionEditor } from './components/queue-definition-editor.js';
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     webConfig: webConfigSpec,
   },

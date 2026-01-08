@@ -1,31 +1,18 @@
 import type {
   PluginMetadataWithPaths,
-  PluginPlatformModule,
+  PluginModule,
   PluginStore,
   ProjectInfo,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import {
-  adminCrudActionCompilerSpec,
-  adminCrudColumnCompilerSpec,
-  adminCrudInputCompilerSpec,
-  appCompilerSpec,
-  modelTransformerCompilerSpec,
-} from '@baseplate-dev/project-builder-lib';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { discoverPlugins } from './plugin-discovery.js';
+import { SERVER_CORE_MODULES } from '#src/core-modules/index.js';
 
-const NODE_SPEC_IMPLEMENTATIONS = [
-  modelTransformerCompilerSpec,
-  adminCrudInputCompilerSpec,
-  adminCrudActionCompilerSpec,
-  adminCrudColumnCompilerSpec,
-  appCompilerSpec,
-];
+import { discoverPlugins } from './plugin-discovery.js';
 
 export async function createNodePluginStore(
   plugins: PluginMetadataWithPaths[],
@@ -36,12 +23,12 @@ export async function createNodePluginStore(
       modules: await Promise.all(
         plugin.nodeModulePaths.map(async (modulePath) => {
           const mod = (await import(pathToFileURL(modulePath).href)) as
-            | { default: PluginPlatformModule }
-            | PluginPlatformModule;
+            | { default: PluginModule }
+            | PluginModule;
           const unwrappedModule = 'default' in mod ? mod.default : mod;
 
           return {
-            key: path.relative(plugin.pluginDirectory, modulePath),
+            directory: path.relative(plugin.pluginDirectory, modulePath),
             module: unwrappedModule,
           };
         }),
@@ -50,7 +37,7 @@ export async function createNodePluginStore(
   );
   return {
     availablePlugins: pluginsWithModules,
-    builtinSpecImplementations: NODE_SPEC_IMPLEMENTATIONS,
+    additionalCoreModules: SERVER_CORE_MODULES,
   };
 }
 

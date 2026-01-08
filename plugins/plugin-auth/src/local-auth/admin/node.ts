@@ -8,7 +8,7 @@ import {
   adminCrudActionCompilerSpec,
   adminCrudColumnCompilerSpec,
   authConfigSpec,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import type { AdminCrudManageRolesActionDefinition } from './schema/manage-role-action.js';
@@ -61,7 +61,7 @@ function buildResetPasswordActionCompiler(): AdminCrudActionCompiler<AdminCrudRe
   };
 }
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     adminCrudActionCompiler: adminCrudActionCompilerSpec,
     adminCrudColumnCompiler: adminCrudColumnCompilerSpec,

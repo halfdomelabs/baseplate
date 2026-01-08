@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -7,7 +7,7 @@ import { PgBossDefinitionEditor } from './components/pg-boss-definition-editor.j
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     webConfig: webConfigSpec,
   },

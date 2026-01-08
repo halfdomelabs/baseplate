@@ -1,12 +1,12 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import { queuesGenerator } from './generators/index.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     appCompiler: appCompilerSpec,
   },

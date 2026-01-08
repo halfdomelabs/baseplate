@@ -19,6 +19,15 @@ type AuthConfigGetter = (definition: ProjectDefinition) => {
 /**
  * Spec for allowing plugins to declare standard auth configurations
  */
-export const authConfigSpec = createFieldMapSpec('core/auth-config', (t) => ({
-  getAuthConfig: t.scalar<AuthConfigGetter>(),
-}));
+export const authConfigSpec = createFieldMapSpec(
+  'core/auth-config',
+  (t) => ({
+    getAuthConfig: t.scalar<AuthConfigGetter>(),
+  }),
+  {
+    use: (values) => ({
+      getAuthConfig: (definition: ProjectDefinition) =>
+        values.getAuthConfig?.(definition),
+    }),
+  },
+);

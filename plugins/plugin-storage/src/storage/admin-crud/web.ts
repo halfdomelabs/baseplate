@@ -1,4 +1,4 @@
-import { createPlatformPluginExport } from '@baseplate-dev/project-builder-lib';
+import { createPluginModule } from '@baseplate-dev/project-builder-lib';
 import { adminCrudInputWebSpec } from '@baseplate-dev/project-builder-lib/web';
 
 import type { AdminCrudFileInputInput } from './types.js';
@@ -7,7 +7,7 @@ import { AdminCrudFileInputForm } from './admin-crud-input-form.js';
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     adminCrudInputWeb: adminCrudInputWebSpec,
   },

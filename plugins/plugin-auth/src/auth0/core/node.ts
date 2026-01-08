@@ -1,7 +1,7 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
@@ -16,7 +16,7 @@ import {
   reactAuth0Generator,
 } from '../generators/index.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     appCompiler: appCompilerSpec,
   },

@@ -1,11 +1,11 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   modelTransformerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import { createFileTransformerSchema } from './schema/file-transformer.schema.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     transformer: modelTransformerSpec,
   },

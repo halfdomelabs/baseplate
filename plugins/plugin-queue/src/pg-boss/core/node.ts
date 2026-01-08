@@ -1,12 +1,12 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import { pgBossGenerator } from './generators/pg-boss/pg-boss.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     appCompiler: appCompilerSpec,
   },

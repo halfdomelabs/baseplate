@@ -5,7 +5,7 @@ import {
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -25,7 +25,7 @@ import {
 } from './generators/index.js';
 import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     appCompiler: appCompilerSpec,
   },

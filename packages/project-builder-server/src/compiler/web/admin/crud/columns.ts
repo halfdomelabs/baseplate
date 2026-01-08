@@ -1,78 +1,16 @@
 import type {
   AdminCrudColumnDefinition,
-  AdminCrudForeignColumnDefinition,
   AdminCrudSectionConfig,
-  AdminCrudTextColumnDefinition,
   WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   adminCrudColumnCompilerSpec,
-  createAdminCrudColumnCompiler,
-  ModelFieldUtils,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
-import {
-  adminCrudForeignColumnGenerator,
-  adminCrudTextColumnGenerator,
-} from '@baseplate-dev/react-generators';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
-
-// Built-in column compilers
-const BUILT_IN_COLUMN_COMPILERS = [
-  createAdminCrudColumnCompiler<AdminCrudTextColumnDefinition>({
-    name: 'text',
-    compileColumn: (column, options) =>
-      adminCrudTextColumnGenerator({
-        id: column.id,
-        label: column.label,
-        order: options.order,
-        modelField: options.definitionContainer.nameFromId(
-          column.modelFieldRef,
-        ),
-      }),
-  }),
-  createAdminCrudColumnCompiler<AdminCrudForeignColumnDefinition>({
-    name: 'foreign',
-    compileColumn: (column, { definitionContainer, model, order }) => {
-      const relation = model.model.relations?.find(
-        (r) => r.id === column.localRelationRef,
-      );
-      const localRelationName = definitionContainer.nameFromId(
-        column.localRelationRef,
-      );
-
-      if (!relation) {
-        throw new Error(
-          `Could not find relation ${localRelationName} in model ${model.name}`,
-        );
-      }
-
-      if (relation.references.length !== 1) {
-        throw new Error(`Only relations with a single reference are supported`);
-      }
-
-      const foreignModelIdFields = ModelUtils.byIdOrThrow(
-        definitionContainer.definition,
-        relation.modelRef,
-      ).model.primaryKeyFieldRefs.map((ref) =>
-        definitionContainer.nameFromId(ref),
-      );
-
-      return adminCrudForeignColumnGenerator({
-        id: column.id,
-        label: column.label,
-        order,
-        relationName: localRelationName,
-        foreignModelIdFields,
-        isOptional: ModelFieldUtils.isRelationOptional(model, relation),
-        labelExpression: column.labelExpression,
-      });
-    },
-  }),
-];
 
 /**
  * Compiles an admin CRUD column definition into generator bundles
@@ -84,22 +22,20 @@ export function compileAdminCrudColumn(
   modelCrudSection: AdminCrudSectionConfig,
   order: number,
 ): GeneratorBundle {
-  const { definitionContainer } = builder;
+  const columnCompiler = builder.pluginStore.use(adminCrudColumnCompilerSpec);
 
-  // Get the registered column compiler for this type
-  const columnCompilers = definitionContainer.pluginStore.getPluginSpec(
-    adminCrudColumnCompilerSpec,
-  );
+  const compiler = columnCompiler.columns.find((c) => c.name === column.type);
 
-  const compiler = columnCompilers.getCompiler(
-    column.type,
-    BUILT_IN_COLUMN_COMPILERS,
-  );
+  if (!compiler) {
+    throw new Error(`Compiler for column type ${column.type} not found`);
+  }
+
+  const model = ModelUtils.byIdOrThrow(builder.projectDefinition, modelId);
 
   return compiler.compileColumn(column, {
     order,
-    model: ModelUtils.byIdOrThrow(builder.projectDefinition, modelId),
-    definitionContainer,
+    definitionContainer: builder.definitionContainer,
+    model,
     modelCrudSection,
   });
 }

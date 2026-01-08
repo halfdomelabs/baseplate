@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -9,7 +9,7 @@ import {
 
 import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     adminCrudActionWeb: adminCrudActionWebSpec,
     adminCrudColumnWeb: adminCrudColumnWebSpec,

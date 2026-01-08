@@ -148,7 +148,7 @@ export function ServiceMethodFieldsSection({
                       ).label
                     }
                   >
-                    {ModelTransformerUtils.getTransformName(
+                    {ModelTransformerUtils.getTransformerName(
                       definitionContainer,
                       transformer,
                       pluginContainer,

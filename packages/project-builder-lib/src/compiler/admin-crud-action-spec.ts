@@ -27,6 +27,7 @@ export interface AdminCrudActionCompiler<
 export const adminCrudActionCompilerSpec = createFieldMapSpec(
   'core/admin-crud-action-compiler',
   (t) => ({
-    actions: t.map<string, AdminCrudActionCompiler>(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    actions: t.namedArray<AdminCrudActionCompiler<any>>(),
   }),
 );

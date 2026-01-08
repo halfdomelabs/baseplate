@@ -1,14 +1,14 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import { createBullmqPluginDefinitionSchema } from './schema/plugin-definition.js';
 
 // necessary for Typescript to infer the return type of the initialize function
-export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+export type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     config: pluginConfigSpec,
   },

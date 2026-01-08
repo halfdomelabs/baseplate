@@ -9,7 +9,7 @@ import {
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
@@ -20,53 +20,53 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
-        const auth = PluginUtils.configByKeyOrThrow(
-          projectDefinition,
-          pluginKey,
-        ) as AuthPluginDefinition;
+    appCompiler.compilers.push(
+      {
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ projectDefinition, appCompiler }) => {
+          const auth = PluginUtils.configByKeyOrThrow(
+            projectDefinition,
+            pluginKey,
+          ) as AuthPluginDefinition;
 
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          authContext: authContextGenerator({}),
-          authPlugin: authPluginGenerator({}),
-          authRoles: authRolesGenerator({
-            roles: auth.roles.map((r) => ({
-              name: r.name,
-              comment: r.comment,
-              builtIn: r.builtIn,
-            })),
-          }),
-          userSessionTypes: userSessionTypesGenerator({}),
-        });
+          appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+            authContext: authContextGenerator({}),
+            authPlugin: authPluginGenerator({}),
+            authRoles: authRolesGenerator({
+              roles: auth.roles.map((r) => ({
+                name: r.name,
+                comment: r.comment,
+                builtIn: r.builtIn,
+              })),
+            }),
+            userSessionTypes: userSessionTypesGenerator({}),
+          });
 
-        appCompiler.addRootChildren({
-          pothosAuth: pothosAuthGenerator({}),
-          authorizerUtils: prismaAuthorizerUtilsGenerator({}),
-        });
+          appCompiler.addRootChildren({
+            pothosAuth: pothosAuthGenerator({}),
+            authorizerUtils: prismaAuthorizerUtilsGenerator({}),
+          });
+        },
       },
-    });
-
-    // register web compiler
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: webAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          authIdentify: authIdentifyGenerator({}),
-          authErrors: authErrorsGenerator({}),
-        });
+      {
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler }) => {
+          appCompiler.addRootChildren({
+            authIdentify: authIdentifyGenerator({}),
+            authErrors: authErrorsGenerator({}),
+          });
+        },
       },
-    });
+    );
 
     return {};
   },

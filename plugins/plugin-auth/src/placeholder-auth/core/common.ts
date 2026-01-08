@@ -1,6 +1,6 @@
 import {
   authModelConfigSpec,
-  createPlatformPluginExport,
+  createPluginModule,
   ModelUtils,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
@@ -10,9 +10,9 @@ import { PLACEHOLDER_AUTH_MODELS } from '#src/placeholder-auth/constants/model-n
 import { createPlaceholderAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
 // necessary for Typescript to infer the return type of the initialize function
-export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+export type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     config: pluginConfigSpec,
   },

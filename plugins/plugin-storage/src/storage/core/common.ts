@@ -1,12 +1,12 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import { STORAGE_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createStoragePluginDefinitionSchema } from './schema/plugin-definition.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     config: pluginConfigSpec,
   },

@@ -1,7 +1,5 @@
 import type {
-  EmbeddedRelationTransformerConfig,
   ModelConfig,
-  ModelTransformerCompiler,
   TransformerConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -9,7 +7,6 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import {
   prismaDataCreateGenerator,
   prismaDataDeleteGenerator,
-  prismaDataNestedFieldGenerator,
   prismaDataServiceGenerator,
   prismaDataUpdateGenerator,
   serviceFileGenerator,
@@ -23,40 +20,6 @@ import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
-const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
-  {
-    name: 'embeddedRelation',
-    compileField(definition, { definitionContainer, model }) {
-      // find foreign relation
-      const nestedRelation = ModelUtils.getRelationsToModel(
-        definitionContainer.definition,
-        model.id,
-      ).find(
-        ({ relation }) => relation.foreignId === definition.foreignRelationRef,
-      );
-
-      if (!nestedRelation) {
-        throw new Error(
-          `Could not find relation ${definition.foreignRelationRef} for nested relation field`,
-        );
-      }
-
-      return prismaDataNestedFieldGenerator({
-        modelName: model.name,
-        relationName: definitionContainer.nameFromId(
-          definition.foreignRelationRef,
-        ),
-        nestedModelName: nestedRelation.model.name,
-        scalarFieldNames: definition.embeddedFieldNames.map((e) =>
-          definitionContainer.nameFromId(e),
-        ),
-        virtualInputFieldNames: definition.embeddedTransformerNames?.map((t) =>
-          definitionContainer.nameFromId(t),
-        ),
-      });
-    },
-  };
-
 function buildVirtualInputField(
   appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
@@ -67,10 +30,15 @@ function buildVirtualInputField(
     modelTransformerCompilerSpec,
   );
 
-  const compiler = compilerImplementation.getModelTransformerCompiler(
-    transformer.type,
-    [embeddedRelationTransformerCompiler],
+  const compiler = compilerImplementation.transformers.find(
+    (c) => c.name === transformer.type,
   );
+
+  if (!compiler) {
+    throw new Error(
+      `Compiler for transformer type ${transformer.type} not found`,
+    );
+  }
 
   return compiler.compileField(transformer, {
     definitionContainer: appBuilder.definitionContainer,

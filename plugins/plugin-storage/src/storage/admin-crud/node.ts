@@ -2,7 +2,7 @@ import type { AdminCrudInputCompiler } from '@baseplate-dev/project-builder-lib'
 
 import {
   adminCrudInputCompilerSpec,
-  createPlatformPluginExport,
+  createPluginModule,
   ModelFieldUtils,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -52,7 +52,7 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
   };
 }
 
-export default createPlatformPluginExport({
+export default createPluginModule({
   dependencies: {
     adminCrudInputCompiler: adminCrudInputCompilerSpec,
   },
