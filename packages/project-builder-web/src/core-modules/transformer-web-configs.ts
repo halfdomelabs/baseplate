@@ -9,7 +9,7 @@ import {
 
 import { embeddedRelationTransformerWebConfig } from '#src/routes/data/models/edit.$key/-components/service/service-embedded-relation-form.js';
 
-export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
+const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
   embeddedRelationTransformerWebConfig,
   createModelTransformerWebConfig({
     name: 'password',
