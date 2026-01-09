@@ -572,7 +572,7 @@ export function defineCreateOperation<
         include: query.include,
       });
       if (!freshResult) {
-        throw new Error(`Failed to re-fetch ${config.model} after create`);
+        throw new NotFoundError(`${config.model} not found after create`);
       }
       return freshResult as GetPayload<TModelName, TQueryArgs>;
     }
