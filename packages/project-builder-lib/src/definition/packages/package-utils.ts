@@ -1,5 +1,5 @@
 import type {
-  BasePackageConfig,
+  BaseLibraryDefinition,
   MonorepoSettingsDefinition,
   ProjectDefinition,
 } from '#src/schema/index.js';
@@ -7,7 +7,7 @@ import type {
 function byId(
   projectDefinition: ProjectDefinition,
   id: string,
-): BasePackageConfig {
+): BaseLibraryDefinition {
   const config = projectDefinition.packages.find((pkg) => pkg.id === id);
   if (!config) {
     throw new Error(`Unable to find package with ID ${id}`);
@@ -23,7 +23,7 @@ function byId(
  * @returns The directory of the package
  */
 function getPackageDirectory(
-  packageConfig: BasePackageConfig,
+  packageConfig: BaseLibraryDefinition,
   monorepoSettings?: MonorepoSettingsDefinition,
 ): string {
   const packagesFolder = monorepoSettings?.packagesFolder ?? 'packages';

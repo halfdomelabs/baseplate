@@ -1,13 +1,13 @@
 import type {
   AppConfig,
-  BasePackageConfig,
+  BaseLibraryDefinition,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   appEntityType,
   baseAppSchema,
-  basePackageSchema,
+  baseLibrarySchema,
   libraryEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -71,7 +71,7 @@ export function NewDialog({
 
   // Package form
   const packageForm = useForm({
-    resolver: zodResolver(basePackageSchema),
+    resolver: zodResolver(baseLibrarySchema),
     defaultValues: {
       id: '',
       name: '',
@@ -133,7 +133,7 @@ export function NewDialog({
         ];
         draftConfig.packages = sortBy(newPackages, [
           (pkg) => pkg.name,
-        ]) as BasePackageConfig[];
+        ]) as BaseLibraryDefinition[];
       },
       {
         successMessage: `Successfully created ${data.name}!`,

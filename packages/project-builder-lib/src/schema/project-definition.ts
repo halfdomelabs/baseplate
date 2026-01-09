@@ -9,7 +9,7 @@ import { definitionSchema } from './creator/schema-creator.js';
 import { createFeaturesSchema } from './features/index.js';
 import { createEnumSchema } from './models/enums.js';
 import { createModelSchema } from './models/index.js';
-import { createLibrarySchema } from './packages/library.js';
+import { createLibrarySchema } from './libraries/library.js';
 import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings/index.js';
 

@@ -4,7 +4,7 @@ import z from 'zod';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
-  BasePackageConfig,
+  BaseLibraryDefinition,
   DefinitionSchemaCreatorWithSlots,
 } from '#src/schema/index.js';
 
@@ -13,12 +13,12 @@ import {
   definitionSchemaWithSlots,
   libraryEntityType,
 } from '#src/schema/index.js';
-import { basePackageValidators } from '#src/schema/packages/base.js';
+import { baseLibraryValidators } from '#src/schema/libraries/base.js';
 
 import type { PackageCompiler } from './package-compiler-types.js';
 
 export interface LibraryDefinitionSchemaEntry<
-  T extends BasePackageConfig = BasePackageConfig,
+  T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
   name: string;
   definitionSchema: DefinitionSchemaCreatorWithSlots<
@@ -31,7 +31,7 @@ const createNodeLibrarySchema = definitionSchemaWithSlots(
   { librarySlot: libraryEntityType },
   () =>
     z.object({
-      ...basePackageValidators,
+      ...baseLibraryValidators,
       type: z.literal('node-library'),
     }),
 );
@@ -42,7 +42,7 @@ export const nodeLibraryDefinitionSchemaEntry = {
 };
 
 export interface LibraryCompilerCreator<
-  T extends BasePackageConfig = BasePackageConfig,
+  T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
   name: string;
   createCompiler: (
@@ -55,7 +55,7 @@ export interface LibraryCompilerCreator<
  * Props passed to library edit components
  */
 export interface LibraryEditComponentProps<
-  T extends BasePackageConfig = BasePackageConfig,
+  T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
   packageDefinition: T;
 }
@@ -64,7 +64,7 @@ export interface LibraryEditComponentProps<
  * Web configuration for a library type
  */
 export interface LibraryWebConfig<
-  T extends BasePackageConfig = BasePackageConfig,
+  T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
   name: string;
   /** React component for editing this library type */

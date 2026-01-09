@@ -1,5 +1,5 @@
 import type {
-  BasePackageConfig,
+  BaseLibraryDefinition,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -19,7 +19,7 @@ import { buildPackageName, getPackageDirectory } from '../package-compiler.js';
  * - Have simpler compilation without app-specific features
  */
 export abstract class LibraryCompiler<
-  TPackageConfig extends BasePackageConfig,
+  TPackageConfig extends BaseLibraryDefinition,
 > extends PackageCompiler {
   protected readonly packageConfig: TPackageConfig;
 
@@ -50,7 +50,7 @@ export abstract class LibraryCompiler<
 
 export function createLibraryCompilerFromSpec(
   definitionContainer: ProjectDefinitionContainer,
-  packageConfig: BasePackageConfig,
+  packageConfig: BaseLibraryDefinition,
 ): PackageCompiler {
   const typeSpec = definitionContainer.pluginStore.use(libraryTypeSpec);
   const compilerCreator = typeSpec.compilerCreators.get(packageConfig.type);

@@ -1,5 +1,5 @@
 import type {
-  BasePackageConfig,
+  BaseLibraryDefinition,
   LibraryCompilerCreator,
   PackageEntry,
 } from '@baseplate-dev/project-builder-lib';
@@ -13,7 +13,7 @@ import { nodeLibraryDefinitionSchemaEntry } from '@baseplate-dev/project-builder
 
 import { LibraryCompiler } from './library-compiler.js';
 
-class NodeLibraryPackageCompiler extends LibraryCompiler<BasePackageConfig> {
+class NodeLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> {
   compile(): PackageEntry {
     const { packageConfig, definitionContainer } = this;
     const projectDefinition = definitionContainer.definition;
