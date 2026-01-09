@@ -64,5 +64,5 @@ export function getPackageDirectory(
     packageType === 'app'
       ? (monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER)
       : (monorepoSettings?.packagesFolder ?? DEFAULT_PACKAGES_FOLDER);
-  return `${packagesFolder}/${packageType}/${packageName}`;
+  return `${packagesFolder}/${packageName}`;
 }

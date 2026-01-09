@@ -25,7 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { UnlinkSection } from '../../-components/unlink-section.js';
 
-export function NodeLibraryEditComponent({
+function NodeLibraryEditComponent({
   packageDefinition,
 }: LibraryEditComponentProps): React.JSX.Element {
   const { saveDefinitionWithFeedback } = useProjectDefinition();

@@ -1,5 +1,5 @@
 {
-  "name": "blog-with-auth-backend",
+  "name": "@blog-with-auth/backend",
   "version": "1.0.0",
   "private": true,
   "description": "Backend app for blog-with-auth",

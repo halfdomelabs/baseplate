@@ -693,7 +693,7 @@
   ],
   "packages": [
     {
-      "id": "package:X95tdAsNslUj",
+      "id": "library:X95tdAsNslUj",
       "name": "transactional",
       "type": "node-library"
     }

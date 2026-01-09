@@ -1,5 +1,5 @@
 {
-  "name": "blog-with-auth-backend",
+  "name": "@blog-with-auth/backend",
   "version": "1.0.0",
   "private": true,
   "description": "Backend app for blog-with-auth",
@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@blog-with-auth/transactional": "workspace:^",
     "@envelop/core": "5.3.0",
     "@envelop/disable-introspection": "8.0.0",
     "@fastify/cookie": "11.0.1",
@@ -51,7 +52,6 @@
     "@sentry/node": "9.17.0",
     "@sentry/profiling-node": "9.17.0",
     "altair-fastify-plugin": "8.0.4",
-    "blog-with-auth-transactional": "workspace:^",
     "es-toolkit": "1.31.0",
     "fastify": "5.6.2",
     "fastify-plugin": "5.1.0",
