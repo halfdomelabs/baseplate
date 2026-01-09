@@ -19,11 +19,11 @@ import { MdApps } from 'react-icons/md';
 
 import { NewDialog } from './-components/new-dialog.js';
 
-export const Route = createFileRoute('/apps/')({
-  component: AppsListPage,
+export const Route = createFileRoute('/packages/')({
+  component: PackagesListPage,
 });
 
-function AppsListPage(): React.JSX.Element {
+function PackagesListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
   const { apps, libraries = [] } = definition;
@@ -64,7 +64,7 @@ function AppsListPage(): React.JSX.Element {
               return (
                 <Link
                   key={app.id}
-                  to="/apps/edit/$key"
+                  to="/packages/apps/$key"
                   params={{ key: appEntityType.keyFromId(app.id) }}
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
@@ -101,7 +101,7 @@ function AppsListPage(): React.JSX.Element {
               return (
                 <Link
                   key={lib.id}
-                  to="/apps/packages/$key"
+                  to="/packages/libs/$key"
                   params={{ key: libraryEntityType.keyFromId(lib.id) }}
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">

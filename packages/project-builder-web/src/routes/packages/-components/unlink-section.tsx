@@ -24,7 +24,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 interface UnlinkSectionProps {
-  entityType: 'app' | 'package';
+  entityType: 'app' | 'library';
   entityId: string;
   name: string;
 }
@@ -38,7 +38,7 @@ export function UnlinkSection({
     useProjectDefinition();
   const navigate = useNavigate();
 
-  const entityLabel = entityType === 'app' ? 'App' : 'Package';
+  const entityLabel = entityType === 'app' ? 'App' : 'Library';
 
   const handleUnlink = (): void => {
     saveDefinitionWithFeedbackSync(
@@ -55,7 +55,7 @@ export function UnlinkSection({
         successMessage: `Successfully unlinked ${entityType}!`,
         disableDeleteRefDialog: true,
         onSuccess: () => {
-          navigate({ to: '/apps' }).catch(logAndFormatError);
+          navigate({ to: '/packages' }).catch(logAndFormatError);
         },
       },
     );

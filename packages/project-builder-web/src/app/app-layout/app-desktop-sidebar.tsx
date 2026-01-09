@@ -50,7 +50,7 @@ export function AppDesktopSidebar(): React.JSX.Element {
           />
         </Link>
         <div className="space-y-2">
-          <SidebarNavigationLink to="/apps" icon={MdApps} label="Apps" />
+          <SidebarNavigationLink to="/packages" icon={MdApps} label="Apps" />
           <SidebarNavigationLink to="/data" icon={HiDatabase} label="Data" />
           <SidebarNavigationLink
             to="/plugins"

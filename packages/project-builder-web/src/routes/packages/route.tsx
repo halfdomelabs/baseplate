@@ -20,14 +20,14 @@ import { MdAdd } from 'react-icons/md';
 
 import { NewDialog } from './-components/new-dialog.js';
 
-export const Route = createFileRoute('/apps')({
-  component: AppsLayout,
+export const Route = createFileRoute('/packages')({
+  component: PackagesLayout,
   beforeLoad: () => ({
-    getTitle: () => 'Apps',
+    getTitle: () => 'Packages',
   }),
 });
 
-function AppsLayout(): React.JSX.Element {
+function PackagesLayout(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
   const { apps, libraries = [] } = definition;
@@ -55,7 +55,7 @@ function AppsLayout(): React.JSX.Element {
                 {sortedApps.map((app) => (
                   <NavigationMenuItemWithLink key={app.id} asChild>
                     <Link
-                      to="/apps/edit/$key"
+                      to="/packages/apps/$key"
                       params={{ key: appEntityType.keyFromId(app.id) }}
                     >
                       {app.name}
@@ -78,7 +78,7 @@ function AppsLayout(): React.JSX.Element {
                 {sortedLibraries.map((lib) => (
                   <NavigationMenuItemWithLink key={lib.id} asChild>
                     <Link
-                      to="/apps/packages/$key"
+                      to="/packages/libs/$key"
                       params={{ key: libraryEntityType.keyFromId(lib.id) }}
                     >
                       {lib.name}

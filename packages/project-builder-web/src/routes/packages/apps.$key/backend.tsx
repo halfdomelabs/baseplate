@@ -23,12 +23,12 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 import { UnlinkSection } from '../-components/unlink-section.js';
 
-export const Route = createFileRoute('/apps/edit/$key/backend')({
+export const Route = createFileRoute('/packages/apps/$key/backend')({
   component: BackendAppEditPage,
   loader: ({ context: { app }, params: { key } }) => {
     if (!app) throw notFound();
     if (app.type !== 'backend') {
-      throw redirect({ to: '/apps/edit/$key', params: { key } });
+      throw redirect({ to: '/packages/apps/$key', params: { key } });
     }
     return {
       backendDefinition: app,

@@ -66,7 +66,7 @@ function NodeLibraryEditComponent({
         </SectionListSection>
 
         <UnlinkSection
-          entityType="package"
+          entityType="library"
           entityId={packageDefinition.id}
           name={packageDefinition.name}
         />

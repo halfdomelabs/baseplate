@@ -11,11 +11,11 @@ import {
   redirect,
 } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/apps/edit/$key/web')({
+export const Route = createFileRoute('/packages/apps/$key/web')({
   component: WebAppLayout,
   beforeLoad: ({ context: { app }, params: { key } }) => {
     if (app?.type !== 'web') {
-      throw redirect({ to: '/apps/edit/$key', params: { key } });
+      throw redirect({ to: '/packages/apps/$key', params: { key } });
     }
 
     return {
@@ -31,7 +31,7 @@ function WebAppLayout(): React.JSX.Element {
       <NavigationTabs>
         <NavigationTabsItem asChild>
           <Link
-            to="/apps/edit/$key/web"
+            to="/packages/apps/$key/web"
             params={{ key }}
             activeOptions={{ exact: true }}
           >
@@ -39,7 +39,7 @@ function WebAppLayout(): React.JSX.Element {
           </Link>
         </NavigationTabsItem>
         <NavigationTabsItem asChild>
-          <Link to="/apps/edit/$key/web/admin" params={{ key }}>
+          <Link to="/packages/apps/$key/web/admin" params={{ key }}>
             Admin
           </Link>
         </NavigationTabsItem>

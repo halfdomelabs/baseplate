@@ -3,7 +3,7 @@ import {
   libraryTypeSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { nodeLibraryWebConfig } from '#src/routes/apps/packages.$key/-components/node-library-edit.js';
+import { nodeLibraryWebConfig } from '#src/routes/packages/libs.$key/-components/node-library-edit.js';
 
 /**
  * Core module that registers library type web configurations.

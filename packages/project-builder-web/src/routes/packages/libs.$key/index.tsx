@@ -4,7 +4,7 @@ import { libraryTypeSpec } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/apps/packages/$key/')({
+export const Route = createFileRoute('/packages/libs/$key/')({
   component: PackageEditPage,
   loader: ({ context: { pkg } }) => {
     if (!pkg) throw notFound();

@@ -46,7 +46,7 @@ export const Route = createFileRoute('/admin-sections/$appKey')({
     if (!app) throw notFound();
     if (!adminApp)
       throw redirect({
-        to: '/apps/edit/$key/web/admin',
+        to: '/packages/apps/$key/web/admin',
         params: { key: appEntityType.keyFromId(app.id) },
       });
     return { app, adminApp };
@@ -66,7 +66,7 @@ function AdminSectionsLayout(): React.JSX.Element {
         {/* Header with back link */}
         <div className="flex flex-col gap-4">
           <Link
-            to="/apps/edit/$key/web/admin"
+            to="/packages/apps/$key/web/admin"
             params={{ key: appKey }}
             className="flex items-center gap-2 text-sm hover:underline"
           >

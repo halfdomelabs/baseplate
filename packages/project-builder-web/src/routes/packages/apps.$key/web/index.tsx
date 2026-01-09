@@ -23,7 +23,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { UnlinkSection } from '../../-components/unlink-section.js';
 
-export const Route = createFileRoute('/apps/edit/$key/web/')({
+export const Route = createFileRoute('/packages/apps/$key/web/')({
   component: WebAppGeneralForm,
 });
 

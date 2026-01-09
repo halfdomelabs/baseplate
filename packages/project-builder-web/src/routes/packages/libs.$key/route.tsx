@@ -1,47 +1,47 @@
 import type React from 'react';
 
-import { appEntityType } from '@baseplate-dev/project-builder-lib';
+import { libraryEntityType } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { Badge } from '@baseplate-dev/ui-components';
 import { createFileRoute, notFound, Outlet } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/apps/edit/$key')({
-  component: EditAppPage,
+export const Route = createFileRoute('/packages/libs/$key')({
+  component: EditPackagePage,
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
-    const id = appEntityType.idFromKey(key);
-    const app = id && projectDefinition.apps.find((a) => a.id === id);
-    if (!app) {
+    const id = libraryEntityType.idFromKey(key);
+    const pkg = id && projectDefinition.libraries.find((lib) => lib.id === id);
+    if (!pkg) {
       return {};
     }
     return {
-      getTitle: () => app.name,
-      app,
+      getTitle: () => pkg.name,
+      pkg,
     };
   },
   // Workaround for https://github.com/TanStack/router/issues/2139#issuecomment-2632375738
   // where throwing notFound() in beforeLoad causes the not found component to be rendered incorrectly
-  loader: ({ context: { app } }) => {
-    if (!app) throw notFound();
-    return { app };
+  loader: ({ context: { pkg } }) => {
+    if (!pkg) throw notFound();
+    return { pkg };
   },
 });
 
-function EditAppPage(): React.JSX.Element {
+function EditPackagePage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const { app } = Route.useLoaderData();
+  const { pkg } = Route.useLoaderData();
 
   const { packageScope } = definition.settings.general;
 
   return (
     <div
       className="relative flex h-full flex-1 flex-col overflow-hidden"
-      key={app.id}
+      key={pkg.id}
     >
       <div className="max-w-7xl space-y-4 p-4">
         <div className="flex items-center gap-3">
-          <h2>{packageScope ? `@${packageScope}/${app.name}` : app.name}</h2>
-          <Badge variant="secondary">{app.type}</Badge>
+          <h2>{packageScope ? `@${packageScope}/${pkg.name}` : pkg.name}</h2>
+          <Badge variant="secondary">{pkg.type}</Badge>
         </div>
       </div>
       <div

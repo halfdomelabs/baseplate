@@ -28,7 +28,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdSettings } from 'react-icons/md';
 
-export const Route = createFileRoute('/apps/edit/$key/web/admin')({
+export const Route = createFileRoute('/packages/apps/$key/web/admin')({
   component: WebAdminPage,
 });
 

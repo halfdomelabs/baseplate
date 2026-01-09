@@ -36,7 +36,7 @@ import { useForm } from 'react-hook-form';
 
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
-type TabValue = 'app' | 'package';
+type TabValue = 'app' | 'library';
 
 interface NewDialogProps {
   children: React.ReactNode;
@@ -111,7 +111,7 @@ export function NewDialog({
             .invalidate()
             .then(() => {
               navigate({
-                to: `/apps/edit/${appEntityType.keyFromId(newId)}`,
+                to: `/packages/apps/${appEntityType.keyFromId(newId)}`,
               });
             })
             .catch(logAndFormatError);
@@ -143,7 +143,7 @@ export function NewDialog({
             .invalidate()
             .then(() => {
               navigate({
-                to: `/apps/packages/$key`,
+                to: `/packages/libs/$key`,
                 params: { key: libraryEntityType.keyFromId(newId) },
               });
             })
@@ -181,7 +181,7 @@ export function NewDialog({
         >
           <TabsList className="w-full">
             <TabsTrigger value="app">App</TabsTrigger>
-            <TabsTrigger value="package">Package</TabsTrigger>
+            <TabsTrigger value="library">Library</TabsTrigger>
           </TabsList>
 
           <TabsContent value="app">
@@ -224,7 +224,7 @@ export function NewDialog({
             </form>
           </TabsContent>
 
-          <TabsContent value="package">
+          <TabsContent value="library">
             <form
               onSubmit={(e) => {
                 e.stopPropagation();
