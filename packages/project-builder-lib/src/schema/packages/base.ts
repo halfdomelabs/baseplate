@@ -1,10 +1,10 @@
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { packageEntityType } from './types.js';
+import { libraryEntityType } from './types.js';
 
 export const basePackageValidators = {
-  id: z.string().default(packageEntityType.generateNewId()),
+  id: z.string().default(libraryEntityType.generateNewId()),
   name: CASE_VALIDATORS.KEBAB_CASE,
   type: z.string(),
 } as const;

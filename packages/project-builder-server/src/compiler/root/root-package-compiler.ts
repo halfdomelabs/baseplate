@@ -1,4 +1,7 @@
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  PackageCompilerContext,
+  ProjectDefinition,
+} from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
@@ -11,9 +14,9 @@ import {
   rootReadmeGenerator,
   turboGenerator,
 } from '@baseplate-dev/core-generators';
+import { PackageCompiler } from '@baseplate-dev/project-builder-lib';
 import { uniq } from 'es-toolkit';
 
-import type { PackageCompilerContext } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
 import {
@@ -21,7 +24,11 @@ import {
   getRedisSettings,
   isRedisEnabled,
 } from '../infrastructure-utils.js';
-import { buildPackageName, PackageCompiler } from '../package-compiler.js';
+import {
+  buildPackageName,
+  DEFAULT_APPS_FOLDER,
+  DEFAULT_PACKAGES_FOLDER,
+} from '../package-compiler.js';
 
 /**
  * Build Docker Compose configuration at root level
@@ -61,8 +68,9 @@ export class RootPackageCompiler extends PackageCompiler {
     const monorepoSettings = projectDefinition.settings.monorepo;
 
     // Build workspace patterns from monorepo settings
-    const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
-    const packagesFolder = monorepoSettings?.packagesFolder ?? 'packages';
+    const appsFolder = monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER;
+    const packagesFolder =
+      monorepoSettings?.packagesFolder ?? DEFAULT_PACKAGES_FOLDER;
     const workspacePackages = [`${appsFolder}/*`, `${packagesFolder}/*`];
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());

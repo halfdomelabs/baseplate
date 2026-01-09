@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { packageEntityType } from '@baseplate-dev/project-builder-lib';
+import { libraryEntityType } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { Badge } from '@baseplate-dev/ui-components';
 import { createFileRoute, notFound, Outlet } from '@tanstack/react-router';
@@ -8,7 +8,7 @@ import { createFileRoute, notFound, Outlet } from '@tanstack/react-router';
 export const Route = createFileRoute('/apps/packages/$key')({
   component: EditPackagePage,
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
-    const id = packageEntityType.idFromKey(key);
+    const id = libraryEntityType.idFromKey(key);
     const pkg = id && projectDefinition.packages.find((p) => p.id === id);
     if (!pkg) {
       return {};

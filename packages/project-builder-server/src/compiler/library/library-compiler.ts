@@ -4,15 +4,11 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 
 import {
-  composeNodeGenerator,
-  nodeLibraryGenerator,
-  vitestGenerator,
-} from '@baseplate-dev/core-generators';
+  libraryTypeSpec,
+  PackageCompiler,
+} from '@baseplate-dev/project-builder-lib';
 
-import type { PackageTasks } from '../package-compiler.js';
-import type { PackageEntry } from '../package-entry.js';
-
-import { buildPackageName, PackageCompiler } from '../package-compiler.js';
+import { buildPackageName, getPackageDirectory } from '../package-compiler.js';
 
 /**
  * Abstract base class for library package compilers
@@ -44,50 +40,22 @@ export abstract class LibraryCompiler<
   getPackageDirectory(): string {
     const monorepoSettings =
       this.definitionContainer.definition.settings.monorepo;
-    const packagesFolder = monorepoSettings?.packagesFolder ?? 'packages';
-    return `${packagesFolder}/${this.packageConfig.name}`;
+    return getPackageDirectory(
+      monorepoSettings,
+      this.packageConfig.name,
+      'library',
+    );
   }
 }
 
-/**
- * Compiler for node library packages
- *
- * Generates a TypeScript library package with:
- * - TypeScript compilation using tsc
- * - Vitest testing setup
- * - Package.json with library exports
- */
-export class NodeLibraryCompiler extends LibraryCompiler<BasePackageConfig> {
-  compile(): PackageEntry {
-    const projectDefinition = this.definitionContainer.definition;
-    const generalSettings = projectDefinition.settings.general;
-
-    const packageName = this.getPackageName();
-
-    const rootBundle = composeNodeGenerator({
-      name: `${generalSettings.name}-${this.packageConfig.name}`,
-      packageName,
-      description: `Library package for ${generalSettings.name}`,
-      version: '1.0.0',
-      children: {
-        library: nodeLibraryGenerator({ includePlaceholderIndexFile: true }),
-        vitest: vitestGenerator({ includeTestHelpers: false }),
-      },
-    });
-
-    return {
-      id: this.packageConfig.id,
-      name: this.packageConfig.name,
-      packageDirectory: this.getPackageDirectory(),
-      generatorBundle: rootBundle,
-    };
+export function createLibraryCompilerFromSpec(
+  definitionContainer: ProjectDefinitionContainer,
+  packageConfig: BasePackageConfig,
+): PackageCompiler {
+  const typeSpec = definitionContainer.pluginStore.use(libraryTypeSpec);
+  const compilerCreator = typeSpec.compilerCreators.get(packageConfig.type);
+  if (!compilerCreator) {
+    throw new Error(`Unknown library type: ${packageConfig.type}`);
   }
-
-  getTasks(): PackageTasks {
-    return {
-      build: ['build'],
-      dev: [],
-      watch: [],
-    };
-  }
+  return compilerCreator.createCompiler(definitionContainer, packageConfig);
 }

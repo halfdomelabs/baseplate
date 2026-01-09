@@ -1,20 +1,17 @@
 import type {
   AppConfig,
-  PackageConfig,
+  PackageCompiler,
+  PackageCompilerContext,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
-import type {
-  PackageCompiler,
-  PackageCompilerContext,
-} from './package-compiler.js';
 import type { PackageEntry } from './package-entry.js';
 
 import { BackendPackageCompiler } from './backend/index.js';
-import { NodeLibraryCompiler } from './library/index.js';
+import { createLibraryCompilerFromSpec } from './library/index.js';
 import { RootPackageCompiler } from './root/index.js';
 import { WebPackageCompiler } from './web/index.js';
 
@@ -38,29 +35,6 @@ function createAppCompiler(
     }
     default: {
       throw new Error(`Unknown app type: ${(app as AppConfig).type}`);
-    }
-  }
-}
-
-/**
- * Create a library compiler instance based on package type
- *
- * @param definitionContainer - The project definition container
- * @param pkg - The package configuration
- * @returns PackageCompiler instance for the package type
- */
-function createLibraryCompiler(
-  definitionContainer: ProjectDefinitionContainer,
-  pkg: PackageConfig,
-): PackageCompiler {
-  // Cast to string to support future package types without lint errors
-  const pkgType = pkg.type as string;
-  switch (pkgType) {
-    case 'node-library': {
-      return new NodeLibraryCompiler(definitionContainer, pkg);
-    }
-    default: {
-      throw new Error(`Unknown package type: ${pkgType}`);
     }
   }
 }
@@ -98,7 +72,7 @@ export function compilePackages(
     new RootPackageCompiler(definitionContainer),
     ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
     ...packageConfigs.map((pkg) =>
-      createLibraryCompiler(definitionContainer, pkg),
+      createLibraryCompilerFromSpec(definitionContainer, pkg),
     ),
   ];
 

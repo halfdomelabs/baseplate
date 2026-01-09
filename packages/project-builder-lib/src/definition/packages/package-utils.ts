@@ -1,11 +1,13 @@
 import type {
   BasePackageConfig,
   MonorepoSettingsDefinition,
-  PackageConfig,
   ProjectDefinition,
 } from '#src/schema/index.js';
 
-function byId(projectDefinition: ProjectDefinition, id: string): PackageConfig {
+function byId(
+  projectDefinition: ProjectDefinition,
+  id: string,
+): BasePackageConfig {
   const config = projectDefinition.packages.find((pkg) => pkg.id === id);
   if (!config) {
     throw new Error(`Unable to find package with ID ${id}`);

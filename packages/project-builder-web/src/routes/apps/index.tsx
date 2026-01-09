@@ -3,7 +3,7 @@ import type React from 'react';
 import {
   appEntityType,
   AppUtils,
-  packageEntityType,
+  libraryEntityType,
   PackageUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -102,7 +102,7 @@ function AppsListPage(): React.JSX.Element {
                 <Link
                   key={pkg.id}
                   to="/apps/packages/$key"
-                  params={{ key: packageEntityType.keyFromId(pkg.id) }}
+                  params={{ key: libraryEntityType.keyFromId(pkg.id) }}
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
                     <div className="flex items-center justify-between">

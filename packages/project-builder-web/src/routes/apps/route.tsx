@@ -2,7 +2,7 @@ import type React from 'react';
 
 import {
   appEntityType,
-  packageEntityType,
+  libraryEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -79,7 +79,7 @@ function AppsLayout(): React.JSX.Element {
                   <NavigationMenuItemWithLink key={pkg.id} asChild>
                     <Link
                       to="/apps/packages/$key"
-                      params={{ key: packageEntityType.keyFromId(pkg.id) }}
+                      params={{ key: libraryEntityType.keyFromId(pkg.id) }}
                     >
                       {pkg.name}
                     </Link>

@@ -9,8 +9,7 @@ import { definitionSchema } from './creator/schema-creator.js';
 import { createFeaturesSchema } from './features/index.js';
 import { createEnumSchema } from './models/enums.js';
 import { createModelSchema } from './models/index.js';
-import { createNodeLibraryPackageSchema } from './packages/node-library/index.js';
-import { packageEntityType } from './packages/types.js';
+import { createLibrarySchema } from './packages/library.js';
 import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings/index.js';
 
@@ -31,28 +30,11 @@ export const createAppSchema = definitionSchema((ctx) =>
 
 export type AppConfig = def.InferOutput<typeof createAppSchema>;
 
-export const createPackageSchema = definitionSchema((ctx) =>
-  ctx.refContext({ packageSlot: packageEntityType }, ({ packageSlot }) =>
-    ctx.withEnt(
-      z.discriminatedUnion('type', [
-        createNodeLibraryPackageSchema(ctx, { packageSlot }),
-        // Future: add more package types here
-      ]),
-      {
-        type: packageEntityType,
-        provides: packageSlot,
-      },
-    ),
-  ),
-);
-
-export type PackageConfig = def.InferOutput<typeof createPackageSchema>;
-
 export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     cliVersion: z.string().nullish(),
     apps: z.array(createAppSchema(ctx)).default([]),
-    packages: z.array(createPackageSchema(ctx)).default([]),
+    packages: z.array(createLibrarySchema(ctx)).default([]),
     features: createFeaturesSchema(ctx),
     models: z.array(createModelSchema(ctx)).default([]),
     enums: z.array(createEnumSchema(ctx)).optional(),

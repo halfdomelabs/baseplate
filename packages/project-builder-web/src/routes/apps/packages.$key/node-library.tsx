@@ -27,7 +27,7 @@ export const Route = createFileRoute('/apps/packages/$key/node-library')({
   loader: ({ context: { pkg }, params: { key } }) => {
     if (!pkg) throw notFound();
     // Cast to string to support future package types without lint errors
-    const pkgType = pkg.type as string;
+    const pkgType = pkg.type;
     if (pkgType !== 'node-library') {
       throw redirect({ to: '/apps/packages/$key', params: { key } });
     }

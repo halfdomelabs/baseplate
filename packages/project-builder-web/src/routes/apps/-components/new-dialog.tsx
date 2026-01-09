@@ -1,6 +1,6 @@
 import type {
   AppConfig,
-  PackageConfig,
+  BasePackageConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
@@ -8,7 +8,7 @@ import {
   appEntityType,
   baseAppSchema,
   basePackageSchema,
-  packageEntityType,
+  libraryEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -121,7 +121,7 @@ export function NewDialog({
   });
 
   const onSubmitPackage = packageForm.handleSubmit((data) => {
-    const newId = packageEntityType.generateNewId();
+    const newId = libraryEntityType.generateNewId();
     return saveDefinitionWithFeedback(
       (draftConfig) => {
         const newPackages = [
@@ -133,7 +133,7 @@ export function NewDialog({
         ];
         draftConfig.packages = sortBy(newPackages, [
           (pkg) => pkg.name,
-        ]) as PackageConfig[];
+        ]) as BasePackageConfig[];
       },
       {
         successMessage: `Successfully created ${data.name}!`,
@@ -144,7 +144,7 @@ export function NewDialog({
             .then(() => {
               navigate({
                 to: `/apps/packages/$key`,
-                params: { key: packageEntityType.keyFromId(newId) },
+                params: { key: libraryEntityType.keyFromId(newId) },
               });
             })
             .catch(logAndFormatError);
