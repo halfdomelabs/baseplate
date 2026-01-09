@@ -11,7 +11,7 @@ export const createLibrarySchema = definitionSchema((ctx) =>
   ctx.refContext({ librarySlot: libraryEntityType }, ({ librarySlot }) => {
     const packageTypes = ctx.plugins.use(libraryTypeSpec);
     const schemas = [...packageTypes.schemaCreators.values()].map((entry) =>
-      entry.schemaCreator(ctx, { librarySlot }),
+      entry.definitionSchema(ctx, { librarySlot }),
     );
     return ctx.withEnt(
       z.discriminatedUnion(
