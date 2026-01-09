@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { libraryTypeSpec } from '#src/compiler/index.js';
+import { libraryTypeSpec } from '#src/specs/packages/library-type-spec.js';
 
 import type { basePackageSchema } from './base.js';
 
