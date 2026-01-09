@@ -3,9 +3,11 @@ import type {
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
-import { PackageCompiler } from '@baseplate-dev/project-builder-lib';
-
-import { buildPackageName, getPackageDirectory } from './package-compiler.js';
+import {
+  buildPackageName,
+  getPackageDirectory,
+  PackageCompiler,
+} from '@baseplate-dev/project-builder-lib';
 
 export abstract class AppCompiler<
   TAppConfig extends BaseAppConfig,

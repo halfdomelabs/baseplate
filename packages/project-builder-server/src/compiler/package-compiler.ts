@@ -1,7 +1,6 @@
 import type {
   AppEntryType,
   BaseAppConfig,
-  MonorepoSettingsDefinition,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -26,43 +25,4 @@ export function createAppEntryBuilderForPackage<
   appConfigType: AppEntryType<TAppConfig>,
 ): AppEntryBuilder<TAppConfig> {
   return new AppEntryBuilder(definitionContainer, appConfig, appConfigType);
-}
-
-/**
- * Build a scoped package name using the package scope or project name as scope
- *
- * @example
- * ```typescript
- * buildPackageName({ name: 'blog', packageScope: 'acme' }, 'utils')
- * // Returns: '@acme/utils'
- *
- * buildPackageName({ name: 'blog', packageScope: '' }, 'utils')
- * // Returns: '@blog/utils'
- * ```
- */
-export function buildPackageName(
-  generalSettings: { name: string; packageScope: string },
-  packageName: string,
-): string {
-  const scope = generalSettings.packageScope || generalSettings.name;
-  return `@${scope}/${packageName}`;
-}
-
-export const DEFAULT_APPS_FOLDER = 'apps';
-export const DEFAULT_LIBRARIES_FOLDER = 'libs';
-
-/**
- * Get the package directory for an app or library package based off
- * the monorepo settings and package name
- */
-export function getPackageDirectory(
-  monorepoSettings: MonorepoSettingsDefinition | undefined,
-  packageName: string,
-  packageType: 'app' | 'library',
-): string {
-  const folder =
-    packageType === 'app'
-      ? (monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER)
-      : (monorepoSettings?.librariesFolder ?? DEFAULT_LIBRARIES_FOLDER);
-  return `${folder}/${packageName}`;
 }

@@ -9,9 +9,10 @@ import {
   nodeLibraryGenerator,
   vitestGenerator,
 } from '@baseplate-dev/core-generators';
-import { nodeLibraryDefinitionSchemaEntry } from '@baseplate-dev/project-builder-lib';
-
-import { LibraryCompiler } from './library-compiler.js';
+import {
+  LibraryCompiler,
+  nodeLibraryDefinitionSchemaEntry,
+} from '@baseplate-dev/project-builder-lib';
 
 class NodeLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> {
   compile(): PackageEntry {

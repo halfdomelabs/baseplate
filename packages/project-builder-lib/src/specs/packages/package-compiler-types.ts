@@ -1,6 +1,8 @@
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { BaseLibraryDefinition } from '#src/schema/libraries/base.js';
+import type { MonorepoSettingsDefinition } from '#src/schema/settings/monorepo.js';
 
 /**
  * Represents a compiled package entry ready for code generation
@@ -85,5 +87,90 @@ export abstract class PackageCompiler {
       dev: [],
       watch: [],
     };
+  }
+}
+
+// ============================================================================
+// Package Directory Helpers
+// ============================================================================
+
+export const DEFAULT_APPS_FOLDER = 'apps';
+export const DEFAULT_LIBRARIES_FOLDER = 'libs';
+
+/**
+ * Build a scoped package name using the package scope or project name as scope
+ *
+ * @example
+ * ```typescript
+ * buildPackageName({ name: 'blog', packageScope: 'acme' }, 'utils')
+ * // Returns: '@acme/utils'
+ *
+ * buildPackageName({ name: 'blog', packageScope: '' }, 'utils')
+ * // Returns: '@blog/utils'
+ * ```
+ */
+export function buildPackageName(
+  generalSettings: { name: string; packageScope: string },
+  packageName: string,
+): string {
+  const scope = generalSettings.packageScope || generalSettings.name;
+  return `@${scope}/${packageName}`;
+}
+
+/**
+ * Get the package directory for an app or library package based off
+ * the monorepo settings and package name
+ */
+export function getPackageDirectory(
+  monorepoSettings: MonorepoSettingsDefinition | undefined,
+  packageName: string,
+  packageType: 'app' | 'library',
+): string {
+  const folder =
+    packageType === 'app'
+      ? (monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER)
+      : (monorepoSettings?.librariesFolder ?? DEFAULT_LIBRARIES_FOLDER);
+  return `${folder}/${packageName}`;
+}
+
+// ============================================================================
+// Library Compiler Base Class
+// ============================================================================
+
+/**
+ * Abstract base class for library package compilers
+ *
+ * Library packages differ from app packages in that they:
+ * - Don't use the plugin system (no AppEntryBuilder)
+ * - Use the librariesFolder instead of appsFolder
+ * - Have simpler compilation without app-specific features
+ */
+export abstract class LibraryCompiler<
+  TPackageConfig extends BaseLibraryDefinition,
+> extends PackageCompiler {
+  protected readonly packageConfig: TPackageConfig;
+
+  constructor(
+    definitionContainer: ProjectDefinitionContainer,
+    packageConfig: TPackageConfig,
+  ) {
+    super(definitionContainer);
+    this.packageConfig = packageConfig;
+  }
+
+  getPackageName(): string {
+    const generalSettings =
+      this.definitionContainer.definition.settings.general;
+    return buildPackageName(generalSettings, this.packageConfig.name);
+  }
+
+  getPackageDirectory(): string {
+    const monorepoSettings =
+      this.definitionContainer.definition.settings.monorepo;
+    return getPackageDirectory(
+      monorepoSettings,
+      this.packageConfig.name,
+      'library',
+    );
   }
 }

@@ -14,7 +14,12 @@ import {
   rootReadmeGenerator,
   turboGenerator,
 } from '@baseplate-dev/core-generators';
-import { PackageCompiler } from '@baseplate-dev/project-builder-lib';
+import {
+  buildPackageName,
+  DEFAULT_APPS_FOLDER,
+  DEFAULT_LIBRARIES_FOLDER,
+  PackageCompiler,
+} from '@baseplate-dev/project-builder-lib';
 import { uniq } from 'es-toolkit';
 
 import type { PackageEntry } from '../package-entry.js';
@@ -24,11 +29,6 @@ import {
   getRedisSettings,
   isRedisEnabled,
 } from '../infrastructure-utils.js';
-import {
-  buildPackageName,
-  DEFAULT_APPS_FOLDER,
-  DEFAULT_LIBRARIES_FOLDER,
-} from '../package-compiler.js';
 
 /**
  * Build Docker Compose configuration at root level

@@ -141,9 +141,7 @@ export function NewDialog({
     return saveDefinitionWithFeedback(
       (draftConfig) => {
         const newLibraries = [...draftConfig.libraries, newDefinition];
-        draftConfig.libraries = sortBy(newLibraries, [
-          (lib) => lib.name,
-        ]) as BaseLibraryDefinition[];
+        draftConfig.libraries = sortBy(newLibraries, [(lib) => lib.name]);
       },
       {
         successMessage: `Successfully created ${data.name}!`,
