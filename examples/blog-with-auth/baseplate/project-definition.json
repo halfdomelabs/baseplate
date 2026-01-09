@@ -101,6 +101,13 @@
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" }
   ],
   "isInitialized": true,
+  "libraries": [
+    {
+      "id": "library:X95tdAsNslUj",
+      "name": "transactional",
+      "type": "node-library"
+    }
+  ],
   "models": [
     {
       "featureRef": "blogs",
@@ -691,13 +698,6 @@
       }
     }
   ],
-  "packages": [
-    {
-      "id": "library:X95tdAsNslUj",
-      "name": "transactional",
-      "type": "node-library"
-    }
-  ],
   "plugins": [
     {
       "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },
@@ -775,7 +775,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 21,
+  "schemaVersion": 22,
   "settings": {
     "general": {
       "name": "blog-with-auth",
