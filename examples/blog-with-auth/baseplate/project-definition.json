@@ -104,7 +104,7 @@
     {
       "id": "library:X95tdAsNslUj",
       "name": "transactional",
-      "type": "node-library"
+      "type": "@baseplate-dev/plugin-email/transactional-lib"
     }
   ],
   "models": [

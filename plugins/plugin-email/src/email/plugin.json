@@ -4,5 +4,5 @@
   "icon": "icon.svg",
   "description": "Email sending service for your application. Requires an implementation (Postmark, SendGrid, etc.)",
   "version": "0.1.0",
-  "moduleDirectories": ["core"]
+  "moduleDirectories": ["core", "transactional-lib"]
 }
