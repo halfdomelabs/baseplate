@@ -1,4 +1,7 @@
-import type { LibraryEditComponentProps } from '@baseplate-dev/project-builder-lib';
+import type {
+  BasePackageConfig,
+  LibraryEditComponentProps,
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import { nodeLibraryDefinitionSchemaEntry } from '@baseplate-dev/project-builder-lib';
@@ -31,7 +34,7 @@ export function NodeLibraryEditComponent({
   const nodeLibrarySchema = useDefinitionSchema(
     nodeLibraryDefinitionSchemaEntry.definitionSchema,
   );
-  const formProps = useResettableForm({
+  const formProps = useResettableForm<BasePackageConfig>({
     resolver: zodResolver(nodeLibrarySchema),
     values: packageDefinition,
   });
