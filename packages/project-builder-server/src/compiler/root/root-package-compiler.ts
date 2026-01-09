@@ -27,7 +27,7 @@ import {
 import {
   buildPackageName,
   DEFAULT_APPS_FOLDER,
-  DEFAULT_PACKAGES_FOLDER,
+  DEFAULT_LIBRARIES_FOLDER,
 } from '../package-compiler.js';
 
 /**
@@ -69,9 +69,9 @@ export class RootPackageCompiler extends PackageCompiler {
 
     // Build workspace patterns from monorepo settings
     const appsFolder = monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER;
-    const packagesFolder =
-      monorepoSettings?.packagesFolder ?? DEFAULT_PACKAGES_FOLDER;
-    const workspacePackages = [`${appsFolder}/*`, `${packagesFolder}/*`];
+    const librariesFolder =
+      monorepoSettings?.librariesFolder ?? DEFAULT_LIBRARIES_FOLDER;
+    const workspacePackages = [`${appsFolder}/*`, `${librariesFolder}/*`];
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
     const mergedTasks = {
@@ -138,8 +138,8 @@ export class RootPackageCompiler extends PackageCompiler {
         ...(watchTasks.length > 0 ? { watch: `turbo run ${watchTasks}` } : {}),
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
-        'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${packagesFolder}/**"`,
-        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${packagesFolder}/**"`,
+        'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${librariesFolder}/**"`,
+        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${librariesFolder}/**"`,
       },
       additionalPackages: {
         dev: {

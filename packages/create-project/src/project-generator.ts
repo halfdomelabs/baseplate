@@ -55,7 +55,7 @@ export function createInitialProjectDefinition(
     features: [],
     cliVersion: config.cliVersion,
     apps: [],
-    packages: [],
+    libraries: [],
     models: [],
     isInitialized: false,
     schemaVersion: getLatestMigrationVersion(),

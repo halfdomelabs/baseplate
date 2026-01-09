@@ -26,12 +26,12 @@ export const Route = createFileRoute('/apps/')({
 function AppsListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const { apps, packages = [] } = definition;
+  const { apps, libraries = [] } = definition;
   const monorepoSettings = definition.settings.monorepo;
   const sortedApps = sortBy(apps, [(app) => app.name]);
-  const sortedPackages = sortBy(packages, [(pkg) => pkg.name]);
+  const sortedLibraries = sortBy(libraries, [(lib) => lib.name]);
 
-  if (sortedApps.length === 0 && sortedPackages.length === 0) {
+  if (sortedApps.length === 0 && sortedLibraries.length === 0) {
     return (
       <EmptyDisplay
         icon={MdApps}
@@ -85,32 +85,32 @@ function AppsListPage(): React.JSX.Element {
         )}
       </section>
 
-      {/* Packages Section */}
+      {/* Libraries Section */}
       <section className="space-y-4">
-        <h2>Packages</h2>
+        <h2>Libraries</h2>
         <p className="text-muted-foreground">
           Library packages that can be shared across apps.
         </p>
-        {sortedPackages.length > 0 ? (
+        {sortedLibraries.length > 0 ? (
           <div className="mt-4 flex max-w-xl flex-col gap-4">
-            {sortedPackages.map((pkg) => {
-              const pkgDirectory = PackageUtils.getPackageDirectory(
-                pkg,
+            {sortedLibraries.map((lib) => {
+              const libDirectory = PackageUtils.getLibraryDirectory(
+                lib,
                 monorepoSettings,
               );
               return (
                 <Link
-                  key={pkg.id}
+                  key={lib.id}
                   to="/apps/packages/$key"
-                  params={{ key: libraryEntityType.keyFromId(pkg.id) }}
+                  params={{ key: libraryEntityType.keyFromId(lib.id) }}
                 >
                   <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
                     <div className="flex items-center justify-between">
-                      <h3>{pkg.name}</h3>
-                      <Badge variant="secondary">{pkg.type}</Badge>
+                      <h3>{lib.name}</h3>
+                      <Badge variant="secondary">{lib.type}</Badge>
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Location: {pkgDirectory}
+                      Location: {libDirectory}
                     </p>
                   </Card>
                 </Link>
@@ -118,7 +118,9 @@ function AppsListPage(): React.JSX.Element {
             })}
           </div>
         ) : (
-          <p className="mt-4 text-sm text-muted-foreground">No packages yet.</p>
+          <p className="mt-4 text-sm text-muted-foreground">
+            No libraries yet.
+          </p>
         )}
       </section>
     </div>

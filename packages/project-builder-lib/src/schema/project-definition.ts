@@ -7,9 +7,9 @@ import { createWebAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
 import { definitionSchema } from './creator/schema-creator.js';
 import { createFeaturesSchema } from './features/index.js';
+import { createLibrarySchema } from './libraries/library.js';
 import { createEnumSchema } from './models/enums.js';
 import { createModelSchema } from './models/index.js';
-import { createLibrarySchema } from './libraries/library.js';
 import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings/index.js';
 
@@ -34,7 +34,7 @@ export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     cliVersion: z.string().nullish(),
     apps: z.array(createAppSchema(ctx)).default([]),
-    packages: z.array(createLibrarySchema(ctx)).default([]),
+    libraries: z.array(createLibrarySchema(ctx)).default([]),
     features: createFeaturesSchema(ctx),
     models: z.array(createModelSchema(ctx)).default([]),
     enums: z.array(createEnumSchema(ctx)).optional(),

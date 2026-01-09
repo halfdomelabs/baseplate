@@ -9,7 +9,7 @@ export const Route = createFileRoute('/apps/packages/$key')({
   component: EditPackagePage,
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
     const id = libraryEntityType.idFromKey(key);
-    const pkg = id && projectDefinition.packages.find((p) => p.id === id);
+    const pkg = id && projectDefinition.libraries.find((lib) => lib.id === id);
     if (!pkg) {
       return {};
     }

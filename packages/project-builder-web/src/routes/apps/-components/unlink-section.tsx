@@ -46,8 +46,8 @@ export function UnlinkSection({
         if (entityType === 'app') {
           definition.apps = definition.apps.filter((a) => a.id !== entityId);
         } else {
-          definition.packages = definition.packages.filter(
-            (p) => p.id !== entityId,
+          definition.libraries = definition.libraries.filter(
+            (lib) => lib.id !== entityId,
           );
         }
       },

@@ -49,7 +49,7 @@ export function buildPackageName(
 }
 
 export const DEFAULT_APPS_FOLDER = 'apps';
-export const DEFAULT_PACKAGES_FOLDER = 'packages';
+export const DEFAULT_LIBRARIES_FOLDER = 'libs';
 
 /**
  * Get the package directory for an app or library package based off
@@ -60,9 +60,9 @@ export function getPackageDirectory(
   packageName: string,
   packageType: 'app' | 'library',
 ): string {
-  const packagesFolder =
+  const folder =
     packageType === 'app'
       ? (monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER)
-      : (monorepoSettings?.packagesFolder ?? DEFAULT_PACKAGES_FOLDER);
-  return `${packagesFolder}/${packageName}`;
+      : (monorepoSettings?.librariesFolder ?? DEFAULT_LIBRARIES_FOLDER);
+  return `${folder}/${packageName}`;
 }

@@ -42,8 +42,8 @@ function NodeLibraryEditComponent({
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
-      draftConfig.packages = draftConfig.packages.map((pkg) =>
-        pkg.id === packageDefinition.id ? data : pkg,
+      draftConfig.libraries = draftConfig.libraries.map((lib) =>
+        lib.id === packageDefinition.id ? data : lib,
       );
     }),
   );

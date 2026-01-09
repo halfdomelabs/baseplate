@@ -124,15 +124,15 @@ export function NewDialog({
     const newId = libraryEntityType.generateNewId();
     return saveDefinitionWithFeedback(
       (draftConfig) => {
-        const newPackages = [
-          ...draftConfig.packages,
+        const newLibraries = [
+          ...draftConfig.libraries,
           {
             ...data,
             id: newId,
           },
         ];
-        draftConfig.packages = sortBy(newPackages, [
-          (pkg) => pkg.name,
+        draftConfig.libraries = sortBy(newLibraries, [
+          (lib) => lib.name,
         ]) as BaseLibraryDefinition[];
       },
       {

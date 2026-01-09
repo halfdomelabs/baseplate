@@ -30,9 +30,9 @@ export const Route = createFileRoute('/apps')({
 function AppsLayout(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const { apps, packages = [] } = definition;
+  const { apps, libraries = [] } = definition;
   const sortedApps = sortBy(apps, [(app) => app.name]);
-  const sortedPackages = sortBy(packages, [(pkg) => pkg.name]);
+  const sortedLibraries = sortBy(libraries, [(lib) => lib.name]);
 
   return (
     <SidebarLayout className="flex-1">
@@ -67,21 +67,21 @@ function AppsLayout(): React.JSX.Element {
           </>
         )}
 
-        {/* Packages Section */}
-        {sortedPackages.length > 0 && (
+        {/* Libraries Section */}
+        {sortedLibraries.length > 0 && (
           <>
             <h4 className="mt-2 px-2 text-sm font-medium text-muted-foreground">
-              Packages
+              Libraries
             </h4>
             <NavigationMenu orientation="vertical">
               <NavigationMenuList>
-                {sortedPackages.map((pkg) => (
-                  <NavigationMenuItemWithLink key={pkg.id} asChild>
+                {sortedLibraries.map((lib) => (
+                  <NavigationMenuItemWithLink key={lib.id} asChild>
                     <Link
                       to="/apps/packages/$key"
-                      params={{ key: libraryEntityType.keyFromId(pkg.id) }}
+                      params={{ key: libraryEntityType.keyFromId(lib.id) }}
                     >
-                      {pkg.name}
+                      {lib.name}
                     </Link>
                   </NavigationMenuItemWithLink>
                 ))}

@@ -62,17 +62,17 @@ export function compilePackages(
     (a) => a.name,
   ]);
 
-  // Get library packages sorted by name
-  const packageConfigs = sortBy(definitionContainer.definition.packages, [
-    (p) => p.name,
+  // Get libraries sorted by name
+  const libraryConfigs = sortBy(definitionContainer.definition.libraries, [
+    (lib) => lib.name,
   ]);
 
   // Instantiate all package compilers
   const compilers = [
     new RootPackageCompiler(definitionContainer),
     ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
-    ...packageConfigs.map((pkg) =>
-      createLibraryCompilerFromSpec(definitionContainer, pkg),
+    ...libraryConfigs.map((lib) =>
+      createLibraryCompilerFromSpec(definitionContainer, lib),
     ),
   ];
 

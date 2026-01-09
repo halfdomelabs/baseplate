@@ -25,7 +25,7 @@ export function createTestProjectDefinition(
     features: [],
     cliVersion: '1.0.0',
     apps: [],
-    packages: [],
+    libraries: [],
     models: [],
     isInitialized: true,
     schemaVersion: getLatestMigrationVersion(),
