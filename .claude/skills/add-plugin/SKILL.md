@@ -170,20 +170,19 @@ Create or copy an SVG icon to `plugins/plugin-<name>/src/<plugin-name>/static/ic
 
 ```typescript
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import { create<PluginName>PluginDefinitionSchema } from './schema/plugin-definition.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
+    pluginConfig: pluginConfigSpec,
   },
-  exports: {},
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(pluginKey, create<PluginName>PluginDefinitionSchema);
-    return {};
+  initialize: ({ pluginConfig }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, create<PluginName>PluginDefinitionSchema);
   },
 });
 ```
@@ -192,20 +191,21 @@ export default createPlatformPluginExport({
 
 ```typescript
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import { <PluginName>DefinitionEditor } from './components/<plugin-name>-definition-editor.js';
 
-export default createPlatformPluginExport({
+import '../../styles.css';
+
+export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, <PluginName>DefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, <PluginName>DefinitionEditor);
   },
 });
 ```
@@ -216,27 +216,29 @@ export default createPlatformPluginExport({
 import {
   appCompilerSpec,
   backendAppEntryType,
-  createPlatformPluginExport,
+  createPluginModule,
+  pluginAppCompiler,
 } from '@baseplate-dev/project-builder-lib';
 
 import { <pluginName>Generator } from './generators/<plugin-name>/<plugin-name>.generator.js';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
   },
-  exports: {},
   initialize: ({ appCompiler }, { pluginKey }) => {
-    appCompiler.registerAppCompiler({
-      pluginKey,
-      appType: backendAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          <pluginName>: <pluginName>Generator({}),
-        });
-      },
-    });
-    return {};
+    appCompiler.compilers.push(
+      pluginAppCompiler({
+        pluginKey,
+        appType: backendAppEntryType,
+        compile: ({ appCompiler }) => {
+          appCompiler.addRootChildren({
+            <pluginName>: <pluginName>Generator({}),
+          });
+        },
+      }),
+    );
   },
 });
 ```
