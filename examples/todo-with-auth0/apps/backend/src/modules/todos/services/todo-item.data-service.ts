@@ -43,6 +43,7 @@ export const todoItemInputFields = {
 export const createTodoItem = defineCreateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
+  getWhereUnique: (result) => ({ id: result.id }),
   create: async ({ tx, data: { assigneeId, todoListId, ...data }, query }) => {
     const item = await tx.todoItem.create({
       data: {

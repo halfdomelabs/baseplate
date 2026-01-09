@@ -68,6 +68,7 @@ export const userInputFields = {
 export const createUser = defineCreateOperation({
   model: 'user',
   fields: userInputFields,
+  getWhereUnique: (result) => ({ id: result.id }),
   create: async ({ tx, data, query }) => {
     const item = await tx.user.create({
       data,

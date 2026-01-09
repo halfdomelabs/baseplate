@@ -65,6 +65,20 @@ export async function invokeHooks<TContext>(
   await Promise.all(hooks.map((hook) => hook(context)));
 }
 
+/**
+ * Checks if any hooks are present that could modify data after the initial operation.
+ * Used to determine if a re-fetch is needed after operation completes.
+ *
+ * @param hooks - The hooks object to check
+ * @returns true if afterExecute or afterCommit hooks exist
+ */
+function hasPostExecuteHooks(hooks: AnyOperationHooks): boolean {
+  return (
+    (hooks.afterExecute?.length ?? 0) > 0 ||
+    (hooks.afterCommit?.length ?? 0) > 0
+  );
+}
+
 type FieldDataOrFunction<TField extends AnyFieldDefinition> =
   | InferFieldOutput<TField>
   | ((tx: PrismaTransaction) => Promise<InferFieldOutput<TField>>);
@@ -332,6 +346,19 @@ export interface CreateOperationConfig<
    * Optional hooks for the operation
    */
   hooks?: OperationHooks<GetPayload<TModelName>>;
+
+  /**
+   * Function to extract unique identifier from the created result.
+   * Required for re-fetching fresh data after hooks modify related records.
+   *
+   * @example
+   * ```typescript
+   * getWhereUnique: (result) => ({ id: result.id })
+   * ```
+   */
+  getWhereUnique: (
+    result: GetPayload<TModelName>,
+  ) => WhereUniqueInput<TModelName>;
 }
 
 /**
@@ -487,49 +514,69 @@ export function defineCreateOperation<
       ],
     };
 
+    // Check if we need to re-fetch after hooks (hooks may modify related records)
+    const needsRefetch = hasPostExecuteHooks(allHooks);
+
     // Execute in transaction
-    return prisma
-      .$transaction(async (tx) => {
-        const txContext: TransactionalOperationContext<
-          GetPayload<TModelName>,
-          { hasResult: false }
-        > = {
-          ...baseOperationContext,
-          tx,
-        };
+    const transactionResult = await prisma.$transaction(async (tx) => {
+      const txContext: TransactionalOperationContext<
+        GetPayload<TModelName>,
+        { hasResult: false }
+      > = {
+        ...baseOperationContext,
+        tx,
+      };
 
-        // Run beforeExecute hooks
-        await invokeHooks(allHooks.beforeExecute, txContext);
+      // Run beforeExecute hooks
+      await invokeHooks(allHooks.beforeExecute, txContext);
 
-        // Run all async create data transformations
-        const awaitedFieldsData =
-          typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
+      // Run all async create data transformations
+      const awaitedFieldsData =
+        typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
 
-        const result = await config.create({
-          tx,
-          data: { ...awaitedFieldsData.create, ...preparedData },
-          query: (query ?? {}) as {
-            include: NonNullable<TQueryArgs['include']>;
-          },
-          serviceContext: context,
-        });
+      // If re-fetching, don't include relations in initial create
+      const createQuery = needsRefetch
+        ? ({} as { include: NonNullable<TQueryArgs['include']> })
+        : ((query ?? {}) as { include: NonNullable<TQueryArgs['include']> });
 
-        // Run afterExecute hooks
-        await invokeHooks(allHooks.afterExecute, {
-          ...txContext,
-          result,
-        });
-
-        return result;
-      })
-      .then(async (result) => {
-        // Run afterCommit hooks (outside transaction)
-        await invokeHooks(allHooks.afterCommit, {
-          ...baseOperationContext,
-          result,
-        });
-        return result as GetPayload<TModelName, TQueryArgs>;
+      const result = await config.create({
+        tx,
+        data: { ...awaitedFieldsData.create, ...preparedData },
+        query: createQuery,
+        serviceContext: context,
       });
+
+      // Run afterExecute hooks
+      await invokeHooks(allHooks.afterExecute, {
+        ...txContext,
+        result,
+      });
+
+      return result;
+    });
+
+    // Run afterCommit hooks (outside transaction)
+    await invokeHooks(allHooks.afterCommit, {
+      ...baseOperationContext,
+      result: transactionResult,
+    });
+
+    // Re-fetch if hooks existed and query includes relations
+    if (needsRefetch && query?.include) {
+      const delegate = makeGenericPrismaDelegate(prisma, config.model);
+      const freshResult = await delegate.findUnique<TQueryArgs>({
+        where: config.getWhereUnique(
+          transactionResult as unknown as GetPayload<TModelName>,
+        ),
+        include: query.include,
+      });
+      if (!freshResult) {
+        throw new Error(`Failed to re-fetch ${config.model} after create`);
+      }
+      return freshResult as GetPayload<TModelName, TQueryArgs>;
+    }
+
+    return transactionResult as GetPayload<TModelName, TQueryArgs>;
   };
   createOperation.$dataSchema = dataSchema;
   return createOperation;
@@ -808,50 +855,67 @@ export function defineUpdateOperation<
       ],
     };
 
+    // Check if we need to re-fetch after hooks (hooks may modify related records)
+    const needsRefetch = hasPostExecuteHooks(allHooks);
+
     // Execute in transaction
-    return prisma
-      .$transaction(async (tx) => {
-        const txContext: TransactionalOperationContext<
-          GetPayload<TModelName>,
-          { hasResult: false }
-        > = {
-          ...baseOperationContext,
-          tx,
-        };
+    const transactionResult = await prisma.$transaction(async (tx) => {
+      const txContext: TransactionalOperationContext<
+        GetPayload<TModelName>,
+        { hasResult: false }
+      > = {
+        ...baseOperationContext,
+        tx,
+      };
 
-        // Run beforeExecute hooks
-        await invokeHooks(allHooks.beforeExecute, txContext);
+      // Run beforeExecute hooks
+      await invokeHooks(allHooks.beforeExecute, txContext);
 
-        // Run all async update data transformations
-        const awaitedFieldsData =
-          typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
+      // Run all async update data transformations
+      const awaitedFieldsData =
+        typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
 
-        const result = await config.update({
-          tx,
-          where,
-          data: { ...awaitedFieldsData.update, ...preparedData },
-          query: (query ?? {}) as {
-            include: NonNullable<TQueryArgs['include']>;
-          },
-          serviceContext: context,
-        });
+      // If re-fetching, don't bother including relations in initial update
+      const updateQuery = needsRefetch
+        ? ({} as { include: NonNullable<TQueryArgs['include']> })
+        : ((query ?? {}) as { include: NonNullable<TQueryArgs['include']> });
 
-        // Run afterExecute hooks
-        await invokeHooks(allHooks.afterExecute, {
-          ...txContext,
-          result,
-        });
-
-        return result;
-      })
-      .then(async (result) => {
-        // Run afterCommit hooks (outside transaction)
-        await invokeHooks(allHooks.afterCommit, {
-          ...baseOperationContext,
-          result,
-        });
-        return result as GetPayload<TModelName, TQueryArgs>;
+      const result = await config.update({
+        tx,
+        where,
+        data: { ...awaitedFieldsData.update, ...preparedData },
+        query: updateQuery,
+        serviceContext: context,
       });
+
+      // Run afterExecute hooks
+      await invokeHooks(allHooks.afterExecute, {
+        ...txContext,
+        result,
+      });
+
+      return result;
+    });
+
+    // Run afterCommit hooks (outside transaction)
+    await invokeHooks(allHooks.afterCommit, {
+      ...baseOperationContext,
+      result: transactionResult,
+    });
+
+    // Re-fetch if hooks existed and query includes relations
+    if (needsRefetch && query?.include) {
+      const freshResult = await delegate.findUnique<TQueryArgs>({
+        where,
+        include: query.include,
+      });
+      if (!freshResult) {
+        throw new NotFoundError(`${config.model} not found after update`);
+      }
+      return freshResult as GetPayload<TModelName, TQueryArgs>;
+    }
+
+    return transactionResult as GetPayload<TModelName, TQueryArgs>;
   };
   updateOperation.$dataSchema = generateCreateSchema(config.fields).partial();
   return updateOperation;

@@ -24,6 +24,7 @@ import {
 } from '#src/types/service-output.js';
 
 import { generateCreateCallback } from '../_shared/build-data-helpers/index.js';
+import { generateGetWhereUniqueFragment } from '../_shared/crud-method/primary-key-input.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -69,17 +70,23 @@ export const prismaDataCreateGenerator = createGenerator({
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
             // Generate create callback that transforms FK fields into relations
+            const prismaModel = prismaOutput.getPrismaModel(modelName);
             const { createCallbackFragment } = generateCreateCallback({
-              prismaModel: prismaOutput.getPrismaModel(modelName),
+              prismaModel,
               inputFieldNames: fields,
               dataUtilsImports,
               modelVariableName: lowercaseFirstChar(modelName),
             });
 
+            // Generate getWhereUnique based on primary key structure
+            const getWhereUniqueFragment =
+              generateGetWhereUniqueFragment(prismaModel);
+
             const createOperation = tsTemplate`
               export const ${name} = ${dataUtilsImports.defineCreateOperation.fragment()}({
                 model: ${quot(lowercaseFirstChar(modelName))},
                 fields: ${fieldsFragment},
+                getWhereUnique: ${getWhereUniqueFragment},
                 create: ${createCallbackFragment},
               })
             `;
