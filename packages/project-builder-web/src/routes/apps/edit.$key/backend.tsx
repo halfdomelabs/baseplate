@@ -90,12 +90,6 @@ function BackendAppEditPage(): React.JSX.Element {
               />
               <SwitchFieldController
                 control={control}
-                name="enablePostmark"
-                label="Postmark"
-                description="Enable Postmark for email delivery"
-              />
-              <SwitchFieldController
-                control={control}
                 name="enableSubscriptions"
                 label="GraphQL Subscriptions"
                 description="Enable GraphQL Subscriptions for real-time updates"
