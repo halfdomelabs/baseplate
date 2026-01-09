@@ -9,6 +9,7 @@ import {
   baseAppSchema,
   baseLibrarySchema,
   libraryEntityType,
+  libraryTypeSpec,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -54,8 +55,12 @@ export function NewDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const [activeTab, setActiveTab] = useState<TabValue>(defaultTab);
 
-  const { saveDefinitionWithFeedback, isSavingDefinition } =
+  const { saveDefinitionWithFeedback, isSavingDefinition, pluginContainer } =
     useProjectDefinition();
+
+  // Get library web configs from the spec
+  const librarySpec = pluginContainer.use(libraryTypeSpec);
+  const libraryWebConfigs = [...librarySpec.webConfigs.entries()];
   const navigate = useNavigate();
   const router = useRouter();
 
@@ -84,7 +89,10 @@ export function NewDialog({
     { label: 'Web App', value: 'web' },
   ];
 
-  const packageTypeOptions = [{ label: 'Node Library', value: 'node-library' }];
+  const packageTypeOptions = libraryWebConfigs.map(([name, config]) => ({
+    label: config.displayName,
+    value: name,
+  }));
 
   const onSubmitApp = appForm.handleSubmit((data) => {
     const newId = appEntityType.generateNewId();
@@ -122,15 +130,17 @@ export function NewDialog({
 
   const onSubmitPackage = packageForm.handleSubmit((data) => {
     const newId = libraryEntityType.generateNewId();
+    const webConfig = librarySpec.webConfigs.get(data.type);
+    if (!webConfig) {
+      throw new Error(`No web config found for library type: ${data.type}`);
+    }
+    const newDefinition = webConfig.createDefinition({
+      id: newId,
+      name: data.name,
+    }) as BaseLibraryDefinition;
     return saveDefinitionWithFeedback(
       (draftConfig) => {
-        const newLibraries = [
-          ...draftConfig.libraries,
-          {
-            ...data,
-            id: newId,
-          },
-        ];
+        const newLibraries = [...draftConfig.libraries, newDefinition];
         draftConfig.libraries = sortBy(newLibraries, [
           (lib) => lib.name,
         ]) as BaseLibraryDefinition[];

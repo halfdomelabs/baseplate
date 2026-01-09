@@ -61,14 +61,35 @@ export interface LibraryEditComponentProps<
 }
 
 /**
+ * Parameters for creating a new library definition
+ */
+export interface CreateLibraryDefinitionParams {
+  id: string;
+  name: string;
+}
+
+/**
  * Web configuration for a library type
  */
 export interface LibraryWebConfig<
   T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
   name: string;
+  /** Display name shown in the UI (e.g., "Node Library") */
+  displayName: string;
   /** React component for editing this library type */
   EditComponent: React.ComponentType<LibraryEditComponentProps<T>>;
+  /** Creates a new library definition with the given id and name */
+  createDefinition: (params: CreateLibraryDefinitionParams) => T;
+}
+
+/**
+ * Creates a typed library web config
+ */
+export function createLibraryWebConfig<
+  T extends BaseLibraryDefinition = BaseLibraryDefinition,
+>(config: LibraryWebConfig<T>): LibraryWebConfig<T> {
+  return config;
 }
 
 /**

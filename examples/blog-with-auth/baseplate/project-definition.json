@@ -86,7 +86,6 @@
     },
     {
       "enableAxios": false,
-      "enablePostmark": false,
       "enableStripe": false,
       "enableSubscriptions": false,
       "id": "app:acqRWBqOc6tx",
@@ -94,7 +93,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.4.4",
+  "cliVersion": "0.5.0",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },

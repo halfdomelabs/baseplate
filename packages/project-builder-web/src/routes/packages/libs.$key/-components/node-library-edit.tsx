@@ -4,7 +4,10 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { nodeLibraryDefinitionSchemaEntry } from '@baseplate-dev/project-builder-lib';
+import {
+  createLibraryWebConfig,
+  nodeLibraryDefinitionSchemaEntry,
+} from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -76,7 +79,13 @@ function NodeLibraryEditComponent({
   );
 }
 
-export const nodeLibraryWebConfig = {
+export const nodeLibraryWebConfig = createLibraryWebConfig({
   name: nodeLibraryDefinitionSchemaEntry.name,
+  displayName: 'Node Library',
   EditComponent: NodeLibraryEditComponent,
-};
+  createDefinition: ({ id, name }) => ({
+    id,
+    name,
+    type: 'node-library',
+  }),
+});
