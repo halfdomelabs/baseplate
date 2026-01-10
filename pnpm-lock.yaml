@@ -1366,6 +1366,9 @@ importers:
       '@baseplate-dev/plugin-queue':
         specifier: workspace:*
         version: link:../plugin-queue
+      '@baseplate-dev/react-generators':
+        specifier: workspace:*
+        version: link:../../packages/react-generators
       '@baseplate-dev/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components

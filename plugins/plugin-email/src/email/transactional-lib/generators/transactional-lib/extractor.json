@@ -112,6 +112,15 @@
       "sourceFile": "src/emails/test.email.tsx",
       "variables": {}
     },
+    "index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/index.ts",
+      "sourceFile": "src/index.ts",
+      "variables": {}
+    },
     "services-render-email": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

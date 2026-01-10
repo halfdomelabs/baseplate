@@ -34,7 +34,7 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
       description: `Transactional email library for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
-        library: nodeLibraryGenerator({ includePlaceholderIndexFile: true }),
+        library: nodeLibraryGenerator({ includePlaceholderIndexFile: false }),
         vitest: vitestGenerator({ includeTestHelpers: false }),
         transactional: transactionalLibGenerator({}),
       },

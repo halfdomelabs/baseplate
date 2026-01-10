@@ -2,7 +2,7 @@
   "name": "@blog-with-auth/transactional",
   "version": "1.0.0",
   "private": true,
-  "description": "Library package for blog-with-auth",
+  "description": "Transactional email library for blog-with-auth",
   "license": "UNLICENSED",
   "type": "module",
   "exports": {
@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@react-email/components": "1.0.3",
-    "entities": "7.0.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

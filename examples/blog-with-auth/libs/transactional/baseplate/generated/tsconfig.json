@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "declaration": true,
+    "declarationMap": true,
     "target": "es2022",
     "lib": ["es2023"],
     "esModuleInterop": true,
@@ -11,7 +12,9 @@
     "removeComments": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "sourceMap": true
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "jsx": "react-jsx"
   },
   "include": ["src"],
   "exclude": ["**/node_modules", "**/dist", "**/lib"]

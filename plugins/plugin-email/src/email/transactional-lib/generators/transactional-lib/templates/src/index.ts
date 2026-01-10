@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 export * from './components/index.js';
 export * from './emails/index.js';
 export * from './services/render-email.service.js';

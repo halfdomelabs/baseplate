@@ -161,6 +161,17 @@ const emailsTest = createTsTemplateFile({
   variables: {},
 });
 
+const index = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'index',
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/index.ts'),
+  },
+  variables: {},
+});
+
 const servicesRenderEmail = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -208,6 +219,7 @@ export const mainGroup = {
   constantsTheme,
   emailsIndex,
   emailsTest,
+  index,
   servicesRenderEmail,
   typesEmailComponent,
 };

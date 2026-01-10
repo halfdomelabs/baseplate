@@ -133,9 +133,10 @@ export interface TypescriptFileProvider {
 export const typescriptFileProvider =
   createProviderType<TypescriptFileProvider>('typescript-file');
 
-const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
+export const DEFAULT_TYPESCRIPT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   outDir: 'dist',
   declaration: true,
+  declarationMap: true,
   target: 'es2022',
   lib: ['es2023'],
   esModuleInterop: true,
@@ -145,6 +146,7 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   removeComments: true,
   forceConsistentCasingInFileNames: true,
   resolveJsonModule: true,
+  skipLibCheck: true,
   sourceMap: true,
 };
 
@@ -152,7 +154,7 @@ const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
-        DEFAULT_COMPILER_OPTIONS,
+        DEFAULT_TYPESCRIPT_COMPILER_OPTIONS,
       ),
       isComposite: t.scalar<boolean>(false),
       include: t.array<string>(['src'], { stripDuplicates: true }),

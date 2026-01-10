@@ -1,9 +1,19 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import {
+  DEFAULT_TYPESCRIPT_COMPILER_OPTIONS,
   nodeProvider,
+  packageScope,
+  TsCodeUtils,
   tsTemplate,
   typescriptSetupProvider,
 } from '@baseplate-dev/core-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { REACT_PACKAGES } from '@baseplate-dev/react-generators';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { EMAIL_TRANSACTIONAL_LIB_GENERATED } from './generated/index.js';
@@ -16,14 +26,25 @@ const descriptorSchema = z.object({});
 const TRANSACTIONAL_LIB_PACKAGES = {
   prod: {
     '@react-email/components': '1.0.3',
-    entities: '7.0.0',
-    react: '19.1.0',
-    'react-dom': '19.1.0',
+    react: REACT_PACKAGES.react,
+    'react-dom': REACT_PACKAGES['react-dom'],
   },
   dev: {
-    '@types/react': '19.1.3',
+    '@types/react': REACT_PACKAGES['@types/react'],
   },
 } as const;
+
+interface EmailTemplateExport {
+  exportTarget: string;
+  exportFragment: TsCodeFragment;
+}
+
+interface EmailTemplatesProvider {
+  registerExport(templateExport: EmailTemplateExport): void;
+}
+
+const emailTemplatesProvider =
+  createProviderType<EmailTemplatesProvider>('email-templates');
 
 /**
  * Generator for email/transactional-lib
@@ -47,6 +68,7 @@ export const transactionalLibGenerator = createGenerator({
       run({ typescriptSetup }) {
         // Add JSX support for React Email components
         typescriptSetup.compilerOptions.set({
+          ...DEFAULT_TYPESCRIPT_COMPILER_OPTIONS,
           jsx: 'react-jsx',
         });
       },
@@ -69,15 +91,42 @@ export const transactionalLibGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         renderers: EMAIL_TRANSACTIONAL_LIB_GENERATED.renderers.provider,
+        paths: EMAIL_TRANSACTIONAL_LIB_GENERATED.paths.provider,
       },
-      run({ renderers }) {
+      exports: {
+        emailTemplates: emailTemplatesProvider.export(packageScope),
+      },
+      run({ renderers, paths }) {
+        const emailTemplates: EmailTemplateExport[] = [
+          {
+            exportTarget: paths.emailsTest,
+            exportFragment: tsTemplate`export { default as TestEmail } from './test.email.js';`,
+          },
+        ];
+
         return {
+          providers: {
+            emailTemplates: {
+              registerExport: (template) => {
+                emailTemplates.push(template);
+              },
+            },
+          },
           build: async (builder) => {
+            const emailTemplatesIndex = TsCodeUtils.mergeFragments(
+              Object.fromEntries(
+                emailTemplates.map((template) => [
+                  template.exportTarget,
+                  template.exportFragment,
+                ]),
+              ),
+            );
+
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
                   emailsIndex: {
-                    TPL_EMAIL_TEMPLATES: tsTemplate``,
+                    TPL_EMAIL_TEMPLATES: emailTemplatesIndex,
                   },
                 },
               }),

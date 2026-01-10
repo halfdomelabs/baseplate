@@ -13,6 +13,7 @@ export interface EmailTransactionalLibPaths {
   constantsTheme: string;
   emailsIndex: string;
   emailsTest: string;
+  index: string;
   servicesRenderEmail: string;
   typesEmailComponent: string;
 }
@@ -42,6 +43,7 @@ const emailTransactionalLibPathsTask = createGeneratorTask({
           constantsTheme: `${srcRoot}/constants/theme.ts`,
           emailsIndex: `${srcRoot}/emails/index.ts`,
           emailsTest: `${srcRoot}/emails/test.email.tsx`,
+          index: `${srcRoot}/index.ts`,
           servicesRenderEmail: `${srcRoot}/services/render-email.service.tsx`,
           typesEmailComponent: `${srcRoot}/types/email-component.types.ts`,
         },
