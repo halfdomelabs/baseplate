@@ -1,9 +1,12 @@
 import {
   appCompilerSpec,
   backendAppEntryType,
+  buildPackageName,
   createPluginModule,
+  LibraryUtils,
 } from '@baseplate-dev/project-builder-lib';
 
+import { TRANSACTIONAL_LIB_TYPE } from '../transactional-lib/index.js';
 import { emailModuleGenerator } from './generators/index.js';
 
 export default createPluginModule({
@@ -15,9 +18,18 @@ export default createPluginModule({
     appCompiler.compilers.push({
       pluginKey,
       appType: backendAppEntryType,
-      compile: ({ appCompiler }) => {
+      compile: ({ appCompiler, projectDefinition }) => {
+        const transactionalLibDefinition = LibraryUtils.byUniqueTypeOrThrow(
+          projectDefinition,
+          TRANSACTIONAL_LIB_TYPE,
+        );
         appCompiler.addRootChildren({
-          emailModule: emailModuleGenerator({}),
+          emailModule: emailModuleGenerator({
+            transactionalLibPackageName: buildPackageName(
+              projectDefinition.settings.general,
+              transactionalLibDefinition.name,
+            ),
+          }),
         });
       },
     });

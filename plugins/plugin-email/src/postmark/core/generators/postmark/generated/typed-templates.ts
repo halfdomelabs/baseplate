@@ -20,4 +20,4 @@ const postmarkService = createTsTemplateFile({
   variables: {},
 });
 
-export const POSTMARK_POSTMARK_TEMPLATES = { postmarkService };
+export const POSTMARK_CORE_POSTMARK_TEMPLATES = { postmarkService };

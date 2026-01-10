@@ -17,7 +17,7 @@
       },
       "referencedGeneratorTemplates": ["emails-types", "send-email-queue"],
       "sourceFile": "module/emails/services/emails.service.ts",
-      "variables": {}
+      "variables": { "TPL_EMAIL_COMPONENT": {}, "TPL_RENDER_EMAIL": {} }
     },
     "emails-types": {
       "type": "ts",

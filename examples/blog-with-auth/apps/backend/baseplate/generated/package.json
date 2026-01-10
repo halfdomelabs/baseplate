@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@blog-with-auth/transactional": "workspace:*",
     "@envelop/core": "5.3.0",
     "@envelop/disable-introspection": "8.0.0",
     "@fastify/cookie": "11.0.1",

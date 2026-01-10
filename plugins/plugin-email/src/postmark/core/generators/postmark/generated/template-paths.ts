@@ -1,23 +1,23 @@
 import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface PostmarkPostmarkPaths {
+export interface PostmarkCorePostmarkPaths {
   postmarkService: string;
 }
 
-const postmarkPostmarkPaths = createProviderType<PostmarkPostmarkPaths>(
-  'postmark-postmark-paths',
+const postmarkCorePostmarkPaths = createProviderType<PostmarkCorePostmarkPaths>(
+  'postmark-core-postmark-paths',
 );
 
-const postmarkPostmarkPathsTask = createGeneratorTask({
+const postmarkCorePostmarkPathsTask = createGeneratorTask({
   dependencies: { appModule: appModuleProvider },
-  exports: { postmarkPostmarkPaths: postmarkPostmarkPaths.export() },
+  exports: { postmarkCorePostmarkPaths: postmarkCorePostmarkPaths.export() },
   run({ appModule }) {
     const moduleRoot = appModule.getModuleFolder();
 
     return {
       providers: {
-        postmarkPostmarkPaths: {
+        postmarkCorePostmarkPaths: {
           postmarkService: `${moduleRoot}/emails/services/postmark.service.ts`,
         },
       },
@@ -25,7 +25,7 @@ const postmarkPostmarkPathsTask = createGeneratorTask({
   },
 });
 
-export const POSTMARK_POSTMARK_PATHS = {
-  provider: postmarkPostmarkPaths,
-  task: postmarkPostmarkPathsTask,
+export const POSTMARK_CORE_POSTMARK_PATHS = {
+  provider: postmarkCorePostmarkPaths,
+  task: postmarkCorePostmarkPathsTask,
 };

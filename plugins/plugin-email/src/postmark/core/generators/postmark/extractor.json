@@ -1,5 +1,5 @@
 {
-  "name": "postmark/postmark",
+  "name": "postmark/core/postmark",
   "templates": {
     "postmark-service": {
       "type": "ts",

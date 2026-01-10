@@ -15,7 +15,7 @@ import { z } from 'zod';
 
 import { emailConfigProvider } from '#src/email/core/generators/email-module/email-module.generator.js';
 
-import { POSTMARK_POSTMARK_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { POSTMARK_CORE_POSTMARK_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 

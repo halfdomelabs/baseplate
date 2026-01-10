@@ -15,6 +15,22 @@ function byId(
   return config;
 }
 
+function byUniqueTypeOrThrow(
+  projectDefinition: ProjectDefinition,
+  type: string,
+): BaseLibraryDefinition {
+  const config = projectDefinition.libraries.filter((lib) => lib.type === type);
+  if (config.length === 0) {
+    throw new Error(`Unable to find library with type ${type}`);
+  }
+  if (config.length > 1) {
+    throw new Error(
+      `Multiple libraries with type ${type} found and only one is expected (${config.map((lib) => lib.name).join(', ')})`,
+    );
+  }
+  return config[0];
+}
+
 /**
  * Given a library config, get the relative directory of the library
  *
@@ -30,7 +46,8 @@ function getLibraryDirectory(
   return `${librariesFolder}/${libraryConfig.name}`;
 }
 
-export const PackageUtils = {
+export const LibraryUtils = {
   byId,
+  byUniqueTypeOrThrow,
   getLibraryDirectory,
 };

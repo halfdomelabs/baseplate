@@ -1,8 +1,10 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
+  createNodePackagesTask,
   packageScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import { configServiceProvider } from '@baseplate-dev/fastify-generators';
@@ -17,7 +19,9 @@ import { z } from 'zod';
 
 import { EMAIL_CORE_EMAIL_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  transactionalLibPackageName: z.string(),
+});
 
 // Create a config provider for email adapters to register themselves
 const [emailConfigTask, emailConfigProvider, emailConfigValuesProvider] =
@@ -41,11 +45,17 @@ export const emailModuleGenerator = createGenerator({
   name: 'email/core/email-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ transactionalLibPackageName }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     imports: GENERATED_TEMPLATES.imports.task,
     emailConfig: emailConfigTask,
+    // Add transactional lib package dependency
+    nodePackages: createNodePackagesTask({
+      prod: {
+        [transactionalLibPackageName]: 'workspace:*',
+      },
+    }),
     // Add EMAIL_DEFAULT_FROM config field
     configService: createProviderTask(
       configServiceProvider,
@@ -93,6 +103,16 @@ export const emailModuleGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
+                  emailsService: {
+                    TPL_RENDER_EMAIL: TsCodeUtils.importFragment(
+                      'renderEmail',
+                      transactionalLibPackageName,
+                    ),
+                    TPL_EMAIL_COMPONENT: TsCodeUtils.typeImportFragment(
+                      'EmailComponent',
+                      transactionalLibPackageName,
+                    ),
+                  },
                   sendEmailQueue: {
                     TPL_EMAIL_ADAPTER: emailAdapter,
                   },

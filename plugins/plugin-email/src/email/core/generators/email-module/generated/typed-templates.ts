@@ -22,7 +22,7 @@ const emailsService = createTsTemplateFile({
       '../templates/module/emails/services/emails.service.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_EMAIL_COMPONENT: {}, TPL_RENDER_EMAIL: {} },
 });
 
 const emailsTypes = createTsTemplateFile({

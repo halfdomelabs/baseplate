@@ -4,7 +4,7 @@ import {
   appEntityType,
   AppUtils,
   libraryEntityType,
-  PackageUtils,
+  LibraryUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -94,7 +94,7 @@ function PackagesListPage(): React.JSX.Element {
         {sortedLibraries.length > 0 ? (
           <div className="mt-4 flex max-w-xl flex-col gap-4">
             {sortedLibraries.map((lib) => {
-              const libDirectory = PackageUtils.getLibraryDirectory(
+              const libDirectory = LibraryUtils.getLibraryDirectory(
                 lib,
                 monorepoSettings,
               );
