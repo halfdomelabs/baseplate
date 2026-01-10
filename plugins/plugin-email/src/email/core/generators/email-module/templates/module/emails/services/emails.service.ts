@@ -68,6 +68,6 @@ export async function sendEmail<P extends object>(
     ...options,
     html,
     text,
-    template: component.name,
+    template: component.displayName,
   });
 }

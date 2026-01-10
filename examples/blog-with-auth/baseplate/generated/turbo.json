@@ -13,6 +13,7 @@
     "prettier:write": { "cache": false },
     "prettier:write:root": { "cache": false },
     "test": { "dependsOn": ["^build"] },
-    "typecheck": {}
+    "typecheck": {},
+    "watch": { "cache": false, "persistent": true }
   }
 }

@@ -21,10 +21,15 @@ interface EmailLayoutProps {
   previewText?: string;
 }
 
+const { branding } = theme;
+
 export function EmailLayout({
   children,
   previewText,
 }: EmailLayoutProps): React.ReactElement {
+  const hasFooterLinks =
+    branding.links.privacyPolicy ?? branding.links.termsOfService;
+
   return (
     <Html>
       <Head />
@@ -33,18 +38,20 @@ export function EmailLayout({
         <Container style={styles.container}>
           <Section style={styles.header}>
             <Row>
-              <Column style={{ width: '40px' }}>
-                <Img
-                  src="https://static.baseplate.dev/logo.png"
-                  width="32"
-                  height="32"
-                  alt="Baseplate Logo"
-                  style={{ borderRadius: '4px' }}
-                />
-              </Column>
+              {branding.logoUrl && (
+                <Column style={{ width: `${branding.logoWidth + 8}px` }}>
+                  <Img
+                    src={branding.logoUrl}
+                    width={branding.logoWidth}
+                    height={branding.logoHeight}
+                    alt={`${branding.name} Logo`}
+                    style={{ borderRadius: '4px' }}
+                  />
+                </Column>
+              )}
               <Column>
                 <ReactEmailText style={styles.brandName}>
-                  Baseplate
+                  {branding.name}
                 </ReactEmailText>
               </Column>
             </Row>
@@ -56,23 +63,40 @@ export function EmailLayout({
           <Section style={styles.content}>{children}</Section>
 
           {/* --- Global Footer --- */}
-          {/* TODO: Replace placeholder footer links with real URLs before production deployment */}
           <Section style={styles.footer}>
             <ReactEmailText style={styles.footerText}>
-              © 2026 Half Dome Labs LLC. All rights reserved.
+              © {branding.footer.copyrightYear} {branding.footer.companyName}.
+              All rights reserved.
               <br />
-              Half Dome Labs LLC, 123 Main Street, San Francisco, CA 94103
+              {branding.footer.address}
             </ReactEmailText>
 
-            <ReactEmailText style={{ ...styles.footerText, marginTop: '20px' }}>
-              <ReactEmailLink href="#" style={styles.footerLink}>
-                Privacy Policy
-              </ReactEmailLink>
-              &nbsp;&nbsp;•&nbsp;&nbsp;
-              <ReactEmailLink href="#" style={styles.footerLink}>
-                Terms of Service
-              </ReactEmailLink>
-            </ReactEmailText>
+            {hasFooterLinks && (
+              <ReactEmailText
+                style={{ ...styles.footerText, marginTop: '20px' }}
+              >
+                {branding.links.privacyPolicy && (
+                  <ReactEmailLink
+                    href={branding.links.privacyPolicy}
+                    style={styles.footerLink}
+                  >
+                    Privacy Policy
+                  </ReactEmailLink>
+                )}
+                {branding.links.privacyPolicy &&
+                  branding.links.termsOfService && (
+                    <>&nbsp;&nbsp;•&nbsp;&nbsp;</>
+                  )}
+                {branding.links.termsOfService && (
+                  <ReactEmailLink
+                    href={branding.links.termsOfService}
+                    style={styles.footerLink}
+                  >
+                    Terms of Service
+                  </ReactEmailLink>
+                )}
+              </ReactEmailText>
+            )}
           </Section>
         </Container>
       </Body>

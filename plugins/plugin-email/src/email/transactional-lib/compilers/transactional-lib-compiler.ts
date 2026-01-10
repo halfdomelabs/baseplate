@@ -2,6 +2,7 @@ import type {
   BaseLibraryDefinition,
   LibraryCompilerCreator,
   PackageEntry,
+  PackageTasks,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
@@ -45,6 +46,14 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
       name: this.packageConfig.name,
       packageDirectory,
       generatorBundle: rootBundle,
+    };
+  }
+
+  getTasks(): PackageTasks {
+    return {
+      build: [],
+      dev: ['watch'],
+      watch: ['watch'],
     };
   }
 }

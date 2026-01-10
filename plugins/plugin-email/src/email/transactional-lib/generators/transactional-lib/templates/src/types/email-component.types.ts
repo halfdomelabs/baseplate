@@ -9,7 +9,7 @@ import type * as React from 'react';
 export interface EmailComponent<P extends object> {
   (props: P): React.ReactElement;
   subject: string | ((props: P) => string);
-  name: string;
+  displayName: string;
   /**
    * Preview props for React Email dev server.
    */
@@ -53,7 +53,7 @@ export function defineEmail<P extends object>(
 ): EmailComponent<P> {
   const emailComponent = component as EmailComponent<P>;
   emailComponent.subject = options.subject;
-  emailComponent.name = options.name ?? component.name;
+  emailComponent.displayName = options.name ?? component.name;
   emailComponent.PreviewProps = options.previewProps;
   return emailComponent;
 }
