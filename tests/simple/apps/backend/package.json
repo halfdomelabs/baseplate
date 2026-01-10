@@ -1,5 +1,5 @@
 {
-  "name": "simple-backend",
+  "name": "@simple/backend",
   "version": "1.0.0",
   "private": true,
   "description": "Backend app for simple",

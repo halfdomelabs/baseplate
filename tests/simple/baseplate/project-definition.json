@@ -74,7 +74,7 @@
     }
   ],
   "plugins": [],
-  "schemaVersion": 21,
+  "schemaVersion": 22,
   "settings": {
     "general": { "name": "simple", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

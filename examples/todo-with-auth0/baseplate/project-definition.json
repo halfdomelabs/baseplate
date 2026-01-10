@@ -1464,7 +1464,7 @@
       "version": "1.0.0"
     }
   ],
-  "schemaVersion": 21,
+  "schemaVersion": 22,
   "settings": {
     "general": {
       "name": "todo-with-auth0",
