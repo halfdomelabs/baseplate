@@ -5,6 +5,7 @@ import type {
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
+  CORE_PACKAGES,
   dockerComposeGenerator,
   nodeGenerator,
   nodeGitIgnoreGenerator,
@@ -149,6 +150,8 @@ export class RootPackageCompiler extends PackageCompiler {
             : {
                 '@baseplate-dev/project-builder-cli': cliVersion,
               }),
+          // Include Typescript to allow tsconfig plugins like gql.tada to be used
+          typescript: CORE_PACKAGES.typescript,
         },
       },
       children: {

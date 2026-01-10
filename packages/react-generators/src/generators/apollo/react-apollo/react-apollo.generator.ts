@@ -5,6 +5,7 @@ import type {
 
 import {
   createNodePackagesTask,
+  createNodeTask,
   eslintConfigProvider,
   extractPackageVersions,
   packageScope,
@@ -168,6 +169,13 @@ export const reactApolloGenerator = createGenerator({
         'graphql',
         'gql.tada',
       ]),
+    }),
+    nodeScripts: createNodeTask((node) => {
+      node.scripts.set('gql:check', 'gql-tada check -c tsconfig.app.json');
+      node.scripts.set(
+        'gql:generate',
+        'gql-tada generate-output -c tsconfig.app.json',
+      );
     }),
     reactTypescript: createProviderTask(
       reactTypescriptProvider,
