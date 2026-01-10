@@ -136,7 +136,11 @@ describe('create', () => {
         text: 'Test item',
         done: false,
         attachments: [
-          { url: 'https://example.com', position: 1, tags: [{ tag: 'test-tag' }] },
+          {
+            url: 'https://example.com',
+            position: 1,
+            tags: [{ tag: 'test-tag' }],
+          },
         ],
       },
       query: { include: { attachments: { include: { tags: true } } } },
@@ -176,7 +180,11 @@ describe('create', () => {
       data: {
         text: 'Updated item',
         attachments: [
-          { url: 'https://example.com', position: 1, tags: [{ tag: 'update-tag' }] },
+          {
+            url: 'https://example.com',
+            position: 1,
+            tags: [{ tag: 'update-tag' }],
+          },
         ],
       },
       query: { include: { attachments: { include: { tags: true } } } },
