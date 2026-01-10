@@ -11,6 +11,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
+    "gql:check": "gql-tada check -c tsconfig.app.json",
+    "gql:generate": "gql-tada generate-output -c tsconfig.app.json",
     "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
