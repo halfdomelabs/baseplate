@@ -10,6 +10,7 @@ export const userProfileInputFields = {
   id: scalarField(z.uuid().optional()),
   bio: scalarField(z.string().nullish()),
   birthDay: scalarField(z.date().nullish()),
+  favoriteTodoListId: scalarField(z.uuid().nullish()),
   avatar: fileField({
     category: userProfileAvatarFileCategory,
     fileIdFieldName: 'avatarId',

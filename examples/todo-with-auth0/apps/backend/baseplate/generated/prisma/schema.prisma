@@ -83,18 +83,19 @@ model TodoItemAttachmentTag {
 }
 
 model TodoList {
-  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ownerId        String          @map("owner_id") @db.Uuid
-  position       Int
-  name           String
-  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
-  status         TodoListStatus? @default(ACTIVE)
-  coverPhotoId   String?         @map("cover_photo_id") @db.Uuid
-  coverPhoto     File?           @relation(fields: [coverPhotoId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  todoItems      TodoItem[]
-  todoListShares TodoListShare[]
+  id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId              String          @map("owner_id") @db.Uuid
+  position             Int
+  name                 String
+  updatedAt            DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt            DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  status               TodoListStatus? @default(ACTIVE)
+  coverPhotoId         String?         @map("cover_photo_id") @db.Uuid
+  coverPhoto           File?           @relation(fields: [coverPhotoId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  owner                User            @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  todoItems            TodoItem[]
+  todoListShares       TodoListShare[]
+  userProfileFavorites UserProfile[]
 
   @@unique([ownerId, name])
   @@map("todo_list")
@@ -150,14 +151,16 @@ model UserImage {
 }
 
 model UserProfile {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId        String    @unique @map("user_id") @db.Uuid
-  bio           String?
-  birthDay      DateTime? @map("birth_day") @db.Date
-  avatarId      String?   @map("avatar_id") @db.Uuid
-  twitterHandle String?   @map("twitter_handle")
-  avatar        File?     @relation(fields: [avatarId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String    @unique @map("user_id") @db.Uuid
+  bio                String?
+  birthDay           DateTime? @map("birth_day") @db.Date
+  avatarId           String?   @map("avatar_id") @db.Uuid
+  twitterHandle      String?   @map("twitter_handle")
+  favoriteTodoListId String?   @map("favorite_todo_list_id") @db.Uuid
+  avatar             File?     @relation(fields: [avatarId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  favoriteTodoList   TodoList? @relation(fields: [favoriteTodoListId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@map("user_profile")
 }

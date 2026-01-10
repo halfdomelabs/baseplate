@@ -12,6 +12,7 @@ import {
   nestedOneToOneField,
   scalarField,
 } from '@src/utils/data-operations/field-definitions.js';
+import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import { userImageInputFields } from './user-image.data-service.js';
 import { userProfileInputFields } from './user-profile.data-service.js';
@@ -24,7 +25,8 @@ export const userInputFields = {
   name: scalarField(z.string().nullish()),
   email: scalarField(z.string()),
   customer: nestedOneToOneField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: { stripeCustomerId: scalarField(z.string()) },
     getWhereUnique: (parentModel) => ({ id: parentModel.id }),
     model: 'customer',
@@ -32,7 +34,8 @@ export const userInputFields = {
     relationName: 'user',
   }),
   images: nestedOneToManyField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: pick(userImageInputFields, ['id', 'caption', 'file'] as const),
     getWhereUnique: (input) => (input.id ? { id: input.id } : undefined),
     model: 'userImage',
@@ -40,7 +43,8 @@ export const userInputFields = {
     relationName: 'user',
   }),
   roles: nestedOneToManyField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: { role: scalarField(z.string()) },
     getWhereUnique: (input, parentModel) =>
       input.role
@@ -51,11 +55,23 @@ export const userInputFields = {
     relationName: 'user',
   }),
   userProfile: nestedOneToOneField({
-    buildData: (data) => data,
+    buildCreateData: ({ favoriteTodoListId, ...data }) => ({
+      ...data,
+      favoriteTodoList: relationHelpers.connectCreate({
+        id: favoriteTodoListId,
+      }),
+    }),
+    buildUpdateData: ({ favoriteTodoListId, ...data }) => ({
+      ...data,
+      favoriteTodoList: relationHelpers.connectUpdate({
+        id: favoriteTodoListId,
+      }),
+    }),
     fields: pick(userProfileInputFields, [
       'id',
       'bio',
       'birthDay',
+      'favoriteTodoListId',
       'avatar',
     ] as const),
     getWhereUnique: (parentModel) => ({ userId: parentModel.id }),
