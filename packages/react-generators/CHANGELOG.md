@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- [#743](https://github.com/halfdomelabs/baseplate/pull/743) [`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072) Thanks [@kingston](https://github.com/kingston)! - Add gql:check and gql:generate commands to package.json and add typescript to root repo
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

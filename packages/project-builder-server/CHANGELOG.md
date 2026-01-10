@@ -1,5 +1,46 @@
 # @baseplate-dev/project-builder-server
 
+## 0.5.1
+
+### Patch Changes
+
+- [#743](https://github.com/halfdomelabs/baseplate/pull/743) [`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072) Thanks [@kingston](https://github.com/kingston)! - Add gql:check and gql:generate commands to package.json and add typescript to root repo
+
+- [#737](https://github.com/halfdomelabs/baseplate/pull/737) [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499) Thanks [@kingston](https://github.com/kingston)! - Refactor plugin spec system with lazy initialization and clear setup/use phases
+
+  This refactoring overhauls the plugin spec system to introduce a two-phase architecture with lazy initialization:
+
+  **New Architecture:**
+  - **Setup phase (init)**: Plugins register their implementations during module initialization using mutable field containers
+  - **Use phase**: Consumers access registered items through a read-only interface, with lazy initialization on first access
+  - **FieldMap-based specs**: New `createFieldMapSpec` helper provides type-safe containers (maps, arrays, named arrays, scalars) with automatic source tracking
+
+  **Key changes:**
+  - Rename `PluginImplementationStore` to `PluginSpecStore` with cached `use()` instances
+  - Rename `createPlatformPluginExport` to `createPluginModule`
+  - Add required `name` field to all plugin modules for unique identification
+  - Convert all specs to use `createFieldMapSpec` with typed containers
+  - Update all plugin modules to use new registration methods (`.add()`, `.set()`, `.push()`)
+  - Introduce `ModuleContext` with `moduleKey` and `pluginKey` for better source tracking
+  - Specs now define both `init` (mutable setup interface) and `use` (read-only consumption interface)
+
+- [#740](https://github.com/halfdomelabs/baseplate/pull/740) [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534) Thanks [@kingston](https://github.com/kingston)! - Rename `packages` to `libraries` in project definition schema
+  - Renamed `packages` field to `libraries` in project definition
+  - Renamed `packagesFolder` to `librariesFolder` in monorepo settings with new default `libs`
+  - Updated entity IDs from `package:*` prefix to `library:*`
+  - Added migration (022) to automatically migrate existing projects
+  - Reorganized routes from `/apps/*` to `/packages/*` root with `/packages/apps/$key` and `/packages/libs/$key` subroutes
+
+  **Breaking change:** The default library folder has changed from `packages` to `libs`. If you have existing library packages, you will need to rename your `packages/` directory to `libs/` in your project.
+
+- Updated dependencies [[`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534), [`ecebd3b`](https://github.com/halfdomelabs/baseplate/commit/ecebd3bf50cfa2d2a62501e0be39c411b42bed25), [`ff4203e`](https://github.com/halfdomelabs/baseplate/commit/ff4203e45a057b25a0ded5ecb3e1c07f5c7108b4), [`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072), [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499), [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534)]:
+  - @baseplate-dev/fastify-generators@0.5.1
+  - @baseplate-dev/react-generators@0.5.1
+  - @baseplate-dev/project-builder-lib@0.5.1
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes

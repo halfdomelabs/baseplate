@@ -1,5 +1,28 @@
 # @baseplate-dev/fastify-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- [#740](https://github.com/halfdomelabs/baseplate/pull/740) [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534) Thanks [@kingston](https://github.com/kingston)! - Add email plugin with Postmark implementation for queue-based email delivery
+  - Add `@baseplate-dev/plugin-email/transactional-lib` library type for generating transactional email libraries
+  - Include reusable email components (Button, Heading, Text, Link, Divider, Section, Layout)
+
+- [#741](https://github.com/halfdomelabs/baseplate/pull/741) [`ecebd3b`](https://github.com/halfdomelabs/baseplate/commit/ecebd3bf50cfa2d2a62501e0be39c411b42bed25) Thanks [@kingston](https://github.com/kingston)! - Fix duplicate identifier bug in generated nested field buildData functions
+  - Split `buildData` into separate `buildCreateData` and `buildUpdateData` functions
+  - Each function now has its own scope, avoiding duplicate identifier errors when FK fields are destructured
+  - Use `Promise.all` for parallel execution of buildCreateData and buildUpdateData
+
+- [#739](https://github.com/halfdomelabs/baseplate/pull/739) [`ff4203e`](https://github.com/halfdomelabs/baseplate/commit/ff4203e45a057b25a0ded5ecb3e1c07f5c7108b4) Thanks [@kingston](https://github.com/kingston)! - Fix stale data bug in data operations when afterExecute/afterCommit hooks modify related records
+  - Add conditional re-fetch after hooks complete when query includes relations
+  - Add required `getWhereUnique` to `CreateOperationConfig` for ID extraction
+  - Extend `findUnique` in `GenericPrismaDelegate` to accept optional `include`
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes
