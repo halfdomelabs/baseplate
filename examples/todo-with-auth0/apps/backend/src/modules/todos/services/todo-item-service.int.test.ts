@@ -117,4 +117,87 @@ describe('create', () => {
       ],
     });
   });
+
+  it('should return nested attachments directly from createTodoItem when query is provided', async () => {
+    await prisma.user.deleteMany({});
+
+    const owner = await prisma.user.create({
+      data: { email: 'test@example.com' },
+    });
+    const todoList = await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 1, name: 'Test List' },
+    });
+
+    // Call createTodoItem WITH a query that includes attachments
+    const createdItem = await createTodoItem({
+      data: {
+        todoListId: todoList.id,
+        position: 1,
+        text: 'Test item',
+        done: false,
+        attachments: [
+          {
+            url: 'https://example.com',
+            position: 1,
+            tags: [{ tag: 'test-tag' }],
+          },
+        ],
+      },
+      query: { include: { attachments: { include: { tags: true } } } },
+      context,
+    });
+
+    // The returned item should directly contain the attachments (no separate query needed)
+    expect(createdItem.attachments).toHaveLength(1);
+    expect(createdItem.attachments[0]).toMatchObject({
+      url: 'https://example.com',
+      position: 1,
+      tags: [{ tag: 'test-tag' }],
+    });
+  });
+
+  it('should return nested attachments directly from updateTodoItem when query is provided', async () => {
+    await prisma.user.deleteMany({});
+
+    const owner = await prisma.user.create({
+      data: { email: 'test@example.com' },
+    });
+    const todoList = await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 1, name: 'Test List' },
+    });
+    const todoItem = await prisma.todoItem.create({
+      data: {
+        todoListId: todoList.id,
+        position: 1,
+        text: 'Initial item',
+        done: false,
+      },
+    });
+
+    // Call updateTodoItem WITH a query that includes attachments
+    const updatedItem = await updateTodoItem({
+      where: { id: todoItem.id },
+      data: {
+        text: 'Updated item',
+        attachments: [
+          {
+            url: 'https://example.com',
+            position: 1,
+            tags: [{ tag: 'update-tag' }],
+          },
+        ],
+      },
+      query: { include: { attachments: { include: { tags: true } } } },
+      context,
+    });
+
+    // The returned item should directly contain the attachments (no separate query needed)
+    expect(updatedItem.attachments).toHaveLength(1);
+    expect(updatedItem.attachments[0]).toMatchObject({
+      url: 'https://example.com',
+      position: 1,
+      tags: [{ tag: 'update-tag' }],
+    });
+    expect(updatedItem.text).toBe('Updated item');
+  });
 });

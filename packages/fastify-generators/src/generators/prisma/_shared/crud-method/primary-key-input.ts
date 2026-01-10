@@ -65,3 +65,34 @@ export function getModelIdFieldName(model: PrismaOutputModel): string {
   // handle multiple primary key case
   return idFields.join('_');
 }
+
+/**
+ * Generates a getWhereUnique function string for use in defineCreateOperation.
+ *
+ * For single primary key: `(result) => ({ id: result.id })`
+ * For compound primary key: `(result) => ({ field1_field2: { field1: result.field1, field2: result.field2 } })`
+ *
+ * @param model - The Prisma model to generate the function for
+ * @returns A string representation of the getWhereUnique arrow function
+ */
+export function generateGetWhereUniqueFragment(
+  model: PrismaOutputModel,
+): string {
+  const { idFields } = model;
+  if (!idFields?.length) {
+    throw new Error(`Model ${model.name} has no primary key`);
+  }
+
+  if (idFields.length === 1) {
+    // Single primary key: (result) => ({ id: result.id })
+    const idField = idFields[0];
+    return `(result) => ({ ${idField}: result.${idField} })`;
+  }
+
+  // Compound primary key: (result) => ({ field1_field2: { field1: result.field1, field2: result.field2 } })
+  const whereUniqueFieldName = idFields.join('_');
+  const innerFields = idFields
+    .map((field) => `${field}: result.${field}`)
+    .join(', ');
+  return `(result) => ({ ${whereUniqueFieldName}: { ${innerFields} } })`;
+}

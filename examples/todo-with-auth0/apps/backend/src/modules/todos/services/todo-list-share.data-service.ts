@@ -18,6 +18,9 @@ export const todoListShareInputFields = {
 export const createTodoListShare = defineCreateOperation({
   model: 'todoListShare',
   fields: todoListShareInputFields,
+  getWhereUnique: (result) => ({
+    todoListId_userId: { todoListId: result.todoListId, userId: result.userId },
+  }),
   create: async ({ tx, data: { todoListId, userId, ...data }, query }) => {
     const item = await tx.todoListShare.create({
       data: {

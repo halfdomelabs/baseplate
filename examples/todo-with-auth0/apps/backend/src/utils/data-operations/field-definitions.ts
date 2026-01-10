@@ -319,9 +319,9 @@ export function nestedOneToOneField<
         );
         const prismaDelegate = makeGenericPrismaDelegate(prisma, config.model);
         cachedExisting =
-          (await prismaDelegate.findUnique({
+          ((await prismaDelegate.findUnique({
             where: whereUnique,
-          })) ?? undefined;
+          })) as GetPayload<TModelName> | null) ?? undefined;
         return cachedExisting;
       }
 
@@ -640,9 +640,9 @@ export function nestedOneToManyField<
           if (cachedExisting) return cachedExisting;
           if (!whereUnique) return undefined;
           cachedExisting =
-            (await delegate.findUnique({
+            ((await delegate.findUnique({
               where: { ...whereUnique, ...whereFromOriginalModel },
-            })) ?? undefined;
+            })) as GetPayload<TModelName> | null) ?? undefined;
           return cachedExisting;
         };
       });
