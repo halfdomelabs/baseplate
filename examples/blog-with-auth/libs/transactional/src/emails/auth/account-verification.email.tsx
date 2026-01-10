@@ -1,20 +1,20 @@
 import * as React from 'react';
 
-import { Button } from '../components/button.js';
-import { Divider } from '../components/divider.js';
-import { Heading } from '../components/heading.js';
-import { EmailLayout } from '../components/layout.js';
-import { Section } from '../components/section.js';
-import { Text } from '../components/text.js';
-import { theme } from '../constants/theme.js';
-import { defineEmail } from '../types/email-component.types.js';
+import { Button } from '../../components/button.js';
+import { Divider } from '../../components/divider.js';
+import { Heading } from '../../components/heading.js';
+import { EmailLayout } from '../../components/layout.js';
+import { Section } from '../../components/section.js';
+import { Text } from '../../components/text.js';
+import { theme } from '../../constants/theme.js';
+import { defineEmail } from '../../types/email-component.types.js';
 
-interface VerifyEmailProps {
+interface AccountVerificationProps {
   verifyLink?: string;
   verifyCode?: string;
 }
 
-export default defineEmail(VerifyEmail, {
+export default defineEmail(AccountVerificationEmail, {
   subject: 'Verify your email address',
   previewProps: {
     verifyLink: 'https://example.com',
@@ -22,10 +22,10 @@ export default defineEmail(VerifyEmail, {
   },
 });
 
-function VerifyEmail({
+function AccountVerificationEmail({
   verifyLink,
   verifyCode,
-}: VerifyEmailProps): React.ReactElement {
+}: AccountVerificationProps): React.ReactElement {
   return (
     <EmailLayout previewText="Verify your email address">
       <Heading as="h2">Verify your email</Heading>

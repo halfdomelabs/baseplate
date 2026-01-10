@@ -1,25 +1,27 @@
 import * as React from 'react';
 
-import { Button } from '../components/button.js';
-import { Divider } from '../components/divider.js';
-import { Heading } from '../components/heading.js';
-import { EmailLayout } from '../components/layout.js';
-import { Section } from '../components/section.js';
-import { Text } from '../components/text.js';
-import { defineEmail } from '../types/email-component.types.js';
+import { Button } from '../../components/button.js';
+import { Divider } from '../../components/divider.js';
+import { Heading } from '../../components/heading.js';
+import { EmailLayout } from '../../components/layout.js';
+import { Section } from '../../components/section.js';
+import { Text } from '../../components/text.js';
+import { defineEmail } from '../../types/email-component.types.js';
 
-interface ResetPasswordProps {
+interface PasswordResetProps {
   resetLink: string;
 }
 
-export default defineEmail(ResetPassword, {
+export default defineEmail(PasswordResetEmail, {
   subject: 'Reset your Baseplate password',
   previewProps: {
     resetLink: 'https://example.com',
   },
 });
 
-function ResetPassword({ resetLink }: ResetPasswordProps): React.ReactElement {
+function PasswordResetEmail({
+  resetLink,
+}: PasswordResetProps): React.ReactElement {
   return (
     <EmailLayout previewText="Reset your Baseplate password">
       <Heading as="h2">Reset your password</Heading>

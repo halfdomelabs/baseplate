@@ -130,6 +130,37 @@ const constantsTheme = createTsTemplateFile({
   variables: {},
 });
 
+const emailsIndex = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'emails-index',
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/emails/index.ts'),
+  },
+  variables: { TPL_EMAIL_TEMPLATES: {} },
+});
+
+const emailsTest = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'emails-test',
+  referencedGeneratorTemplates: {
+    componentsHeading: {},
+    componentsLayout: {},
+    componentsText: {},
+    typesEmailComponent: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/emails/test.email.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const servicesRenderEmail = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -175,6 +206,8 @@ export const mainGroup = {
   componentsSection,
   componentsText,
   constantsTheme,
+  emailsIndex,
+  emailsTest,
   servicesRenderEmail,
   typesEmailComponent,
 };

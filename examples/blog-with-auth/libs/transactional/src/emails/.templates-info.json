@@ -1,0 +1,12 @@
+{
+  "index.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "emails-index"
+  },
+  "test.email.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "emails-test"
+  }
+}

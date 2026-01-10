@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  tsTemplate,
   typescriptSetupProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -72,7 +73,15 @@ export const transactionalLibGenerator = createGenerator({
       run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(renderers.mainGroup.render({}));
+            await builder.apply(
+              renderers.mainGroup.render({
+                variables: {
+                  emailsIndex: {
+                    TPL_EMAIL_TEMPLATES: tsTemplate``,
+                  },
+                },
+              }),
+            );
           },
         };
       },

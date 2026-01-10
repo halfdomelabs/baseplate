@@ -88,6 +88,30 @@
       "sourceFile": "src/constants/theme.ts",
       "variables": {}
     },
+    "emails-index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/emails/index.ts",
+      "sourceFile": "src/emails/index.ts",
+      "variables": { "TPL_EMAIL_TEMPLATES": {} }
+    },
+    "emails-test": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/emails/test.email.tsx",
+      "referencedGeneratorTemplates": [
+        "components-heading",
+        "components-layout",
+        "components-text",
+        "types-email-component"
+      ],
+      "sourceFile": "src/emails/test.email.tsx",
+      "variables": {}
+    },
     "services-render-email": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
