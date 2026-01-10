@@ -1,4 +1,7 @@
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  PackageCompilerContext,
+  ProjectDefinition,
+} from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
@@ -11,9 +14,14 @@ import {
   rootReadmeGenerator,
   turboGenerator,
 } from '@baseplate-dev/core-generators';
+import {
+  buildPackageName,
+  DEFAULT_APPS_FOLDER,
+  DEFAULT_LIBRARIES_FOLDER,
+  PackageCompiler,
+} from '@baseplate-dev/project-builder-lib';
 import { uniq } from 'es-toolkit';
 
-import type { PackageCompilerContext } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
 import {
@@ -21,7 +29,6 @@ import {
   getRedisSettings,
   isRedisEnabled,
 } from '../infrastructure-utils.js';
-import { buildPackageName, PackageCompiler } from '../package-compiler.js';
 
 /**
  * Build Docker Compose configuration at root level
@@ -61,9 +68,10 @@ export class RootPackageCompiler extends PackageCompiler {
     const monorepoSettings = projectDefinition.settings.monorepo;
 
     // Build workspace patterns from monorepo settings
-    const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
-    const packagesFolder = monorepoSettings?.packagesFolder ?? 'packages';
-    const workspacePackages = [`${appsFolder}/*`, `${packagesFolder}/*`];
+    const appsFolder = monorepoSettings?.appsFolder ?? DEFAULT_APPS_FOLDER;
+    const librariesFolder =
+      monorepoSettings?.librariesFolder ?? DEFAULT_LIBRARIES_FOLDER;
+    const workspacePackages = [`${appsFolder}/*`, `${librariesFolder}/*`];
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
     const mergedTasks = {
@@ -130,8 +138,8 @@ export class RootPackageCompiler extends PackageCompiler {
         ...(watchTasks.length > 0 ? { watch: `turbo run ${watchTasks}` } : {}),
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
-        'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${packagesFolder}/**"`,
-        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${packagesFolder}/**"`,
+        'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${librariesFolder}/**"`,
+        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${librariesFolder}/**"`,
       },
       additionalPackages: {
         dev: {

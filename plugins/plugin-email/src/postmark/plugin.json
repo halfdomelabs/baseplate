@@ -1,0 +1,9 @@
+{
+  "name": "postmark",
+  "displayName": "Postmark",
+  "icon": "icon.svg",
+  "description": "Postmark email delivery implementation using the Postmark API for reliable transactional email.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "managedBy": "@baseplate-dev/plugin-email:email"
+}

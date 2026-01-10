@@ -1,0 +1,12 @@
+{
+  "extends": "@baseplate-dev/tools/tsconfig.vite.lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/generators/*/*/templates/**"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

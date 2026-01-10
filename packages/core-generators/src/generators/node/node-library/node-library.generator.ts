@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { tsCodeFragment } from '#src/renderers/typescript/index.js';
 import { writeJsonToBuilder } from '#src/writers/json.js';
 
+import { eslintConfigProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';
 import {
   typescriptFileProvider,
@@ -66,6 +67,7 @@ export const nodeLibraryGenerator = createGenerator({
       run({ node }) {
         // Add build script using tsc
         node.scripts.set('build', 'tsc -p tsconfig.build.json');
+        node.scripts.set('watch', 'tsc -p tsconfig.build.json --watch');
         node.scripts.set('clean', 'rm -rf dist');
 
         // Configure package exports
@@ -83,6 +85,14 @@ export const nodeLibraryGenerator = createGenerator({
         node.files.push('dist');
       },
     }),
+    eslintConfig: createGeneratorTask({
+      dependencies: {
+        eslintConfig: eslintConfigProvider,
+      },
+      run({ eslintConfig }) {
+        eslintConfig.tsDefaultProjectFiles.push('vitest.config.ts');
+      },
+    }),
     indexFile: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -97,7 +107,7 @@ export const nodeLibraryGenerator = createGenerator({
                   id: 'index-file',
                   destination: 'src/index.ts',
                   fragment: tsCodeFragment(
-                    `// Export your library modules here\n// export * from './my-module.js';\n`,
+                    `// Export your library modules here\nexport const placeholder = 'placeholder';\n`,
                   ),
                 }),
               );

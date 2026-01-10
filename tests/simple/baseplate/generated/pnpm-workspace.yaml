@@ -1,6 +1,6 @@
 packages:
   - apps/*
-  - packages/*
+  - libs/*
 blockExoticSubdeps: true
 linkWorkspacePackages: true
 minimumReleaseAge: 1440

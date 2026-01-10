@@ -1,0 +1,155 @@
+{
+  "name": "email/transactional-lib",
+  "templates": {
+    "components-button": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/button.tsx",
+      "referencedGeneratorTemplates": ["constants-theme"],
+      "sourceFile": "src/components/button.tsx",
+      "variables": {}
+    },
+    "components-divider": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/divider.tsx",
+      "referencedGeneratorTemplates": ["constants-theme"],
+      "sourceFile": "src/components/divider.tsx",
+      "variables": {}
+    },
+    "components-heading": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/heading.tsx",
+      "referencedGeneratorTemplates": ["constants-theme"],
+      "sourceFile": "src/components/heading.tsx",
+      "variables": {}
+    },
+    "components-index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/index.ts",
+      "sourceFile": "src/components/index.ts",
+      "variables": {}
+    },
+    "components-layout": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/layout.tsx",
+      "referencedGeneratorTemplates": ["components-divider", "constants-theme"],
+      "sourceFile": "src/components/layout.tsx",
+      "variables": {}
+    },
+    "components-link": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/link.tsx",
+      "referencedGeneratorTemplates": ["constants-theme"],
+      "sourceFile": "src/components/link.tsx",
+      "variables": {}
+    },
+    "components-section": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/section.tsx",
+      "sourceFile": "src/components/section.tsx",
+      "variables": {}
+    },
+    "components-text": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/text.tsx",
+      "referencedGeneratorTemplates": ["constants-theme"],
+      "sourceFile": "src/components/text.tsx",
+      "variables": {}
+    },
+    "constants-theme": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/constants/theme.ts",
+      "sourceFile": "src/constants/theme.ts",
+      "variables": {}
+    },
+    "emails-index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/emails/index.ts",
+      "sourceFile": "src/emails/index.ts",
+      "variables": { "TPL_EMAIL_TEMPLATES": {} }
+    },
+    "emails-test": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/emails/test.email.tsx",
+      "referencedGeneratorTemplates": [
+        "components-heading",
+        "components-layout",
+        "components-text",
+        "types-email-component"
+      ],
+      "sourceFile": "src/emails/test.email.tsx",
+      "variables": {}
+    },
+    "index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/index.ts",
+      "sourceFile": "src/index.ts",
+      "variables": {}
+    },
+    "services-render-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/render-email.service.tsx",
+      "projectExports": {
+        "renderEmail": { "isTypeOnly": false, "name": "renderEmail" }
+      },
+      "referencedGeneratorTemplates": ["types-email-component"],
+      "sourceFile": "src/services/render-email.service.tsx",
+      "variables": {}
+    },
+    "types-email-component": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/email-component.types.ts",
+      "projectExports": {
+        "defineEmail": { "isTypeOnly": false, "name": "defineEmail" },
+        "DefineEmailOptions": {
+          "isTypeOnly": true,
+          "name": "DefineEmailOptions"
+        },
+        "EmailComponent": { "isTypeOnly": true, "name": "EmailComponent" }
+      },
+      "sourceFile": "src/types/email-component.types.ts",
+      "variables": {}
+    }
+  }
+}

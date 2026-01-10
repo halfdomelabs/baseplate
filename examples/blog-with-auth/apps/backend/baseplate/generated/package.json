@@ -1,5 +1,5 @@
 {
-  "name": "blog-with-auth-backend",
+  "name": "@blog-with-auth/backend",
   "version": "1.0.0",
   "private": true,
   "description": "Backend app for blog-with-auth",
@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "tsc && tsc-alias",
-    "dev": "FORCE_COLOR=1 pnpm run --reporter-hide-prefix --parallel \"/^dev:/\"",
+    "dev": "concurrently pnpm:dev:*",
     "dev:server": "tsx watch --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/index.ts | pino-pretty -t",
     "dev:workers": "tsx watch --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/scripts/run-workers.ts | pino-pretty -t",
     "generate:schema": "tsx --env-file-if-exists=.env src/index.ts --exit-after-generate-schema",
@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@blog-with-auth/transactional": "workspace:*",
     "@envelop/core": "5.3.0",
     "@envelop/disable-introspection": "8.0.0",
     "@fastify/cookie": "11.0.1",
@@ -60,6 +61,7 @@
     "nanoid": "5.1.6",
     "pg-boss": "11.1.1",
     "pino": "9.5.0",
+    "postmark": "4.0.5",
     "zod": "4.1.13"
   },
   "devDependencies": {
@@ -68,6 +70,7 @@
     "@types/node": "^22.0.0",
     "@types/ws": "8.5.13",
     "@vitest/eslint-plugin": "1.6.5",
+    "concurrently": "9.2.1",
     "cross-env": "7.0.3",
     "eslint": "9.32.0",
     "eslint-config-prettier": "10.1.8",

@@ -1,20 +1,17 @@
 import type {
   AppConfig,
-  PackageConfig,
+  PackageCompiler,
+  PackageCompilerContext,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
-import type {
-  PackageCompiler,
-  PackageCompilerContext,
-} from './package-compiler.js';
 import type { PackageEntry } from './package-entry.js';
 
 import { BackendPackageCompiler } from './backend/index.js';
-import { NodeLibraryCompiler } from './library/index.js';
+import { createLibraryCompilerFromSpec } from './library/index.js';
 import { RootPackageCompiler } from './root/index.js';
 import { WebPackageCompiler } from './web/index.js';
 
@@ -43,29 +40,6 @@ function createAppCompiler(
 }
 
 /**
- * Create a library compiler instance based on package type
- *
- * @param definitionContainer - The project definition container
- * @param pkg - The package configuration
- * @returns PackageCompiler instance for the package type
- */
-function createLibraryCompiler(
-  definitionContainer: ProjectDefinitionContainer,
-  pkg: PackageConfig,
-): PackageCompiler {
-  // Cast to string to support future package types without lint errors
-  const pkgType = pkg.type as string;
-  switch (pkgType) {
-    case 'node-library': {
-      return new NodeLibraryCompiler(definitionContainer, pkg);
-    }
-    default: {
-      throw new Error(`Unknown package type: ${pkgType}`);
-    }
-  }
-}
-
-/**
  * Compile all packages in a project definition
  *
  * Root package is compiled first, then backend apps, then other apps, then library packages.
@@ -88,17 +62,17 @@ export function compilePackages(
     (a) => a.name,
   ]);
 
-  // Get library packages sorted by name
-  const packageConfigs = sortBy(definitionContainer.definition.packages, [
-    (p) => p.name,
+  // Get libraries sorted by name
+  const libraryConfigs = sortBy(definitionContainer.definition.libraries, [
+    (lib) => lib.name,
   ]);
 
   // Instantiate all package compilers
   const compilers = [
     new RootPackageCompiler(definitionContainer),
     ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
-    ...packageConfigs.map((pkg) =>
-      createLibraryCompiler(definitionContainer, pkg),
+    ...libraryConfigs.map((lib) =>
+      createLibraryCompilerFromSpec(definitionContainer, lib),
     ),
   ];
 

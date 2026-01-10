@@ -11,12 +11,11 @@ export function enhanceErrorWithContext(
 ): Error {
   // Create a new error with combined message
   const enhancedError = new Error(
-    `${contextMessage}: ${
+    `${contextMessage}:\n${
       originalError instanceof Error
         ? originalError.message
         : String(originalError)
     }`,
-    { cause: originalError },
   );
 
   // Preserve the original stack if possible

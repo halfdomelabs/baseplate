@@ -10,18 +10,19 @@
     "baseplate:serve": "baseplate serve",
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev watch",
     "preinstall": "npx only-allow pnpm",
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
     "prettier:check:affected": "turbo run prettier:check --affected",
-    "prettier:check:root": "prettier --check . \"!apps/**\" \"!packages/**\"",
+    "prettier:check:root": "prettier --check . \"!apps/**\" \"!libs/**\"",
     "prettier:write": "turbo run prettier:write && pnpm run prettier:write:root",
-    "prettier:write:root": "prettier --write . \"!apps/**\" \"!packages/**\"",
+    "prettier:write:root": "prettier --write . \"!apps/**\" \"!libs/**\"",
     "test": "turbo run test",
     "test:affected": "turbo run test --affected",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "watch": "turbo run watch"
   },
   "dependencies": {},
   "devDependencies": {

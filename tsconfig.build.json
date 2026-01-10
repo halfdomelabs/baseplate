@@ -35,6 +35,9 @@
       "path": "./plugins/plugin-auth/tsconfig.build.json"
     },
     {
+      "path": "./plugins/plugin-email/tsconfig.build.json"
+    },
+    {
       "path": "./plugins/plugin-queue/tsconfig.build.json"
     },
     {

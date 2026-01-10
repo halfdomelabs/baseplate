@@ -86,7 +86,6 @@
     },
     {
       "enableAxios": false,
-      "enablePostmark": false,
       "enableStripe": false,
       "enableSubscriptions": false,
       "id": "app:acqRWBqOc6tx",
@@ -94,13 +93,20 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.4.4",
+  "cliVersion": "0.5.0",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" }
   ],
   "isInitialized": true,
+  "libraries": [
+    {
+      "id": "library:X95tdAsNslUj",
+      "name": "transactional",
+      "type": "@baseplate-dev/plugin-email/transactional-lib"
+    }
+  ],
   "models": [
     {
       "featureRef": "blogs",
@@ -691,7 +697,6 @@
       }
     }
   ],
-  "packages": [],
   "plugins": [
     {
       "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },
@@ -751,9 +756,25 @@
       "name": "pg-boss",
       "packageName": "@baseplate-dev/plugin-queue",
       "version": "0.1.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
+      },
+      "id": "plugin:baseplate-dev_plugin-email_email",
+      "name": "email",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
     }
   ],
-  "schemaVersion": 21,
+  "schemaVersion": 22,
   "settings": {
     "general": {
       "name": "blog-with-auth",

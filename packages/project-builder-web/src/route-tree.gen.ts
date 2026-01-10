@@ -11,13 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteRouteImport } from './routes/settings/route'
 import { Route as PluginsRouteRouteImport } from './routes/plugins/route'
+import { Route as PackagesRouteRouteImport } from './routes/packages/route'
 import { Route as DataRouteRouteImport } from './routes/data/route'
-import { Route as AppsRouteRouteImport } from './routes/apps/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as PluginsIndexRouteImport } from './routes/plugins/index'
+import { Route as PackagesIndexRouteImport } from './routes/packages/index'
 import { Route as DataIndexRouteImport } from './routes/data/index'
-import { Route as AppsIndexRouteImport } from './routes/apps/index'
 import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
 import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
 import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
@@ -30,22 +30,21 @@ import { Route as DataModelsIndexRouteImport } from './routes/data/models/index'
 import { Route as DataEnumsIndexRouteImport } from './routes/data/enums/index'
 import { Route as AdminSectionsAppKeyIndexRouteImport } from './routes/admin-sections.$appKey/index'
 import { Route as PluginsEditKeyRouteImport } from './routes/plugins/edit.$key'
-import { Route as AppsPackagesKeyRouteRouteImport } from './routes/apps/packages.$key/route'
-import { Route as AppsEditKeyRouteRouteImport } from './routes/apps/edit.$key/route'
-import { Route as AppsPackagesKeyIndexRouteImport } from './routes/apps/packages.$key/index'
-import { Route as AppsEditKeyIndexRouteImport } from './routes/apps/edit.$key/index'
-import { Route as AppsPackagesKeyNodeLibraryRouteImport } from './routes/apps/packages.$key/node-library'
-import { Route as AppsEditKeyBackendRouteImport } from './routes/apps/edit.$key/backend'
+import { Route as PackagesLibsKeyRouteRouteImport } from './routes/packages/libs.$key/route'
+import { Route as PackagesAppsKeyRouteRouteImport } from './routes/packages/apps.$key/route'
+import { Route as PackagesLibsKeyIndexRouteImport } from './routes/packages/libs.$key/index'
+import { Route as PackagesAppsKeyIndexRouteImport } from './routes/packages/apps.$key/index'
+import { Route as PackagesAppsKeyBackendRouteImport } from './routes/packages/apps.$key/backend'
 import { Route as AdminSectionsAppKeyEditSectionKeyRouteImport } from './routes/admin-sections.$appKey/edit.$sectionKey'
+import { Route as PackagesAppsKeyWebRouteRouteImport } from './routes/packages/apps.$key/web/route'
 import { Route as DataModelsEditKeyRouteRouteImport } from './routes/data/models/edit.$key/route'
 import { Route as DataEnumsEditKeyRouteRouteImport } from './routes/data/enums/edit.$key/route'
-import { Route as AppsEditKeyWebRouteRouteImport } from './routes/apps/edit.$key/web/route'
+import { Route as PackagesAppsKeyWebIndexRouteImport } from './routes/packages/apps.$key/web/index'
 import { Route as DataModelsEditKeyIndexRouteImport } from './routes/data/models/edit.$key/index'
 import { Route as DataEnumsEditKeyIndexRouteImport } from './routes/data/enums/edit.$key/index'
-import { Route as AppsEditKeyWebIndexRouteImport } from './routes/apps/edit.$key/web/index'
+import { Route as PackagesAppsKeyWebAdminRouteImport } from './routes/packages/apps.$key/web/admin'
 import { Route as DataModelsEditKeyServiceRouteImport } from './routes/data/models/edit.$key/service'
 import { Route as DataModelsEditKeyGraphqlRouteImport } from './routes/data/models/edit.$key/graphql'
-import { Route as AppsEditKeyWebAdminRouteImport } from './routes/apps/edit.$key/web/admin'
 
 const SettingsRouteRoute = SettingsRouteRouteImport.update({
   id: '/settings',
@@ -57,14 +56,14 @@ const PluginsRouteRoute = PluginsRouteRouteImport.update({
   path: '/plugins',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PackagesRouteRoute = PackagesRouteRouteImport.update({
+  id: '/packages',
+  path: '/packages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DataRouteRoute = DataRouteRouteImport.update({
   id: '/data',
   path: '/data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppsRouteRoute = AppsRouteRouteImport.update({
-  id: '/apps',
-  path: '/apps',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -82,15 +81,15 @@ const PluginsIndexRoute = PluginsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PluginsRouteRoute,
 } as any)
+const PackagesIndexRoute = PackagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PackagesRouteRoute,
+} as any)
 const DataIndexRoute = DataIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DataRouteRoute,
-} as any)
-const AppsIndexRoute = AppsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppsRouteRoute,
 } as any)
 const SettingsThemeBuilderRoute = SettingsThemeBuilderRouteImport.update({
   id: '/theme-builder',
@@ -155,36 +154,30 @@ const PluginsEditKeyRoute = PluginsEditKeyRouteImport.update({
   path: '/edit/$key',
   getParentRoute: () => PluginsRouteRoute,
 } as any)
-const AppsPackagesKeyRouteRoute = AppsPackagesKeyRouteRouteImport.update({
-  id: '/packages/$key',
-  path: '/packages/$key',
-  getParentRoute: () => AppsRouteRoute,
+const PackagesLibsKeyRouteRoute = PackagesLibsKeyRouteRouteImport.update({
+  id: '/libs/$key',
+  path: '/libs/$key',
+  getParentRoute: () => PackagesRouteRoute,
 } as any)
-const AppsEditKeyRouteRoute = AppsEditKeyRouteRouteImport.update({
-  id: '/edit/$key',
-  path: '/edit/$key',
-  getParentRoute: () => AppsRouteRoute,
+const PackagesAppsKeyRouteRoute = PackagesAppsKeyRouteRouteImport.update({
+  id: '/apps/$key',
+  path: '/apps/$key',
+  getParentRoute: () => PackagesRouteRoute,
 } as any)
-const AppsPackagesKeyIndexRoute = AppsPackagesKeyIndexRouteImport.update({
+const PackagesLibsKeyIndexRoute = PackagesLibsKeyIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppsPackagesKeyRouteRoute,
+  getParentRoute: () => PackagesLibsKeyRouteRoute,
 } as any)
-const AppsEditKeyIndexRoute = AppsEditKeyIndexRouteImport.update({
+const PackagesAppsKeyIndexRoute = PackagesAppsKeyIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppsEditKeyRouteRoute,
+  getParentRoute: () => PackagesAppsKeyRouteRoute,
 } as any)
-const AppsPackagesKeyNodeLibraryRoute =
-  AppsPackagesKeyNodeLibraryRouteImport.update({
-    id: '/node-library',
-    path: '/node-library',
-    getParentRoute: () => AppsPackagesKeyRouteRoute,
-  } as any)
-const AppsEditKeyBackendRoute = AppsEditKeyBackendRouteImport.update({
+const PackagesAppsKeyBackendRoute = PackagesAppsKeyBackendRouteImport.update({
   id: '/backend',
   path: '/backend',
-  getParentRoute: () => AppsEditKeyRouteRoute,
+  getParentRoute: () => PackagesAppsKeyRouteRoute,
 } as any)
 const AdminSectionsAppKeyEditSectionKeyRoute =
   AdminSectionsAppKeyEditSectionKeyRouteImport.update({
@@ -192,6 +185,11 @@ const AdminSectionsAppKeyEditSectionKeyRoute =
     path: '/edit/$sectionKey',
     getParentRoute: () => AdminSectionsAppKeyRouteRoute,
   } as any)
+const PackagesAppsKeyWebRouteRoute = PackagesAppsKeyWebRouteRouteImport.update({
+  id: '/web',
+  path: '/web',
+  getParentRoute: () => PackagesAppsKeyRouteRoute,
+} as any)
 const DataModelsEditKeyRouteRoute = DataModelsEditKeyRouteRouteImport.update({
   id: '/edit/$key',
   path: '/edit/$key',
@@ -202,10 +200,10 @@ const DataEnumsEditKeyRouteRoute = DataEnumsEditKeyRouteRouteImport.update({
   path: '/edit/$key',
   getParentRoute: () => DataEnumsRouteRoute,
 } as any)
-const AppsEditKeyWebRouteRoute = AppsEditKeyWebRouteRouteImport.update({
-  id: '/web',
-  path: '/web',
-  getParentRoute: () => AppsEditKeyRouteRoute,
+const PackagesAppsKeyWebIndexRoute = PackagesAppsKeyWebIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
 } as any)
 const DataModelsEditKeyIndexRoute = DataModelsEditKeyIndexRouteImport.update({
   id: '/',
@@ -217,10 +215,10 @@ const DataEnumsEditKeyIndexRoute = DataEnumsEditKeyIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DataEnumsEditKeyRouteRoute,
 } as any)
-const AppsEditKeyWebIndexRoute = AppsEditKeyWebIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppsEditKeyWebRouteRoute,
+const PackagesAppsKeyWebAdminRoute = PackagesAppsKeyWebAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
 } as any)
 const DataModelsEditKeyServiceRoute =
   DataModelsEditKeyServiceRouteImport.update({
@@ -234,16 +232,11 @@ const DataModelsEditKeyGraphqlRoute =
     path: '/graphql',
     getParentRoute: () => DataModelsEditKeyRouteRoute,
   } as any)
-const AppsEditKeyWebAdminRoute = AppsEditKeyWebAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AppsEditKeyWebRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/apps': typeof AppsRouteRouteWithChildren
   '/data': typeof DataRouteRouteWithChildren
+  '/packages': typeof PackagesRouteRouteWithChildren
   '/plugins': typeof PluginsRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
   '/admin-sections/$appKey': typeof AdminSectionsAppKeyRouteRouteWithChildren
@@ -254,30 +247,29 @@ export interface FileRoutesByFullPath {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
-  '/apps/': typeof AppsIndexRoute
   '/data/': typeof DataIndexRoute
+  '/packages/': typeof PackagesIndexRoute
   '/plugins/': typeof PluginsIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/apps/edit/$key': typeof AppsEditKeyRouteRouteWithChildren
-  '/apps/packages/$key': typeof AppsPackagesKeyRouteRouteWithChildren
+  '/packages/apps/$key': typeof PackagesAppsKeyRouteRouteWithChildren
+  '/packages/libs/$key': typeof PackagesLibsKeyRouteRouteWithChildren
   '/plugins/edit/$key': typeof PluginsEditKeyRoute
   '/admin-sections/$appKey/': typeof AdminSectionsAppKeyIndexRoute
   '/data/enums/': typeof DataEnumsIndexRoute
   '/data/models/': typeof DataModelsIndexRoute
-  '/apps/edit/$key/web': typeof AppsEditKeyWebRouteRouteWithChildren
   '/data/enums/edit/$key': typeof DataEnumsEditKeyRouteRouteWithChildren
   '/data/models/edit/$key': typeof DataModelsEditKeyRouteRouteWithChildren
+  '/packages/apps/$key/web': typeof PackagesAppsKeyWebRouteRouteWithChildren
   '/admin-sections/$appKey/edit/$sectionKey': typeof AdminSectionsAppKeyEditSectionKeyRoute
-  '/apps/edit/$key/backend': typeof AppsEditKeyBackendRoute
-  '/apps/packages/$key/node-library': typeof AppsPackagesKeyNodeLibraryRoute
-  '/apps/edit/$key/': typeof AppsEditKeyIndexRoute
-  '/apps/packages/$key/': typeof AppsPackagesKeyIndexRoute
-  '/apps/edit/$key/web/admin': typeof AppsEditKeyWebAdminRoute
+  '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
+  '/packages/apps/$key/': typeof PackagesAppsKeyIndexRoute
+  '/packages/libs/$key/': typeof PackagesLibsKeyIndexRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
-  '/apps/edit/$key/web/': typeof AppsEditKeyWebIndexRoute
+  '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
   '/data/enums/edit/$key/': typeof DataEnumsEditKeyIndexRoute
   '/data/models/edit/$key/': typeof DataModelsEditKeyIndexRoute
+  '/packages/apps/$key/web/': typeof PackagesAppsKeyWebIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -286,8 +278,8 @@ export interface FileRoutesByTo {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
-  '/apps': typeof AppsIndexRoute
   '/data': typeof DataIndexRoute
+  '/packages': typeof PackagesIndexRoute
   '/plugins': typeof PluginsIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/plugins/edit/$key': typeof PluginsEditKeyRoute
@@ -295,22 +287,21 @@ export interface FileRoutesByTo {
   '/data/enums': typeof DataEnumsIndexRoute
   '/data/models': typeof DataModelsIndexRoute
   '/admin-sections/$appKey/edit/$sectionKey': typeof AdminSectionsAppKeyEditSectionKeyRoute
-  '/apps/edit/$key/backend': typeof AppsEditKeyBackendRoute
-  '/apps/packages/$key/node-library': typeof AppsPackagesKeyNodeLibraryRoute
-  '/apps/edit/$key': typeof AppsEditKeyIndexRoute
-  '/apps/packages/$key': typeof AppsPackagesKeyIndexRoute
-  '/apps/edit/$key/web/admin': typeof AppsEditKeyWebAdminRoute
+  '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
+  '/packages/apps/$key': typeof PackagesAppsKeyIndexRoute
+  '/packages/libs/$key': typeof PackagesLibsKeyIndexRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
-  '/apps/edit/$key/web': typeof AppsEditKeyWebIndexRoute
+  '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
   '/data/enums/edit/$key': typeof DataEnumsEditKeyIndexRoute
   '/data/models/edit/$key': typeof DataModelsEditKeyIndexRoute
+  '/packages/apps/$key/web': typeof PackagesAppsKeyWebIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/apps': typeof AppsRouteRouteWithChildren
   '/data': typeof DataRouteRouteWithChildren
+  '/packages': typeof PackagesRouteRouteWithChildren
   '/plugins': typeof PluginsRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
   '/admin-sections/$appKey': typeof AdminSectionsAppKeyRouteRouteWithChildren
@@ -321,37 +312,36 @@ export interface FileRoutesById {
   '/settings/monorepo': typeof SettingsMonorepoRoute
   '/settings/template-extractor': typeof SettingsTemplateExtractorRoute
   '/settings/theme-builder': typeof SettingsThemeBuilderRoute
-  '/apps/': typeof AppsIndexRoute
   '/data/': typeof DataIndexRoute
+  '/packages/': typeof PackagesIndexRoute
   '/plugins/': typeof PluginsIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/apps/edit/$key': typeof AppsEditKeyRouteRouteWithChildren
-  '/apps/packages/$key': typeof AppsPackagesKeyRouteRouteWithChildren
+  '/packages/apps/$key': typeof PackagesAppsKeyRouteRouteWithChildren
+  '/packages/libs/$key': typeof PackagesLibsKeyRouteRouteWithChildren
   '/plugins/edit/$key': typeof PluginsEditKeyRoute
   '/admin-sections/$appKey/': typeof AdminSectionsAppKeyIndexRoute
   '/data/enums/': typeof DataEnumsIndexRoute
   '/data/models/': typeof DataModelsIndexRoute
-  '/apps/edit/$key/web': typeof AppsEditKeyWebRouteRouteWithChildren
   '/data/enums/edit/$key': typeof DataEnumsEditKeyRouteRouteWithChildren
   '/data/models/edit/$key': typeof DataModelsEditKeyRouteRouteWithChildren
+  '/packages/apps/$key/web': typeof PackagesAppsKeyWebRouteRouteWithChildren
   '/admin-sections/$appKey/edit/$sectionKey': typeof AdminSectionsAppKeyEditSectionKeyRoute
-  '/apps/edit/$key/backend': typeof AppsEditKeyBackendRoute
-  '/apps/packages/$key/node-library': typeof AppsPackagesKeyNodeLibraryRoute
-  '/apps/edit/$key/': typeof AppsEditKeyIndexRoute
-  '/apps/packages/$key/': typeof AppsPackagesKeyIndexRoute
-  '/apps/edit/$key/web/admin': typeof AppsEditKeyWebAdminRoute
+  '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
+  '/packages/apps/$key/': typeof PackagesAppsKeyIndexRoute
+  '/packages/libs/$key/': typeof PackagesLibsKeyIndexRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
-  '/apps/edit/$key/web/': typeof AppsEditKeyWebIndexRoute
+  '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
   '/data/enums/edit/$key/': typeof DataEnumsEditKeyIndexRoute
   '/data/models/edit/$key/': typeof DataModelsEditKeyIndexRoute
+  '/packages/apps/$key/web/': typeof PackagesAppsKeyWebIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/apps'
     | '/data'
+    | '/packages'
     | '/plugins'
     | '/settings'
     | '/admin-sections/$appKey'
@@ -362,30 +352,29 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
-    | '/apps/'
     | '/data/'
+    | '/packages/'
     | '/plugins/'
     | '/settings/'
-    | '/apps/edit/$key'
-    | '/apps/packages/$key'
+    | '/packages/apps/$key'
+    | '/packages/libs/$key'
     | '/plugins/edit/$key'
     | '/admin-sections/$appKey/'
     | '/data/enums/'
     | '/data/models/'
-    | '/apps/edit/$key/web'
     | '/data/enums/edit/$key'
     | '/data/models/edit/$key'
+    | '/packages/apps/$key/web'
     | '/admin-sections/$appKey/edit/$sectionKey'
-    | '/apps/edit/$key/backend'
-    | '/apps/packages/$key/node-library'
-    | '/apps/edit/$key/'
-    | '/apps/packages/$key/'
-    | '/apps/edit/$key/web/admin'
+    | '/packages/apps/$key/backend'
+    | '/packages/apps/$key/'
+    | '/packages/libs/$key/'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
-    | '/apps/edit/$key/web/'
+    | '/packages/apps/$key/web/admin'
     | '/data/enums/edit/$key/'
     | '/data/models/edit/$key/'
+    | '/packages/apps/$key/web/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -394,8 +383,8 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
-    | '/apps'
     | '/data'
+    | '/packages'
     | '/plugins'
     | '/settings'
     | '/plugins/edit/$key'
@@ -403,21 +392,20 @@ export interface FileRouteTypes {
     | '/data/enums'
     | '/data/models'
     | '/admin-sections/$appKey/edit/$sectionKey'
-    | '/apps/edit/$key/backend'
-    | '/apps/packages/$key/node-library'
-    | '/apps/edit/$key'
-    | '/apps/packages/$key'
-    | '/apps/edit/$key/web/admin'
+    | '/packages/apps/$key/backend'
+    | '/packages/apps/$key'
+    | '/packages/libs/$key'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
-    | '/apps/edit/$key/web'
+    | '/packages/apps/$key/web/admin'
     | '/data/enums/edit/$key'
     | '/data/models/edit/$key'
+    | '/packages/apps/$key/web'
   id:
     | '__root__'
     | '/'
-    | '/apps'
     | '/data'
+    | '/packages'
     | '/plugins'
     | '/settings'
     | '/admin-sections/$appKey'
@@ -428,36 +416,35 @@ export interface FileRouteTypes {
     | '/settings/monorepo'
     | '/settings/template-extractor'
     | '/settings/theme-builder'
-    | '/apps/'
     | '/data/'
+    | '/packages/'
     | '/plugins/'
     | '/settings/'
-    | '/apps/edit/$key'
-    | '/apps/packages/$key'
+    | '/packages/apps/$key'
+    | '/packages/libs/$key'
     | '/plugins/edit/$key'
     | '/admin-sections/$appKey/'
     | '/data/enums/'
     | '/data/models/'
-    | '/apps/edit/$key/web'
     | '/data/enums/edit/$key'
     | '/data/models/edit/$key'
+    | '/packages/apps/$key/web'
     | '/admin-sections/$appKey/edit/$sectionKey'
-    | '/apps/edit/$key/backend'
-    | '/apps/packages/$key/node-library'
-    | '/apps/edit/$key/'
-    | '/apps/packages/$key/'
-    | '/apps/edit/$key/web/admin'
+    | '/packages/apps/$key/backend'
+    | '/packages/apps/$key/'
+    | '/packages/libs/$key/'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
-    | '/apps/edit/$key/web/'
+    | '/packages/apps/$key/web/admin'
     | '/data/enums/edit/$key/'
     | '/data/models/edit/$key/'
+    | '/packages/apps/$key/web/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppsRouteRoute: typeof AppsRouteRouteWithChildren
   DataRouteRoute: typeof DataRouteRouteWithChildren
+  PackagesRouteRoute: typeof PackagesRouteRouteWithChildren
   PluginsRouteRoute: typeof PluginsRouteRouteWithChildren
   SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
   AdminSectionsAppKeyRouteRoute: typeof AdminSectionsAppKeyRouteRouteWithChildren
@@ -479,18 +466,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PluginsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packages': {
+      id: '/packages'
+      path: '/packages'
+      fullPath: '/packages'
+      preLoaderRoute: typeof PackagesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/data': {
       id: '/data'
       path: '/data'
       fullPath: '/data'
       preLoaderRoute: typeof DataRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/apps': {
-      id: '/apps'
-      path: '/apps'
-      fullPath: '/apps'
-      preLoaderRoute: typeof AppsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -514,19 +501,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PluginsIndexRouteImport
       parentRoute: typeof PluginsRouteRoute
     }
+    '/packages/': {
+      id: '/packages/'
+      path: '/'
+      fullPath: '/packages/'
+      preLoaderRoute: typeof PackagesIndexRouteImport
+      parentRoute: typeof PackagesRouteRoute
+    }
     '/data/': {
       id: '/data/'
       path: '/'
       fullPath: '/data/'
       preLoaderRoute: typeof DataIndexRouteImport
       parentRoute: typeof DataRouteRoute
-    }
-    '/apps/': {
-      id: '/apps/'
-      path: '/'
-      fullPath: '/apps/'
-      preLoaderRoute: typeof AppsIndexRouteImport
-      parentRoute: typeof AppsRouteRoute
     }
     '/settings/theme-builder': {
       id: '/settings/theme-builder'
@@ -612,47 +599,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PluginsEditKeyRouteImport
       parentRoute: typeof PluginsRouteRoute
     }
-    '/apps/packages/$key': {
-      id: '/apps/packages/$key'
-      path: '/packages/$key'
-      fullPath: '/apps/packages/$key'
-      preLoaderRoute: typeof AppsPackagesKeyRouteRouteImport
-      parentRoute: typeof AppsRouteRoute
+    '/packages/libs/$key': {
+      id: '/packages/libs/$key'
+      path: '/libs/$key'
+      fullPath: '/packages/libs/$key'
+      preLoaderRoute: typeof PackagesLibsKeyRouteRouteImport
+      parentRoute: typeof PackagesRouteRoute
     }
-    '/apps/edit/$key': {
-      id: '/apps/edit/$key'
-      path: '/edit/$key'
-      fullPath: '/apps/edit/$key'
-      preLoaderRoute: typeof AppsEditKeyRouteRouteImport
-      parentRoute: typeof AppsRouteRoute
+    '/packages/apps/$key': {
+      id: '/packages/apps/$key'
+      path: '/apps/$key'
+      fullPath: '/packages/apps/$key'
+      preLoaderRoute: typeof PackagesAppsKeyRouteRouteImport
+      parentRoute: typeof PackagesRouteRoute
     }
-    '/apps/packages/$key/': {
-      id: '/apps/packages/$key/'
+    '/packages/libs/$key/': {
+      id: '/packages/libs/$key/'
       path: '/'
-      fullPath: '/apps/packages/$key/'
-      preLoaderRoute: typeof AppsPackagesKeyIndexRouteImport
-      parentRoute: typeof AppsPackagesKeyRouteRoute
+      fullPath: '/packages/libs/$key/'
+      preLoaderRoute: typeof PackagesLibsKeyIndexRouteImport
+      parentRoute: typeof PackagesLibsKeyRouteRoute
     }
-    '/apps/edit/$key/': {
-      id: '/apps/edit/$key/'
+    '/packages/apps/$key/': {
+      id: '/packages/apps/$key/'
       path: '/'
-      fullPath: '/apps/edit/$key/'
-      preLoaderRoute: typeof AppsEditKeyIndexRouteImport
-      parentRoute: typeof AppsEditKeyRouteRoute
+      fullPath: '/packages/apps/$key/'
+      preLoaderRoute: typeof PackagesAppsKeyIndexRouteImport
+      parentRoute: typeof PackagesAppsKeyRouteRoute
     }
-    '/apps/packages/$key/node-library': {
-      id: '/apps/packages/$key/node-library'
-      path: '/node-library'
-      fullPath: '/apps/packages/$key/node-library'
-      preLoaderRoute: typeof AppsPackagesKeyNodeLibraryRouteImport
-      parentRoute: typeof AppsPackagesKeyRouteRoute
-    }
-    '/apps/edit/$key/backend': {
-      id: '/apps/edit/$key/backend'
+    '/packages/apps/$key/backend': {
+      id: '/packages/apps/$key/backend'
       path: '/backend'
-      fullPath: '/apps/edit/$key/backend'
-      preLoaderRoute: typeof AppsEditKeyBackendRouteImport
-      parentRoute: typeof AppsEditKeyRouteRoute
+      fullPath: '/packages/apps/$key/backend'
+      preLoaderRoute: typeof PackagesAppsKeyBackendRouteImport
+      parentRoute: typeof PackagesAppsKeyRouteRoute
     }
     '/admin-sections/$appKey/edit/$sectionKey': {
       id: '/admin-sections/$appKey/edit/$sectionKey'
@@ -660,6 +640,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin-sections/$appKey/edit/$sectionKey'
       preLoaderRoute: typeof AdminSectionsAppKeyEditSectionKeyRouteImport
       parentRoute: typeof AdminSectionsAppKeyRouteRoute
+    }
+    '/packages/apps/$key/web': {
+      id: '/packages/apps/$key/web'
+      path: '/web'
+      fullPath: '/packages/apps/$key/web'
+      preLoaderRoute: typeof PackagesAppsKeyWebRouteRouteImport
+      parentRoute: typeof PackagesAppsKeyRouteRoute
     }
     '/data/models/edit/$key': {
       id: '/data/models/edit/$key'
@@ -675,12 +662,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsEditKeyRouteRouteImport
       parentRoute: typeof DataEnumsRouteRoute
     }
-    '/apps/edit/$key/web': {
-      id: '/apps/edit/$key/web'
-      path: '/web'
-      fullPath: '/apps/edit/$key/web'
-      preLoaderRoute: typeof AppsEditKeyWebRouteRouteImport
-      parentRoute: typeof AppsEditKeyRouteRoute
+    '/packages/apps/$key/web/': {
+      id: '/packages/apps/$key/web/'
+      path: '/'
+      fullPath: '/packages/apps/$key/web/'
+      preLoaderRoute: typeof PackagesAppsKeyWebIndexRouteImport
+      parentRoute: typeof PackagesAppsKeyWebRouteRoute
     }
     '/data/models/edit/$key/': {
       id: '/data/models/edit/$key/'
@@ -696,12 +683,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsEditKeyIndexRouteImport
       parentRoute: typeof DataEnumsEditKeyRouteRoute
     }
-    '/apps/edit/$key/web/': {
-      id: '/apps/edit/$key/web/'
-      path: '/'
-      fullPath: '/apps/edit/$key/web/'
-      preLoaderRoute: typeof AppsEditKeyWebIndexRouteImport
-      parentRoute: typeof AppsEditKeyWebRouteRoute
+    '/packages/apps/$key/web/admin': {
+      id: '/packages/apps/$key/web/admin'
+      path: '/admin'
+      fullPath: '/packages/apps/$key/web/admin'
+      preLoaderRoute: typeof PackagesAppsKeyWebAdminRouteImport
+      parentRoute: typeof PackagesAppsKeyWebRouteRoute
     }
     '/data/models/edit/$key/service': {
       id: '/data/models/edit/$key/service'
@@ -717,72 +704,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataModelsEditKeyGraphqlRouteImport
       parentRoute: typeof DataModelsEditKeyRouteRoute
     }
-    '/apps/edit/$key/web/admin': {
-      id: '/apps/edit/$key/web/admin'
-      path: '/admin'
-      fullPath: '/apps/edit/$key/web/admin'
-      preLoaderRoute: typeof AppsEditKeyWebAdminRouteImport
-      parentRoute: typeof AppsEditKeyWebRouteRoute
-    }
   }
 }
-
-interface AppsEditKeyWebRouteRouteChildren {
-  AppsEditKeyWebAdminRoute: typeof AppsEditKeyWebAdminRoute
-  AppsEditKeyWebIndexRoute: typeof AppsEditKeyWebIndexRoute
-}
-
-const AppsEditKeyWebRouteRouteChildren: AppsEditKeyWebRouteRouteChildren = {
-  AppsEditKeyWebAdminRoute: AppsEditKeyWebAdminRoute,
-  AppsEditKeyWebIndexRoute: AppsEditKeyWebIndexRoute,
-}
-
-const AppsEditKeyWebRouteRouteWithChildren =
-  AppsEditKeyWebRouteRoute._addFileChildren(AppsEditKeyWebRouteRouteChildren)
-
-interface AppsEditKeyRouteRouteChildren {
-  AppsEditKeyWebRouteRoute: typeof AppsEditKeyWebRouteRouteWithChildren
-  AppsEditKeyBackendRoute: typeof AppsEditKeyBackendRoute
-  AppsEditKeyIndexRoute: typeof AppsEditKeyIndexRoute
-}
-
-const AppsEditKeyRouteRouteChildren: AppsEditKeyRouteRouteChildren = {
-  AppsEditKeyWebRouteRoute: AppsEditKeyWebRouteRouteWithChildren,
-  AppsEditKeyBackendRoute: AppsEditKeyBackendRoute,
-  AppsEditKeyIndexRoute: AppsEditKeyIndexRoute,
-}
-
-const AppsEditKeyRouteRouteWithChildren =
-  AppsEditKeyRouteRoute._addFileChildren(AppsEditKeyRouteRouteChildren)
-
-interface AppsPackagesKeyRouteRouteChildren {
-  AppsPackagesKeyNodeLibraryRoute: typeof AppsPackagesKeyNodeLibraryRoute
-  AppsPackagesKeyIndexRoute: typeof AppsPackagesKeyIndexRoute
-}
-
-const AppsPackagesKeyRouteRouteChildren: AppsPackagesKeyRouteRouteChildren = {
-  AppsPackagesKeyNodeLibraryRoute: AppsPackagesKeyNodeLibraryRoute,
-  AppsPackagesKeyIndexRoute: AppsPackagesKeyIndexRoute,
-}
-
-const AppsPackagesKeyRouteRouteWithChildren =
-  AppsPackagesKeyRouteRoute._addFileChildren(AppsPackagesKeyRouteRouteChildren)
-
-interface AppsRouteRouteChildren {
-  AppsIndexRoute: typeof AppsIndexRoute
-  AppsEditKeyRouteRoute: typeof AppsEditKeyRouteRouteWithChildren
-  AppsPackagesKeyRouteRoute: typeof AppsPackagesKeyRouteRouteWithChildren
-}
-
-const AppsRouteRouteChildren: AppsRouteRouteChildren = {
-  AppsIndexRoute: AppsIndexRoute,
-  AppsEditKeyRouteRoute: AppsEditKeyRouteRouteWithChildren,
-  AppsPackagesKeyRouteRoute: AppsPackagesKeyRouteRouteWithChildren,
-}
-
-const AppsRouteRouteWithChildren = AppsRouteRoute._addFileChildren(
-  AppsRouteRouteChildren,
-)
 
 interface DataEnumsEditKeyRouteRouteChildren {
   DataEnumsEditKeyIndexRoute: typeof DataEnumsEditKeyIndexRoute
@@ -859,6 +782,64 @@ const DataRouteRouteWithChildren = DataRouteRoute._addFileChildren(
   DataRouteRouteChildren,
 )
 
+interface PackagesAppsKeyWebRouteRouteChildren {
+  PackagesAppsKeyWebAdminRoute: typeof PackagesAppsKeyWebAdminRoute
+  PackagesAppsKeyWebIndexRoute: typeof PackagesAppsKeyWebIndexRoute
+}
+
+const PackagesAppsKeyWebRouteRouteChildren: PackagesAppsKeyWebRouteRouteChildren =
+  {
+    PackagesAppsKeyWebAdminRoute: PackagesAppsKeyWebAdminRoute,
+    PackagesAppsKeyWebIndexRoute: PackagesAppsKeyWebIndexRoute,
+  }
+
+const PackagesAppsKeyWebRouteRouteWithChildren =
+  PackagesAppsKeyWebRouteRoute._addFileChildren(
+    PackagesAppsKeyWebRouteRouteChildren,
+  )
+
+interface PackagesAppsKeyRouteRouteChildren {
+  PackagesAppsKeyWebRouteRoute: typeof PackagesAppsKeyWebRouteRouteWithChildren
+  PackagesAppsKeyBackendRoute: typeof PackagesAppsKeyBackendRoute
+  PackagesAppsKeyIndexRoute: typeof PackagesAppsKeyIndexRoute
+}
+
+const PackagesAppsKeyRouteRouteChildren: PackagesAppsKeyRouteRouteChildren = {
+  PackagesAppsKeyWebRouteRoute: PackagesAppsKeyWebRouteRouteWithChildren,
+  PackagesAppsKeyBackendRoute: PackagesAppsKeyBackendRoute,
+  PackagesAppsKeyIndexRoute: PackagesAppsKeyIndexRoute,
+}
+
+const PackagesAppsKeyRouteRouteWithChildren =
+  PackagesAppsKeyRouteRoute._addFileChildren(PackagesAppsKeyRouteRouteChildren)
+
+interface PackagesLibsKeyRouteRouteChildren {
+  PackagesLibsKeyIndexRoute: typeof PackagesLibsKeyIndexRoute
+}
+
+const PackagesLibsKeyRouteRouteChildren: PackagesLibsKeyRouteRouteChildren = {
+  PackagesLibsKeyIndexRoute: PackagesLibsKeyIndexRoute,
+}
+
+const PackagesLibsKeyRouteRouteWithChildren =
+  PackagesLibsKeyRouteRoute._addFileChildren(PackagesLibsKeyRouteRouteChildren)
+
+interface PackagesRouteRouteChildren {
+  PackagesIndexRoute: typeof PackagesIndexRoute
+  PackagesAppsKeyRouteRoute: typeof PackagesAppsKeyRouteRouteWithChildren
+  PackagesLibsKeyRouteRoute: typeof PackagesLibsKeyRouteRouteWithChildren
+}
+
+const PackagesRouteRouteChildren: PackagesRouteRouteChildren = {
+  PackagesIndexRoute: PackagesIndexRoute,
+  PackagesAppsKeyRouteRoute: PackagesAppsKeyRouteRouteWithChildren,
+  PackagesLibsKeyRouteRoute: PackagesLibsKeyRouteRouteWithChildren,
+}
+
+const PackagesRouteRouteWithChildren = PackagesRouteRoute._addFileChildren(
+  PackagesRouteRouteChildren,
+)
+
 interface PluginsRouteRouteChildren {
   PluginsIndexRoute: typeof PluginsIndexRoute
   PluginsEditKeyRoute: typeof PluginsEditKeyRoute
@@ -914,8 +895,8 @@ const AdminSectionsAppKeyRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppsRouteRoute: AppsRouteRouteWithChildren,
   DataRouteRoute: DataRouteRouteWithChildren,
+  PackagesRouteRoute: PackagesRouteRouteWithChildren,
   PluginsRouteRoute: PluginsRouteRouteWithChildren,
   SettingsRouteRoute: SettingsRouteRouteWithChildren,
   AdminSectionsAppKeyRouteRoute: AdminSectionsAppKeyRouteRouteWithChildren,

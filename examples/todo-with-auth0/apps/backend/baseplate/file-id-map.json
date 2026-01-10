@@ -52,7 +52,6 @@
   "@baseplate-dev/fastify-generators#core/service-file:prisma-data-service:User": "src/modules/accounts/users/services/user.data-service.ts",
   "@baseplate-dev/fastify-generators#core/service-file:prisma-data-service:UserImage": "src/modules/accounts/users/services/user-image.data-service.ts",
   "@baseplate-dev/fastify-generators#core/service-file:prisma-data-service:UserProfile": "src/modules/accounts/users/services/user-profile.data-service.ts",
-  "@baseplate-dev/fastify-generators#email/fastify-postmark:postmark": "src/services/postmark.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-auth:field-authorize-global-types": "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-auth:field-authorize-plugin": "src/plugins/graphql/FieldAuthorizePlugin/index.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-auth:field-authorize-types": "src/plugins/graphql/FieldAuthorizePlugin/types.ts",

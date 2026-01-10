@@ -7,6 +7,7 @@ export * from './parser/index.js';
 export * from './plugins/index.js';
 export * from './references/index.js';
 export * from './schema/index.js';
+export * from './specs/index.js';
 export * from './tools/index.js';
 export * from './types/field-types.js';
 export * from './utils/index.js';

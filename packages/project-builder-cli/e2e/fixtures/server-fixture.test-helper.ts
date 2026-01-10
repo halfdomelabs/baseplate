@@ -29,7 +29,7 @@ export function getInitializedTestProjectDefinition(): ProjectDefinition {
     cliVersion: '0.0.1',
     apps: [],
     features: [],
-    packages: [],
+    libraries: [],
     models: [],
     isInitialized: true,
     schemaVersion: getLatestMigrationVersion(),
