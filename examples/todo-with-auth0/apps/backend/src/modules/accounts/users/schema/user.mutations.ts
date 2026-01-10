@@ -42,6 +42,7 @@ const userUserProfileNestedInputInputType = builder.inputType(
       id: t.id(),
       bio: t.string(),
       birthDay: t.field({ type: 'Date' }),
+      favoriteTodoListId: t.field({ type: 'Uuid' }),
       avatar: t.field({ type: fileInputInputType }),
     }),
   },

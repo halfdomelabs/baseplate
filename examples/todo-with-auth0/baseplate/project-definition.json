@@ -7,12 +7,12 @@
         "pathPrefix": "/admin",
         "sections": [
           {
-            "disableCreate": false,
             "embeddedForms": [],
             "featureRef": "todos",
             "form": {
               "fields": [
                 {
+                  "id": "admin-crud-input:DUQWGglVMePU",
                   "label": "Full Name",
                   "modelFieldRef": "name",
                   "type": "text",
@@ -20,6 +20,7 @@
                 },
                 {
                   "defaultLabel": "option.id",
+                  "id": "admin-crud-input:1V1Crxa7qhzr",
                   "label": "Owner",
                   "labelExpression": "name",
                   "localRelationRef": "owner",
@@ -27,22 +28,26 @@
                   "valueExpression": "id"
                 },
                 {
+                  "id": "admin-crud-input:n0SBXEYdtk75",
                   "label": "Status",
                   "modelFieldRef": "status",
                   "type": "enum"
                 },
                 {
+                  "id": "admin-crud-input:atxuF0y5M6Vb",
                   "label": "Cover Photo",
                   "modelRelationRef": "coverPhoto",
                   "type": "file"
                 },
                 {
+                  "id": "admin-crud-input:78XZZY_usxPH",
                   "label": "Created At",
                   "modelFieldRef": "createdAt",
                   "type": "text",
                   "validation": ""
                 },
                 {
+                  "id": "admin-crud-input:ezYapbwq0sjy",
                   "label": "Position",
                   "modelFieldRef": "position",
                   "type": "text",
@@ -56,14 +61,33 @@
             "name": "TodoList",
             "nameFieldRef": "name",
             "table": {
+              "actions": [
+                {
+                  "id": "admin-crud-action:tjP8caudvyEP",
+                  "position": "inline",
+                  "type": "edit"
+                },
+                {
+                  "id": "admin-crud-action:P8YPH4eXdVx_",
+                  "position": "dropdown",
+                  "type": "delete"
+                }
+              ],
               "columns": [
                 {
+                  "id": "admin-crud-column:MnT9i12kTKPz",
                   "label": "Owner ID",
                   "modelFieldRef": "ownerId",
                   "type": "text"
                 },
-                { "label": "Name", "modelFieldRef": "name", "type": "text" },
                 {
+                  "id": "admin-crud-column:KwBd4GRyRk3o",
+                  "label": "Name",
+                  "modelFieldRef": "name",
+                  "type": "text"
+                },
+                {
+                  "id": "admin-crud-column:PfHnnYz1KNVL",
                   "label": "Created At",
                   "modelFieldRef": "createdAt",
                   "type": "text"
@@ -79,6 +103,7 @@
                 "form": {
                   "fields": [
                     {
+                      "id": "admin-crud-input:7NlNjvyQtLjJ",
                       "label": "Stripe Customer ID",
                       "modelFieldRef": "stripeCustomerId",
                       "type": "text",
@@ -96,6 +121,7 @@
                 "form": {
                   "fields": [
                     {
+                      "id": "admin-crud-input:O3HQh5kYheIG",
                       "label": "Role",
                       "modelFieldRef": "role",
                       "type": "text",
@@ -108,7 +134,12 @@
                 "name": "roles",
                 "table": {
                   "columns": [
-                    { "label": "Role", "modelFieldRef": "role", "type": "text" }
+                    {
+                      "id": "admin-crud-column:hHo512O7ikoy",
+                      "label": "Role",
+                      "modelFieldRef": "role",
+                      "type": "text"
+                    }
                   ]
                 },
                 "type": "list"
@@ -118,12 +149,14 @@
             "form": {
               "fields": [
                 {
+                  "id": "admin-crud-input:AwZ6EN4zpDgi",
                   "label": "Name",
                   "modelFieldRef": "name",
                   "type": "text",
                   "validation": "z.string().nullish()"
                 },
                 {
+                  "id": "admin-crud-input:YN3esHIftRIm",
                   "label": "Email",
                   "modelFieldRef": "email",
                   "type": "text",
@@ -131,17 +164,23 @@
                 },
                 {
                   "embeddedFormRef": "customer",
+                  "id": "admin-crud-input:HMzUWyPS83gO",
                   "label": "Customer",
                   "modelRelationRef": "customer",
                   "type": "embedded"
                 },
                 {
                   "embeddedFormRef": "roles",
+                  "id": "admin-crud-input:bf_bFetNJISe",
                   "label": "Roles",
                   "modelRelationRef": "roles",
                   "type": "embedded"
                 },
-                { "label": "Password", "type": "password" }
+                {
+                  "id": "admin-crud-input:DJMnduxgwiw1",
+                  "label": "Password",
+                  "type": "password"
+                }
               ]
             },
             "icon": "FaUserAlt",
@@ -150,9 +189,31 @@
             "name": "User",
             "nameFieldRef": "name",
             "table": {
+              "actions": [
+                {
+                  "id": "admin-crud-action:1PqgFhkDbkE_",
+                  "position": "inline",
+                  "type": "edit"
+                },
+                {
+                  "id": "admin-crud-action:2pdFwp039pMD",
+                  "position": "dropdown",
+                  "type": "delete"
+                }
+              ],
               "columns": [
-                { "label": "Name", "modelFieldRef": "name", "type": "text" },
-                { "label": "Email", "modelFieldRef": "email", "type": "text" }
+                {
+                  "id": "admin-crud-column:o4BCXUDri_Qz",
+                  "label": "Name",
+                  "modelFieldRef": "name",
+                  "type": "text"
+                },
+                {
+                  "id": "admin-crud-column:vMLKqS_3dYED",
+                  "label": "Email",
+                  "modelFieldRef": "email",
+                  "type": "text"
+                }
               ]
             },
             "type": "crud"
@@ -167,7 +228,6 @@
     },
     {
       "enableAxios": true,
-      "enablePostmark": true,
       "enableStripe": true,
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
@@ -184,7 +244,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.2.5",
+  "cliVersion": "0.5.0",
   "enums": [
     {
       "featureRef": "todos",
@@ -1065,7 +1125,12 @@
             "type": "embeddedRelation"
           },
           {
-            "embeddedFieldNames": ["id", "bio", "birthDay"],
+            "embeddedFieldNames": [
+              "id",
+              "bio",
+              "birthDay",
+              "favoriteTodoListId"
+            ],
             "embeddedTransformerNames": ["avatar"],
             "foreignRelationRef": "userProfile",
             "id": "model-transformer:Ll9gvoax1ly4",
@@ -1234,6 +1299,13 @@
             "name": "twitterHandle",
             "options": { "default": "" },
             "type": "string"
+          },
+          {
+            "id": "model-scalar-field:xgGEeGk60qFf",
+            "isOptional": true,
+            "name": "favoriteTodoListId",
+            "options": { "default": "" },
+            "type": "uuid"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
@@ -1257,6 +1329,18 @@
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "avatarId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:O4FuWnBH65Eq",
+            "foreignRelationName": "userProfileFavorites",
+            "id": "model-local-relation:l5vYcdfEgGu2",
+            "modelRef": "TodoList",
+            "name": "favoriteTodoList",
+            "onDelete": "Restrict",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "id", "localRef": "favoriteTodoListId" }
+            ]
           }
         ],
         "uniqueConstraints": [
@@ -1354,10 +1438,10 @@
       }
     }
   ],
+  "packages": [],
   "plugins": [
     {
       "config": {
-        "modelRefs": { "file": "File" },
         "s3Adapters": [
           {
             "bucketConfigVar": "AWS_UPLOADS_BUCKET",
@@ -1375,36 +1459,7 @@
       "version": "0.1.0"
     },
     {
-      "config": {
-        "authFeatureRef": "accounts/auth",
-        "modelRefs": { "user": "User" },
-        "roles": [
-          {
-            "builtIn": true,
-            "comment": "All users (including unauthenticated and authenticated users)",
-            "id": "role:6wrjv_fs5rHf",
-            "name": "public"
-          },
-          {
-            "builtIn": true,
-            "comment": "All authenticated users",
-            "id": "role:zbp8hfo8qDZp",
-            "name": "user"
-          },
-          {
-            "builtIn": true,
-            "comment": "System processes without a user context, e.g. background jobs",
-            "id": "role:_tnnEc4bvDHX",
-            "name": "system"
-          },
-          {
-            "builtIn": false,
-            "comment": "Administrative role",
-            "id": "role:PYGSU4BDOlpQ",
-            "name": "admin"
-          }
-        ]
-      },
+      "config": {},
       "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_auth0",
       "name": "auth0",

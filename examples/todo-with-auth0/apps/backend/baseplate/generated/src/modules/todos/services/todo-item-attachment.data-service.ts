@@ -15,7 +15,8 @@ export const todoItemAttachmentInputFields = {
   position: scalarField(z.int()),
   url: scalarField(z.string()),
   tags: nestedOneToManyField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: { tag: scalarField(z.string()) },
     getWhereUnique: (input, parentModel) =>
       input.tag

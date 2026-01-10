@@ -26,7 +26,8 @@ export const todoItemInputFields = {
   done: scalarField(z.boolean()),
   assigneeId: scalarField(z.uuid().nullish()),
   attachments: nestedOneToManyField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: pick(todoItemAttachmentInputFields, [
       'position',
       'url',

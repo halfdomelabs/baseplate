@@ -10,31 +10,35 @@ import type {
 import type { DataUtilsImportsProvider } from '../../data-utils/index.js';
 
 /**
- * Configuration for generating relation buildData function
+ * Configuration for generating relation buildData functions
  */
 interface GenerateRelationBuildDataConfig {
   /** Prisma model to analyze for relations */
   prismaModel: PrismaOutputModel;
   /** Field names that are included in the input (to determine which relations to include) */
   inputFieldNames: string[];
-  /** Operation type - determines whether to use connectCreate or connectUpdate */
-  operationType: 'create' | 'update' | 'upsert';
   /** Data utils imports provider for accessing relationHelpers fragments */
   dataUtilsImports: DataUtilsImportsProvider;
 }
 
 /**
- * Result of generating relation buildData function
+ * Result of generating relation buildData functions
  */
 interface GenerateRelationBuildDataResult {
-  /** Argument pattern for the function (e.g., "{ ownerId, ...data }" or "data") */
-  argumentFragment: TsCodeFragment;
-  /** Return value with relation transformations (e.g., "{ ...data, owner: relationHelpers.connectCreate(...) }") */
-  returnFragment: TsCodeFragment;
+  /** Create operation: argument pattern (e.g., "{ ownerId, ...data }") */
+  createArgumentFragment: TsCodeFragment;
+  /** Create operation: return value (e.g., "{ ...data, owner: relationHelpers.connectCreate(...) }") */
+  createReturnFragment: TsCodeFragment;
+  /** Update operation: argument pattern (e.g., "{ ownerId, ...data }") */
+  updateArgumentFragment: TsCodeFragment;
+  /** Update operation: return value (e.g., "{ ...data, owner: relationHelpers.connectUpdate(...) }") */
+  updateReturnFragment: TsCodeFragment;
+  /** buildCreateData function fragment: ({ fk1, fk2, ...data }) => ({ ...data, relation1: relationHelpers.connectCreate(...) }) */
+  buildCreateDataFragment: TsCodeFragment;
+  /** buildUpdateData function fragment: ({ fk1, fk2, ...data }) => ({ ...data, relation1: relationHelpers.connectUpdate(...) }) */
+  buildUpdateDataFragment: TsCodeFragment;
   /** Whether this is a simple passthrough (no relations to transform) */
   passthrough: boolean;
-  /** Complete buildData function fragment: ({ fk1, fk2, ...data }) => ({ ...data, relation1: ..., relation2: ... }) */
-  buildDataFunctionFragment: TsCodeFragment;
 }
 
 /**
@@ -229,60 +233,43 @@ function generateBuildDataBody(
 }
 
 /**
- * Generates buildData function that transforms foreign key fields into Prisma relation objects
+ * Generates separate buildCreateData and buildUpdateData functions that transform
+ * foreign key fields into Prisma relation objects.
  *
  * This helper analyzes a Prisma model to find relations whose foreign key fields are included
- * in the input, then generates a buildData function that destructures those FK fields and
- * uses relationHelpers to build the appropriate Prisma connect/disconnect objects.
+ * in the input, then generates two separate functions for create and update operations.
+ * Each function destructures the FK fields and uses relationHelpers to build the appropriate
+ * Prisma connect objects.
  *
- * @param config - Configuration including Prisma model, input fields, and operation type
- * @returns Result containing FK fields, relation mappings, and the buildData function fragment
+ * @param config - Configuration including Prisma model, input fields, and data utils imports
+ * @returns Result containing buildCreateDataFragment and buildUpdateDataFragment
  *
  * @example
  * // Single relation
  * generateRelationBuildData({
  *   prismaModel: { fields: [...] },
  *   inputFieldNames: ['name', 'ownerId'],
- *   operationType: 'create',
  *   dataUtilsImports,
  * })
- * // Returns: buildData: ({ ownerId, ...data }) => ({ ...data, owner: relationHelpers.connectCreate({ id: ownerId }) })
- *
- * @example
- * // Multiple relations
- * generateRelationBuildData({
- *   prismaModel: { fields: [...] },
- *   inputFieldNames: ['text', 'todoListId', 'assigneeId'],
- *   operationType: 'create',
- *   dataUtilsImports,
- * })
- * // Returns: buildData: ({ todoListId, assigneeId, ...data }) => ({ ...data, todoList: ..., assignee: ... })
- *
- * @example
- * // Composite key relation
- * generateRelationBuildData({
- *   prismaModel: { fields: [...] },
- *   inputFieldNames: ['name', 'userId', 'tenantId'],
- *   operationType: 'create',
- *   dataUtilsImports,
- * })
- * // Returns: buildData: ({ userId, tenantId, ...data }) => ({ ...data, owner: relationHelpers.connectCreate({ id: userId, tenantId }) })
+ * // Returns:
+ * // buildCreateDataFragment: ({ ownerId, ...data }) => ({ ...data, owner: relationHelpers.connectCreate({ id: ownerId }) })
+ * // buildUpdateDataFragment: ({ ownerId, ...data }) => ({ ...data, owner: relationHelpers.connectUpdate({ id: ownerId }) })
  *
  * @example
  * // No relations (pass-through)
  * generateRelationBuildData({
  *   prismaModel: { fields: [...] },
  *   inputFieldNames: ['name', 'description'],
- *   operationType: 'create',
  *   dataUtilsImports,
  * })
- * // Returns: buildData: (data) => data
+ * // Returns:
+ * // buildCreateDataFragment: (data) => data
+ * // buildUpdateDataFragment: (data) => data
  */
 export function generateRelationBuildData(
   config: GenerateRelationBuildDataConfig,
 ): GenerateRelationBuildDataResult {
-  const { prismaModel, inputFieldNames, operationType, dataUtilsImports } =
-    config;
+  const { prismaModel, inputFieldNames, dataUtilsImports } = config;
 
   // Find all relations that have at least one FK field in the input
   const relevantRelations = findRelevantRelations(prismaModel, inputFieldNames);
@@ -290,58 +277,32 @@ export function generateRelationBuildData(
   // Extract all foreign key field names
   const foreignKeyFieldNames = extractForeignKeyFields(relevantRelations);
 
-  // Generate the complete buildData function
-  if (operationType === 'upsert') {
-    const createDataBody = generateBuildDataBody(
-      foreignKeyFieldNames,
-      'create',
-      dataUtilsImports,
-      relevantRelations,
-      inputFieldNames,
-      'createData',
-    );
-    const updateDataBody = generateBuildDataBody(
-      foreignKeyFieldNames,
-      'update',
-      dataUtilsImports,
-      relevantRelations,
-      inputFieldNames,
-      'updateData',
-    );
+  // Generate both create and update buildData functions
+  const createBody = generateBuildDataBody(
+    foreignKeyFieldNames,
+    'create',
+    dataUtilsImports,
+    relevantRelations,
+    inputFieldNames,
+  );
+  const updateBody = generateBuildDataBody(
+    foreignKeyFieldNames,
+    'update',
+    dataUtilsImports,
+    relevantRelations,
+    inputFieldNames,
+  );
 
-    if (createDataBody.passthrough && updateDataBody.passthrough) {
-      return {
-        argumentFragment: tsTemplate`data`,
-        returnFragment: tsTemplate`data`,
-        passthrough: true,
-        buildDataFunctionFragment: tsTemplate`(data) => data`,
-      };
-    }
+  // Both should have the same passthrough status since they use the same relations
+  const passthrough = createBody.passthrough && updateBody.passthrough;
 
-    // For upsert with relations, we don't expose individual fragments since the structure is complex
-    // Consumers should use buildDataFunctionFragment directly
-    return {
-      argumentFragment: tsTemplate`{ create: ${createDataBody.argumentFragment}, update: ${updateDataBody.argumentFragment}}`,
-      returnFragment: tsTemplate`{ create: ${createDataBody.returnFragment}, update: ${updateDataBody.returnFragment} }`,
-      passthrough: false,
-      buildDataFunctionFragment: tsTemplate`
-      ({ create: ${createDataBody.argumentFragment}, update: ${updateDataBody.argumentFragment}}) =>
-       ({ create: ${createDataBody.returnFragment}, update: ${updateDataBody.returnFragment} })`,
-    };
-  } else {
-    const buildDataBody = generateBuildDataBody(
-      foreignKeyFieldNames,
-      operationType,
-      dataUtilsImports,
-      relevantRelations,
-      inputFieldNames,
-    );
-
-    return {
-      argumentFragment: buildDataBody.argumentFragment,
-      returnFragment: buildDataBody.returnFragment,
-      passthrough: buildDataBody.passthrough,
-      buildDataFunctionFragment: tsTemplate`(${buildDataBody.argumentFragment}) => (${buildDataBody.returnFragment})`,
-    };
-  }
+  return {
+    createArgumentFragment: createBody.argumentFragment,
+    createReturnFragment: createBody.returnFragment,
+    updateArgumentFragment: updateBody.argumentFragment,
+    updateReturnFragment: updateBody.returnFragment,
+    buildCreateDataFragment: tsTemplate`(${createBody.argumentFragment}) => (${createBody.returnFragment})`,
+    buildUpdateDataFragment: tsTemplate`(${updateBody.argumentFragment}) => (${updateBody.returnFragment})`,
+    passthrough,
+  };
 }
