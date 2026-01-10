@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-queue",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Contains the queue plugin for Baseplate",
   "keywords": [
     "queue",
