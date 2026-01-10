@@ -738,11 +738,12 @@ export function nestedOneToManyField<
               ctx.result,
             );
 
-            const sharedCtx = {
+            const sharedCtx: TransactionalOperationContext<
+              GetPayload<TModelName> | undefined,
+              { hasResult: false }
+            > = {
               ...ctx,
-              operation: (item.whereUnique ? 'update' : 'create') as
-                | 'update'
-                | 'create',
+              operation: item.whereUnique ? 'update' : 'create',
               loadExisting: cachedLoadExisting[idx],
               result: undefined,
             };
