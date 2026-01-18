@@ -39,14 +39,10 @@ const VALID_AUTH_FIELDS = new Set(['userId']);
  * @returns Set of defined role names
  */
 function getRoleNames(container: ProjectDefinitionContainer): Set<string> {
-  const authConfig =
-    container.pluginStore.getPluginSpecOptional(authConfigSpec);
-  if (!authConfig) {
-    return new Set();
-  }
+  const authConfig = container.pluginStore.use(authConfigSpec);
 
-  const roles = authConfig.getAuthRoles(container.definition);
-  return new Set(roles.map((role) => role.name));
+  const roles = authConfig.getAuthConfig(container.definition)?.roles;
+  return new Set(roles?.map((role) => role.name) ?? []);
 }
 
 /**

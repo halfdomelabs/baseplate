@@ -22,20 +22,14 @@ import {
  */
 function createMockContainer(roles: AuthRole[]): ProjectDefinitionContainer {
   const pluginStore = {
-    implementations: {
-      [authConfigSpec.name]: {
-        getAuthRoles: () => roles,
-      },
-    },
-    getPluginSpec: (spec: { name: string }): unknown => {
-      const impl = pluginStore.implementations[spec.name];
-      if (!impl) {
-        throw new Error(`No implementation for ${spec.name}`);
+    use: (spec: typeof authConfigSpec) => {
+      if (spec.name === authConfigSpec.name) {
+        return {
+          getAuthConfig: () => ({ roles }),
+        };
       }
-      return impl;
+      throw new Error(`No implementation for ${spec.name}`);
     },
-    getPluginSpecOptional: (spec: { name: string }): unknown =>
-      pluginStore.implementations[spec.name],
   } as unknown as PluginImplementationStore;
 
   return {
