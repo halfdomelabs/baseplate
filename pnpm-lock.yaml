@@ -456,6 +456,9 @@ importers:
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../utils
+      acorn:
+        specifier: ^8.15.0
+        version: 8.15.0
       culori:
         specifier: ^4.0.1
         version: 4.0.1
