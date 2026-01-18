@@ -1,0 +1,7 @@
+{
+  "emails.types.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/core/email-module",
+    "instanceData": {},
+    "template": "emails-types"
+  }
+}

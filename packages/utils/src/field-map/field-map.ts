@@ -233,6 +233,36 @@ export class NamedArrayFieldContainer<V extends { name: string }>
   }
 }
 
+/**
+ * Named array field container that returns a map of names to values
+ */
+export class NamedArrayToMapFieldContainer<V extends { name: string }>
+  implements FieldContainer<Map<string, V>>
+{
+  private readonly _namedFieldContainer: NamedArrayFieldContainer<V>;
+
+  constructor(initialValue?: V[], options?: FieldContainerOptions) {
+    this._namedFieldContainer = new NamedArrayFieldContainer(
+      initialValue,
+      options,
+    );
+  }
+
+  add(value: V, source?: string): void {
+    this._namedFieldContainer.add(value, source);
+  }
+
+  addMany(values: V[], source?: string): void {
+    this._namedFieldContainer.addMany(values, source);
+  }
+
+  getValue(): Map<string, V> {
+    return new Map(
+      this._namedFieldContainer.getValue().map((value) => [value.name, value]),
+    );
+  }
+}
+
 // Map of maps field container
 export class MapOfMapsContainer<
   K1 extends string | number | symbol,
@@ -406,6 +436,12 @@ export class FieldMapSchemaBuilder {
     initialValue?: V[],
   ): NamedArrayFieldContainer<V> {
     return new NamedArrayFieldContainer(initialValue, this.options);
+  }
+
+  namedArrayToMap<V extends { name: string }>(
+    initialValue?: V[],
+  ): NamedArrayToMapFieldContainer<V> {
+    return new NamedArrayToMapFieldContainer(initialValue, this.options);
   }
 
   mapOfMaps<

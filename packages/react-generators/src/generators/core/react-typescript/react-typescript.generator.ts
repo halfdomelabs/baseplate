@@ -1,3 +1,5 @@
+import type { TypescriptCompilerOptions } from '@baseplate-dev/core-generators';
+
 import {
   packageScope,
   typescriptSetupProvider,
@@ -12,8 +14,11 @@ import { z } from 'zod';
 
 const descriptorSchema = z.object({});
 
+type CompilerPlugin = NonNullable<TypescriptCompilerOptions['plugins']>[number];
+
 export interface ReactTypescriptProvider {
   addNodeTsFile(filePath: string): void;
+  addCompilerPlugin(plugin: CompilerPlugin): void;
 }
 
 export const reactTypescriptProvider =
@@ -33,36 +38,8 @@ export const reactTypescriptGenerator = createGenerator({
       },
       run({ typescriptSetup }) {
         const nodeTsFiles: string[] = ['vite.config.ts', 'vitest.config.ts'];
-        typescriptSetup.compilerOptions.set(
-          {
-            /* Compilation */
-            target: 'es2022',
-            useDefineForClassFields: true,
-            lib: ['dom', 'dom.iterable', 'es2022'],
-            module: 'esnext',
-            skipLibCheck: true,
+        const compilerPlugins: CompilerPlugin[] = [];
 
-            /* Bundler mode */
-            moduleResolution: 'bundler',
-            allowImportingTsExtensions: true,
-            verbatimModuleSyntax: true,
-            noEmit: true,
-            jsx: 'react-jsx',
-
-            /* Linting */
-            strict: true,
-            noUnusedLocals: true,
-            noUnusedParameters: true,
-            noFallthroughCasesInSwitch: true,
-            noUncheckedSideEffectImports: true,
-
-            /* Paths */
-            paths: {
-              '@src/*': ['./src/*'],
-            },
-          },
-          'react',
-        );
         typescriptSetup.isComposite.set(true);
         typescriptSetup.include.push('src');
         typescriptSetup.tsconfigPath.set('tsconfig.app.json');
@@ -72,9 +49,47 @@ export const reactTypescriptGenerator = createGenerator({
               addNodeTsFile: (filePath: string) => {
                 nodeTsFiles.push(filePath);
               },
+              addCompilerPlugin: (plugin: CompilerPlugin) => {
+                compilerPlugins.push(plugin);
+              },
             },
           },
           build: (builder) => {
+            // Set compiler options here so plugins can be added first
+            typescriptSetup.compilerOptions.set(
+              {
+                /* Compilation */
+                target: 'es2022',
+                useDefineForClassFields: true,
+                lib: ['dom', 'dom.iterable', 'es2023'],
+                module: 'esnext',
+                skipLibCheck: true,
+
+                /* Bundler mode */
+                moduleResolution: 'bundler',
+                allowImportingTsExtensions: true,
+                verbatimModuleSyntax: true,
+                noEmit: true,
+                jsx: 'react-jsx',
+
+                /* Linting */
+                strict: true,
+                noUnusedLocals: true,
+                noUnusedParameters: true,
+                noFallthroughCasesInSwitch: true,
+                noUncheckedSideEffectImports: true,
+
+                /* Paths */
+                paths: {
+                  '@src/*': ['./src/*'],
+                },
+
+                /* Plugins */
+                plugins:
+                  compilerPlugins.length > 0 ? compilerPlugins : undefined,
+              },
+              'react',
+            );
             writeJsonToBuilder(builder, {
               id: 'tsconfig-root',
               destination: 'tsconfig.json',

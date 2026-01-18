@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react';
 
-import type { AuthRole } from '../generated/graphql';
+import type { graphql } from '../graphql';
 
-export { type AuthRole } from '@src/generated/graphql';
+export type AuthRole = ReturnType<typeof graphql.scalar<'AuthRole'>>;
 
 export interface SessionData {
   userId: string | undefined;

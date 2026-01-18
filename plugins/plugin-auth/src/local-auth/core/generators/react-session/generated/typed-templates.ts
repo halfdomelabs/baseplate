@@ -1,10 +1,7 @@
-import {
-  createTextTemplateFile,
-  createTsTemplateFile,
-} from '@baseplate-dev/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   authHooksImportsProvider,
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
   reactUtilsImportsProvider,
@@ -33,7 +30,7 @@ const userSessionProvider = createTsTemplateFile({
   group: 'main',
   importMapProviders: {
     authHooksImports: authHooksImportsProvider,
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     localAuthHooksImports: localAuthHooksImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
@@ -51,19 +48,4 @@ const userSessionProvider = createTsTemplateFile({
 
 export const mainGroup = { userSessionClient, userSessionProvider };
 
-const userSessionProviderGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'user-session-provider-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/app/user-session-provider.gql',
-    ),
-  },
-  variables: {},
-});
-
-export const LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES = {
-  mainGroup,
-  userSessionProviderGql,
-};
+export const LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES = { mainGroup };

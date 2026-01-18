@@ -204,7 +204,7 @@ function renderCombinedImportProviderTask(
             const path = projectExportsMap.get(key);
             if (!path) {
               throw new Error(
-                `Project export ${key} not found in project exports map`,
+                `Project export ${key} not found in project exports map in ${externalImportProvider.packagePathSpecifier}`,
               );
             }
             return path;

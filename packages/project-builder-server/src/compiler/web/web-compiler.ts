@@ -1,4 +1,7 @@
-import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
+import type {
+  PackageTasks,
+  WebAppConfig,
+} from '@baseplate-dev/project-builder-lib';
 import type { AdminLayoutLinkItem } from '@baseplate-dev/react-generators';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -32,7 +35,6 @@ import { kebabCase } from 'es-toolkit';
 import { titleizeCamel } from '#src/utils/case.js';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
-import type { PackageTasks } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
 import { AppCompiler } from '../app-compiler.js';
@@ -204,8 +206,8 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
   getTasks(): PackageTasks {
     return {
       build: ['build'],
-      dev: ['dev', 'watch:gql'],
-      watch: ['watch:gql'],
+      dev: ['dev'],
+      watch: [],
     };
   }
 }

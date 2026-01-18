@@ -1,52 +1,13 @@
 import type {
-  AdminCrudActionCompiler,
   AdminCrudActionInput,
-  AdminCrudDeleteActionConfig,
-  AdminCrudEditActionConfig,
   AdminCrudSectionConfig,
   WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import { adminCrudActionCompilerSpec } from '@baseplate-dev/project-builder-lib';
-import {
-  adminCrudDeleteActionGenerator,
-  adminCrudEditActionGenerator,
-} from '@baseplate-dev/react-generators';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
-
-const adminCrudEditActionCompiler: AdminCrudActionCompiler<AdminCrudEditActionConfig> =
-  {
-    name: 'edit',
-    compileAction: (definition, { order }) =>
-      adminCrudEditActionGenerator({
-        order,
-        position: definition.position,
-      }),
-  };
-
-const adminCrudDeleteActionCompiler: AdminCrudActionCompiler<AdminCrudDeleteActionConfig> =
-  {
-    name: 'delete',
-    compileAction: (
-      definition,
-      { order, model, modelCrudSection, definitionContainer },
-    ) =>
-      adminCrudDeleteActionGenerator({
-        order,
-        position: definition.position,
-        modelName: model.name,
-        nameField: definitionContainer.nameFromId(
-          modelCrudSection.nameFieldRef,
-        ),
-      }),
-  };
-
-const builtInCompilers = [
-  adminCrudEditActionCompiler,
-  adminCrudDeleteActionCompiler,
-];
 
 export function compileAdminCrudAction(
   action: AdminCrudActionInput,
@@ -55,11 +16,13 @@ export function compileAdminCrudAction(
   modelCrudSection: AdminCrudSectionConfig,
   order: number,
 ): GeneratorBundle {
-  const actionCompiler = builder.pluginStore.getPluginSpec(
-    adminCrudActionCompilerSpec,
-  );
+  const actionCompiler = builder.pluginStore.use(adminCrudActionCompilerSpec);
 
-  const compiler = actionCompiler.getCompiler(action.type, builtInCompilers);
+  const compiler = actionCompiler.actions.get(action.type);
+
+  if (!compiler) {
+    throw new Error(`Compiler for action type ${action.type} not found`);
+  }
 
   const model = builder.projectDefinition.models.find((m) => m.id === modelId);
   if (!model) {

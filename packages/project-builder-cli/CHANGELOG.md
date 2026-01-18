@@ -1,5 +1,76 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.5.1
+
+### Patch Changes
+
+- [#737](https://github.com/halfdomelabs/baseplate/pull/737) [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499) Thanks [@kingston](https://github.com/kingston)! - Refactor plugin spec system with lazy initialization and clear setup/use phases
+
+  This refactoring overhauls the plugin spec system to introduce a two-phase architecture with lazy initialization:
+
+  **New Architecture:**
+  - **Setup phase (init)**: Plugins register their implementations during module initialization using mutable field containers
+  - **Use phase**: Consumers access registered items through a read-only interface, with lazy initialization on first access
+  - **FieldMap-based specs**: New `createFieldMapSpec` helper provides type-safe containers (maps, arrays, named arrays, scalars) with automatic source tracking
+
+  **Key changes:**
+  - Rename `PluginImplementationStore` to `PluginSpecStore` with cached `use()` instances
+  - Rename `createPlatformPluginExport` to `createPluginModule`
+  - Add required `name` field to all plugin modules for unique identification
+  - Convert all specs to use `createFieldMapSpec` with typed containers
+  - Update all plugin modules to use new registration methods (`.add()`, `.set()`, `.push()`)
+  - Introduce `ModuleContext` with `moduleKey` and `pluginKey` for better source tracking
+  - Specs now define both `init` (mutable setup interface) and `use` (read-only consumption interface)
+
+- Updated dependencies [[`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072), [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499), [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534)]:
+  - @baseplate-dev/project-builder-server@0.5.1
+  - @baseplate-dev/project-builder-lib@0.5.1
+  - @baseplate-dev/project-builder-web@0.5.1
+  - @baseplate-dev/project-builder-common@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
+## 0.5.0
+
+### Patch Changes
+
+- [#730](https://github.com/halfdomelabs/baseplate/pull/730) [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9) Thanks [@kingston](https://github.com/kingston)! - Add `sync-file` command for incrementally applying generated files
+  - New CLI command: `pnpm baseplate sync-file <project> <app> <files...>`
+  - New MCP action: `sync-file` for programmatic access
+  - Allows applying specific generated files without performing a full sync
+  - Writes matching files to both working directory and generated folder
+  - Useful for incrementally fixing generators one file at a time
+
+- Updated dependencies [[`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9)]:
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/project-builder-server@0.5.0
+  - @baseplate-dev/project-builder-web@0.5.0
+  - @baseplate-dev/project-builder-common@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.4.4
+  - @baseplate-dev/project-builder-common@0.4.4
+  - @baseplate-dev/project-builder-web@0.4.4
+  - @baseplate-dev/project-builder-lib@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- [#724](https://github.com/halfdomelabs/baseplate/pull/724) [`9638baf`](https://github.com/halfdomelabs/baseplate/commit/9638baf19fa0f68bed961daa0fe889822246c11a) Thanks [@kingston](https://github.com/kingston)! - Add create-generator action and CLI command to scaffold new generators with boilerplate code
+
+- Updated dependencies [[`9638baf`](https://github.com/halfdomelabs/baseplate/commit/9638baf19fa0f68bed961daa0fe889822246c11a), [`68ab5bd`](https://github.com/halfdomelabs/baseplate/commit/68ab5bdbc98a0b4bbc46059bfabd84666a2ab18b), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d)]:
+  - @baseplate-dev/project-builder-server@0.4.3
+  - @baseplate-dev/project-builder-common@0.4.3
+  - @baseplate-dev/project-builder-web@0.4.3
+  - @baseplate-dev/project-builder-lib@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

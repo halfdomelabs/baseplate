@@ -1,88 +1,112 @@
 import type { ReactElement } from 'react';
 
-import { useMutation, useQuery } from '@apollo/client/react';
+import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { toast } from 'sonner';
 
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import {
-  UpdateUserDocument,
-  UserEditByIdDocument,
-} from '@src/generated/graphql';
+import { graphql } from '@src/graphql';
+import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
 import type { UserFormData } from './-schemas/user-schema';
 
-import { UserEditForm } from './-components/user-edit-form';
+import {
+  UserEditForm,
+  userEditFormDefaultValuesFragment,
+} from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
-/* TPL_USER_QUERY=UserEditByIdDocument */
+/* TPL_UPDATE_MUTATION_FIELD_NAME=updateUser */
+/* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
+
+/* TPL_EDIT_QUERY:START */
+const userEditPageQuery = graphql(
+  `
+    query UserEditPage($id: Uuid!) {
+      user(id: $id) {
+        id
+        name
+        ...UserEditForm_defaultValues
+      }
+    }
+  `,
+  [userEditFormDefaultValuesFragment],
+);
+/* TPL_EDIT_QUERY:END */
+
+/* TPL_UPDATE_MUTATION:START */
+const userEditPageUpdateMutation = graphql(
+  `
+    mutation UserEditPageUpdate($input: UpdateUserInput!) {
+      updateUser(input: $input) {
+        user {
+          id
+          name
+          ...UserEditForm_defaultValues
+        }
+      }
+    }
+  `,
+  [userEditFormDefaultValuesFragment],
+);
+/* TPL_UPDATE_MUTATION:END */
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/accounts/users/$id' /* TPL_ROUTE_PATH:END */,
 )({
   component: UserEditPage,
-  loader: async ({ context: { apolloClient }, params }) => {
-    const { id } = params;
-    const { data } = await apolloClient.query({
-      query: UserEditByIdDocument,
-      variables: { id },
-    });
-    if (!data) throw new Error('No data received from query');
-    return {
-      crumb: /* TPL_CRUMB_EXPRESSION:START */ data.user.name
-        ? data.user.name
-        : 'Unnamed User' /* TPL_CRUMB_EXPRESSION:END */,
-    };
-  },
+  /* TPL_ROUTE_PROPS:START */ loader: ({
+    context: { preloadQuery, apolloClient },
+    params: { id },
+  }) => ({
+    crumb: apolloClient
+      .query({
+        query: userEditPageQuery,
+        variables: { id },
+      })
+      .then(({ data }) => (data?.user.name ? data.user.name : 'Edit User'))
+      .catch(() => 'Edit User'),
+    queryRef: preloadQuery(userEditPageQuery, { variables: { id } }),
+  }) /* TPL_ROUTE_PROPS:END */,
 });
 
 function UserEditPage(): ReactElement {
   const { id } = Route.useParams();
-  const { crumb } = Route.useLoaderData();
 
   /* TPL_DATA_LOADER:START */
+  const { queryRef, crumb } = Route.useLoaderData();
 
-  const { data, error } = useQuery(UserEditByIdDocument, {
-    variables: { id },
-  });
-
-  const initialData: UserFormData | undefined = useMemo(() => {
-    if (!data?.user) return undefined;
-    return data.user;
-  }, [data]);
-
+  const { data } = useReadQuery(queryRef);
   /* TPL_DATA_LOADER:END */
 
-  const [/* TPL_MUTATION_NAME:START */ updateUser /* TPL_MUTATION_NAME:END */] =
-    useMutation(
-      /* TPL_UPDATE_MUTATION:START */ UpdateUserDocument /* TPL_UPDATE_MUTATION:END */,
-    );
+  const [updateUser] = useMutation(userEditPageUpdateMutation);
   const navigate = useNavigate();
 
-  /* TPL_DATA_GATE:START */
-  if (!initialData) {
-    return <ErrorableLoader error={error} />;
-  }
-  /* TPL_DATA_GATE:END */
-
   const submitData = async (formData: UserFormData): Promise<void> => {
-    await /* TPL_MUTATION_NAME:START */ updateUser(
-      /* TPL_MUTATION_NAME:END */ {
+    try {
+      await updateUser({
         variables: { input: { id, data: formData } },
-      },
-    );
-    toast.success('Successfully updated item!');
-    navigate({ to: '..' }).catch(logError);
+      });
+      toast.success(
+        /* TPL_MUTATION_SUCCESS_MESSAGE:START */ 'Successfully updated user!' /* TPL_MUTATION_SUCCESS_MESSAGE:END */,
+      );
+      navigate({ to: '..' }).catch(logError);
+    } catch (err: unknown) {
+      toast.error(
+        logAndFormatError(
+          err,
+          /* TPL_MUTATION_ERROR_MESSAGE:START */ 'Sorry, we could not update user.' /* TPL_MUTATION_ERROR_MESSAGE:END */,
+        ),
+      );
+    }
   };
 
   return (
     <div className="space-y-4">
       <h1 className="flex space-x-2">{crumb}</h1>
       {/* TPL_EDIT_FORM:START */}
-      <UserEditForm submitData={submitData} initialData={initialData} />
+      <UserEditForm submitData={submitData} defaultValues={data.user} />
       {/* TPL_EDIT_FORM:END */}
     </div>
   );

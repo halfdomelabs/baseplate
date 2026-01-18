@@ -30,15 +30,11 @@ import type {
   AdminCrudInput,
   AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container.js';
-import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
+import type { DataLoader } from '../_utils/data-loader.js';
 import type { AdminComponentsImportsProvider } from '../admin-components/index.js';
 
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
-import {
-  getPassthroughExtraProps,
-  mergeAdminCrudDataDependencies,
-} from '../_utils/data-loaders.js';
 import { adminComponentsImportsProvider } from '../admin-components/index.js';
 import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
 import { adminCrudSectionScope } from '../admin-crud-section/index.js';
@@ -60,7 +56,7 @@ interface AdminCrudEmbeddedComponent {
 interface AdminCrudEmbeddedObjectFormInfo {
   type: 'object';
   embeddedFormComponent: AdminCrudEmbeddedComponent;
-  dataDependencies: AdminCrudDataDependency[];
+  dataLoaders: DataLoader[];
   graphQLFields: GraphQLField[];
   validationExpression: TsCodeFragment;
 }
@@ -89,13 +85,13 @@ function getComponentProps({
   inputType,
   componentType,
   formDataType,
-  dataDependencies,
+  dataLoaders,
   adminComponentsImports,
 }: {
   inputType: 'Object' | 'List';
   componentType: 'Form' | 'Table';
   formDataType: string;
-  dataDependencies: AdminCrudDataDependency[];
+  dataLoaders: DataLoader[];
   adminComponentsImports: AdminComponentsImportsProvider;
 }): TsCodeFragment {
   const defaultProps = `Embedded${inputType}${componentType}Props` as const;
@@ -108,7 +104,7 @@ function getComponentProps({
   const defaultPropsImport =
     adminComponentsImports[defaultProps].typeFragment();
   const defaultPropsExpression = tsTemplate`${defaultPropsImport}<${formDataType}>`;
-  if (dataDependencies.length === 0) {
+  if (dataLoaders.length === 0) {
     return defaultPropsExpression;
   }
 
@@ -128,7 +124,7 @@ function getComponentProps({
             DEFAULT_PROPS: defaultPropsExpression,
             INTERFACE_CONTENT: TsCodeUtils.mergeFragmentsAsInterfaceContent(
               Object.fromEntries(
-                dataDependencies.map((d): [string, TsCodeFragment] => [
+                dataLoaders.map((d): [string, TsCodeFragment] => [
                   d.propName,
                   d.propType,
                 ]),
@@ -170,6 +166,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
             adminCrudInputContainer: {
               addInput: (input) => inputFields.push(input),
               getModelName: () => modelName,
+              getParentComponentName: () =>
+                `Embedded${upperCaseFirst(name)}Form`,
+              getParentComponentPath: () => `embedded-${name}-form.tsx`,
               isInModal: () => true,
             },
             adminCrudColumnContainer: {
@@ -226,24 +225,21 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           `-components/${kebabCase(formName)}.tsx`,
         );
 
-        const inputDataDependencies = inputFields.flatMap(
-          (f) => f.dataDependencies ?? [],
+        const inputDataLoaders = inputFields.flatMap(
+          (f) => f.dataLoaders ?? [],
         );
 
         const tableName = `Embedded${capitalizedName}Table`;
-        const tableDataDependencies = tableColumns.flatMap(
-          (f) => f.display.dataDependencies ?? [],
+        const tableDataLoaders = tableColumns.flatMap(
+          (f) => f.dataLoaders ?? [],
         );
 
-        const allDataDependencies = mergeAdminCrudDataDependencies([
-          ...inputDataDependencies,
-          ...tableDataDependencies,
-        ]);
+        const allDataLoaders = [...inputDataLoaders, ...tableDataLoaders];
 
         const graphQLFields: GraphQLField[] = [
           ...(idField ? [{ name: idField }] : []),
           ...inputFields.flatMap((f) => f.graphQLFields),
-          ...tableColumns.flatMap((f) => f.display.graphQLFields),
+          ...tableColumns.flatMap((f) => f.graphQLFields),
         ];
 
         // Create schema
@@ -293,9 +289,11 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                 const sharedData = {
                   embeddedFormComponent: {
                     expression: TsCodeUtils.importFragment(formName, formPath),
-                    extraProps: getPassthroughExtraProps(inputDataDependencies),
+                    extraProps: inputDataLoaders
+                      .map((d) => d.propName)
+                      .join(',\n'),
                   },
-                  dataDependencies: allDataDependencies,
+                  dataLoaders: allDataLoaders,
                   graphQLFields,
                   validationExpression,
                 };
@@ -308,9 +306,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                         tableName,
                         formPath,
                       ),
-                      extraProps: getPassthroughExtraProps(
-                        tableDataDependencies,
-                      ),
+                      extraProps: tableDataLoaders
+                        .map((d) => d.propName)
+                        .join(',\n'),
                     },
                   };
                 }
@@ -335,7 +333,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
             );
             const cells = tableColumns.map(
               (column) =>
-                tsTemplate`<TableCell>${column.display.content('item')}</TableCell>`,
+                tsTemplate`<TableCell>${column.content('item')}</TableCell>`,
             );
             const tableComponent = isList
               ? TsCodeUtils.formatFragment(
@@ -377,14 +375,14 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
   `,
                   {
                     TPL_COMPONENT_NAME: tableName,
-                    TPL_EXTRA_PROP_SPREAD: tableDataDependencies
+                    TPL_EXTRA_PROP_SPREAD: tableDataLoaders
                       .map((d) => d.propName)
                       .join(',\n'),
                     TPL_PROPS: getComponentProps({
                       inputType: 'List',
                       componentType: 'Table',
                       formDataType,
-                      dataDependencies: tableDataDependencies,
+                      dataLoaders: tableDataLoaders,
                       adminComponentsImports,
                     }),
                     TPL_HEADERS: TsCodeUtils.mergeFragmentsPresorted(
@@ -432,15 +430,13 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                   TPL_DESTRUCTURED_PROPS: `{
                       initialData,
                       onSubmit,
-                      ${inputDataDependencies
-                        .map((d) => d.propName)
-                        .join(',\n')}
+                      ${inputDataLoaders.map((d) => d.propName).join(',\n')}
                     }`,
                   TPL_PROPS: getComponentProps({
                     inputType: isList ? 'List' : 'Object',
                     componentType: 'Form',
                     formDataType,
-                    dataDependencies: inputDataDependencies,
+                    dataLoaders: inputDataLoaders,
                     adminComponentsImports,
                   }),
                   TPL_TABLE_COMPONENT: tableComponent,

@@ -1,5 +1,25 @@
 # @baseplate-dev/tools
 
+## 0.5.1
+
+## 0.5.0
+
+### Patch Changes
+
+- [#735](https://github.com/halfdomelabs/baseplate/pull/735) [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599) Thanks [@kingston](https://github.com/kingston)! - Support ES2023 in Vite tsconfig generators and re-enable replaceAll ESLint rule for React apps
+
+- [#734](https://github.com/halfdomelabs/baseplate/pull/734) [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 4.0.16
+  - vitest: 3.2.4 → 4.0.16
+  - @vitest/eslint-plugin: 1.3.4 → 1.6.5
+
+  Breaking changes addressed:
+  - Updated `UserConfig` type to `ViteUserConfig` in vitest config files
+  - Fixed mock type annotations for vitest 4.0 compatibility
+
+## 0.4.4
+
+## 0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

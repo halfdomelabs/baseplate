@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-storage",
-  "version": "3.0.2",
+  "version": "4.0.1",
   "description": "Contains the storage plugin for Baseplate",
   "keywords": [
     "storage",
@@ -43,7 +43,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "vite build --watch"
+    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
@@ -53,7 +53,6 @@
     "@baseplate-dev/utils": "workspace:*",
     "@hookform/resolvers": "5.2.2",
     "es-toolkit": "1.31.0",
-    "inflection": "3.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.60.0",
@@ -72,6 +71,7 @@
     "concurrently": "9.0.1",
     "cpx2": "catalog:",
     "eslint": "catalog:",
+    "nodemon": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",

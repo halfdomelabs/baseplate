@@ -23,6 +23,23 @@
       "sourceFile": "module/services/management.ts",
       "variables": {}
     },
+    "user-session-queries": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
+      "sourceFile": "module/schema/user-session.queries.ts",
+      "variables": { "TPL_USER_OBJECT_TYPE": {} }
+    },
     "user-session-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

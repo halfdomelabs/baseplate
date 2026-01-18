@@ -8,22 +8,17 @@
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
-      "importMapProviders": {
-        "reactComponentsImportsProvider": {
-          "importName": "reactComponentsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
-        }
-      },
+      "importMapProviders": {},
       "sourceFile": "index.tsx",
       "variables": {
+        "TPL_COMPONENT_NAME": { "type": "replacement" },
         "TPL_CREATE_BUTTON": {},
-        "TPL_DATA_LOADER": {},
-        "TPL_DATA_PARTS": {},
-        "TPL_ERROR_PARTS": {},
-        "TPL_PAGE_NAME": {},
+        "TPL_DATA_LOADERS": {},
+        "TPL_ITEMS_QUERY": {},
+        "TPL_PAGE_TITLE": {},
         "TPL_ROUTE_PATH": {},
-        "TPL_TABLE_COMPONENT": {},
-        "TPL_TITLE": {}
+        "TPL_ROUTE_PROPS": {},
+        "TPL_TABLE_COMPONENT": {}
       }
     },
     "table": {
@@ -34,6 +29,10 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
       "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
@@ -46,10 +45,11 @@
         "TPL_CELLS": {},
         "TPL_COMPONENT_NAME": { "type": "replacement" },
         "TPL_DESTRUCTURED_PROPS": {},
-        "TPL_EXTRA_PROPS": {},
         "TPL_HEADERS": {},
+        "TPL_ITEMS_FRAGMENT": {},
+        "TPL_ITEMS_FRAGMENT_NAME": { "type": "replacement" },
         "TPL_PLURAL_MODEL": {},
-        "TPL_ROW_FRAGMENT": { "type": "replacement" }
+        "TPL_PROPS": {}
       }
     }
   }

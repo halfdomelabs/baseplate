@@ -182,4 +182,5 @@ export interface TypescriptCompilerOptions {
   verbatimModuleSyntax?: boolean;
   esModuleInterop?: boolean;
   useDefineForClassFields?: boolean;
+  plugins?: ({ name: string } & Record<string, unknown>)[];
 }

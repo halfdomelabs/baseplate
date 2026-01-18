@@ -1,0 +1,7 @@
+{
+  "index.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "index"
+  }
+}

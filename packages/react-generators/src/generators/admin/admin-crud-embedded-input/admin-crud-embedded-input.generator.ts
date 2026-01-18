@@ -6,7 +6,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
+import { mergeGraphqlFields } from '#src/writers/graphql/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { adminComponentsImportsProvider } from '../admin-components/index.js';
@@ -19,6 +19,7 @@ const descriptorSchema = z.object({
   modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
   isRequired: z.boolean().optional(),
+  idFields: z.array(z.string()),
 });
 
 export type AdminCrudEmbeddedInputProvider = unknown;
@@ -39,6 +40,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
     embeddedFormRef,
     isRequired,
     order,
+    idFields,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -59,7 +61,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
         const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
         const {
           embeddedFormComponent,
-          dataDependencies,
+          dataLoaders,
           graphQLFields,
           validationExpression,
         } = formInfo;
@@ -107,7 +109,13 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
           order,
           content,
           graphQLFields: [
-            { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
+            {
+              name: modelRelation,
+              fields: mergeGraphqlFields([
+                ...idFields.map((id) => ({ name: id })),
+                ...graphQLFields,
+              ]),
+            },
           ],
           validation: [
             {
@@ -117,7 +125,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
               }`,
             },
           ],
-          dataDependencies,
+          dataLoaders,
         });
 
         return {

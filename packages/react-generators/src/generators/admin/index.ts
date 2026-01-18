@@ -10,7 +10,6 @@ export * from './admin-crud-foreign-column/index.js';
 export * from './admin-crud-foreign-input/index.js';
 export * from './admin-crud-list/index.js';
 export * from './admin-crud-password-input/index.js';
-export * from './admin-crud-queries/index.js';
 export * from './admin-crud-section/index.js';
 export * from './admin-crud-text-column/index.js';
 export * from './admin-crud-text-input/index.js';

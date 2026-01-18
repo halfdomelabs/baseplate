@@ -1,0 +1,12 @@
+{
+  "files": {
+    "added": [
+      "src/emails/auth/account-verification.email.tsx",
+      "src/emails/auth/index.ts",
+      "src/emails/auth/password-reset.email.tsx"
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}

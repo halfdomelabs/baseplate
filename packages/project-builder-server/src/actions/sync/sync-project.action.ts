@@ -21,6 +21,10 @@ const syncProjectInputSchema = z.object({
     .string()
     .optional()
     .describe('Directory containing snapshot to use when generating.'),
+  packages: z
+    .array(z.string())
+    .optional()
+    .describe('Only sync specific packages by name.'),
 });
 
 const syncProjectOutputSchema = z.object({
@@ -49,6 +53,7 @@ export const syncProjectAction = createServiceAction({
       overwrite,
       skipCommands,
       snapshotDirectory,
+      packages,
     } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
 
@@ -83,6 +88,7 @@ export const syncProjectAction = createServiceAction({
         overwrite,
         skipCommands,
         snapshotDirectory,
+        packageFilter: packages,
       });
 
       const statusMessage =

@@ -5,6 +5,8 @@ import {
 } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 
+import type { TsCodeFragment } from '#src/renderers/index.js';
+
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { packageInfoProvider } from '#src/providers/project.js';
 import { packageScope } from '#src/providers/scopes.js';
@@ -25,7 +27,6 @@ const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
         'dist',
         'node_modules',
         'build',
-        'src/generated/graphql.tsx',
         'baseplate',
       ]),
       devDependencies: t.array<string>([
@@ -41,6 +42,7 @@ const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
       ]),
       enableVitest: t.scalar<boolean>(),
       tsDefaultProjectFiles: t.array<string>(),
+      extraConfigs: t.map<string, TsCodeFragment>(),
     }),
     {
       prefix: 'eslint',
@@ -124,6 +126,7 @@ export const eslintGenerator = createGenerator({
           tsDefaultProjectFiles,
           enableVitest,
           devDependencies,
+          extraConfigs,
         },
         typescriptFile,
         paths,
@@ -131,6 +134,13 @@ export const eslintGenerator = createGenerator({
         const defaultProjectFiles = [...tsDefaultProjectFiles];
         return {
           build: async (builder) => {
+            // Combine built-in configs with extra configs from other generators
+            const allConfigs: Record<string, TsCodeFragment | undefined> = {
+              react: react ? REACT_ESLINT_RULES : undefined,
+              vitest: enableVitest ? VITEST_ESLINT_RULES : undefined,
+              ...Object.fromEntries(extraConfigs),
+            };
+
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: NODE_ESLINT_GENERATED.templates.eslintConfig,
@@ -148,10 +158,7 @@ export const eslintGenerator = createGenerator({
                     eslintIgnore.map(quot).toSorted(),
                   ),
                   TPL_EXTRA_CONFIGS: TsCodeUtils.mergeFragments(
-                    {
-                      react: react ? REACT_ESLINT_RULES : undefined,
-                      vitest: enableVitest ? VITEST_ESLINT_RULES : undefined,
-                    },
+                    allConfigs,
                     '\n\n',
                   ),
                   TPL_GLOBALS: react ? 'browser' : 'node',

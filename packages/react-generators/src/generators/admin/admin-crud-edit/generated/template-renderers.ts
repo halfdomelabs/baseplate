@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { graphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
@@ -69,6 +70,7 @@ const adminAdminCrudEditRenderers =
 
 const adminAdminCrudEditRenderersTask = createGeneratorTask({
   dependencies: {
+    graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -76,7 +78,12 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
   exports: {
     adminAdminCrudEditRenderers: adminAdminCrudEditRenderers.export(),
   },
-  run({ reactComponentsImports, reactErrorImports, typescriptFile }) {
+  run({
+    graphqlImports,
+    reactComponentsImports,
+    reactErrorImports,
+    typescriptFile,
+  }) {
     return {
       providers: {
         adminAdminCrudEditRenderers: {
@@ -95,8 +102,8 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.editForm,
                 importMapProviders: {
+                  graphqlImports,
                   reactComponentsImports,
-                  reactErrorImports,
                 },
                 ...options,
               }),

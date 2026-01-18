@@ -60,18 +60,10 @@ export function ErrorBoundary({
   return (
     <ReactErrorBoundary
       fallback={
-        <ErrorBoundaryFallback
-          resetButtonLabel={resetButtonLabel ?? 'Reload Page'}
-        />
+        <ErrorBoundaryFallback resetButtonLabel={resetButtonLabel ?? 'Retry'} />
       }
       onError={(err) => logError(err)}
-      onReset={() => {
-        if (onReset) {
-          onReset();
-        } else {
-          globalThis.location.reload();
-        }
-      }}
+      onReset={onReset}
     >
       {children}
     </ReactErrorBoundary>

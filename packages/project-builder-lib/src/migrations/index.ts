@@ -18,6 +18,7 @@ import { migration018CrudNameFieldRef } from './migration-018-crud-name-field-re
 import { migration019ColumnTypeBased } from './migration-019-column-type-based.js';
 import { migration020MoveRedisToInfrastructure } from './migration-020-move-redis-to-infrastructure.js';
 import { migration021MigrateBullmqToPlugin } from './migration-021-migrate-bullmq-to-plugin.js';
+import { migration022RenamePackagesToLibraries } from './migration-022-rename-packages-to-libraries.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -37,6 +38,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration019ColumnTypeBased,
   migration020MoveRedisToInfrastructure,
   migration021MigrateBullmqToPlugin,
+  migration022RenamePackagesToLibraries,
 ];
 
 export function isMigrateableProjectDefinition(

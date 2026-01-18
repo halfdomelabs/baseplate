@@ -1,11 +1,16 @@
 import { diffProjectAction } from './diff/diff-project.action.js';
+import { createGeneratorAction } from './generators/index.js';
 import {
   snapshotAddAction,
   snapshotRemoveAction,
   snapshotSaveAction,
   snapshotShowAction,
 } from './snapshot/index.js';
-import { syncAllProjectsAction, syncProjectAction } from './sync/index.js';
+import {
+  syncAllProjectsAction,
+  syncFileAction,
+  syncProjectAction,
+} from './sync/index.js';
 import {
   discoverGeneratorsAction,
   extractTemplatesAction,
@@ -24,9 +29,11 @@ export const ALL_SERVICE_ACTIONS = [
   diffProjectAction,
   syncProjectAction,
   syncAllProjectsAction,
+  syncFileAction,
   discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,
+  createGeneratorAction,
   configureTsTemplateAction,
   configureTextTemplateAction,
   configureRawTemplateAction,

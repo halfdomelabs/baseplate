@@ -11,6 +11,16 @@ import { CORE_REACT_ERROR_BOUNDARY_PATHS } from './template-paths.js';
 import { CORE_REACT_ERROR_BOUNDARY_TEMPLATES } from './typed-templates.js';
 
 export interface CoreReactErrorBoundaryRenderers {
+  asyncBoundary: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_REACT_ERROR_BOUNDARY_TEMPLATES.asyncBoundary
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   component: {
     render: (
       options: Omit<
@@ -42,6 +52,18 @@ const coreReactErrorBoundaryRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreReactErrorBoundaryRenderers: {
+          asyncBoundary: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ERROR_BOUNDARY_TEMPLATES.asyncBoundary,
+                destination: paths.asyncBoundary,
+                importMapProviders: {
+                  reactComponentsImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           component: {
             render: (options) =>
               typescriptFile.renderTemplateFile({

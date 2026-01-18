@@ -11,16 +11,17 @@ import {
 } from '@baseplate-dev/sync';
 
 import {
-  generatedGraphqlImportsProvider,
-  generatedGraphqlImportsSchema,
-} from '#src/generators/apollo/react-apollo/providers/generated-graphql.js';
+  graphqlImportsProvider,
+  graphqlImportsSchema,
+} from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 
 import { APOLLO_REACT_APOLLO_PATHS } from './template-paths.js';
 
 export const reactApolloImportsSchema = createTsImportMapSchema({
-  config: {},
   createApolloCache: {},
   createApolloClient: {},
+  introspection: { isTypeOnly: true },
+  introspection_types: { isTypeOnly: true },
 });
 
 export type ReactApolloImportsProvider = TsImportMapProviderFromSchema<
@@ -37,21 +38,24 @@ const apolloReactApolloImportsTask = createGeneratorTask({
     paths: APOLLO_REACT_APOLLO_PATHS.provider,
   },
   exports: {
-    generatedGraphqlImports:
-      generatedGraphqlImportsProvider.export(packageScope),
+    graphqlImports: graphqlImportsProvider.export(packageScope),
     reactApolloImports: reactApolloImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {
       providers: {
-        generatedGraphqlImports: createTsImportMap(
-          generatedGraphqlImportsSchema,
-          { '*': paths.graphql },
-        ),
+        graphqlImports: createTsImportMap(graphqlImportsSchema, {
+          FragmentOf: paths.graphql,
+          graphql: paths.graphql,
+          readFragment: paths.graphql,
+          ResultOf: paths.graphql,
+          VariablesOf: paths.graphql,
+        }),
         reactApolloImports: createTsImportMap(reactApolloImportsSchema, {
-          config: paths.codegenConfig,
           createApolloCache: paths.cache,
           createApolloClient: paths.service,
+          introspection: paths.graphqlEnvD,
+          introspection_types: paths.graphqlEnvD,
         }),
       },
     };

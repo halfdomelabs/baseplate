@@ -2,24 +2,34 @@
 
 import type { ReactElement } from 'react';
 
-import { useCurrentUser } from '%authHooksImports';
+import { graphql } from '%graphqlImports';
 import { ErrorableLoader } from '%reactComponentsImports';
+import { useQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: HomePage,
 });
 
-function HomePage(): ReactElement {
-  const { user, error } = useCurrentUser();
+const homePageQuery = graphql(`
+  query HomePage {
+    viewer {
+      id
+      email
+    }
+  }
+`);
 
-  if (!user) {
+function HomePage(): ReactElement {
+  const { data, error } = useQuery(homePageQuery);
+
+  if (!data) {
     return <ErrorableLoader error={error} />;
   }
 
   return (
     <div className="space-y-4">
-      <p>Welcome {user.email}!</p>
+      <p>Welcome {data.viewer?.email ?? 'an anonymous user'}!</p>
     </div>
   );
 }

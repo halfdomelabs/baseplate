@@ -8,7 +8,7 @@ import type React from 'react';
 
 import {
   createDefinitionSchemaParserContext,
-  createPluginImplementationStore,
+  createPluginSpecStore,
   createProjectDefinitionSchema,
   fixRefDeletions,
   ProjectDefinitionContainer,
@@ -84,7 +84,7 @@ export function ProjectDefinitionProvider({
       try {
         const newProjectDefinition = produce(definition, newConfig);
 
-        const pluginStore = createPluginImplementationStore(
+        const pluginStore = createPluginSpecStore(
           parserContext.pluginStore,
           newProjectDefinition,
         );
@@ -157,7 +157,7 @@ export function ProjectDefinitionProvider({
       schemaParserContext,
       updatedExternally,
       definitionSchemaParserContext: createDefinitionSchemaParserContext({
-        plugins: createPluginImplementationStore(
+        plugins: createPluginSpecStore(
           schemaParserContext.pluginStore,
           definition,
         ),

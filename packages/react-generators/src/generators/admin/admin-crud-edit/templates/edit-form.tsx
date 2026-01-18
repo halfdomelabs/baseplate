@@ -2,56 +2,54 @@
 
 import type { ReactElement } from 'react';
 
+import { readFragment } from '%graphqlImports';
 import { Button, Card, CardContent, CardFooter } from '%reactComponentsImports';
-import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+
+TPL_EDIT_FRAGMENT;
 
 interface Props {
   className?: string;
-  initialData?: TPL_FORM_DATA_NAME;
   submitData: (data: TPL_FORM_DATA_NAME) => Promise<void>;
-  TPL_EXTRA_PROPS;
+  TPL_PROPS;
 }
 
 export function TPL_COMPONENT_NAME(
   TPL_DESTRUCTURED_PROPS: Props,
 ): ReactElement {
-  const { handleSubmit, control } = useForm({
+  const initialValuesData = readFragment(
+    TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE,
+    defaultValues,
+  );
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = useForm<TPL_FORM_DATA_NAME>({
     resolver: zodResolver(TPL_EDIT_SCHEMA),
-    defaultValues: initialData,
+    defaultValues: initialValuesData,
   });
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const onSubmit = async (data: TPL_FORM_DATA_NAME): Promise<void> => {
-    try {
-      setIsUpdating(true);
-      await submitData(data);
-    } catch (err) {
-      toast.error(logAndFormatError(err));
-    } finally {
-      setIsUpdating(false);
-    }
-  };
 
   TPL_HEADER;
 
   return (
     <div className={className}>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
+      <form
+        onSubmit={handleSubmit((data) => submitData(data))}
+        className="max-w-md space-y-4"
+      >
         <Card>
           <CardContent className="flex flex-col gap-4">
             <TPL_INPUTS />
           </CardContent>
           <CardFooter className="flex gap-4">
-            <Button type="submit" disabled={isUpdating}>
+            <Button type="submit" disabled={isSubmitting}>
               Save
             </Button>
             <Link to="TPL_LIST_ROUTE">
-              <Button type="button" variant="secondary">
+              <Button type="button" variant="secondary" disabled={isSubmitting}>
                 Cancel
               </Button>
             </Link>

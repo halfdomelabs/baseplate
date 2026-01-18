@@ -3,7 +3,7 @@
   "extractors": {
     "ts": {
       "importProviders": [
-        "@baseplate-dev/react-generators:generatedGraphqlImportsProvider"
+        "@baseplate-dev/react-generators:graphqlImportsProvider"
       ]
     }
   },
@@ -12,6 +12,7 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/app-apollo-provider.tsx",
       "referencedGeneratorTemplates": ["service"],
@@ -26,35 +27,62 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/cache.ts",
       "projectExports": { "createApolloCache": {} },
       "sourceFile": "src/services/apollo/cache.ts",
       "variables": {}
     },
-    "codegen-config": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{package-root}/codegen.ts",
-      "projectExports": { "config": {} },
-      "sourceFile": "package/codegen.ts",
-      "variables": { "TPL_BACKEND_SCHEMA": {} }
-    },
     "graphql": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
-      "pathRootRelativePath": "{src-root}/generated/graphql.tsx",
-      "projectExports": { "*": {} },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/graphql.ts",
+      "projectExports": {
+        "FragmentOf": { "isTypeOnly": false, "name": "FragmentOf" },
+        "graphql": { "isTypeOnly": false, "name": "graphql" },
+        "readFragment": { "isTypeOnly": false, "name": "readFragment" },
+        "ResultOf": { "isTypeOnly": false, "name": "ResultOf" },
+        "VariablesOf": { "isTypeOnly": false, "name": "VariablesOf" }
+      },
+      "referencedGeneratorTemplates": ["graphql-env-d"],
+      "sourceFile": "src/graphql.ts",
+      "variables": {}
+    },
+    "graphql-config": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/graphql.config.ts",
+      "sourceFile": "package/graphql.config.ts",
+      "variables": { "TPL_BACKEND_SCHEMA_PATH": {} }
+    },
+    "graphql-env-d": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/graphql-env.d.ts",
+      "projectExports": {
+        "introspection": { "isTypeOnly": true, "name": "introspection" },
+        "introspection_types": {
+          "isTypeOnly": true,
+          "name": "introspection_types"
+        }
+      },
       "projectExportsOnly": true,
-      "sourceFile": "src/generated/graphql.tsx"
+      "sourceFile": "src/graphql-env.d.ts",
+      "variables": {}
     },
     "service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/index.ts",
       "projectExports": { "createApolloClient": {} },

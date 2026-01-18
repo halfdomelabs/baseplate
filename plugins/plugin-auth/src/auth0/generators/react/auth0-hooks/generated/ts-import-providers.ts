@@ -21,7 +21,6 @@ const auth0Auth0HooksImportsTask = createGeneratorTask({
         authHooksImports: createTsImportMap(authHooksImportsSchema, {
           AuthRole: paths.useSession,
           SessionData: paths.useSession,
-          useCurrentUser: paths.useCurrentUser,
           useLogOut: paths.useLogOut,
           useRequiredUserId: paths.useRequiredUserId,
           useSession: paths.useSession,

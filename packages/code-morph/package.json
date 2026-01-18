@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/code-morph",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "private": true,
   "description": "Simple package for running code migrations on the codebase",
   "keywords": [

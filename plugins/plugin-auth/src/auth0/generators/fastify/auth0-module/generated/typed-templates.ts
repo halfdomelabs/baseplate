@@ -3,6 +3,8 @@ import {
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
+  pothosImportsProvider,
+  prismaImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
@@ -18,6 +20,22 @@ const management = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const userSessionQueries = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    pothosImports: pothosImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'user-session-queries',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/user-session.queries.ts',
+    ),
+  },
+  variables: { TPL_USER_OBJECT_TYPE: {} },
 });
 
 const userSessionService = createTsTemplateFile({
@@ -38,4 +56,8 @@ const userSessionService = createTsTemplateFile({
   variables: { TPL_USER_MODEL: {} },
 });
 
-export const AUTH0_AUTH0_MODULE_TEMPLATES = { management, userSessionService };
+export const AUTH0_AUTH0_MODULE_TEMPLATES = {
+  management,
+  userSessionQueries,
+  userSessionService,
+};

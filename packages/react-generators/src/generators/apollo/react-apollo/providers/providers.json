@@ -1,11 +1,15 @@
 {
-  "generated-graphql.ts": {
-    "generatedGraphqlImportsProvider": {
+  "graphql-imports.ts": {
+    "graphqlImportsProvider": {
       "type": "ts-imports",
-      "providerExport": "generatedGraphqlImportsProvider",
-      "schemaExport": "generatedGraphqlImportsSchema",
+      "providerExport": "graphqlImportsProvider",
+      "schemaExport": "graphqlImportsSchema",
       "projectExports": {
-        "*": {}
+        "graphql": {},
+        "readFragment": {},
+        "FragmentOf": { "isTypeOnly": true },
+        "ResultOf": { "isTypeOnly": true },
+        "VariablesOf": { "isTypeOnly": true }
       }
     }
   }

@@ -1,8 +1,8 @@
+import { mapValuesOfMap } from '@baseplate-dev/utils';
+
 import type { DefinitionSchemaCreator } from '#src/schema/index.js';
 
-import type { PluginSpecImplementation } from './types.js';
-
-import { createPluginSpec } from './types.js';
+import { createFieldMapSpec } from '../utils/create-field-map-spec.js';
 
 export interface PluginMigrationResult {
   updatedConfig?: unknown;
@@ -25,72 +25,27 @@ export interface PluginConfigMigration {
   ) => PluginMigrationResult;
 }
 
-/**
- * Spec for registering plugin config schema
- */
-export interface PluginConfigSpec extends PluginSpecImplementation {
-  registerSchemaCreator: (
-    pluginKey: string,
-    schemaCreator: DefinitionSchemaCreator,
-  ) => void;
-  registerMigrations: (
-    pluginKey: string,
-    migrations: PluginConfigMigration[],
-  ) => void;
-  getSchemaCreator(pluginKey: string): DefinitionSchemaCreator | undefined;
-  getMigrations(pluginKey: string): PluginConfigMigration[] | undefined;
-  getLastMigrationVersion(pluginKey: string): number | undefined;
-}
-
 function sortAndValidateMigrations(
   migrations: PluginConfigMigration[],
+  pluginKey: string,
 ): PluginConfigMigration[] {
   // make sure migrations are sorted by version and they are all unique
   const sortedMigrations = [...migrations].sort(
     (a, b) => a.version - b.version,
   );
   if (sortedMigrations.some((m) => m.version <= 0)) {
-    throw new Error(`Migration version must be a positive integer`);
+    throw new Error(
+      `All migrations for plugin ${pluginKey} must have a positive version`,
+    );
   }
   for (let i = 0; i < sortedMigrations.length - 1; i++) {
     if (sortedMigrations[i].version === sortedMigrations[i + 1].version) {
-      throw new Error(`Migration versions must be unique`);
+      throw new Error(
+        `All migrations for plugin ${pluginKey} must have a unique version`,
+      );
     }
   }
   return sortedMigrations;
-}
-
-export function createPluginConfigImplementation(): PluginConfigSpec {
-  const schemas = new Map<string, DefinitionSchemaCreator>();
-  const migrationsMap = new Map<string, PluginConfigMigration[]>();
-
-  return {
-    registerSchemaCreator(pluginKey, schemaCreator) {
-      if (schemas.has(pluginKey)) {
-        throw new Error(`Schema for plugin ${pluginKey} is already registered`);
-      }
-      schemas.set(pluginKey, schemaCreator);
-    },
-    registerMigrations(pluginKey, migrations) {
-      if (migrationsMap.has(pluginKey)) {
-        throw new Error(
-          `Migrations for plugin ${pluginKey} are already registered`,
-        );
-      }
-      const sortedMigrations = sortAndValidateMigrations(migrations);
-      migrationsMap.set(pluginKey, sortedMigrations);
-    },
-    getSchemaCreator(pluginKey) {
-      return schemas.get(pluginKey);
-    },
-    getMigrations(pluginKey) {
-      return migrationsMap.get(pluginKey);
-    },
-    getLastMigrationVersion(pluginKey) {
-      const migrations = migrationsMap.get(pluginKey);
-      return migrations?.[migrations.length - 1]?.version;
-    },
-  };
 }
 
 /**
@@ -104,6 +59,28 @@ export function createPluginConfigImplementation(): PluginConfigSpec {
  *  }]
  * }
  */
-export const pluginConfigSpec = createPluginSpec('core/plugin-config', {
-  defaultInitializer: createPluginConfigImplementation,
-});
+export const pluginConfigSpec = createFieldMapSpec(
+  'core/plugin-config',
+  (t) => ({
+    schemas: t.map<string, DefinitionSchemaCreator>(),
+    migrations: t.map<string, PluginConfigMigration[]>(),
+  }),
+  {
+    use: (values) => {
+      const validatedMigrations = mapValuesOfMap(
+        values.migrations,
+        (migrations, pluginKey) =>
+          sortAndValidateMigrations(migrations, pluginKey),
+      );
+      return {
+        getSchemaCreator: (pluginKey: string) => values.schemas.get(pluginKey),
+        getMigrations: (pluginKey: string) =>
+          validatedMigrations.get(pluginKey),
+        getLastMigrationVersion: (pluginKey: string) => {
+          const migrations = values.migrations.get(pluginKey);
+          return migrations?.[migrations.length - 1]?.version;
+        },
+      };
+    },
+  },
+);

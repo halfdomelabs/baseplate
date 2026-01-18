@@ -3,26 +3,25 @@ import {
   createGenerator,
   createGeneratorTask,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/index.js';
 import { packageScope } from '#src/providers/scopes.js';
-import { extractPackageVersions } from '#src/utils/extract-packages.js';
-
-import { eslintConfigProvider } from '../eslint/index.js';
-import { createNodePackagesTask, createNodeTask } from '../node/index.js';
-
-const descriptorSchema = z.object({});
-
-import { quot } from '@baseplate-dev/utils';
-
 import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
 } from '#src/renderers/index.js';
+import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
+import { eslintConfigProvider } from '../eslint/index.js';
+import { createNodePackagesTask, createNodeTask } from '../node/index.js';
 import { NODE_VITEST_GENERATED } from './generated/index.js';
+
+const descriptorSchema = z.object({
+  includeTestHelpers: z.boolean().default(true),
+});
 
 const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
   createConfigProviderTask(
@@ -42,7 +41,7 @@ export const vitestGenerator = createGenerator({
   name: 'node/vitest',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ includeTestHelpers }) => ({
     paths: NODE_VITEST_GENERATED.paths.task,
     renderers: NODE_VITEST_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
@@ -76,7 +75,6 @@ export const vitestGenerator = createGenerator({
             const configValues = TsCodeUtils.mergeFragmentsAsObject({
               clearMocks: 'true',
               passWithNoTests: 'true',
-              root: quot('./src'),
               globalSetup:
                 globalSetupFiles.length > 0
                   ? JSON.stringify(globalSetupFiles.toSorted())
@@ -86,6 +84,7 @@ export const vitestGenerator = createGenerator({
                   ? JSON.stringify(setupFiles.toSorted())
                   : undefined,
               maxWorkers: '1',
+              dir: quot('src'),
               env: tsCodeFragment(
                 "loadEnv('development', process.cwd(), '')",
                 tsImportBuilder(['loadEnv']).from('vite'),
@@ -110,7 +109,9 @@ export const vitestGenerator = createGenerator({
                 },
               }),
             );
-            await builder.apply(renderers.testHelpersGroup.render({}));
+            if (includeTestHelpers) {
+              await builder.apply(renderers.testHelpersGroup.render({}));
+            }
           },
         };
       },

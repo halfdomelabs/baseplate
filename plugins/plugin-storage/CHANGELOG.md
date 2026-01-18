@@ -1,5 +1,86 @@
 # @baseplate-dev/plugin-storage
 
+## 4.0.1
+
+### Patch Changes
+
+- [#737](https://github.com/halfdomelabs/baseplate/pull/737) [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499) Thanks [@kingston](https://github.com/kingston)! - Refactor plugin spec system with lazy initialization and clear setup/use phases
+
+  This refactoring overhauls the plugin spec system to introduce a two-phase architecture with lazy initialization:
+
+  **New Architecture:**
+  - **Setup phase (init)**: Plugins register their implementations during module initialization using mutable field containers
+  - **Use phase**: Consumers access registered items through a read-only interface, with lazy initialization on first access
+  - **FieldMap-based specs**: New `createFieldMapSpec` helper provides type-safe containers (maps, arrays, named arrays, scalars) with automatic source tracking
+
+  **Key changes:**
+  - Rename `PluginImplementationStore` to `PluginSpecStore` with cached `use()` instances
+  - Rename `createPlatformPluginExport` to `createPluginModule`
+  - Add required `name` field to all plugin modules for unique identification
+  - Convert all specs to use `createFieldMapSpec` with typed containers
+  - Update all plugin modules to use new registration methods (`.add()`, `.set()`, `.push()`)
+  - Introduce `ModuleContext` with `moduleKey` and `pluginKey` for better source tracking
+  - Specs now define both `init` (mutable setup interface) and `use` (read-only consumption interface)
+
+- Updated dependencies [[`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534), [`ecebd3b`](https://github.com/halfdomelabs/baseplate/commit/ecebd3bf50cfa2d2a62501e0be39c411b42bed25), [`ff4203e`](https://github.com/halfdomelabs/baseplate/commit/ff4203e45a057b25a0ded5ecb3e1c07f5c7108b4), [`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072), [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499), [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534)]:
+  - @baseplate-dev/fastify-generators@0.5.1
+  - @baseplate-dev/react-generators@0.5.1
+  - @baseplate-dev/project-builder-lib@0.5.1
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/ui-components@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
+## 4.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797), [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9), [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599), [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`d09175d`](https://github.com/halfdomelabs/baseplate/commit/d09175dc41d33fb0a818d53c2e2da899430a48cd), [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`2d5abd5`](https://github.com/halfdomelabs/baseplate/commit/2d5abd53fccfc2b15f8142fc796c5e4ea4c2f92a), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/fastify-generators@0.5.0
+  - @baseplate-dev/core-generators@0.5.0
+  - @baseplate-dev/react-generators@0.5.0
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/ui-components@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
+## 3.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`ec2f1e9`](https://github.com/halfdomelabs/baseplate/commit/ec2f1e9716e84cd4a901c071eacf4971436962d9)]:
+  - @baseplate-dev/fastify-generators@0.4.4
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/project-builder-lib@0.4.4
+  - @baseplate-dev/react-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/ui-components@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 3.0.3
+
+### Patch Changes
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Upgrade Apollo Client to v4
+  - @apollo/client: 3.13.8 → 4.0.11
+  - Add rxjs 7.8.2 as peer dependency (required by Apollo Client v4)
+
+  Breaking changes in generated code:
+  - React hooks (useQuery, useMutation, useApolloClient, etc.) now import from `@apollo/client/react` instead of `@apollo/client`
+  - ApolloProvider now imports from `@apollo/client/react`
+  - Error handling uses new `CombinedGraphQLErrors` and `ServerError` classes from `@apollo/client/errors`
+  - `ErrorLink` class replaces deprecated `onError` function
+  - `ApolloClient` is no longer generic (use `ApolloClient` instead of `ApolloClient<NormalizedCacheObject>`)
+
+- Updated dependencies [[`12d1e62`](https://github.com/halfdomelabs/baseplate/commit/12d1e625bc04256eeb2704faa3f36dfda00545f9), [`6e23a6f`](https://github.com/halfdomelabs/baseplate/commit/6e23a6f2ff99954eebcb78b450d0c18618aa0b54), [`f1bab33`](https://github.com/halfdomelabs/baseplate/commit/f1bab3310fa8c00c645a6d9aca0a6a757cb661f1), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d), [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d)]:
+  - @baseplate-dev/fastify-generators@0.4.3
+  - @baseplate-dev/react-generators@0.4.3
+  - @baseplate-dev/core-generators@0.4.3
+  - @baseplate-dev/project-builder-lib@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/ui-components@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 3.0.2
 
 ### Patch Changes

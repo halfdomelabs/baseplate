@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { TodoListRowFragment } from '@src/generated/graphql';
+import type { FragmentOf, ResultOf } from '@src/graphql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Button } from '@src/components/ui/button';
@@ -23,19 +23,41 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import {
-  DeleteTodoListDocument,
-  GetTodoListsDocument,
-} from '@src/generated/graphql';
+import { graphql, readFragment } from '@src/graphql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
+/* HOISTED:delete-action-mutation:START */
+const todoListListPageDeleteTodoListMutation = graphql(`
+  mutation TodoListListPageDeleteTodoList($input: DeleteTodoListInput!) {
+    deleteTodoList(input: $input) {
+      todoList {
+        id
+        name
+      }
+    }
+  }
+`);
+/* HOISTED:delete-action-mutation:END */
+
 /* TPL_COMPONENT_NAME=TodoListTable */
-/* TPL_ROW_FRAGMENT=TodoListRowFragment */
+/* TPL_ITEMS_FRAGMENT_NAME=todoListTableItemsFragment */
+
+/* TPL_ITEMS_FRAGMENT:START */
+export const todoListTableItemsFragment = graphql(`
+  fragment TodoListTable_items on TodoList {
+    createdAt
+    id
+    name
+    ownerId
+  }
+`);
+/* TPL_ITEMS_FRAGMENT:END */
 
 interface Props {
-  items: TodoListRowFragment[];
-  /* TPL_EXTRA_PROPS:BLOCK */
+  /* TPL_PROPS:START */
+  items: FragmentOf<typeof todoListTableItemsFragment>[];
+  /* TPL_PROPS:END */
 }
 
 export function TodoListTable(
@@ -45,11 +67,18 @@ export function TodoListTable(
 ): ReactElement {
   /* TPL_ACTION_HOOKS:START */
   const { requestConfirm } = useConfirmDialog();
-  const [deleteTodoList] = useMutation(DeleteTodoListDocument, {
-    refetchQueries: [{ query: GetTodoListsDocument }],
+  const [deleteTodoList] = useMutation(todoListListPageDeleteTodoListMutation, {
+    update: (cache, result) => {
+      if (!result.data?.deleteTodoList.todoList) return;
+      const itemId = cache.identify(result.data.deleteTodoList.todoList);
+      cache.evict({ id: itemId });
+      cache.gc();
+    },
   });
 
-  function handleDelete(item: TodoListRowFragment): void {
+  function handleDelete(
+    item: ResultOf<typeof todoListTableItemsFragment>,
+  ): void {
     requestConfirm({
       title: 'Delete Todo List',
       content: `Are you sure you want to delete todo list ${item.name ? item.name : 'unnamed todo list'}?`,
@@ -58,11 +87,14 @@ export function TodoListTable(
           variables: { input: { id: item.id } },
         })
           .then(() => {
-            toast.success('Successfully deleted todo list!');
+            toast.success('Successfully deleted the todo list!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry we could not delete todo list.'),
+              logAndFormatError(
+                err,
+                'Sorry, we could not delete the todo list.',
+              ),
             );
           });
       },
@@ -70,7 +102,10 @@ export function TodoListTable(
   }
   /* TPL_ACTION_HOOKS:END */
 
-  if (items.length === 0) {
+  // Unmask the fragment data for rendering
+  const itemsData = readFragment(todoListTableItemsFragment, items);
+
+  if (itemsData.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -96,7 +131,7 @@ export function TodoListTable(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
+          {itemsData.map((item) => (
             <TableRow key={item.id}>
               {/* TPL_CELLS:START */}
               <TableCell>{item.ownerId}</TableCell>

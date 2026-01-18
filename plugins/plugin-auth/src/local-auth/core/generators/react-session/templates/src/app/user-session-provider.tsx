@@ -4,7 +4,7 @@ import type { SessionData } from '%authHooksImports';
 import type React from 'react';
 
 import { userSessionClient } from '$userSessionClient';
-import { GetCurrentUserSessionDocument } from '%generatedGraphqlImports';
+import { graphql } from '%graphqlImports';
 import { AuthSessionContext } from '%localAuthHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
@@ -15,6 +15,15 @@ interface UserSessionProviderProps {
   children: React.ReactNode;
 }
 
+const getCurrentUserSessionQuery = graphql(`
+  query CurrentUserSession {
+    currentUserSession {
+      userId
+      roles
+    }
+  }
+`);
+
 export function UserSessionProvider({
   children,
 }: UserSessionProviderProps): React.JSX.Element {
@@ -24,7 +33,7 @@ export function UserSessionProvider({
   const apolloClient = useApolloClient();
 
   const { data: sessionQueryData, error: sessionError } = useQuery(
-    GetCurrentUserSessionDocument,
+    getCurrentUserSessionQuery,
     {
       notifyOnNetworkStatusChange: true,
     },

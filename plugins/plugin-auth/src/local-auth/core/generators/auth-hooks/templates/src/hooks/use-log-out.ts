@@ -1,14 +1,22 @@
 // @ts-nocheck
 
-import { LogOutDocument } from '%generatedGraphqlImports';
+import { graphql } from '%graphqlImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
 import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
+export const logOutMutationDocument = graphql(`
+  mutation LogOut {
+    logOut {
+      success
+    }
+  }
+`);
+
 export function useLogOut(): () => void {
-  const [logOut] = useMutation(LogOutDocument);
+  const [logOut] = useMutation(logOutMutationDocument);
   const navigate = useNavigate();
 
   return () => {

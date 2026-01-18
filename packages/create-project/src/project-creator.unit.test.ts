@@ -1,4 +1,5 @@
 import type { Ora } from 'ora';
+import type { Mock } from 'vitest';
 
 import ora from 'ora';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -26,7 +27,7 @@ vi.mock('./project-generator.js', () => ({
 }));
 
 describe('generateBaseplateProject', () => {
-  let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
+  let consoleInfoSpy: Mock<typeof console.info>;
   let spinnerMock: {
     start: ReturnType<typeof vi.fn>;
     succeed: ReturnType<typeof vi.fn>;
@@ -126,10 +127,8 @@ describe('generateBaseplateProject', () => {
     });
 
     const successMessage = consoleInfoSpy.mock.calls
-      .map((call) => call[0])
-      .find(
-        (msg) => typeof msg === 'string' && msg.includes('🎉 Congratulations!'),
-      );
+      .map(([msg]) => msg as string)
+      .find((msg) => msg.includes('🎉 Congratulations!'));
 
     expect(successMessage).toBeDefined();
     expect(successMessage).not.toContain('cd ');

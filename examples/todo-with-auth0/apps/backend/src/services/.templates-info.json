@@ -24,11 +24,6 @@
     "instanceData": {},
     "template": "logger"
   },
-  "postmark.ts": {
-    "generator": "@baseplate-dev/fastify-generators#email/fastify-postmark",
-    "instanceData": {},
-    "template": "postmark"
-  },
   "prisma.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
     "instanceData": {},

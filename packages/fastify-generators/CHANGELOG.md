@@ -1,5 +1,76 @@
 # @baseplate-dev/fastify-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- [#740](https://github.com/halfdomelabs/baseplate/pull/740) [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534) Thanks [@kingston](https://github.com/kingston)! - Add email plugin with Postmark implementation for queue-based email delivery
+  - Add `@baseplate-dev/plugin-email/transactional-lib` library type for generating transactional email libraries
+  - Include reusable email components (Button, Heading, Text, Link, Divider, Section, Layout)
+
+- [#741](https://github.com/halfdomelabs/baseplate/pull/741) [`ecebd3b`](https://github.com/halfdomelabs/baseplate/commit/ecebd3bf50cfa2d2a62501e0be39c411b42bed25) Thanks [@kingston](https://github.com/kingston)! - Fix duplicate identifier bug in generated nested field buildData functions
+  - Split `buildData` into separate `buildCreateData` and `buildUpdateData` functions
+  - Each function now has its own scope, avoiding duplicate identifier errors when FK fields are destructured
+  - Use `Promise.all` for parallel execution of buildCreateData and buildUpdateData
+
+- [#739](https://github.com/halfdomelabs/baseplate/pull/739) [`ff4203e`](https://github.com/halfdomelabs/baseplate/commit/ff4203e45a057b25a0ded5ecb3e1c07f5c7108b4) Thanks [@kingston](https://github.com/kingston)! - Fix stale data bug in data operations when afterExecute/afterCommit hooks modify related records
+  - Add conditional re-fetch after hooks complete when query includes relations
+  - Add required `getWhereUnique` to `CreateOperationConfig` for ID extraction
+  - Extend `findUnique` in `GenericPrismaDelegate` to accept optional `include`
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
+## 0.5.0
+
+### Patch Changes
+
+- [#732](https://github.com/halfdomelabs/baseplate/pull/732) [`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797) Thanks [@kingston](https://github.com/kingston)! - Remove root: 'src/' from vitest.config.ts
+
+- [#736](https://github.com/halfdomelabs/baseplate/pull/736) [`d09175d`](https://github.com/halfdomelabs/baseplate/commit/d09175dc41d33fb0a818d53c2e2da899430a48cd) Thanks [@kingston](https://github.com/kingston)! - Move scripts directory from `scripts/` to `src/scripts/` for fastify-generated projects, allowing TypeScript files to compile alongside the rest of the app and use `@src/` imports
+
+- Updated dependencies [[`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797), [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599), [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`2d5abd5`](https://github.com/halfdomelabs/baseplate/commit/2d5abd53fccfc2b15f8142fc796c5e4ea4c2f92a), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/core-generators@0.5.0
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
+## 0.4.4
+
+### Patch Changes
+
+- [#726](https://github.com/halfdomelabs/baseplate/pull/726) [`ec2f1e9`](https://github.com/halfdomelabs/baseplate/commit/ec2f1e9716e84cd4a901c071eacf4971436962d9) Thanks [@kingston](https://github.com/kingston)! - Fix handling of Prisma scalar fields without options
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- [#720](https://github.com/halfdomelabs/baseplate/pull/720) [`12d1e62`](https://github.com/halfdomelabs/baseplate/commit/12d1e625bc04256eeb2704faa3f36dfda00545f9) Thanks [@kingston](https://github.com/kingston)! - Use block syntax instead of arrow function implicit returns in generated data operation callbacks for better error diagnostics
+
+- [#718](https://github.com/halfdomelabs/baseplate/pull/718) [`6e23a6f`](https://github.com/halfdomelabs/baseplate/commit/6e23a6f2ff99954eebcb78b450d0c18618aa0b54) Thanks [@kingston](https://github.com/kingston)! - Fix nestedOneToOneField to not error when setting to null on non-existent relation
+
+  Previously, setting a nested one-to-one field to `null` would throw an error if the related record didn't exist, because Prisma's `delete: true` syntax requires the record to exist. Now the deletion is performed via an `afterExecute` hook using `deleteMany`, which is idempotent and won't error if no record exists.
+
+- [#719](https://github.com/halfdomelabs/baseplate/pull/719) [`f1bab33`](https://github.com/halfdomelabs/baseplate/commit/f1bab3310fa8c00c645a6d9aca0a6a757cb661f1) Thanks [@kingston](https://github.com/kingston)! - Refactor authorization system to use ABAC pattern with string-based roles
+  - Add `authorizerCache` and `authorizerModelCache` fields to ServiceContext via the `authorizer-utils` generator for caching authorization decisions
+  - Remove `AuthRole` type and `extractRoles` config from pothos-auth generator as authorization now uses string-based roles with instance role functions
+  - Add new authorizer utilities including `checkGlobalAuthorization`, `checkInstanceAuthorization`, and `createModelAuthorizer` for flexible authorization patterns
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Add support for generating vitest on web apps
+
+- [#722](https://github.com/halfdomelabs/baseplate/pull/722) [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed) Thanks [@kingston](https://github.com/kingston)! - Add support for generating files in package.json
+
+- Updated dependencies [[`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d), [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed)]:
+  - @baseplate-dev/core-generators@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

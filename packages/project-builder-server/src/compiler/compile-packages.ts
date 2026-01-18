@@ -1,18 +1,17 @@
 import type {
   AppConfig,
+  PackageCompiler,
+  PackageCompilerContext,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
-import type {
-  PackageCompiler,
-  PackageCompilerContext,
-} from './package-compiler.js';
 import type { PackageEntry } from './package-entry.js';
 
 import { BackendPackageCompiler } from './backend/index.js';
+import { createLibraryCompilerFromSpec } from './library/index.js';
 import { RootPackageCompiler } from './root/index.js';
 import { WebPackageCompiler } from './web/index.js';
 
@@ -43,11 +42,11 @@ function createAppCompiler(
 /**
  * Compile all packages in a project definition
  *
- * Root package is compiled first, then backend apps, then other apps.
+ * Root package is compiled first, then backend apps, then other apps, then library packages.
  *
  * @param projectJson - Serialized project definition JSON
  * @param context - Schema parser context
- * @returns Array of compiled package entries with generator bundles (root first, then apps)
+ * @returns Array of compiled package entries with generator bundles (root first, then apps, then libraries)
  */
 export function compilePackages(
   projectJson: unknown,
@@ -63,10 +62,18 @@ export function compilePackages(
     (a) => a.name,
   ]);
 
+  // Get libraries sorted by name
+  const libraryConfigs = sortBy(definitionContainer.definition.libraries, [
+    (lib) => lib.name,
+  ]);
+
   // Instantiate all package compilers
   const compilers = [
     new RootPackageCompiler(definitionContainer),
     ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
+    ...libraryConfigs.map((lib) =>
+      createLibraryCompilerFromSpec(definitionContainer, lib),
+    ),
   ];
 
   const compilerContext: PackageCompilerContext = {

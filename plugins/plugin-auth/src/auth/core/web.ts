@@ -1,5 +1,5 @@
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -7,13 +7,12 @@ import { AuthDefinitionEditor } from './components/auth-definition-editor.js';
 
 import '../../styles.css';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
   },
-  exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, AuthDefinitionEditor);
-    return {};
+    webConfig.components.set(pluginKey, AuthDefinitionEditor);
   },
 });

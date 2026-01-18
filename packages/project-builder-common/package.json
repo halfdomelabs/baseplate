@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-common",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "description": "Holds common packages for plugins and generators",
   "keywords": [
     "common",
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@baseplate-dev/plugin-auth": "workspace:*",
+    "@baseplate-dev/plugin-email": "workspace:*",
     "@baseplate-dev/plugin-queue": "workspace:*",
     "@baseplate-dev/plugin-storage": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",

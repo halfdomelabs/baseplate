@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2022",
     "useDefineForClassFields": true,
-    "lib": ["dom", "dom.iterable", "es2022"],
+    "lib": ["dom", "dom.iterable", "es2023"],
     "module": "esnext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -17,7 +17,16 @@
     "noUncheckedSideEffectImports": true,
     "paths": {
       "@src/*": ["./src/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../backend/schema.graphql",
+        "tadaOutputLocation": "./src/graphql-env.d.ts",
+        "trackFieldUsage": false,
+        "shouldCheckForColocatedFragments": false
+      }
+    ]
   },
   "include": ["src"],
   "exclude": ["**/node_modules", "**/dist", "**/lib"]

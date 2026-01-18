@@ -7,10 +7,10 @@ export default defineConfig(
     plugins: [tsconfigPaths()],
     test: {
       clearMocks: true,
+      dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
       maxWorkers: 1,
       passWithNoTests: true,
-      root: './src',
     },
   } /* TPL_CONFIG:END */,
 );

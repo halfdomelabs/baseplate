@@ -1,0 +1,95 @@
+{
+  "name": "@baseplate-dev/plugin-email",
+  "version": "0.1.1",
+  "description": "Contains the email plugin for Baseplate",
+  "keywords": [
+    "email",
+    "plugin",
+    "full-stack",
+    "typescript",
+    "baseplate",
+    "code-generation"
+  ],
+  "homepage": "https://www.baseplate.dev",
+  "repository": "https://github.com/halfdomelabs/baseplate",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "concurrently pnpm:build:*",
+    "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
+    "build:tsc": "tsc -p tsconfig.build.json",
+    "build:vite": "vite build",
+    "clean": "rm -rf ./dist",
+    "lint": "eslint .",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit",
+    "watch": "concurrently pnpm:watch:*",
+    "watch:static": "pnpm build:static --watch",
+    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+  },
+  "dependencies": {
+    "@baseplate-dev/core-generators": "workspace:*",
+    "@baseplate-dev/fastify-generators": "workspace:*",
+    "@baseplate-dev/plugin-queue": "workspace:*",
+    "@baseplate-dev/react-generators": "workspace:*",
+    "@baseplate-dev/ui-components": "workspace:*",
+    "@hookform/resolvers": "5.2.2",
+    "@tanstack/react-router": "1.139.7",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-hook-form": "7.60.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
+    "@originjs/vite-plugin-federation": "1.3.6",
+    "@tailwindcss/vite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "concurrently": "9.0.1",
+    "cpx2": "catalog:",
+    "eslint": "catalog:",
+    "nodemon": "catalog:",
+    "prettier": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*"
+  },
+  "engines": {
+    "node": "^22.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -1,15 +1,9 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateFileActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
@@ -39,16 +33,6 @@ export interface ReactUploadComponentsRenderers {
       >,
     ) => BuilderAction;
   };
-  fileInputUploadGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputUploadGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
   hooksUseUpload: {
     render: (
       options: Omit<
@@ -68,7 +52,7 @@ const reactUploadComponentsRenderers =
 
 const reactUploadComponentsRenderersTask = createGeneratorTask({
   dependencies: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     paths: REACT_UPLOAD_COMPONENTS_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
@@ -78,7 +62,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
     reactUploadComponentsRenderers: reactUploadComponentsRenderers.export(),
   },
   run({
-    generatedGraphqlImports,
+    graphqlImports,
     paths,
     reactComponentsImports,
     reactErrorImports,
@@ -93,7 +77,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                 template: REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputComponent,
                 destination: paths.fileInputComponent,
                 importMapProviders: {
-                  generatedGraphqlImports,
+                  graphqlImports,
                   reactComponentsImports,
                   reactErrorImports,
                 },
@@ -110,14 +94,6 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                   reactComponentsImports,
                 },
                 generatorPaths: paths,
-                ...options,
-              }),
-          },
-          fileInputUploadGql: {
-            render: (options) =>
-              renderTextTemplateFileAction({
-                template: REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputUploadGql,
-                destination: paths.fileInputUploadGql,
                 ...options,
               }),
           },

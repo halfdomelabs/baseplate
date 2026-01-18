@@ -1,5 +1,77 @@
 # @baseplate-dev/create-project
 
+## 0.5.1
+
+### Patch Changes
+
+- [#737](https://github.com/halfdomelabs/baseplate/pull/737) [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499) Thanks [@kingston](https://github.com/kingston)! - Refactor plugin spec system with lazy initialization and clear setup/use phases
+
+  This refactoring overhauls the plugin spec system to introduce a two-phase architecture with lazy initialization:
+
+  **New Architecture:**
+  - **Setup phase (init)**: Plugins register their implementations during module initialization using mutable field containers
+  - **Use phase**: Consumers access registered items through a read-only interface, with lazy initialization on first access
+  - **FieldMap-based specs**: New `createFieldMapSpec` helper provides type-safe containers (maps, arrays, named arrays, scalars) with automatic source tracking
+
+  **Key changes:**
+  - Rename `PluginImplementationStore` to `PluginSpecStore` with cached `use()` instances
+  - Rename `createPlatformPluginExport` to `createPluginModule`
+  - Add required `name` field to all plugin modules for unique identification
+  - Convert all specs to use `createFieldMapSpec` with typed containers
+  - Update all plugin modules to use new registration methods (`.add()`, `.set()`, `.push()`)
+  - Introduce `ModuleContext` with `moduleKey` and `pluginKey` for better source tracking
+  - Specs now define both `init` (mutable setup interface) and `use` (read-only consumption interface)
+
+- Updated dependencies [[`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072), [`55aa484`](https://github.com/halfdomelabs/baseplate/commit/55aa484621f2dc5b1195b6b537e7d6ad215bc499), [`2de5d5c`](https://github.com/halfdomelabs/baseplate/commit/2de5d5c43c5354571d50707a99b4028ff8792534)]:
+  - @baseplate-dev/project-builder-server@0.5.1
+  - @baseplate-dev/project-builder-lib@0.5.1
+  - @baseplate-dev/project-builder-cli@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
+## 0.5.0
+
+### Patch Changes
+
+- [#734](https://github.com/halfdomelabs/baseplate/pull/734) [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 4.0.16
+  - vitest: 3.2.4 → 4.0.16
+  - @vitest/eslint-plugin: 1.3.4 → 1.6.5
+
+  Breaking changes addressed:
+  - Updated `UserConfig` type to `ViteUserConfig` in vitest config files
+  - Fixed mock type annotations for vitest 4.0 compatibility
+
+- Updated dependencies [[`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/project-builder-lib@0.5.0
+  - @baseplate-dev/project-builder-server@0.5.0
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/project-builder-cli@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.4.4
+  - @baseplate-dev/project-builder-cli@0.4.4
+  - @baseplate-dev/project-builder-lib@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- [#715](https://github.com/halfdomelabs/baseplate/pull/715) [`68ab5bd`](https://github.com/halfdomelabs/baseplate/commit/68ab5bdbc98a0b4bbc46059bfabd84666a2ab18b) Thanks [@kingston](https://github.com/kingston)! - Refactor create-project to use sync engine for generating root directory files
+
+- Updated dependencies [[`9638baf`](https://github.com/halfdomelabs/baseplate/commit/9638baf19fa0f68bed961daa0fe889822246c11a), [`68ab5bd`](https://github.com/halfdomelabs/baseplate/commit/68ab5bdbc98a0b4bbc46059bfabd84666a2ab18b), [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d)]:
+  - @baseplate-dev/project-builder-server@0.4.3
+  - @baseplate-dev/project-builder-cli@0.4.3
+  - @baseplate-dev/project-builder-lib@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

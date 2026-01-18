@@ -1,7 +1,7 @@
 import type { ModelTransformerCompiler } from '@baseplate-dev/project-builder-lib';
 
 import {
-  createPlatformPluginExport,
+  createPluginModule,
   modelTransformerCompilerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -35,15 +35,12 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
   };
 }
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     transformerCompiler: modelTransformerCompilerSpec,
   },
-  exports: {},
   initialize: ({ transformerCompiler }) => {
-    transformerCompiler.registerTransformerCompiler(
-      buildFileTransformerCompiler(),
-    );
-    return {};
+    transformerCompiler.transformers.add(buildFileTransformerCompiler());
   },
 });

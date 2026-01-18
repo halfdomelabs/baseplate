@@ -1,33 +1,18 @@
 import { tsCodeFragment } from '@baseplate-dev/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '#src/generators/apollo/react-apollo/index.js';
-
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
-import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
   order: z.int().nonnegative(),
-  localField: z.string().min(1),
+  relationName: z.string().min(1),
+  foreignModelIdFields: z.array(z.string().min(1)),
   isOptional: z.boolean().optional(),
-  foreignModelName: z.string().min(1),
   labelExpression: z.string().min(1),
-  valueExpression: z.string().min(1),
 });
-
-export type AdminCrudForeignColumnProvider = unknown;
-
-export const adminCrudForeignColumnProvider =
-  createProviderType<AdminCrudForeignColumnProvider>(
-    'admin-crud-foreign-column',
-  );
 
 export const adminCrudForeignColumnGenerator = createGenerator({
   name: 'admin/admin-crud-foreign-column',
@@ -37,47 +22,37 @@ export const adminCrudForeignColumnGenerator = createGenerator({
   buildTasks: ({
     label,
     order,
-    localField,
+    relationName,
+    foreignModelIdFields,
     isOptional,
-    foreignModelName,
     labelExpression,
-    valueExpression,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudColumnContainer: adminCrudColumnContainerProvider,
-        reactApollo: reactApolloProvider,
       },
-      exports: {
-        adminCrudForeignColumn: adminCrudForeignColumnProvider.export(),
-      },
-      run({ adminCrudColumnContainer, reactApollo }) {
-        const modelName = adminCrudColumnContainer.getModelName();
-
-        const { dataDependency, propName } = createForeignDataDependency({
-          foreignModelName,
-          modelName,
-          reactApollo,
-          labelExpression,
-          valueExpression,
-        });
-
+      run({ adminCrudColumnContainer }) {
         adminCrudColumnContainer.addColumn({
           label,
           order,
-          display: {
-            content: (itemName) => {
-              const optionalClause = isOptional
-                ? `${itemName}.${localField} == null ? "None" : `
-                : '';
-              return tsCodeFragment(`{
-            ${optionalClause}
-            ${propName}.find(option => option.${valueExpression} === ${itemName}.${localField})?.${labelExpression}
-            ?? "Unknown Item"}`);
-            },
-            graphQLFields: [{ name: localField }],
-            dataDependencies: [dataDependency],
+          content: (itemName) => {
+            const optionalClause = isOptional
+              ? `${itemName}.${relationName} == null ? "None" : `
+              : '';
+            return tsCodeFragment(`{
+              ${optionalClause}
+              ${itemName}.${relationName}.${labelExpression}
+            }`);
           },
+          graphQLFields: [
+            {
+              name: relationName,
+              fields: [
+                ...foreignModelIdFields.map((field) => ({ name: field })),
+                { name: labelExpression },
+              ],
+            },
+          ],
         });
 
         return {

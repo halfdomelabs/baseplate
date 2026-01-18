@@ -49,7 +49,7 @@ export function AppMobileSidebar(): React.JSX.Element {
           label="Home"
           activeOptions={{ exact: true }}
         />
-        <SidebarNavigationLink to="/apps" icon={MdApps} label="Apps" />
+        <SidebarNavigationLink to="/packages" icon={MdApps} label="Apps" />
         <SidebarNavigationLink
           to="/data/models"
           icon={HiDatabase}

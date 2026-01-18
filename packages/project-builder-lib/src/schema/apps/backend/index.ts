@@ -14,7 +14,6 @@ export const createBackendAppSchema = definitionSchemaWithSlots(
       ...baseAppValidators,
       type: z.literal('backend'),
       enableStripe: z.boolean().optional(),
-      enablePostmark: z.boolean().optional(),
       enableSubscriptions: z.boolean().optional(),
       enableAxios: z.boolean().optional(),
     }),

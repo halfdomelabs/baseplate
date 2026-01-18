@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import type { UserRowFragment } from '@src/generated/graphql';
+import type { FragmentOf } from '@src/graphql';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -19,10 +19,7 @@ import {
   DialogTitle,
 } from '@src/components/ui/dialog';
 import { MultiComboboxFieldController } from '@src/components/ui/multi-combobox-field';
-import {
-  GetUsersDocument,
-  UpdateUserRolesDocument,
-} from '@src/generated/graphql';
+import { graphql, readFragment } from '@src/graphql';
 
 const roleFormSchema = z.object({
   roles: z.array(z.string()),
@@ -41,8 +38,32 @@ const AVAILABLE_ROLES: RoleOption[] = /* TPL_AVAILABLE_ROLES:START */ [
   { value: 'admin', label: 'admin', description: 'Administrator role' },
 ]; /* TPL_AVAILABLE_ROLES:END */
 
+export const roleManagerDialogUserFragment = graphql(`
+  fragment RoleManagerDialog_user on User {
+    id
+    name
+    email
+    roles {
+      role
+    }
+  }
+`);
+
+const updateUserRolesMutation = graphql(
+  `
+    mutation UpdateUserRoles($input: UpdateUserRolesInput!) {
+      updateUserRoles(input: $input) {
+        user {
+          ...RoleManagerDialog_user
+        }
+      }
+    }
+  `,
+  [roleManagerDialogUserFragment],
+);
+
 interface RoleManagerDialogProps {
-  user: UserRowFragment;
+  user: FragmentOf<typeof roleManagerDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -65,14 +86,15 @@ export function RoleManagerDialog({
 }: RoleManagerDialogProps): ReactElement {
   const [isSaving, setIsSaving] = useState(false);
 
-  const [updateUserRoles] = useMutation(UpdateUserRolesDocument, {
-    refetchQueries: [{ query: GetUsersDocument }],
-  });
+  // Unmask the fragment data
+  const userData = readFragment(roleManagerDialogUserFragment, user);
+
+  const [updateUserRoles] = useMutation(updateUserRolesMutation);
 
   const form = useForm<RoleFormData>({
     resolver: zodResolver(roleFormSchema),
     defaultValues: {
-      roles: user.roles.map((r: { role: string }) => r.role),
+      roles: userData.roles.map((r: { role: string }) => r.role),
     },
   });
 
@@ -81,7 +103,7 @@ export function RoleManagerDialog({
     try {
       await updateUserRoles({
         variables: {
-          input: { userId: user.id, roles: data.roles },
+          input: { userId: userData.id, roles: data.roles },
         },
       });
       toast.success('Roles updated successfully');
@@ -99,7 +121,7 @@ export function RoleManagerDialog({
         <DialogHeader>
           <DialogTitle>Manage Roles</DialogTitle>
           <DialogDescription>
-            Assign roles to {user.name ?? user.email}
+            Assign roles to {userData.name ?? userData.email}
           </DialogDescription>
         </DialogHeader>
 

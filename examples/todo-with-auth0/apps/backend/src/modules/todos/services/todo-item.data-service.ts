@@ -26,7 +26,8 @@ export const todoItemInputFields = {
   done: scalarField(z.boolean()),
   assigneeId: scalarField(z.uuid().nullish()),
   attachments: nestedOneToManyField({
-    buildData: (data) => data,
+    buildCreateData: (data) => data,
+    buildUpdateData: (data) => data,
     fields: pick(todoItemAttachmentInputFields, [
       'position',
       'url',
@@ -43,6 +44,7 @@ export const todoItemInputFields = {
 export const createTodoItem = defineCreateOperation({
   model: 'todoItem',
   fields: todoItemInputFields,
+  getWhereUnique: (result) => ({ id: result.id }),
   create: async ({ tx, data: { assigneeId, todoListId, ...data }, query }) => {
     const item = await tx.todoItem.create({
       data: {

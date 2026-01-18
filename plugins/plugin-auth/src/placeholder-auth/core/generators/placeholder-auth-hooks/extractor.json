@@ -9,30 +9,6 @@
     }
   },
   "templates": {
-    "use-current-user": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
-      "group": "hooks",
-      "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/hooks/use-current-user.ts",
-      "projectExports": { "useCurrentUser": {} },
-      "referencedGeneratorTemplates": ["use-session"],
-      "sourceFile": "src/hooks/use-current-user.ts",
-      "variables": {}
-    },
-    "use-current-user-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/hooks/use-current-user.gql",
-      "sourceFile": "src/hooks/use-current-user.gql",
-      "variables": {}
-    },
     "use-log-out": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

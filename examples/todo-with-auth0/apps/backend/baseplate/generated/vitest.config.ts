@@ -7,14 +7,14 @@ export default defineConfig(
     plugins: [tsconfigPaths()],
     test: {
       clearMocks: true,
+      dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
       globalSetup: [
-        './tests/scripts/global-setup-prisma.ts',
-        './tests/scripts/global-setup-redis.ts',
+        'src/tests/scripts/global-setup-prisma.ts',
+        'src/tests/scripts/global-setup-redis.ts',
       ],
       maxWorkers: 1,
       passWithNoTests: true,
-      root: './src',
     },
   } /* TPL_CONFIG:END */,
 );

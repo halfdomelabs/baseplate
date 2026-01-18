@@ -65,13 +65,15 @@ export function generateCreateCallback(
   const { prismaModel, inputFieldNames, dataUtilsImports, modelVariableName } =
     config;
 
-  const { argumentFragment, returnFragment, passthrough } =
-    generateRelationBuildData({
-      prismaModel,
-      inputFieldNames,
-      operationType: 'create',
-      dataUtilsImports,
-    });
+  const {
+    createArgumentFragment: argumentFragment,
+    createReturnFragment: returnFragment,
+    passthrough,
+  } = generateRelationBuildData({
+    prismaModel,
+    inputFieldNames,
+    dataUtilsImports,
+  });
 
   if (passthrough) {
     return {
@@ -158,13 +160,15 @@ export function generateUpdateCallback(
   const { prismaModel, inputFieldNames, dataUtilsImports, modelVariableName } =
     config;
 
-  const { argumentFragment, returnFragment, passthrough } =
-    generateRelationBuildData({
-      prismaModel,
-      inputFieldNames,
-      operationType: 'update',
-      dataUtilsImports,
-    });
+  const {
+    updateArgumentFragment: argumentFragment,
+    updateReturnFragment: returnFragment,
+    passthrough,
+  } = generateRelationBuildData({
+    prismaModel,
+    inputFieldNames,
+    dataUtilsImports,
+  });
 
   if (passthrough) {
     return {

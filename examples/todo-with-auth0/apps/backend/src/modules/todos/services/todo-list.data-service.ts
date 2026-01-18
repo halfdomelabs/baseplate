@@ -28,6 +28,7 @@ export const todoListInputFields = {
 export const createTodoList = defineCreateOperation({
   model: 'todoList',
   fields: todoListInputFields,
+  getWhereUnique: (result) => ({ id: result.id }),
   create: async ({ tx, data: { ownerId, ...data }, query }) => {
     const item = await tx.todoList.create({
       data: { ...data, owner: relationHelpers.connectCreate({ id: ownerId }) },

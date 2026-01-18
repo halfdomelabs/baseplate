@@ -10,6 +10,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { authErrorsImportsProvider } from '#src/generators/auth/auth-errors/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
+import { reactErrorBoundaryImportsProvider } from '#src/generators/core/react-error-boundary/generated/ts-import-providers.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 import { ADMIN_ADMIN_LAYOUT_PATHS } from './template-paths.js';
 import { ADMIN_ADMIN_LAYOUT_TEMPLATES } from './typed-templates.js';
@@ -47,6 +49,8 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
     authHooksImports: authHooksImportsProvider,
     paths: ADMIN_ADMIN_LAYOUT_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorBoundaryImports: reactErrorBoundaryImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { adminAdminLayoutRenderers: adminAdminLayoutRenderers.export() },
@@ -55,6 +59,8 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
     authHooksImports,
     paths,
     reactComponentsImports,
+    reactErrorBoundaryImports,
+    reactErrorImports,
     typescriptFile,
   }) {
     return {
@@ -81,6 +87,8 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authHooksImports,
                   reactComponentsImports,
+                  reactErrorBoundaryImports,
+                  reactErrorImports,
                 },
                 generatorPaths: paths,
                 ...options,

@@ -1,14 +1,13 @@
 import type {
   AdminCrudActionCompiler,
   AdminCrudColumnCompiler,
-  AuthConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
   adminCrudActionCompilerSpec,
   adminCrudColumnCompilerSpec,
   authConfigSpec,
-  createPlatformPluginExport,
+  createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
 import type { AdminCrudManageRolesActionDefinition } from './schema/manage-role-action.js';
@@ -32,21 +31,17 @@ function buildRolesColumnCompiler(): AdminCrudColumnCompiler<AdminCrudRolesColum
   };
 }
 
-function buildManageRolesActionCompiler(
-  authConfig: AuthConfigSpec,
-): AdminCrudActionCompiler<AdminCrudManageRolesActionDefinition> {
+function buildManageRolesActionCompiler(): AdminCrudActionCompiler<AdminCrudManageRolesActionDefinition> {
   return {
     name: 'manage-roles',
-    compileAction(definition, { order, model, definitionContainer }) {
-      const userModelName = definitionContainer.nameFromId(model.id);
-
+    compileAction(definition, { order, definitionContainer }) {
+      const authConfig = definitionContainer.pluginStore.use(authConfigSpec);
       return adminCrudManageRolesActionGenerator({
         order,
         position: definition.position,
-        userModelName,
         availableRoles: authConfig
-          .getAuthRoles(definitionContainer.definition)
-          .filter((r) => !r.builtIn),
+          .getAuthConfigOrThrow(definitionContainer.definition)
+          .roles.filter((r) => !r.builtIn),
       });
     },
   };
@@ -55,37 +50,26 @@ function buildManageRolesActionCompiler(
 function buildResetPasswordActionCompiler(): AdminCrudActionCompiler<AdminCrudResetPasswordActionDefinition> {
   return {
     name: 'reset-password',
-    compileAction(definition, { order, model, definitionContainer }) {
-      const userModelName = definitionContainer.nameFromId(model.id);
-
+    compileAction(definition, { order }) {
       return adminCrudResetPasswordActionGenerator({
         order,
         position: definition.position,
-        userModelName,
       });
     },
   };
 }
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'node',
   dependencies: {
     adminCrudActionCompiler: adminCrudActionCompilerSpec,
     adminCrudColumnCompiler: adminCrudColumnCompilerSpec,
-    authConfig: authConfigSpec,
   },
-  exports: {},
-  initialize: ({
-    adminCrudActionCompiler,
-    authConfig,
-    adminCrudColumnCompiler,
-  }) => {
-    adminCrudActionCompiler.registerCompiler(
-      buildManageRolesActionCompiler(authConfig),
-    );
-    adminCrudActionCompiler.registerCompiler(
+  initialize: ({ adminCrudActionCompiler, adminCrudColumnCompiler }) => {
+    adminCrudActionCompiler.actions.addMany([
+      buildManageRolesActionCompiler(),
       buildResetPasswordActionCompiler(),
-    );
-    adminCrudColumnCompiler.registerCompiler(buildRolesColumnCompiler());
-    return {};
+    ]);
+    adminCrudColumnCompiler.columns.add(buildRolesColumnCompiler());
   },
 });

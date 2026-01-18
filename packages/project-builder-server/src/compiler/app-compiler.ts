@@ -3,7 +3,11 @@ import type {
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
-import { buildPackageName, PackageCompiler } from './package-compiler.js';
+import {
+  buildPackageName,
+  getPackageDirectory,
+  PackageCompiler,
+} from '@baseplate-dev/project-builder-lib';
 
 export abstract class AppCompiler<
   TAppConfig extends BaseAppConfig,
@@ -27,7 +31,6 @@ export abstract class AppCompiler<
   getPackageDirectory(): string {
     const monorepoSettings =
       this.definitionContainer.definition.settings.monorepo;
-    const appsFolder = monorepoSettings?.appsFolder ?? 'apps';
-    return `${appsFolder}/${this.appConfig.name}`;
+    return getPackageDirectory(monorepoSettings, this.appConfig.name, 'app');
   }
 }

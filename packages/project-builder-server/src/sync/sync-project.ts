@@ -63,6 +63,10 @@ export interface SyncProjectOptions {
    * Directory containing snapshot to use when generating.
    */
   snapshotDirectory?: string;
+  /**
+   * Only sync specific packages by name.
+   */
+  packageFilter?: string[];
 }
 
 /**
@@ -95,6 +99,7 @@ export async function syncProject({
   cliFilePath,
   overwrite,
   snapshotDirectory,
+  packageFilter,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -115,6 +120,23 @@ export async function syncProject({
     );
     const apps = compilePackages(projectJson, context);
 
+    // Filter apps if specified
+    const filteredApps = packageFilter?.length
+      ? apps.filter((app) => packageFilter.includes(app.name))
+      : apps;
+
+    if (packageFilter?.length) {
+      if (filteredApps.length === 0) {
+        throw new Error(
+          `No packages found to sync: ${packageFilter.join(', ')} (available packages: ${apps.map((app) => app.name).join(', ')})`,
+        );
+      } else {
+        logger.info(
+          `Syncing packages: ${filteredApps.map((app) => app.name).join(', ')}`,
+        );
+      }
+    }
+
     await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
       status: 'in-progress',
@@ -125,7 +147,7 @@ export async function syncProject({
           ? cliFilePath
           : undefined,
       packages: Object.fromEntries(
-        apps.map((app, index) => [
+        filteredApps.map((app, index) => [
           app.id,
           {
             name: app.name,
@@ -147,7 +169,7 @@ export async function syncProject({
     let hasErrors = false;
     let wasCancelled = false;
 
-    for (const app of apps) {
+    for (const app of filteredApps) {
       let newResult: PackageSyncResult;
       try {
         if (abortSignal?.aborted) {
@@ -224,7 +246,7 @@ export async function syncProject({
     const metadata = await syncMetadataController?.getMetadata();
 
     const packageSyncResults = Object.fromEntries(
-      apps.map((app) => [app.id, metadata?.packages[app.id].result]),
+      filteredApps.map((app) => [app.id, metadata?.packages[app.id].result]),
     );
 
     if (wasCancelled) {

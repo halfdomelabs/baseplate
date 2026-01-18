@@ -1,3 +1,10 @@
 import { createNodeVitestConfig } from '@baseplate-dev/tools/vitest-node';
+import { mergeConfig } from 'vitest/config';
 
-export default createNodeVitestConfig(import.meta.dirname);
+const baseConfig = createNodeVitestConfig(import.meta.dirname);
+
+export default mergeConfig(baseConfig, {
+  test: {
+    setupFiles: ['./src/test-helpers/setup.ts'],
+  },
+});

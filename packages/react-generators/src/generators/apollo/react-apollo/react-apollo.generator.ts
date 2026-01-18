@@ -23,8 +23,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
-  POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
 import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -41,6 +39,7 @@ import { reactProxyProvider } from '#src/generators/core/react-proxy/index.js';
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
 import { APOLLO_REACT_APOLLO_GENERATED } from './generated/index.js';
+import { GRAPHQL_ESLINT_RULES } from './graphql-eslint-rules.js';
 
 const descriptorSchema = z.object({
   /**
@@ -155,18 +154,6 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
 
 export { reactApolloConfigProvider };
 
-export interface ReactApolloProvider {
-  /**
-   * Get the path to the generated graphql file
-   *
-   * @returns The path to the generated graphql file
-   */
-  getGeneratedFilePath(): string;
-}
-
-export const reactApolloProvider =
-  createProviderType<ReactApolloProvider>('react-apollo');
-
 export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
@@ -180,29 +167,20 @@ export const reactApolloGenerator = createGenerator({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@apollo/client',
         'graphql',
-      ]),
-      dev: extractPackageVersions(REACT_PACKAGES, [
-        '@graphql-codegen/cli',
-        '@graphql-codegen/typescript',
-        '@graphql-codegen/typescript-operations',
-        '@graphql-codegen/typed-document-node',
-        '@graphql-typed-document-node/core',
-        '@parcel/watcher',
+        'gql.tada',
       ]),
     }),
-    codegen: createNodeTask((node) => {
-      node.scripts.mergeObj(
-        {
-          generate: 'graphql-codegen',
-          'watch:gql': 'graphql-codegen --watch',
-        },
-        'graphql-codegen',
+    nodeScripts: createNodeTask((node) => {
+      node.scripts.set('gql:check', 'gql-tada check -c tsconfig.app.json');
+      node.scripts.set(
+        'gql:generate',
+        'gql-tada generate-output -c tsconfig.app.json',
       );
     }),
     reactTypescript: createProviderTask(
       reactTypescriptProvider,
       (reactTypescript) => {
-        reactTypescript.addNodeTsFile('codegen.ts');
+        reactTypescript.addNodeTsFile('graphql.config.ts');
       },
     ),
     websocketPackages: enableSubscriptions
@@ -211,10 +189,28 @@ export const reactApolloGenerator = createGenerator({
         })
       : undefined,
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
-      eslintConfig.eslintIgnore.push('src/generated/graphql.tsx');
+      eslintConfig.eslintIgnore.push('src/graphql-env.d.ts');
+      eslintConfig.extraConfigs.set('graphql', GRAPHQL_ESLINT_RULES);
     }),
+    eslintPackages: createNodePackagesTask({
+      dev: extractPackageVersions(REACT_PACKAGES, [
+        '@graphql-eslint/eslint-plugin',
+      ]),
+    }),
+    typescriptPlugin: createProviderTask(
+      reactTypescriptProvider,
+      (reactTypescript) => {
+        reactTypescript.addCompilerPlugin({
+          name: 'gql.tada/ts-plugin',
+          schema: schemaLocation,
+          tadaOutputLocation: './src/graphql-env.d.ts',
+          trackFieldUsage: false,
+          shouldCheckForColocatedFragments: false,
+        });
+      },
+    ),
     prettier: createProviderTask(prettierProvider, (prettier) => {
-      prettier.addPrettierIgnore('src/generated/graphql.tsx');
+      prettier.addPrettierIgnore('src/graphql-env.d.ts');
     }),
     reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
       if (enableSubscriptions) {
@@ -270,11 +266,31 @@ export const reactApolloGenerator = createGenerator({
           },
         });
 
+        reactRouterConfig.rootContextFields.add({
+          name: 'preloadQuery',
+          type: tsTemplateWithImports([
+            tsTypeImportBuilder(['PreloadQueryFunction']).from(
+              '@apollo/client/react',
+            ),
+          ])`PreloadQueryFunction`,
+          optional: false,
+          routerProviderInitializer: {
+            code: tsTemplate`preloadQuery`,
+            dependencies: ['preloadQuery'],
+          },
+        });
+
         reactRouterConfig.routerSetupFragments.set(
           'apollo-client',
           tsTemplateWithImports([
-            tsImportBuilder(['useApolloClient']).from('@apollo/client/react'),
-          ])`const apolloClient = useApolloClient();`,
+            tsImportBuilder(['createQueryPreloader', 'useApolloClient']).from(
+              '@apollo/client/react',
+            ),
+          ])`const apolloClient = useApolloClient();
+const preloadQuery = useMemo(
+  () => createQueryPreloader(apolloClient),
+  [apolloClient],
+);`,
         );
       },
     }),
@@ -282,11 +298,7 @@ export const reactApolloGenerator = createGenerator({
       dependencies: {
         reactConfigImports: reactConfigImportsProvider,
         reactApolloConfigValues: reactApolloConfigValuesProvider,
-        paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
         renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.provider,
-      },
-      exports: {
-        reactApollo: reactApolloProvider.export(packageScope),
       },
       run({
         reactConfigImports,
@@ -295,17 +307,9 @@ export const reactApolloGenerator = createGenerator({
           apolloLinks,
           websocketOptions,
         },
-        paths,
         renderers,
       }) {
         return {
-          providers: {
-            reactApollo: {
-              getGeneratedFilePath() {
-                return paths.graphql;
-              },
-            },
-          },
           build: async (builder) => {
             const findLink = (name: string): ApolloLink => {
               const link = apolloLinks.find((link) => link.name === name);
@@ -459,95 +463,70 @@ export const reactApolloGenerator = createGenerator({
                 tsCodeFragment(apolloLink.name, apolloLink.nameImport),
               );
 
-            // services/apollo/index.ts
             await builder.apply(
-              renderers.service.render({
+              renderers.mainGroup.render({
                 variables: {
-                  TPL_CREATE_ARGS:
-                    createApolloClientArguments.length === 0
-                      ? ''
-                      : tsCodeFragment(
-                          `{${createArgNames}}: CreateApolloClientOptions`,
-                          undefined,
-                          {
-                            hoistedFragments: [
-                              tsHoistedFragment(
-                                'create-apollo-client-options',
-                                tsTemplate`
-                              interface CreateApolloClientOptions {
-                                ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
-                                  Object.fromEntries(
-                                    createApolloClientArguments.map((arg) => [
-                                      arg.name,
-                                      arg.type,
-                                    ]),
-                                  ),
-                                )}
-                              }
-                              `,
-                              ),
-                            ],
-                          },
-                        ),
-                  TPL_LINK_BODIES: TsCodeUtils.mergeFragmentsPresorted(
-                    sortedLinks
-                      .map((link) => link.bodyFragment)
-                      .filter(notEmpty),
-                    '\n\n',
-                  ),
-                  TPL_LINKS:
-                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      apolloLinkFragments,
+                  appApolloProvider: {
+                    TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
+                      createApolloClientArguments.map(
+                        (arg) => arg.reactRenderBody,
+                      ),
+                      '\n\n',
                     ),
-                },
-              }),
-            );
-
-            // services/apollo/cache.ts
-            await builder.apply(renderers.cache.render({}));
-
-            // codegen.ts
-            await builder.apply(
-              renderers.codegenConfig.render({
-                variables: {
-                  TPL_BACKEND_SCHEMA: quot(schemaLocation),
-                },
-              }),
-            );
-
-            // app/AppApolloProvider.tsx
-            await builder.apply(
-              renderers.appApolloProvider.render({
-                variables: {
-                  TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
-                    createApolloClientArguments.map(
-                      (arg) => arg.reactRenderBody,
+                    TPL_CREATE_ARGS:
+                      createApolloClientArguments.length > 0
+                        ? `{ ${createApolloClientArguments
+                            .map((arg) => arg.name)
+                            .join(', ')} }`
+                        : '',
+                    TPL_MEMO_DEPENDENCIES: createApolloClientArguments
+                      .map((arg) => arg.name)
+                      .join(', '),
+                  },
+                  graphqlConfig: {
+                    TPL_BACKEND_SCHEMA_PATH: quot(schemaLocation),
+                  },
+                  service: {
+                    TPL_CREATE_ARGS:
+                      createApolloClientArguments.length === 0
+                        ? ''
+                        : tsCodeFragment(
+                            `{${createArgNames}}: CreateApolloClientOptions`,
+                            undefined,
+                            {
+                              hoistedFragments: [
+                                tsHoistedFragment(
+                                  'create-apollo-client-options',
+                                  tsTemplate`
+                                interface CreateApolloClientOptions {
+                                  ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                                    Object.fromEntries(
+                                      createApolloClientArguments.map((arg) => [
+                                        arg.name,
+                                        arg.type,
+                                      ]),
+                                    ),
+                                  )}
+                                }
+                                `,
+                                ),
+                              ],
+                            },
+                          ),
+                    TPL_LINK_BODIES: TsCodeUtils.mergeFragmentsPresorted(
+                      sortedLinks
+                        .map((link) => link.bodyFragment)
+                        .filter(notEmpty),
+                      '\n\n',
                     ),
-                    '\n\n',
-                  ),
-                  TPL_CREATE_ARGS:
-                    createApolloClientArguments.length > 0
-                      ? `{ ${createApolloClientArguments
-                          .map((arg) => arg.name)
-                          .join(', ')} }`
-                      : '',
-                  TPL_MEMO_DEPENDENCIES: createApolloClientArguments
-                    .map((arg) => arg.name)
-                    .join(', '),
+                    TPL_LINKS:
+                      TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                        apolloLinkFragments,
+                      ),
+                  },
                 },
               }),
             );
-
-            // write a pseudo-file so that the template extractor can infer metadata for the
-            // generated graphql file
-
-            // generated/graphql.tsx
-            await builder.apply(renderers.graphql.render({}));
-
-            builder.addPostWriteCommand('pnpm generate', {
-              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
-              onlyIfChanged: ['codegen.ts', 'src/**/*.gql'],
-            });
           },
         };
       },

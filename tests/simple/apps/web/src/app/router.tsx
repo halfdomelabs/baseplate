@@ -1,6 +1,6 @@
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
-import { useApolloClient } from '@apollo/client/react';
+import { createQueryPreloader, useApolloClient } from '@apollo/client/react';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef } from 'react';
 
@@ -31,6 +31,8 @@ export const router = createRouter({
   context: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- context instantiated in the RouteProvider
     apolloClient: undefined!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- context instantiated in the RouteProvider
+    preloadQuery: undefined!,
   },
 });
 
@@ -43,8 +45,15 @@ declare module '@tanstack/react-router' {
 
 export function AppRoutes(): React.ReactElement {
   const apolloClient = useApolloClient();
+  const preloadQuery = useMemo(
+    () => createQueryPreloader(apolloClient),
+    [apolloClient],
+  );
 
-  const routerContext = useMemo(() => ({ apolloClient }), [apolloClient]);
+  const routerContext = useMemo(
+    () => ({ apolloClient, preloadQuery }),
+    [apolloClient, preloadQuery],
+  );
 
   // Ensure we always have the latest context in the router
   const previousContext = useRef<typeof routerContext>(undefined);

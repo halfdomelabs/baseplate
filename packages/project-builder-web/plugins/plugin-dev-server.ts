@@ -53,7 +53,7 @@ export function pluginDevServerPlugin(): Plugin {
         fs.readFileSync(path.join(pluginLocation, 'package.json'), 'utf8'),
       ) as { name: string };
       return {
-        id: packageJson.name.replace('@', '').replace(/\//g, '_'),
+        id: packageJson.name.replace('@', '').replaceAll('/', '_'),
         location: pluginLocation,
       };
     });

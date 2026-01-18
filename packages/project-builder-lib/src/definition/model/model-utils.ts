@@ -104,6 +104,11 @@ function getModelIdByNameOrDefault(
   return projectDefinition.models.find((m) => m.name === name)?.id ?? name;
 }
 
+function getPrimaryKeyFields(model: ModelConfig): ModelScalarFieldConfig[] {
+  const primaryKeyFields = model.model.primaryKeyFieldRefs;
+  return primaryKeyFields.map((id) => getScalarFieldById(model, id));
+}
+
 export const ModelUtils = {
   byId,
   byIdOrThrow,
@@ -116,4 +121,5 @@ export const ModelUtils = {
   hasService,
   validateModelName,
   getModelIdByNameOrDefault,
+  getPrimaryKeyFields,
 };

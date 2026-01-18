@@ -57,16 +57,16 @@ function Index(): React.JSX.Element {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Apps & Repositories</CardTitle>
+              <CardTitle>Packages</CardTitle>
               <CardDescription>
-                Each app represents a separate application that can be run, e.g.
-                backend, frontend, mobile app, etc. You can also configure how
-                the apps are organized into repositories, e.g. monorepos.
+                Each package represents an app or library in your project. Apps
+                are runnable applications (backend, frontend, etc.) while
+                libraries are shared code packages.
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Link className="inline-block" to="/apps">
-                <Button>Configure Apps</Button>
+              <Link className="inline-block" to="/packages">
+                <Button>Configure Packages</Button>
               </Link>
             </CardFooter>
           </Card>

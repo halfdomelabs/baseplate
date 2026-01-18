@@ -1,19 +1,21 @@
-import type { BackendAppConfig } from '@baseplate-dev/project-builder-lib';
+import type {
+  BackendAppConfig,
+  PackageTasks,
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   composeNodeGenerator,
   vitestGenerator,
 } from '@baseplate-dev/core-generators';
-import { backendAppEntryType } from '@baseplate-dev/project-builder-lib';
+import {
+  backendAppEntryType,
+  buildPackageName,
+} from '@baseplate-dev/project-builder-lib';
 
-import type { PackageTasks } from '../package-compiler.js';
 import type { PackageEntry } from '../package-entry.js';
 
 import { AppCompiler } from '../app-compiler.js';
-import {
-  buildPackageName,
-  createAppEntryBuilderForPackage,
-} from '../package-compiler.js';
+import { createAppEntryBuilderForPackage } from '../package-compiler.js';
 import { buildFastify } from './fastify.js';
 
 /**

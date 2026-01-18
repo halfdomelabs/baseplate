@@ -263,6 +263,32 @@ export class TemplateExtractorConfigLookup {
   }
 
   /**
+   * Remove a template from the in-memory config for a generator
+   * @param generatorName - The name of the generator
+   * @param templateName - The name of the template to remove
+   * @returns true if the template was removed, false if it didn't exist
+   */
+  removeExtractorTemplate(
+    generatorName: string,
+    templateName: string,
+  ): boolean {
+    this.checkInitialized();
+
+    const entry = this.extractorConfigCache.get(generatorName);
+    if (!entry) {
+      return false;
+    }
+
+    if (!(templateName in entry.config.templates)) {
+      return false;
+    }
+
+    const { [templateName]: _, ...remainingTemplates } = entry.config.templates;
+    entry.config.templates = remainingTemplates;
+    return true;
+  }
+
+  /**
    * Get plugin configuration for a specific generator
    * @param generatorName - The name of the generator
    * @param pluginName - The name of the plugin

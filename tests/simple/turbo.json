@@ -6,14 +6,24 @@
       "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
       "persistent": false
     },
-    "dev": { "cache": false, "persistent": true },
-    "lint": { "dependsOn": ["^build"] },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
     "prettier:check": {},
     "prettier:check:root": {},
-    "prettier:write": { "cache": false },
-    "prettier:write:root": { "cache": false },
-    "test": { "dependsOn": ["^build"] },
-    "typecheck": {},
-    "watch:gql": { "cache": false, "persistent": true }
+    "prettier:write": {
+      "cache": false
+    },
+    "prettier:write:root": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "typecheck": {}
   }
 }

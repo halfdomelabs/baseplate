@@ -1,10 +1,11 @@
+import type { PluginStore } from '#src/plugins/index.js';
 import type {
   ProjectDefinition,
   ProjectDefinitionInput,
 } from '#src/schema/project-definition.js';
 
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
-import { createPluginImplementationStore } from '#src/parser/parser.js';
+import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
@@ -24,6 +25,7 @@ export function createTestProjectDefinition(
     features: [],
     cliVersion: '1.0.0',
     apps: [],
+    libraries: [],
     models: [],
     isInitialized: true,
     schemaVersion: getLatestMigrationVersion(),
@@ -43,17 +45,17 @@ export function createTestProjectDefinitionInput(
 export function createTestProjectDefinitionContainer(
   input: Partial<ProjectDefinitionInput> = {},
 ): ProjectDefinitionContainer {
-  const pluginStore = {
+  const pluginStore: PluginStore = {
     availablePlugins: [],
+    coreModules: [],
   };
-  const pluginImplementationStore = createPluginImplementationStore(
-    pluginStore,
-    { plugins: [] },
-  );
+  const pluginSpecStore = createPluginSpecStore(pluginStore, {
+    plugins: [],
+  });
   const resolvedRefPayload = deserializeSchemaWithTransformedReferences(
     createProjectDefinitionSchema,
     createTestProjectDefinitionInput(input),
-    { plugins: pluginImplementationStore },
+    { plugins: pluginSpecStore },
   );
   return new ProjectDefinitionContainer(
     resolvedRefPayload,
@@ -67,6 +69,6 @@ export function createTestProjectDefinitionContainer(
         isInternalExample: false,
       },
     },
-    pluginImplementationStore,
+    pluginSpecStore,
   );
 }

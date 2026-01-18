@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 
+import { readFragment } from '%graphqlImports';
 import {
   Alert,
   AlertTitle,
@@ -11,9 +12,10 @@ import {
   TableRow,
 } from '%reactComponentsImports';
 
+TPL_ITEMS_FRAGMENT;
+
 interface Props {
-  items: TPL_ROW_FRAGMENT[];
-  TPL_EXTRA_PROPS;
+  TPL_PROPS;
 }
 
 export function TPL_COMPONENT_NAME(
@@ -21,7 +23,10 @@ export function TPL_COMPONENT_NAME(
 ): ReactElement {
   TPL_ACTION_HOOKS;
 
-  if (items.length === 0) {
+  // Unmask the fragment data for rendering
+  const itemsData = readFragment(TPL_ITEMS_FRAGMENT_NAME, items);
+
+  if (itemsData.length === 0) {
     return (
       <Alert variant="default">
         <AlertTitle>
@@ -40,7 +45,7 @@ export function TPL_COMPONENT_NAME(
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
+          {itemsData.map((item) => (
             <TableRow key={item.id}>
               <TPL_CELLS />
             </TableRow>

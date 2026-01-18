@@ -2,11 +2,9 @@ import type { ReactElement } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import type { TodoListUserOptionFragment } from '@src/generated/graphql';
+import type { FragmentOf } from '@src/graphql';
 
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
@@ -15,11 +13,33 @@ import { DateTimePickerFieldController } from '@src/components/ui/date-time-pick
 import { FileInputFieldController } from '@src/components/ui/file-input-field';
 import { InputFieldController } from '@src/components/ui/input-field';
 import { SelectFieldController } from '@src/components/ui/select-field';
-import { logAndFormatError } from '@src/services/error-formatter';
+import { graphql, readFragment } from '@src/graphql';
 
 import type { TodoListFormData } from '../-schemas/todo-list-schema';
 
 import { todoListEditFormSchema } from '../-schemas/todo-list-schema';
+
+/* HOISTED:foreign-input-fragment-ownerOptions:START */
+export const todoListEditFormOwnerOptionsFragment = graphql(`
+  fragment TodoListEditForm_ownerOptions on User {
+    id
+    name
+  }
+`);
+/* HOISTED:foreign-input-fragment-ownerOptions:END */
+
+/* HOISTED:foreign-input-query-ownerOptions:START */
+export const todoListEditFormOwnerOptionsQuery = graphql(
+  `
+    query TodoListEditFormOwnerOptions {
+      users {
+        ...TodoListEditForm_ownerOptions
+      }
+    }
+  `,
+  [todoListEditFormOwnerOptionsFragment],
+);
+/* HOISTED:foreign-input-query-ownerOptions:END */
 
 /* HOISTED:statusOptions:START */
 const statusOptions = [
@@ -28,48 +48,66 @@ const statusOptions = [
 ];
 /* HOISTED:statusOptions:END */
 
+/* TPL_COMPONENT_NAME=TodoListEditForm */
+/* TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE=todoListEditFormDefaultValuesFragment */
 /* TPL_FORM_DATA_NAME=TodoListFormData */
 /* TPL_LIST_ROUTE=/admin/todos/todo-list */
 
+/* TPL_EDIT_FRAGMENT:START */
+export const todoListEditFormDefaultValuesFragment = graphql(`
+  fragment TodoListEditForm_defaultValues on TodoList {
+    createdAt
+    id
+    name
+    ownerId
+    position
+    status
+    coverPhoto {
+      id
+    }
+  }
+`);
+/* TPL_EDIT_FRAGMENT:END */
+
 interface Props {
   className?: string;
-  initialData?: TodoListFormData;
   submitData: (data: TodoListFormData) => Promise<void>;
-  /* TPL_EXTRA_PROPS:START */
-  todoListUserOptions: TodoListUserOptionFragment[];
-  /* TPL_EXTRA_PROPS:END */
+  /* TPL_PROPS:START */
+  defaultValues:
+    | FragmentOf<typeof todoListEditFormDefaultValuesFragment>
+    | undefined;
+  ownerOptions: FragmentOf<typeof todoListEditFormOwnerOptionsFragment>[];
+  /* TPL_PROPS:END */
 }
 
-export function /* TPL_COMPONENT_NAME:START */ TodoListEditForm /* TPL_COMPONENT_NAME:END */(
+export function TodoListEditForm(
   /* TPL_DESTRUCTURED_PROPS:START */ {
     className,
-    initialData,
     submitData,
-    todoListUserOptions,
+    defaultValues,
+    ownerOptions,
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
-  const { handleSubmit, control } = useForm({
+  const initialValuesData = readFragment(
+    todoListEditFormDefaultValuesFragment,
+    defaultValues,
+  );
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = useForm<TodoListFormData>({
     resolver: zodResolver(
       /* TPL_EDIT_SCHEMA:START */ todoListEditFormSchema /* TPL_EDIT_SCHEMA:END */,
     ),
-    defaultValues: initialData,
+    defaultValues: initialValuesData,
   });
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const onSubmit = async (data: TodoListFormData): Promise<void> => {
-    try {
-      setIsUpdating(true);
-      await submitData(data);
-    } catch (err) {
-      toast.error(logAndFormatError(err));
-    } finally {
-      setIsUpdating(false);
-    }
-  };
 
   /* TPL_HEADER:START */
-
-  const ownerOptions = todoListUserOptions.map((option) => ({
+  const ownerOptionsData = readFragment(
+    todoListEditFormOwnerOptionsFragment,
+    ownerOptions,
+  ).map((option) => ({
     label: option.name ?? option.id,
     value: option.id,
   }));
@@ -77,7 +115,10 @@ export function /* TPL_COMPONENT_NAME:START */ TodoListEditForm /* TPL_COMPONENT
 
   return (
     <div className={className}>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
+      <form
+        onSubmit={handleSubmit((data) => submitData(data))}
+        className="max-w-md space-y-4"
+      >
         <Card>
           <CardContent className="flex flex-col gap-4">
             {/* TPL_INPUTS:START */}
@@ -90,7 +131,7 @@ export function /* TPL_COMPONENT_NAME:START */ TodoListEditForm /* TPL_COMPONENT
               label="Owner"
               control={control}
               name="ownerId"
-              options={ownerOptions}
+              options={ownerOptionsData}
             />
             <SelectFieldController
               label="Status"
@@ -118,11 +159,11 @@ export function /* TPL_COMPONENT_NAME:START */ TodoListEditForm /* TPL_COMPONENT
             {/* TPL_INPUTS:END */}
           </CardContent>
           <CardFooter className="flex gap-4">
-            <Button type="submit" disabled={isUpdating}>
+            <Button type="submit" disabled={isSubmitting}>
               Save
             </Button>
             <Link to="/admin/todos/todo-list">
-              <Button type="button" variant="secondary">
+              <Button type="button" variant="secondary" disabled={isSubmitting}>
                 Cancel
               </Button>
             </Link>

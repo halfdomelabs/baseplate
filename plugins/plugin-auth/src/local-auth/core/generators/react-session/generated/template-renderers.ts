@@ -1,16 +1,10 @@
-import type {
-  RenderTextTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import {
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   authHooksImportsProvider,
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
   reactUtilsImportsProvider,
@@ -33,16 +27,6 @@ export interface LocalAuthCoreReactSessionRenderers {
       >,
     ) => BuilderAction;
   };
-  userSessionProviderGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionProviderGql
-        >,
-        'destination' | 'template'
-      >,
-    ) => BuilderAction;
-  };
 }
 
 const localAuthCoreReactSessionRenderers =
@@ -53,7 +37,7 @@ const localAuthCoreReactSessionRenderers =
 const localAuthCoreReactSessionRenderersTask = createGeneratorTask({
   dependencies: {
     authHooksImports: authHooksImportsProvider,
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     localAuthHooksImports: localAuthHooksImportsProvider,
     paths: LOCAL_AUTH_CORE_REACT_SESSION_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
@@ -67,7 +51,7 @@ const localAuthCoreReactSessionRenderersTask = createGeneratorTask({
   },
   run({
     authHooksImports,
-    generatedGraphqlImports,
+    graphqlImports,
     localAuthHooksImports,
     paths,
     reactComponentsImports,
@@ -85,22 +69,13 @@ const localAuthCoreReactSessionRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   authHooksImports,
-                  generatedGraphqlImports,
+                  graphqlImports,
                   localAuthHooksImports,
                   reactComponentsImports,
                   reactErrorImports,
                   reactUtilsImports,
                 },
                 generatorPaths: paths,
-                ...options,
-              }),
-          },
-          userSessionProviderGql: {
-            render: (options) =>
-              renderTextTemplateFileAction({
-                template:
-                  LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionProviderGql,
-                destination: paths.userSessionProviderGql,
                 ...options,
               }),
           },

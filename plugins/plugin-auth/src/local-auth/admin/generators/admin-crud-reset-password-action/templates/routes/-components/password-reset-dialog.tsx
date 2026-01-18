@@ -1,12 +1,9 @@
 // @ts-nocheck
 
-import type { UserRowFragment } from '%generatedGraphqlImports';
+import type { FragmentOf } from '%graphqlImports';
 import type { ReactElement } from 'react';
 
-import {
-  GetUsersDocument,
-  ResetUserPasswordDocument,
-} from '%generatedGraphqlImports';
+import { graphql, readFragment } from '%graphqlImports';
 import {
   Button,
   Dialog,
@@ -44,8 +41,29 @@ const passwordResetSchema = z
 
 type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
+export const passwordResetDialogUserFragment = graphql(`
+  fragment PasswordResetDialog_user on User {
+    id
+    name
+    email
+  }
+`);
+
+const resetUserPasswordMutation = graphql(
+  `
+    mutation ResetUserPassword($input: ResetUserPasswordInput!) {
+      resetUserPassword(input: $input) {
+        user {
+          ...PasswordResetDialog_user
+        }
+      }
+    }
+  `,
+  [passwordResetDialogUserFragment],
+);
+
 interface PasswordResetDialogProps {
-  user: UserRowFragment;
+  user: FragmentOf<typeof passwordResetDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -68,9 +86,10 @@ export function PasswordResetDialog({
 }: PasswordResetDialogProps): ReactElement {
   const [isSaving, setIsSaving] = useState(false);
 
-  const [resetUserPassword] = useMutation(ResetUserPasswordDocument, {
-    refetchQueries: [{ query: GetUsersDocument }],
-  });
+  // Unmask the fragment data
+  const userData = readFragment(passwordResetDialogUserFragment, user);
+
+  const [resetUserPassword] = useMutation(resetUserPasswordMutation);
 
   const form = useForm<PasswordResetFormData>({
     resolver: zodResolver(passwordResetSchema),
@@ -86,7 +105,7 @@ export function PasswordResetDialog({
       await resetUserPassword({
         variables: {
           input: {
-            userId: user.id,
+            userId: userData.id,
             newPassword: data.newPassword,
           },
         },
@@ -107,7 +126,7 @@ export function PasswordResetDialog({
         <DialogHeader>
           <DialogTitle>Reset Password</DialogTitle>
           <DialogDescription>
-            Set a new password for {user.name ?? user.email}
+            Set a new password for {userData.name ?? userData.email}
           </DialogDescription>
         </DialogHeader>
 

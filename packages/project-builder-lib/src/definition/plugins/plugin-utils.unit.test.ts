@@ -1,15 +1,13 @@
 import { describe, expect, test } from 'vitest';
 
-import type {
-  PluginConfigMigration,
-  PluginConfigSpec,
-} from '#src/plugins/spec/config-spec.js';
+import type { PluginConfigMigration } from '#src/plugins/spec/config-spec.js';
 import type { BasePluginDefinition } from '#src/schema/plugins/definition.js';
 
 import {
   createTestProjectDefinition,
   createTestProjectDefinitionContainer,
 } from '#src/definition/project-definition-container.test-utils.js';
+import { createPluginModule } from '#src/plugins/index.js';
 import {
   createTestMigration,
   createTestPluginMetadata,
@@ -40,19 +38,18 @@ function createTestContainerWithAvailablePlugins(
       metadata,
       modules: [
         {
-          key: 'common',
-          module: {
-            dependencies: { pluginConfigSpec },
-            initialize: (deps: Record<string, unknown>) => {
+          key: `${metadata.key}/common`,
+          pluginKey: metadata.key,
+          directory: 'common',
+          module: createPluginModule({
+            name: 'common',
+            dependencies: { pluginConfig: pluginConfigSpec },
+            initialize: (deps, { pluginKey }) => {
               if (migrations.length > 0) {
-                (deps.pluginConfigSpec as PluginConfigSpec).registerMigrations(
-                  metadata.key,
-                  migrations,
-                );
+                deps.pluginConfig.migrations.set(pluginKey, migrations);
               }
-              return {};
             },
-          },
+          }),
         },
       ],
     }),

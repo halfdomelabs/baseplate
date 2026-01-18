@@ -1,5 +1,70 @@
 # @baseplate-dev/react-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- [#743](https://github.com/halfdomelabs/baseplate/pull/743) [`1debcb8`](https://github.com/halfdomelabs/baseplate/commit/1debcb89807fafdd7415a659f4bebbad0d69f072) Thanks [@kingston](https://github.com/kingston)! - Add gql:check and gql:generate commands to package.json and add typescript to root repo
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.5.1
+  - @baseplate-dev/sync@0.5.1
+  - @baseplate-dev/utils@0.5.1
+
+## 0.5.0
+
+### Minor Changes
+
+- [#730](https://github.com/halfdomelabs/baseplate/pull/730) [`397018b`](https://github.com/halfdomelabs/baseplate/commit/397018b8c30949f75734369b58c67d7afcc424a9) Thanks [@kingston](https://github.com/kingston)! - Migrate GraphQL codegen from graphql-codegen to gql.tada
+  - Replace separate `.gql` files and generated `graphql.tsx` with inline `graphql()` template literals
+  - Add gql.tada TypeScript plugin for automatic type generation via `graphql-env.d.ts`
+  - Add `@graphql-eslint/eslint-plugin` with naming convention rules for operations and fragments
+  - Colocate fragments with their consuming components using `ComponentName_field` naming pattern
+  - Use `readFragment()` and `FragmentOf<>` for proper fragment masking
+  - Extract shared queries to dedicated `queries.ts` files to avoid circular imports
+
+### Patch Changes
+
+- [#735](https://github.com/halfdomelabs/baseplate/pull/735) [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599) Thanks [@kingston](https://github.com/kingston)! - Support ES2023 in Vite tsconfig generators and re-enable replaceAll ESLint rule for React apps
+
+- Updated dependencies [[`fbabdec`](https://github.com/halfdomelabs/baseplate/commit/fbabdecf6715c21799d1c224b3a2162ef1f49797), [`9b31726`](https://github.com/halfdomelabs/baseplate/commit/9b31726ee0dce77dc7b16fa334eb597d86349599), [`97bd14e`](https://github.com/halfdomelabs/baseplate/commit/97bd14e381206b54e55c22264d1d406e83146146), [`c7d373e`](https://github.com/halfdomelabs/baseplate/commit/c7d373ebaaeda2522515fdaeae0d37d0cd9ce7fe), [`2d5abd5`](https://github.com/halfdomelabs/baseplate/commit/2d5abd53fccfc2b15f8142fc796c5e4ea4c2f92a), [`8bfc742`](https://github.com/halfdomelabs/baseplate/commit/8bfc742b8a93393a5539babfd11b97a88ee9c39e)]:
+  - @baseplate-dev/core-generators@0.5.0
+  - @baseplate-dev/sync@0.5.0
+  - @baseplate-dev/utils@0.5.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.4.4
+  - @baseplate-dev/sync@0.4.4
+  - @baseplate-dev/utils@0.4.4
+
+## 0.4.3
+
+### Patch Changes
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Add support for generating vitest on web apps
+
+- [#722](https://github.com/halfdomelabs/baseplate/pull/722) [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed) Thanks [@kingston](https://github.com/kingston)! - Add support for generating files in package.json
+
+- [#717](https://github.com/halfdomelabs/baseplate/pull/717) [`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d) Thanks [@kingston](https://github.com/kingston)! - Upgrade Apollo Client to v4
+  - @apollo/client: 3.13.8 → 4.0.11
+  - Add rxjs 7.8.2 as peer dependency (required by Apollo Client v4)
+
+  Breaking changes in generated code:
+  - React hooks (useQuery, useMutation, useApolloClient, etc.) now import from `@apollo/client/react` instead of `@apollo/client`
+  - ApolloProvider now imports from `@apollo/client/react`
+  - Error handling uses new `CombinedGraphQLErrors` and `ServerError` classes from `@apollo/client/errors`
+  - `ErrorLink` class replaces deprecated `onError` function
+  - `ApolloClient` is no longer generic (use `ApolloClient` instead of `ApolloClient<NormalizedCacheObject>`)
+
+- Updated dependencies [[`83e4e7f`](https://github.com/halfdomelabs/baseplate/commit/83e4e7f60adf67480cebb4ff419c015ff282010d), [`8622c4e`](https://github.com/halfdomelabs/baseplate/commit/8622c4e2b91788ad4a368c9f06f82a17ee1a29ed)]:
+  - @baseplate-dev/core-generators@0.4.3
+  - @baseplate-dev/sync@0.4.3
+  - @baseplate-dev/utils@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes

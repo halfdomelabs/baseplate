@@ -20,6 +20,7 @@ import { initializeTemplateExtractorPlugins } from './runner/initialize-template
 import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
+import { cleanupOrphanedTemplates } from './utils/cleanup-orphaned-templates.js';
 import { cleanupUnusedTemplateFiles } from './utils/cleanup-unused-template-files.js';
 import { mergeExtractorTemplateEntries } from './utils/merge-extractor-template-entries.js';
 import { writeExtractorTemplateJsons } from './utils/write-extractor-template-jsons.js';
@@ -59,13 +60,24 @@ export async function runTemplateFileExtractors(
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const ignorePatterns = await loadIgnorePatterns(outputDirectory);
-  const templateMetadataFiles = await readTemplateInfoFiles(
-    outputDirectory,
-    ignorePatterns,
-  );
+  const { entries: templateMetadataFiles, orphanedEntries } =
+    await readTemplateInfoFiles(outputDirectory, ignorePatterns);
 
   const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();
+
+  // Clean up orphaned templates (file deleted but metadata remains)
+  let orphanedGenerators: string[] = [];
+  if (orphanedEntries.length > 0) {
+    logger.info(
+      `Cleaning up ${orphanedEntries.length} orphaned template(s)...`,
+    );
+    orphanedGenerators = await cleanupOrphanedTemplates(
+      orphanedEntries,
+      configLookup,
+      logger,
+    );
+  }
 
   if (options?.autoGenerateExtractor) {
     const generatorNames = templateMetadataFiles.map(
@@ -209,7 +221,11 @@ export async function runTemplateFileExtractors(
   }
 
   // Write extractor.json files before afterWrite hook so writeTemplateFiles can update extractor config
-  const generatorNames = uniq(metadataEntries.map((e) => e.generator));
+  // Include generators modified by orphan cleanup to ensure their configs are saved
+  const generatorNames = uniq([
+    ...metadataEntries.map((e) => e.generator),
+    ...orphanedGenerators,
+  ]);
   await writeExtractorTemplateJsons(generatorNames, context);
 
   await runHooks('afterWrite');

@@ -3,16 +3,15 @@ import {
   extractPackageVersions,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
-  authContextImportsProvider,
-  authRolesImportsProvider,
+  appModuleProvider,
   configServiceImportsProvider,
   configServiceProvider,
+  createPothosPrismaObjectTypeOutputName,
   fastifyServerConfigProvider,
+  pothosTypeOutputProvider,
   prismaOutputProvider,
-  userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
@@ -37,6 +36,7 @@ export const auth0ModuleGenerator = createGenerator({
   buildTasks: ({ includeManagement }) => ({
     paths: AUTH0_AUTH0_MODULE_GENERATED.paths.task,
     imports: AUTH0_AUTH0_MODULE_GENERATED.imports.task,
+    renderers: AUTH0_AUTH0_MODULE_GENERATED.renderers.task,
     nodeManagementPackage: includeManagement
       ? createNodePackagesTask({
           prod: extractPackageVersions(AUTH0_PACKAGES, ['auth0']),
@@ -84,56 +84,41 @@ export const auth0ModuleGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: AUTH0_AUTH0_MODULE_GENERATED.paths.provider,
-        authRolesImports: authRolesImportsProvider,
-        configServiceImports: configServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
-        userSessionTypesImports: userSessionTypesImportsProvider,
-        authContextImports: authContextImportsProvider,
+        paths: AUTH0_AUTH0_MODULE_GENERATED.paths.provider,
+        renderers: AUTH0_AUTH0_MODULE_GENERATED.renderers.provider,
+        userObjectType: pothosTypeOutputProvider
+          .dependency()
+          .reference(createPothosPrismaObjectTypeOutputName(AUTH0_MODELS.user)),
+        appModule: appModuleProvider,
       },
-      run({
-        typescriptFile,
-        paths,
-        authRolesImports,
-        prismaOutput,
-        configServiceImports,
-        userSessionTypesImports,
-        authContextImports,
-      }) {
+      run({ prismaOutput, renderers, userObjectType, appModule, paths }) {
         return {
           providers: {
             auth0Module: {},
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  AUTH0_AUTH0_MODULE_GENERATED.templates.userSessionService,
-                destination: paths.userSessionService,
+              renderers.userSessionQueries.render({
+                variables: {
+                  TPL_USER_OBJECT_TYPE:
+                    userObjectType.getTypeReference().fragment,
+                },
+              }),
+            );
+            appModule.moduleImports.push(paths.userSessionQueries);
+            await builder.apply(
+              renderers.userSessionService.render({
                 variables: {
                   TPL_USER_MODEL: prismaOutput.getPrismaModelFragment(
                     AUTH0_MODELS.user,
                   ),
                 },
-                importMapProviders: {
-                  authContextImports,
-                  authRolesImports,
-                  userSessionTypesImports,
-                },
               }),
             );
 
             if (includeManagement) {
-              await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template: AUTH0_AUTH0_MODULE_GENERATED.templates.management,
-                  destination: paths.management,
-                  importMapProviders: {
-                    configServiceImports,
-                  },
-                }),
-              );
+              await builder.apply(renderers.management.render({}));
             }
           },
         };

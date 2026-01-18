@@ -112,6 +112,9 @@ type Query {
   currentUserSession: UserSessionPayload
   user(id: Uuid!): User!
   users: [User!]!
+
+  """The currently authenticated user"""
+  viewer: User
 }
 
 """Input type for registerWithEmailPassword mutation"""

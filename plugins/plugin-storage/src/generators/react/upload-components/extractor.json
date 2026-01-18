@@ -6,9 +6,9 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#react/upload-components",
       "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
         },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
@@ -20,7 +20,14 @@
         }
       },
       "pathRootRelativePath": "{components-root}/ui/file-input.tsx",
-      "projectExports": { "FileInput": { "exportedAs": "default" } },
+      "projectExports": {
+        "FileCategory": { "isTypeOnly": true, "name": "FileCategory" },
+        "FileInput": { "isTypeOnly": false, "name": "FileInput" },
+        "fileInputValueFragment": {
+          "isTypeOnly": false,
+          "name": "fileInputValueFragment"
+        }
+      },
       "referencedGeneratorTemplates": ["hooks-use-upload"],
       "sourceFile": "components/ui/file-input.tsx",
       "variables": {}
@@ -43,13 +50,6 @@
       "referencedGeneratorTemplates": ["file-input-component"],
       "sourceFile": "components/ui/file-input-field.tsx",
       "variables": {}
-    },
-    "file-input-upload-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{components-root}/ui/file-input.gql",
-      "sourceFile": "components/ui/file-input.gql",
-      "variables": { "TPL_FILE_TYPE": {} }
     },
     "hooks-use-upload": {
       "type": "ts",

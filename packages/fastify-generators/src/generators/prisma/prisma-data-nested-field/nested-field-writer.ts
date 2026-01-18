@@ -253,18 +253,20 @@ export function writePrismaDataNestedField(
       )
     : createOneToOneWhereUniqueFunction(reverseRelation, nestedModel);
 
+  const buildDataResult = generateRelationBuildData({
+    prismaModel: nestedModel,
+    inputFieldNames: nestedFieldNames,
+    dataUtilsImports,
+  });
+
   const fieldOptions = TsCodeUtils.mergeFragmentsAsObject({
-    parentModel: 'parentModel',
-    model: quot(lowercaseFirstChar(nestedModel.name)),
-    relationName: quot(reverseRelation.name),
+    buildCreateData: buildDataResult.buildCreateDataFragment,
+    buildUpdateData: buildDataResult.buildUpdateDataFragment,
     fields: pickedFieldsFragment,
     getWhereUnique: getWhereUniqueFragment,
-    buildData: generateRelationBuildData({
-      prismaModel: nestedModel,
-      inputFieldNames: nestedFieldNames,
-      operationType: 'upsert',
-      dataUtilsImports,
-    }).buildDataFunctionFragment,
+    model: quot(lowercaseFirstChar(nestedModel.name)),
+    parentModel: 'parentModel',
+    relationName: quot(reverseRelation.name),
   });
 
   const fragment = tsTemplateWithImports([], {

@@ -1,7 +1,6 @@
 import {
-  authModelConfigSpec,
-  createPlatformPluginExport,
-  ModelUtils,
+  authModelsSpec,
+  createPluginModule,
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -10,25 +9,18 @@ import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 import { createLocalAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
 // necessary for Typescript to infer the return type of the initialize function
-export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+export type { PluginModule } from '@baseplate-dev/project-builder-lib';
 
-export default createPlatformPluginExport({
+export default createPluginModule({
+  name: 'common',
   dependencies: {
-    config: pluginConfigSpec,
+    pluginConfig: pluginConfigSpec,
+    authModels: authModelsSpec,
   },
-  exports: {
-    authModelConfig: authModelConfigSpec,
-  },
-  initialize: ({ config }, { pluginKey }) => {
-    config.registerSchemaCreator(
-      pluginKey,
-      createLocalAuthPluginDefinitionSchema,
-    );
-    return {
-      authModelConfig: {
-        getUserModel: (definition) =>
-          ModelUtils.byNameOrThrow(definition, LOCAL_AUTH_MODELS.user),
-      },
-    };
+  initialize: ({ pluginConfig, authModels }, { pluginKey }) => {
+    pluginConfig.schemas.set(pluginKey, createLocalAuthPluginDefinitionSchema);
+    authModels.getAuthModels.set(() => ({
+      user: LOCAL_AUTH_MODELS.user,
+    }));
   },
 });

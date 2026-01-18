@@ -1,15 +1,9 @@
-import type {
-  RenderTextTemplateGroupActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  renderTextTemplateGroupAction,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
+  graphqlImportsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -20,16 +14,6 @@ import { LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
 import { LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
 
 export interface LocalAuthCoreAuthHooksRenderers {
-  hooksGqlGroup: {
-    render: (
-      options: Omit<
-        RenderTextTemplateGroupActionInput<
-          typeof LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup
-        >,
-        'group' | 'paths'
-      >,
-    ) => BuilderAction;
-  };
   hooksGroup: {
     render: (
       options: Omit<
@@ -49,7 +33,7 @@ const localAuthCoreAuthHooksRenderers =
 
 const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
   dependencies: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    graphqlImports: graphqlImportsProvider,
     paths: LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS.provider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
@@ -59,7 +43,7 @@ const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
     localAuthCoreAuthHooksRenderers: localAuthCoreAuthHooksRenderers.export(),
   },
   run({
-    generatedGraphqlImports,
+    graphqlImports,
     paths,
     reactErrorImports,
     reactSessionImports,
@@ -68,21 +52,13 @@ const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
     return {
       providers: {
         localAuthCoreAuthHooksRenderers: {
-          hooksGqlGroup: {
-            render: (options) =>
-              renderTextTemplateGroupAction({
-                group: LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup,
-                paths,
-                ...options,
-              }),
-          },
           hooksGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
                 group: LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup,
                 paths,
                 importMapProviders: {
-                  generatedGraphqlImports,
+                  graphqlImports,
                   reactErrorImports,
                   reactSessionImports,
                 },

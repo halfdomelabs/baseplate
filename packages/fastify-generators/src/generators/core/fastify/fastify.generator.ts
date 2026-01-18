@@ -193,10 +193,10 @@ export const fastifyGenerator = createGenerator({
             });
 
             if (enableParallelDevCommand) {
-              node.scripts.set(
-                'dev',
-                'FORCE_COLOR=1 pnpm run --reporter-hide-prefix --parallel "/^dev:/"',
+              node.packages.addDevPackages(
+                extractPackageVersions(FASTIFY_PACKAGES, ['concurrently']),
               );
+              node.scripts.set('dev', 'concurrently pnpm:dev:*');
               node.scripts.set('dev:server', devCommand);
             } else {
               node.scripts.set('dev', devCommand);

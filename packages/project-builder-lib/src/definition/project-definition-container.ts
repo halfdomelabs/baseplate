@@ -2,7 +2,7 @@ import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { produce } from 'immer';
 
 import type { SchemaParserContext } from '#src/parser/types.js';
-import type { PluginImplementationStore } from '#src/plugins/index.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type {
   DefinitionEntity,
   DefinitionReference,
@@ -12,7 +12,7 @@ import type {
 import type { ProjectDefinition } from '#src/schema/index.js';
 
 import {
-  createPluginImplementationStore,
+  createPluginSpecStore,
   parseProjectDefinitionWithReferences,
 } from '#src/parser/parser.js';
 import {
@@ -34,12 +34,12 @@ export class ProjectDefinitionContainer {
   references: DefinitionReference[];
   entities: DefinitionEntity[];
   parserContext: SchemaParserContext;
-  pluginStore: PluginImplementationStore;
+  pluginStore: PluginSpecStore;
 
   constructor(
     config: ResolvedZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
-    pluginStore: PluginImplementationStore,
+    pluginStore: PluginSpecStore,
   ) {
     this.refPayload = config;
     this.definition = config.data;
@@ -144,10 +144,7 @@ export class ProjectDefinitionContainer {
     config: unknown,
     context: SchemaParserContext,
   ): ProjectDefinitionContainer {
-    const plugins = createPluginImplementationStore(
-      context.pluginStore,
-      config,
-    );
+    const plugins = createPluginSpecStore(context.pluginStore, config);
     return new ProjectDefinitionContainer(
       deserializeSchemaWithTransformedReferences(
         createProjectDefinitionSchema,

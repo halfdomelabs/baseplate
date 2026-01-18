@@ -9,6 +9,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '%reactComponentsImports';
+import { AsyncBoundary } from '%reactErrorBoundaryImports';
 import { Outlet } from '@tanstack/react-router';
 
 interface Props {
@@ -29,7 +30,9 @@ export function AdminLayout({ className }: Props): ReactElement {
           <AppBreadcrumbs />
         </header>
         <main className="flex-1 p-4">
-          <Outlet />
+          <AsyncBoundary>
+            <Outlet />
+          </AsyncBoundary>
         </main>
       </div>
     </SidebarProvider>

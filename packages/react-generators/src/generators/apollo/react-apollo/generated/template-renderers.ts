@@ -1,4 +1,4 @@
-import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -8,53 +8,13 @@ import { APOLLO_REACT_APOLLO_PATHS } from './template-paths.js';
 import { APOLLO_REACT_APOLLO_TEMPLATES } from './typed-templates.js';
 
 export interface ApolloReactApolloRenderers {
-  appApolloProvider: {
+  mainGroup: {
     render: (
       options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof APOLLO_REACT_APOLLO_TEMPLATES.appApolloProvider
+        RenderTsTemplateGroupActionInput<
+          typeof APOLLO_REACT_APOLLO_TEMPLATES.mainGroup
         >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  cache: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof APOLLO_REACT_APOLLO_TEMPLATES.cache
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  codegenConfig: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof APOLLO_REACT_APOLLO_TEMPLATES.codegenConfig
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  graphql: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof APOLLO_REACT_APOLLO_TEMPLATES.graphql
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  service: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof APOLLO_REACT_APOLLO_TEMPLATES.service
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -75,44 +35,11 @@ const apolloReactApolloRenderersTask = createGeneratorTask({
     return {
       providers: {
         apolloReactApolloRenderers: {
-          appApolloProvider: {
+          mainGroup: {
             render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TEMPLATES.appApolloProvider,
-                destination: paths.appApolloProvider,
-                generatorPaths: paths,
-                ...options,
-              }),
-          },
-          cache: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TEMPLATES.cache,
-                destination: paths.cache,
-                ...options,
-              }),
-          },
-          codegenConfig: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TEMPLATES.codegenConfig,
-                destination: paths.codegenConfig,
-                ...options,
-              }),
-          },
-          graphql: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TEMPLATES.graphql,
-                destination: paths.graphql,
-                ...options,
-              }),
-          },
-          service: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TEMPLATES.service,
-                destination: paths.service,
+              typescriptFile.renderTemplateGroup({
+                group: APOLLO_REACT_APOLLO_TEMPLATES.mainGroup,
+                paths,
                 generatorPaths: paths,
                 ...options,
               }),

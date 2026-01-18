@@ -18,7 +18,7 @@ const mockDataUtilsImports = createTestTsImportMap(
 
 describe('generateRelationBuildData', () => {
   describe('single relation with single FK field', () => {
-    it('should generate buildData for a single required relation', () => {
+    it('should generate buildCreateData and buildUpdateData for a single required relation', () => {
       const prismaModel: PrismaOutputModel = {
         name: 'TodoList',
         fields: [
@@ -33,13 +33,16 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name', 'ownerId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ ownerId, ...data }) => ({...data,
         owner: relationHelpers.connectCreate({id: ownerId,}),})"
+      `);
+      expect(result.buildUpdateDataFragment.contents).toMatchInlineSnapshot(`
+        "({ ownerId, ...data }) => ({...data,
+        owner: relationHelpers.connectUpdate({id: ownerId,}),})"
       `);
     });
 
@@ -58,11 +61,10 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['text', 'assigneeId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ assigneeId, ...data }) => ({...data,
         assignee: relationHelpers.connectCreate({id: assigneeId,}),})"
       `);
@@ -87,11 +89,10 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['text', 'todoListId', 'assigneeId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ assigneeId, todoListId, ...data }) => ({...data,
         todoList: relationHelpers.connectCreate({id: todoListId,}),
         assignee: relationHelpers.connectCreate({id: assigneeId,}),})"
@@ -120,11 +121,10 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name', 'userId', 'tenantId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ tenantId, userId, ...data }) => ({...data,
         owner: relationHelpers.connectCreate({id: userId,
         tenantId,}),})"
@@ -151,12 +151,11 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name', 'tenantId', 'organizationId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
       // Should use shorthand syntax for matching field names
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ organizationId, tenantId, ...data }) => ({...data,
         owner: relationHelpers.connectCreate({organizationId,
         tenantId,}),})"
@@ -180,12 +179,11 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name'], // ownerId not included
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      const generatedCode = result.buildDataFunctionFragment.contents;
-      expect(generatedCode).toBe('(data) => (data)');
+      expect(result.buildCreateDataFragment.contents).toBe('(data) => (data)');
+      expect(result.buildUpdateDataFragment.contents).toBe('(data) => (data)');
     });
 
     it('should generate pass-through function when model has no relations', () => {
@@ -198,12 +196,11 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      const generatedCode = result.buildDataFunctionFragment.contents;
-      expect(generatedCode).toBe('(data) => (data)');
+      expect(result.buildCreateDataFragment.contents).toBe('(data) => (data)');
+      expect(result.buildUpdateDataFragment.contents).toBe('(data) => (data)');
     });
   });
 
@@ -223,12 +220,11 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['userId', 'projectId'], // Only FK fields
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
       // Should not include spread operator when all input fields are FKs
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ projectId, userId }) => ({project: relationHelpers.connectCreate({id: projectId,}),
         user: relationHelpers.connectCreate({id: userId,}),})"
       `);
@@ -236,7 +232,7 @@ describe('generateRelationBuildData', () => {
   });
 
   describe('operation types', () => {
-    it('should use connectCreate for create operations', () => {
+    it('should use connectCreate for buildCreateDataFragment', () => {
       const prismaModel: PrismaOutputModel = {
         name: 'TodoList',
         fields: [
@@ -251,17 +247,16 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name', 'ownerId'],
-        operationType: 'create',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ ownerId, ...data }) => ({...data,
         owner: relationHelpers.connectCreate({id: ownerId,}),})"
       `);
     });
 
-    it('should use connectUpdate for update operations', () => {
+    it('should use connectUpdate for buildUpdateDataFragment', () => {
       const prismaModel: PrismaOutputModel = {
         name: 'TodoList',
         fields: [
@@ -276,11 +271,10 @@ describe('generateRelationBuildData', () => {
       const result = generateRelationBuildData({
         prismaModel,
         inputFieldNames: ['name', 'ownerId'],
-        operationType: 'update',
         dataUtilsImports: mockDataUtilsImports,
       });
 
-      expect(result.buildDataFunctionFragment.contents).toMatchInlineSnapshot(`
+      expect(result.buildUpdateDataFragment.contents).toMatchInlineSnapshot(`
         "({ ownerId, ...data }) => ({...data,
         owner: relationHelpers.connectUpdate({id: ownerId,}),})"
       `);
@@ -310,7 +304,6 @@ describe('generateRelationBuildData', () => {
         generateRelationBuildData({
           prismaModel,
           inputFieldNames: ['name', 'userId'], // tenantId not included - missing required FK field
-          operationType: 'create',
           dataUtilsImports: mockDataUtilsImports,
         }),
       ).toThrow(

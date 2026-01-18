@@ -25,7 +25,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
       const pluginKey = pluginEntityType.keyFromId(data.id);
 
       const createConfigSchema = ctx.plugins
-        .getPluginSpec(pluginConfigSpec)
+        .use(pluginConfigSpec)
         .getSchemaCreator(pluginKey);
 
       if (!createConfigSchema) return data;

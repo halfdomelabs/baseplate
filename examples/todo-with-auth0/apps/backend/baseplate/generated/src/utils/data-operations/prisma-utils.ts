@@ -2,6 +2,7 @@ import type {
   CreateInput,
   GetPayload,
   ModelPropName,
+  ModelQuery,
   UpdateInput,
   WhereInput,
   WhereUniqueInput,
@@ -20,9 +21,10 @@ import type { PrismaTransaction } from './types.js';
  * @internal This interface is used internally by the data operations system
  */
 interface GenericPrismaDelegate<TModelName extends ModelPropName> {
-  findUnique: (args: {
+  findUnique: <TQueryArgs extends ModelQuery<TModelName> = object>(args: {
     where: WhereUniqueInput<TModelName>;
-  }) => Promise<GetPayload<TModelName> | null>;
+    include?: NonNullable<ModelQuery<TModelName>['include']>;
+  }) => Promise<GetPayload<TModelName, TQueryArgs> | null>;
   findMany: (args: {
     where: WhereInput<TModelName>;
   }) => Promise<GetPayload<TModelName>[]>;

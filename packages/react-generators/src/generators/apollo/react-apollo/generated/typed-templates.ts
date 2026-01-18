@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const appApolloProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'main',
   importMapProviders: {},
   name: 'app-apollo-provider',
   referencedGeneratorTemplates: { service: {} },
@@ -21,6 +22,7 @@ const appApolloProvider = createTsTemplateFile({
 
 const cache = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'main',
   importMapProviders: {},
   name: 'cache',
   projectExports: { createApolloCache: {} },
@@ -33,21 +35,48 @@ const cache = createTsTemplateFile({
   variables: {},
 });
 
-const codegenConfig = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'codegen-config',
-  projectExports: { config: {} },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/package/codegen.ts'),
-  },
-  variables: { TPL_BACKEND_SCHEMA: {} },
-});
-
 const graphql = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
   name: 'graphql',
-  projectExports: { '*': {} },
+  projectExports: {
+    FragmentOf: { isTypeOnly: false },
+    graphql: { isTypeOnly: false },
+    readFragment: { isTypeOnly: false },
+    ResultOf: { isTypeOnly: false },
+    VariablesOf: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { graphqlEnvD: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/graphql.ts'),
+  },
+  variables: {},
+});
+
+const graphqlConfig = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'graphql-config',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/package/graphql.config.ts',
+    ),
+  },
+  variables: { TPL_BACKEND_SCHEMA_PATH: {} },
+});
+
+const graphqlEnvD = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'graphql-env-d',
+  projectExports: {
+    introspection: { isTypeOnly: true },
+    introspection_types: { isTypeOnly: true },
+  },
   projectExportsOnly: true,
   source: { contents: '' },
   variables: {},
@@ -55,6 +84,7 @@ const graphql = createTsTemplateFile({
 
 const service = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'main',
   importMapProviders: {},
   name: 'service',
   projectExports: { createApolloClient: {} },
@@ -68,10 +98,13 @@ const service = createTsTemplateFile({
   variables: { TPL_CREATE_ARGS: {}, TPL_LINK_BODIES: {}, TPL_LINKS: {} },
 });
 
-export const APOLLO_REACT_APOLLO_TEMPLATES = {
+export const mainGroup = {
   appApolloProvider,
   cache,
-  codegenConfig,
   graphql,
+  graphqlConfig,
+  graphqlEnvD,
   service,
 };
+
+export const APOLLO_REACT_APOLLO_TEMPLATES = { mainGroup };

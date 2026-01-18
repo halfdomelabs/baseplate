@@ -18,10 +18,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
 
-import {
-  BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-  SCALAR_FIELD_TYPE_OPTIONS,
-} from '../../../-constants.js';
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../-constants.js';
 import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { BadgeWithTypeLabel } from '../badge-with-type-label.js';
 
@@ -58,7 +55,7 @@ export function ServiceMethodFieldsSection({
   const tableClassName =
     'w-full border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10 [&_th]:py-2';
 
-  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
+  const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
 
   return (
     <SectionListSection className={className}>
@@ -142,13 +139,10 @@ export function ServiceMethodFieldsSection({
                 <td>
                   <BadgeWithTypeLabel
                     type={
-                      transformerWeb.getTransformerWebConfig(
-                        transformer.type,
-                        BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-                      ).label
+                      transformerWeb.getWebConfigOrThrow(transformer.type).label
                     }
                   >
-                    {ModelTransformerUtils.getTransformName(
+                    {ModelTransformerUtils.getTransformerName(
                       definitionContainer,
                       transformer,
                       pluginContainer,

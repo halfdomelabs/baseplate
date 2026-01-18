@@ -1,24 +1,30 @@
 import {
+  tsHoistedFragment,
   tsImportBuilder,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { lowercaseFirstChar } from '@baseplate-dev/utils';
 import { z } from 'zod';
+
+import type { GraphQLOperation } from '#src/writers/graphql/graphql.js';
 
 import {
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
 } from '#src/generators/core/index.js';
-import { titleizeCamel } from '#src/utils/case.js';
+import { graphqlImportsProvider } from '#src/generators/index.js';
+import { renderTadaOperation } from '#src/writers/graphql/gql-tada.js';
 
 import { adminCrudActionContainerProvider } from '../_providers/admin-crud-action-container.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
+import { getModelNameVariants } from '../_utils/get-model-name-variants.js';
 
 const descriptorSchema = z.object({
   order: z.int().nonnegative(),
   modelName: z.string().min(1),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
   nameField: z.string().min(1),
+  idField: z.string().min(1),
 });
 
 export const adminCrudDeleteActionGenerator = createGenerator({
@@ -26,20 +32,32 @@ export const adminCrudDeleteActionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: () => 'delete',
-  buildTasks: ({ order, position, modelName, nameField }) => ({
+  buildTasks: ({ order, position, modelName, nameField, idField }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudActionContainer: adminCrudActionContainerProvider,
-        adminCrudQueries: adminCrudQueriesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         reactErrorImports: reactErrorImportsProvider,
+        graphqlImports: graphqlImportsProvider,
       },
       run({
         adminCrudActionContainer,
-        adminCrudQueries,
         reactComponentsImports,
         reactErrorImports,
+        graphqlImports,
       }) {
+        const parentComponentName =
+          adminCrudActionContainer.getParentComponentName();
+        const parentComponentPath =
+          adminCrudActionContainer.getParentComponentPath();
+        const itemsFragmentVariable =
+          adminCrudActionContainer.getItemsFragmentVariable();
+        const itemsFragment = tsTemplateWithImports([
+          graphqlImports.ResultOf.typeDeclaration(),
+        ])`ResultOf<typeof ${itemsFragmentVariable}>`;
+        const modelNameVariants = getModelNameVariants(modelName);
+        const modelTitle = modelNameVariants.title;
+
         const actionFragment =
           position === 'inline'
             ? tsTemplateWithImports([
@@ -65,32 +83,80 @@ export const adminCrudDeleteActionGenerator = createGenerator({
           </DropdownMenuItem>
         `;
 
-        const modelTitle = titleizeCamel(modelName);
-        const hookContent = tsTemplateWithImports([
-          tsImportBuilder(['useMutation']).from('@apollo/client/react'),
-          reactComponentsImports.useConfirmDialog.declaration(),
-          tsImportBuilder(['toast']).from('sonner'),
-          reactErrorImports.logAndFormatError.declaration(),
-        ])`
+        const deleteMutationName = `${parentComponentName}Delete${modelNameVariants.pascal}`;
+        const deleteMutationVariable = `${lowercaseFirstChar(deleteMutationName)}Mutation`;
+        const graphqlDeleteFieldName = `delete${modelNameVariants.pascal}`;
+        const deleteMutation: GraphQLOperation = {
+          type: 'mutation',
+          variableName: deleteMutationVariable,
+          operationName: deleteMutationName,
+          variables: [
+            { name: 'input', type: `Delete${modelNameVariants.pascal}Input!` },
+          ],
+          fields: [
+            {
+              name: graphqlDeleteFieldName,
+              args: [
+                {
+                  name: 'input',
+                  value: { type: 'variable', variable: 'input' },
+                },
+              ],
+              fields: [
+                {
+                  name: modelNameVariants.camel,
+                  fields: [{ name: idField }, { name: nameField }],
+                },
+              ],
+            },
+          ],
+        };
+
+        const deleteMutationHoistedFragment = renderTadaOperation(
+          deleteMutation,
+          { currentPath: parentComponentPath },
+        );
+
+        const hookContent = tsTemplateWithImports(
+          [
+            tsImportBuilder(['useMutation']).from('@apollo/client/react'),
+            reactComponentsImports.useConfirmDialog.declaration(),
+            tsImportBuilder(['toast']).from('sonner'),
+            reactErrorImports.logAndFormatError.declaration(),
+          ],
+          {
+            hoistedFragments: [
+              tsHoistedFragment(
+                'delete-action-mutation',
+                deleteMutationHoistedFragment,
+              ),
+            ],
+          },
+        )`
           const { requestConfirm } = useConfirmDialog();
-          const [${adminCrudQueries.getDeleteHookInfo().fieldName}] = useMutation(${adminCrudQueries.getDeleteHookInfo().documentExpression}, {
-    refetchQueries: [{ query: ${adminCrudQueries.getListDocumentExpression()} }],
+          const [${graphqlDeleteFieldName}] = useMutation(${deleteMutationVariable}, {
+    update: (cache, result) => {
+      if (!result.data?.${graphqlDeleteFieldName}.${modelNameVariants.camel}) return;
+      const itemId = cache.identify(result.data.${graphqlDeleteFieldName}.${modelNameVariants.camel});
+      cache.evict({ id: itemId });
+      cache.gc();
+    },
   });
 
-  function handleDelete(item: ${adminCrudQueries.getRowFragmentExpression()}): void {
+  function handleDelete(item: ${itemsFragment}): void {
     requestConfirm({
       title: 'Delete ${modelTitle}',
-      content: \`Are you sure you want to delete ${modelTitle.toLocaleLowerCase()} \${item.${nameField} ? item.${nameField} : 'unnamed ${modelTitle.toLocaleLowerCase()}'}?\`,
+      content: \`Are you sure you want to delete ${modelNameVariants.lowercaseWords} \${item.${nameField} ? item.${nameField} : 'unnamed ${modelNameVariants.lowercaseWords}'}?\`,
       onConfirm: () => {
-        ${adminCrudQueries.getDeleteHookInfo().fieldName}({
-          variables: { input: { id: item.id } },
+        ${graphqlDeleteFieldName}({
+          variables: { input: { ${idField}: item.${idField} } },
         })
           .then(() => {
-            toast.success('Successfully deleted ${modelTitle.toLocaleLowerCase()}!');
+            toast.success('Successfully deleted the ${modelNameVariants.lowercaseWords}!');
           })
           .catch((err: unknown) => {
             toast.error(
-              logAndFormatError(err, 'Sorry we could not delete ${modelTitle.toLocaleLowerCase()}.'),
+              logAndFormatError(err, 'Sorry, we could not delete the ${modelNameVariants.lowercaseWords}.'),
             );
           });
       },
@@ -106,7 +172,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
           order,
           hookContent,
           action: actionFragment,
-          graphQLFields: [{ name: 'id' }, { name: nameField }],
+          graphQLFields: [{ name: idField }, { name: nameField }],
         });
         return {};
       },
