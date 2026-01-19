@@ -57,6 +57,15 @@ function ModelEditLayout(): React.JSX.Element {
           </NavigationTabsItem>
           <NavigationTabsItem asChild>
             <Link
+              to="/data/models/edit/$key/authorization"
+              params={{ key }}
+              activeOptions={{ exact: true }}
+            >
+              Authorization
+            </Link>
+          </NavigationTabsItem>
+          <NavigationTabsItem asChild>
+            <Link
               to="/data/models/edit/$key/service"
               params={{ key }}
               activeOptions={{ exact: true }}
