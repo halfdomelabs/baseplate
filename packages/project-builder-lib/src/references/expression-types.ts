@@ -10,6 +10,10 @@ export interface RefExpressionWarning {
   message: string;
   /** Path within the expression where the warning occurred */
   expressionPath?: string;
+  /** Start position in the expression for inline highlighting */
+  start?: number;
+  /** End position in the expression for inline highlighting */
+  end?: number;
 }
 
 /**

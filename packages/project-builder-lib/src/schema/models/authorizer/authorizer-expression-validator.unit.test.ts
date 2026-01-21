@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
-import type { PluginImplementationStore } from '#src/plugins/schema/store.js';
 import type { AuthRole } from '#src/plugins/spec/auth-config-spec.js';
+import type { PluginSpecStore } from '#src/plugins/store/index.js';
 
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
@@ -30,7 +30,7 @@ function createMockContainer(roles: AuthRole[]): ProjectDefinitionContainer {
       }
       throw new Error(`No implementation for ${spec.name}`);
     },
-  } as unknown as PluginImplementationStore;
+  } as unknown as PluginSpecStore;
 
   return {
     pluginStore,

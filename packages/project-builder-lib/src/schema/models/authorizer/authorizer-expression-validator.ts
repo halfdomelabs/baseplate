@@ -83,6 +83,8 @@ export function validateAuthorizerExpression(
         if (!roleNames.has(node.role)) {
           warnings.push({
             message: `Role '${node.role}' is not defined in the project configuration. It may be defined by a plugin.`,
+            start: node.roleStart,
+            end: node.roleEnd,
           });
         }
         break;
@@ -102,12 +104,16 @@ export function validateAuthorizerExpression(
       if (!modelContext.scalarFieldNames.has(node.field)) {
         warnings.push({
           message: `Field '${node.field}' does not exist on model '${modelContext.modelName}'.`,
+          start: node.start,
+          end: node.end,
         });
       }
     } else if (!VALID_AUTH_FIELDS.has(node.field)) {
       // node.source === 'auth' is implied since source is 'model' | 'auth'
       warnings.push({
         message: `Invalid auth property '${node.field}'. Valid properties are: ${[...VALID_AUTH_FIELDS].join(', ')}.`,
+        start: node.start,
+        end: node.end,
       });
     }
   }

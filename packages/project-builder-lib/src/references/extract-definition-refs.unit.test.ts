@@ -1097,7 +1097,7 @@ describe('extract-definition-refs', () => {
           schemaCreator,
           input,
           {
-            plugins: new PluginImplementationStore({}),
+            plugins: new PluginSpecStore(),
           },
         );
 
@@ -1131,7 +1131,7 @@ describe('extract-definition-refs', () => {
           schemaCreator,
           input,
           {
-            plugins: new PluginImplementationStore({}),
+            plugins: new PluginSpecStore(),
           },
         );
 
@@ -1150,7 +1150,7 @@ describe('extract-definition-refs', () => {
           }),
         );
 
-        const pluginStore = new PluginImplementationStore({});
+        const pluginStore = new PluginSpecStore();
 
         // With expression
         const inputWithExpr = {
@@ -1225,7 +1225,7 @@ describe('extract-definition-refs', () => {
         const result = parseSchemaWithTransformedReferences(
           schemaCreator,
           input,
-          { plugins: new PluginImplementationStore({}) },
+          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(2);
@@ -1307,7 +1307,7 @@ describe('extract-definition-refs', () => {
         const result = parseSchemaWithTransformedReferences(
           schemaCreator,
           input,
-          { plugins: new PluginImplementationStore({}) },
+          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(1);
@@ -1385,7 +1385,7 @@ describe('extract-definition-refs', () => {
         const result = parseSchemaWithTransformedReferences(
           schemaCreator,
           input,
-          { plugins: new PluginImplementationStore({}) },
+          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(1);
