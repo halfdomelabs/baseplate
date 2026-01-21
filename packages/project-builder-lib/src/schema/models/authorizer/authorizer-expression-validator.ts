@@ -82,10 +82,27 @@ export function validateAuthorizerExpression(
         // Warn if role doesn't exist (but allow - plugins may define roles)
         if (!roleNames.has(node.role)) {
           warnings.push({
-            message: `Role '${node.role}' is not defined in the project configuration. It may be defined by a plugin.`,
+            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
             start: node.roleStart,
             end: node.roleEnd,
           });
+        }
+        break;
+      }
+
+      case 'hasSomeRole': {
+        // Warn if any role doesn't exist (but allow - plugins may define roles)
+        for (let i = 0; i < node.roles.length; i++) {
+          const role = node.roles[i];
+          if (!roleNames.has(role)) {
+            const start = node.rolesStart[i];
+            const end = node.rolesEnd[i];
+            warnings.push({
+              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
+              start,
+              end,
+            });
+          }
         }
         break;
       }

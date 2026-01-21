@@ -2,9 +2,10 @@
  * AST node types for authorizer expressions.
  *
  * These represent the semantic structure of expressions like:
- * - `model.id === auth.userId`
- * - `auth.hasRole('admin')`
- * - `model.id === auth.userId || auth.hasRole('admin')`
+ * - `model.id === userId`
+ * - `hasRole('admin')`
+ * - `hasSomeRole(['admin', 'moderator'])`
+ * - `model.id === userId || hasRole('admin')`
  *
  * The AST is produced by parsing with Acorn and converting from ESTree.
  */
@@ -15,6 +16,7 @@
 export type AuthorizerExpressionNode =
   | FieldComparisonNode
   | HasRoleNode
+  | HasSomeRoleNode
   | BinaryLogicalNode;
 
 /**
@@ -41,16 +43,16 @@ export interface FieldComparisonNode {
 }
 
 /**
- * A role check expression: `auth.hasRole('roleName')`
+ * A role check expression: `hasRole('roleName')`
  *
  * @example
  * ```typescript
- * // auth.hasRole('admin')
+ * // hasRole('admin')
  * {
  *   type: 'hasRole',
  *   role: 'admin',
- *   roleStart: 14,
- *   roleEnd: 21,
+ *   roleStart: 8,
+ *   roleEnd: 15,
  * }
  * ```
  */
@@ -62,6 +64,30 @@ export interface HasRoleNode {
   roleStart: number;
   /** End position of the role string in the source (for rename tracking) */
   roleEnd: number;
+}
+
+/**
+ * A role check expression for multiple roles: `hasSomeRole(['role1', 'role2'])`
+ *
+ * @example
+ * ```typescript
+ * // hasSomeRole(['admin', 'moderator'])
+ * {
+ *   type: 'hasSomeRole',
+ *   roles: ['admin', 'moderator'],
+ *   rolesStart: [13, 22],
+ *   rolesEnd: [20, 33],
+ * }
+ * ```
+ */
+export interface HasSomeRoleNode {
+  type: 'hasSomeRole';
+  /** The role names being checked */
+  roles: string[];
+  /** Start positions of each role string in the source (for rename tracking) */
+  rolesStart: number[];
+  /** End positions of each role string in the source (for rename tracking) */
+  rolesEnd: number[];
 }
 
 /**
@@ -93,8 +119,8 @@ export interface BinaryLogicalNode {
  * // model.id
  * { type: 'fieldRef', source: 'model', field: 'id', start: 0, end: 8 }
  *
- * // auth.userId
- * { type: 'fieldRef', source: 'auth', field: 'userId', start: 13, end: 24 }
+ * // userId - implicit auth context
+ * { type: 'fieldRef', source: 'auth', field: 'userId', start: 13, end: 19 }
  * ```
  */
 export interface FieldRefNode {

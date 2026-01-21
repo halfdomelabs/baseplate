@@ -97,3 +97,8 @@
     }
   }
 }
+
+/* Disable ligatures in monospace fonts (Geist Mono merges === into a single ligature) */
+@utility font-mono {
+  font-variant-ligatures: no-common-ligatures;
+}

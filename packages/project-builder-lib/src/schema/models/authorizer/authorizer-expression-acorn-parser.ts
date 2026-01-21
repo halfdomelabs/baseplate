@@ -1,10 +1,11 @@
 /**
  * Parser for authorizer expressions using Acorn.
  *
- * Parses expressions like:
- * - `model.id === auth.userId`
- * - `auth.hasRole('admin')`
- * - `model.id === auth.userId || auth.hasRole('admin')`
+ * Parses expressions with implicit auth context:
+ * - `model.id === userId`
+ * - `hasRole('admin')`
+ * - `hasSomeRole(['admin', 'moderator'])`
+ * - `model.id === userId || hasRole('admin')`
  *
  * Uses Acorn to parse as JavaScript, then converts the ESTree AST
  * to our domain-specific AST, rejecting unsupported constructs.
@@ -27,6 +28,7 @@ import type {
   FieldComparisonNode,
   FieldRefNode,
   HasRoleNode,
+  HasSomeRoleNode,
 } from './authorizer-expression-ast.js';
 
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
@@ -173,56 +175,46 @@ function convertBinaryExpression(node: BinaryExpression): FieldComparisonNode {
 }
 
 /**
- * Convert a CallExpression to HasRoleNode.
- * Only supports auth.hasRole('roleName') pattern.
+ * Convert a CallExpression to HasRoleNode or HasSomeRoleNode.
+ * Supports:
+ * - `hasRole('admin')`
+ * - `hasSomeRole(['admin', 'moderator'])`
  */
-function convertCallExpression(node: CallExpression): HasRoleNode {
-  // Must be a member expression call: auth.hasRole(...)
-  if (node.callee.type !== 'MemberExpression') {
+function convertCallExpression(
+  node: CallExpression,
+): HasRoleNode | HasSomeRoleNode {
+  // Only support direct calls (e.g., hasRole(...))
+  if (node.callee.type !== 'Identifier') {
     throw new AuthorizerExpressionParseError(
-      "Function calls must be in the form auth.hasRole('roleName')",
-      node,
+      'Function calls must be standalone (hasRole, hasSomeRole)',
+      node.callee,
     );
   }
 
-  const { callee } = node;
+  const funcName = node.callee.name;
 
-  // Object must be 'auth'
-  if (callee.object.type !== 'Identifier') {
-    throw new AuthorizerExpressionParseError(
-      'Function calls must be on the auth object',
-      callee.object,
-    );
+  if (funcName === 'hasRole') {
+    return parseHasRoleArgs(node, 'hasRole()');
   }
 
-  const objectName = callee.object.name;
-  if (objectName !== 'auth') {
-    throw new AuthorizerExpressionParseError(
-      `Function calls must be on the auth object, not '${objectName}'`,
-      callee.object,
-    );
+  if (funcName === 'hasSomeRole') {
+    return parseHasSomeRoleArgs(node, 'hasSomeRole()');
   }
 
-  // Property must be 'hasRole'
-  if (callee.property.type !== 'Identifier') {
-    throw new AuthorizerExpressionParseError(
-      'Expected hasRole method call',
-      callee.property,
-    );
-  }
+  throw new AuthorizerExpressionParseError(
+    `Unknown function '${funcName}'. Use hasRole() or hasSomeRole().`,
+    node.callee,
+  );
+}
 
-  const methodName = callee.property.name;
-  if (methodName !== 'hasRole') {
-    throw new AuthorizerExpressionParseError(
-      `Unsupported auth method: ${methodName}. Only hasRole is supported.`,
-      callee.property,
-    );
-  }
-
+/**
+ * Parse hasRole('role') arguments.
+ */
+function parseHasRoleArgs(node: CallExpression, funcName: string): HasRoleNode {
   // Must have exactly one string argument
   if (node.arguments.length !== 1) {
     throw new AuthorizerExpressionParseError(
-      `auth.hasRole() requires exactly one argument, got ${node.arguments.length}`,
+      `${funcName} requires exactly one argument, got ${node.arguments.length}`,
       node,
     );
   }
@@ -230,7 +222,7 @@ function convertCallExpression(node: CallExpression): HasRoleNode {
   const arg = node.arguments[0];
   if (arg.type !== 'Literal' || typeof arg.value !== 'string') {
     throw new AuthorizerExpressionParseError(
-      'auth.hasRole() argument must be a string literal',
+      `${funcName} argument must be a string literal`,
       arg,
     );
   }
@@ -246,31 +238,117 @@ function convertCallExpression(node: CallExpression): HasRoleNode {
 }
 
 /**
- * Convert a MemberExpression to FieldRefNode.
- * Only supports model.field or auth.field patterns.
+ * Parse hasSomeRole(['role1', 'role2']) arguments.
+ */
+function parseHasSomeRoleArgs(
+  node: CallExpression,
+  funcName: string,
+): HasSomeRoleNode {
+  // Must have exactly one array argument
+  if (node.arguments.length !== 1) {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} requires exactly one argument, got ${node.arguments.length}`,
+      node,
+    );
+  }
+
+  const arg = node.arguments[0];
+  if (arg.type !== 'ArrayExpression') {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} argument must be an array literal (e.g., ['admin', 'moderator'])`,
+      arg,
+    );
+  }
+
+  const roles: string[] = [];
+  const rolesStart: number[] = [];
+  const rolesEnd: number[] = [];
+
+  for (const element of arg.elements) {
+    if (!element) {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} array cannot have empty elements`,
+        arg,
+      );
+    }
+
+    if (element.type !== 'Literal' || typeof element.value !== 'string') {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} array elements must be string literals`,
+        element,
+      );
+    }
+
+    roles.push(element.value);
+    rolesStart.push(element.start);
+    rolesEnd.push(element.end);
+  }
+
+  if (roles.length === 0) {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} requires at least one role`,
+      arg,
+    );
+  }
+
+  return {
+    type: 'hasSomeRole',
+    roles,
+    rolesStart,
+    rolesEnd,
+  };
+}
+
+/**
+ * Convert to FieldRefNode.
+ * Supports:
+ * - Standalone identifier for implicit auth context: `userId`
+ * - Member expressions: `model.field`
  */
 function convertFieldRef(node: Expression): FieldRefNode {
+  // Handle standalone identifier (implicit auth context)
+  if (node.type === 'Identifier') {
+    const identifier = node;
+    const { name } = identifier;
+
+    // Only userId is valid as a standalone identifier (implicit auth context)
+    if (name === 'userId') {
+      return {
+        type: 'fieldRef',
+        source: 'auth',
+        field: 'userId',
+        start: node.start,
+        end: node.end,
+      };
+    }
+
+    throw new AuthorizerExpressionParseError(
+      `Unknown identifier '${name}'. Did you mean 'model.${name}' or use 'userId' for auth context?`,
+      node,
+    );
+  }
+
   if (node.type !== 'MemberExpression') {
     throw new AuthorizerExpressionParseError(
-      'Expected field reference (model.field or auth.field)',
+      'Expected field reference (model.field or userId)',
       node,
     );
   }
 
   const memberExpr = node;
 
-  // Object must be an identifier (model or auth)
+  // Object must be an identifier
   if (memberExpr.object.type !== 'Identifier') {
     throw new AuthorizerExpressionParseError(
-      'Field reference must start with model or auth',
+      'Field reference must start with model',
       memberExpr.object,
     );
   }
 
   const source = memberExpr.object.name;
-  if (source !== 'model' && source !== 'auth') {
+  if (source !== 'model') {
     throw new AuthorizerExpressionParseError(
-      `Field reference must start with 'model' or 'auth', not '${source}'`,
+      `Field reference must start with 'model', not '${source}'`,
       memberExpr.object,
     );
   }
@@ -294,7 +372,7 @@ function convertFieldRef(node: Expression): FieldRefNode {
 
   return {
     type: 'fieldRef',
-    source,
+    source: 'model',
     field,
     start: node.start,
     end: node.end,
@@ -322,6 +400,11 @@ function extractInfo(
 
       case 'hasRole': {
         roleRefs.push(node.role);
+        break;
+      }
+
+      case 'hasSomeRole': {
+        roleRefs.push(...node.roles);
         break;
       }
 

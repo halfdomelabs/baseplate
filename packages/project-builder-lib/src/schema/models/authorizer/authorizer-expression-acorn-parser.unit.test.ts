@@ -5,8 +5,8 @@ import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
 
 describe('parseAuthorizerExpression', () => {
   describe('field comparisons', () => {
-    it('should parse model.id === auth.userId', () => {
-      const result = parseAuthorizerExpression('model.id === auth.userId');
+    it('should parse model.id === userId', () => {
+      const result = parseAuthorizerExpression('model.id === userId');
 
       expect(result.ast).toEqual({
         type: 'fieldComparison',
@@ -23,7 +23,7 @@ describe('parseAuthorizerExpression', () => {
           source: 'auth',
           field: 'userId',
           start: 13,
-          end: 24,
+          end: 19,
         },
       });
       expect(result.modelFieldRefs).toEqual(['id']);
@@ -33,49 +33,56 @@ describe('parseAuthorizerExpression', () => {
     });
 
     it('should parse different field names', () => {
-      const result = parseAuthorizerExpression(
-        'model.authorId === auth.userId',
-      );
+      const result = parseAuthorizerExpression('model.authorId === userId');
 
       expect(result.ast.type).toBe('fieldComparison');
       expect(result.modelFieldRefs).toEqual(['authorId']);
       expect(result.authFieldRefs).toEqual(['userId']);
     });
 
-    it('should reject non-model/auth field sources', () => {
-      expect(() => parseAuthorizerExpression('foo.id === auth.userId')).toThrow(
+    it('should reject non-model field sources', () => {
+      expect(() => parseAuthorizerExpression('foo.id === userId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject unknown standalone identifiers', () => {
+      expect(() => parseAuthorizerExpression('model.id === unknownId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+      expect(() => parseAuthorizerExpression('model.id === foo')).toThrow(
         AuthorizerExpressionParseError,
       );
     });
 
     it('should reject != operator', () => {
-      expect(() =>
-        parseAuthorizerExpression('model.id !== auth.userId'),
-      ).toThrow(AuthorizerExpressionParseError);
+      expect(() => parseAuthorizerExpression('model.id !== userId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
     });
 
     it('should reject == operator', () => {
-      expect(() =>
-        parseAuthorizerExpression('model.id == auth.userId'),
-      ).toThrow(AuthorizerExpressionParseError);
+      expect(() => parseAuthorizerExpression('model.id == userId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
     });
 
     it('should reject computed property access', () => {
-      expect(() =>
-        parseAuthorizerExpression('model["id"] === auth.userId'),
-      ).toThrow(AuthorizerExpressionParseError);
+      expect(() => parseAuthorizerExpression('model["id"] === userId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
     });
   });
 
   describe('hasRole expressions', () => {
-    it("should parse auth.hasRole('admin')", () => {
-      const result = parseAuthorizerExpression("auth.hasRole('admin')");
+    it("should parse hasRole('admin')", () => {
+      const result = parseAuthorizerExpression("hasRole('admin')");
 
       expect(result.ast).toEqual({
         type: 'hasRole',
         role: 'admin',
-        roleStart: 13,
-        roleEnd: 20,
+        roleStart: 8,
+        roleEnd: 15,
       });
       expect(result.modelFieldRefs).toEqual([]);
       expect(result.authFieldRefs).toEqual([]);
@@ -84,52 +91,101 @@ describe('parseAuthorizerExpression', () => {
     });
 
     it('should parse hasRole with double quotes', () => {
-      const result = parseAuthorizerExpression('auth.hasRole("editor")');
+      const result = parseAuthorizerExpression('hasRole("editor")');
 
       expect(result.ast).toEqual({
         type: 'hasRole',
         role: 'editor',
-        roleStart: 13,
-        roleEnd: 21,
+        roleStart: 8,
+        roleEnd: 16,
       });
       expect(result.roleRefs).toEqual(['editor']);
     });
 
-    it('should reject hasRole on non-auth object', () => {
-      expect(() => parseAuthorizerExpression("model.hasRole('admin')")).toThrow(
-        AuthorizerExpressionParseError,
-      );
-    });
-
     it('should reject hasRole with no arguments', () => {
-      expect(() => parseAuthorizerExpression('auth.hasRole()')).toThrow(
+      expect(() => parseAuthorizerExpression('hasRole()')).toThrow(
         AuthorizerExpressionParseError,
       );
     });
 
     it('should reject hasRole with multiple arguments', () => {
       expect(() =>
-        parseAuthorizerExpression("auth.hasRole('admin', 'user')"),
+        parseAuthorizerExpression("hasRole('admin', 'user')"),
       ).toThrow(AuthorizerExpressionParseError);
     });
 
     it('should reject hasRole with non-string argument', () => {
-      expect(() => parseAuthorizerExpression('auth.hasRole(123)')).toThrow(
+      expect(() => parseAuthorizerExpression('hasRole(123)')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+  });
+
+  describe('hasSomeRole expressions', () => {
+    it("should parse hasSomeRole(['admin', 'editor'])", () => {
+      const result = parseAuthorizerExpression(
+        "hasSomeRole(['admin', 'editor'])",
+      );
+
+      expect(result.ast).toEqual({
+        type: 'hasSomeRole',
+        roles: ['admin', 'editor'],
+        rolesStart: [13, 22],
+        rolesEnd: [20, 30],
+      });
+      expect(result.modelFieldRefs).toEqual([]);
+      expect(result.authFieldRefs).toEqual([]);
+      expect(result.roleRefs).toEqual(['admin', 'editor']);
+      expect(result.requiresModel).toBe(false);
+    });
+
+    it('should parse hasSomeRole with single role', () => {
+      const result = parseAuthorizerExpression("hasSomeRole(['admin'])");
+
+      expect(result.ast).toEqual({
+        type: 'hasSomeRole',
+        roles: ['admin'],
+        rolesStart: [13],
+        rolesEnd: [20],
+      });
+      expect(result.roleRefs).toEqual(['admin']);
+    });
+
+    it('should reject hasSomeRole with no arguments', () => {
+      expect(() => parseAuthorizerExpression('hasSomeRole()')).toThrow(
         AuthorizerExpressionParseError,
       );
     });
 
-    it('should reject other auth methods', () => {
+    it('should reject hasSomeRole with non-array argument', () => {
+      expect(() => parseAuthorizerExpression("hasSomeRole('admin')")).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject hasSomeRole with empty array', () => {
+      expect(() => parseAuthorizerExpression('hasSomeRole([])')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject hasSomeRole with non-string array elements', () => {
+      expect(() => parseAuthorizerExpression('hasSomeRole([123])')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject hasSomeRole with empty array elements', () => {
       expect(() =>
-        parseAuthorizerExpression("auth.hasSomeRole(['admin'])"),
+        parseAuthorizerExpression("hasSomeRole(['admin', , 'editor'])"),
       ).toThrow(AuthorizerExpressionParseError);
     });
   });
 
   describe('logical operators', () => {
-    it("should parse model.id === auth.userId || auth.hasRole('admin')", () => {
+    it("should parse model.id === userId || hasRole('admin')", () => {
       const result = parseAuthorizerExpression(
-        "model.id === auth.userId || auth.hasRole('admin')",
+        "model.id === userId || hasRole('admin')",
       );
 
       expect(result.ast).toEqual({
@@ -150,14 +206,14 @@ describe('parseAuthorizerExpression', () => {
             source: 'auth',
             field: 'userId',
             start: 13,
-            end: 24,
+            end: 19,
           },
         },
         right: {
           type: 'hasRole',
           role: 'admin',
-          roleStart: 41,
-          roleEnd: 48,
+          roleStart: 31,
+          roleEnd: 38,
         },
       });
       expect(result.modelFieldRefs).toEqual(['id']);
@@ -166,9 +222,9 @@ describe('parseAuthorizerExpression', () => {
       expect(result.requiresModel).toBe(true);
     });
 
-    it("should parse auth.hasRole('admin') && auth.hasRole('moderator')", () => {
+    it("should parse hasRole('admin') && hasRole('moderator')", () => {
       const result = parseAuthorizerExpression(
-        "auth.hasRole('admin') && auth.hasRole('moderator')",
+        "hasRole('admin') && hasRole('moderator')",
       );
 
       expect(result.ast.type).toBe('binaryLogical');
@@ -181,9 +237,21 @@ describe('parseAuthorizerExpression', () => {
       expect(result.requiresModel).toBe(false);
     });
 
+    it('should parse hasSomeRole with logical operators', () => {
+      const result = parseAuthorizerExpression(
+        "model.id === userId && hasSomeRole(['admin', 'editor'])",
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      expect(result.modelFieldRefs).toEqual(['id']);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.roleRefs).toEqual(['admin', 'editor']);
+      expect(result.requiresModel).toBe(true);
+    });
+
     it('should handle nested logical expressions', () => {
       const result = parseAuthorizerExpression(
-        "auth.hasRole('a') || auth.hasRole('b') || auth.hasRole('c')",
+        "hasRole('a') || hasRole('b') || hasRole('c')",
       );
 
       // Left-associative: ((a || b) || c)
@@ -195,7 +263,7 @@ describe('parseAuthorizerExpression', () => {
 
     it('should reject nullish coalescing operator', () => {
       expect(() =>
-        parseAuthorizerExpression("auth.hasRole('a') ?? auth.hasRole('b')"),
+        parseAuthorizerExpression("hasRole('a') ?? hasRole('b')"),
       ).toThrow(AuthorizerExpressionParseError);
     });
   });
@@ -203,7 +271,7 @@ describe('parseAuthorizerExpression', () => {
   describe('dependency extraction', () => {
     it('should deduplicate model field refs', () => {
       const result = parseAuthorizerExpression(
-        'model.id === auth.userId || model.id === auth.userId',
+        'model.id === userId || model.id === userId',
       );
 
       expect(result.modelFieldRefs).toEqual(['id']);
@@ -211,7 +279,7 @@ describe('parseAuthorizerExpression', () => {
 
     it('should deduplicate role refs', () => {
       const result = parseAuthorizerExpression(
-        "auth.hasRole('admin') || auth.hasRole('admin')",
+        "hasRole('admin') || hasRole('admin')",
       );
 
       expect(result.roleRefs).toEqual(['admin']);
@@ -219,7 +287,7 @@ describe('parseAuthorizerExpression', () => {
 
     it('should collect multiple different refs', () => {
       const result = parseAuthorizerExpression(
-        "model.authorId === auth.userId || model.editorId === auth.userId || auth.hasRole('admin')",
+        "model.authorId === userId || model.editorId === userId || hasRole('admin')",
       );
 
       expect(result.modelFieldRefs).toEqual(['authorId', 'editorId']);
@@ -237,7 +305,7 @@ describe('parseAuthorizerExpression', () => {
 
     it('should reject trailing content', () => {
       expect(() =>
-        parseAuthorizerExpression('model.id === auth.userId extra'),
+        parseAuthorizerExpression('model.id === userId extra'),
       ).toThrow(AuthorizerExpressionParseError);
     });
 
@@ -253,8 +321,14 @@ describe('parseAuthorizerExpression', () => {
       );
     });
 
-    it('should reject standalone function calls', () => {
-      expect(() => parseAuthorizerExpression('hasRole("admin")')).toThrow(
+    it('should reject unknown standalone function calls', () => {
+      expect(() => parseAuthorizerExpression('unknownFunc()')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject standalone userId without comparison', () => {
+      expect(() => parseAuthorizerExpression('userId')).toThrow(
         AuthorizerExpressionParseError,
       );
     });
@@ -263,7 +337,7 @@ describe('parseAuthorizerExpression', () => {
   describe('error positions', () => {
     it('should include position in error for invalid operator', () => {
       try {
-        parseAuthorizerExpression('model.id !== auth.userId');
+        parseAuthorizerExpression('model.id !== userId');
         expect.fail('Expected error to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(AuthorizerExpressionParseError);
