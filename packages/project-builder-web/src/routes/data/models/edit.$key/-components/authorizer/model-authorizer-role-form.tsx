@@ -176,11 +176,24 @@ export function ModelAuthorizerRoleForm({
         extensions={extensions}
         height="120px"
         description={
-          <>
-            TypeScript boolean expression. Available: <code>model</code> (the
-            model instance), <code>userId</code>, <code>hasRole()</code>, and{' '}
-            <code>hasSomeRole()</code>
-          </>
+          <div className="space-y-1">
+            <p>
+              TypeScript boolean expression. Available: <code>model</code> (the
+              model instance), <code>userId</code>, <code>hasRole()</code>, and{' '}
+              <code>hasSomeRole()</code>
+            </p>
+            <div>
+              Examples: <code>model.id === userId</code>
+            </div>
+            <div>
+              <code>hasRole(&apos;admin&apos;)</code>
+            </div>
+            <div>
+              <code>
+                model.authorId === userId || hasRole(&apos;admin&apos;)
+              </code>
+            </div>
+          </div>
         }
       />
       <DialogFooter>
