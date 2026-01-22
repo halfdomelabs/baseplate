@@ -1,3 +1,5 @@
+import type { z } from 'zod';
+
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { DefinitionEntityType, ReferencePath } from './types.js';
 
@@ -98,6 +100,14 @@ export abstract class RefExpressionParser<
 > {
   /** Unique name for this parser type (used for serialization) */
   abstract readonly name: string;
+
+  /**
+   * Zod schema for validating the expression value.
+   * This schema is used by `withExpression()` for input validation.
+   *
+   * @returns A Zod schema that validates the raw expression value
+   */
+  abstract readonly schema: z.ZodType<TValue>;
 
   /**
    * Parse the raw value and return the parse result.

@@ -255,6 +255,8 @@ export function extendParserContextWithRefs({
    * If the parser declares required slots (via TRequiredSlots), they must be
    * provided as the second argument. TypeScript enforces this at compile time.
    *
+   * The parser's `schema` property is used for input validation.
+   *
    * @example
    * ```typescript
    * // Parser without required slots
@@ -278,7 +280,7 @@ export function extendParserContextWithRefs({
     parser: RefExpressionParser<TValue, TParseResult, TRequiredSlots>,
     slots?: ExpressionSlotMap<TRequiredSlots>,
   ): z.ZodType<TValue, TValue> {
-    return z.unknown().transform((value) => {
+    return parser.schema.transform((value) => {
       if (transformReferences && value !== undefined) {
         return new DefinitionExpressionMarker(value, {
           path: [],
@@ -287,7 +289,7 @@ export function extendParserContextWithRefs({
           slots,
         }) as unknown as TValue;
       }
-      return value as TValue;
+      return value;
     }) as z.ZodType<TValue, TValue>;
   }
 

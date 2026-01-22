@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
   RefExpressionDependency,
@@ -38,6 +40,12 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   { model: typeof modelEntityType }
 > {
   readonly name = 'authorizer-expression';
+
+  /**
+   * Zod schema for validating expression strings.
+   * Requires a non-empty string value.
+   */
+  readonly schema = z.string().min(1, 'Expression is required');
 
   /**
    * Parse the expression string into an AST.

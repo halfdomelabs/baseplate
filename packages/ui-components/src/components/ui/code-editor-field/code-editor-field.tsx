@@ -4,7 +4,6 @@ import type { Extension } from '@codemirror/state';
 import type { ComponentPropsWithRef } from 'react';
 import type {
   Control,
-  FieldError,
   FieldPath,
   FieldValues,
   RegisterOptions,
@@ -14,9 +13,10 @@ import { javascript } from '@codemirror/lang-javascript';
 import { tooltips } from '@codemirror/view';
 import CodeMirror from '@uiw/react-codemirror';
 import { useMemo } from 'react';
-import { Controller, get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '#src/types/form.js';
+
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 
 import {
   FormControl,
@@ -84,6 +84,7 @@ function CodeEditorField({
             placeholder={placeholder}
             readOnly={readOnly}
             basicSetup={true}
+            indentWithTab={false}
             style={{
               fontSize: '14px',
               fontFamily: 'var(--font-mono)',
@@ -99,13 +100,13 @@ function CodeEditorField({
   );
 }
 
-export interface CodeEditorFieldControllerProps<
+interface CodeEditorFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<CodeEditorFieldProps, 'onChange' | 'value'> {
+> extends Omit<CodeEditorFieldProps, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
-  registerOptions?: RegisterOptions<TFieldValues, TFieldName>;
+  rules?: RegisterOptions<TFieldValues, TFieldName>;
 }
 
 function CodeEditorFieldController<
@@ -114,30 +115,18 @@ function CodeEditorFieldController<
 >({
   control,
   name,
-  registerOptions,
+  rules,
   ...rest
 }: CodeEditorFieldControllerProps<
   TFieldValues,
   TFieldName
 >): React.ReactElement {
-  const { errors } = useFormState({ control, name });
-  const error = get(errors, name) as FieldError | undefined;
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ name, control, rules }, rest);
 
-  return (
-    <Controller
-      control={control}
-      name={name}
-      rules={registerOptions}
-      render={({ field }) => (
-        <CodeEditorField
-          value={field.value as string}
-          onChange={field.onChange}
-          error={error?.message}
-          {...rest}
-        />
-      )}
-    />
-  );
+  return <CodeEditorField error={error?.message} {...rest} {...field} />;
 }
 
 export { CodeEditorField, CodeEditorFieldController };

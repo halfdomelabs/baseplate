@@ -6,8 +6,10 @@ import type React from 'react';
 
 import {
   authConfigSpec,
+  AuthorizerExpressionParseError,
   createAuthorizerRoleSchema,
   modelAuthorizerRoleEntityType,
+  parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useDefinitionSchema,
@@ -22,6 +24,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { autocompletion } from '@codemirror/autocomplete';
 import { linter } from '@codemirror/lint';
+import { EditorView } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId, useMemo } from 'react';
@@ -48,13 +51,37 @@ export function ModelAuthorizerRoleForm({
   const roleSchema = useDefinitionSchema(createAuthorizerRoleSchema);
   const { definitionContainer } = useProjectDefinition();
 
-  const schema = useMemo(
-    () =>
-      z.object({
-        role: roleSchema,
-      }),
-    [roleSchema],
-  );
+  const schema = useMemo(() => {
+    // Add parse validation to the role schema
+    const enhancedRoleSchema = roleSchema.superRefine((role, ctx) => {
+      // Skip validation if expression is empty (already validated by parser schema)
+      if (!role.expression.trim()) {
+        return;
+      }
+
+      try {
+        // Parse the expression to validate syntax
+        parseAuthorizerExpression(role.expression);
+      } catch (error) {
+        if (error instanceof AuthorizerExpressionParseError) {
+          ctx.addIssue({
+            code: 'custom',
+            message: error.message,
+            path: ['expression'],
+          });
+        }
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Invalid expression syntax',
+          path: ['expression'],
+        });
+      }
+    });
+
+    return z.object({
+      role: enhancedRoleSchema,
+    });
+  }, [roleSchema]);
 
   const formProps = useForm<{ role: AuthorizerRoleConfig }>({
     resolver: zodResolver(schema),
@@ -118,6 +145,7 @@ export function ModelAuthorizerRoleForm({
       linter(
         createAuthorizerExpressionLinter(modelContext, definitionContainer),
       ),
+      EditorView.lineWrapping,
     ];
 
     return exts;
