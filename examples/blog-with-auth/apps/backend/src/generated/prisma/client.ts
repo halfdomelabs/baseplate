@@ -74,3 +74,8 @@ export type UserRole = Prisma.UserRoleModel
  * 
  */
 export type UserSession = Prisma.UserSessionModel
+/**
+ * Model RateLimiterFlexible
+ * Model for rate-limiter-flexible to store rate limit data
+ */
+export type RateLimiterFlexible = Prisma.RateLimiterFlexibleModel

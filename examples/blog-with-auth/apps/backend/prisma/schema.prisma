@@ -109,3 +109,11 @@ model UserSession {
 
   @@map("user_session")
 }
+
+model RateLimiterFlexible {
+  key    String    @id
+  points Int
+  expire DateTime?
+
+  @@map("rate_limiter_flexible")
+}
