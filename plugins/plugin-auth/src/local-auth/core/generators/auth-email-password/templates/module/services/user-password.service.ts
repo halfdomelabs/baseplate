@@ -9,12 +9,14 @@ import {
   BadRequestError,
   handleZodRequestValidationError,
   NotFoundError,
+  TooManyRequestsError,
 } from '%errorHandlerServiceImports';
 import {
   createPasswordHash,
   verifyPasswordHash,
 } from '%passwordHasherServiceImports';
 import { prisma } from '%prismaImports';
+import { memoizeRateLimiter } from '%rateLimitImports';
 import { userSessionService } from '%userSessionServiceImports';
 import z from 'zod';
 
@@ -29,6 +31,31 @@ const emailPasswordSchema = z.object({
     .transform((value) => value.toLowerCase()),
   password: z.string().min(PASSWORD_MIN_LENGTH).max(MAX_VALUE_LENGTH),
 });
+
+/**
+ * Rate limiters for authentication operations.
+ */
+
+const getRegistrationLimiter = memoizeRateLimiter('registration', {
+  points: 10,
+  duration: 60 * 60, // 1 hour
+  blockDuration: 60 * 60, // Block for 1 hour if exceeded
+});
+
+const getLoginIpLimiter = memoizeRateLimiter('login-ip', {
+  points: 10,
+  duration: 60 * 60 * 24, // 24 hours
+  blockDuration: 60 * 60, // Block for 1 hour if exceeded
+});
+
+const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
+  'login-consecutive-fails',
+  {
+    points: 5,
+    duration: 60 * 60 * 24, // 24 hours (duration for tracking)
+    blockDuration: 60 * 15, // Block for 15 minutes after 5 consecutive fails
+  },
+);
 
 export async function createUserWithEmailAndPassword({
   input,
@@ -82,6 +109,13 @@ export async function registerUserWithEmailAndPassword({
   };
   context: RequestServiceContext;
 }): Promise<{ session: UserSessionPayload; user: User }> {
+  // Rate limit registration by IP
+  await getRegistrationLimiter().consumeOrThrow(
+    context.reqInfo.ip,
+    'Too many registration attempts. Please try again later.',
+    'registration-rate-limited',
+  );
+
   const user = await createUserWithEmailAndPassword({ input });
   const session = await userSessionService.createSession(user.id, context);
 
@@ -102,6 +136,29 @@ export async function authenticateUserWithEmailAndPassword({
     .parseAsync(input)
     .catch(handleZodRequestValidationError);
 
+  // Rate limiting setup
+  const clientIp = context.reqInfo.ip;
+  const emailIpKey = `${email}_${clientIp}`;
+
+  // Check IP-based rate limit (slow brute force protection)
+  await getLoginIpLimiter().consumeOrThrow(
+    clientIp,
+    'Too many login attempts. Please try again later.',
+    'login-ip-rate-limited',
+  );
+
+  // Check consecutive failures rate limit (fast brute force protection)
+  const consecutiveFailsResult =
+    await getLoginConsecutiveFailsLimiter().get(emailIpKey);
+
+  if (consecutiveFailsResult && !consecutiveFailsResult.allowed) {
+    throw new TooManyRequestsError(
+      'Account temporarily locked due to too many failed attempts. Please try again later.',
+      'login-consecutive-fails-blocked',
+      { retryAfterMs: consecutiveFailsResult.msBeforeNext },
+    );
+  }
+
   // check if user with that email exists
   const userAccount = await prisma.userAccount.findUnique({
     where: {
@@ -113,6 +170,8 @@ export async function authenticateUserWithEmailAndPassword({
   });
 
   if (userAccount === null) {
+    // Track failed attempt
+    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
     throw new BadRequestError('Invalid email', 'invalid-email');
   }
 
@@ -122,8 +181,13 @@ export async function authenticateUserWithEmailAndPassword({
     password,
   );
   if (!isValid) {
+    // Track failed attempt
+    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
     throw new BadRequestError('Invalid password', 'invalid-password');
   }
+
+  // Reset consecutive failures on successful login
+  await getLoginConsecutiveFailsLimiter().delete(emailIpKey);
 
   const session = await userSessionService.createSession(
     userAccount.userId,

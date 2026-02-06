@@ -16,6 +16,10 @@
     "pathRootName": "routes-root"
   },
   {
+    "canonicalPath": "@/src/routes/utilities",
+    "pathRootName": "routes-root"
+  },
+  {
     "canonicalPath": "@/src/routes/auth",
     "pathRootName": "routes-root"
   },

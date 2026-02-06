@@ -53,6 +53,14 @@ model BlogUser {
   @@map("blog_user")
 }
 
+model RateLimiterFlexible {
+  key    String    @id
+  points Int
+  expire DateTime? @db.Timestamptz(3)
+
+  @@map("rate_limiter_flexible")
+}
+
 model User {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email           String?       @unique

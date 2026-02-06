@@ -1,0 +1,8 @@
+{
+  "name": "rate-limit",
+  "displayName": "Rate Limiting",
+  "icon": "icon.svg",
+  "description": "Rate limiting service for protecting your API endpoints using Prisma-backed storage.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

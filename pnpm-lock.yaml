@@ -431,6 +431,9 @@ importers:
       '@baseplate-dev/plugin-queue':
         specifier: workspace:*
         version: link:../../plugins/plugin-queue
+      '@baseplate-dev/plugin-rate-limit':
+        specifier: workspace:*
+        version: link:../../plugins/plugin-rate-limit
       '@baseplate-dev/plugin-storage':
         specifier: workspace:*
         version: link:../../plugins/plugin-storage
@@ -1296,6 +1299,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-rate-limit':
+        specifier: workspace:*
+        version: link:../plugin-rate-limit
       '@baseplate-dev/react-generators':
         specifier: workspace:*
         version: link:../../packages/react-generators
@@ -1496,6 +1502,91 @@ importers:
       '@tanstack/react-router':
         specifier: 1.139.7
         version: 1.139.7(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.1.0(react@19.1.0)
+      react-hook-form:
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
+      zod:
+        specifier: 'catalog:'
+        version: 4.1.13
+    devDependencies:
+      '@baseplate-dev/project-builder-lib':
+        specifier: workspace:*
+        version: link:../../packages/project-builder-lib
+      '@baseplate-dev/sync':
+        specifier: workspace:*
+        version: link:../../packages/sync
+      '@baseplate-dev/tools':
+        specifier: workspace:*
+        version: link:../../packages/tools
+      '@originjs/vite-plugin-federation':
+        specifier: 1.3.6
+        version: 1.3.6
+      '@tailwindcss/vite':
+        specifier: 'catalog:'
+        version: 4.1.13(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.2))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.17.2
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.1.3
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.1.3(@types/react@19.1.3)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 5.0.2(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.2))
+      concurrently:
+        specifier: 9.0.1
+        version: 9.0.1
+      cpx2:
+        specifier: 'catalog:'
+        version: 8.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.32.0(jiti@2.6.1)
+      nodemon:
+        specifier: 'catalog:'
+        version: 3.1.11
+      prettier:
+        specifier: 'catalog:'
+        version: 3.6.2
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.1.13
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+      vite:
+        specifier: 'catalog:'
+        version: 7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.16(@types/node@22.17.2)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.2)
+
+  plugins/plugin-rate-limit:
+    dependencies:
+      '@baseplate-dev/core-generators':
+        specifier: workspace:*
+        version: link:../../packages/core-generators
+      '@baseplate-dev/fastify-generators':
+        specifier: workspace:*
+        version: link:../../packages/fastify-generators
+      '@baseplate-dev/ui-components':
+        specifier: workspace:*
+        version: link:../../packages/ui-components
+      '@baseplate-dev/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@hookform/resolvers':
+        specifier: 5.2.2
+        version: 5.2.2(react-hook-form@7.60.0(react@19.1.0))
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -5681,11 +5772,13 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   globals@14.0.0:
@@ -7617,6 +7710,7 @@ packages:
   tar@7.4.3:
     resolution: {integrity: sha512-5S7Va8hKfV7W5U6g3aYxXmlPoZVAwUMy9AOKyF2fVuZa2UD3qZjg578OrLRt8PcNN1PleVaL/5/yYATNL0ICUw==}
     engines: {node: '>=18'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
