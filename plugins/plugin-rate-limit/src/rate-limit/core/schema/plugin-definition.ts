@@ -1,12 +1,17 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
-import { definitionSchema } from '@baseplate-dev/project-builder-lib';
+import {
+  definitionSchema,
+  featureEntityType,
+} from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const createRateLimitPluginDefinitionSchema = definitionSchema(() =>
+export const createRateLimitPluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
-    // Rate limit plugin configuration - currently no options needed
-    // The Prisma model is defined via the project builder UI
+    rateLimitFeatureRef: ctx.withRef({
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
     rateLimitOptions: z.object({}).prefault({}),
   }),
 );

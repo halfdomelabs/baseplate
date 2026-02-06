@@ -1,8 +1,16 @@
 import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { PluginUtils } from '@baseplate-dev/project-builder-lib';
 import {
+  createAndApplyModelMergerResults,
+  createModelMergerResults,
+  doesModelMergerResultsHaveChanges,
+  FeatureUtils,
+  PluginUtils,
+} from '@baseplate-dev/project-builder-lib';
+import {
+  FeatureComboboxFieldController,
+  ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -20,8 +28,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
+import { RATE_LIMIT_MODELS } from '#src/rate-limit/constants/model-names.js';
+
 import type { RateLimitPluginDefinitionInput } from '../schema/plugin-definition.js';
 
+import { createRateLimitModels } from '../schema/models.js';
 import { createRateLimitPluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
@@ -31,7 +42,7 @@ export function RateLimitDefinitionEditor({
   metadata,
   onSave,
 }: WebConfigProps): React.JSX.Element {
-  const { definitionContainer, saveDefinitionWithFeedback } =
+  const { definition, definitionContainer, saveDefinitionWithFeedback } =
     useProjectDefinition();
 
   const rateLimitPluginDefinitionSchema = useDefinitionSchema(
@@ -43,10 +54,16 @@ export function RateLimitDefinitionEditor({
       return pluginMetadata.config as RateLimitPluginDefinitionInput;
     }
 
+    const defaultFeatureRef = FeatureUtils.getFeatureIdByNameOrDefault(
+      definition,
+      'utilities',
+    );
+
     return {
+      rateLimitFeatureRef: defaultFeatureRef,
       rateLimitOptions: {},
     } satisfies RateLimitPluginDefinitionInput;
-  }, [pluginMetadata?.config]);
+  }, [definition, pluginMetadata?.config]);
 
   const form = useResettableForm({
     resolver: zodResolver(rateLimitPluginDefinitionSchema),
@@ -54,13 +71,43 @@ export function RateLimitDefinitionEditor({
   });
   const { control, reset, handleSubmit } = form;
 
+  const pluginConfig = pluginMetadata?.config as
+    | RateLimitPluginDefinitionInput
+    | undefined;
+
+  const pendingModelChanges = useMemo(() => {
+    const featureRef = pluginConfig?.rateLimitFeatureRef ?? '';
+    if (!featureRef) return undefined;
+
+    const desiredModels = createRateLimitModels(featureRef);
+
+    return createModelMergerResults(
+      RATE_LIMIT_MODELS,
+      desiredModels,
+      definitionContainer,
+    );
+  }, [definitionContainer, pluginConfig?.rateLimitFeatureRef]);
+
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
+        const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
+          draftConfig,
+          data.rateLimitFeatureRef,
+        );
+        createAndApplyModelMergerResults(
+          draftConfig,
+          RATE_LIMIT_MODELS,
+          createRateLimitModels(featureRef),
+          definitionContainer,
+        );
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
-          data,
+          {
+            ...data,
+            rateLimitFeatureRef: featureRef,
+          },
           definitionContainer,
         );
       },
@@ -94,35 +141,56 @@ export function RateLimitDefinitionEditor({
               <SectionListSection>
                 <SectionListSectionHeader>
                   <SectionListSectionTitle>
-                    Rate Limiting Configuration
+                    General Settings
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Rate limiting uses a Prisma model for storage. Create a
-                    model named <code>RateLimiterFlexible</code> with the
-                    following fields.
+                    Configure the general settings for the rate limiting plugin.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="ratelimit:space-y-6">
-                  <div className="ratelimit:rounded-md ratelimit:bg-muted ratelimit:p-4">
-                    <pre className="ratelimit:text-sm ratelimit:text-muted-foreground">
-                      {`model RateLimiterFlexible {
-  key     String   @id
-  points  Int
-  expire  DateTime?
-}`}
-                    </pre>
-                  </div>
-                  <p className="ratelimit:text-sm ratelimit:text-muted-foreground">
-                    After adding this model to your data model in the project
-                    builder, the rate limiting service will be available for use
-                    in your application.
-                  </p>
+                  <FeatureComboboxFieldController
+                    label="Feature Path"
+                    name="rateLimitFeatureRef"
+                    control={control}
+                    canCreate
+                    description="Specify the feature path where the rate limiting model will be created"
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Rate Limiting Models
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    The plugin will automatically configure the models it needs
+                    for rate limiting storage.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="ratelimit:space-y-6">
+                  {pendingModelChanges ? (
+                    <ModelMergerResultAlert
+                      pendingModelChanges={pendingModelChanges}
+                    />
+                  ) : (
+                    <p className="ratelimit:text-sm ratelimit:text-muted-foreground">
+                      Save to create the RateLimiterFlexible model in your
+                      project.
+                    </p>
+                  )}
                 </SectionListSectionContent>
               </SectionListSection>
             </SectionList>
           </div>
 
-          <FormActionBar form={form} allowSaveWithoutDirty={!pluginMetadata} />
+          <FormActionBar
+            form={form}
+            allowSaveWithoutDirty={
+              !pluginMetadata ||
+              (pendingModelChanges != null &&
+                doesModelMergerResultsHaveChanges(pendingModelChanges))
+            }
+          />
         </form>
       </div>
     </div>

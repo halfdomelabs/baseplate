@@ -52,6 +52,11 @@ export const errorHandlerPlugin = fp((fastify, opts, done) => {
     logError(error);
 
     if (error instanceof HttpError) {
+      if (error.headers) {
+        for (const [key, value] of Object.entries(error.headers)) {
+          void reply.header(key, value);
+        }
+      }
       await reply.code(error.statusCode).send({
         ...error.extraData,
         message: error.message,

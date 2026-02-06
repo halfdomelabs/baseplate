@@ -9,6 +9,7 @@ import {
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import path from 'node:path';
 
 import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
@@ -54,6 +55,7 @@ const servicesUserPassword = createTsTemplateFile({
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     userSessionServiceImports: userSessionServiceImportsProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,

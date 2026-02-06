@@ -17,7 +17,10 @@ Provides flexible rate limiting for your application using Prisma-backed storage
 After enabling the plugin in your project, you can create and use rate limiters:
 
 ```typescript
-import { createRateLimiter, memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
+import {
+  createRateLimiter,
+  memoizeRateLimiter,
+} from '@src/services/rate-limiter.service.js';
 
 // Create a rate limiter directly
 const limiter = createRateLimiter({
@@ -45,7 +48,7 @@ if (!result.allowed) {
 await limiter.consumeOrThrow(
   userIp,
   'Too many login attempts',
-  'LOGIN_RATE_LIMITED'
+  'LOGIN_RATE_LIMITED',
 );
 ```
 

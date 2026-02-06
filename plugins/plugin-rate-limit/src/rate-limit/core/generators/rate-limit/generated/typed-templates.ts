@@ -5,21 +5,22 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-import { rateLimitImportsProvider } from '#src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.js';
-
 const rateLimiterService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaImports: prismaImportsProvider,
-    rateLimitImports: rateLimitImportsProvider,
   },
   name: 'rate-limiter-service',
-  projectExports: { createRateLimiter: {}, memoizeRateLimiter: {} },
+  projectExports: {
+    createRateLimiter: { isTypeOnly: false },
+    memoizeRateLimiter: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { rateLimiterTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/rate-limiter.service.ts',
+      '../templates/src/services/rate-limiter.service.ts',
     ),
   },
   variables: {},
@@ -31,14 +32,14 @@ const rateLimiterTypes = createTsTemplateFile({
   importMapProviders: {},
   name: 'rate-limiter-types',
   projectExports: {
-    RateLimiterConfig: {},
-    RateLimitResult: {},
-    RateLimiter: {},
+    RateLimiter: { isTypeOnly: true },
+    RateLimiterConfig: { isTypeOnly: true },
+    RateLimitResult: { isTypeOnly: true },
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/types/rate-limiter.types.ts',
+      '../templates/src/types/rate-limiter.types.ts',
     ),
   },
   variables: {},

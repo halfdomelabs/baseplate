@@ -1,4 +1,4 @@
-import { appModuleProvider } from '@baseplate-dev/fastify-generators';
+import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface RateLimitCoreRateLimitPaths {
@@ -12,18 +12,18 @@ const rateLimitCoreRateLimitPaths =
   );
 
 const rateLimitCoreRateLimitPathsTask = createGeneratorTask({
-  dependencies: { appModule: appModuleProvider },
+  dependencies: { packageInfo: packageInfoProvider },
   exports: {
     rateLimitCoreRateLimitPaths: rateLimitCoreRateLimitPaths.export(),
   },
-  run({ appModule }) {
-    const moduleRoot = appModule.getModuleFolder();
+  run({ packageInfo }) {
+    const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         rateLimitCoreRateLimitPaths: {
-          rateLimiterService: `${moduleRoot}/services/rate-limiter.service.ts`,
-          rateLimiterTypes: `${moduleRoot}/types/rate-limiter.types.ts`,
+          rateLimiterService: `${srcRoot}/services/rate-limiter.service.ts`,
+          rateLimiterTypes: `${srcRoot}/types/rate-limiter.types.ts`,
         },
       },
     };

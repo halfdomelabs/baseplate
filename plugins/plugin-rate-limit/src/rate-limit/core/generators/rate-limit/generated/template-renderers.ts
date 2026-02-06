@@ -11,8 +11,6 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { rateLimitImportsProvider } from '#src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.js';
-
 import { RATE_LIMIT_CORE_RATE_LIMIT_PATHS } from './template-paths.js';
 import { RATE_LIMIT_CORE_RATE_LIMIT_TEMPLATES } from './typed-templates.js';
 
@@ -49,19 +47,12 @@ const rateLimitCoreRateLimitRenderersTask = createGeneratorTask({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: RATE_LIMIT_CORE_RATE_LIMIT_PATHS.provider,
     prismaImports: prismaImportsProvider,
-    rateLimitImports: rateLimitImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     rateLimitCoreRateLimitRenderers: rateLimitCoreRateLimitRenderers.export(),
   },
-  run({
-    errorHandlerServiceImports,
-    paths,
-    prismaImports,
-    rateLimitImports,
-    typescriptFile,
-  }) {
+  run({ errorHandlerServiceImports, paths, prismaImports, typescriptFile }) {
     return {
       providers: {
         rateLimitCoreRateLimitRenderers: {
@@ -74,8 +65,8 @@ const rateLimitCoreRateLimitRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   errorHandlerServiceImports,
                   prismaImports,
-                  rateLimitImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

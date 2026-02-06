@@ -12,6 +12,7 @@ import {
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
@@ -46,6 +47,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionServiceImports: userSessionServiceImportsProvider,
@@ -63,6 +65,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
+    rateLimitImports,
     requestServiceContextImports,
     typescriptFile,
     userSessionServiceImports,
@@ -84,6 +87,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   pothosImports,
                   prismaGeneratedImports,
                   prismaImports,
+                  rateLimitImports,
                   requestServiceContextImports,
                   userSessionServiceImports,
                   userSessionTypesImports,

@@ -97,7 +97,8 @@
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
-    { "id": "feature:XM8fb3xFc7ve", "name": "auth" }
+    { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
+    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
   "libraries": [
@@ -695,6 +696,45 @@
         "transformers": [],
         "update": { "enabled": false }
       }
+    },
+    {
+      "featureRef": "utilities",
+      "id": "model:TO3fGEXsMhzX",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:FwFLIDsUpJbX",
+            "isOptional": false,
+            "name": "key",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5CkPRDkMexZG",
+            "isOptional": false,
+            "name": "points",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:OBYWG0Ngi9Ze",
+            "isOptional": true,
+            "name": "expire",
+            "options": { "default": "" },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["key"],
+        "relations": [],
+        "uniqueConstraints": []
+      },
+      "name": "RateLimiterFlexible",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
     }
   ],
   "plugins": [
@@ -771,6 +811,13 @@
       "id": "plugin:baseplate-dev_plugin-email_postmark",
       "name": "postmark",
       "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "rateLimitFeatureRef": "utilities", "rateLimitOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-rate-limit_rate-limit",
+      "name": "rate-limit",
+      "packageName": "@baseplate-dev/plugin-rate-limit",
       "version": "0.1.0"
     }
   ],

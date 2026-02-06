@@ -4,12 +4,11 @@ import type {
   RateLimiter,
   RateLimiterConfig,
   RateLimitResult,
-} from '%rateLimitImports';
-
-import { RateLimiterPrisma, RateLimiterRes } from 'rate-limiter-flexible';
+} from '$rateLimiterTypes';
 
 import { TooManyRequestsError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
+import { RateLimiterPrisma, RateLimiterRes } from 'rate-limiter-flexible';
 
 /**
  * Convert rate-limiter-flexible response to our interface.

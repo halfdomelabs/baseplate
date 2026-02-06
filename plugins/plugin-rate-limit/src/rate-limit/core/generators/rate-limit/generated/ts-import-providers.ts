@@ -15,9 +15,9 @@ import { RATE_LIMIT_CORE_RATE_LIMIT_PATHS } from './template-paths.js';
 export const rateLimitImportsSchema = createTsImportMapSchema({
   createRateLimiter: {},
   memoizeRateLimiter: {},
-  RateLimiter: {},
-  RateLimiterConfig: {},
-  RateLimitResult: {},
+  RateLimiter: { isTypeOnly: true },
+  RateLimiterConfig: { isTypeOnly: true },
+  RateLimitResult: { isTypeOnly: true },
 });
 
 export type RateLimitImportsProvider = TsImportMapProviderFromSchema<

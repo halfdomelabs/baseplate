@@ -1,1 +1,1 @@
-export type * from './rate-limit/index.js';
+export * from './rate-limit/index.js';

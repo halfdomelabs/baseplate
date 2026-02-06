@@ -1,20 +1,6 @@
 {
   "name": "rate-limit/core/rate-limit",
   "templates": {
-    "rate-limiter-types": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "types",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/types/rate-limiter.types.ts",
-      "sourceFile": "module/types/rate-limiter.types.ts",
-      "projectExports": {
-        "RateLimiterConfig": {},
-        "RateLimitResult": {},
-        "RateLimiter": {}
-      },
-      "variables": {}
-    },
     "rate-limiter-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -25,19 +11,39 @@
         },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/prisma/generated/ts-import-providers.ts"
-        },
-        "rateLimitImportsProvider": {
-          "importName": "rateLimitImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-rate-limit:src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.ts"
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/services/rate-limiter.service.ts",
-      "sourceFile": "module/services/rate-limiter.service.ts",
+      "pathRootRelativePath": "{src-root}/services/rate-limiter.service.ts",
       "projectExports": {
-        "createRateLimiter": {},
-        "memoizeRateLimiter": {}
+        "createRateLimiter": {
+          "isTypeOnly": false,
+          "name": "createRateLimiter"
+        },
+        "memoizeRateLimiter": {
+          "isTypeOnly": false,
+          "name": "memoizeRateLimiter"
+        }
       },
+      "referencedGeneratorTemplates": ["rate-limiter-types"],
+      "sourceFile": "src/services/rate-limiter.service.ts",
+      "variables": {}
+    },
+    "rate-limiter-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "types",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/rate-limiter.types.ts",
+      "projectExports": {
+        "RateLimiter": { "isTypeOnly": true, "name": "RateLimiter" },
+        "RateLimiterConfig": {
+          "isTypeOnly": true,
+          "name": "RateLimiterConfig"
+        },
+        "RateLimitResult": { "isTypeOnly": true, "name": "RateLimitResult" }
+      },
+      "sourceFile": "src/types/rate-limiter.types.ts",
       "variables": {}
     }
   }

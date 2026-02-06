@@ -24,6 +24,11 @@
     "instanceData": {},
     "template": "service"
   },
+  "rate-limiter.service.ts": {
+    "generator": "@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit",
+    "instanceData": {},
+    "template": "rate-limiter-service"
+  },
   "sentry.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
     "instanceData": {},
