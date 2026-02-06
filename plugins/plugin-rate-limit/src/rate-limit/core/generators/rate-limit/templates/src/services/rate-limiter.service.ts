@@ -60,7 +60,7 @@ export function createRateLimiter(
     async get(key: string): Promise<RateLimitResult | null> {
       const res = await primaryLimiter.get(key);
       if (!res) return null;
-      return mapResult(res, res.remainingPoints >= 0);
+      return mapResult(res, res.remainingPoints > 0);
     },
 
     async block(key: string, durationSeconds: number): Promise<void> {
