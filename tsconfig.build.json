@@ -41,6 +41,9 @@
       "path": "./plugins/plugin-queue/tsconfig.build.json"
     },
     {
+      "path": "./plugins/plugin-rate-limit/tsconfig.build.json"
+    },
+    {
       "path": "./plugins/plugin-storage/tsconfig.build.json"
     }
   ],

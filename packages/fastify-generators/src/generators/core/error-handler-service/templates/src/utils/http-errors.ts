@@ -6,6 +6,7 @@ export class HttpError extends Error {
     public code?: string,
     public extraData?: Record<string, unknown>,
     public statusCode = 500,
+    public headers?: Record<string, string>,
   ) {
     super(message);
   }
@@ -48,6 +49,21 @@ export class NotFoundError extends HttpError {
     extraData?: Record<string, unknown>,
   ) {
     super(message, code, extraData, 404);
+  }
+}
+
+export class TooManyRequestsError extends HttpError {
+  constructor(
+    message: string,
+    code = 'TOO_MANY_REQUESTS',
+    extraData?: Record<string, unknown>,
+  ) {
+    const retryAfterMs = extraData?.retryAfterMs;
+    const headers =
+      typeof retryAfterMs === 'number'
+        ? { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) }
+        : undefined;
+    super(message, code, extraData, 429, headers);
   }
 }
 

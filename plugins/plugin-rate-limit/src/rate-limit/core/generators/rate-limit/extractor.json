@@ -1,0 +1,44 @@
+{
+  "name": "rate-limit/core/rate-limit",
+  "templates": {
+    "rate-limiter-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "types",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/types/rate-limiter.types.ts",
+      "sourceFile": "module/types/rate-limiter.types.ts",
+      "projectExports": {
+        "RateLimiterConfig": {},
+        "RateLimitResult": {},
+        "RateLimiter": {}
+      },
+      "variables": {}
+    },
+    "rate-limiter-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/prisma/generated/ts-import-providers.ts"
+        },
+        "rateLimitImportsProvider": {
+          "importName": "rateLimitImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-rate-limit:src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/rate-limiter.service.ts",
+      "sourceFile": "module/services/rate-limiter.service.ts",
+      "projectExports": {
+        "createRateLimiter": {},
+        "memoizeRateLimiter": {}
+      },
+      "variables": {}
+    }
+  }
+}
