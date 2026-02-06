@@ -43,6 +43,7 @@ const httpErrors = createTsTemplateFile({
     HttpError: {},
     InternalServerError: {},
     NotFoundError: {},
+    TooManyRequestsError: {},
     UnauthorizedError: {},
   },
   source: {

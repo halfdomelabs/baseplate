@@ -132,6 +132,9 @@ export function generateTypescriptEslintConfig(options = []) {
             allow: ['NotFoundError', 'Redirect'],
           },
         ],
+        '@typescript-eslint/no-unused-vars': KEEP_UNUSED_IMPORTS
+          ? 'error'
+          : 'off',
       },
     },
 
@@ -143,9 +146,6 @@ export function generateTypescriptEslintConfig(options = []) {
       rules: {
         // Prevent unused imports from being auto-removed if the environment variable is set to true
         // This is useful when AI agents are editing code part by part
-        '@typescript-eslint/no-unused-vars': KEEP_UNUSED_IMPORTS
-          ? 'error'
-          : 'off',
         'unused-imports/no-unused-imports': KEEP_UNUSED_IMPORTS
           ? 'off'
           : 'error',

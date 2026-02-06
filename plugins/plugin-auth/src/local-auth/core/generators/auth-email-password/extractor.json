@@ -54,6 +54,10 @@
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         },
+        "rateLimitImportsProvider": {
+          "importName": "rateLimitImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-rate-limit:src/rate-limit/core/generators/rate-limit/generated/ts-import-providers.ts"
+        },
         "requestServiceContextImportsProvider": {
           "importName": "requestServiceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"

@@ -20,6 +20,7 @@
   "@baseplate-dev/fastify-generators#core/app-module:module-email-password": "src/modules/accounts/password/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-feature:c28pJNS_89Oz": "src/modules/blogs/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-feature:I_EnFXnHjbGQ": "src/modules/accounts/index.ts",
+  "@baseplate-dev/fastify-generators#core/app-module:module-feature:IFU3VXMq1CM7": "src/modules/utilities/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-feature:XM8fb3xFc7ve": "src/modules/auth/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-graphql": "src/modules/graphql/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-root": "src/modules/index.ts",
@@ -107,5 +108,7 @@
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:pg-boss-service": "src/services/pg-boss.service.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:run-workers": "src/scripts/run-workers.ts",
   "@baseplate-dev/plugin-queue#queue/core/queues:queue-registry": "src/constants/queues.constants.ts",
-  "@baseplate-dev/plugin-queue#queue/core/queues:queue-types": "src/types/queue.types.ts"
+  "@baseplate-dev/plugin-queue#queue/core/queues:queue-types": "src/types/queue.types.ts",
+  "@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit:rate-limiter-service": "src/services/rate-limiter.service.ts",
+  "@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit:rate-limiter-types": "src/types/rate-limiter.types.ts"
 }

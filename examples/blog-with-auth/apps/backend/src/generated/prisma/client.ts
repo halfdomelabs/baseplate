@@ -55,6 +55,11 @@ export type BlogPost = Prisma.BlogPostModel
  */
 export type BlogUser = Prisma.BlogUserModel
 /**
+ * Model RateLimiterFlexible
+ * 
+ */
+export type RateLimiterFlexible = Prisma.RateLimiterFlexibleModel
+/**
  * Model User
  * 
  */

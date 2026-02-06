@@ -20,6 +20,7 @@ export const errorHandlerServiceImportsSchema = createTsImportMapSchema({
   InternalServerError: {},
   logError: {},
   NotFoundError: {},
+  TooManyRequestsError: {},
   UnauthorizedError: {},
 });
 
@@ -53,6 +54,7 @@ const coreErrorHandlerServiceImportsTask = createGeneratorTask({
             InternalServerError: paths.httpErrors,
             logError: paths.errorLogger,
             NotFoundError: paths.httpErrors,
+            TooManyRequestsError: paths.httpErrors,
             UnauthorizedError: paths.httpErrors,
           },
         ),

@@ -22,7 +22,7 @@
   "files": [
     "README.md",
     "LICENSE",
-    "CHANGELOG",
+    "CHANGELOG.md",
     "dist/**/*",
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
@@ -45,6 +45,7 @@
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
+    "@baseplate-dev/plugin-rate-limit": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",

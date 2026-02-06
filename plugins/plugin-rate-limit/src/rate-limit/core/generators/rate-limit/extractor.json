@@ -1,0 +1,50 @@
+{
+  "name": "rate-limit/core/rate-limit",
+  "templates": {
+    "rate-limiter-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/rate-limiter.service.ts",
+      "projectExports": {
+        "createRateLimiter": {
+          "isTypeOnly": false,
+          "name": "createRateLimiter"
+        },
+        "memoizeRateLimiter": {
+          "isTypeOnly": false,
+          "name": "memoizeRateLimiter"
+        }
+      },
+      "referencedGeneratorTemplates": ["rate-limiter-types"],
+      "sourceFile": "src/services/rate-limiter.service.ts",
+      "variables": {}
+    },
+    "rate-limiter-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "types",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/rate-limiter.types.ts",
+      "projectExports": {
+        "RateLimiter": { "isTypeOnly": true, "name": "RateLimiter" },
+        "RateLimiterConfig": {
+          "isTypeOnly": true,
+          "name": "RateLimiterConfig"
+        },
+        "RateLimitResult": { "isTypeOnly": true, "name": "RateLimitResult" }
+      },
+      "sourceFile": "src/types/rate-limiter.types.ts",
+      "variables": {}
+    }
+  }
+}

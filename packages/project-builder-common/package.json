@@ -35,6 +35,7 @@
     "@baseplate-dev/plugin-auth": "workspace:*",
     "@baseplate-dev/plugin-email": "workspace:*",
     "@baseplate-dev/plugin-queue": "workspace:*",
+    "@baseplate-dev/plugin-rate-limit": "workspace:*",
     "@baseplate-dev/plugin-storage": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/project-builder-server": "workspace:*",

@@ -75,7 +75,7 @@ export default defineWorkspaceMetaConfig({
           packageJson.files = [
             'README.md',
             'LICENSE',
-            'CHANGELOG',
+            'CHANGELOG.md',
             'dist/**/*',
             '!dist/**/*.map',
             '!dist/**/*.tsbuildinfo',
