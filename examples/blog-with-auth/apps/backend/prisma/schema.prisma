@@ -53,6 +53,18 @@ model BlogUser {
   @@map("blog_user")
 }
 
+model PasswordResetToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("password_reset_token")
+}
+
 model RateLimiterFlexible {
   key    String    @id
   points Int
@@ -62,20 +74,21 @@ model RateLimiterFlexible {
 }
 
 model User {
-  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email           String?       @unique
-  isEmailVerified Boolean       @default(false) @map("is_email_verified")
-  phone           String?
-  updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
-  name            String?
-  emailVerified   Boolean       @default(false) @map("email_verified")
-  accounts        UserAccount[]
-  blogPosts       BlogPost[]
-  blogs           Blog[]
-  blogUsers       BlogUser[]
-  roles           UserRole[]
-  sessions        UserSession[]
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email               String?              @unique
+  isEmailVerified     Boolean              @default(false) @map("is_email_verified")
+  phone               String?
+  updatedAt           DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  name                String?
+  emailVerified       Boolean              @default(false) @map("email_verified")
+  accounts            UserAccount[]
+  blogPosts           BlogPost[]
+  blogs               Blog[]
+  blogUsers           BlogUser[]
+  passwordResetTokens PasswordResetToken[]
+  roles               UserRole[]
+  sessions            UserSession[]
 
   @@map("user")
 }

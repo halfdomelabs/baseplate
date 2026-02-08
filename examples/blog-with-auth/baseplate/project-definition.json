@@ -348,6 +348,121 @@
       }
     },
     {
+      "featureRef": "auth",
+      "id": "model:QHs2C2SaYd7X",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:eN_ntzNuhhla",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:QApK8td_P0fH",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:a8VtjLJlTXbe",
+            "isOptional": false,
+            "name": "tokenHash",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:qUJiNF4igR9H",
+            "isOptional": false,
+            "name": "expiresAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:dtt3o8SwYrMK",
+            "isOptional": true,
+            "name": "usedAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:je0yJOHtiPm8",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:POFd5ZLJCghf",
+            "foreignRelationName": "passwordResetTokens",
+            "id": "model-local-relation:VF7sHMwCJD6_",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "tokenHash" }],
+            "id": "model-unique-constraint:VOz4xo9vq9NO"
+          }
+        ]
+      },
+      "name": "PasswordResetToken",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "utilities",
+      "id": "model:TO3fGEXsMhzX",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:FwFLIDsUpJbX",
+            "isOptional": false,
+            "name": "key",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5CkPRDkMexZG",
+            "isOptional": false,
+            "name": "points",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:OBYWG0Ngi9Ze",
+            "isOptional": true,
+            "name": "expire",
+            "options": { "default": "" },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["key"],
+        "relations": [],
+        "uniqueConstraints": []
+      },
+      "name": "RateLimiterFlexible",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
       "featureRef": "accounts",
       "graphql": {
         "mutations": {
@@ -690,45 +805,6 @@
         ]
       },
       "name": "UserSession",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
-    },
-    {
-      "featureRef": "utilities",
-      "id": "model:TO3fGEXsMhzX",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:FwFLIDsUpJbX",
-            "isOptional": false,
-            "name": "key",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:5CkPRDkMexZG",
-            "isOptional": false,
-            "name": "points",
-            "options": { "default": "" },
-            "type": "int"
-          },
-          {
-            "id": "model-scalar-field:OBYWG0Ngi9Ze",
-            "isOptional": true,
-            "name": "expire",
-            "options": { "default": "" },
-            "type": "dateTime"
-          }
-        ],
-        "primaryKeyFieldRefs": ["key"],
-        "relations": [],
-        "uniqueConstraints": []
-      },
-      "name": "RateLimiterFlexible",
       "service": {
         "create": { "enabled": false },
         "delete": { "enabled": false },

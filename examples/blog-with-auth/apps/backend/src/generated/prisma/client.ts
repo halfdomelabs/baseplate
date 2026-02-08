@@ -55,6 +55,11 @@ export type BlogPost = Prisma.BlogPostModel
  */
 export type BlogUser = Prisma.BlogUserModel
 /**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
  * Model RateLimiterFlexible
  * 
  */
