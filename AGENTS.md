@@ -126,7 +126,7 @@ For all code generation, file sorting, and internal data structures, use `compar
 
 ## Key Reminders for Claude Code
 
-- Run `pnpm lint:affected` and `pnpm typecheck` before committing changes
+- Run `pnpm precheck` after finishing a new feature or bug fix to validate everything works correctly
 - If a particular interface or type is not exported, change the file so it is exported
 - If you are adding a new feature or changing an existing feature, please also add a new Changeset for it in the `.changeset/` directory of the form (keeping things to patch changes for now):
 
