@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import { generateAuthorizerExpressionCode } from './authorizers.js';
 
-describe('generateAuthorizerExpressionCode', () => {
-  function generate(expression: string): string {
-    const parsed = parseAuthorizerExpression(expression);
-    return generateAuthorizerExpressionCode(parsed.ast);
-  }
+function generate(expression: string): string {
+  const parsed = parseAuthorizerExpression(expression);
+  return generateAuthorizerExpressionCode(parsed.ast);
+}
 
+describe('generateAuthorizerExpressionCode', () => {
   describe('field comparisons', () => {
     it('should transform model field === userId', () => {
       expect(generate('model.id === userId')).toBe(
