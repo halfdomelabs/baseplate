@@ -126,7 +126,7 @@ export const prismaModelAuthorizerGenerator = createGenerator({
               export const ${authorizerName} = ${prismaAuthorizerUtilsImports.createModelAuthorizer.fragment()}({
                 model: '${modelVarName}',
                 idField: '${idFieldName}',
-                getModelById: (id) => ${prismaModelFragment}.findUnique({ where: { id } }),
+                getModelById: (id) => ${prismaModelFragment}.findUnique({ where: { ${idFieldName}: id } }),
                 roles: ${rolesFragment},
               });
             `;

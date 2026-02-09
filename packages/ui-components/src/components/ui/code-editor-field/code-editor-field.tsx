@@ -88,7 +88,7 @@ function CodeEditorField({
             style={{
               fontSize: '14px',
               fontFamily: 'var(--font-mono)',
-              border: '1px solid hsl(var(--border))',
+              border: '1px solid var(--border)',
               borderRadius: 'var(--radius)',
             }}
           />

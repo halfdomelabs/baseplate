@@ -69,12 +69,13 @@ export function ModelAuthorizerRoleForm({
             message: error.message,
             path: ['expression'],
           });
+        } else {
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Invalid expression syntax',
+            path: ['expression'],
+          });
         }
-        ctx.addIssue({
-          code: 'custom',
-          message: 'Invalid expression syntax',
-          path: ['expression'],
-        });
       }
     });
 

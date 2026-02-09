@@ -33,11 +33,12 @@ export const createAuthorizerRoleSchema = definitionSchemaWithSlots(
          *
          * Available context variables:
          * - `model` - The model instance being authorized
-         * - `auth` - The AuthContext with userId, roles, etc.
+         * - `userId` - The authenticated user's ID (implicit auth context)
+         * - `hasRole()` / `hasSomeRole()` - Role checking functions
          *
-         * @example 'model.id === auth.userId'
-         * @example 'auth.hasRole("admin")'
-         * @example 'model.organizationId === auth.organizationId'
+         * @example 'model.id === userId'
+         * @example 'hasRole("admin")'
+         * @example 'model.authorId === userId || hasRole("admin")'
          */
         expression: ctx.withExpression(authorizerExpressionParser, {
           model: modelSlot,
