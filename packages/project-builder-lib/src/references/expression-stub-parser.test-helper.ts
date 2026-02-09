@@ -19,7 +19,7 @@ import { RefExpressionParser } from './expression-types.js';
  * });
  * ```
  */
-export class StubParser extends RefExpressionParser<string, undefined> {
+class StubParser extends RefExpressionParser<string, undefined> {
   readonly name = 'stub';
   readonly schema = z.string();
 
