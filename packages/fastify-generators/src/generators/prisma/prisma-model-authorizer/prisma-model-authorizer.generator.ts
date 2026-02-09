@@ -122,11 +122,13 @@ export const prismaModelAuthorizerGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
+            const idWhere = idFieldName === 'id' ? 'id' : `${idFieldName}: id`;
+
             const fileFragment = tsTemplate`
               export const ${authorizerName} = ${prismaAuthorizerUtilsImports.createModelAuthorizer.fragment()}({
                 model: '${modelVarName}',
                 idField: '${idFieldName}',
-                getModelById: (id) => ${prismaModelFragment}.findUnique({ where: { ${idFieldName}: id } }),
+                getModelById: (id) => ${prismaModelFragment}.findUnique({ where: { ${idWhere} } }),
                 roles: ${rolesFragment},
               });
             `;
