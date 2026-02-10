@@ -41,6 +41,19 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
 
   // React Hooks
   reactHooksPlugin.configs.flat['recommended-latest'],
+  {
+    rules: {
+      // Disable new strict rules from react-hooks v7 that require significant refactoring
+      // These should be addressed separately in a future PR
+      'react-hooks/refs': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/static-components': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/incompatible-library': 'off',
+      'react-hooks/immutability': 'off',
+    },
+  },
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,

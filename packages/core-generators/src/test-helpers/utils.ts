@@ -31,14 +31,14 @@ export function normalizeImports(
     .map((imp) => ({
       ...imp,
       // Sort named imports alphabetically
-      namedImports: imp.namedImports?.slice().sort((a, b) => {
+      namedImports: imp.namedImports?.toSorted((a, b) => {
         const nameCompare = compareStrings(a.name, b.name);
         if (nameCompare !== 0) return nameCompare;
         // If names are equal, sort by alias
         return compareStrings(a.alias ?? '', b.alias ?? '');
       }),
     }))
-    .sort((a, b) => {
+    .toSorted((a, b) => {
       // Primary sort: module specifier
       const moduleCompare = compareStrings(
         a.moduleSpecifier,
@@ -86,7 +86,7 @@ export function normalizeHoistedFragments(
         key: frag.key,
       } as TsHoistedFragment;
     })
-    .sort((a, b) => compareStrings(a.key, b.key));
+    .toSorted((a, b) => compareStrings(a.key, b.key));
 }
 
 /**

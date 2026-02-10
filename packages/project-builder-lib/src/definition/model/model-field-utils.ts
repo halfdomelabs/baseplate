@@ -26,11 +26,11 @@ function areScalarsUnique(
   model: ModelConfigInput,
   fieldIds: string[],
 ): boolean {
-  const sortedFieldIds = [...fieldIds].sort();
+  const sortedFieldIds = [...fieldIds].toSorted();
   return (
-    (isEqual([...model.model.primaryKeyFieldRefs].sort(), sortedFieldIds) ||
+    (isEqual([...model.model.primaryKeyFieldRefs].toSorted(), sortedFieldIds) ||
       model.model.uniqueConstraints?.some((c) =>
-        isEqual(c.fields.map((f) => f.fieldRef).sort(), sortedFieldIds),
+        isEqual(c.fields.map((f) => f.fieldRef).toSorted(), sortedFieldIds),
       )) ??
     false
   );
@@ -75,7 +75,7 @@ function isRelationOneToOne(
   relation: ModelRelationFieldConfig,
 ): boolean {
   const localFields = getRelationLocalFields(model, relation);
-  const localFieldIds = localFields.map((f) => f.id).sort();
+  const localFieldIds = localFields.map((f) => f.id).toSorted();
   // check if the local fields are a primary key or unique constraint
   return areScalarsUnique(model, localFieldIds);
 }

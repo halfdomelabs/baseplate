@@ -213,10 +213,9 @@ describe('TemplateExtractorFileContainer', () => {
 
       const files = vol.toJSON();
       const fileContent = files[filePath];
+      expect(typeof fileContent).toBe('string');
       if (typeof fileContent === 'string') {
         expect(Buffer.from(fileContent)).toEqual(contents);
-      } else {
-        throw new TypeError('Expected file content to be a string');
       }
     });
 

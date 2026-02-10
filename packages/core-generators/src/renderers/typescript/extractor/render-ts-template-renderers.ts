@@ -45,7 +45,7 @@ function getImportMapProvidersExpression(
   if (providers.length === 0) return;
 
   return `{
-    ${[...new Set(providers.map((p) => p.replace(/Provider$/, '')))].sort().join(', ')}
+    ${[...new Set(providers.map((p) => p.replace(/Provider$/, '')))].toSorted().join(', ')}
   }`;
 }
 
@@ -173,7 +173,7 @@ function createTypeScriptRenderFunctionForTemplateGroup(
     ),
   )`${typedTemplatesExportName}.${camelCase(groupName)}`;
 
-  const usesGeneratorPaths = !!templateConfigs.some(
+  const usesGeneratorPaths = templateConfigs.some(
     (t) =>
       t.referencedGeneratorTemplates &&
       t.referencedGeneratorTemplates.length > 0,

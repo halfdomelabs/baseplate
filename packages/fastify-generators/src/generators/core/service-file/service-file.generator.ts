@@ -140,10 +140,10 @@ export const serviceFileGenerator = createGenerator({
           build: async (builder) => {
             const orderedHeaders = headersContainer
               .getValue()
-              .sort((a, b) => compareStrings(a.name, b.name));
+              .toSorted((a, b) => compareStrings(a.name, b.name));
             const orderedMethods = methodsContainer
               .getValue()
-              .sort((a, b) => a.order - b.order);
+              .toSorted((a, b) => a.order - b.order);
 
             if (orderedMethods.length > 0 || orderedHeaders.length > 0) {
               const mergedMethods = mergeFragmentsWithHoistedFragmentsPresorted(

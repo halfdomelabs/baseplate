@@ -202,7 +202,7 @@ async function discoverTemplatePathRoots(
     z.array(templatePathRootSchema),
   ).catch(handleFileNotFoundError);
   if (!pathsMetadataContents) return [];
-  return pathsMetadataContents.sort(
+  return pathsMetadataContents.toSorted(
     (a, b) => b.canonicalPath.length - a.canonicalPath.length,
   );
 }

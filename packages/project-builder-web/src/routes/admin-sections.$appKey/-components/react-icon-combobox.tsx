@@ -54,7 +54,7 @@ function ReactIconCombobox({
                 !query ||
                 option.label.toLowerCase().includes(query.toLowerCase()),
             )
-            .sort((a, b) => compareStrings(a.label, b.label))
+            .toSorted((a, b) => compareStrings(a.label, b.label))
             .slice(0, 20),
         )
       }

@@ -54,10 +54,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * @param _projectDef - The project definition (unused during parsing)
    * @returns The parsed expression info, or undefined if parsing fails
    */
-  parse(
-    value: string,
-    _projectDef: unknown,
-  ): AuthorizerExpressionInfo | undefined {
+  parse(value: string): AuthorizerExpressionInfo | undefined {
     try {
       return parseAuthorizerExpression(value);
     } catch (error) {
@@ -129,10 +126,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * entity-level dependencies (just field names).
    * Future: could track model field entity references for renames.
    */
-  getDependencies(
-    _value: string,
-    _parseResult: AuthorizerExpressionInfo | undefined,
-  ): RefExpressionDependency[] {
+  getDependencies(): RefExpressionDependency[] {
     // TODO: Track model field entities for rename support
     return [];
   }
@@ -143,11 +137,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * Currently returns value unchanged as we don't yet
    * support field renames in expressions.
    */
-  updateForRename(
-    value: string,
-    _parseResult: AuthorizerExpressionInfo | undefined,
-    _renames: Map<string, string>,
-  ): string {
+  updateForRename(value: string): string {
     // TODO: Implement rename support using AST position info
     return value;
   }

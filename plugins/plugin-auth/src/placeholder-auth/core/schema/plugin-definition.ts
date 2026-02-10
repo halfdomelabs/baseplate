@@ -4,7 +4,7 @@ import { definitionSchema } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
 export const createPlaceholderAuthPluginDefinitionSchema = definitionSchema(
-  (_) => z.object({}),
+  () => z.object({}),
 );
 
 export type PlaceholderAuthPluginDefinitionInput = def.InferInput<

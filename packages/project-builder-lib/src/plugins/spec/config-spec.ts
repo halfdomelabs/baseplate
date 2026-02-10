@@ -30,7 +30,7 @@ function sortAndValidateMigrations(
   pluginKey: string,
 ): PluginConfigMigration[] {
   // make sure migrations are sorted by version and they are all unique
-  const sortedMigrations = [...migrations].sort(
+  const sortedMigrations = [...migrations].toSorted(
     (a, b) => a.version - b.version,
   );
   if (sortedMigrations.some((m) => m.version <= 0)) {

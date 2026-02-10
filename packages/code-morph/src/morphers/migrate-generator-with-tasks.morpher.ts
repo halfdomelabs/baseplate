@@ -105,7 +105,8 @@ export default createTypescriptMorpher({
     );
 
     if (
-      getDefaultChildGenerators?.getText() === 'getDefaultChildGenerators: () => ({})'
+      getDefaultChildGenerators?.getText() ===
+      'getDefaultChildGenerators: () => ({})'
     ) {
       getDefaultChildGenerators.remove();
     }

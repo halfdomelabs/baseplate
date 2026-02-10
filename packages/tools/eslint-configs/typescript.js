@@ -277,6 +277,7 @@ export function generateTypescriptEslintConfig(options = []) {
         ...vitest.configs.recommended.rules,
         // Helpful in dev but should flag as errors when linting
         'vitest/no-focused-tests': 'error',
+        'vitest/no-conditional-expect': 'off',
       },
       settings: {
         vitest: {

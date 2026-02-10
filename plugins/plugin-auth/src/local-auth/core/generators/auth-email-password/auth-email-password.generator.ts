@@ -53,7 +53,7 @@ export const authEmailPasswordGenerator = createGenerator({
                 variables: {
                   schemaUserPasswordMutations: {
                     TPL_ADMIN_ROLES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      adminRoles.map((r) => quot(r)).sort(),
+                      adminRoles.map((r) => quot(r)).toSorted(),
                     ),
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,

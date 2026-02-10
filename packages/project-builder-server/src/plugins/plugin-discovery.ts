@@ -61,7 +61,7 @@ export async function discoverPlugins(
   ].filter(
     (name) =>
       name.startsWith('baseplate-plugin-') ||
-      !!/^@[^/]+\/baseplate-plugin-/.test(name) ||
+      /^@[^/]+\/baseplate-plugin-/.test(name) ||
       name.startsWith('@baseplate-dev/plugin-'),
   );
 

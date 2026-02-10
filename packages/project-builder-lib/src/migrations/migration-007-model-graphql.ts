@@ -86,7 +86,7 @@ export const migration007ModelGraphql = createSchemaMigration<
           stripUndefinedChildren({
             objectType: buildObjectType
               ? {
-                  enabled: !!buildObjectType,
+                  enabled: buildObjectType,
                   fields: exposedFields ?? [],
                   localRelations: exposedLocalRelations ?? [],
                   foreignRelations: exposedForeignRelations ?? [],

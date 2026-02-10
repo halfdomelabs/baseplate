@@ -16,7 +16,7 @@ export function applySimpleReplacements(
 ): string {
   // Sort replacements by length (longest first) to avoid substring issues
   // For example, we want to replace "UserEditPage" before "User"
-  const sortedReplacements = Object.entries(replacements).sort(
+  const sortedReplacements = Object.entries(replacements).toSorted(
     ([a], [b]) => b.length - a.length,
   );
 

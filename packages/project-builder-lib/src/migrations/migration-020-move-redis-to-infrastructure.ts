@@ -77,7 +77,7 @@ export const migration020MoveRedisToInfrastructure = createSchemaMigration<
     // Remove enableRedis from all apps
     const apps = config.apps?.map((app) => {
       if (app.type === 'backend' && 'enableRedis' in app) {
-        const { enableRedis: _, ...rest } = app;
+        const { enableRedis: _enableRedis, ...rest } = app;
         return rest as NewBackendApp;
       }
       return app as NewBackendApp;

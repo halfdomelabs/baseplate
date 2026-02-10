@@ -185,10 +185,10 @@ export class PrismaModelBlockWriter {
   protected getSortedFields(): PrismaModelField[] {
     const scalarFields = this.fields
       .filter((field) => field.fieldType === 'scalar')
-      .sort((a, b) => a.order - b.order);
+      .toSorted((a, b) => a.order - b.order);
     const relationFields = this.fields
       .filter((field) => field.fieldType === 'relation')
-      .sort((a, b) => compareStrings(a.name, b.name));
+      .toSorted((a, b) => compareStrings(a.name, b.name));
 
     // Look for duplicated orders in scalar fields
     const orderSet = new Set(scalarFields.map((field) => field.order));

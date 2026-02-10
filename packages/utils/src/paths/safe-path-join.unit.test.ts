@@ -96,14 +96,10 @@ describe('safePathJoin', () => {
     });
 
     it('should include paths in error message', () => {
-      try {
-        safePathJoin('/home/user', '../other');
-        expect.fail('Should have thrown');
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toContain('/home/user');
-        expect((error as Error).message).toContain('Path traversal detected');
-      }
+      const throwFn = (): string => safePathJoin('/home/user', '../other');
+      expect(throwFn).toThrow(Error);
+      expect(throwFn).toThrow(/\/home\/user/);
+      expect(throwFn).toThrow(/Path traversal detected/);
     });
   });
 
@@ -120,9 +116,10 @@ describe('safePathJoin', () => {
       expect(result).toBe(path.resolve('/'));
     });
 
-    it('should handle Windows paths', () => {
-      // This test will behave differently on Windows vs Unix
-      if (process.platform === 'win32') {
+    it.skipIf(process.platform !== 'win32')(
+      'should handle Windows paths',
+      () => {
+        // This test will behave differently on Windows vs Unix
         const result = safePathJoin(
           String.raw`C:\Users\John`,
           'Documents',
@@ -131,8 +128,8 @@ describe('safePathJoin', () => {
         expect(result).toBe(
           path.resolve(String.raw`C:\Users\John\Documents\file.txt`),
         );
-      }
-    });
+      },
+    );
 
     it('should handle paths with special characters', () => {
       const result = safePathJoin(

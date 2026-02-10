@@ -192,9 +192,11 @@ describe('snapshot-utils', () => {
         const convertedPath = safeDiffFilenameToPath(diffFilename);
         // Note: underscores in original filenames will be converted to slashes
         // This is a known limitation of the current implementation
-        if (!originalPath.includes('_')) {
-          expect(convertedPath).toBe(originalPath);
+        if (originalPath.includes('_')) {
+          // Skip this case as it's a known limitation
+          continue;
         }
+        expect(convertedPath).toBe(originalPath);
       }
     });
   });
