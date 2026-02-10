@@ -2,6 +2,7 @@ import { flattenAppModule } from '@src/utils/app-modules.js';
 
 /* TPL_IMPORTS:START */
 import './schema/user-password.mutations.js';
+import './schema/password-reset.mutations.js';
 /* TPL_IMPORTS:END */
 
 export const /* TPL_MODULE_NAME:START */ passwordModule /* TPL_MODULE_NAME:END */ =

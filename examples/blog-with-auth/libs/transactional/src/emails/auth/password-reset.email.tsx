@@ -6,6 +6,7 @@ import { Heading } from '../../components/heading.js';
 import { EmailLayout } from '../../components/layout.js';
 import { Section } from '../../components/section.js';
 import { Text } from '../../components/text.js';
+import { theme } from '../../constants/theme.js';
 import { defineEmail } from '../../types/email-component.types.js';
 
 interface PasswordResetProps {
@@ -13,7 +14,7 @@ interface PasswordResetProps {
 }
 
 export default defineEmail(PasswordResetEmail, {
-  subject: 'Reset your Baseplate password',
+  subject: `Reset your ${theme.branding.name} password`,
   previewProps: {
     resetLink: 'https://example.com',
   },
@@ -23,11 +24,12 @@ function PasswordResetEmail({
   resetLink,
 }: PasswordResetProps): React.ReactElement {
   return (
-    <EmailLayout previewText="Reset your Baseplate password">
+    <EmailLayout previewText={`Reset your ${theme.branding.name} password`}>
       <Heading as="h2">Reset your password</Heading>
 
       <Text>
-        We received a request to reset the password for your Baseplate account.
+        We received a request to reset the password for your{' '}
+        {theme.branding.name} account.
       </Text>
 
       <Text>

@@ -381,13 +381,6 @@
             "type": "dateTime"
           },
           {
-            "id": "model-scalar-field:dtt3o8SwYrMK",
-            "isOptional": true,
-            "name": "usedAt",
-            "options": { "default": "" },
-            "type": "dateTime"
-          },
-          {
             "id": "model-scalar-field:je0yJOHtiPm8",
             "isOptional": false,
             "name": "createdAt",

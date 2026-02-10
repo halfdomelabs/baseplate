@@ -99,9 +99,12 @@ type Mutation {
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
   registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
+  requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
+  resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
+  validatePasswordResetToken(input: ValidatePasswordResetTokenInput!): ValidatePasswordResetTokenPayload!
 }
 
 type Query {
@@ -126,6 +129,27 @@ input RegisterWithEmailPasswordInput {
 """Payload type for registerWithEmailPassword mutation"""
 type RegisterWithEmailPasswordPayload {
   session: UserSessionPayload!
+}
+
+"""Input type for requestPasswordReset mutation"""
+input RequestPasswordResetInput {
+  email: String!
+}
+
+"""Payload type for requestPasswordReset mutation"""
+type RequestPasswordResetPayload {
+  success: Boolean!
+}
+
+"""Input type for resetPasswordWithToken mutation"""
+input ResetPasswordWithTokenInput {
+  newPassword: String!
+  token: String!
+}
+
+"""Payload type for resetPasswordWithToken mutation"""
+type ResetPasswordWithTokenPayload {
+  success: Boolean!
 }
 
 """Input type for resetUserPassword mutation"""
@@ -191,3 +215,13 @@ type UserSessionPayload {
 A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
 """
 scalar Uuid
+
+"""Input type for validatePasswordResetToken mutation"""
+input ValidatePasswordResetTokenInput {
+  token: String!
+}
+
+"""Payload type for validatePasswordResetToken mutation"""
+type ValidatePasswordResetTokenPayload {
+  valid: Boolean!
+}
