@@ -102,6 +102,7 @@ playground
 # AI tools
 .claude/settings.local.json
 .gemini
+.codex
 CLAUDE.local.md
 
 # Baseplate settings

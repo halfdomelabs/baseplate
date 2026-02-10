@@ -172,7 +172,9 @@ function ResetPasswordPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <Link to="/auth/forgot-password">
-            <Button className="w-full">Request New Link</Button>
+            <Button variant="secondary" className="w-full">
+              Request New Link
+            </Button>
           </Link>
         </CardContent>
       </Card>
@@ -192,6 +194,7 @@ function ResetPasswordPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <Button
+            variant="secondary"
             className="w-full"
             onClick={() => {
               navigate({ to: '/auth/login' }).catch(logError);

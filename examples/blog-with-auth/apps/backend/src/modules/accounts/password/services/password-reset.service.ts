@@ -93,7 +93,16 @@ export async function requestPasswordReset({
       'Too many password reset attempts. Please try again later.',
       'too-many-requests',
     ),
-    getPasswordResetGlobalLimiter().consume('global'),
+    getPasswordResetEmailLimiter().consumeOrThrow(
+      email,
+      'Too many password reset attempts. Please try again later.',
+      'too-many-requests',
+    ),
+    getPasswordResetGlobalLimiter().consumeOrThrow(
+      'global',
+      'Too many password reset attempts. Please try again later.',
+      'too-many-requests',
+    ),
   ]);
 
   // Find user by email - silently handle non-existent users to prevent enumeration
@@ -103,36 +112,30 @@ export async function requestPasswordReset({
   });
 
   if (user?.email) {
-    // Per-email rate limit (silent - don't reveal email existence)
-    const emailLimitResult =
-      await getPasswordResetEmailLimiter().consume(email);
+    // Generate token
+    const token = generateResetToken();
+    const tokenHash = hashToken(token);
+    const expiresAt = new Date(
+      Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_SEC * 1000,
+    );
 
-    if (emailLimitResult.allowed) {
-      // Generate token
-      const token = generateResetToken();
-      const tokenHash = hashToken(token);
-      const expiresAt = new Date(
-        Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_SEC * 1000,
-      );
+    // Store the hashed token
+    await prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
 
-      // Store the hashed token
-      await prisma.passwordResetToken.create({
-        data: {
-          userId: user.id,
-          tokenHash,
-          expiresAt,
-        },
-      });
+    // Construct reset URL using configured domain
+    const resetLink = `${config.PASSWORD_RESET_DOMAIN}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
-      // Construct reset URL using configured base URL
-      const resetLink = `${config.PASSWORD_RESET_URL_BASE}?token=${encodeURIComponent(token)}`;
-
-      // Send email asynchronously (queue-based)
-      await sendEmail(PasswordResetEmail, {
-        to: user.email,
-        data: { resetLink },
-      });
-    }
+    // Send email asynchronously (queue-based)
+    await sendEmail(PasswordResetEmail, {
+      to: user.email,
+      data: { resetLink },
+    });
   }
 
   // Always return success to prevent user enumeration

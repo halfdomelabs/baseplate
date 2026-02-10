@@ -81,11 +81,11 @@ function ForgotPasswordPage(): React.JSX.Element {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center text-sm">
-            <Link to="/auth/login" className="underline underline-offset-4">
+          <Link to="/auth/login">
+            <Button variant="secondary" className="w-full">
               Back to login
-            </Link>
-          </div>
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     );
