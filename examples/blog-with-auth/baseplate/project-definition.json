@@ -348,6 +348,15 @@
       }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.id === userId",
+            "id": "model-authorizer-role:blog-user-owner",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "accounts",
       "graphql": {
         "mutations": {

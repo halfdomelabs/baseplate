@@ -1,12 +1,19 @@
-import { DefinitionReferenceMarker } from './markers.js';
+import {
+  DefinitionExpressionMarker,
+  DefinitionReferenceMarker,
+} from './markers.js';
 
 /**
- * Strips the DefinitionReferenceMarker from the value recursively.
- * @param value - The value to strip the DefinitionReferenceMarker from.
- * @returns The value without the DefinitionReferenceMarker.
+ * Strips the DefinitionReferenceMarker and DefinitionExpressionMarker from the value recursively.
+ * @param value - The value to strip the markers from.
+ * @returns The value without the markers.
  */
 export function stripRefMarkers<TInput = unknown>(value: TInput): TInput {
   if (value instanceof DefinitionReferenceMarker) {
+    return value.value as TInput;
+  }
+
+  if (value instanceof DefinitionExpressionMarker) {
     return value.value as TInput;
   }
 

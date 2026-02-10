@@ -1,5 +1,7 @@
 import { randomKey } from '@baseplate-dev/utils';
 
+import type { DefinitionExpression } from './expression-types.js';
+
 export type ReferencePath = (string | number)[];
 
 /**
@@ -173,4 +175,8 @@ export interface ResolvedZodRefPayload<T> {
    * The references in the definition.
    */
   references: DefinitionReference[];
+  /**
+   * The expressions in the definition.
+   */
+  expressions: DefinitionExpression[];
 }

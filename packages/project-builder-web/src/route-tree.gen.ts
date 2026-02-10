@@ -45,6 +45,7 @@ import { Route as DataEnumsEditKeyIndexRouteImport } from './routes/data/enums/e
 import { Route as PackagesAppsKeyWebAdminRouteImport } from './routes/packages/apps.$key/web/admin'
 import { Route as DataModelsEditKeyServiceRouteImport } from './routes/data/models/edit.$key/service'
 import { Route as DataModelsEditKeyGraphqlRouteImport } from './routes/data/models/edit.$key/graphql'
+import { Route as DataModelsEditKeyAuthorizationRouteImport } from './routes/data/models/edit.$key/authorization'
 
 const SettingsRouteRoute = SettingsRouteRouteImport.update({
   id: '/settings',
@@ -232,6 +233,12 @@ const DataModelsEditKeyGraphqlRoute =
     path: '/graphql',
     getParentRoute: () => DataModelsEditKeyRouteRoute,
   } as any)
+const DataModelsEditKeyAuthorizationRoute =
+  DataModelsEditKeyAuthorizationRouteImport.update({
+    id: '/authorization',
+    path: '/authorization',
+    getParentRoute: () => DataModelsEditKeyRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
   '/packages/apps/$key/': typeof PackagesAppsKeyIndexRoute
   '/packages/libs/$key/': typeof PackagesLibsKeyIndexRoute
+  '/data/models/edit/$key/authorization': typeof DataModelsEditKeyAuthorizationRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
   '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
@@ -290,6 +298,7 @@ export interface FileRoutesByTo {
   '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
   '/packages/apps/$key': typeof PackagesAppsKeyIndexRoute
   '/packages/libs/$key': typeof PackagesLibsKeyIndexRoute
+  '/data/models/edit/$key/authorization': typeof DataModelsEditKeyAuthorizationRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
   '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
@@ -329,6 +338,7 @@ export interface FileRoutesById {
   '/packages/apps/$key/backend': typeof PackagesAppsKeyBackendRoute
   '/packages/apps/$key/': typeof PackagesAppsKeyIndexRoute
   '/packages/libs/$key/': typeof PackagesLibsKeyIndexRoute
+  '/data/models/edit/$key/authorization': typeof DataModelsEditKeyAuthorizationRoute
   '/data/models/edit/$key/graphql': typeof DataModelsEditKeyGraphqlRoute
   '/data/models/edit/$key/service': typeof DataModelsEditKeyServiceRoute
   '/packages/apps/$key/web/admin': typeof PackagesAppsKeyWebAdminRoute
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/packages/apps/$key/backend'
     | '/packages/apps/$key/'
     | '/packages/libs/$key/'
+    | '/data/models/edit/$key/authorization'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
     | '/packages/apps/$key/web/admin'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/packages/apps/$key/backend'
     | '/packages/apps/$key'
     | '/packages/libs/$key'
+    | '/data/models/edit/$key/authorization'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
     | '/packages/apps/$key/web/admin'
@@ -433,6 +445,7 @@ export interface FileRouteTypes {
     | '/packages/apps/$key/backend'
     | '/packages/apps/$key/'
     | '/packages/libs/$key/'
+    | '/data/models/edit/$key/authorization'
     | '/data/models/edit/$key/graphql'
     | '/data/models/edit/$key/service'
     | '/packages/apps/$key/web/admin'
@@ -704,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataModelsEditKeyGraphqlRouteImport
       parentRoute: typeof DataModelsEditKeyRouteRoute
     }
+    '/data/models/edit/$key/authorization': {
+      id: '/data/models/edit/$key/authorization'
+      path: '/authorization'
+      fullPath: '/data/models/edit/$key/authorization'
+      preLoaderRoute: typeof DataModelsEditKeyAuthorizationRouteImport
+      parentRoute: typeof DataModelsEditKeyRouteRoute
+    }
   }
 }
 
@@ -735,6 +755,7 @@ const DataEnumsRouteRouteWithChildren = DataEnumsRouteRoute._addFileChildren(
 )
 
 interface DataModelsEditKeyRouteRouteChildren {
+  DataModelsEditKeyAuthorizationRoute: typeof DataModelsEditKeyAuthorizationRoute
   DataModelsEditKeyGraphqlRoute: typeof DataModelsEditKeyGraphqlRoute
   DataModelsEditKeyServiceRoute: typeof DataModelsEditKeyServiceRoute
   DataModelsEditKeyIndexRoute: typeof DataModelsEditKeyIndexRoute
@@ -742,6 +763,7 @@ interface DataModelsEditKeyRouteRouteChildren {
 
 const DataModelsEditKeyRouteRouteChildren: DataModelsEditKeyRouteRouteChildren =
   {
+    DataModelsEditKeyAuthorizationRoute: DataModelsEditKeyAuthorizationRoute,
     DataModelsEditKeyGraphqlRoute: DataModelsEditKeyGraphqlRoute,
     DataModelsEditKeyServiceRoute: DataModelsEditKeyServiceRoute,
     DataModelsEditKeyIndexRoute: DataModelsEditKeyIndexRoute,

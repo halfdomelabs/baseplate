@@ -8,6 +8,7 @@ export * from './prisma-data-service/index.js';
 export * from './prisma-data-update/index.js';
 export * from './prisma-enum/index.js';
 export * from './prisma-field/index.js';
+export * from './prisma-model-authorizer/index.js';
 export * from './prisma-model-id/index.js';
 export * from './prisma-model-index/index.js';
 export * from './prisma-model-unique/index.js';
