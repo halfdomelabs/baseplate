@@ -57,7 +57,7 @@ export const reactEslintConfig = tsEslint.config(
   },
 
   // React Hooks
-  reactHooksPlugin.configs['recommended-latest'],
+  reactHooksPlugin.configs.flat['recommended-latest'],
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,

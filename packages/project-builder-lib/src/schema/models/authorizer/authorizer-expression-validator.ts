@@ -42,7 +42,7 @@ function getRoleNames(container: ProjectDefinitionContainer): Set<string> {
   const authConfig = container.pluginStore.use(authConfigSpec);
 
   const roles = authConfig.getAuthConfig(container.definition)?.roles;
-  return new Set(roles?.map((role) => role.name) ?? []);
+  return new Set(roles?.map((role) => role.name));
 }
 
 /**

@@ -89,7 +89,7 @@ export function addSimpleReplacementComments(
 
       // Check if the value already exists in the template (would prevent extraction)
       // We check the original template, not the processed one
-      const valuePattern = new RegExp(`\\b${escapeRegExp(contents)}\\b`);
+      const valuePattern = new RegExp(String.raw`\b${escapeRegExp(contents)}\b`);
       if (valuePattern.test(template)) {
         throw new Error(
           `The template contents contain the value "${contents}" which would prevent ` +
@@ -170,7 +170,7 @@ export function renderTsTemplateToTsCodeFragment(
   >();
 
   // --- Pass 1: Replace block placeholders with unique markers ---
-  const blockRegex = new RegExp(`^([ \\t]*)(${prefix}[A-Z0-9_]+);$`, 'gm');
+  const blockRegex = new RegExp(String.raw`^([ \t]*)(${prefix}[A-Z0-9_]+);$`, 'gm');
   renderedTemplate = renderedTemplate.replace(
     blockRegex,
     (match, leading: string, key: string) => {
@@ -204,7 +204,7 @@ export function renderTsTemplateToTsCodeFragment(
   );
 
   // --- Pass 3: Replace comment placeholders with unique markers ---
-  const commentRegex = new RegExp(`\\/\\* (${prefix}[A-Z0-9_]+) \\*\\/`, 'g');
+  const commentRegex = new RegExp(String.raw`\/\* (${prefix}[A-Z0-9_]+) \*\/`, 'g');
   renderedTemplate = renderedTemplate.replace(
     commentRegex,
     (match, key: string) => {

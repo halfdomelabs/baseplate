@@ -27,7 +27,7 @@ export const Route = createFileRoute('/data')({
 
 function DataLayout(): React.JSX.Element {
   const {
-    definition: { models = [], enums = [] },
+    definition: { models, enums = [] },
   } = useProjectDefinition();
 
   const longestName = maxBy([...models, ...enums], (m) => m.name.length)?.name;

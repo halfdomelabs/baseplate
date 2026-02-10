@@ -78,7 +78,7 @@ export const pluginConfigSpec = createFieldMapSpec(
           validatedMigrations.get(pluginKey),
         getLastMigrationVersion: (pluginKey: string) => {
           const migrations = values.migrations.get(pluginKey);
-          return migrations?.[migrations.length - 1]?.version;
+          return migrations?.at(-1)?.version;
         },
       };
     },

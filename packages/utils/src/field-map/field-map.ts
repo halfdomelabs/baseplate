@@ -310,8 +310,7 @@ export class MapOfMapsContainer<
       const newInnerMap = new Map<
         K2,
         { value: V; setBySource: string | undefined }
-      >();
-      newInnerMap.set(key2, { value, setBySource: sourceToUse });
+      >([[key2, { value, setBySource: sourceToUse }]]);
       this._value.set(key1, {
         value: newInnerMap,
         setBySource: sourceToUse,

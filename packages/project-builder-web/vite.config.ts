@@ -92,7 +92,7 @@ export default defineConfig(({ mode }) => {
 
                   // Regex for this dev server instance URLs
                   const devServerRegex = new RegExp(
-                    `^(http|https|ws|wss)://(localhost|127.0.0.1|\\[::1\\]):${PORT}$`,
+                    String.raw`^(http|https|ws|wss)://(localhost|127.0.0.1|\[::1\]):${PORT}$`,
                   );
 
                   // Rewrite localhost origin to match backend host only if it comes from the Vite dev server

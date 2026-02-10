@@ -33,8 +33,7 @@ describe('findGeneratorPackageName', () => {
   });
 
   it('uses cached package name if available', async () => {
-    const cache: PackageNameCache = new Map();
-    cache.set('/test/generators/my-generator', 'cached-package');
+    const cache: PackageNameCache = new Map([['/test/generators/my-generator', 'cached-package']]);
 
     const packageName = await findGeneratorPackageName(
       '/test/generators/my-generator',

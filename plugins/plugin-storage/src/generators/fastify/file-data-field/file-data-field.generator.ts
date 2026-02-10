@@ -71,7 +71,7 @@ export const fileDataFieldGenerator = createGenerator({
         }
 
         // Validate this is a file relation (should have exactly one field)
-        if (!relation.fields || relation.fields.length !== 1) {
+        if (relation.fields?.length !== 1) {
           throw new Error(
             `File relation ${relationName} in model ${modelName} must have exactly one field (the file ID field)`,
           );

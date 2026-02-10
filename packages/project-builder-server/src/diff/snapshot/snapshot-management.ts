@@ -252,21 +252,21 @@ export async function listSnapshotContents({
     logger.info(`Snapshot contents (${snapshotDir.path}):`);
 
     if (manifest.files.modified.length > 0) {
-      logger.info(`\\nModified files (${manifest.files.modified.length}):`);
+      logger.info(String.raw`\nModified files (${manifest.files.modified.length}):`);
       for (const entry of manifest.files.modified) {
         logger.info(`  ${entry.path}`);
       }
     }
 
     if (manifest.files.added.length > 0) {
-      logger.info(`\\nAdded files (${manifest.files.added.length}):`);
+      logger.info(String.raw`\nAdded files (${manifest.files.added.length}):`);
       for (const file of manifest.files.added) {
         logger.info(`  ${file}`);
       }
     }
 
     if (manifest.files.deleted.length > 0) {
-      logger.info(`\\nDeleted files (${manifest.files.deleted.length}):`);
+      logger.info(String.raw`\nDeleted files (${manifest.files.deleted.length}):`);
       for (const file of manifest.files.deleted) {
         logger.info(`  ${file}`);
       }

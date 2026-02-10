@@ -90,7 +90,7 @@ function applyReplacementToText(
     return result;
   } else {
     // For other values, do exact matching with word boundaries where possible
-    const regex = new RegExp(`\\b${escapedValue}\\b`, 'g');
+    const regex = new RegExp(String.raw`\b${escapedValue}\b`, 'g');
     return text.replace(regex, variable);
   }
 }

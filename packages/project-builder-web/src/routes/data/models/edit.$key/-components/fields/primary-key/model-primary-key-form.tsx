@@ -35,7 +35,7 @@ export function ModelPrimaryKeyForm({
 }: ModelPrimaryKeyFormProps): React.JSX.Element {
   const fields = useEditedModelConfig((model) => model.model.fields);
   const {
-    field: { value: modelValue = [], onChange: onModelChange },
+    field: { value: modelValue, onChange: onModelChange },
   } = useController({
     name: 'model.primaryKeyFieldRefs',
     control: modelControl,

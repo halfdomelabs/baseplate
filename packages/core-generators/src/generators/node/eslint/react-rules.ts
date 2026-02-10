@@ -40,7 +40,7 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
   },
 
   // React Hooks
-  reactHooksPlugin.configs['recommended-latest'],
+  reactHooksPlugin.configs.flat['recommended-latest'],
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,
