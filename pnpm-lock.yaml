@@ -1269,6 +1269,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-email':
+        specifier: workspace:*
+        version: link:../plugin-email
       '@baseplate-dev/plugin-rate-limit':
         specifier: workspace:*
         version: link:../plugin-rate-limit

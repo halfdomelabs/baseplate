@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "password-hasher-service"
   },
+  "password-reset.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-password-reset"
+  },
   "user-password.service.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

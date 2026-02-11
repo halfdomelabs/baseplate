@@ -1,3 +1,18 @@
+// @ts-nocheck
+
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '$constants';
+import { getApolloErrorCode } from '%apolloErrorImports';
+import { graphql } from '%graphqlImports';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  InputFieldController,
+} from '%reactComponentsImports';
+import { logAndFormatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -10,22 +25,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-
-import { Button } from '@src/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@src/components/ui/card';
-import { InputFieldController } from '@src/components/ui/input-field';
-import { graphql } from '@src/graphql';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { logError } from '@src/services/error-logger';
-import { getApolloErrorCode } from '@src/utils/apollo-error';
-
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from './-constants';
 
 export const Route = createFileRoute('/auth_/reset-password')({
   validateSearch: z.object({

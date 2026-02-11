@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
   pothosImportsProvider,
@@ -9,6 +10,7 @@ import {
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import path from 'node:path';
 
@@ -19,11 +21,30 @@ const constantsPassword = createTsTemplateFile({
   group: 'module',
   importMapProviders: {},
   name: 'constants-password',
-  projectExports: { PASSWORD_MIN_LENGTH: {} },
+  projectExports: {
+    PASSWORD_MAX_LENGTH: {},
+    PASSWORD_MIN_LENGTH: {},
+    PASSWORD_RESET_TOKEN_EXPIRY_SEC: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/module/constants/password.constants.ts',
+    ),
+  },
+  variables: {},
+});
+
+const schemaPasswordResetMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-password-reset-mutations',
+  referencedGeneratorTemplates: { servicesPasswordReset: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/password-reset.mutations.ts',
     ),
   },
   variables: {},
@@ -45,6 +66,35 @@ const schemaUserPasswordMutations = createTsTemplateFile({
     ),
   },
   variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
+});
+
+const servicesPasswordReset = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    passwordHasherServiceImports: passwordHasherServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
+    requestServiceContextImports: requestServiceContextImportsProvider,
+  },
+  name: 'services-password-reset',
+  projectExports: {
+    cleanupExpiredPasswordResetTokens: { isTypeOnly: false },
+    completePasswordReset: { isTypeOnly: false },
+    requestPasswordReset: { isTypeOnly: false },
+    validatePasswordResetToken: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { constantsPassword: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/password-reset.service.ts',
+    ),
+  },
+  variables: {},
 });
 
 const servicesUserPassword = createTsTemplateFile({
@@ -78,7 +128,9 @@ const servicesUserPassword = createTsTemplateFile({
 
 export const moduleGroup = {
   constantsPassword,
+  schemaPasswordResetMutations,
   schemaUserPasswordMutations,
+  servicesPasswordReset,
   servicesUserPassword,
 };
 

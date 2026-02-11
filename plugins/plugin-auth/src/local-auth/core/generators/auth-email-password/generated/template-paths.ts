@@ -3,7 +3,9 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthEmailPasswordPaths {
   constantsPassword: string;
+  schemaPasswordResetMutations: string;
   schemaUserPasswordMutations: string;
+  servicesPasswordReset: string;
   servicesUserPassword: string;
 }
 
@@ -25,7 +27,9 @@ const localAuthCoreAuthEmailPasswordPathsTask = createGeneratorTask({
       providers: {
         localAuthCoreAuthEmailPasswordPaths: {
           constantsPassword: `${moduleRoot}/constants/password.constants.ts`,
+          schemaPasswordResetMutations: `${moduleRoot}/schema/password-reset.mutations.ts`,
           schemaUserPasswordMutations: `${moduleRoot}/schema/user-password.mutations.ts`,
+          servicesPasswordReset: `${moduleRoot}/services/password-reset.service.ts`,
           servicesUserPassword: `${moduleRoot}/services/user-password.service.ts`,
         },
       },

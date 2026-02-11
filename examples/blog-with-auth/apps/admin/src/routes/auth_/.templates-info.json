@@ -1,4 +1,14 @@
 {
+  "-constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "constants"
+  },
+  "forgot-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "forgot-password"
+  },
   "login.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
@@ -8,6 +18,11 @@
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
     "template": "register"
+  },
+  "reset-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "reset-password"
   },
   "route.tsx": {
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",

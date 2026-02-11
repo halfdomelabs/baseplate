@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
   pothosImportsProvider,
@@ -12,6 +13,7 @@ import {
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -41,6 +43,8 @@ const localAuthCoreAuthEmailPasswordRenderers =
 const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   dependencies: {
     authModuleImports: authModuleImportsProvider,
+    configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     paths: LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
@@ -59,6 +63,8 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   },
   run({
     authModuleImports,
+    configServiceImports,
+    emailModuleImports,
     errorHandlerServiceImports,
     passwordHasherServiceImports,
     paths,
@@ -82,6 +88,8 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   authModuleImports,
+                  configServiceImports,
+                  emailModuleImports,
                   errorHandlerServiceImports,
                   passwordHasherServiceImports,
                   pothosImports,

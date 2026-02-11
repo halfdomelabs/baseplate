@@ -70,6 +70,7 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '$constants';
 import { getApolloErrorCode } from '%apolloErrorImports';
 import { graphql } from '%graphqlImports';
 import {
@@ -40,11 +41,9 @@ export const Route = createFileRoute('/auth_/login')({
   },
 });
 
-const PASSWORD_MIN_LENGTH = 8;
-
 const formSchema = z.object({
   email: z.email().transform((value) => value.toLowerCase()),
-  password: z.string().min(PASSWORD_MIN_LENGTH),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -154,11 +153,22 @@ function LoginPage(): React.JSX.Element {
               Login
             </Button>
           </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link to="/auth/register" className="underline underline-offset-4">
-              Sign up
+          <div className="mt-4 flex flex-col gap-4 text-center text-sm">
+            <Link
+              to="/auth/forgot-password"
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              Forgot your password?
             </Link>
+            <div>
+              Don&apos;t have an account?{' '}
+              <Link
+                to="/auth/register"
+                className="underline underline-offset-4"
+              >
+                Sign up
+              </Link>
+            </div>
           </div>
         </form>
       </CardContent>
