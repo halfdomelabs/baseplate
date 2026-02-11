@@ -11,14 +11,14 @@ export const Route = createFileRoute('/')({
 });
 
 const homePageQuery = graphql(`
-query HomePage {
-  blogPosts {
-    id
-    title
-    content
+  query HomePage {
+    blogPosts {
+      id
+      title
+      content
+    }
   }
-}
-  `)
+`);
 
 function HomePage(): ReactElement {
   const { data, error } = useQuery(homePageQuery);
