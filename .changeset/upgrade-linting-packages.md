@@ -4,8 +4,9 @@
 '@baseplate-dev/react-generators': patch
 '@baseplate-dev/ui-components': patch
 '@baseplate-dev/fastify-generators': patch
-'@baseplate-plugin/storage': patch
-'@baseplate-plugin/auth': patch
+'@baseplate-dev/plugin-storage': patch
+'@baseplate-dev/plugin-auth': patch
+'@baseplate-dev/plugin-email': patch
 ---
 
 Upgrade linting packages
