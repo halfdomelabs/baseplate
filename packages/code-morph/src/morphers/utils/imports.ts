@@ -78,7 +78,9 @@ export function addOrUpdateImport(
     // Create new import declaration at the top with sorted imports
     insertImportDeclarationAtTop(sourceFile, {
       moduleSpecifier,
-      namedImports: namedImports.toSorted().map((name) => ({ name })),
+      namedImports: namedImports
+        .toSorted((a, b) => compareStrings(a, b))
+        .map((name) => ({ name })),
       isTypeOnly: typeOnly,
     });
   }

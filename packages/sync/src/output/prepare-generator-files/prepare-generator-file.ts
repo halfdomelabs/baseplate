@@ -85,8 +85,8 @@ export async function formatOutputFileContents(
 
   const formattersForFile = formatters.filter(
     (f) =>
-      f.fileExtensions?.includes(path.extname(relativePath)) ??
-      f.fileNames?.includes(path.basename(relativePath)),
+      (f.fileExtensions?.includes(path.extname(relativePath)) ?? false) ||
+      (f.fileNames?.includes(path.basename(relativePath)) ?? false),
   );
 
   if (formattersForFile.length > 1) {
