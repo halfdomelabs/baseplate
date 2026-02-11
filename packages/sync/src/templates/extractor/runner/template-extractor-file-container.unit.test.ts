@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TemplateExtractorFileContainer } from './template-extractor-file-container.js';
 
@@ -213,10 +213,8 @@ describe('TemplateExtractorFileContainer', () => {
 
       const files = vol.toJSON();
       const fileContent = files[filePath];
-      expect(typeof fileContent).toBe('string');
-      if (typeof fileContent === 'string') {
-        expect(Buffer.from(fileContent)).toEqual(contents);
-      }
+      assert(typeof fileContent === 'string');
+      expect(Buffer.from(fileContent)).toEqual(contents);
     });
 
     it('should call formatter for string contents', async () => {

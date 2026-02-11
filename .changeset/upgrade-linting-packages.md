@@ -30,11 +30,3 @@ Upgrade linting packages
 **Config changes:**
 - Updated eslint-plugin-react-hooks v7 API: `configs['recommended-latest']` → `configs.flat['recommended-latest']`
 - Disabled new strict rules from react-hooks v7 (refs, set-state-in-effect, purity, static-components, preserve-manual-memoization, incompatible-library, immutability)
-- Disabled vitest/no-conditional-expect rule
-
-**Template fixes to pass new lint rules:**
-- Fixed auth templates to use optional chaining instead of `&&` checks
-- Fixed circular-progress component to make props optional
-- Fixed sentry template to remove unnecessary `String()` calls
-- Fixed S3 adapter template to use `replaceAll()` instead of `replace()` with regex
-- Fixed error-logger template to avoid immediate mutation on Object.assign()
