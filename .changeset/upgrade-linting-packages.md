@@ -29,4 +29,4 @@ Upgrade linting packages
 
 **Config changes:**
 - Updated eslint-plugin-react-hooks v7 API: `configs['recommended-latest']` → `configs.flat['recommended-latest']`
-- Disabled new strict rules from react-hooks v7 (refs, set-state-in-effect, purity, static-components, preserve-manual-memoization, incompatible-library, immutability)
+- Disabled new strict rules from react-hooks v7 (refs, set-state-in-effect, preserve-manual-memoization, incompatible-library)

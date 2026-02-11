@@ -315,15 +315,11 @@ export default tsEslint.config(
   reactHooksPlugin.configs.flat['recommended-latest'],
   {
     rules: {
-      // Disable new strict rules from react-hooks v7 that require significant refactoring
-      // These should be addressed separately in a future PR
+      // Disable new strict rules from react-hooks v7 until we enable React Compiler
       'react-hooks/refs': 'off',
       'react-hooks/set-state-in-effect': 'off',
-      'react-hooks/purity': 'off',
-      'react-hooks/static-components': 'off',
       'react-hooks/preserve-manual-memoization': 'off',
       'react-hooks/incompatible-library': 'off',
-      'react-hooks/immutability': 'off',
     },
   },
 
