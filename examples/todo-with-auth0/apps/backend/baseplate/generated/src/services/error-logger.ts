@@ -19,7 +19,12 @@ export function logError(
   const context: ErrorContext = { ...additionalContext };
 
   /* TPL_CONTEXT_ACTIONS:START */
-  Object.assign(context, getAxiosErrorInfo(error));
+  const axiosErrorInfo = getAxiosErrorInfo(error);
+  if (axiosErrorInfo) {
+    for (const [key, value] of Object.entries(axiosErrorInfo)) {
+      context[key] = value;
+    }
+  }
   /* TPL_CONTEXT_ACTIONS:END */
 
   /* TPL_LOGGER_ACTIONS:START */

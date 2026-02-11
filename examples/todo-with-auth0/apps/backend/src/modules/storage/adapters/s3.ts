@@ -174,7 +174,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
         size: response.ContentLength ?? 0,
         contentType: response.ContentType ?? 'application/octet-stream',
         lastModified: response.LastModified ?? new Date(),
-        etag: response.ETag?.replace(/"/g, ''),
+        etag: response.ETag?.replaceAll('"', ''),
       };
     } catch (error: unknown) {
       const err = error as {

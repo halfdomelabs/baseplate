@@ -3,7 +3,14 @@
   "singleQuote": true,
   "trailingComma": "all",
   "semi": true,
-  "tailwindFunctions": ["clsx", "cn", "cva"],
+  "tailwindFunctions": [
+    "clsx",
+    "cn",
+    "cva"
+  ],
   "tailwindStylesheet": "./src/styles.css",
-  "plugins": ["prettier-plugin-packagejson", "prettier-plugin-tailwindcss"]
+  "plugins": [
+    "prettier-plugin-packagejson",
+    "prettier-plugin-tailwindcss"
+  ]
 }

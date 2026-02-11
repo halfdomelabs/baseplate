@@ -19,8 +19,8 @@ function configureSentryScopeForGraphqlError(
     ].filter((value): value is string => typeof value === 'string' && !!value),
   );
   if (error.path?.[0]) {
-    scope.setTransactionName(String(error.path[0]));
-    scope.setTag('path', String(error.path.join('.')));
+    scope.setTransactionName(error.path[0] as string);
+    scope.setTag('path', error.path.join('.'));
   }
 }
 

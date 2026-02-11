@@ -11,7 +11,7 @@ builder.queryField('currentUserSession', (t) =>
     nullable: true,
     authorize: ['public'],
     resolve: (root, args, { auth }) => {
-      if (!auth.session || auth.session.type !== 'user') {
+      if (auth.session?.type !== 'user') {
         return undefined;
       }
 
@@ -31,7 +31,7 @@ builder.queryField('viewer', (t) =>
     description: 'The currently authenticated user',
     authorize: ['public'],
     resolve: async (query, root, args, { auth }) => {
-      if (!auth.session || auth.session.type !== 'user') {
+      if (auth.session?.type !== 'user') {
         return null;
       }
       return prisma.user.findUnique({
