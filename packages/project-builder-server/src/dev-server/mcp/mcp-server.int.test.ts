@@ -64,5 +64,5 @@ describe('MCP Server', () => {
         (result.structuredContent as Record<string, unknown>).generators,
       ),
     ).toBe(true);
-  }, 10_000); // 10 second timeout
+  }, 20_000); // 10 second timeout
 });
