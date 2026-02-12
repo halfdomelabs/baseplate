@@ -33,6 +33,9 @@ Only use `localeCompare()` when:
 
 For all code generation, file sorting, and internal data structures, use `compareStrings`.
 
+## Utility Functions
+- **es-toolkit:** Prefer `es-toolkit` functions (e.g., `omit`, `pick`, `uniq`, `groupBy`) over manual implementations where reasonable. This codebase already depends on `es-toolkit`.
+
 ## Logging & Debugging
 - **Console Methods:** Use `console.info`, `console.warn`, or `console.error`.
 - **Prohibited:** Do not use `console.log` unless you are debugging.

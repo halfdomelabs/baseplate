@@ -17,6 +17,7 @@
       "Bash(pnpm check)",
       "Bash(pnpm why *)",
       "Bash(npm view *)",
+      "Bash(git log *)",
       "Bash(pnpm --filter @baseplate-dev/* lint*)",
       "Bash(pnpm --filter @baseplate-dev/* typecheck*)",
       "Bash(pnpm --filter @baseplate-dev/* build*)",
