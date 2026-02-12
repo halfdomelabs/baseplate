@@ -228,11 +228,14 @@ describe('parseAuthorizerExpression', () => {
       );
 
       expect(result.ast.type).toBe('binaryLogical');
-      if (result.ast.type === 'binaryLogical') {
-        expect(result.ast.operator).toBe('&&');
-        expect(result.ast.left.type).toBe('hasRole');
-        expect(result.ast.right.type).toBe('hasRole');
-      }
+      // Type assertion - we've verified the type above
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'binaryLogical' }
+      >;
+      expect(ast.operator).toBe('&&');
+      expect(ast.left.type).toBe('hasRole');
+      expect(ast.right.type).toBe('hasRole');
       expect(result.roleRefs).toEqual(['admin', 'moderator']);
       expect(result.requiresModel).toBe(false);
     });
@@ -336,15 +339,17 @@ describe('parseAuthorizerExpression', () => {
 
   describe('error positions', () => {
     it('should include position in error for invalid operator', () => {
+      let caughtError: unknown;
       try {
         parseAuthorizerExpression('model.id !== userId');
-        expect.fail('Expected error to be thrown');
       } catch (error) {
-        expect(error).toBeInstanceOf(AuthorizerExpressionParseError);
-        expect(
-          (error as AuthorizerExpressionParseError).startPosition,
-        ).toBeDefined();
+        caughtError = error;
       }
+
+      expect(caughtError).toBeInstanceOf(AuthorizerExpressionParseError);
+      expect(
+        (caughtError as AuthorizerExpressionParseError).startPosition,
+      ).toBeDefined();
     });
   });
 });

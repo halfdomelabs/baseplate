@@ -17,7 +17,7 @@ export function sortKeysRecursive<T>(obj: T): T {
 
   return Object.fromEntries(
     Object.entries(obj)
-      .sort(([a], [b]) => compareStrings(a, b))
+      .toSorted(([a], [b]) => compareStrings(a, b))
       .map(([key, value]) => [key, sortKeysRecursive(value)]),
   ) as T;
 }

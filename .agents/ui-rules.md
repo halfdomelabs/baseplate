@@ -1,8 +1,3 @@
----
-description: 
-globs: *.tsx,packages/project-builder-web/**,packages/ui-components/**
-alwaysApply: false
----
 ## UI Development Guidelines
 
 - **Component Library**: Use ShadCN-based components from `@baseplate-dev/ui-components`
@@ -16,4 +11,3 @@ alwaysApply: false
   - Import icons like: `import { MdAdd, MdDelete } from 'react-icons/md'`
   - Avoid using other icon libraries (lucide-react, heroicons, etc.)
   - If a specific icon is not available in `react-icons/md`, consult before using alternatives.
-  

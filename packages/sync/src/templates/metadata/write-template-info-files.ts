@@ -59,7 +59,7 @@ export async function writeTemplateInfoFiles(
     const infoPath = path.join(fullDirPath, TEMPLATES_INFO_FILENAME);
 
     const sortedInfoEntries = Object.fromEntries(
-      Object.entries(info).sort(([a], [b]) => compareStrings(a, b)),
+      Object.entries(info).toSorted(([a], [b]) => compareStrings(a, b)),
     );
 
     // Ensure directory exists

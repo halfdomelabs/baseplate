@@ -190,7 +190,7 @@ describe('readTemplateMetadataFiles', () => {
     expect(result.entries).toHaveLength(2);
     expect(result.orphanedEntries).toHaveLength(0);
 
-    const paths = result.entries.map((e) => e.absolutePath).sort();
+    const paths = result.entries.map((e) => e.absolutePath).toSorted();
     expect(paths).toEqual([
       '/project/src/file1.ts',
       '/project/src/nested/deep/file2.ts',
@@ -228,7 +228,7 @@ describe('readTemplateMetadataFiles', () => {
     expect(result.entries).toHaveLength(3);
     expect(result.orphanedEntries).toHaveLength(0);
 
-    const names = result.entries.map((e) => e.templateInfo.template).sort();
+    const names = result.entries.map((e) => e.templateInfo.template).toSorted();
     expect(names).toEqual(['file-one', 'file-three', 'file-two']);
   });
 });

@@ -30,7 +30,7 @@ export const Route = createFileRoute('/packages')({
 function PackagesLayout(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const { apps, libraries = [] } = definition;
+  const { apps, libraries } = definition;
   const sortedApps = sortBy(apps, [(app) => app.name]);
   const sortedLibraries = sortBy(libraries, [(lib) => lib.name]);
 

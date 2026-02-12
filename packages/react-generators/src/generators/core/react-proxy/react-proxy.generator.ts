@@ -51,11 +51,11 @@ export const reactProxyGenerator = createGenerator({
             reactBaseConfig.viteServerOptions.set(
               'proxy',
               tsCodeFragment(
-                `envVars.DEV_BACKEND_HOST
+                String.raw`envVars.DEV_BACKEND_HOST
           ? {
               '/api': {
                 target: envVars.DEV_BACKEND_HOST,
-                rewrite: (path) => path.replace(/^\\/api/, ''),
+                rewrite: (path) => path.replace(/^\/api/, ''),
                 ${enableWebsocket ? 'ws: true,' : ''}
               },
             }

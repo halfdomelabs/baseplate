@@ -110,6 +110,7 @@
   ],
   "models": [
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
@@ -185,6 +186,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:ZYGsFp93vRhv",
       "model": {
@@ -277,6 +279,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:at_hVtN6XVWX",
       "model": {
@@ -462,6 +465,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:brCokD6pIz7E",
       "model": {
@@ -552,6 +556,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["userId", "role"] }
@@ -616,6 +621,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:8koW3IyW42e_",
       "model": {
@@ -707,6 +713,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "utilities",
       "id": "model:TO3fGEXsMhzX",
       "model": {
@@ -835,7 +842,7 @@
     "general": {
       "name": "blog-with-auth",
       "packageScope": "",
-      "portOffset": 3000
+      "portOffset": 5000
     },
     "infrastructure": { "redis": { "enabled": false } },
     "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }

@@ -8,6 +8,6 @@ import { compareStrings } from '../string/compare-strings.js';
  */
 export function sortObjectKeys<T extends Record<string, unknown>>(obj: T): T {
   return Object.fromEntries(
-    Object.entries(obj).sort(([a], [b]) => compareStrings(a, b)),
+    Object.entries(obj).toSorted(([a], [b]) => compareStrings(a, b)),
   ) as T;
 }

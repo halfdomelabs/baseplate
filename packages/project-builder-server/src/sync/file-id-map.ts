@@ -50,7 +50,7 @@ export async function writeGeneratedFileIdMap(
 ): Promise<void> {
   const fileIdMapPath = path.join(projectDirectory, FILE_ID_MAP_PATH);
   const fileIdMap = Object.fromEntries(
-    [...fileIdToRelativePathMap.entries()].sort(([a], [b]) =>
+    [...fileIdToRelativePathMap.entries()].toSorted(([a], [b]) =>
       compareStrings(a, b),
     ),
   );

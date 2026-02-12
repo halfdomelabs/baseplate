@@ -58,7 +58,7 @@ export const seedInitialUserGenerator = createGenerator({
                 variables: {
                   TPL_INITIAL_USER_ROLES:
                     TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      initialUserRoles.map((role) => quot(role)).sort(),
+                      initialUserRoles.map((role) => quot(role)).toSorted(),
                     ),
                 },
               }),

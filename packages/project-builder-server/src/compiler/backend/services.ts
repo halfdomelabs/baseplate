@@ -119,9 +119,9 @@ export function buildServicesForFeature(
     featureId,
   ).filter(
     (m) =>
-      !!m.service.create.enabled ||
-      !!m.service.update.enabled ||
-      !!m.service.delete.enabled ||
+      m.service.create.enabled ||
+      m.service.update.enabled ||
+      m.service.delete.enabled ||
       m.service.transformers.length > 0,
   );
   return models

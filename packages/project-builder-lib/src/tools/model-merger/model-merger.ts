@@ -74,7 +74,7 @@ export type ModelMergerModelsInput = Record<string, ModelMergerModelInput>;
 function getUniqueConstraintKey(
   constraint: ModelMergerUniqueConstraintInput,
 ): string {
-  const fields = constraint.fields.map((f) => f.fieldRef).sort();
+  const fields = constraint.fields.map((f) => f.fieldRef).toSorted();
   return fields.join('|');
 }
 

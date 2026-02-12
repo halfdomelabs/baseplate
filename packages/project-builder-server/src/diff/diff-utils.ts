@@ -177,8 +177,14 @@ export async function compareFiles(
       }
     } else {
       // Text file comparison
-      const generatedText = generatedContent.toString();
-      const workingText = workingContent.toString();
+      const generatedText =
+        typeof generatedContent === 'string'
+          ? generatedContent
+          : (generatedContent as Buffer).toString('utf8');
+      const workingText =
+        typeof workingContent === 'string'
+          ? workingContent
+          : workingContent.toString('utf8');
 
       if (generatedText !== workingText) {
         diffs.push({

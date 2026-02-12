@@ -44,7 +44,12 @@ export const axiosGenerator = createGenerator({
             errorHandlerServiceConfig.contextActions.set(
               'getAxiosErrorInfo',
               tsTemplate`
-                Object.assign(context, ${axiosImports.getAxiosErrorInfo.fragment()}(error));
+                const axiosErrorInfo = ${axiosImports.getAxiosErrorInfo.fragment()}(error);
+                if (axiosErrorInfo) {
+                  for (const [key, value] of Object.entries(axiosErrorInfo)) {
+                    context[key] = value;
+                  }
+                }
               `,
             );
           },

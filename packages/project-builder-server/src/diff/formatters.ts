@@ -6,17 +6,15 @@ import type { DiffSummary, FileDiff } from './types.js';
  * Formats a diff summary in compact format
  */
 export function formatCompactDiff(summary: DiffSummary): string {
-  const lines: string[] = [];
-
-  // Summary header
-  lines.push(
+  const lines: string[] = [
+    // Summary header
     chalk.bold('Diff Summary:'),
     chalk.green(`  Added: ${summary.addedFiles} files`),
     chalk.yellow(`  Modified: ${summary.modifiedFiles} files`),
     chalk.red(`  Deleted: ${summary.deletedFiles} files`),
     chalk.gray(`  Total: ${summary.totalFiles} files with differences`),
     '',
-  );
+  ];
 
   if (summary.diffs.length === 0) {
     lines.push(chalk.green('✓ No differences found'));

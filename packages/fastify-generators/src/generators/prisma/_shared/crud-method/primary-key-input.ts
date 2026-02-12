@@ -14,7 +14,7 @@ export function getPrimaryKeyDefinition(
     const idFieldName = idFields[0];
     const idField = fields.find((f) => f.name === idFieldName);
 
-    if (!idField || idField.type !== 'scalar') {
+    if (idField?.type !== 'scalar') {
       throw new Error(`Model ${model.name} must have a scalar primary key`);
     }
 
@@ -35,7 +35,7 @@ export function getPrimaryKeyDefinition(
       name: primaryKeyInputName,
       fields: idFields.map((idField) => {
         const field = fields.find((f) => f.name === idField);
-        if (!field || field.type !== 'scalar') {
+        if (field?.type !== 'scalar') {
           throw new Error(
             `ID field ${idField} in model ${model.name} must be a scalar`,
           );

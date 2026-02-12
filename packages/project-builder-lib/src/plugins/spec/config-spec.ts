@@ -30,7 +30,7 @@ function sortAndValidateMigrations(
   pluginKey: string,
 ): PluginConfigMigration[] {
   // make sure migrations are sorted by version and they are all unique
-  const sortedMigrations = [...migrations].sort(
+  const sortedMigrations = [...migrations].toSorted(
     (a, b) => a.version - b.version,
   );
   if (sortedMigrations.some((m) => m.version <= 0)) {
@@ -78,7 +78,7 @@ export const pluginConfigSpec = createFieldMapSpec(
           validatedMigrations.get(pluginKey),
         getLastMigrationVersion: (pluginKey: string) => {
           const migrations = values.migrations.get(pluginKey);
-          return migrations?.[migrations.length - 1]?.version;
+          return migrations?.at(-1)?.version;
         },
       };
     },

@@ -110,7 +110,7 @@ export const fileCategoriesGenerator = createGenerator({
                     category.authorize.uploadRoles.length > 0
                       ? tsTemplate`{
                         upload: ({ auth }) => auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                          category.authorize.uploadRoles.map(quot).sort(),
+                          category.authorize.uploadRoles.map(quot).toSorted(),
                         )})
                       }`
                       : undefined,

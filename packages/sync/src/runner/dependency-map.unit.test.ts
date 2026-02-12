@@ -808,16 +808,20 @@ describe('resolveTaskDependenciesForPhase', () => {
       ],
     });
 
-    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
-    dynamicTaskMap.set('root', [
-      buildTestGeneratorTaskEntry({
-        id: 'root#dynamic-task',
-        name: 'dynamic-task',
-        task: {
-          phase: phase1,
-          dependencies: { dep: readOnlyProvider },
-        },
-      }),
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>([
+      [
+        'root',
+        [
+          buildTestGeneratorTaskEntry({
+            id: 'root#dynamic-task',
+            name: 'dynamic-task',
+            task: {
+              phase: phase1,
+              dependencies: { dep: readOnlyProvider },
+            },
+          }),
+        ],
+      ],
     ]);
 
     // Act
@@ -855,24 +859,28 @@ describe('resolveTaskDependenciesForPhase', () => {
       ],
     });
 
-    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
-    dynamicTaskMap.set('root', [
-      buildTestGeneratorTaskEntry({
-        id: 'root#dynamic-task1',
-        name: 'dynamic-task1',
-        task: {
-          phase: phase1,
-          dependencies: { dep: readOnlyProvider },
-        },
-      }),
-      buildTestGeneratorTaskEntry({
-        id: 'root#dynamic-task2',
-        name: 'dynamic-task2',
-        task: {
-          phase: phase2,
-          dependencies: { dep: readOnlyProvider },
-        },
-      }),
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>([
+      [
+        'root',
+        [
+          buildTestGeneratorTaskEntry({
+            id: 'root#dynamic-task1',
+            name: 'dynamic-task1',
+            task: {
+              phase: phase1,
+              dependencies: { dep: readOnlyProvider },
+            },
+          }),
+          buildTestGeneratorTaskEntry({
+            id: 'root#dynamic-task2',
+            name: 'dynamic-task2',
+            task: {
+              phase: phase2,
+              dependencies: { dep: readOnlyProvider },
+            },
+          }),
+        ],
+      ],
     ]);
 
     // Act
@@ -931,18 +939,22 @@ describe('resolveTaskDependenciesForPhase', () => {
 
     rootEntry.children.push(childEntry);
 
-    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
-    dynamicTaskMap.set('child', [
-      buildTestGeneratorTaskEntry({
-        id: 'child#dynamic-task',
-        name: 'dynamic-task',
-        task: {
-          phase: phase1,
-          dependencies: {
-            dep: readOnlyProvider.dependency().parentScopeOnly(),
-          },
-        },
-      }),
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>([
+      [
+        'child',
+        [
+          buildTestGeneratorTaskEntry({
+            id: 'child#dynamic-task',
+            name: 'dynamic-task',
+            task: {
+              phase: phase1,
+              dependencies: {
+                dep: readOnlyProvider.dependency().parentScopeOnly(),
+              },
+            },
+          }),
+        ],
+      ],
     ]);
 
     // Act

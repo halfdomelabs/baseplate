@@ -1,3 +1,4 @@
+import type { MakeRouteMatchUnion } from '@tanstack/react-router';
 import type React from 'react';
 
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -24,11 +25,11 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
-export function AppBreadcrumbs(): React.JSX.Element {
-  const { definitionContainer } = useProjectDefinition();
-  const matches = useRouterState({ select: (s) => s.matches });
+function getCrumbs(
+  matches: MakeRouteMatchUnion[],
+): { id: string; label: string; url: string }[] {
   let lastGetTitle: string | (() => string) | undefined;
-  const crumbs = matches
+  return matches
     .map((match) => {
       const { getTitle } = match.context;
       if (!getTitle) return null;
@@ -43,6 +44,12 @@ export function AppBreadcrumbs(): React.JSX.Element {
       };
     })
     .filter(notEmpty);
+}
+
+export function AppBreadcrumbs(): React.JSX.Element {
+  const { definitionContainer } = useProjectDefinition();
+  const matches = useRouterState({ select: (s) => s.matches });
+  const crumbs = getCrumbs(matches);
   const projects = useProjects((state) => state.projects);
   const setCurrentProjectId = useProjects((state) => state.setCurrentProjectId);
   const navigate = useNavigate();

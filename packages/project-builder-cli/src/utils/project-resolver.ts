@@ -130,7 +130,7 @@ export async function resolveProject(
 
   const projectInfo = projectMap.get(nameOrPath);
   if (!projectInfo) {
-    const availableProjects = [...projectMap.keys()].sort();
+    const availableProjects = [...projectMap.keys()].toSorted();
     throw new Error(
       `Project '${nameOrPath}' not found. Available projects: ${availableProjects.join(', ')}\n` +
         'You can also specify a directory path directly.',
@@ -212,5 +212,5 @@ export function getProjectDirectories(
 export function getProjectNames(
   projectMap: Map<string, DiscoveredProjectInfo>,
 ): string[] {
-  return [...projectMap.keys()].sort();
+  return [...projectMap.keys()].toSorted();
 }

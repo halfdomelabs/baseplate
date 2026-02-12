@@ -66,8 +66,8 @@ export function addOrUpdateImport(
 
     if (newImports.length > 0) {
       // Collect all import names (existing + new)
-      const allImportNames = [...existingNames, ...newImports].sort((a, b) =>
-        compareStrings(a, b),
+      const allImportNames = [...existingNames, ...newImports].toSorted(
+        (a, b) => compareStrings(a, b),
       );
 
       // Replace with sorted named imports
@@ -78,7 +78,9 @@ export function addOrUpdateImport(
     // Create new import declaration at the top with sorted imports
     insertImportDeclarationAtTop(sourceFile, {
       moduleSpecifier,
-      namedImports: namedImports.sort().map((name) => ({ name })),
+      namedImports: namedImports
+        .toSorted((a, b) => compareStrings(a, b))
+        .map((name) => ({ name })),
       isTypeOnly: typeOnly,
     });
   }

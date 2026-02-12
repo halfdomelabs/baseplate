@@ -29,7 +29,7 @@ export const auth0HooksGenerator = createGenerator({
                 variables: {
                   useSession: {
                     TPL_AUTH_ROLES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      [...authRoles].sort().map((role) => quot(role)),
+                      [...authRoles].toSorted().map((role) => quot(role)),
                     ),
                   },
                 },

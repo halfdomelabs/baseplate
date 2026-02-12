@@ -26,7 +26,7 @@ export const Route = createFileRoute('/packages/')({
 function PackagesListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const { apps, libraries = [] } = definition;
+  const { apps, libraries } = definition;
   const monorepoSettings = definition.settings.monorepo;
   const sortedApps = sortBy(apps, [(app) => app.name]);
   const sortedLibraries = sortBy(libraries, [(lib) => lib.name]);

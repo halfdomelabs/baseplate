@@ -9,7 +9,7 @@ import { converter, formatHex, parse } from 'culori';
  */
 export function parseOklch(color: string): Oklch {
   const parsedColor = parse(color);
-  if (!parsedColor || parsedColor.mode !== 'oklch') {
+  if (parsedColor?.mode !== 'oklch') {
     throw new Error(`Invalid OKLCH color string: ${color}`);
   }
   return parsedColor;

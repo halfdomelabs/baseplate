@@ -165,7 +165,7 @@ describe('jsonDeepClone', () => {
     });
 
     it('should throw error for BigInt', () => {
-      const bigInt = BigInt(123);
+      const bigInt = 123n;
       expect(() => jsonDeepClone(bigInt)).toThrow(
         'Cannot clone value of unsupported type: bigint',
       );

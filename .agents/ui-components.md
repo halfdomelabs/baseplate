@@ -142,5 +142,3 @@ const handleDelete = async () => {
   }
 };
 ```
-
-For detailed component documentation and examples, see the Storybook at `packages/ui-components/storybook-static/index.html` or run `pnpm storybook:dev` in the ui-components package.

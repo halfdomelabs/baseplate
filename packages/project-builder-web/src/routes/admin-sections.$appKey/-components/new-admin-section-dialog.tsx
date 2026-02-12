@@ -109,7 +109,7 @@ function NewAdminSectionDialog({
         webApp.adminApp.sections = [
           ...(webApp.adminApp.sections ?? []),
           { ...data, id: newId },
-        ].sort((a, b) => compareStrings(a.name, b.name));
+        ].toSorted((a, b) => compareStrings(a.name, b.name));
       },
       {
         successMessage: `Successfully created section "${data.name}"!`,

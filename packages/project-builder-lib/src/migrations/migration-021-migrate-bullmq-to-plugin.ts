@@ -61,7 +61,7 @@ export const migration021MigrateBullmqToPlugin = createSchemaMigration<
     // Remove enableBullQueue from all apps
     const apps = config.apps?.map((app) => {
       if (app.type === 'backend' && 'enableBullQueue' in app) {
-        const { enableBullQueue: _, ...rest } = app;
+        const { enableBullQueue: _enableBullQueue, ...rest } = app;
         return rest as NewBackendApp;
       }
       return app as NewBackendApp;

@@ -245,10 +245,23 @@ export const prettierGenerator = createGenerator({
 
               const config = await prettierConfigPromise;
 
-              return prettierModule.format(input, {
-                ...config,
-                filepath: fullPath,
-              });
+              try {
+                return await prettierModule.format(input, {
+                  ...config,
+                  filepath: fullPath,
+                });
+              } catch {
+                logger.info(
+                  'Prettier formatting failed. Falling back to base config without plugins. Run again once dependencies have been installed.',
+                );
+                return prettierModule.format(input, {
+                  tabWidth: descriptor.tabWidth,
+                  singleQuote: descriptor.singleQuote,
+                  trailingComma: descriptor.trailingComma,
+                  semi: descriptor.semi,
+                  filepath: fullPath,
+                });
+              }
             };
 
             builder.addGlobalFormatter({

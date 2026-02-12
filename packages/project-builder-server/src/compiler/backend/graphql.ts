@@ -49,7 +49,7 @@ function buildObjectTypeFile(
     fileName: `${kebabCase(model.name)}.object-type`,
     children: {
       primaryKey:
-        (!!buildMutations || !!buildQuery) &&
+        (buildMutations || buildQuery) &&
         ModelUtils.getModelIdFields(model).length > 1
           ? pothosPrismaPrimaryKeyGenerator({
               modelName: model.name,

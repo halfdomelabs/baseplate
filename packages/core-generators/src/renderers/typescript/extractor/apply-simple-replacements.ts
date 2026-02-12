@@ -16,7 +16,7 @@ export function applySimpleReplacements(
 ): string {
   // Sort replacements by length (longest first) to avoid substring issues
   // For example, we want to replace "UserEditPage" before "User"
-  const sortedReplacements = Object.entries(replacements).sort(
+  const sortedReplacements = Object.entries(replacements).toSorted(
     ([a], [b]) => b.length - a.length,
   );
 
@@ -90,7 +90,7 @@ function applyReplacementToText(
     return result;
   } else {
     // For other values, do exact matching with word boundaries where possible
-    const regex = new RegExp(`\\b${escapedValue}\\b`, 'g');
+    const regex = new RegExp(String.raw`\b${escapedValue}\b`, 'g');
     return text.replace(regex, variable);
   }
 }

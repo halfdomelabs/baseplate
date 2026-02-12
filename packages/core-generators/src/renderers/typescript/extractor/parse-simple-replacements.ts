@@ -87,7 +87,7 @@ export function generateSimpleReplacementComments(
   replacements: Record<string, string>,
 ): string[] {
   return Object.entries(replacements)
-    .sort(([, a], [, b]) => compareStrings(a, b)) // Sort by variable name
+    .toSorted(([, a], [, b]) => compareStrings(a, b)) // Sort by variable name
     .map(([value, variable]) => {
       // Extract just the part after TPL_
       const varName = variable.replace(/^TPL_/, '');

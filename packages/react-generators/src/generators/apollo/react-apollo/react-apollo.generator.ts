@@ -565,7 +565,7 @@ const preloadQuery = useMemo(
         reactErrorConfig.contextActions.set(
           'apollo',
           tsCodeFragment(
-            `
+            String.raw`
             if (error instanceof GraphQLError) {
               annotateGraphQLError(error, context);
             }
@@ -576,15 +576,15 @@ const preloadQuery = useMemo(
               }
               // it's more useful to log the current stack trace than the one from
               // CombinedGraphQLErrors which is always the same
-              const currentStack = new Error('stack').stack?.split('\\n');
+              const currentStack = new Error('stack').stack?.split('\n');
               error.stack = [
-                error.stack?.split('\\n')[0],
+                error.stack?.split('\n')[0],
                 currentStack
                   ?.slice(currentStack.findIndex((line) => line.includes('logError')) + 1)
-                  .join('\\n'),
+                  .join('\n'),
               ]
                 .filter(Boolean)
-                .join('\\n');
+                .join('\n');
             }
 
             if (ServerError.is(error)) {
