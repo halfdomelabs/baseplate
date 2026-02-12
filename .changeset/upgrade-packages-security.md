@@ -26,7 +26,7 @@ Upgrade packages to fix security vulnerabilities and update to latest versions
 - diff: 8.0.2 → 8.0.3 (fixes CVE-2026-24001 - DoS vulnerability)
 - testcontainers: 11.10.0 → 11.11.0 (fixes undici vulnerability)
 
-**Package updates:**
+**Package updates (monorepo):**
 - @tailwindcss/vite: 4.1.13 → 4.1.18
 - tailwindcss: 4.1.13 → 4.1.18
 - @tanstack/react-router: 1.139.7 → 1.159.5
@@ -35,4 +35,7 @@ Upgrade packages to fix security vulnerabilities and update to latest versions
 - concurrently: 9.0.1 → 9.2.1
 - ts-morph: 26.0.0 → 27.0.2
 
-All packages tested and verified across the monorepo and generated projects.
+**Package updates (generated projects):**
+- prisma/@prisma/client/@prisma/adapter-pg: 7.2.0 → 7.4.0
+- postmark: 4.0.2 → 4.0.5
+- axios: 1.12.0 → 1.13.5
