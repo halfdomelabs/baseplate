@@ -68,7 +68,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "concurrently": "9.0.1",
+    "concurrently": "9.2.1",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
