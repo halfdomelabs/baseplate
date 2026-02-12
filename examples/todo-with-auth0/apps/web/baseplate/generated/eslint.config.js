@@ -315,7 +315,16 @@ export default tsEslint.config(
   },
 
   // React Hooks
-  reactHooksPlugin.configs['recommended-latest'],
+  reactHooksPlugin.configs.flat['recommended-latest'],
+  {
+    rules: {
+      // Disable new strict rules from react-hooks v7 until we enable React Compiler
+      'react-hooks/refs': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,

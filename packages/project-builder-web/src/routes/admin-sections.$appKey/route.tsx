@@ -32,7 +32,7 @@ export const Route = createFileRoute('/admin-sections/$appKey')({
     const app = appId
       ? projectDefinition.apps.find((a) => a.id === appId)
       : undefined;
-    if (!app || app.type !== 'web') {
+    if (app?.type !== 'web') {
       return {};
     }
     const { adminApp } = app;

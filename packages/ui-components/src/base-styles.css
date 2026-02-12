@@ -146,3 +146,11 @@ html[data-theme='dark'] {
     @apply surface-default;
   }
 }
+
+/**
+ * CodeMirror tooltip z-index
+ * Ensures tooltips (autocomplete, linting) appear above dialogs (z-50)
+ */
+.cm-tooltip {
+  z-index: 100 !important;
+}

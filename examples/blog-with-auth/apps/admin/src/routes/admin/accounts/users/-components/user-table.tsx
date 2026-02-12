@@ -74,7 +74,7 @@ export const userTableItemsFragment = graphql(
       }
     }
   `,
-  [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
+  [passwordResetDialogUserFragment, roleManagerDialogUserFragment],
 );
 /* TPL_ITEMS_FRAGMENT:END */
 

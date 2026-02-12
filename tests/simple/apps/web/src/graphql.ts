@@ -13,4 +13,3 @@ export const graphql = initGraphQLTada<{
 
 export type { FragmentOf, ResultOf, VariablesOf } from 'gql.tada';
 export { readFragment } from 'gql.tada';
-

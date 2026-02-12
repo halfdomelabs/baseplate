@@ -11,7 +11,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
   const pluginStore = new PluginSpecStore();
 
   it('should work with a no-reference object', () => {
-    const schemaCreator = definitionSchema((_ctx) =>
+    const schemaCreator = definitionSchema(() =>
       z.object({
         test: z.string(),
       }),

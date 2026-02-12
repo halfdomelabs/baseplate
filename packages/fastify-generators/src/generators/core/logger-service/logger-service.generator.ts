@@ -58,14 +58,14 @@ export const loggerServiceGenerator = createGenerator({
       run({ typescriptFile, loggerServiceConfigValues: { mixins }, paths }) {
         return {
           build: async (builder) => {
-            const loggerOptions: Record<string, TsCodeFragment | string> = {};
-
             // log level vs. number for better log parsing
-            loggerOptions.formatters = `{
+            const loggerOptions: Record<string, TsCodeFragment | string> = {
+              formatters: `{
   level(level) {
     return { level };
   },
-}`;
+}`,
+            };
 
             if (mixins.size > 0) {
               loggerOptions.mixin = TsCodeUtils.template`

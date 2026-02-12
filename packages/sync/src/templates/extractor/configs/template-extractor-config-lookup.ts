@@ -283,7 +283,8 @@ export class TemplateExtractorConfigLookup {
       return false;
     }
 
-    const { [templateName]: _, ...remainingTemplates } = entry.config.templates;
+    const { [templateName]: _unused, ...remainingTemplates } =
+      entry.config.templates;
     entry.config.templates = remainingTemplates;
     return true;
   }

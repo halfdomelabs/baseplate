@@ -9,8 +9,8 @@ function createImportDeclaration(
   source: string,
   {
     isTypeOnly = false,
-    defaultImport = undefined,
-    namespaceImport = undefined,
+    defaultImport,
+    namespaceImport,
     namedImports = [],
   }: {
     isTypeOnly?: boolean;

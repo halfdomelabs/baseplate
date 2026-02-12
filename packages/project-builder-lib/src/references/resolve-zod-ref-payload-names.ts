@@ -92,5 +92,6 @@ export function resolveZodRefPayloadNames<T>(
     entities: [...resolvedEntitiesById.values()],
     references,
     data,
+    expressions: payload.expressions,
   };
 }

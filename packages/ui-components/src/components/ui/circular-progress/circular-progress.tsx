@@ -16,11 +16,11 @@ interface CircularProgressProps {
  * https://magicui.design/docs/components/animated-circular-progress-bar
  */
 export function CircularProgress({
-  max = 100,
-  min = 0,
-  value = 0,
-  gaugePrimaryColor = 'var(--primary)',
-  gaugeSecondaryColor = 'var(--muted)',
+  max,
+  min,
+  value,
+  gaugePrimaryColor,
+  gaugeSecondaryColor,
   size = 'md',
   className,
 }: CircularProgressProps): React.ReactElement {

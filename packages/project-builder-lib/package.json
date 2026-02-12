@@ -52,6 +52,7 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "acorn": "^8.15.0",
     "culori": "^4.0.1",
     "es-toolkit": "1.31.0",
     "globby": "^14.0.2",

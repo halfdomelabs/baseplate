@@ -83,7 +83,7 @@ function mergeImportsAndHoistedFragments(
   // such as not supporting hoisted fragments and no deduplication of keys.
   // This can be improved in the future but since the use-case is very limited,
   // we'll just throw an error if this happens.
-  const sortedPositionedHoistedFragments = positionedHoistedFragments.sort(
+  const sortedPositionedHoistedFragments = positionedHoistedFragments.toSorted(
     (a, b) => compareStrings(a.key, b.key),
   );
   if (

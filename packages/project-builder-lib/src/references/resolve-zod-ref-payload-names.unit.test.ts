@@ -11,6 +11,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'test-1',
@@ -40,6 +41,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'child-1',
@@ -78,6 +80,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'collection-1',
@@ -123,6 +126,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'child-1',
@@ -147,6 +151,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'child-1',
@@ -173,6 +178,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [
         {
           id: 'child-1',
@@ -206,6 +212,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<unknown> = {
       data: {},
       references,
+      expressions: [],
       entitiesWithNameResolver: [],
     };
 
@@ -218,6 +225,7 @@ describe('resolveZodRefPayloadNames', () => {
     const payload: ExtractDefinitionRefsPayload<typeof data> = {
       data,
       references: [],
+      expressions: [],
       entitiesWithNameResolver: [],
     };
 

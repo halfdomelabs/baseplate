@@ -73,7 +73,7 @@
     "oxc-resolver": "5.2.0",
     "p-limit": "6.1.0",
     "prettier": "catalog:",
-    "prettier-plugin-packagejson": "2.5.19",
+    "prettier-plugin-packagejson": "3.0.0",
     "resolve-from": "5.0.0",
     "semver": "^7.5.4",
     "sort-package-json": "2.10.1",

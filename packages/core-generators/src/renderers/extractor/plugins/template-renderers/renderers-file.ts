@@ -141,7 +141,7 @@ function createRenderersTask(
   );
 
   // Generate run function with dynamic dependency names
-  const dependencyNames = [...allDependencies.keys()].sort();
+  const dependencyNames = [...allDependencies.keys()].toSorted();
 
   const run = tsTemplate`
   function run({ ${dependencyNames.join(', ')} }) {

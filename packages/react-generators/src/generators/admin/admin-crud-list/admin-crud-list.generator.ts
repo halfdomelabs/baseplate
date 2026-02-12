@@ -101,8 +101,8 @@ export const adminCrudListGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            const sortedActions = actions.sort((a, b) => a.order - b.order);
-            const sortedColumns = columns.sort((a, b) => a.order - b.order);
+            const sortedActions = actions.toSorted((a, b) => a.order - b.order);
+            const sortedColumns = columns.toSorted((a, b) => a.order - b.order);
 
             const listPageLoader: DataLoader = {
               propName: 'items',

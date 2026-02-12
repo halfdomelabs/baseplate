@@ -23,7 +23,7 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   // Hostname to bind the server to
   SERVER_HOST: z.string().default('localhost'),
   // Port to bind the server to
-  SERVER_PORT: z.coerce.number().min(1).max(65_535).default(3001),
+  SERVER_PORT: z.coerce.number().min(1).max(65_535).default(5001),
 }); /* TPL_CONFIG_SCHEMA:END */
 
 export const config = configSchema.parse(process.env);

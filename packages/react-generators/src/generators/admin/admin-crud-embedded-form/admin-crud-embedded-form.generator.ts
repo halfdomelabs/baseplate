@@ -185,8 +185,8 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           },
           build: () => ({
             adminCrudEmbeddedFormSetup: {
-              inputFields: inputFields.sort((a, b) => a.order - b.order),
-              tableColumns: tableColumns.sort((a, b) => a.order - b.order),
+              inputFields: inputFields.toSorted((a, b) => a.order - b.order),
+              tableColumns: tableColumns.toSorted((a, b) => a.order - b.order),
             },
           }),
         };

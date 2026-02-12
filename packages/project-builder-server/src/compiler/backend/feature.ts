@@ -6,6 +6,7 @@ import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
+import { buildAuthorizersForFeature } from './authorizers.js';
 import { buildEnumsForFeature } from './enums.js';
 import { buildGraphqlForFeature } from './graphql.js';
 import { buildModelsForFeature } from './models.js';
@@ -32,6 +33,7 @@ export function buildFeature(
     name: featureName,
     children: safeMergeAll(
       {
+        authorizers: buildAuthorizersForFeature(builder, featureId),
         enums: buildEnumsForFeature(featureId, projectDefinition),
         models: buildModelsForFeature(builder, featureId),
         services: buildServicesForFeature(builder, featureId),

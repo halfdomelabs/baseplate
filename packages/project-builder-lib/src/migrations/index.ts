@@ -73,7 +73,7 @@ export function runSchemaMigrations(config: ProjectDefinition): {
 
   const unappliedMigrations = SCHEMA_MIGRATIONS.filter(
     (m) => m.version > schemaVersion,
-  ).sort((a, b) => a.version - b.version);
+  ).toSorted((a, b) => a.version - b.version);
 
   let migratedDefinition = config;
   for (const migration of unappliedMigrations) {

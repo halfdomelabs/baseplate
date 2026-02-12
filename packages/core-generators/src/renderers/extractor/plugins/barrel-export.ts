@@ -116,7 +116,7 @@ export function mergeBarrelExports(
   }
 
   // Sort module specifiers
-  const sortedModuleSpecifiers = [...exportsByModuleAndType.keys()].sort();
+  const sortedModuleSpecifiers = [...exportsByModuleAndType.keys()].toSorted();
 
   // Add exports back in sorted order
   for (const moduleSpecifier of sortedModuleSpecifiers) {
@@ -147,7 +147,7 @@ export function mergeBarrelExports(
         sourceFile.addExportDeclaration({
           moduleSpecifier,
           isTypeOnly: true,
-          namedExports: typeOnlyExports.sort().map((name) => ({ name })),
+          namedExports: typeOnlyExports.toSorted().map((name) => ({ name })),
         });
       }
 
@@ -156,7 +156,7 @@ export function mergeBarrelExports(
         sourceFile.addExportDeclaration({
           moduleSpecifier,
           isTypeOnly: false,
-          namedExports: regularExports.sort().map((name) => ({ name })),
+          namedExports: regularExports.toSorted().map((name) => ({ name })),
         });
       }
     }
@@ -203,11 +203,13 @@ export function mergeGeneratedBarrelExports(
   }
 
   // Add import statements (sorted by module specifier)
-  const sortedModuleSpecifiers = [...importsByModuleSpecifier.keys()].sort();
+  const sortedModuleSpecifiers = [
+    ...importsByModuleSpecifier.keys(),
+  ].toSorted();
   for (const moduleSpecifier of sortedModuleSpecifiers) {
     const imports = importsByModuleSpecifier.get(moduleSpecifier);
     if (!imports) continue;
-    const namedImports = [...imports].sort();
+    const namedImports = [...imports].toSorted();
     sourceFile.addImportDeclaration({
       moduleSpecifier,
       namedImports,
@@ -227,7 +229,7 @@ export function mergeGeneratedBarrelExports(
   }
 
   // Sort properties by name for consistent output
-  const sortedPropertyNames = [...exportProperties.keys()].sort();
+  const sortedPropertyNames = [...exportProperties.keys()].toSorted();
   const properties = sortedPropertyNames.map(
     (propName) => `${propName}: ${exportProperties.get(propName)}`,
   );

@@ -11,7 +11,7 @@ builder.mutationField('logOut', (t) =>
       }),
     },
     resolve: async (parent, args, context) => {
-      if (context.auth.session && context.auth.session.type === 'user') {
+      if (context.auth.session?.type === 'user') {
         await userSessionService.clearSession(context.auth.session, context);
       }
 

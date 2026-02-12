@@ -11,6 +11,10 @@ import type {
   DefinitionReferenceInput,
 } from './definition-ref-builder.js';
 import type {
+  ExpressionSlotMap,
+  RefExpressionParser,
+} from './expression-types.js';
+import type {
   DefinitionEntityAnnotation,
   DefinitionRefAnnotations,
 } from './markers.js';
@@ -21,6 +25,7 @@ import type {
 } from './ref-context-slot.js';
 
 import {
+  DefinitionExpressionMarker,
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
@@ -60,12 +65,37 @@ export type RefContextType = <
   schemaBuilder: (slots: RefContextSlotMap<TSlotDef>) => TSchema,
 ) => ZodTypeWithOptional<TSchema>;
 
+/**
+ * Wraps a value with a ref expression parser for deferred validation.
+ * The parser handles all parsing, validation, and rename handling.
+ *
+ * If the parser declares required slots (via TRequiredSlots), they must be
+ * provided as the second argument. TypeScript enforces this at compile time.
+ */
+export interface WithExpressionType {
+  // Overload for parsers with no required slots
+  <TValue, TParseResult>(
+    parser: RefExpressionParser<TValue, TParseResult>,
+  ): z.ZodType<TValue, TValue>;
+
+  // Overload for parsers with required slots
+  <
+    TValue,
+    TParseResult,
+    TRequiredSlots extends Record<string, DefinitionEntityType>,
+  >(
+    parser: RefExpressionParser<TValue, TParseResult, TRequiredSlots>,
+    slots: ExpressionSlotMap<TRequiredSlots>,
+  ): z.ZodType<TValue, TValue>;
+}
+
 export function extendParserContextWithRefs({
   transformReferences,
 }: DefinitionSchemaCreatorOptions): {
   withRef: WithRefType;
   withEnt: WithEntType;
   refContext: RefContextType;
+  withExpression: WithExpressionType;
 } {
   function modifyAnnotations(
     value: unknown,
@@ -218,9 +248,55 @@ export function extendParserContextWithRefs({
     ) as unknown as ZodTypeWithOptional<TSchema>;
   }
 
+  /**
+   * Wraps a value with a ref expression parser for deferred validation.
+   * The parser handles all parsing, validation, and rename handling.
+   *
+   * If the parser declares required slots (via TRequiredSlots), they must be
+   * provided as the second argument. TypeScript enforces this at compile time.
+   *
+   * The parser's `schema` property is used for input validation.
+   *
+   * @example
+   * ```typescript
+   * // Parser without required slots
+   * const expressionSchema = ctx.withExpression(simpleParser);
+   *
+   * // Parser with required slots (TypeScript enforces the second argument)
+   * ctx.refContext(
+   *   { modelSlot: modelEntityType },
+   *   ({ modelSlot }) =>
+   *     z.object({
+   *       condition: ctx.withExpression(authorizerParser, { model: modelSlot }),
+   *     })
+   * );
+   * ```
+   */
+  function withExpression<
+    TValue,
+    TParseResult,
+    TRequiredSlots extends Record<string, DefinitionEntityType>,
+  >(
+    parser: RefExpressionParser<TValue, TParseResult, TRequiredSlots>,
+    slots?: ExpressionSlotMap<TRequiredSlots>,
+  ): z.ZodType<TValue, TValue> {
+    return parser.schema.transform((value) => {
+      if (transformReferences && value !== undefined) {
+        return new DefinitionExpressionMarker(value, {
+          path: [],
+          value,
+          parser,
+          slots,
+        }) as unknown as TValue;
+      }
+      return value;
+    }) as z.ZodType<TValue, TValue>;
+  }
+
   return {
     withRef,
     withEnt,
     refContext,
+    withExpression,
   };
 }

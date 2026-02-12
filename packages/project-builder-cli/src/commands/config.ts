@@ -62,9 +62,7 @@ export function addConfigCommand(program: Command): void {
         if (err instanceof ZodError) {
           const error = err.message.includes('Unrecognized key')
             ? new Error(`Unknown configuration key: ${path}`)
-            : new Error(
-                `Unable to set configuration key: ${String(err.message)}`,
-              );
+            : new Error(`Unable to set configuration key: ${err.message}`);
           throw error;
         }
         throw err;

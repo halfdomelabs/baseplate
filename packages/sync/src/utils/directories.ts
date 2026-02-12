@@ -70,7 +70,9 @@ export async function removeEmptyAncestorDirectories(
   ];
 
   // Sort by path length in descending order to process deeper directories first
-  const sortedParentDirs = uniqueParentDirs.sort((a, b) => b.length - a.length);
+  const sortedParentDirs = uniqueParentDirs.toSorted(
+    (a, b) => b.length - a.length,
+  );
 
   // Process each directory
   for (const dir of sortedParentDirs) {

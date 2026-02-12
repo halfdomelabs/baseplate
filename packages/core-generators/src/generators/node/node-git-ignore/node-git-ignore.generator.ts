@@ -67,7 +67,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
           'baseplate/.build',
         ];
         if (exclusions.size > 0) {
-          const sortedExclusions = [...exclusions.entries()].sort((a, b) =>
+          const sortedExclusions = [...exclusions.entries()].toSorted((a, b) =>
             compareStrings(a[0], b[0]),
           );
           exclusionLines.push(

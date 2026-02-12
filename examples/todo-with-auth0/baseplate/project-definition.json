@@ -244,7 +244,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.5.0",
+  "cliVersion": "0.5.1",
   "enums": [
     {
       "featureRef": "todos",
@@ -281,8 +281,10 @@
     { "id": "feature:5yQn3gjSzKEB", "name": "todos" }
   ],
   "isInitialized": true,
+  "libraries": [],
   "models": [
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -333,6 +335,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "storage",
       "graphql": {
         "objectType": {
@@ -475,6 +478,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -616,6 +620,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "objectType": {
@@ -713,6 +718,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "objectType": {
@@ -764,6 +770,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -916,6 +923,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -1011,6 +1019,15 @@
       }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.id === userId",
+            "id": "model-authorizer-role:e5NV7nPN9Flw",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
@@ -1154,6 +1171,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1240,6 +1258,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1371,6 +1390,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1438,7 +1458,6 @@
       }
     }
   ],
-  "packages": [],
   "plugins": [
     {
       "config": {

@@ -3,23 +3,23 @@ export const CORE_PACKAGES = {
   typescript: '5.8.3',
 
   // Linting
-  '@eslint/js': '9.32.0',
-  '@vitest/eslint-plugin': '1.6.5',
-  eslint: '9.32.0',
+  '@eslint/js': '9.39.2',
+  '@vitest/eslint-plugin': '1.6.6',
+  eslint: '9.39.2',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
   'eslint-plugin-import-x': '4.16.1',
   'eslint-plugin-jsx-a11y': '6.10.2',
-  'eslint-plugin-perfectionist': '4.15.0',
+  'eslint-plugin-perfectionist': '5.4.0',
   'eslint-plugin-react': '7.37.5',
-  'eslint-plugin-react-hooks': '5.2.0',
-  'eslint-plugin-unicorn': '60.0.0',
-  'typescript-eslint': '8.38.0',
-  globals: '16.4.0',
+  'eslint-plugin-react-hooks': '7.0.1',
+  'eslint-plugin-unicorn': '62.0.0',
+  'typescript-eslint': '8.54.0',
+  globals: '17.3.0',
 
   // Formatting
   prettier: '3.6.2',
-  'prettier-plugin-packagejson': '2.5.19',
+  'prettier-plugin-packagejson': '3.0.0',
 
   // Testing
   vite: '7.1.12',

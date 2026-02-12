@@ -110,6 +110,7 @@
   ],
   "models": [
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
@@ -185,6 +186,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:ZYGsFp93vRhv",
       "model": {
@@ -277,6 +279,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:at_hVtN6XVWX",
       "model": {
@@ -456,6 +459,15 @@
       }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.id === userId",
+            "id": "model-authorizer-role:blog-user-owner",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "accounts",
       "graphql": {
         "mutations": {
@@ -561,6 +573,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:brCokD6pIz7E",
       "model": {
@@ -651,6 +664,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["userId", "role"] }
@@ -715,6 +729,7 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:8koW3IyW42e_",
       "model": {
@@ -798,6 +813,46 @@
         ]
       },
       "name": "UserSession",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "authorizer": { "roles": [] },
+      "featureRef": "utilities",
+      "id": "model:TO3fGEXsMhzX",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:FwFLIDsUpJbX",
+            "isOptional": false,
+            "name": "key",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5CkPRDkMexZG",
+            "isOptional": false,
+            "name": "points",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:OBYWG0Ngi9Ze",
+            "isOptional": true,
+            "name": "expire",
+            "options": { "default": "" },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["key"],
+        "relations": [],
+        "uniqueConstraints": []
+      },
+      "name": "RateLimiterFlexible",
       "service": {
         "create": { "enabled": false },
         "delete": { "enabled": false },
@@ -895,7 +950,7 @@
     "general": {
       "name": "blog-with-auth",
       "packageScope": "",
-      "portOffset": 3000
+      "portOffset": 5000
     },
     "infrastructure": { "redis": { "enabled": false } },
     "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }

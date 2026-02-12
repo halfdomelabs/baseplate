@@ -48,7 +48,7 @@ function FeatureComboboxField({
 
     const newFeatureName = searchQuery ? searchQuery : value;
 
-    const doesNewFeatureExist = !!baseFeatures.some(
+    const doesNewFeatureExist = baseFeatures.some(
       (option) =>
         option.label === newFeatureName || option.value === newFeatureName,
     );

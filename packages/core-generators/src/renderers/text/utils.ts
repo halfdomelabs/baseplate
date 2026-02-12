@@ -44,7 +44,7 @@ export function getTextTemplateDelimiters(filename: string): {
  * @returns The regex for the text template variable.
  */
 export function getTextTemplateVariableRegExp(value: string): RegExp {
-  return new RegExp(`(?<!\\w)${escapeRegExp(value)}(?!\\w)`, 'g');
+  return new RegExp(String.raw`(?<!\w)${escapeRegExp(value)}(?!\w)`, 'g');
 }
 
 /**
@@ -68,7 +68,7 @@ export function extractTemplateVariables(
   const { start, end } = getTextTemplateDelimiters(filename);
 
   // Sort variables by descending length of their values to prevent overlapping replacements
-  const sortedVariables = Object.entries(variables).sort(
+  const sortedVariables = Object.entries(variables).toSorted(
     ([, a], [, b]) => b.length - a.length,
   );
 

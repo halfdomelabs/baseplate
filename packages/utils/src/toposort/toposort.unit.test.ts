@@ -116,23 +116,30 @@ describe('toposort', () => {
       ['a', 'b'],
       ['b', 'a'],
     ];
+    expect(() => toposort(nodes, edges)).toThrow(
+      ToposortCyclicalDependencyError,
+    );
+
+    // Verify cycle path properties
+    let error: ToposortCyclicalDependencyError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
-      // Depending on traversal order, the reported cycle might start at 'b'
-      expect((e as ToposortCyclicalDependencyError).cyclePath).satisfies(
-        (path: unknown[]) =>
-          (path.length === 3 &&
-            path[0] === 'a' &&
-            path[1] === 'b' &&
-            path[2] === 'a') ||
-          (path.length === 3 &&
-            path[0] === 'b' &&
-            path[1] === 'a' &&
-            path[2] === 'b'),
-      );
+      error = e as ToposortCyclicalDependencyError;
     }
+
+    // Depending on traversal order, the reported cycle might start at 'b'
+    expect(error?.cyclePath).satisfies(
+      (path: unknown[]) =>
+        (path.length === 3 &&
+          path[0] === 'a' &&
+          path[1] === 'b' &&
+          path[2] === 'a') ||
+        (path.length === 3 &&
+          path[0] === 'b' &&
+          path[1] === 'a' &&
+          path[2] === 'b'),
+    );
   });
 
   it('should throw ToposortCyclicalDependencyError for a longer cycle', () => {
@@ -143,17 +150,19 @@ describe('toposort', () => {
       ['c', 'd'],
       ['d', 'b'],
     ]; // Cycle: b -> c -> d -> b
+    expect(() => toposort(nodes, edges)).toThrow(
+      ToposortCyclicalDependencyError,
+    );
+
+    // Verify cycle path
+    let error: ToposortCyclicalDependencyError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
-      expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([
-        'b',
-        'c',
-        'd',
-        'b',
-      ]);
+      error = e as ToposortCyclicalDependencyError;
     }
+
+    expect(error?.cyclePath).toEqual(['b', 'c', 'd', 'b']);
   });
 
   it('should throw ToposortCyclicalDependencyError for self-loop', () => {
@@ -168,15 +177,16 @@ describe('toposort', () => {
     expect(() => toposort(nodes, edges)).toThrowError(
       /Cyclical dependency detected: "a" -> "a"/,
     );
+
+    // Verify cycle path
+    let error: ToposortCyclicalDependencyError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
-      expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([
-        'a',
-        'a',
-      ]);
+      error = e as ToposortCyclicalDependencyError;
     }
+
+    expect(error?.cyclePath).toEqual(['a', 'a']);
   });
 
   it('should throw ToposortUnknownNodeError if edge source is not in nodes', () => {
@@ -186,12 +196,16 @@ describe('toposort', () => {
     expect(() => toposort(nodes, edges)).toThrowError(
       /Unknown node referenced in edges: "c"/,
     );
+
+    // Verify unknown node property
+    let error: ToposortUnknownNodeError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortUnknownNodeError);
-      expect((e as ToposortUnknownNodeError).unknownNode).toBe('c');
+      error = e as ToposortUnknownNodeError;
     }
+
+    expect(error?.unknownNode).toBe('c');
   });
 
   it('should throw ToposortUnknownNodeError if edge target is not in nodes', () => {
@@ -201,12 +215,16 @@ describe('toposort', () => {
     expect(() => toposort(nodes, edges)).toThrowError(
       /Unknown node referenced in edges: "c"/,
     );
+
+    // Verify unknown node property
+    let error: ToposortUnknownNodeError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortUnknownNodeError);
-      expect((e as ToposortUnknownNodeError).unknownNode).toBe('c');
+      error = e as ToposortUnknownNodeError;
     }
+
+    expect(error?.unknownNode).toBe('c');
   });
 
   it('should handle nodes as objects (reference equality)', () => {
@@ -267,19 +285,26 @@ describe('toposort', () => {
       ['f', 'g'],
       ['g', 'c'], // Creates cycle: c -> e -> f -> g -> c
     ];
+    expect(() => toposort(nodes, edges)).toThrow(
+      ToposortCyclicalDependencyError,
+    );
+
+    // Verify cycle path properties
+    let error: ToposortCyclicalDependencyError | null = null;
     try {
       toposort(nodes, edges);
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
-      const { cyclePath } = e as ToposortCyclicalDependencyError;
-      // The cycle should contain: c -> e -> f -> g -> c
-      expect(cyclePath).toContain('c');
-      expect(cyclePath).toContain('e');
-      expect(cyclePath).toContain('f');
-      expect(cyclePath).toContain('g');
-      expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
-      expect(cyclePath.length).toBeGreaterThan(3); // Should have at least 4 nodes in the cycle
+      error = e as ToposortCyclicalDependencyError;
     }
+
+    const cyclePath = error?.cyclePath ?? [];
+    // The cycle should contain: c -> e -> f -> g -> c
+    expect(cyclePath).toContain('c');
+    expect(cyclePath).toContain('e');
+    expect(cyclePath).toContain('f');
+    expect(cyclePath).toContain('g');
+    expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
+    expect(cyclePath.length).toBeGreaterThan(3); // Should have at least 4 nodes in the cycle
   });
 
   it('should detect cycle in disconnected components where first unvisited node has no cycle', () => {
@@ -296,18 +321,24 @@ describe('toposort', () => {
       ['d', 'b'], // Creates cycle: b -> c -> d -> b
     ];
 
+    expect(() => toposort(nodes, edges)).toThrow(
+      ToposortCyclicalDependencyError,
+    );
+
+    // Verify cycle path properties
+    let error: ToposortCyclicalDependencyError | null = null;
     try {
       toposort(nodes, edges);
-      throw new Error('Expected ToposortCyclicalDependencyError');
     } catch (e) {
-      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
-      const { cyclePath } = e as ToposortCyclicalDependencyError;
-      // Should find the cycle despite 'b' being the first unvisited node
-      expect(cyclePath.length).toBeGreaterThan(0);
-      expect(cyclePath).toContain('b');
-      expect(cyclePath).toContain('c');
-      expect(cyclePath).toContain('d');
-      expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
+      error = e as ToposortCyclicalDependencyError;
     }
+
+    const cyclePath = error?.cyclePath ?? [];
+    // Should find the cycle despite 'b' being the first unvisited node
+    expect(cyclePath.length).toBeGreaterThan(0);
+    expect(cyclePath).toContain('b');
+    expect(cyclePath).toContain('c');
+    expect(cyclePath).toContain('d');
+    expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
   });
 });

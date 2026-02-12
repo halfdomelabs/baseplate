@@ -1,11 +1,11 @@
 import { cn } from '@src/utils/cn';
 
 interface CircularProgressProps {
-  max: number;
-  value: number;
-  min: number;
-  gaugePrimaryColor: string;
-  gaugeSecondaryColor: string;
+  max?: number;
+  value?: number;
+  min?: number;
+  gaugePrimaryColor?: string;
+  gaugeSecondaryColor?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }

@@ -271,7 +271,7 @@ export async function organizeTsTemplateImports(
             );
           }
           const isTypeOnly =
-            !!importDeclaration.isTypeOnly || !!namedImport.isTypeOnly;
+            importDeclaration.isTypeOnly || namedImport.isTypeOnly;
           if (!isTypeOnly && projectExport.isTypeOnly) {
             throw new Error(
               `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not a type only import but the project export is a type only import.`,

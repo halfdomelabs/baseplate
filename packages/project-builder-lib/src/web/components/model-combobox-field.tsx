@@ -48,7 +48,7 @@ function ModelComboboxField({
 
     const newModelName = searchQuery ? searchQuery : value;
 
-    const doesNewModelExist = !!baseModels.some(
+    const doesNewModelExist = baseModels.some(
       (option) =>
         option.label === newModelName || option.value === newModelName,
     );
