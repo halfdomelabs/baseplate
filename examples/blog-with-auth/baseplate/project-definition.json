@@ -420,45 +420,6 @@
       }
     },
     {
-      "featureRef": "utilities",
-      "id": "model:TO3fGEXsMhzX",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:FwFLIDsUpJbX",
-            "isOptional": false,
-            "name": "key",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:5CkPRDkMexZG",
-            "isOptional": false,
-            "name": "points",
-            "options": { "default": "" },
-            "type": "int"
-          },
-          {
-            "id": "model-scalar-field:OBYWG0Ngi9Ze",
-            "isOptional": true,
-            "name": "expire",
-            "options": { "default": "" },
-            "type": "dateTime"
-          }
-        ],
-        "primaryKeyFieldRefs": ["key"],
-        "relations": [],
-        "uniqueConstraints": []
-      },
-      "name": "RateLimiterFlexible",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
-    },
-    {
       "authorizer": {
         "roles": [
           {

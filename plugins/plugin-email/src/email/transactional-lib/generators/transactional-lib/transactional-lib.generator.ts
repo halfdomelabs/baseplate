@@ -1,5 +1,3 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import {
   DEFAULT_TYPESCRIPT_COMPILER_OPTIONS,
   nodeProvider,
@@ -14,6 +12,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { EMAIL_TRANSACTIONAL_LIB_GENERATED } from './generated/index.js';
@@ -34,16 +33,16 @@ const TRANSACTIONAL_LIB_PACKAGES = {
   },
 } as const;
 
-interface EmailTemplateExport {
-  exportTarget: string;
-  exportFragment: TsCodeFragment;
+export interface EmailTemplateExport {
+  exportName: string;
+  exportPath: string;
 }
 
-interface EmailTemplatesProvider {
+export interface EmailTemplatesProvider {
   registerExport(templateExport: EmailTemplateExport): void;
 }
 
-const emailTemplatesProvider =
+export const emailTemplatesProvider =
   createProviderType<EmailTemplatesProvider>('email-templates');
 
 /**
@@ -58,6 +57,7 @@ export const transactionalLibGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     paths: EMAIL_TRANSACTIONAL_LIB_GENERATED.paths.task,
+    imports: EMAIL_TRANSACTIONAL_LIB_GENERATED.imports.task,
     renderers: EMAIL_TRANSACTIONAL_LIB_GENERATED.renderers.task,
 
     // Configure TypeScript for JSX support
@@ -99,8 +99,8 @@ export const transactionalLibGenerator = createGenerator({
       run({ renderers, paths }) {
         const emailTemplates: EmailTemplateExport[] = [
           {
-            exportTarget: paths.emailsTest,
-            exportFragment: tsTemplate`export { default as TestEmail } from './test.email.js';`,
+            exportName: 'TestEmail',
+            exportPath: paths.emailsTest,
           },
         ];
 
@@ -113,12 +113,23 @@ export const transactionalLibGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            const emailsIndexDir = path.posix.dirname(paths.emailsIndex);
+
             const emailTemplatesIndex = TsCodeUtils.mergeFragments(
               Object.fromEntries(
-                emailTemplates.map((template) => [
-                  template.exportTarget,
-                  template.exportFragment,
-                ]),
+                emailTemplates.map((template) => {
+                  const relativePath = path.posix
+                    .relative(emailsIndexDir, template.exportPath)
+                    .replace(/\.tsx?$/, '.js');
+                  const moduleSpecifier = relativePath.startsWith('.')
+                    ? relativePath
+                    : `./${relativePath}`;
+
+                  return [
+                    template.exportPath,
+                    tsTemplate`export { default as ${template.exportName} } from '${moduleSpecifier}';`,
+                  ];
+                }),
               ),
             );
 

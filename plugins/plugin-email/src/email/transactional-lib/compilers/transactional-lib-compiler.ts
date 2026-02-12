@@ -4,6 +4,7 @@ import type {
   PackageEntry,
   PackageTasks,
 } from '@baseplate-dev/project-builder-lib';
+import type { AnyGeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   composeNodeGenerator,
@@ -12,6 +13,7 @@ import {
 } from '@baseplate-dev/core-generators';
 import { LibraryCompiler } from '@baseplate-dev/project-builder-lib';
 
+import { emailTemplateSpec } from '../email-template-spec.js';
 import { transactionalLibGenerator } from '../generators/transactional-lib/index.js';
 import { transactionalLibDefinitionSchemaEntry } from '../schema/transactional-lib-definition.js';
 
@@ -29,6 +31,14 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
     const packageName = this.getPackageName();
     const packageDirectory = this.getPackageDirectory();
 
+    // Collect plugin-registered email template generators
+    const emailTemplateStore =
+      this.definitionContainer.pluginStore.use(emailTemplateSpec);
+    const pluginChildren: Record<string, AnyGeneratorBundle> = {};
+    for (const [index, generator] of emailTemplateStore.generators.entries()) {
+      pluginChildren[`emailPlugin${index}`] = generator;
+    }
+
     const rootBundle = composeNodeGenerator({
       name: `${generalSettings.name}-${this.packageConfig.name}`,
       packageName,
@@ -38,6 +48,7 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
         library: nodeLibraryGenerator({ includePlaceholderIndexFile: false }),
         vitest: vitestGenerator({ includeTestHelpers: false }),
         transactional: transactionalLibGenerator({}),
+        ...pluginChildren,
       },
     });
 

@@ -7,6 +7,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/button.tsx",
+      "projectExports": { "Button": {} },
       "referencedGeneratorTemplates": ["constants-theme"],
       "sourceFile": "src/components/button.tsx",
       "variables": {}
@@ -17,6 +18,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/divider.tsx",
+      "projectExports": { "Divider": {} },
       "referencedGeneratorTemplates": ["constants-theme"],
       "sourceFile": "src/components/divider.tsx",
       "variables": {}
@@ -27,6 +29,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/heading.tsx",
+      "projectExports": { "Heading": {} },
       "referencedGeneratorTemplates": ["constants-theme"],
       "sourceFile": "src/components/heading.tsx",
       "variables": {}
@@ -46,6 +49,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/layout.tsx",
+      "projectExports": { "EmailLayout": {} },
       "referencedGeneratorTemplates": ["components-divider", "constants-theme"],
       "sourceFile": "src/components/layout.tsx",
       "variables": {}
@@ -66,6 +70,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/section.tsx",
+      "projectExports": { "Section": {} },
       "sourceFile": "src/components/section.tsx",
       "variables": {}
     },
@@ -75,6 +80,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/text.tsx",
+      "projectExports": { "Text": {} },
       "referencedGeneratorTemplates": ["constants-theme"],
       "sourceFile": "src/components/text.tsx",
       "variables": {}
@@ -85,6 +91,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/constants/theme.ts",
+      "projectExports": { "theme": {} },
       "sourceFile": "src/constants/theme.ts",
       "variables": {}
     },

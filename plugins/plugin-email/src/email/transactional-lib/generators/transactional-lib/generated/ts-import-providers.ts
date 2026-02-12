@@ -13,10 +13,17 @@ import {
 import { EMAIL_TRANSACTIONAL_LIB_PATHS } from './template-paths.js';
 
 export const transactionalLibImportsSchema = createTsImportMapSchema({
+  Button: {},
   defineEmail: {},
   DefineEmailOptions: { isTypeOnly: true },
+  Divider: {},
   EmailComponent: { isTypeOnly: true },
+  EmailLayout: {},
+  Heading: {},
   renderEmail: {},
+  Section: {},
+  Text: {},
+  theme: {},
 });
 
 export type TransactionalLibImportsProvider = TsImportMapProviderFromSchema<
@@ -42,10 +49,17 @@ const emailTransactionalLibImportsTask = createGeneratorTask({
         transactionalLibImports: createTsImportMap(
           transactionalLibImportsSchema,
           {
+            Button: paths.componentsButton,
             defineEmail: paths.typesEmailComponent,
             DefineEmailOptions: paths.typesEmailComponent,
+            Divider: paths.componentsDivider,
             EmailComponent: paths.typesEmailComponent,
+            EmailLayout: paths.componentsLayout,
+            Heading: paths.componentsHeading,
             renderEmail: paths.servicesRenderEmail,
+            Section: paths.componentsSection,
+            Text: paths.componentsText,
+            theme: paths.constantsTheme,
           },
         ),
       },

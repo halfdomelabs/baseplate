@@ -80,7 +80,8 @@
   },
   "peerDependencies": {
     "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*"
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"
