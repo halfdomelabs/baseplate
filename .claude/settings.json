@@ -1,15 +1,32 @@
 {
-  "enabledMcpjsonServers": ["baseplate-dev-server"],
-  "enableAllProjectMcpServers": false,
+  "env": {
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
+    "BASEPLATE_KEEP_UNUSED_IMPORTS": "true",
+    "ENABLE_LSP_TOOL": "1"
+  },
   "permissions": {
     "allow": [
-      "Bash(pnpm build:*)",
-      "Bash(pnpm generate:templates:*)",
-      "mcp__baseplate-dev-server__extract-templates",
-      "mcp__baseplate-dev-server__generate-templates",
-      "mcp__baseplate-dev-server__configure-ts-template"
+      "Bash(pnpm lint*)",
+      "Bash(pnpm lint:affected*)",
+      "Bash(pnpm typecheck*)",
+      "Bash(pnpm build*)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm eslint*)",
+      "Bash(pnpm test:affected*)",
+      "Bash(pnpm lint:only:affected*)",
+      "Bash(pnpm check)",
+      "Bash(pnpm why *)",
+      "Bash(npm view *)",
+      "Bash(pnpm --filter @baseplate-dev/* lint*)",
+      "Bash(pnpm --filter @baseplate-dev/* typecheck*)",
+      "Bash(pnpm --filter @baseplate-dev/* build*)",
+      "Bash(pnpm --filter @baseplate-dev/* test*)",
+      "Bash(pnpm --filter @baseplate-dev/* eslint*)",
+      "mcp__baseplate-dev-server__*"
     ]
   },
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": ["baseplate-dev-server"],
   "hooks": {
     "PostToolUse": [
       {
@@ -23,8 +40,7 @@
       }
     ]
   },
-  "env": {
-    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true",
-    "BASEPLATE_KEEP_UNUSED_IMPORTS": "true"
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true
   }
 }
