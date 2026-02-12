@@ -96,7 +96,7 @@
     "sentry-testkit": "^6.2.2",
     "tsc-alias": "1.8.10",
     "tsx": "4.20.6",
-    "typescript": "5.8.3",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.54.0",
     "vite": "7.1.12",
     "vite-tsconfig-paths": "5.1.4",
