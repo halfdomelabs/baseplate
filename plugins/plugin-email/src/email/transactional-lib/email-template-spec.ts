@@ -1,4 +1,4 @@
-import type { GeneratorBundle } from '@baseplate-dev/sync';
+import type { AnyGeneratorBundle } from '@baseplate-dev/sync';
 
 import { createFieldMapSpec } from '@baseplate-dev/project-builder-lib';
 
@@ -13,7 +13,6 @@ import { createFieldMapSpec } from '@baseplate-dev/project-builder-lib';
 export const emailTemplateSpec = createFieldMapSpec(
   'email/email-template',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- generator bundles have varying task configs at runtime
-    generators: t.array<GeneratorBundle<any>>(),
+    generators: t.array<AnyGeneratorBundle>(),
   }),
 );
