@@ -35,7 +35,6 @@ function AccountVerificationEmail({
         Thanks for signing up for {theme.branding.name}! Please verify your
         email address to get started.
       </Text>
-      (
       <>
         <Text>
           Click the button below to confirm your email. This link will expire in

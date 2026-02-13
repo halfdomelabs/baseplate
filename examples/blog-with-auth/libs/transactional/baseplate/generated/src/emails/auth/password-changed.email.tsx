@@ -8,13 +8,15 @@ import { theme } from '../../constants/theme.js';
 import { defineEmail } from '../../types/email-component.types.js';
 
 export default defineEmail(PasswordChangedEmail, {
-  subject: 'Your password has been changed',
+  subject: `Your ${theme.branding.name} password has been changed`,
   previewProps: {},
 });
 
 function PasswordChangedEmail(): React.ReactElement {
   return (
-    <EmailLayout previewText="Your password has been changed">
+    <EmailLayout
+      previewText={`Your ${theme.branding.name} password has been changed`}
+    >
       <Heading as="h2">Password changed</Heading>
 
       <Text>

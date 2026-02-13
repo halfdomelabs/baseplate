@@ -526,13 +526,6 @@
             "type": "string"
           },
           {
-            "id": "model-scalar-field:TZkNcyQ_Txvy",
-            "isOptional": false,
-            "name": "isEmailVerified",
-            "options": { "default": "false" },
-            "type": "boolean"
-          },
-          {
             "id": "model-scalar-field:HQJa_S0ldCJR",
             "isOptional": true,
             "name": "phone",

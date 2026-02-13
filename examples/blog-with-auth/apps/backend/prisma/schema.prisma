@@ -79,7 +79,6 @@ model RateLimiterFlexible {
 model User {
   id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email              String?            @unique
-  isEmailVerified    Boolean            @default(false) @map("is_email_verified")
   phone              String?
   updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
