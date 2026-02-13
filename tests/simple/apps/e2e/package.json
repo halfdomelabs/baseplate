@@ -11,11 +11,8 @@
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",
-    "@types/node": "^20.0.0",
-    "prettier": "3.3.3",
-    "typescript": "5.5.4"
-  },
-  "volta": {
-    "node": "22.18.0"
+    "@types/node": "^22.0.0",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3"
   }
 }
