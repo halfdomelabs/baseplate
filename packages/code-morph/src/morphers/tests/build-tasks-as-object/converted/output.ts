@@ -56,8 +56,9 @@ const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
   extraProperties: t.object({}),
 }));
 
-export interface NodeProvider
-  extends InferFieldMapSchemaFromBuilder<typeof nodePackageJsonFieldsSchema> {
+export interface NodeProvider extends InferFieldMapSchemaFromBuilder<
+  typeof nodePackageJsonFieldsSchema
+> {
   /**
    * The version of node that will be used
    */

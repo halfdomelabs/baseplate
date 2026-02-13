@@ -9,8 +9,8 @@ import type { StorageAdapterKey } from '../config/adapters.config.js';
  */
 export interface FileCategory<
   TName extends string = string,
-  TReferencedByRelation extends
-    keyof Prisma.FileCountOutputType = keyof Prisma.FileCountOutputType,
+  TReferencedByRelation extends keyof Prisma.FileCountOutputType =
+    keyof Prisma.FileCountOutputType,
 > {
   /** Name of category (must be CONSTANT_CASE) */
   readonly name: TName;
