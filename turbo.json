@@ -30,9 +30,11 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"]
     },
-    "prettier:check": {},
+    "prettier:check": {
+      "outputLogs": "errors-only"
+    },
     "prettier:write": {
-      "cache": false
+      "outputLogs": "errors-only"
     },
     "typecheck": {
       "inputs": ["$TURBO_DEFAULT$"]
