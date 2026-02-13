@@ -13,6 +13,7 @@
     "clean": "turbo run clean",
     "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-cli --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
     "preinstall": "npx only-allow pnpm",
+    "run:all": "bash scripts/run-all.sh",
     "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
