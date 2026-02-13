@@ -37,6 +37,9 @@
       "path": "../../packages/utils/tsconfig.build.json"
     },
     {
+      "path": "../plugin-email/tsconfig.build.json"
+    },
+    {
       "path": "../plugin-rate-limit/tsconfig.build.json"
     }
   ]
