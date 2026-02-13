@@ -30,64 +30,32 @@ import { makeGenericPrismaDelegate } from '$prismaUtils';
 import { prisma } from '%prismaImports';
 
 /**
- * Create a simple scalar field with validation and optional transformation
+ * Create a simple scalar field with validation
  *
  * This helper creates a field definition that validates input using a Zod schema.
- * Optionally, you can provide a transform function to convert the validated value
- * into a different type for Prisma operations.
- *
- * For relation fields (e.g., `userId`), use this helper to validate the ID,
- * then use relation helpers in the transform step to create Prisma connect/disconnect objects.
+ * The validated value is used directly for both create and update operations.
  *
  * @template TSchema - The Zod schema type for validation
- * @template TTransformed - The output type after transformation (defaults to schema output)
  * @param schema - Zod schema for validation
- * @param options - Optional configuration
- * @param options.transform - Function to transform the validated value
  * @returns Field definition
  *
  * @example
  * ```typescript
- * // Simple validation
  * const fields = {
  *   title: scalarField(z.string()),
- *   ownerId: scalarField(z.string()), // Validated as string
- * };
- *
- * // With transformation
- * const fields = {
- *   email: scalarField(
- *     z.email(),
- *     { transform: (email) => email.toLowerCase() }
- *   ),
- *   createdAt: scalarField(
- *     z.string().datetime(),
- *     { transform: (dateStr) => new Date(dateStr) }
- *   ),
+ *   email: scalarField(z.string().email()),
+ *   age: scalarField(z.number().int().positive()),
  * };
  * ```
  */
-export function scalarField<
-  TSchema extends z.ZodType,
-  TTransformed = z.output<TSchema>,
->(
+export function scalarField<TSchema extends z.ZodType>(
   schema: TSchema,
-  options?: {
-    transform?: (value: z.output<TSchema>) => TTransformed;
-  },
-): FieldDefinition<TSchema, TTransformed, TTransformed> {
+): FieldDefinition<TSchema, z.output<TSchema>, z.output<TSchema>> {
   return {
     schema,
-    processInput: (value) => {
-      // Apply transform if provided
-      const transformed = options?.transform
-        ? options.transform(value)
-        : (value as TTransformed);
-
-      return {
-        data: { create: transformed, update: transformed },
-      };
-    },
+    processInput: (value) => ({
+      data: { create: value, update: value },
+    }),
   };
 }
 
