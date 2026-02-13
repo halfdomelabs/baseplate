@@ -18,8 +18,9 @@ import {
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
 
-export interface EmbeddedListFieldProps<InputType>
-  extends EmbeddedListInputProps<InputType> {
+export interface EmbeddedListFieldProps<
+  InputType,
+> extends EmbeddedListInputProps<InputType> {
   label?: React.ReactNode;
 }
 
@@ -42,16 +43,16 @@ interface EmbeddedListFieldControllerProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > extends Omit<
-    EmbeddedListFieldProps<
-      Exclude<
-        FieldPathValue<TFieldValues, TName>,
-        undefined | null
-      > extends (infer InputType)[]
-        ? InputType
-        : never
-    >,
-    'onChange' | 'value' | 'error'
-  > {
+  EmbeddedListFieldProps<
+    Exclude<
+      FieldPathValue<TFieldValues, TName>,
+      undefined | null
+    > extends (infer InputType)[]
+      ? InputType
+      : never
+  >,
+  'onChange' | 'value' | 'error'
+> {
   control: Control<TFieldValues>;
   name: TName;
 }

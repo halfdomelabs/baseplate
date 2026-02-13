@@ -61,9 +61,8 @@ export const snapshotRemoveAction = createServiceAction({
         cliVersion,
       );
 
-      const { removeFilesFromSnapshot } = await import(
-        '#src/diff/snapshot/snapshot-management.js'
-      );
+      const { removeFilesFromSnapshot } =
+        await import('#src/diff/snapshot/snapshot-management.js');
 
       await removeFilesFromSnapshot(files, {
         projectDirectory: project.directory,

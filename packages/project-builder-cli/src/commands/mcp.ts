@@ -9,9 +9,8 @@ export function addMcpCommand(program: Command): void {
     .action(async () => {
       const context = await createServiceActionContext();
 
-      const { startMcpStdioServer } = await import(
-        '@baseplate-dev/project-builder-server/dev-server'
-      );
+      const { startMcpStdioServer } =
+        await import('@baseplate-dev/project-builder-server/dev-server');
 
       await startMcpStdioServer(context);
     });

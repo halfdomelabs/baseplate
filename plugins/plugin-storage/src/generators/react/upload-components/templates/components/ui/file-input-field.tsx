@@ -22,8 +22,7 @@ import {
 import { useController } from 'react-hook-form';
 
 interface FileInputFieldProps
-  extends Omit<FileInputProps, 'onChange' | 'value'>,
-    FormFieldProps {
+  extends Omit<FileInputProps, 'onChange' | 'value'>, FormFieldProps {
   onChange?: (value: FileUploadInput | null) => void;
   value?: FileUploadInput;
 }

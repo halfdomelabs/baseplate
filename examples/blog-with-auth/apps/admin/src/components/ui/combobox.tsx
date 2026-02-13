@@ -169,10 +169,8 @@ export function useComboboxContext(): ComboboxContextValue {
   return value;
 }
 
-interface ComboboxInputProps extends Omit<
-  React.ComponentPropsWithRef<'input'>,
-  'value'
-> {
+interface ComboboxInputProps
+  extends Omit<React.ComponentPropsWithRef<'input'>, 'value'> {
   selectedLabel?: string;
 }
 
@@ -370,10 +368,8 @@ function ComboboxEmpty({
 
 const ComboboxGroup = Command.Group;
 
-interface ComboboxItemProps extends Omit<
-  React.ComponentPropsWithRef<'div'>,
-  'onSelect'
-> {
+interface ComboboxItemProps
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
   disabled?: boolean;
   value: string | null;
   label?: string;
@@ -418,10 +414,8 @@ function ComboboxItem({
   );
 }
 
-interface ComboboxActionProps extends Omit<
-  React.ComponentPropsWithRef<'div'>,
-  'onSelect' | 'onClick'
-> {
+interface ComboboxActionProps
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect' | 'onClick'> {
   disabled?: boolean;
   value: string;
   label?: string;

@@ -97,8 +97,7 @@ const TYPE_OPTIONS = [
   { label: 'List', value: 'list' },
 ];
 
-interface Props
-  extends EmbeddedListFormProps<AdminCrudEmbeddedFormConfigInput> {
+interface Props extends EmbeddedListFormProps<AdminCrudEmbeddedFormConfigInput> {
   embeddedFormOptions: { label: string; value: string }[];
 }
 

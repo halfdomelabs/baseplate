@@ -21,8 +21,8 @@ export const MimeTypes = {
 
 export function createFileCategory<
   TName extends string,
-  TReferencedByRelation extends keyof Prisma.FileCountOutputType =
-    keyof Prisma.FileCountOutputType,
+  TReferencedByRelation extends
+    keyof Prisma.FileCountOutputType = keyof Prisma.FileCountOutputType,
 >(
   config: FileCategory<TName, TReferencedByRelation>,
 ): FileCategory<TName, TReferencedByRelation> {

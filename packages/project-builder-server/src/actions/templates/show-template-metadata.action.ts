@@ -40,9 +40,8 @@ export const showTemplateMetadataAction = createServiceAction({
   handler: async (input, context) => {
     const { filePath, project } = input;
 
-    const { showTemplateMetadata } = await import(
-      '../../templates/show/show-template-metadata.js'
-    );
+    const { showTemplateMetadata } =
+      await import('../../templates/show/show-template-metadata.js');
 
     const result = await showTemplateMetadata(
       {

@@ -218,9 +218,8 @@ describe('TemplateExtractorFileContainer', () => {
     });
 
     it('should call formatter for string contents', async () => {
-      const { formatGeneratedTemplateContents } = await import(
-        '#src/templates/utils/formatter.js'
-      );
+      const { formatGeneratedTemplateContents } =
+        await import('#src/templates/utils/formatter.js');
 
       vol.fromJSON({});
 
@@ -238,9 +237,8 @@ describe('TemplateExtractorFileContainer', () => {
     });
 
     it('should not call formatter for Buffer contents', async () => {
-      const { formatGeneratedTemplateContents } = await import(
-        '#src/templates/utils/formatter.js'
-      );
+      const { formatGeneratedTemplateContents } =
+        await import('#src/templates/utils/formatter.js');
 
       vol.fromJSON({});
 

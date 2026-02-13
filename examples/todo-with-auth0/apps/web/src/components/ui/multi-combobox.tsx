@@ -282,10 +282,8 @@ function MultiComboboxEmpty({
 
 const MultiComboboxGroup = CommandGroup;
 
-interface MultiComboboxItemProps extends Omit<
-  React.ComponentPropsWithRef<'div'>,
-  'onSelect'
-> {
+interface MultiComboboxItemProps
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
   disabled?: boolean;
   value: string;
   label?: string;

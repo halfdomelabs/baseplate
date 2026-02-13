@@ -27,8 +27,8 @@ export type AdminCrudActionSchema = z.ZodType<
 >;
 
 export interface AdminCrudActionType<
-  T extends
-    DefinitionSchemaCreator<AdminCrudActionSchema> = DefinitionSchemaCreator<AdminCrudActionSchema>,
+  T extends DefinitionSchemaCreator<AdminCrudActionSchema> =
+    DefinitionSchemaCreator<AdminCrudActionSchema>,
 > {
   name: string;
   createSchema: T;

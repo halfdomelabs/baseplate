@@ -27,7 +27,8 @@ import {
 } from './select';
 
 export interface SelectFieldProps<OptionType>
-  extends SelectOptionProps<OptionType>, FormFieldProps {
+  extends SelectOptionProps<OptionType>,
+    FormFieldProps {
   className?: string;
 }
 

@@ -19,8 +19,7 @@ import {
 } from './form-item';
 
 interface CheckboxFieldProps
-  extends
-    Omit<
+  extends Omit<
       ComponentPropsWithRef<'button'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
     >,

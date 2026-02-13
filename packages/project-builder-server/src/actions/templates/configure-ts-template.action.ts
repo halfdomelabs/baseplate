@@ -55,9 +55,8 @@ export const configureTsTemplateAction = createServiceAction({
       group,
     } = input;
 
-    const { configureTsTemplate } = await import(
-      '#src/templates/configure/configure-ts-template.js'
-    );
+    const { configureTsTemplate } =
+      await import('#src/templates/configure/configure-ts-template.js');
 
     // Configure the template using the dedicated function
     const result = await configureTsTemplate(

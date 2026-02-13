@@ -35,8 +35,9 @@ const appModuleConfigSchema = createFieldMapSchemaBuilder((t) => ({
   moduleImports: t.array<string>(),
 }));
 
-export interface AppModuleProvider
-  extends InferFieldMapSchemaFromBuilder<typeof appModuleConfigSchema> {
+export interface AppModuleProvider extends InferFieldMapSchemaFromBuilder<
+  typeof appModuleConfigSchema
+> {
   getModuleFolder(): string;
 }
 

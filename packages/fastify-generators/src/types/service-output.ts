@@ -41,8 +41,7 @@ export type ServiceOutputDtoNestedField =
   | ServiceOutputDtoNestedFieldWithoutPrisma
   | ServiceOutputDtoNestedFieldWithPrisma;
 
-export interface ServiceOutputDtoNestedFieldWithoutPrisma
-  extends ServiceOutputDtoBaseField {
+export interface ServiceOutputDtoNestedFieldWithoutPrisma extends ServiceOutputDtoBaseField {
   type: 'nested';
   isPrismaType?: false;
   nestedType: ServiceOutputDto;
@@ -54,8 +53,7 @@ export interface ServiceOutputDtoNestedFieldWithoutPrisma
   zodSchemaFragment?: TsCodeFragment;
 }
 
-export interface ServiceOutputDtoNestedFieldWithPrisma
-  extends ServiceOutputDtoBaseField {
+export interface ServiceOutputDtoNestedFieldWithPrisma extends ServiceOutputDtoBaseField {
   type: 'nested';
   isPrismaType: true;
   nestedType: Omit<ServiceOutputDto, 'fields'>;

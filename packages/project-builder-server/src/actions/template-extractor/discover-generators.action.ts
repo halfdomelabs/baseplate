@@ -51,9 +51,8 @@ export const discoverGeneratorsAction = createServiceAction({
 
     logger.info('Discovering available generators');
 
-    const { discoverGenerators } = await import(
-      '../../template-extractor/discover-generators.js'
-    );
+    const { discoverGenerators } =
+      await import('../../template-extractor/discover-generators.js');
 
     const generators = await discoverGenerators(directory, plugins, logger);
 

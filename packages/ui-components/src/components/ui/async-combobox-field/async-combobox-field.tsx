@@ -38,7 +38,8 @@ type AsyncOptionLoader<OptionType> = (
 ) => Promise<OptionType[]>;
 
 export interface AsyncComboboxFieldProps<OptionType>
-  extends Omit<
+  extends
+    Omit<
       ComboboxProps,
       | 'value'
       | 'onChange'

@@ -37,9 +37,8 @@ export const configureRawTemplateAction = createServiceAction({
   handler: async (input, context) => {
     const { filePath, project, generator, templateName } = input;
 
-    const { configureRawTemplate } = await import(
-      '#src/templates/configure/configure-raw-template.js'
-    );
+    const { configureRawTemplate } =
+      await import('#src/templates/configure/configure-raw-template.js');
 
     // Configure the template using the dedicated function
     const result = await configureRawTemplate(

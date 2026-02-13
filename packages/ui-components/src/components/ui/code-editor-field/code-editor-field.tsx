@@ -27,7 +27,8 @@ import {
 } from '../form-item/form-item.js';
 
 export interface CodeEditorFieldProps
-  extends Omit<ComponentPropsWithRef<'div'>, 'onChange' | 'value' | 'children'>,
+  extends
+    Omit<ComponentPropsWithRef<'div'>, 'onChange' | 'value' | 'children'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;

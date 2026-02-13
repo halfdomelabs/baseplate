@@ -51,9 +51,8 @@ export const configureTextTemplateAction = createServiceAction({
     const { filePath, project, generator, templateName, variables, group } =
       input;
 
-    const { configureTextTemplate } = await import(
-      '#src/templates/configure/configure-text-template.js'
-    );
+    const { configureTextTemplate } =
+      await import('#src/templates/configure/configure-text-template.js');
 
     // Configure the template using the dedicated function
     const result = await configureTextTemplate(

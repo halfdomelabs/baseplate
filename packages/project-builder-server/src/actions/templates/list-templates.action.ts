@@ -40,9 +40,8 @@ export const listTemplatesAction = createServiceAction({
     const { generatorDirectory } = input;
     const { logger } = context;
 
-    const { listTemplates } = await import(
-      '../../templates/list/list-templates.js'
-    );
+    const { listTemplates } =
+      await import('../../templates/list/list-templates.js');
 
     const result = await listTemplates({
       generatorDirectory,

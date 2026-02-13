@@ -13,9 +13,8 @@ import type { EmbeddedListInputProps } from './embedded-list-input';
 import { FormControl, FormItem, FormLabel, FormMessage } from '../ui/form-item';
 import { EmbeddedListInput } from './embedded-list-input';
 
-export interface EmbeddedListFieldProps<
-  InputType,
-> extends EmbeddedListInputProps<InputType> {
+export interface EmbeddedListFieldProps<InputType>
+  extends EmbeddedListInputProps<InputType> {
   label?: React.ReactNode;
 }
 
@@ -38,16 +37,16 @@ interface EmbeddedListFieldControllerProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > extends Omit<
-  EmbeddedListFieldProps<
-    Exclude<
-      FieldPathValue<TFieldValues, TName>,
-      undefined | null
-    > extends (infer InputType)[]
-      ? InputType
-      : never
-  >,
-  'onChange' | 'value' | 'error'
-> {
+    EmbeddedListFieldProps<
+      Exclude<
+        FieldPathValue<TFieldValues, TName>,
+        undefined | null
+      > extends (infer InputType)[]
+        ? InputType
+        : never
+    >,
+    'onChange' | 'value' | 'error'
+  > {
   control: Control<TFieldValues>;
   name: TName;
 }

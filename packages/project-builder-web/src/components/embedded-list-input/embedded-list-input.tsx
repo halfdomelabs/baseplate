@@ -154,16 +154,16 @@ interface EmbeddedListInputLabelledControllerProps<
   FormType extends FieldValues,
   FormPath extends FieldPath<FormType>,
 > extends Omit<
-    EmbeddedListInputLabelledProps<
-      Exclude<
-        FieldPathValue<FormType, FormPath>,
-        undefined | null
-      > extends (infer InputType)[]
-        ? InputType
-        : never
-    >,
-    'onChange' | 'value' | 'error'
-  > {
+  EmbeddedListInputLabelledProps<
+    Exclude<
+      FieldPathValue<FormType, FormPath>,
+      undefined | null
+    > extends (infer InputType)[]
+      ? InputType
+      : never
+  >,
+  'onChange' | 'value' | 'error'
+> {
   className?: string;
   control: Control<FormType>;
   name: FormPath;

@@ -62,7 +62,7 @@ export type TuplePaths<
           ? // Check if Generic Array or Tuple
             number extends T['length']
             ? // --- CASE A: Generic Array (e.g. User[]) ---
-              | [number]
+                | [number]
                 | [number, ...TuplePaths<T[number], Depth, [...Stack, unknown]>]
             : // --- CASE B: Tuple (e.g. [string, number]) ---
               {

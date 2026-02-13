@@ -24,7 +24,8 @@ import { mergeRefs } from '$mergeRefs';
 import { get, useFormState } from 'react-hook-form';
 
 export interface InputFieldProps
-  extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
+  extends
+    Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
