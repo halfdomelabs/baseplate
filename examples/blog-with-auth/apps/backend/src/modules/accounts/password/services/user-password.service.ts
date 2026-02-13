@@ -176,21 +176,18 @@ export async function authenticateUserWithEmailAndPassword({
     },
   });
 
-  if (userAccount === null) {
-    // Track failed attempt
-    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid email', 'invalid-email');
-  }
-
   // check for password match
   const isValid = await verifyPasswordHash(
-    userAccount.password ?? '',
+    userAccount?.password ?? '',
     password,
   );
-  if (!isValid) {
+  if (!isValid || !userAccount) {
     // Track failed attempt
     await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid password', 'invalid-password');
+    throw new BadRequestError(
+      'Invalid email or password',
+      'invalid-credentials',
+    );
   }
 
   // Reset consecutive failures on successful login
