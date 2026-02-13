@@ -1,6 +1,7 @@
 import { flattenAppModule } from '@src/utils/app-modules.js';
 
 /* TPL_IMPORTS:START */
+import './schema/email-verification.mutations.js';
 import './schema/password-reset.mutations.js';
 import './schema/user-password.mutations.js';
 /* TPL_IMPORTS:END */

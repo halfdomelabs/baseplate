@@ -15,7 +15,7 @@ interface AccountVerificationProps {
 }
 
 export default defineEmail(AccountVerificationEmail, {
-  subject: 'Verify your email address',
+  subject: `Verify your ${theme.branding.name} email address`,
   previewProps: {
     verifyLink: 'https://example.com',
     verifyCode: '123456',
@@ -27,12 +27,14 @@ function AccountVerificationEmail({
   verifyCode,
 }: AccountVerificationProps): React.ReactElement {
   return (
-    <EmailLayout previewText="Verify your email address">
+    <EmailLayout
+      previewText={`Verify your ${theme.branding.name} email address`}
+    >
       <Heading as="h2">Verify your email</Heading>
 
       <Text>
-        Thanks for signing up for Baseplate! Please verify your email address to
-        get started.
+        Thanks for signing up for {theme.branding.name}! Please verify your
+        email address to get started.
       </Text>
 
       {verifyCode && (
@@ -75,8 +77,7 @@ function AccountVerificationEmail({
       <Divider spacing="lg" />
 
       <Text variant="muted">
-        If you didn't create an account with Baseplate, you can safely ignore
-        this email.
+        {`If you didn't create an account with ${theme.branding.name}, you can safely ignore this email.`}
       </Text>
     </EmailLayout>
   );

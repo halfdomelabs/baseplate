@@ -29,8 +29,8 @@ export * from "./enums.js"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Blogs
- * const blogs = await prisma.blog.findMany()
+ * // Fetch zero or more AuthVerifications
+ * const authVerifications = await prisma.authVerification.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,6 +39,11 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model AuthVerification
+ * 
+ */
+export type AuthVerification = Prisma.AuthVerificationModel
 /**
  * Model Blog
  * 
@@ -54,11 +59,6 @@ export type BlogPost = Prisma.BlogPostModel
  * 
  */
 export type BlogUser = Prisma.BlogUserModel
-/**
- * Model PasswordResetToken
- * 
- */
-export type PasswordResetToken = Prisma.PasswordResetTokenModel
 /**
  * Model RateLimiterFlexible
  * 

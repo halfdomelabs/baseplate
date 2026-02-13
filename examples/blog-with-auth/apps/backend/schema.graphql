@@ -99,12 +99,14 @@ type Mutation {
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
   registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
+  requestEmailVerification: RequestEmailVerificationPayload!
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
   resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
   validatePasswordResetToken(input: ValidatePasswordResetTokenInput!): ValidatePasswordResetTokenPayload!
+  verifyEmail(input: VerifyEmailInput!): VerifyEmailPayload!
 }
 
 type Query {
@@ -129,6 +131,11 @@ input RegisterWithEmailPasswordInput {
 """Payload type for registerWithEmailPassword mutation"""
 type RegisterWithEmailPasswordPayload {
   session: UserSessionPayload!
+}
+
+"""Payload type for requestEmailVerification mutation"""
+type RequestEmailVerificationPayload {
+  success: Boolean!
 }
 
 """Input type for requestPasswordReset mutation"""
@@ -224,4 +231,14 @@ input ValidatePasswordResetTokenInput {
 """Payload type for validatePasswordResetToken mutation"""
 type ValidatePasswordResetTokenPayload {
   valid: Boolean!
+}
+
+"""Input type for verifyEmail mutation"""
+input VerifyEmailInput {
+  token: String!
+}
+
+"""Payload type for verifyEmail mutation"""
+type VerifyEmailPayload {
+  success: Boolean!
 }
