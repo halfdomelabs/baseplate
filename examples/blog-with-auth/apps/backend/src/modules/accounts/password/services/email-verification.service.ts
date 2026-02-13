@@ -20,14 +20,26 @@ const EMAIL_VERIFY_TYPE = 'email-verify';
  * Rate limiters for email verification operations.
  */
 
-// Per-user rate limit: 3 requests/hour
-const getEmailVerifyUserLimiter = memoizeRateLimiter('email-verify-user', {
-  points: 3,
-  duration: 60 * 60, // 1 hour
-});
+// Per-user rate limit: 3 requests per 20 minutes
+const getRequestEmailVerificationUserLimiter = memoizeRateLimiter(
+  'request-email-verification-user',
+  {
+    points: 3,
+    duration: 60 * 20, // 20 minutes
+  },
+);
 
 // Per-IP rate limit: 10 requests/hour
-const getEmailVerifyIpLimiter = memoizeRateLimiter('email-verify-ip', {
+const getRequestEmailVerificationIpLimiter = memoizeRateLimiter(
+  'request-email-verification-ip',
+  {
+    points: 10,
+    duration: 60 * 60, // 1 hour
+  },
+);
+
+// Per-IP rate limit for verify endpoint: 10 requests/hour
+const getVerifyEmailIpLimiter = memoizeRateLimiter('verify-email-ip', {
   points: 10,
   duration: 60 * 60, // 1 hour
 });
@@ -44,12 +56,12 @@ export async function requestEmailVerification({
   context: RequestServiceContext;
 }): Promise<{ success: true }> {
   await Promise.all([
-    getEmailVerifyIpLimiter().consumeOrThrow(
+    getRequestEmailVerificationIpLimiter().consumeOrThrow(
       context.reqInfo.ip,
       'Too many verification attempts. Please try again later.',
       'too-many-requests',
     ),
-    getEmailVerifyUserLimiter().consumeOrThrow(
+    getRequestEmailVerificationUserLimiter().consumeOrThrow(
       userId,
       'Too many verification attempts. Please try again later.',
       'too-many-requests',
@@ -97,9 +109,17 @@ export async function requestEmailVerification({
  */
 export async function verifyEmail({
   token,
+  context,
 }: {
   token: string;
+  context: RequestServiceContext;
 }): Promise<{ success: true }> {
+  await getVerifyEmailIpLimiter().consumeOrThrow(
+    context.reqInfo.ip,
+    'Too many verification attempts. Please try again later.',
+    'too-many-requests',
+  );
+
   const record = await validateAuthVerification({
     type: EMAIL_VERIFY_TYPE,
     token,

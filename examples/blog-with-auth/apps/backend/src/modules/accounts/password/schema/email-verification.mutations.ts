@@ -28,6 +28,7 @@ builder.mutationField('verifyEmail', (t) =>
     input: {
       token: t.input.field({ required: true, type: 'String' }),
     },
-    resolve: async (_root, { input }) => verifyEmail({ token: input.token }),
+    resolve: async (_root, { input }, context) =>
+      verifyEmail({ token: input.token, context }),
   }),
 );
