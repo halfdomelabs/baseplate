@@ -2,6 +2,7 @@
   "files": {
     "added": [
       "migrate.sh",
+      "src/modules/accounts/password/services/auth-verification.service.int.test.ts",
       "src/modules/accounts/utils/cookie-signer.unit.test.ts",
       "src/services/pg-boss.service.int.test.ts"
     ],

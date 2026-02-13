@@ -1,4 +1,14 @@
 {
+  "auth-verification.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-auth-verification"
+  },
+  "email-verification.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-email-verification"
+  },
   "password-hasher.service.ts": {
     "generator": "@baseplate-dev/fastify-generators#auth/password-hasher-service",
     "instanceData": {},

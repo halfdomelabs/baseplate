@@ -3,6 +3,7 @@ import z from 'zod';
 import type { User } from '@src/generated/prisma/client.js';
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
+import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
 import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import {
@@ -19,6 +20,7 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
 } from '../constants/password.constants.js';
+import { requestEmailVerification } from './email-verification.service.js';
 import {
   createPasswordHash,
   verifyPasswordHash,
@@ -121,6 +123,9 @@ export async function registerUserWithEmailAndPassword({
   const user = await createUserWithEmailAndPassword({ input });
   const session = await userSessionService.createSession(user.id, context);
 
+  // Send verification email (fire-and-forget, don't block registration)
+  requestEmailVerification({ userId: user.id, context }).catch(logError);
+
   return { session, user };
 }
 
@@ -171,21 +176,18 @@ export async function authenticateUserWithEmailAndPassword({
     },
   });
 
-  if (userAccount === null) {
-    // Track failed attempt
-    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid email', 'invalid-email');
-  }
-
   // check for password match
   const isValid = await verifyPasswordHash(
-    userAccount.password ?? '',
+    userAccount?.password ?? '',
     password,
   );
-  if (!isValid) {
+  if (!isValid || !userAccount) {
     // Track failed attempt
     await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid password', 'invalid-password');
+    throw new BadRequestError(
+      'Invalid email or password',
+      'invalid-credentials',
+    );
   }
 
   // Reset consecutive failures on successful login

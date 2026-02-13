@@ -1,4 +1,7 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -30,6 +33,36 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
           typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  schemaEmailVerificationMutations: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailVerificationMutations
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesAuthVerification: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesEmailVerification: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -99,6 +132,50 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   requestServiceContextImports,
                   userSessionServiceImports,
                   userSessionTypesImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          schemaEmailVerificationMutations: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailVerificationMutations,
+                destination: paths.schemaEmailVerificationMutations,
+                importMapProviders: {
+                  pothosImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesAuthVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification,
+                destination: paths.servicesAuthVerification,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  prismaImports,
+                },
+                ...options,
+              }),
+          },
+          servicesEmailVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification,
+                destination: paths.servicesEmailVerification,
+                importMapProviders: {
+                  configServiceImports,
+                  emailModuleImports,
+                  errorHandlerServiceImports,
+                  prismaImports,
+                  rateLimitImports,
+                  requestServiceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,

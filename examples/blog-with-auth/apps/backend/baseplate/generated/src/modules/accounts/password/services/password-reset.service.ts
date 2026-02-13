@@ -2,7 +2,6 @@ import {
   PasswordChangedEmail,
   PasswordResetEmail,
 } from '@blog-with-auth/transactional';
-import * as crypto from 'node:crypto';
 import z from 'zod';
 
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
@@ -19,9 +18,14 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '../constants/password.constants.js';
+import {
+  createAuthVerification,
+  validateAuthVerification,
+} from './auth-verification.service.js';
 import { createPasswordHash } from './password-hasher.service.js';
 
 const PROVIDER_ID = 'email-password';
+const PASSWORD_RESET_TYPE = 'password-reset';
 
 /**
  * Rate limiters for password reset operations.
@@ -50,21 +54,6 @@ const getPasswordResetGlobalLimiter = memoizeRateLimiter(
     duration: 60 * 60, // 1 hour
   },
 );
-
-/**
- * Generates a cryptographically secure token for password reset.
- * Uses 128 bits of randomness (same as session tokens).
- */
-function generateResetToken(): string {
-  return crypto.randomBytes(16).toString('base64url');
-}
-
-/**
- * Creates a SHA-256 hash of the token.
- */
-function hashToken(token: string): string {
-  return crypto.createHash('sha256').update(token).digest('hex');
-}
 
 const requestPasswordResetSchema = z.object({
   email: z
@@ -112,20 +101,10 @@ export async function requestPasswordReset({
   });
 
   if (user?.email) {
-    // Generate token
-    const token = generateResetToken();
-    const tokenHash = hashToken(token);
-    const expiresAt = new Date(
-      Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_SEC * 1000,
-    );
-
-    // Store the hashed token
-    await prisma.passwordResetToken.create({
-      data: {
-        userId: user.id,
-        tokenHash,
-        expiresAt,
-      },
+    const { token } = await createAuthVerification({
+      type: PASSWORD_RESET_TYPE,
+      userId: user.id,
+      expiresInSec: PASSWORD_RESET_TOKEN_EXPIRY_SEC,
     });
 
     // Construct reset URL using configured domain
@@ -159,23 +138,12 @@ export async function validatePasswordResetToken({
     .parseAsync({ token: rawToken })
     .catch(handleZodRequestValidationError);
 
-  const tokenHash = hashToken(token);
-
-  const resetToken = await prisma.passwordResetToken.findUnique({
-    where: { tokenHash },
-    select: { expiresAt: true },
+  const record = await validateAuthVerification({
+    type: PASSWORD_RESET_TYPE,
+    token,
   });
 
-  if (!resetToken) {
-    return { valid: false };
-  }
-
-  // Check if expired
-  if (resetToken.expiresAt < new Date()) {
-    return { valid: false };
-  }
-
-  return { valid: true };
+  return { valid: record !== null };
 }
 
 const completePasswordResetSchema = z.object({
@@ -190,7 +158,7 @@ const completePasswordResetSchema = z.object({
  * - Token is single-use (deleted after successful reset)
  * - Does not auto-login the user
  * - Always invalidates all existing sessions for security
- * - Password update and token deletion are transactional
+ * - All remaining password-reset tokens for this user are deleted
  */
 export async function completePasswordReset({
   token: rawToken,
@@ -206,42 +174,31 @@ export async function completePasswordReset({
     })
     .catch(handleZodRequestValidationError);
 
-  const tokenHash = hashToken(token);
-
-  // Find the token
-  const resetToken = await prisma.passwordResetToken.findUnique({
-    where: { tokenHash },
-    include: {
-      user: {
-        select: { id: true, email: true },
-      },
-    },
+  const record = await validateAuthVerification({
+    type: PASSWORD_RESET_TYPE,
+    token,
   });
 
-  if (!resetToken) {
+  if (!record?.userId) {
     throw new BadRequestError('Invalid or expired token', 'invalid-token');
   }
 
-  // Check if expired
-  if (resetToken.expiresAt < new Date()) {
-    throw new BadRequestError('Token has expired', 'token-expired');
-  }
-
-  const { user } = resetToken;
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: record.userId },
+    select: { id: true, email: true },
+  });
 
   if (!user.email) {
     throw new BadRequestError('User has no email', 'user-has-no-email');
   }
 
-  // Update password and delete token in a transaction
   const passwordHash = await createPasswordHash(newPassword);
 
+  // Delete token + remaining reset tokens + update password + invalidate sessions
   await prisma.$transaction([
-    // Delete the token (single-use enforcement)
-    prisma.passwordResetToken.delete({
-      where: { id: resetToken.id },
+    prisma.authVerification.deleteMany({
+      where: { type: PASSWORD_RESET_TYPE, userId: user.id },
     }),
-    // Update or create password
     prisma.userAccount.upsert({
       where: {
         accountId_providerId: {
@@ -259,7 +216,6 @@ export async function completePasswordReset({
         password: passwordHash,
       },
     }),
-    // Always invalidate all existing sessions for security
     prisma.userSession.deleteMany({
       where: { userId: user.id },
     }),
@@ -272,21 +228,4 @@ export async function completePasswordReset({
   });
 
   return { success: true };
-}
-
-/**
- * Cleanup job to delete expired password reset tokens.
- * Should be called periodically (e.g., via cron job or queue).
- * Note: Used tokens are deleted immediately, so this only cleans up expired ones.
- */
-export async function cleanupExpiredPasswordResetTokens(): Promise<{
-  deletedCount: number;
-}> {
-  const result = await prisma.passwordResetToken.deleteMany({
-    where: {
-      expiresAt: { lt: new Date() },
-    },
-  });
-
-  return { deletedCount: result.count };
 }

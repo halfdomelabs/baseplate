@@ -1,18 +1,18 @@
-import { AccountVerificationEmail } from '@blog-with-auth/transactional';
+// @ts-nocheck
 
-import type { RequestServiceContext } from '@src/utils/request-service-context.js';
+import type { RequestServiceContext } from '%requestServiceContextImports';
 
-import { config } from '@src/services/config.js';
-import { prisma } from '@src/services/prisma.js';
-import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
-import { BadRequestError } from '@src/utils/http-errors.js';
-
-import { sendEmail } from '../../../emails/services/emails.service.js';
-import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '../constants/password.constants.js';
+import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '$constantsPassword';
 import {
   createAuthVerification,
   validateAuthVerification,
-} from './auth-verification.service.js';
+} from '$servicesAuthVerification';
+import { config } from '%configServiceImports';
+import { sendEmail } from '%emailModuleImports';
+import { BadRequestError } from '%errorHandlerServiceImports';
+import { prisma } from '%prismaImports';
+import { memoizeRateLimiter } from '%rateLimitImports';
+import { AccountVerificationEmail } from '@blog-with-auth/transactional';
 
 const EMAIL_VERIFY_TYPE = 'email-verify';
 

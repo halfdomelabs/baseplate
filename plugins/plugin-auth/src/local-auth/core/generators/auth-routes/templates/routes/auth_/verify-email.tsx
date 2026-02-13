@@ -1,21 +1,21 @@
-import { useMutation } from '@apollo/client/react';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { z } from 'zod';
+// @ts-nocheck
 
-import { Button } from '@src/components/ui/button';
+import { getApolloErrorCode } from '%apolloErrorImports';
+import { graphql } from '%graphqlImports';
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@src/components/ui/card';
-import { graphql } from '@src/graphql';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { logError } from '@src/services/error-logger';
-import { getApolloErrorCode } from '@src/utils/apollo-error';
+} from '%reactComponentsImports';
+import { logAndFormatError, logError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client/react';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 export const Route = createFileRoute('/auth_/verify-email')({
   validateSearch: z.object({

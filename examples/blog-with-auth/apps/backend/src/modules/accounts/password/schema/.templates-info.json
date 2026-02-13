@@ -1,4 +1,9 @@
 {
+  "email-verification.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "schema-email-verification-mutations"
+  },
   "password-reset.mutations.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

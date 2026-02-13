@@ -14,6 +14,7 @@
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:register": "src/routes/auth_/register.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:reset-password": "src/routes/auth_/reset-password.tsx",
   "@baseplate-dev/plugin-auth#auth/core/auth-routes:route": "src/routes/auth_/route.tsx",
+  "@baseplate-dev/plugin-auth#auth/core/auth-routes:verify-email": "src/routes/auth_/verify-email.tsx",
   "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-manage-roles-action:role-manager-dialog": "src/routes/admin/accounts/users/-components/role-manager-dialog.tsx",
   "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-reset-password-action:password-reset-dialog": "src/routes/admin/accounts/users/-components/password-reset-dialog.tsx",
   "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks:use-log-out": "src/hooks/use-log-out.ts",

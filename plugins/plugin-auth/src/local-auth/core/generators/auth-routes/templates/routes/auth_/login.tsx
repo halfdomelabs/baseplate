@@ -94,23 +94,14 @@ function LoginPage(): React.JSX.Element {
       })
       .catch((err: unknown) => {
         const errorCode = getApolloErrorCode(err, [
-          'invalid-email',
-          'invalid-password',
+          'invalid-credentials',
         ] as const);
         switch (errorCode) {
-          case 'invalid-email': {
-            setFormError(
-              'email',
-              { message: 'Email not found' },
-              { shouldFocus: true },
-            );
-            break;
-          }
-          case 'invalid-password': {
+          case 'invalid-credentials': {
             resetField('password');
             setFormError(
               'password',
-              { message: 'Password is incorrect' },
+              { message: 'Invalid email or password' },
               { shouldFocus: true },
             );
             break;

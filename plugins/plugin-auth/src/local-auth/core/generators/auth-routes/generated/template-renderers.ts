@@ -1,4 +1,7 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -23,6 +26,16 @@ export interface AuthCoreAuthRoutesRenderers {
           typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  verifyEmail: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.verifyEmail
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -71,6 +84,20 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
                   reactSessionImports,
                 },
                 generatorPaths: paths,
+                ...options,
+              }),
+          },
+          verifyEmail: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.verifyEmail,
+                destination: paths.verifyEmail,
+                importMapProviders: {
+                  apolloErrorImports,
+                  graphqlImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
                 ...options,
               }),
           },

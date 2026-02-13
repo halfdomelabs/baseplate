@@ -28,5 +28,10 @@
     "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
     "instanceData": {},
     "template": "route"
+  },
+  "verify-email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+    "instanceData": {},
+    "template": "verify-email"
   }
 }

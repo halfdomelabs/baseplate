@@ -143,6 +143,31 @@
       "pathRootRelativePath": "{routes-root}/auth_/route.tsx",
       "sourceFile": "routes/auth_/route.tsx",
       "variables": {}
+    },
+    "verify-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "apolloErrorImportsProvider": {
+          "importName": "apolloErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/apollo-error/generated/ts-import-providers.ts"
+        },
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/auth_/verify-email.tsx",
+      "sourceFile": "routes/auth_/verify-email.tsx",
+      "variables": {}
     }
   }
 }

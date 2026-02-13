@@ -8,6 +8,7 @@ export interface AuthCoreAuthRoutesPaths {
   register: string;
   resetPassword: string;
   route: string;
+  verifyEmail: string;
 }
 
 const authCoreAuthRoutesPaths = createProviderType<AuthCoreAuthRoutesPaths>(
@@ -29,6 +30,7 @@ const authCoreAuthRoutesPathsTask = createGeneratorTask({
           register: `${routesRoot}/auth_/register.tsx`,
           resetPassword: `${routesRoot}/auth_/reset-password.tsx`,
           route: `${routesRoot}/auth_/route.tsx`,
+          verifyEmail: `${routesRoot}/auth_/verify-email.tsx`,
         },
       },
     };

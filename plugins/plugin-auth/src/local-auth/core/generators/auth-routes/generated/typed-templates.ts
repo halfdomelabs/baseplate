@@ -125,4 +125,22 @@ export const mainGroup = {
   route,
 };
 
-export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup };
+const verifyEmail = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
+  name: 'verify-email',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/verify-email.tsx',
+    ),
+  },
+  variables: {},
+});
+
+export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup, verifyEmail };

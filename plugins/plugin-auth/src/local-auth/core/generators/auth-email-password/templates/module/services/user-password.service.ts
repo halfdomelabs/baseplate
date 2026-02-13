@@ -5,9 +5,11 @@ import type { RequestServiceContext } from '%requestServiceContextImports';
 import type { UserSessionPayload } from '%userSessionTypesImports';
 
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '$constantsPassword';
+import { requestEmailVerification } from '$servicesEmailVerification';
 import {
   BadRequestError,
   handleZodRequestValidationError,
+  logError,
   NotFoundError,
   TooManyRequestsError,
 } from '%errorHandlerServiceImports';
@@ -117,6 +119,9 @@ export async function registerUserWithEmailAndPassword({
   const user = await createUserWithEmailAndPassword({ input });
   const session = await userSessionService.createSession(user.id, context);
 
+  // Send verification email (fire-and-forget, don't block registration)
+  requestEmailVerification({ userId: user.id, context }).catch(logError);
+
   return { session, user };
 }
 
@@ -167,21 +172,18 @@ export async function authenticateUserWithEmailAndPassword({
     },
   });
 
-  if (userAccount === null) {
-    // Track failed attempt
-    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid email', 'invalid-email');
-  }
-
   // check for password match
   const isValid = await verifyPasswordHash(
-    userAccount.password ?? '',
+    userAccount?.password ?? '',
     password,
   );
-  if (!isValid) {
+  if (!isValid || !userAccount) {
     // Track failed attempt
     await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
-    throw new BadRequestError('Invalid password', 'invalid-password');
+    throw new BadRequestError(
+      'Invalid email or password',
+      'invalid-credentials',
+    );
   }
 
   // Reset consecutive failures on successful login

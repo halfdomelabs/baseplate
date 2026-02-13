@@ -49,6 +49,7 @@ export const authEmailPasswordGenerator = createGenerator({
         appModule.moduleImports.push(
           paths.schemaUserPasswordMutations,
           paths.schemaPasswordResetMutations,
+          paths.schemaEmailVerificationMutations,
         );
       },
     }),
@@ -76,6 +77,11 @@ export const authEmailPasswordGenerator = createGenerator({
                   },
                 },
               }),
+            );
+            await builder.apply(renderers.servicesAuthVerification.render({}));
+            await builder.apply(renderers.servicesEmailVerification.render({}));
+            await builder.apply(
+              renderers.schemaEmailVerificationMutations.render({}),
             );
           },
         };
