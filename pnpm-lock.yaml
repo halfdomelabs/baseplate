@@ -9104,7 +9104,7 @@ snapshots:
       json-schema-resolver: 3.0.0
       openapi-types: 12.1.3
       rfdc: 1.4.1
-      yaml: 2.8.2
+      yaml: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
@@ -15583,7 +15583,8 @@ snapshots:
 
   yaml@2.8.1: {}
 
-  yaml@2.8.2: {}
+  yaml@2.8.2:
+    optional: true
 
   yargs-parser@21.1.1: {}
 
