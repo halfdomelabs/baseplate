@@ -2,8 +2,8 @@ export const REACT_PACKAGES = {
   // React
   react: '19.1.0',
   'react-dom': '19.1.0',
-  '@tanstack/react-router': '1.139.7',
-  '@tanstack/router-plugin': '1.139.7',
+  '@tanstack/react-router': '1.159.5',
+  '@tanstack/router-plugin': '1.159.5',
   '@types/node': `^22.0.0`,
   '@types/react': '19.1.3',
   '@types/react-dom': '19.1.3',
@@ -15,8 +15,8 @@ export const REACT_PACKAGES = {
   loglevel: '1.9.1',
 
   // Tailwind
-  '@tailwindcss/vite': '4.1.13',
-  tailwindcss: '4.1.13',
+  '@tailwindcss/vite': '4.1.18',
+  tailwindcss: '4.1.18',
   'prettier-plugin-tailwindcss': '0.7.2',
   'tw-animate-css': '1.2.9',
   'tailwind-merge': '3.3.1',
