@@ -176,7 +176,7 @@
         "relations": [
           {
             "foreignId": "model-foreign-relation:B2F7kXg0V1Xn",
-            "foreignRelationName": "verificationTokens",
+            "foreignRelationName": "authVerifications",
             "id": "model-local-relation:xPp2IWNsVaP6",
             "modelRef": "User",
             "name": "user",

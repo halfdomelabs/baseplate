@@ -77,20 +77,20 @@ model RateLimiterFlexible {
 }
 
 model User {
-  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email              String?            @unique
-  phone              String?
-  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
-  name               String?
-  emailVerified      Boolean            @default(false) @map("email_verified")
-  accounts           UserAccount[]
-  blogPosts          BlogPost[]
-  blogs              Blog[]
-  blogUsers          BlogUser[]
-  roles              UserRole[]
-  sessions           UserSession[]
-  verificationTokens AuthVerification[]
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email             String?            @unique
+  phone             String?
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  name              String?
+  emailVerified     Boolean            @default(false) @map("email_verified")
+  accounts          UserAccount[]
+  authVerifications AuthVerification[]
+  blogPosts         BlogPost[]
+  blogs             Blog[]
+  blogUsers         BlogUser[]
+  roles             UserRole[]
+  sessions          UserSession[]
 
   @@map("user")
 }
