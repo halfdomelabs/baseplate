@@ -25,8 +25,7 @@ import {
 } from '$multiCombobox';
 
 export interface MultiComboboxFieldProps<OptionType>
-  extends MultiSelectOptionProps<OptionType>,
-    FormFieldProps {
+  extends MultiSelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
   disabled?: boolean;

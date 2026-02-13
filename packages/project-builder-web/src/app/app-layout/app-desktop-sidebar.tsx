@@ -6,8 +6,7 @@ import { createLink, Link } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 
-interface SidebarNavigationIconProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface SidebarNavigationIconProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   icon: IconElement;
   label: React.ReactNode;
 }

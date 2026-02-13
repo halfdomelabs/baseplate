@@ -107,10 +107,8 @@ export interface TsTemplateFile<
     never,
     ProviderType
   >,
-  TReferencedGeneratorTemplates extends Record<
-    string,
-    Record<never, never>
-  > = Record<never, Record<never, never>>,
+  TReferencedGeneratorTemplates extends Record<string, Record<never, never>> =
+    Record<never, Record<never, never>>,
 > extends TemplateFileBase {
   /**
    * The variables for the template.
@@ -181,10 +179,8 @@ export function createTsTemplateFile<
     never,
     ProviderType
   >,
-  TReferencedGeneratorTemplates extends Record<
-    string,
-    Record<never, never>
-  > = Record<never, Record<never, never>>,
+  TReferencedGeneratorTemplates extends Record<string, Record<never, never>> =
+    Record<never, Record<never, never>>,
 >(
   file: TsTemplateFile<
     TVariables,

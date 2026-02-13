@@ -24,7 +24,8 @@ import {
 import { Input } from '../input/input.js';
 
 export interface InputFieldProps
-  extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
+  extends
+    Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;

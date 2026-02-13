@@ -25,9 +25,8 @@ export function addDevServerCommand(program: Command): void {
 
       const context = await createServiceActionContext();
 
-      const { DevServer } = await import(
-        '@baseplate-dev/project-builder-server/dev-server'
-      );
+      const { DevServer } =
+        await import('@baseplate-dev/project-builder-server/dev-server');
 
       const devServer = new DevServer({
         cwd,

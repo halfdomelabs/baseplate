@@ -23,9 +23,7 @@ export interface NodePackageDependencies {
 /**
  * Container for managing Node.js dependencies with specific merging rules
  */
-export class NodePackageDependenciesContainer
-  implements FieldContainer<NodePackageDependencies>
-{
+export class NodePackageDependenciesContainer implements FieldContainer<NodePackageDependencies> {
   private readonly _value: Map<string, NodePackageDependencyInfo>;
   protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 

@@ -137,9 +137,8 @@ async function handleListTemplates(
   directory: string | undefined,
   options: ListTemplatesOptions,
 ): Promise<void> {
-  const { discoverGenerators } = await import(
-    '@baseplate-dev/project-builder-server/template-extractor'
-  );
+  const { discoverGenerators } =
+    await import('@baseplate-dev/project-builder-server/template-extractor');
 
   const resolvedDirectory = directory
     ? expandPathWithTilde(directory)
@@ -206,9 +205,8 @@ async function handleDeleteTemplate(
   templateName: string,
   options: DeleteTemplateOptions,
 ): Promise<void> {
-  const { deleteTemplate } = await import(
-    '@baseplate-dev/project-builder-server/template-extractor'
-  );
+  const { deleteTemplate } =
+    await import('@baseplate-dev/project-builder-server/template-extractor');
   const resolvedDirectory = options.directory
     ? expandPathWithTilde(options.directory)
     : path.resolve('.');
@@ -239,9 +237,8 @@ async function handleExtractTemplates(
   options: ExtractTemplatesOptions,
 ): Promise<void> {
   try {
-    const { runTemplateExtractorsForProject } = await import(
-      '@baseplate-dev/project-builder-server/template-extractor'
-    );
+    const { runTemplateExtractorsForProject } =
+      await import('@baseplate-dev/project-builder-server/template-extractor');
 
     const projectInfo = await resolveProject(project);
     const defaultPlugins = await getDefaultPlugins(logger);
@@ -270,9 +267,8 @@ async function handleGenerateTemplates(
   directory: string | undefined,
   options: GenerateTemplatesOptions,
 ): Promise<void> {
-  const { generateTypedTemplateFiles } = await import(
-    '@baseplate-dev/project-builder-server/template-extractor'
-  );
+  const { generateTypedTemplateFiles } =
+    await import('@baseplate-dev/project-builder-server/template-extractor');
 
   const resolvedDirectory = directory
     ? expandPathWithTilde(directory)
@@ -289,9 +285,8 @@ async function handleCreateGenerator(
   directory: string,
   options: CreateGeneratorOptions,
 ): Promise<void> {
-  const { createGenerator } = await import(
-    '@baseplate-dev/project-builder-server/actions'
-  );
+  const { createGenerator } =
+    await import('@baseplate-dev/project-builder-server/actions');
 
   const resolvedDirectory = expandPathWithTilde(directory);
 

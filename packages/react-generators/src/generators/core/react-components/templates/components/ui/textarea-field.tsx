@@ -24,7 +24,8 @@ import { Textarea } from '$textarea';
 import { get, useFormState } from 'react-hook-form';
 
 export interface TextareaFieldProps
-  extends Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,
+  extends
+    Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;

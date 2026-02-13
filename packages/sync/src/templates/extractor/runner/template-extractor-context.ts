@@ -11,8 +11,8 @@ import type {
  * Context passed to TemplateFileExtractor operations.
  */
 export class TemplateExtractorContext<
-  TPluginDependencies extends
-    TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TPluginDependencies extends TemplateExtractorPluginDependencies =
+    TemplateExtractorPluginDependencies,
 > {
   constructor({
     configLookup,

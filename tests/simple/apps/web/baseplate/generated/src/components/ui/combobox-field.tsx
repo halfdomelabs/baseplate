@@ -29,7 +29,8 @@ import {
 } from './form-item';
 
 export interface ComboboxFieldProps<OptionType>
-  extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
+  extends
+    Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
     SelectOptionProps<OptionType>,
     FormFieldProps {
   className?: string;

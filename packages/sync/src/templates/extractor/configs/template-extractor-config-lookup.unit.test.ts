@@ -81,9 +81,8 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
     vi.clearAllMocks();
 
     // Setup mock to return our test data
-    const { indexTemplateConfigs } = await import(
-      '../utils/index-template-configs.js'
-    );
+    const { indexTemplateConfigs } =
+      await import('../utils/index-template-configs.js');
     vi.mocked(indexTemplateConfigs).mockResolvedValue({
       extractorEntries: mockExtractorEntries,
       providerEntries: mockProviderEntries,

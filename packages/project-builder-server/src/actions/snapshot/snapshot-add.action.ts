@@ -64,9 +64,8 @@ export const snapshotAddAction = createServiceAction({
         cliVersion,
       );
 
-      const { addFilesToSnapshot } = await import(
-        '#src/diff/snapshot/snapshot-management.js'
-      );
+      const { addFilesToSnapshot } =
+        await import('#src/diff/snapshot/snapshot-management.js');
 
       await addFilesToSnapshot(files, deleted, {
         projectDirectory: project.directory,

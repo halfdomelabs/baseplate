@@ -71,9 +71,8 @@ export const snapshotSaveAction = createServiceAction({
         );
       }
 
-      const { createSnapshotForProject } = await import(
-        '#src/diff/snapshot/create-snapshot-for-project.js'
-      );
+      const { createSnapshotForProject } =
+        await import('#src/diff/snapshot/create-snapshot-for-project.js');
 
       await createSnapshotForProject({
         projectDirectory: project.directory,

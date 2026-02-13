@@ -12,14 +12,13 @@ import { ModelUtils } from '#src/definition/index.js';
 
 import { useProjectDefinition } from '../hooks/use-project-definition.js';
 
-interface ModelComboboxFieldProps
-  extends Omit<
-    ComboboxFieldProps<{
-      label: string;
-      value: string;
-    }>,
-    'options'
-  > {
+interface ModelComboboxFieldProps extends Omit<
+  ComboboxFieldProps<{
+    label: string;
+    value: string;
+  }>,
+  'options'
+> {
   canCreate?: boolean;
 }
 

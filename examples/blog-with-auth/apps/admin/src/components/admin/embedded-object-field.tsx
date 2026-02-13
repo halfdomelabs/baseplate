@@ -13,8 +13,9 @@ import type { EmbeddedObjectInputProps } from './embedded-object-input';
 import { FormControl, FormItem, FormLabel, FormMessage } from '../ui/form-item';
 import { EmbeddedObjectInput } from './embedded-object-input';
 
-export interface EmbeddedObjectFieldProps<InputType>
-  extends EmbeddedObjectInputProps<InputType> {
+export interface EmbeddedObjectFieldProps<
+  InputType,
+> extends EmbeddedObjectInputProps<InputType> {
   label?: React.ReactNode;
 }
 
@@ -37,9 +38,9 @@ interface EmbeddedObjectFieldControllerProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > extends Omit<
-    EmbeddedObjectFieldProps<FieldPathValue<TFieldValues, TName>>,
-    'onChange' | 'value' | 'error'
-  > {
+  EmbeddedObjectFieldProps<FieldPathValue<TFieldValues, TName>>,
+  'onChange' | 'value' | 'error'
+> {
   control: Control<TFieldValues>;
   name: TName;
 }
