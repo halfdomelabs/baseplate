@@ -28,7 +28,8 @@ import {
 import { useControllerMerged } from '$hooksUseControllerMerged';
 
 export interface ComboboxFieldProps<OptionType>
-  extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
+  extends
+    Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
     SelectOptionProps<OptionType>,
     FormFieldProps {
   className?: string;

@@ -9,8 +9,7 @@ import type { TsTemplateImportLookupContext } from './organize-ts-template-impor
 import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
 import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 
-export interface WriteTsTemplateFileContext
-  extends TsTemplateImportLookupContext {
+export interface WriteTsTemplateFileContext extends TsTemplateImportLookupContext {
   generatorName: string;
 }
 

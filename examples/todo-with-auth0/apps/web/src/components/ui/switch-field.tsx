@@ -18,7 +18,8 @@ import {
 import { Switch } from './switch';
 
 export interface SwitchFieldProps
-  extends Omit<
+  extends
+    Omit<
       React.ComponentPropsWithRef<typeof Switch>,
       'onChange' | 'value' | 'onCheckedChange' | 'checked'
     >,

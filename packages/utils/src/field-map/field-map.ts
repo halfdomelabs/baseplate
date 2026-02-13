@@ -79,9 +79,9 @@ export class ArrayContainer<T> implements FieldContainer<T[]> {
   }
 }
 
-export class ObjectContainer<T extends Record<string, unknown>>
-  implements FieldContainer<T>
-{
+export class ObjectContainer<
+  T extends Record<string, unknown>,
+> implements FieldContainer<T> {
   private readonly map: Map<
     keyof T,
     { value: unknown; setBySource: string | undefined }
@@ -126,9 +126,10 @@ export class ObjectContainer<T extends Record<string, unknown>>
 }
 
 // Map field container
-export class MapContainer<K extends string | number | symbol, V>
-  implements FieldContainer<Map<K, V>>
-{
+export class MapContainer<
+  K extends string | number | symbol,
+  V,
+> implements FieldContainer<Map<K, V>> {
   private readonly _value: Map<
     K,
     { value: V; setBySource: string | undefined }
@@ -186,9 +187,9 @@ export class MapContainer<K extends string | number | symbol, V>
  * This container stores objects that contains a name field that can be used for
  * detecting duplicate names.
  */
-export class NamedArrayFieldContainer<V extends { name: string }>
-  implements FieldContainer<V[]>
-{
+export class NamedArrayFieldContainer<
+  V extends { name: string },
+> implements FieldContainer<V[]> {
   private readonly _value: Map<
     string,
     { value: V; setBySource: string | undefined }
@@ -236,9 +237,9 @@ export class NamedArrayFieldContainer<V extends { name: string }>
 /**
  * Named array field container that returns a map of names to values
  */
-export class NamedArrayToMapFieldContainer<V extends { name: string }>
-  implements FieldContainer<Map<string, V>>
-{
+export class NamedArrayToMapFieldContainer<
+  V extends { name: string },
+> implements FieldContainer<Map<string, V>> {
   private readonly _namedFieldContainer: NamedArrayFieldContainer<V>;
 
   constructor(initialValue?: V[], options?: FieldContainerOptions) {
@@ -268,8 +269,7 @@ export class MapOfMapsContainer<
   K1 extends string | number | symbol,
   K2 extends string | number | symbol,
   V,
-> implements FieldContainer<Map<K1, Map<K2, V>>>
-{
+> implements FieldContainer<Map<K1, Map<K2, V>>> {
   private readonly _value: Map<
     K1,
     {

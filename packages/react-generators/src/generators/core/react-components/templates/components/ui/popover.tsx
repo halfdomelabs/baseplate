@@ -25,8 +25,9 @@ function PopoverTrigger({
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
-interface PopoverContentProps
-  extends React.ComponentPropsWithRef<typeof PopoverPrimitive.Content> {
+interface PopoverContentProps extends React.ComponentPropsWithRef<
+  typeof PopoverPrimitive.Content
+> {
   width?: 'default' | 'none';
   padding?: 'default' | 'none';
 }

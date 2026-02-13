@@ -37,8 +37,10 @@ export type TsHoistedFragmentPosition = 'beforeImports' | 'afterImports';
  * A hoisted fragment with a specific position in the generated file, e.g.
  * before imports or after imports.
  */
-export interface TsPositionedHoistedFragment
-  extends Omit<TsHoistedFragment, 'hoistedFragments'> {
+export interface TsPositionedHoistedFragment extends Omit<
+  TsHoistedFragment,
+  'hoistedFragments'
+> {
   /**
    * Position where this fragment should be placed in the generated file.
    */

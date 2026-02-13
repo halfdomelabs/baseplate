@@ -18,7 +18,8 @@ import { useControllerMerged } from '$hooksUseControllerMerged';
 import { Switch } from '$switchComponent';
 
 export interface SwitchFieldProps
-  extends Omit<
+  extends
+    Omit<
       React.ComponentPropsWithRef<typeof Switch>,
       'onChange' | 'value' | 'onCheckedChange' | 'checked'
     >,

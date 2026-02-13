@@ -12,9 +12,8 @@ vi.mock('./prepare-generator-files/prepare-generator-file.js', () => ({
   formatOutputFileContents: vi.fn(),
 }));
 
-const { formatOutputFileContents } = await import(
-  './prepare-generator-files/prepare-generator-file.js'
-);
+const { formatOutputFileContents } =
+  await import('./prepare-generator-files/prepare-generator-file.js');
 
 describe('formatGeneratorOutput', () => {
   const mockLogger: Logger = {

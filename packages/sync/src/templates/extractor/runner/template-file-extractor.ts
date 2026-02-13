@@ -82,12 +82,12 @@ export interface TemplateFileExtractorMetadataEntry<
  * - Writing template files to the package
  */
 export interface TemplateFileExtractor<
-  TTemplateMetadataSchema extends
-    typeof templateConfigSchema = typeof templateConfigSchema,
+  TTemplateMetadataSchema extends typeof templateConfigSchema =
+    typeof templateConfigSchema,
   TTemplateInstanceDataSchema extends z.ZodObject = z.ZodObject,
   TExtractorConfig extends z.ZodType = z.ZodUnknown,
-  TPluginDependencies extends
-    TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TPluginDependencies extends TemplateExtractorPluginDependencies =
+    TemplateExtractorPluginDependencies,
 > {
   /**
    * The name of the extractor.
@@ -176,12 +176,12 @@ export interface TemplateFileExtractor<
  * Creates a typed TemplateFileExtractor.
  */
 export function createTemplateFileExtractor<
-  TGeneratorTemplateMetadata extends
-    typeof templateConfigSchema = typeof templateConfigSchema,
+  TGeneratorTemplateMetadata extends typeof templateConfigSchema =
+    typeof templateConfigSchema,
   TTemplateInstanceData extends z.ZodObject = z.ZodObject,
   TExtractorConfig extends z.ZodType = z.ZodUnknown,
-  TPluginDependencies extends
-    TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TPluginDependencies extends TemplateExtractorPluginDependencies =
+    TemplateExtractorPluginDependencies,
 >(
   input: TemplateFileExtractor<
     TGeneratorTemplateMetadata,

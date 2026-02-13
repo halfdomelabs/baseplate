@@ -44,8 +44,8 @@ export interface TemplateExtractorPluginApi {
 export interface TemplateExtractorPlugin<
   TName extends string = string,
   TInstance = unknown,
-  TPluginDependencies extends
-    TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TPluginDependencies extends TemplateExtractorPluginDependencies =
+    TemplateExtractorPluginDependencies,
 > {
   name: TName;
   pluginDependencies?: TPluginDependencies;

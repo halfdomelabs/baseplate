@@ -33,9 +33,8 @@ export async function getCliVersion(): Promise<string> {
   if (cachedCliVersion === undefined) {
     // Use require.resolve to find the package.json for project-builder-cli
     const require = createRequire(import.meta.url);
-    const cliPackagePath = require.resolve(
-      '@baseplate-dev/project-builder-cli',
-    );
+    const cliPackagePath =
+      require.resolve('@baseplate-dev/project-builder-cli');
 
     const packageJsonPath = await findNearestPackageJson({
       cwd: cliPackagePath,

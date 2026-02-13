@@ -110,8 +110,9 @@ export type DefinitionEntityInput<
  * @template TInput - The overall input type.
  * @template TEntityType - The entity type.
  */
-interface DefinitionReferenceInputBase<TEntityType extends DefinitionEntityType>
-  extends Pick<DefinitionReference, 'onDelete'> {
+interface DefinitionReferenceInputBase<
+  TEntityType extends DefinitionEntityType,
+> extends Pick<DefinitionReference, 'onDelete'> {
   type: TEntityType;
   /** Optional ref context slot that this reference provides. Registers this reference's path in a shared context. */
   provides?: RefContextSlot<TEntityType>;
@@ -141,7 +142,9 @@ export type DefinitionReferenceInput<TEntityType extends DefinitionEntityType> =
 /**
  * Entity with a name resolver.
  */
-export interface DefinitionEntityWithNameResolver
-  extends Omit<DefinitionEntity, 'name'> {
+export interface DefinitionEntityWithNameResolver extends Omit<
+  DefinitionEntity,
+  'name'
+> {
   nameResolver: DefinitionEntityNameResolver | string;
 }

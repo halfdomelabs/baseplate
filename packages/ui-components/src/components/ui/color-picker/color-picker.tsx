@@ -11,8 +11,10 @@ import { cn } from '#src/utils/index.js';
 
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover.js';
 
-export interface ColorFieldProps
-  extends Omit<ComponentPropsWithRef<'button'>, 'value' | 'onChange'> {
+export interface ColorFieldProps extends Omit<
+  ComponentPropsWithRef<'button'>,
+  'value' | 'onChange'
+> {
   placeholder?: string;
   onChange?: (value: string) => void;
   value?: string;

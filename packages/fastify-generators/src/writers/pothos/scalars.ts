@@ -6,8 +6,10 @@ export interface PothosScalarConfig {
   pothosMethod?: string | null;
 }
 
-export interface PothosCustomScalarConfig
-  extends Omit<PothosScalarConfig, 'pothosMethod'> {
+export interface PothosCustomScalarConfig extends Omit<
+  PothosScalarConfig,
+  'pothosMethod'
+> {
   inputType: string;
   outputType: string;
 }

@@ -49,9 +49,8 @@ export const generateTemplatesAction = createServiceAction({
     }
     logger.info('Generating typed template files');
 
-    const { generateTypedTemplateFiles } = await import(
-      '../../template-extractor/run-template-extractor.js'
-    );
+    const { generateTypedTemplateFiles } =
+      await import('../../template-extractor/run-template-extractor.js');
 
     await generateTypedTemplateFiles(directory, plugins, logger, {
       skipClean,

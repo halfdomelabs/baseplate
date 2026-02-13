@@ -50,9 +50,8 @@ export const extractTemplatesAction = createServiceAction({
       `Extracting templates from project: ${project.name}, app: ${app}`,
     );
 
-    const { runTemplateExtractorsForProject } = await import(
-      '../../template-extractor/run-template-extractor.js'
-    );
+    const { runTemplateExtractorsForProject } =
+      await import('../../template-extractor/run-template-extractor.js');
 
     await runTemplateExtractorsForProject(
       project.directory,

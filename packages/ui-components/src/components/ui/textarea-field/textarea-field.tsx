@@ -24,7 +24,8 @@ import {
 import { Textarea } from '../textarea/textarea.js';
 
 export interface TextareaFieldProps
-  extends Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,
+  extends
+    Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;

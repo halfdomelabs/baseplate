@@ -23,8 +23,7 @@ import {
 import { SwitchField } from '../switch-field/switch-field.js';
 
 export interface MultiSwitchFieldProps<OptionType>
-  extends MultiSelectOptionProps<OptionType>,
-    FormFieldProps {
+  extends MultiSelectOptionProps<OptionType>, FormFieldProps {
   value?: string[];
   onChange?: (value: string[]) => void;
   className?: string;

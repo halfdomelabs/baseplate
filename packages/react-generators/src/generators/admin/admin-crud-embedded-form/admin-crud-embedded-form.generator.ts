@@ -61,8 +61,10 @@ interface AdminCrudEmbeddedObjectFormInfo {
   validationExpression: TsCodeFragment;
 }
 
-interface AdminCrudEmbeddedListFormInfo
-  extends Omit<AdminCrudEmbeddedObjectFormInfo, 'type'> {
+interface AdminCrudEmbeddedListFormInfo extends Omit<
+  AdminCrudEmbeddedObjectFormInfo,
+  'type'
+> {
   type: 'list';
   embeddedTableComponent: AdminCrudEmbeddedComponent;
 }

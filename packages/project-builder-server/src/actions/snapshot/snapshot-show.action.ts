@@ -75,18 +75,14 @@ export const snapshotShowAction = createServiceAction({
 
       // We need to capture the output instead of just logging it
       // Let's load the snapshot manifest directly
-      const { loadSnapshotManifest } = await import(
-        '#src/diff/snapshot/snapshot-manifest.js'
-      );
-      const { resolveSnapshotDirectory } = await import(
-        '#src/diff/snapshot/snapshot-utils.js'
-      );
-      const { getSingleAppDirectoryForProject } = await import(
-        '#src/project-definition/get-single-app-directory-for-project.js'
-      );
-      const { loadProjectDefinition } = await import(
-        '#src/project-definition/index.js'
-      );
+      const { loadSnapshotManifest } =
+        await import('#src/diff/snapshot/snapshot-manifest.js');
+      const { resolveSnapshotDirectory } =
+        await import('#src/diff/snapshot/snapshot-utils.js');
+      const { getSingleAppDirectoryForProject } =
+        await import('#src/project-definition/get-single-app-directory-for-project.js');
+      const { loadProjectDefinition } =
+        await import('#src/project-definition/index.js');
 
       const { definition } = await loadProjectDefinition(
         project.directory,

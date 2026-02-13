@@ -67,8 +67,9 @@ function SelectTrigger({
     </SelectPrimitive.Trigger>
   );
 }
-interface SelectContentProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
+interface SelectContentProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Content
+> {
   maxHeight?: string;
 }
 

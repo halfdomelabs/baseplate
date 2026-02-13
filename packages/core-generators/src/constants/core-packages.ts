@@ -18,7 +18,7 @@ export const CORE_PACKAGES = {
   globals: '17.3.0',
 
   // Formatting
-  prettier: '3.6.2',
+  prettier: '3.8.1',
   'prettier-plugin-packagejson': '3.0.0',
 
   // Testing

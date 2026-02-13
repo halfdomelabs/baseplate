@@ -45,9 +45,8 @@ export const createGeneratorAction = createServiceAction({
   handler: async (input, context) => {
     const { name, directory, includeTemplates } = input;
 
-    const { createGenerator } = await import(
-      '#src/templates/create/create-generator.js'
-    );
+    const { createGenerator } =
+      await import('#src/templates/create/create-generator.js');
 
     const result = createGenerator({
       name,

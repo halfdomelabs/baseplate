@@ -77,8 +77,9 @@ const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
   sideEffectImports: t.map<string, TsCodeFragment>(),
 }));
 
-export interface YogaPluginConfigProvider
-  extends InferFieldMapSchemaFromBuilder<typeof schemaBuilder> {
+export interface YogaPluginConfigProvider extends InferFieldMapSchemaFromBuilder<
+  typeof schemaBuilder
+> {
   isSubscriptionEnabled(): boolean;
 }
 

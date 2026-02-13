@@ -8,7 +8,8 @@ import { buttonVariants } from '$stylesButton';
 import { Slot } from 'radix-ui';
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }

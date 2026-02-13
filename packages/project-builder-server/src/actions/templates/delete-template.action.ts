@@ -36,9 +36,8 @@ export const deleteTemplateAction = createServiceAction({
     const { filePath, project } = input;
     const { logger } = context;
 
-    const { deleteTemplate } = await import(
-      '../../templates/delete/delete-template.js'
-    );
+    const { deleteTemplate } =
+      await import('../../templates/delete/delete-template.js');
 
     const result = await deleteTemplate(
       {
