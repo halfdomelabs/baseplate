@@ -1,10 +1,15 @@
-import { TsCodeUtils } from '@baseplate-dev/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
+  configServiceProvider,
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
 } from '@baseplate-dev/fastify-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderTask,
+} from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
@@ -27,13 +32,25 @@ export const authEmailPasswordGenerator = createGenerator({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
+    config: createProviderTask(configServiceProvider, (configService) => {
+      configService.configFields.set('PASSWORD_RESET_DOMAIN', {
+        validator: tsCodeFragment('z.url()'),
+        comment:
+          'Base domain for password reset links (e.g., https://app.example.com)',
+        exampleValue: 'http://localhost:3030',
+      });
+    }),
     appModule: createGeneratorTask({
       dependencies: {
         paths: GENERATED_TEMPLATES.paths.provider,
         appModule: appModuleProvider,
       },
       run({ paths, appModule }) {
-        appModule.moduleImports.push(paths.schemaUserPasswordMutations);
+        appModule.moduleImports.push(
+          paths.schemaUserPasswordMutations,
+          paths.schemaPasswordResetMutations,
+          paths.schemaEmailVerificationMutations,
+        );
       },
     }),
     main: createGeneratorTask({
@@ -60,6 +77,11 @@ export const authEmailPasswordGenerator = createGenerator({
                   },
                 },
               }),
+            );
+            await builder.apply(renderers.servicesAuthVerification.render({}));
+            await builder.apply(renderers.servicesEmailVerification.render({}));
+            await builder.apply(
+              renderers.schemaEmailVerificationMutations.render({}),
             );
           },
         };

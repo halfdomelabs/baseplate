@@ -248,3 +248,6 @@ export interface GeneratorBundle<
    */
   preRegisteredPhases?: TaskPhase[];
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the generator bundles from being provided generic arguments
+export type AnyGeneratorBundle = GeneratorBundle<any>;

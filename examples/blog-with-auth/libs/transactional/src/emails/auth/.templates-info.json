@@ -1,0 +1,17 @@
+{
+  "account-verification.email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
+    "instanceData": {},
+    "template": "account-verification-email"
+  },
+  "password-changed.email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
+    "instanceData": {},
+    "template": "password-changed-email"
+  },
+  "password-reset.email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/auth-email-templates",
+    "instanceData": {},
+    "template": "password-reset-email"
+  }
+}

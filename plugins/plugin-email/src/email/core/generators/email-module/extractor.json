@@ -13,6 +13,7 @@
       },
       "pathRootRelativePath": "{module-root}/emails/services/emails.service.ts",
       "projectExports": {
+        "sendEmail": { "isTypeOnly": false, "name": "sendEmail" },
         "sendRawEmail": { "isTypeOnly": false, "name": "sendRawEmail" }
       },
       "referencedGeneratorTemplates": ["emails-types", "send-email-queue"],

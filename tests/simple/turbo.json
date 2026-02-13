@@ -4,7 +4,8 @@
     "build": {
       "inputs": ["$TURBO_DEFAULT$", "!README.md", "!**/*.test.ts"],
       "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
-      "persistent": false
+      "persistent": false,
+      "dependsOn": ["^build"]
     },
     "dev": {
       "cache": false,

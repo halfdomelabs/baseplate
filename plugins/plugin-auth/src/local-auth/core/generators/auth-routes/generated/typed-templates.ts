@@ -9,6 +9,43 @@ import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
+const constants = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'constants',
+  projectExports: {
+    PASSWORD_MAX_LENGTH: { isTypeOnly: false },
+    PASSWORD_MIN_LENGTH: { isTypeOnly: false },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/-constants.ts',
+    ),
+  },
+  variables: {},
+});
+
+const forgotPassword = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
+  name: 'forgot-password',
+  referencedGeneratorTemplates: { constants: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/forgot-password.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const login = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -20,6 +57,7 @@ const login = createTsTemplateFile({
     reactSessionImports: reactSessionImportsProvider,
   },
   name: 'login',
+  referencedGeneratorTemplates: { constants: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/auth_/login.tsx'),
   },
@@ -37,10 +75,31 @@ const register = createTsTemplateFile({
     reactSessionImports: reactSessionImportsProvider,
   },
   name: 'register',
+  referencedGeneratorTemplates: { constants: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/routes/auth_/register.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const resetPassword = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
+  name: 'reset-password',
+  referencedGeneratorTemplates: { constants: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/reset-password.tsx',
     ),
   },
   variables: {},
@@ -57,6 +116,31 @@ const route = createTsTemplateFile({
   variables: {},
 });
 
-export const mainGroup = { login, register, route };
+export const mainGroup = {
+  constants,
+  forgotPassword,
+  login,
+  register,
+  resetPassword,
+  route,
+};
 
-export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup };
+const verifyEmail = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
+    graphqlImports: graphqlImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
+  },
+  name: 'verify-email',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/routes/auth_/verify-email.tsx',
+    ),
+  },
+  variables: {},
+});
+
+export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup, verifyEmail };

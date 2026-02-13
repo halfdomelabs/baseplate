@@ -1,5 +1,6 @@
 export * from './auth-apollo/index.js';
 export * from './auth-email-password/index.js';
+export * from './auth-email-templates/index.js';
 export * from './auth-hooks/index.js';
 export * from './auth-module/index.js';
 export * from './auth-routes/index.js';

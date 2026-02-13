@@ -33,7 +33,8 @@
       "Bash(pnpm --filter @baseplate-dev/* test*)",
       "Bash(pnpm --filter @baseplate-dev/* eslint*)",
       "mcp__baseplate-dev-server__*"
-    ]
+    ],
+    "deny": ["Edit(**/baseplate/generated/**)"]
   },
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": ["baseplate-dev-server"],

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '$constants';
 import { getApolloErrorCode } from '%apolloErrorImports';
 import { graphql } from '%graphqlImports';
 import {
@@ -40,11 +41,9 @@ export const Route = createFileRoute('/auth_/register')({
   },
 });
 
-const PASSWORD_MIN_LENGTH = 8;
-
 const formSchema = z.object({
   email: z.email().transform((value) => value.toLowerCase()),
-  password: z.string().min(PASSWORD_MIN_LENGTH),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 type FormData = z.infer<typeof formSchema>;

@@ -14,6 +14,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   DATABASE_URL: z.string().min(1),
   // Default sender email address for transactional emails
   EMAIL_DEFAULT_FROM: z.email().default('noreply@example.com'),
+  // Base domain for password reset links (e.g., https://app.example.com)
+  PASSWORD_RESET_DOMAIN: z.url(),
   // Postmark API server token for sending emails
   POSTMARK_SERVER_TOKEN: z.string().min(1),
   // Sentry DSN

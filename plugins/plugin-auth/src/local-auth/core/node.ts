@@ -2,6 +2,7 @@ import {
   appModuleGenerator,
   passwordHasherServiceGenerator,
 } from '@baseplate-dev/fastify-generators';
+import { emailTemplateSpec } from '@baseplate-dev/plugin-email';
 import {
   appCompilerSpec,
   backendAppEntryType,
@@ -16,6 +17,7 @@ import type { LocalAuthPluginDefinition } from './schema/plugin-definition.js';
 
 import { authApolloGenerator } from './generators/auth-apollo/auth-apollo.generator.js';
 import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
+import { authEmailTemplatesGenerator } from './generators/auth-email-templates/auth-email-templates.generator.js';
 import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authRoutesGenerator } from './generators/auth-routes/auth-routes.generator.js';
 import {
@@ -29,8 +31,12 @@ export default createPluginModule({
   name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
+    emailTemplate: emailTemplateSpec,
   },
-  initialize: ({ appCompiler }, { pluginKey }) => {
+  initialize: ({ appCompiler, emailTemplate }, { pluginKey }) => {
+    // Register auth email templates with the transactional lib
+    emailTemplate.generators.push(authEmailTemplatesGenerator({}));
+
     // register backend compiler
     appCompiler.compilers.push(
       {

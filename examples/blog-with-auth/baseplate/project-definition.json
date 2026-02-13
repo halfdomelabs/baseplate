@@ -111,6 +111,97 @@
   "models": [
     {
       "authorizer": { "roles": [] },
+      "featureRef": "auth",
+      "id": "model:wGEO1hZs5XQE",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:x5uM_Nhnixmv",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:Ia5IOZYxjSk7",
+            "isOptional": false,
+            "name": "type",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:yO1pPNae8Ikp",
+            "isOptional": false,
+            "name": "identifier",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:zNj1JW0Qzts5",
+            "isOptional": false,
+            "name": "value",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:h8RjTcvjiTB9",
+            "isOptional": true,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:Dr_czFEaco9V",
+            "isOptional": true,
+            "name": "metadata",
+            "options": { "default": "" },
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:JBzoMuV1SZO8",
+            "isOptional": false,
+            "name": "expiresAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:i1R3iha91I8Q",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:B2F7kXg0V1Xn",
+            "foreignRelationName": "authVerifications",
+            "id": "model-local-relation:xPp2IWNsVaP6",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "type" }, { "fieldRef": "identifier" }],
+            "id": "model-unique-constraint:nEpGjIkLAgcn"
+          }
+        ]
+      },
+      "name": "AuthVerification",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
@@ -351,6 +442,46 @@
       }
     },
     {
+      "authorizer": { "roles": [] },
+      "featureRef": "utilities",
+      "id": "model:TO3fGEXsMhzX",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:FwFLIDsUpJbX",
+            "isOptional": false,
+            "name": "key",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5CkPRDkMexZG",
+            "isOptional": false,
+            "name": "points",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:OBYWG0Ngi9Ze",
+            "isOptional": true,
+            "name": "expire",
+            "options": { "default": "" },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["key"],
+        "relations": [],
+        "uniqueConstraints": []
+      },
+      "name": "RateLimiterFlexible",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
       "authorizer": {
         "roles": [
           {
@@ -393,13 +524,6 @@
             "name": "email",
             "options": { "default": "" },
             "type": "string"
-          },
-          {
-            "id": "model-scalar-field:TZkNcyQ_Txvy",
-            "isOptional": false,
-            "name": "isEmailVerified",
-            "options": { "default": "false" },
-            "type": "boolean"
           },
           {
             "id": "model-scalar-field:HQJa_S0ldCJR",
@@ -705,46 +829,6 @@
         ]
       },
       "name": "UserSession",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
-    },
-    {
-      "authorizer": { "roles": [] },
-      "featureRef": "utilities",
-      "id": "model:TO3fGEXsMhzX",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:FwFLIDsUpJbX",
-            "isOptional": false,
-            "name": "key",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:5CkPRDkMexZG",
-            "isOptional": false,
-            "name": "points",
-            "options": { "default": "" },
-            "type": "int"
-          },
-          {
-            "id": "model-scalar-field:OBYWG0Ngi9Ze",
-            "isOptional": true,
-            "name": "expire",
-            "options": { "default": "" },
-            "type": "dateTime"
-          }
-        ],
-        "primaryKeyFieldRefs": ["key"],
-        "relations": [],
-        "uniqueConstraints": []
-      },
-      "name": "RateLimiterFlexible",
       "service": {
         "create": { "enabled": false },
         "delete": { "enabled": false },

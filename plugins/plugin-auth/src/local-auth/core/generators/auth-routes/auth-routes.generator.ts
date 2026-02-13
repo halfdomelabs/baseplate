@@ -27,6 +27,7 @@ export const authRoutesGenerator = createGenerator({
                 variables: {},
               }),
             );
+            await builder.apply(renderers.verifyEmail.render({}));
           },
         };
       },

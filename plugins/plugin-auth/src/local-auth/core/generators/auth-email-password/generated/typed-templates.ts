@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   passwordHasherServiceImportsProvider,
   pothosImportsProvider,
@@ -9,6 +10,7 @@ import {
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import path from 'node:path';
 
@@ -19,11 +21,30 @@ const constantsPassword = createTsTemplateFile({
   group: 'module',
   importMapProviders: {},
   name: 'constants-password',
-  projectExports: { PASSWORD_MIN_LENGTH: {} },
+  projectExports: {
+    PASSWORD_MAX_LENGTH: {},
+    PASSWORD_MIN_LENGTH: {},
+    PASSWORD_RESET_TOKEN_EXPIRY_SEC: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/module/constants/password.constants.ts',
+    ),
+  },
+  variables: {},
+});
+
+const schemaPasswordResetMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-password-reset-mutations',
+  referencedGeneratorTemplates: { servicesPasswordReset: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/password-reset.mutations.ts',
     ),
   },
   variables: {},
@@ -47,6 +68,38 @@ const schemaUserPasswordMutations = createTsTemplateFile({
   variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
 });
 
+const servicesPasswordReset = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    passwordHasherServiceImports: passwordHasherServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
+    requestServiceContextImports: requestServiceContextImportsProvider,
+  },
+  name: 'services-password-reset',
+  projectExports: {
+    cleanupExpiredPasswordResetTokens: { isTypeOnly: false },
+    completePasswordReset: { isTypeOnly: false },
+    requestPasswordReset: { isTypeOnly: false },
+    validatePasswordResetToken: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    constantsPassword: {},
+    servicesAuthVerification: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/password-reset.service.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesUserPassword = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
@@ -66,7 +119,10 @@ const servicesUserPassword = createTsTemplateFile({
     createUserWithEmailAndPassword: {},
     registerUserWithEmailAndPassword: {},
   },
-  referencedGeneratorTemplates: { constantsPassword: {} },
+  referencedGeneratorTemplates: {
+    constantsPassword: {},
+    servicesEmailVerification: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -78,8 +134,69 @@ const servicesUserPassword = createTsTemplateFile({
 
 export const moduleGroup = {
   constantsPassword,
+  schemaPasswordResetMutations,
   schemaUserPasswordMutations,
+  servicesPasswordReset,
   servicesUserPassword,
 };
 
-export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = { moduleGroup };
+const schemaEmailVerificationMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-email-verification-mutations',
+  referencedGeneratorTemplates: { servicesEmailVerification: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/email-verification.mutations.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesAuthVerification = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-auth-verification',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/auth-verification.service.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesEmailVerification = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    rateLimitImports: rateLimitImportsProvider,
+    requestServiceContextImports: requestServiceContextImportsProvider,
+  },
+  name: 'services-email-verification',
+  referencedGeneratorTemplates: {
+    constantsPassword: {},
+    servicesAuthVerification: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/email-verification.service.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
+  moduleGroup,
+  schemaEmailVerificationMutations,
+  servicesAuthVerification,
+  servicesEmailVerification,
+};

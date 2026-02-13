@@ -6,6 +6,7 @@ const componentsButton = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-button',
+  projectExports: { Button: {} },
   referencedGeneratorTemplates: { constantsTheme: {} },
   source: {
     path: path.join(
@@ -21,6 +22,7 @@ const componentsDivider = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-divider',
+  projectExports: { Divider: {} },
   referencedGeneratorTemplates: { constantsTheme: {} },
   source: {
     path: path.join(
@@ -36,6 +38,7 @@ const componentsHeading = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-heading',
+  projectExports: { Heading: {} },
   referencedGeneratorTemplates: { constantsTheme: {} },
   source: {
     path: path.join(
@@ -65,6 +68,7 @@ const componentsLayout = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-layout',
+  projectExports: { EmailLayout: {} },
   referencedGeneratorTemplates: { componentsDivider: {}, constantsTheme: {} },
   source: {
     path: path.join(
@@ -95,6 +99,7 @@ const componentsSection = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-section',
+  projectExports: { Section: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -109,6 +114,7 @@ const componentsText = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-text',
+  projectExports: { Text: {} },
   referencedGeneratorTemplates: { constantsTheme: {} },
   source: {
     path: path.join(
@@ -124,6 +130,7 @@ const constantsTheme = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'constants-theme',
+  projectExports: { theme: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/constants/theme.ts'),
   },

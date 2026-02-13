@@ -209,5 +209,65 @@ export function createAuthModels({
         ],
       },
     },
+    authVerification: {
+      name: LOCAL_AUTH_MODELS.authVerification,
+      featureRef: authFeatureRef,
+      model: {
+        fields: [
+          {
+            name: 'id',
+            type: 'uuid',
+            options: { genUuid: true },
+          },
+          {
+            name: 'type',
+            type: 'string',
+          },
+          {
+            name: 'identifier',
+            type: 'string',
+          },
+          {
+            name: 'value',
+            type: 'string',
+          },
+          {
+            name: 'userId',
+            type: 'uuid',
+            isOptional: true,
+          },
+          {
+            name: 'metadata',
+            type: 'json',
+            isOptional: true,
+          },
+          {
+            name: 'expiresAt',
+            type: 'dateTime',
+          },
+          {
+            name: 'createdAt',
+            type: 'dateTime',
+            options: { defaultToNow: true },
+          },
+        ],
+        primaryKeyFieldRefs: ['id'],
+        uniqueConstraints: [
+          {
+            fields: [{ fieldRef: 'type' }, { fieldRef: 'identifier' }],
+          },
+        ],
+        relations: [
+          {
+            name: 'user',
+            references: [{ localRef: 'userId', foreignRef: 'id' }],
+            modelRef: LOCAL_AUTH_MODELS.user,
+            foreignRelationName: 'authVerifications',
+            onDelete: 'Cascade',
+            onUpdate: 'Restrict',
+          },
+        ],
+      },
+    },
   };
 }

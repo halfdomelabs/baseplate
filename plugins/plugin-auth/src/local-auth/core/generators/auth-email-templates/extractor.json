@@ -1,0 +1,44 @@
+{
+  "name": "local-auth/auth-email-templates",
+  "templates": {
+    "account-verification-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/auth/account-verification.email.tsx",
+      "sourceFile": "src/emails/auth/account-verification.email.tsx",
+      "variables": {}
+    },
+    "password-changed-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/auth/password-changed.email.tsx",
+      "sourceFile": "src/emails/auth/password-changed.email.tsx",
+      "variables": {}
+    },
+    "password-reset-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "transactionalLibImportsProvider": {
+          "importName": "transactionalLibImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/transactional-lib/generators/transactional-lib/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/emails/auth/password-reset.email.tsx",
+      "sourceFile": "src/emails/auth/password-reset.email.tsx",
+      "variables": {}
+    }
+  }
+}
