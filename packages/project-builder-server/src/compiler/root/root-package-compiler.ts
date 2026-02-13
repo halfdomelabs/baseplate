@@ -87,6 +87,7 @@ export class RootPackageCompiler extends PackageCompiler {
         cache: false,
       })),
       ...mergedTasks.build.map((task) => ({
+        dependsOn: ['^build'],
         inputs: ['$TURBO_DEFAULT$', '!README.md', '!**/*.test.ts'],
         outputs: ['build/**', 'dist/**', '.next/**', '!.next/cache/**'],
         name: task,
