@@ -13,7 +13,7 @@ export const createWebAppSchema = definitionSchemaWithSlots(
   (ctx, { appSlot }) =>
     z.object({
       ...baseAppValidators,
-      port: z.number().int().positive(),
+      devPort: z.number().int().positive(),
       type: z.literal('web'),
       includeAuth: ctx.withDefault(z.boolean(), false),
       title: z.string().default(''),

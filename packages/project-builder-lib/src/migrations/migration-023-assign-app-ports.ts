@@ -6,7 +6,7 @@ interface AppConfig {
   id: string;
   name: string;
   type: 'backend' | 'web';
-  port?: number;
+  devPort?: number;
   [key: string]: unknown;
 }
 
@@ -31,9 +31,9 @@ interface NewConfig {
 }
 
 /**
- * Migration to assign ports to apps
+ * Migration to assign development ports to apps
  *
- * This migration assigns ports to all existing apps based on their type:
+ * This migration assigns devPort to all existing apps based on their type:
  * - Backend apps: portOffset + 1
  * - Web apps: portOffset + 30 + alphabeticalIndex
  */
@@ -57,24 +57,24 @@ export const migration023AssignAppPorts = createSchemaMigration<
       .toSorted((a, b) => compareStrings(a.name, b.name));
 
     const updatedApps = config.apps.map((app) => {
-      // Skip if port already assigned
-      if (app.port !== undefined) {
+      // Skip if devPort already assigned
+      if (app.devPort !== undefined) {
         return app;
       }
 
-      // Assign port based on app type
+      // Assign devPort based on app type
       switch (app.type) {
         case 'backend': {
-          return { ...app, port: portOffset + 1 };
+          return { ...app, devPort: portOffset + 1 };
         }
         case 'web': {
           const webAppIndex = webApps.findIndex(
             (webApp) => webApp.id === app.id,
           );
-          return { ...app, port: portOffset + 30 + webAppIndex };
+          return { ...app, devPort: portOffset + 30 + webAppIndex };
         }
         default: {
-          // Other app types don't get ports
+          // Other app types don't get devPort
           return app;
         }
       }

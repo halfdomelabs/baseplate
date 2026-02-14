@@ -21,7 +21,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].port).toBe(5001); // portOffset + 1
+    expect(result.apps?.[0].devPort).toBe(5001); // portOffset + 1
   });
 
   it('assigns port to single web app', () => {
@@ -42,7 +42,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].port).toBe(5030); // portOffset + 30
+    expect(result.apps?.[0].devPort).toBe(5030); // portOffset + 30
   });
 
   it('assigns ports to multiple web apps alphabetically', () => {
@@ -78,9 +78,9 @@ describe('migration023AssignAppPorts', () => {
     const portalApp = result.apps?.find((app) => app.name === 'portal');
     const webApp = result.apps?.find((app) => app.name === 'web');
 
-    expect(adminApp?.port).toBe(5030); // portOffset + 30 + 0
-    expect(portalApp?.port).toBe(5031); // portOffset + 30 + 1
-    expect(webApp?.port).toBe(5032); // portOffset + 30 + 2
+    expect(adminApp?.devPort).toBe(5030); // portOffset + 30 + 0
+    expect(portalApp?.devPort).toBe(5031); // portOffset + 30 + 1
+    expect(webApp?.devPort).toBe(5032); // portOffset + 30 + 2
   });
 
   it('assigns ports to both backend and web apps', () => {
@@ -109,8 +109,8 @@ describe('migration023AssignAppPorts', () => {
     const backendApp = result.apps?.find((app) => app.type === 'backend');
     const adminApp = result.apps?.find((app) => app.type === 'web');
 
-    expect(backendApp?.port).toBe(5001); // portOffset + 1
-    expect(adminApp?.port).toBe(5030); // portOffset + 30
+    expect(backendApp?.devPort).toBe(5001); // portOffset + 1
+    expect(adminApp?.devPort).toBe(5030); // portOffset + 30
   });
 
   it('preserves existing port assignments', () => {
@@ -120,7 +120,7 @@ describe('migration023AssignAppPorts', () => {
           id: 'app:backend',
           type: 'backend' as const,
           name: 'backend',
-          port: 9999, // Custom port
+          devPort: 9999, // Custom port
         },
       ],
       settings: {
@@ -132,7 +132,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].port).toBe(9999); // Unchanged
+    expect(result.apps?.[0].devPort).toBe(9999); // Unchanged
   });
 
   it('handles missing apps array', () => {
@@ -190,7 +190,7 @@ describe('migration023AssignAppPorts', () => {
       name: 'backend',
       customProp: 'value',
       anotherProp: 123,
-      port: 5001,
+      devPort: 5001,
     });
   });
 
@@ -244,8 +244,8 @@ describe('migration023AssignAppPorts', () => {
     const backendApp = result.apps?.find((app) => app.type === 'backend');
     const webApp = result.apps?.find((app) => app.type === 'web');
 
-    expect(backendApp?.port).toBe(8001); // 8000 + 1
-    expect(webApp?.port).toBe(8030); // 8000 + 30
+    expect(backendApp?.devPort).toBe(8001); // 8000 + 1
+    expect(webApp?.devPort).toBe(8030); // 8000 + 30
   });
 
   it('handles complete migration scenario', () => {
@@ -283,8 +283,8 @@ describe('migration023AssignAppPorts', () => {
       (app) => app.name === 'user-portal',
     );
 
-    expect(backendApp?.port).toBe(5001);
-    expect(adminApp?.port).toBe(5030); // First alphabetically
-    expect(userPortalApp?.port).toBe(5031); // Second alphabetically
+    expect(backendApp?.devPort).toBe(5001);
+    expect(adminApp?.devPort).toBe(5030); // First alphabetically
+    expect(userPortalApp?.devPort).toBe(5031); // Second alphabetically
   });
 });

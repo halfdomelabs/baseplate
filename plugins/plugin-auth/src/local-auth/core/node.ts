@@ -55,7 +55,7 @@ export default createPluginModule({
             (app) => app.type === 'web' && app.includeAuth,
           );
           const devWebDomainPort =
-            firstWebApp?.port ??
+            firstWebApp?.devPort ??
             projectDefinition.settings.general.portOffset + 30;
 
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {

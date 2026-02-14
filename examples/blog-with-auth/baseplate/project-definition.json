@@ -79,19 +79,19 @@
         ]
       },
       "description": "admin",
+      "devPort": 5030,
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
-      "port": 5030,
       "title": "Blog Admin",
       "type": "web"
     },
     {
+      "devPort": 5001,
       "enableAxios": false,
       "enableStripe": false,
       "enableSubscriptions": false,
       "id": "app:acqRWBqOc6tx",
       "name": "backend",
-      "port": 5001,
       "type": "backend"
     }
   ],

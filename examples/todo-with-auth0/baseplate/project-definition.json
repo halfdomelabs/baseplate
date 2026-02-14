@@ -223,7 +223,7 @@
       "description": "admin",
       "id": "app:NmEolDU3Iggt",
       "name": "admin",
-      "port": 6030,
+      "devPort": 6030,
       "title": "Admin Page",
       "type": "web"
     },
@@ -233,7 +233,7 @@
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
-      "port": 6001,
+      "devPort": 6001,
       "type": "backend"
     },
     {
@@ -242,7 +242,7 @@
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
-      "port": 6031,
+      "devPort": 6031,
       "title": "Todoer App",
       "type": "web"
     }
