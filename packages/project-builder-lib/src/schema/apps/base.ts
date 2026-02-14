@@ -7,6 +7,7 @@ export const baseAppValidators = {
   id: z.string().default(appEntityType.generateNewId()),
   name: CASE_VALIDATORS.KEBAB_CASE,
   type: z.string(),
+  port: z.number().int().positive().optional(),
 } as const;
 
 export const baseAppSchema = z.object(baseAppValidators);

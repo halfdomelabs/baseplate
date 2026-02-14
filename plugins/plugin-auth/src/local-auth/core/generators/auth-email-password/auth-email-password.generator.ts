@@ -19,6 +19,7 @@ import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } 
 
 const descriptorSchema = z.object({
   adminRoles: z.array(z.string()),
+  devWebDomainPort: z.number(),
 });
 
 /**
@@ -28,7 +29,7 @@ export const authEmailPasswordGenerator = createGenerator({
   name: 'local-auth/core/auth-email-password',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ adminRoles }) => ({
+  buildTasks: ({ adminRoles, devWebDomainPort }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -37,7 +38,7 @@ export const authEmailPasswordGenerator = createGenerator({
         validator: tsCodeFragment('z.url()'),
         comment:
           'Base domain for password reset links (e.g., https://app.example.com)',
-        exampleValue: 'http://localhost:3030',
+        exampleValue: `http://localhost:${devWebDomainPort}`,
       });
     }),
     appModule: createGeneratorTask({

@@ -16,7 +16,13 @@ import { reactGenerator } from '../react/index.js';
 
 export function composeReactGenerators(
   descriptor: InferDescriptorFromGenerator<typeof reactGenerator>,
-  { devBackendHost }: { devBackendHost: string },
+  {
+    devBackendHost,
+    devWebPort,
+  }: {
+    devBackendHost: string;
+    devWebPort: number;
+  },
 ): GeneratorBundle {
   return reactGenerator({
     ...descriptor,
@@ -25,7 +31,7 @@ export function composeReactGenerators(
       reactApp: reactAppGenerator({}),
       logger: reactLoggerGenerator({}),
       reactComponents: reactComponentsGenerator({}),
-      reactConfig: reactConfigGenerator({}),
+      reactConfig: reactConfigGenerator({ devWebPort }),
       reactProxy: reactProxyGenerator({ devBackendHost }),
       reactError: reactErrorGenerator({}),
       reactUtils: reactUtilsGenerator({}),

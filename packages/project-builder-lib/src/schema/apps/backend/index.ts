@@ -12,6 +12,7 @@ export const createBackendAppSchema = definitionSchemaWithSlots(
   () =>
     z.object({
       ...baseAppValidators,
+      port: z.number().int().positive(),
       type: z.literal('backend'),
       enableStripe: z.boolean().optional(),
       enableSubscriptions: z.boolean().optional(),

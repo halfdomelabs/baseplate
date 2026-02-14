@@ -50,6 +50,14 @@ export default createPluginModule({
 
           const authDefinition = getAuthPluginDefinition(projectDefinition);
 
+          // Get first web app's port for auth domain that supports auth
+          const firstWebApp = projectDefinition.apps.find(
+            (app) => app.type === 'web' && app.includeAuth,
+          );
+          const devWebDomainPort =
+            firstWebApp?.port ??
+            projectDefinition.settings.general.portOffset + 30;
+
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
             seedInitialUser: seedInitialUserGenerator({
               initialUserRoles:
@@ -72,6 +80,7 @@ export default createPluginModule({
                     localAuthDefinition.userAdminRoles?.map((role) =>
                       definitionContainer.nameFromId(role),
                     ) ?? [],
+                  devWebDomainPort,
                 }),
                 hasher: passwordHasherServiceGenerator({}),
               },

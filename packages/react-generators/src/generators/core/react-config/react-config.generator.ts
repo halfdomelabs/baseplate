@@ -22,7 +22,9 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { CORE_REACT_CONFIG_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  devWebPort: z.number(),
+});
 
 /**
  * A single entry in the environment variables for the react app.
@@ -62,7 +64,7 @@ export const reactConfigGenerator = createGenerator({
   name: 'core/react-config',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ devWebPort }) => ({
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
@@ -82,6 +84,9 @@ export const reactConfigGenerator = createGenerator({
         });
       },
     ),
+    setupPort: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.additionalDevEnvVars.set('PORT', String(devWebPort));
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
