@@ -40,7 +40,7 @@ export const adminCrudFileInputGenerator = createGenerator({
           graphQLFields: [
             {
               name: modelRelation,
-              fields: [{ name: 'id' }],
+              fields: [{ name: 'id' }, { name: 'filename' }],
             },
           ],
           validation: [
