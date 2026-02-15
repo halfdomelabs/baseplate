@@ -20,7 +20,7 @@ export default {
     });
     await helpers.startBackgroundCommand('pnpm dev', {
       waitForURL: {
-        urls: ['http://localhost:3000', 'http://localhost:3001/healthz'],
+        urls: ['http://localhost:3030', 'http://localhost:3001/healthz'],
       },
     });
   },
