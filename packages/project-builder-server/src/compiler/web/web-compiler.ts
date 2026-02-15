@@ -166,7 +166,7 @@ function buildReact(
       },
     },
     {
-      devBackendHost: `http://localhost:${projectDefinition.settings.general.portOffset + 1}`,
+      devBackendHost: `http://localhost:${backendApp.devPort}`,
       devWebPort,
     },
   );
@@ -193,16 +193,13 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
     const { projectDefinition } = appBuilder;
     const generalSettings = projectDefinition.settings.general;
 
-    // Use devPort from app config, with fallback for backwards compatibility
-    const devWebPort = this.appConfig.devPort;
-
     const nodeBundle = composeNodeGenerator({
       name: `${generalSettings.name}-${this.appConfig.name}`,
       packageName: this.getPackageName(),
       description: `Web app for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
-        react: buildReact(appBuilder, devWebPort),
+        react: buildReact(appBuilder, this.appConfig.devPort),
         vitest: vitestGenerator({}),
       },
     });
