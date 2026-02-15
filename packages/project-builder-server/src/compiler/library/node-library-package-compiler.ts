@@ -2,6 +2,7 @@ import type {
   BaseLibraryDefinition,
   LibraryCompilerCreator,
   PackageEntry,
+  PackageTasks,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
@@ -39,6 +40,14 @@ class NodeLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> 
       name: packageConfig.name,
       packageDirectory,
       generatorBundle: rootBundle,
+    };
+  }
+
+  getTasks(): PackageTasks {
+    return {
+      build: ['build'],
+      dev: ['watch'],
+      watch: ['watch'],
     };
   }
 }
