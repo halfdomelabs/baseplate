@@ -37,7 +37,7 @@ export const Route = createFileRoute('/packages/apps/$key/backend')({
 });
 
 function BackendAppEditPage(): React.JSX.Element {
-  const { saveDefinitionWithFeedback } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, definition } = useProjectDefinition();
   const { backendDefinition } = Route.useLoaderData();
 
   const backendAppSchema = useDefinitionSchema(createBackendAppSchema);
@@ -45,15 +45,30 @@ function BackendAppEditPage(): React.JSX.Element {
     resolver: zodResolver(backendAppSchema),
     values: backendDefinition,
   });
-  const { control, handleSubmit, reset } = formProps;
+  const { control, handleSubmit, reset, setError } = formProps;
 
-  const onSubmit = handleSubmit((data) =>
-    saveDefinitionWithFeedback((draftConfig) => {
+  const onSubmit = handleSubmit((data) => {
+    // Check for port conflicts
+    if (data.devPort) {
+      const conflictingApp = definition.apps.find(
+        (app) =>
+          app.id !== backendDefinition.id && app.devPort === data.devPort,
+      );
+      if (conflictingApp) {
+        setError('devPort', {
+          type: 'manual',
+          message: `Port ${data.devPort} is already used by app "${conflictingApp.name}"`,
+        });
+        return;
+      }
+    }
+
+    return saveDefinitionWithFeedback((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
         app.id === backendDefinition.id ? data : app,
       );
-    }),
-  );
+    });
+  });
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
@@ -69,6 +84,14 @@ function BackendAppEditPage(): React.JSX.Element {
           </SectionListSectionHeader>
           <SectionListSectionContent className="space-y-6">
             <InputFieldController label="Name" control={control} name="name" />
+            <InputFieldController
+              label="Development Port"
+              control={control}
+              name="devPort"
+              type="number"
+              registerOptions={{ valueAsNumber: true }}
+              description="Port number for the development server (e.g., 5001)"
+            />
           </SectionListSectionContent>
         </SectionListSection>
 

@@ -223,6 +223,7 @@
       "description": "admin",
       "id": "app:NmEolDU3Iggt",
       "name": "admin",
+      "devPort": 6030,
       "title": "Admin Page",
       "type": "web"
     },
@@ -232,6 +233,7 @@
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
+      "devPort": 6001,
       "type": "backend"
     },
     {
@@ -240,6 +242,7 @@
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
+      "devPort": 6031,
       "title": "Todoer App",
       "type": "web"
     }
@@ -1538,7 +1541,7 @@
       "version": "1.0.0"
     }
   ],
-  "schemaVersion": 22,
+  "schemaVersion": 23,
   "settings": {
     "general": {
       "name": "todo-with-auth0",
