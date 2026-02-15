@@ -110,7 +110,7 @@ export async function requestPasswordReset({
     });
 
     // Construct reset URL using configured domain
-    const resetLink = `${config.PASSWORD_RESET_DOMAIN}/auth/reset-password?token=${encodeURIComponent(token)}`;
+    const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
     await sendEmail(PasswordResetEmail, {

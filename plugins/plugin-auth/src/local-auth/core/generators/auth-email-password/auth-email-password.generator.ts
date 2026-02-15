@@ -34,10 +34,10 @@ export const authEmailPasswordGenerator = createGenerator({
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
-      configService.configFields.set('PASSWORD_RESET_DOMAIN', {
+      configService.configFields.set('AUTH_FRONTEND_URL', {
         validator: tsCodeFragment('z.url()'),
         comment:
-          'Base domain for password reset links (e.g., https://app.example.com)',
+          'Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)',
         exampleValue: `http://localhost:${devWebDomainPort}`,
       });
     }),

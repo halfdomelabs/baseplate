@@ -88,7 +88,7 @@ export async function requestEmailVerification({
   });
 
   // Construct verification URL using configured domain
-  const verifyLink = `${config.PASSWORD_RESET_DOMAIN}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
   await sendEmail(AccountVerificationEmail, {
     to: user.email,
