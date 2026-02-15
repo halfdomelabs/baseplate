@@ -63,6 +63,7 @@ export const todoListEditFormDefaultValuesFragment = graphql(`
     position
     status
     coverPhoto {
+      filename
       id
     }
   }
