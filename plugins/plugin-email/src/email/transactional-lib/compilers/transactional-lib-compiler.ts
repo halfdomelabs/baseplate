@@ -62,7 +62,7 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
 
   getTasks(): PackageTasks {
     return {
-      build: [],
+      build: ['build'],
       dev: ['watch'],
       watch: ['watch'],
     };
