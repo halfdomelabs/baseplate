@@ -1,6 +1,6 @@
 import { createQueue } from '@src/services/pg-boss.service.js';
 
-import { cleanupExpiredAuthVerifications } from '../../services/auth-verification.service.js';
+import { cleanupExpiredAuthVerifications } from '../services/auth-verification.service.js';
 
 /**
  * Periodic queue to clean up expired auth verification tokens.

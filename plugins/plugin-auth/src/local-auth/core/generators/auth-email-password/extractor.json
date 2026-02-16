@@ -16,29 +16,6 @@
       "sourceFile": "module/constants/password.constants.ts",
       "variables": {}
     },
-    "queues-cleanup-auth-verification": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {
-        "authModuleImportsProvider": {
-          "importName": "authModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
-        },
-        "queueServiceImportsProvider": {
-          "importName": "queueServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/queues/cleanup-auth-verification.queue.ts",
-      "projectExports": {
-        "cleanupAuthVerificationQueue": {
-          "isTypeOnly": false,
-          "name": "cleanupAuthVerificationQueue"
-        }
-      },
-      "sourceFile": "module/queues/cleanup-auth-verification.queue.ts",
-      "variables": {}
-    },
     "schema-email-verification-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

@@ -5,7 +5,6 @@ import {
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import {
   createGenerator,
@@ -65,9 +64,8 @@ export const authEmailPasswordGenerator = createGenerator({
           .reference(
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
-        queueConfig: queueConfigProvider.dependency().optional(),
       },
-      run({ renderers, transactionalLibConfig, userObjectType, queueConfig }) {
+      run({ renderers, transactionalLibConfig, userObjectType }) {
         const transactionalLibPackageName =
           transactionalLibConfig.getTransactionalLibPackageName();
 
@@ -96,8 +94,6 @@ export const authEmailPasswordGenerator = createGenerator({
                 },
               }),
             );
-            await builder.apply(renderers.servicesEmailVerification.render({}));
-            await builder.apply(renderers.servicesAuthVerification.render({}));
             await builder.apply(
               renderers.servicesEmailVerification.render({
                 variables: {
@@ -111,19 +107,6 @@ export const authEmailPasswordGenerator = createGenerator({
             await builder.apply(
               renderers.schemaEmailVerificationMutations.render({}),
             );
-
-            // Render queue only if queue plugin is available
-            if (queueConfig) {
-              await builder.apply(
-                renderers.queuesCleanupAuthVerification.render({}),
-              );
-
-              // Register with queue system
-              queueConfig.queues.set(
-                'cleanup-auth-verification',
-                tsCodeFragment('cleanupAuthVerificationQueue'),
-              );
-            }
           },
         };
       },

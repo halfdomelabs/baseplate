@@ -11,7 +11,6 @@ import {
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
-import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import path from 'node:path';
 
@@ -139,23 +138,6 @@ export const moduleGroup = {
   servicesUserPassword,
 };
 
-const queuesCleanupAuthVerification = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    authModuleImports: authModuleImportsProvider,
-    queueServiceImports: queueServiceImportsProvider,
-  },
-  name: 'queues-cleanup-auth-verification',
-  projectExports: { cleanupAuthVerificationQueue: { isTypeOnly: false } },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/queues/cleanup-auth-verification.queue.ts',
-    ),
-  },
-  variables: {},
-});
-
 const schemaEmailVerificationMutations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: { pothosImports: pothosImportsProvider },
@@ -194,7 +176,6 @@ const servicesEmailVerification = createTsTemplateFile({
 
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
   moduleGroup,
-  queuesCleanupAuthVerification,
   schemaEmailVerificationMutations,
   servicesEmailVerification,
 };
