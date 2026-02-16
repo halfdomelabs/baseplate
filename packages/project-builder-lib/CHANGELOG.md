@@ -1,5 +1,14 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.5.3
+  - @baseplate-dev/ui-components@0.5.3
+  - @baseplate-dev/utils@0.5.3
+
 ## 0.5.2
 
 ### Patch Changes

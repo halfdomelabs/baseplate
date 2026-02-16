@@ -1,5 +1,28 @@
 # @baseplate-dev/tools
 
+## 0.5.3
+
+### Patch Changes
+
+- [#771](https://github.com/halfdomelabs/baseplate/pull/771) [`6c190fe`](https://github.com/halfdomelabs/baseplate/commit/6c190fe50240f0ddc984af757b7900d053433bb1) Thanks [@kingston](https://github.com/kingston)! - Add eslint-plugin-better-tailwindcss for Tailwind correctness linting and improve ESLint config API
+
+  **Monorepo packages:**
+  - Add `eslint-plugin-better-tailwindcss` with `correctness` preset for linting Tailwind class conflicts, duplicates, and invalid classes
+  - Keep `prettier-plugin-tailwindcss` for formatting (class ordering, line breaks)
+  - Create `defineReactEslintConfig()` high-level API with `dirname`, `includeStorybook`, `tailwindEntryPoint`, and `ignores` options
+  - Create `defineNodeEslintConfig()` high-level API with `dirname`, `extraDefaultProjectFiles`, and `ignores` options
+  - Update `generateTypescriptEslintConfig()` to accept single options object with `rootDir` for `tsconfigRootDir` support
+  - Rename `storybookTypescriptEslintOptions` to `storybookTypescriptExtraDevDependencies` for clarity
+  - Remove all default exports from ESLint configs to require explicit `dirname` parameter
+
+  **Generated projects:**
+  - Add `eslint-plugin-better-tailwindcss` and `tailwindcss` as dev dependencies for React apps
+  - Add Tailwind correctness linting to generated React ESLint configs
+  - Add `tsconfigRootDir: import.meta.dirname` to all generated ESLint configs for better TypeScript support
+
+- [#768](https://github.com/halfdomelabs/baseplate/pull/768) [`9129381`](https://github.com/halfdomelabs/baseplate/commit/9129381e17504136837d07deb9958708791da43e) Thanks [@kingston](https://github.com/kingston)! - Upgrade @vitest/eslint-plugin to 1.6.9
+  - @vitest/eslint-plugin: 1.6.6 → 1.6.9
+
 ## 0.5.2
 
 ### Patch Changes

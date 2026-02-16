@@ -1,5 +1,29 @@
 # @baseplate-dev/plugin-auth
 
+## 4.0.3
+
+### Patch Changes
+
+- [#769](https://github.com/halfdomelabs/baseplate/pull/769) [`cb2446e`](https://github.com/halfdomelabs/baseplate/commit/cb2446e235794bf5d45a1671ae320ccce12eb504) Thanks [@kingston](https://github.com/kingston)! - Fix hard-coded email template imports in auth plugin
+
+- [#772](https://github.com/halfdomelabs/baseplate/pull/772) [`820a17f`](https://github.com/halfdomelabs/baseplate/commit/820a17f236e90b4c56c27710bba722153c1daa1a) Thanks [@kingston](https://github.com/kingston)! - Move auth-verification service to accounts level and add cleanup queue
+  - Moved `auth-verification.service.ts` from `accounts/password/services/` to `accounts/services/` since it implements a generic split-token pattern that can be reused across different authentication types
+  - Transferred template ownership from `auth-email-password` generator to `auth-module` generator for better architectural alignment
+  - Added `cleanup-auth-verification.queue.ts` that runs hourly (at minute 15) to automatically delete expired auth verification tokens
+  - Added `@baseplate-dev/plugin-queue` as a dependency for queue integration
+
+- Updated dependencies [[`cb2446e`](https://github.com/halfdomelabs/baseplate/commit/cb2446e235794bf5d45a1671ae320ccce12eb504), [`6c190fe`](https://github.com/halfdomelabs/baseplate/commit/6c190fe50240f0ddc984af757b7900d053433bb1), [`254d675`](https://github.com/halfdomelabs/baseplate/commit/254d675079930e5b569bf1c0c4576f1459d23a03), [`9129381`](https://github.com/halfdomelabs/baseplate/commit/9129381e17504136837d07deb9958708791da43e)]:
+  - @baseplate-dev/plugin-email@0.1.3
+  - @baseplate-dev/core-generators@0.5.3
+  - @baseplate-dev/fastify-generators@0.5.3
+  - @baseplate-dev/react-generators@0.5.3
+  - @baseplate-dev/plugin-queue@2.0.3
+  - @baseplate-dev/plugin-rate-limit@0.1.2
+  - @baseplate-dev/project-builder-lib@0.5.3
+  - @baseplate-dev/sync@0.5.3
+  - @baseplate-dev/ui-components@0.5.3
+  - @baseplate-dev/utils@0.5.3
+
 ## 4.0.2
 
 ### Patch Changes

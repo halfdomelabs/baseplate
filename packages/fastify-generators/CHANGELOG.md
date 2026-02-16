@@ -1,5 +1,14 @@
 # @baseplate-dev/fastify-generators
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`cb2446e`](https://github.com/halfdomelabs/baseplate/commit/cb2446e235794bf5d45a1671ae320ccce12eb504), [`6c190fe`](https://github.com/halfdomelabs/baseplate/commit/6c190fe50240f0ddc984af757b7900d053433bb1), [`254d675`](https://github.com/halfdomelabs/baseplate/commit/254d675079930e5b569bf1c0c4576f1459d23a03), [`9129381`](https://github.com/halfdomelabs/baseplate/commit/9129381e17504136837d07deb9958708791da43e)]:
+  - @baseplate-dev/core-generators@0.5.3
+  - @baseplate-dev/sync@0.5.3
+  - @baseplate-dev/utils@0.5.3
+
 ## 0.5.2
 
 ### Patch Changes
