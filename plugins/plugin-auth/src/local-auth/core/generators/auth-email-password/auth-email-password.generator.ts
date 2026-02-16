@@ -5,6 +5,7 @@ import {
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
 } from '@baseplate-dev/fastify-generators';
+import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import {
   createGenerator,
   createGeneratorTask,
@@ -57,13 +58,17 @@ export const authEmailPasswordGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
+        transactionalLibConfig: transactionalLibConfigProvider,
         userObjectType: pothosTypeOutputProvider
           .dependency()
           .reference(
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
       },
-      run({ renderers, userObjectType }) {
+      run({ renderers, transactionalLibConfig, userObjectType }) {
+        const transactionalLibPackageName =
+          transactionalLibConfig.getTransactionalLibPackageName();
+
         return {
           build: async (builder) => {
             await builder.apply(
@@ -76,11 +81,30 @@ export const authEmailPasswordGenerator = createGenerator({
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,
                   },
+                  servicesPasswordReset: {
+                    TPL_PASSWORD_RESET_EMAIL: TsCodeUtils.importFragment(
+                      'PasswordResetEmail',
+                      transactionalLibPackageName,
+                    ),
+                    TPL_PASSWORD_CHANGED_EMAIL: TsCodeUtils.importFragment(
+                      'PasswordChangedEmail',
+                      transactionalLibPackageName,
+                    ),
+                  },
                 },
               }),
             );
             await builder.apply(renderers.servicesAuthVerification.render({}));
-            await builder.apply(renderers.servicesEmailVerification.render({}));
+            await builder.apply(
+              renderers.servicesEmailVerification.render({
+                variables: {
+                  TPL_ACCOUNT_VERIFICATION_EMAIL: TsCodeUtils.importFragment(
+                    'AccountVerificationEmail',
+                    transactionalLibPackageName,
+                  ),
+                },
+              }),
+            );
             await builder.apply(
               renderers.schemaEmailVerificationMutations.render({}),
             );

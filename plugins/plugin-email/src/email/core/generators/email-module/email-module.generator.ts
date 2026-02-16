@@ -14,6 +14,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
+  createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -39,6 +40,18 @@ const [emailConfigTask, emailConfigProvider, emailConfigValuesProvider] =
 export { emailConfigProvider };
 
 /**
+ * Provider for transactional library configuration
+ */
+export interface TransactionalLibConfigProvider {
+  getTransactionalLibPackageName(): string;
+}
+
+export const transactionalLibConfigProvider =
+  createReadOnlyProviderType<TransactionalLibConfigProvider>(
+    'email-transactional-lib-config',
+  );
+
+/**
  * Generator for email/core/email-module
  */
 export const emailModuleGenerator = createGenerator({
@@ -50,6 +63,20 @@ export const emailModuleGenerator = createGenerator({
     renderers: GENERATED_TEMPLATES.renderers.task,
     imports: GENERATED_TEMPLATES.imports.task,
     emailConfig: emailConfigTask,
+    // Export transactional lib config provider
+    transactionalLibConfigTask: createGeneratorTask({
+      outputs: {
+        transactionalLibConfig:
+          transactionalLibConfigProvider.export(packageScope),
+      },
+      run: () => ({
+        build: () => ({
+          transactionalLibConfig: {
+            getTransactionalLibPackageName: () => transactionalLibPackageName,
+          },
+        }),
+      }),
+    }),
     // Add transactional lib package dependency
     nodePackages: createNodePackagesTask({
       prod: {
@@ -63,7 +90,7 @@ export const emailModuleGenerator = createGenerator({
         configService.configFields.set('EMAIL_DEFAULT_FROM', {
           comment: 'Default sender email address for transactional emails',
           validator: tsCodeFragment(
-            `z.email().default('noreply@example.com')`,
+            `z.string().default('noreply@example.com')`,
             tsImportBuilder().named('z').from('zod'),
           ),
           exampleValue: 'noreply@example.com',

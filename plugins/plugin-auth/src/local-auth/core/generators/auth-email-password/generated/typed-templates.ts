@@ -97,7 +97,7 @@ const servicesPasswordReset = createTsTemplateFile({
       '../templates/module/services/password-reset.service.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_PASSWORD_CHANGED_EMAIL: {}, TPL_PASSWORD_RESET_EMAIL: {} },
 });
 
 const servicesUserPassword = createTsTemplateFile({
@@ -191,7 +191,7 @@ const servicesEmailVerification = createTsTemplateFile({
       '../templates/module/services/email-verification.service.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_ACCOUNT_VERIFICATION_EMAIL: {} },
 });
 
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
