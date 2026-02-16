@@ -87,7 +87,7 @@ export function generateReactEslintConfig(options) {
     // Only enable if tailwindEntryPoint is provided (not null/undefined)
     ...(options.tailwindEntryPoint !== null &&
     options.tailwindEntryPoint !== undefined
-      ? /** @type {any[]} */ ([
+      ? [
           eslintPluginBetterTailwindcss.configs['correctness'],
           {
             settings: {
@@ -111,7 +111,7 @@ export function generateReactEslintConfig(options) {
               ],
             },
           },
-        ])
+        ]
       : []),
 
     // Unicorn

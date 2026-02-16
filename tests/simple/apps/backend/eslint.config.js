@@ -5,6 +5,7 @@ import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescrip
 import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
@@ -35,7 +36,7 @@ const IGNORE_FILES = [
 // This is useful for certain files outside the src directory, e.g. config files
 const TS_DEFAULT_PROJECT_FILES = ['prisma.config.ts', 'vitest.config.ts'];
 
-export default tsEslint.config(
+export default defineConfig(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
@@ -71,6 +72,7 @@ export default tsEslint.config(
     ],
     languageOptions: {
       parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
         projectService: {
           // allow default project for root configs
           allowDefaultProject: TS_DEFAULT_PROJECT_FILES,
