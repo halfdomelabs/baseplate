@@ -46,6 +46,7 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/plugin-email": "workspace:*",
+    "@baseplate-dev/plugin-queue": "workspace:*",
     "@baseplate-dev/plugin-rate-limit": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",

@@ -3,10 +3,10 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthEmailPasswordPaths {
   constantsPassword: string;
+  queuesCleanupAuthVerification: string;
   schemaEmailVerificationMutations: string;
   schemaPasswordResetMutations: string;
   schemaUserPasswordMutations: string;
-  servicesAuthVerification: string;
   servicesEmailVerification: string;
   servicesPasswordReset: string;
   servicesUserPassword: string;
@@ -30,10 +30,10 @@ const localAuthCoreAuthEmailPasswordPathsTask = createGeneratorTask({
       providers: {
         localAuthCoreAuthEmailPasswordPaths: {
           constantsPassword: `${moduleRoot}/constants/password.constants.ts`,
+          queuesCleanupAuthVerification: `${moduleRoot}/queues/cleanup-auth-verification.queue.ts`,
           schemaEmailVerificationMutations: `${moduleRoot}/schema/email-verification.mutations.ts`,
           schemaPasswordResetMutations: `${moduleRoot}/schema/password-reset.mutations.ts`,
           schemaUserPasswordMutations: `${moduleRoot}/schema/user-password.mutations.ts`,
-          servicesAuthVerification: `${moduleRoot}/services/auth-verification.service.ts`,
           servicesEmailVerification: `${moduleRoot}/services/email-verification.service.ts`,
           servicesPasswordReset: `${moduleRoot}/services/password-reset.service.ts`,
           servicesUserPassword: `${moduleRoot}/services/user-password.service.ts`,

@@ -1,4 +1,9 @@
 {
+  "auth-verification.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "services-auth-verification"
+  },
   "user-roles.service.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
     "instanceData": {},

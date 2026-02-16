@@ -16,6 +16,7 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
@@ -39,6 +40,26 @@ export interface LocalAuthCoreAuthModuleRenderers {
           typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  queuesCleanupAuthVerification: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesAuthVerification: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.servicesAuthVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -79,6 +100,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    queueServiceImports: queueServiceImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
@@ -95,6 +117,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
+    queueServiceImports,
     requestServiceContextImports,
     typescriptFile,
     userSessionTypesImports,
@@ -122,6 +145,32 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                   prismaImports,
                 },
                 generatorPaths: paths,
+                ...options,
+              }),
+          },
+          queuesCleanupAuthVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerification,
+                destination: paths.queuesCleanupAuthVerification,
+                importMapProviders: {
+                  queueServiceImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesAuthVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.servicesAuthVerification,
+                destination: paths.servicesAuthVerification,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  prismaImports,
+                },
                 ...options,
               }),
           },

@@ -14,6 +14,7 @@ import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
 
 export const authEmailPasswordImportsSchema = createTsImportMapSchema({
   authenticateUserWithEmailAndPassword: {},
+  cleanupAuthVerificationQueue: {},
   cleanupExpiredPasswordResetTokens: {},
   completePasswordReset: {},
   createUserWithEmailAndPassword: {},
@@ -49,6 +50,7 @@ const localAuthCoreAuthEmailPasswordImportsTask = createGeneratorTask({
           authEmailPasswordImportsSchema,
           {
             authenticateUserWithEmailAndPassword: paths.servicesUserPassword,
+            cleanupAuthVerificationQueue: paths.queuesCleanupAuthVerification,
             cleanupExpiredPasswordResetTokens: paths.servicesPasswordReset,
             completePasswordReset: paths.servicesPasswordReset,
             createUserWithEmailAndPassword: paths.servicesUserPassword,

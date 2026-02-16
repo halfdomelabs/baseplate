@@ -1,0 +1,7 @@
+{
+  "cleanup-auth-verification.queue.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "queues-cleanup-auth-verification"
+  }
+}

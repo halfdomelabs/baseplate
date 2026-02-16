@@ -4,9 +4,11 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface LocalAuthCoreAuthModulePaths {
   authRoleEnum: string;
   cookieSigner: string;
+  queuesCleanupAuthVerification: string;
   schemaUserSessionMutations: string;
   schemaUserSessionPayloadObjectType: string;
   schemaUserSessionQueries: string;
+  servicesAuthVerification: string;
   sessionCookie: string;
   userRolesMutations: string;
   userRolesService: string;
@@ -33,9 +35,11 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
         localAuthCoreAuthModulePaths: {
           authRoleEnum: `${moduleRoot}/schema/auth-role.enum.ts`,
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
+          queuesCleanupAuthVerification: `${moduleRoot}/queues/cleanup-auth-verification.queue.ts`,
           schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,
           schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,
           schemaUserSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,
+          servicesAuthVerification: `${moduleRoot}/services/auth-verification.service.ts`,
           sessionCookie: `${moduleRoot}/utils/session-cookie.ts`,
           userRolesMutations: `${moduleRoot}/schema/user-roles.mutations.ts`,
           userRolesService: `${moduleRoot}/services/user-roles.service.ts`,

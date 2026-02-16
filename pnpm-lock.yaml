@@ -1302,6 +1302,9 @@ importers:
       '@baseplate-dev/plugin-email':
         specifier: workspace:*
         version: link:../plugin-email
+      '@baseplate-dev/plugin-queue':
+        specifier: workspace:*
+        version: link:../plugin-queue
       '@baseplate-dev/plugin-rate-limit':
         specifier: workspace:*
         version: link:../plugin-rate-limit

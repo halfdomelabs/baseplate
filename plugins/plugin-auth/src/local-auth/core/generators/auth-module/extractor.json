@@ -37,6 +37,20 @@
       "sourceFile": "module/utils/cookie-signer.ts",
       "variables": {}
     },
+    "queues-cleanup-auth-verification": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "queueServiceImportsProvider": {
+          "importName": "queueServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/cleanup-auth-verification.queue.ts",
+      "referencedGeneratorTemplates": ["services-auth-verification"],
+      "sourceFile": "module/queues/cleanup-auth-verification.queue.ts",
+      "variables": {}
+    },
     "schema-user-session-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -91,6 +105,37 @@
       ],
       "sourceFile": "module/schema/user-session.queries.ts",
       "variables": { "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "services-auth-verification": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/auth-verification.service.ts",
+      "projectExports": {
+        "cleanupExpiredAuthVerifications": {
+          "isTypeOnly": false,
+          "name": "cleanupExpiredAuthVerifications"
+        },
+        "createAuthVerification": {
+          "isTypeOnly": false,
+          "name": "createAuthVerification"
+        },
+        "validateAuthVerification": {
+          "isTypeOnly": false,
+          "name": "validateAuthVerification"
+        }
+      },
+      "sourceFile": "module/services/auth-verification.service.ts",
+      "variables": {}
     },
     "session-cookie": {
       "type": "ts",

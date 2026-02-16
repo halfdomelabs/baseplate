@@ -11,5 +11,6 @@ import { sendEmailQueue } from '../modules/emails/queues/send-email.queue.js';
  * Registry of all active queues in the application.
  */
 export const QUEUE_REGISTRY: Queue<unknown>[] = /* TPL_QUEUE_LIST:START */ [
+  cleanupAuthVerificationQueue,
   sendEmailQueue,
 ]; /* TPL_QUEUE_LIST:END */

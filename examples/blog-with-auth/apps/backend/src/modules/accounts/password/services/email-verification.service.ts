@@ -8,11 +8,11 @@ import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
 import { sendEmail } from '../../../emails/services/emails.service.js';
-import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '../constants/password.constants.js';
 import {
   createAuthVerification,
   validateAuthVerification,
-} from './auth-verification.service.js';
+} from '../../services/auth-verification.service.js';
+import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '../constants/password.constants.js';
 
 const EMAIL_VERIFY_TYPE = 'email-verify';
 

@@ -1,9 +1,4 @@
 {
-  "auth-verification.service.ts": {
-    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
-    "instanceData": {},
-    "template": "services-auth-verification"
-  },
   "email-verification.service.ts": {
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
     "instanceData": {},

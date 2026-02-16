@@ -16,6 +16,29 @@
       "sourceFile": "module/constants/password.constants.ts",
       "variables": {}
     },
+    "queues-cleanup-auth-verification": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "queueServiceImportsProvider": {
+          "importName": "queueServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/cleanup-auth-verification.queue.ts",
+      "projectExports": {
+        "cleanupAuthVerificationQueue": {
+          "isTypeOnly": false,
+          "name": "cleanupAuthVerificationQueue"
+        }
+      },
+      "sourceFile": "module/queues/cleanup-auth-verification.queue.ts",
+      "variables": {}
+    },
     "schema-email-verification-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -65,27 +88,14 @@
       "sourceFile": "module/schema/user-password.mutations.ts",
       "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
     },
-    "services-auth-verification": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {
-        "prismaGeneratedImportsProvider": {
-          "importName": "prismaGeneratedImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
-        },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/services/auth-verification.service.ts",
-      "sourceFile": "module/services/auth-verification.service.ts",
-      "variables": {}
-    },
     "services-email-verification": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
@@ -112,10 +122,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/email-verification.service.ts",
-      "referencedGeneratorTemplates": [
-        "constants-password",
-        "services-auth-verification"
-      ],
+      "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/email-verification.service.ts",
       "variables": {}
     },
@@ -124,6 +131,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "module",
       "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
@@ -172,10 +183,7 @@
           "name": "validatePasswordResetToken"
         }
       },
-      "referencedGeneratorTemplates": [
-        "constants-password",
-        "services-auth-verification"
-      ],
+      "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/password-reset.service.ts",
       "variables": {}
     },

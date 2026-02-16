@@ -17,6 +17,7 @@ import {
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -36,21 +37,21 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
       >,
     ) => BuilderAction;
   };
-  schemaEmailVerificationMutations: {
+  queuesCleanupAuthVerification: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailVerificationMutations
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.queuesCleanupAuthVerification
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
-  servicesAuthVerification: {
+  schemaEmailVerificationMutations: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.schemaEmailVerificationMutations
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -84,6 +85,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    queueServiceImports: queueServiceImportsProvider,
     rateLimitImports: rateLimitImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -104,6 +106,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
+    queueServiceImports,
     rateLimitImports,
     requestServiceContextImports,
     typescriptFile,
@@ -137,6 +140,19 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
+          queuesCleanupAuthVerification: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.queuesCleanupAuthVerification,
+                destination: paths.queuesCleanupAuthVerification,
+                importMapProviders: {
+                  authModuleImports,
+                  queueServiceImports,
+                },
+                ...options,
+              }),
+          },
           schemaEmailVerificationMutations: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -150,19 +166,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
-          servicesAuthVerification: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template:
-                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification,
-                destination: paths.servicesAuthVerification,
-                importMapProviders: {
-                  prismaGeneratedImports,
-                  prismaImports,
-                },
-                ...options,
-              }),
-          },
           servicesEmailVerification: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -170,6 +173,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification,
                 destination: paths.servicesEmailVerification,
                 importMapProviders: {
+                  authModuleImports,
                   configServiceImports,
                   emailModuleImports,
                   errorHandlerServiceImports,
