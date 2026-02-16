@@ -50,6 +50,26 @@
       "sourceFile": "module/config/categories.config.ts",
       "variables": { "TPL_FILE_CATEGORIES": {} }
     },
+    "queues-clean-unused-files": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "queueServiceImportsProvider": {
+          "importName": "queueServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/clean-unused-files.ts",
+      "projectExports": {
+        "cleanUnusedFilesQueue": {
+          "isTypeOnly": false,
+          "name": "cleanUnusedFilesQueue"
+        }
+      },
+      "referencedGeneratorTemplates": ["services-clean-unused-files"],
+      "sourceFile": "module/queues/clean-unused-files.ts",
+      "variables": {}
+    },
     "schema-file-category": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -116,6 +136,31 @@
       "referencedGeneratorTemplates": ["services-get-public-url"],
       "sourceFile": "module/schema/public-url.field.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
+    },
+    "services-clean-unused-files": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/clean-unused-files.ts",
+      "projectExports": {
+        "cleanUnusedFiles": { "isTypeOnly": false, "name": "cleanUnusedFiles" }
+      },
+      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
+      "sourceFile": "module/services/clean-unused-files.ts",
+      "variables": {}
     },
     "services-create-presigned-download-url": {
       "type": "ts",

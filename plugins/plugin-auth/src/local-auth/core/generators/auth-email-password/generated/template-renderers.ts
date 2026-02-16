@@ -46,16 +46,6 @@ export interface LocalAuthCoreAuthEmailPasswordRenderers {
       >,
     ) => BuilderAction;
   };
-  servicesAuthVerification: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   servicesEmailVerification: {
     render: (
       options: Omit<
@@ -150,19 +140,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
-          servicesAuthVerification: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template:
-                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesAuthVerification,
-                destination: paths.servicesAuthVerification,
-                importMapProviders: {
-                  prismaGeneratedImports,
-                  prismaImports,
-                },
-                ...options,
-              }),
-          },
           servicesEmailVerification: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -170,6 +147,7 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.servicesEmailVerification,
                 destination: paths.servicesEmailVerification,
                 importMapProviders: {
+                  authModuleImports,
                   configServiceImports,
                   emailModuleImports,
                   errorHandlerServiceImports,

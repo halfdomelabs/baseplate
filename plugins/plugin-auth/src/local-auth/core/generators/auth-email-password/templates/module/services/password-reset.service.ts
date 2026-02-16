@@ -10,7 +10,7 @@ import {
 import {
   createAuthVerification,
   validateAuthVerification,
-} from '$servicesAuthVerification';
+} from '%authModuleImports';
 import { config } from '%configServiceImports';
 import { sendEmail } from '%emailModuleImports';
 import {

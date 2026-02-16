@@ -10,6 +10,7 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const userSessionConstants = createTsTemplateFile({
@@ -139,6 +140,41 @@ export const moduleGroup = {
   userRolesService,
 };
 
+const queuesCleanupAuthVerification = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { queueServiceImports: queueServiceImportsProvider },
+  name: 'queues-cleanup-auth-verification',
+  referencedGeneratorTemplates: { servicesAuthVerification: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/cleanup-auth-verification.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesAuthVerification = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-auth-verification',
+  projectExports: {
+    cleanupExpiredAuthVerifications: { isTypeOnly: false },
+    createAuthVerification: { isTypeOnly: false },
+    validateAuthVerification: { isTypeOnly: false },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/auth-verification.service.ts',
+    ),
+  },
+  variables: {},
+});
+
 const userSessionService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -214,6 +250,8 @@ export const utilsGroup = { cookieSigner, sessionCookie, verifyRequestOrigin };
 export const LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   constantsGroup,
   moduleGroup,
+  queuesCleanupAuthVerification,
+  servicesAuthVerification,
   userSessionService,
   utilsGroup,
 };

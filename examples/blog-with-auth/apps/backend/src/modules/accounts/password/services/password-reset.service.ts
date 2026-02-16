@@ -14,14 +14,14 @@ import { handleZodRequestValidationError } from '@src/utils/zod.js';
 
 import { sendEmail } from '../../../emails/services/emails.service.js';
 import {
+  createAuthVerification,
+  validateAuthVerification,
+} from '../../services/auth-verification.service.js';
+import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '../constants/password.constants.js';
-import {
-  createAuthVerification,
-  validateAuthVerification,
-} from './auth-verification.service.js';
 import { createPasswordHash } from './password-hasher.service.js';
 
 const PROVIDER_ID = 'email-password';

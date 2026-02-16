@@ -6,7 +6,7 @@ import { EMAIL_VERIFICATION_TOKEN_EXPIRY_SEC } from '$constantsPassword';
 import {
   createAuthVerification,
   validateAuthVerification,
-} from '$servicesAuthVerification';
+} from '%authModuleImports';
 import { config } from '%configServiceImports';
 import { sendEmail } from '%emailModuleImports';
 import { BadRequestError } from '%errorHandlerServiceImports';

@@ -72,6 +72,7 @@ const servicesPasswordReset = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
   importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
@@ -87,10 +88,7 @@ const servicesPasswordReset = createTsTemplateFile({
     requestPasswordReset: { isTypeOnly: false },
     validatePasswordResetToken: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: {
-    constantsPassword: {},
-    servicesAuthVerification: {},
-  },
+  referencedGeneratorTemplates: { constantsPassword: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -154,25 +152,10 @@ const schemaEmailVerificationMutations = createTsTemplateFile({
   variables: {},
 });
 
-const servicesAuthVerification = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
-  name: 'services-auth-verification',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/auth-verification.service.ts',
-    ),
-  },
-  variables: {},
-});
-
 const servicesEmailVerification = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
@@ -181,10 +164,7 @@ const servicesEmailVerification = createTsTemplateFile({
     requestServiceContextImports: requestServiceContextImportsProvider,
   },
   name: 'services-email-verification',
-  referencedGeneratorTemplates: {
-    constantsPassword: {},
-    servicesAuthVerification: {},
-  },
+  referencedGeneratorTemplates: { constantsPassword: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -197,6 +177,5 @@ const servicesEmailVerification = createTsTemplateFile({
 export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = {
   moduleGroup,
   schemaEmailVerificationMutations,
-  servicesAuthVerification,
   servicesEmailVerification,
 };

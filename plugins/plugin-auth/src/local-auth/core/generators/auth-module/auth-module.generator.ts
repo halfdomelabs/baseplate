@@ -6,6 +6,7 @@ import {
   pothosTypeOutputProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import {
   createGenerator,
   createGeneratorTask,
@@ -72,8 +73,10 @@ export const authModuleGenerator = createGenerator({
           .reference(
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
+        queueConfig: queueConfigProvider.dependency().optional(),
+        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ prismaOutput, renderers, userObjectType }) {
+      run({ prismaOutput, renderers, userObjectType, queueConfig, paths }) {
         return {
           providers: {
             authModule: {},
@@ -88,6 +91,7 @@ export const authModuleGenerator = createGenerator({
                 },
               }),
             );
+            await builder.apply(renderers.servicesAuthVerification.render({}));
             await builder.apply(renderers.constantsGroup.render({}));
             await builder.apply(renderers.utilsGroup.render({}));
             await builder.apply(
@@ -114,6 +118,21 @@ export const authModuleGenerator = createGenerator({
                 },
               }),
             );
+            // Render queue only if queue plugin is available
+            if (queueConfig) {
+              await builder.apply(
+                renderers.queuesCleanupAuthVerification.render({}),
+              );
+
+              // Register with` queue system
+              queueConfig.queues.set(
+                'cleanup-auth-verification',
+                TsCodeUtils.importFragment(
+                  'cleanupAuthVerificationQueue',
+                  paths.queuesCleanupAuthVerification,
+                ),
+              );
+            }
           },
         };
       },

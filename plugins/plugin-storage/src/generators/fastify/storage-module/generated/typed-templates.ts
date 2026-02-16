@@ -2,11 +2,13 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   dataUtilsImportsProvider,
   errorHandlerServiceImportsProvider,
+  loggerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const configAdapters = createTsTemplateFile({
@@ -287,6 +289,21 @@ export const mainGroup = {
   utilsValidateFileUploadOptions,
 };
 
+const queuesCleanUnusedFiles = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { queueServiceImports: queueServiceImportsProvider },
+  name: 'queues-clean-unused-files',
+  projectExports: { cleanUnusedFilesQueue: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { servicesCleanUnusedFiles: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/clean-unused-files.ts',
+    ),
+  },
+  variables: {},
+});
+
 const schemaFileCategory = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'schema',
@@ -361,6 +378,25 @@ export const schemaGroup = {
   schemaPublicUrl,
 };
 
+const servicesCleanUnusedFiles = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-clean-unused-files',
+  projectExports: { cleanUnusedFiles: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/clean-unused-files.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesGetPublicUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -381,6 +417,8 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   configAdapters,
   configCategories,
   mainGroup,
+  queuesCleanUnusedFiles,
   schemaGroup,
+  servicesCleanUnusedFiles,
   servicesGetPublicUrl,
 };

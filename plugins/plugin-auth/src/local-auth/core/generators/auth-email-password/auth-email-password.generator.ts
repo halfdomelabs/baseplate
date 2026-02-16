@@ -94,7 +94,6 @@ export const authEmailPasswordGenerator = createGenerator({
                 },
               }),
             );
-            await builder.apply(renderers.servicesAuthVerification.render({}));
             await builder.apply(
               renderers.servicesEmailVerification.render({
                 variables: {

@@ -13,6 +13,8 @@ import {
 import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
 
 export const storageModuleImportsSchema = createTsImportMapSchema({
+  cleanUnusedFiles: {},
+  cleanUnusedFilesQueue: {},
   createFileCategory: {},
   createPresignedDownloadUrl: {},
   CreatePresignedUploadOptions: { isTypeOnly: true },
@@ -63,6 +65,8 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
     return {
       providers: {
         storageModuleImports: createTsImportMap(storageModuleImportsSchema, {
+          cleanUnusedFiles: paths.servicesCleanUnusedFiles,
+          cleanUnusedFilesQueue: paths.queuesCleanUnusedFiles,
           createFileCategory: paths.utilsCreateFileCategory,
           createPresignedDownloadUrl: paths.servicesCreatePresignedDownloadUrl,
           CreatePresignedUploadOptions: paths.typesAdapter,

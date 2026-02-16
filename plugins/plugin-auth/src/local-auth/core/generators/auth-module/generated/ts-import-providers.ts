@@ -17,7 +17,10 @@ import {
 import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
 
 export const authModuleImportsSchema = createTsImportMapSchema({
+  cleanupExpiredAuthVerifications: {},
+  createAuthVerification: {},
   userSessionPayload: {},
+  validateAuthVerification: {},
 });
 
 export type AuthModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -40,7 +43,10 @@ const localAuthCoreAuthModuleImportsTask = createGeneratorTask({
     return {
       providers: {
         authModuleImports: createTsImportMap(authModuleImportsSchema, {
+          cleanupExpiredAuthVerifications: paths.servicesAuthVerification,
+          createAuthVerification: paths.servicesAuthVerification,
           userSessionPayload: paths.schemaUserSessionPayloadObjectType,
+          validateAuthVerification: paths.servicesAuthVerification,
         }),
         userSessionServiceImports: createTsImportMap(
           userSessionServiceImportsSchema,

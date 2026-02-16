@@ -1,4 +1,9 @@
 {
+  "clean-unused-files.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-clean-unused-files"
+  },
   "create-presigned-download-url.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
