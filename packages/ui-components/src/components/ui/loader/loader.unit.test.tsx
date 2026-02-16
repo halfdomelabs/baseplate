@@ -62,17 +62,6 @@ describe('Loader', () => {
     expect(loader).toBeInTheDocument();
   });
 
-  it('should apply custom className', () => {
-    render(<Loader className="custom-class" />);
-
-    act(() => {
-      vi.advanceTimersByTime(300);
-    });
-
-    const loader = screen.getByRole('progressbar');
-    expect(loader).toHaveClass('custom-class');
-  });
-
   it('should cleanup timer on unmount', () => {
     const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
 

@@ -1,8 +1,6 @@
-import eslintNode from '@baseplate-dev/tools/eslint-node';
+import { defineNodeEslintConfig } from '@baseplate-dev/tools/eslint-node';
 
-export default [
-  ...eslintNode,
-  {
-    ignores: ['src/morphers/tests/*/**/*'],
-  },
-];
+export default defineNodeEslintConfig({
+  dirname: import.meta.dirname,
+  ignores: ['src/morphers/tests/*/**/*'],
+});

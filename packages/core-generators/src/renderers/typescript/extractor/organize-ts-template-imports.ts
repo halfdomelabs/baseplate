@@ -39,6 +39,34 @@ export interface TsTemplateImportLookupContext {
 }
 
 /**
+ * Detects if an import is to a workspace package that should be variablized
+ */
+function isWorkspacePackageImport(
+  moduleSpecifier: string,
+  resolvedPath: string,
+  outputDirectory: string,
+): boolean {
+  // Check if it's a scoped package import
+  if (!moduleSpecifier.startsWith('@')) {
+    return false;
+  }
+
+  // Check if resolved path is within the workspace (not node_modules)
+  if (!resolvedPath.startsWith(outputDirectory)) {
+    return false;
+  }
+
+  // Check if it's in a workspace package location (libs/, packages/, apps/)
+  const relativePath = path.relative(outputDirectory, resolvedPath);
+  const isInWorkspaceLocation =
+    relativePath.startsWith('libs/') ||
+    relativePath.startsWith('packages/') ||
+    relativePath.startsWith('apps/');
+
+  return isInWorkspaceLocation;
+}
+
+/**
  * Collects all Identifier names from a SourceFile,
  * skipping nodes within ImportDeclaration structures.
  */
@@ -209,6 +237,18 @@ export async function organizeTsTemplateImports(
         );
       }
       const resolvedPath = resolutionResult.path;
+
+      // Validate workspace package imports
+      if (
+        isWorkspacePackageImport(moduleSpecifier, resolvedPath, outputDirectory)
+      ) {
+        throw new Error(
+          `Workspace package import "${moduleSpecifier}" in ${filePath} must be configured as a project export or converted to a template variable. ` +
+            `Template imports should use TPL_* variables for dynamic package references. ` +
+            `Example: Wrap the usage with delimited variables like /* TPL_VAR:START */identifier/* TPL_VAR:END */ and pass TsCodeUtils.importFragment() in the generator.`,
+        );
+      }
+
       // Don't modify external imports outside the project root
       if (!resolvedPath.startsWith(outputDirectory)) {
         return [importDeclaration];

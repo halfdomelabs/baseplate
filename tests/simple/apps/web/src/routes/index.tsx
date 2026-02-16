@@ -33,7 +33,7 @@ function HomePage(): ReactElement {
       data-testid="blog-list"
     >
       {data.blogPosts.map((post) => (
-        <div className="border-gray-200 w-[200px] border p-4" key={post.id}>
+        <div className="border-border w-[200px] border p-4" key={post.id}>
           <h2>{post.title}</h2>
           <p>{post.content.slice(0, 100)}</p>
         </div>

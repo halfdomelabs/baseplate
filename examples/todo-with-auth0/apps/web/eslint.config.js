@@ -3,12 +3,14 @@ import graphqlPlugin from '@graphql-eslint/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import eslintPluginImportX, { importX } from 'eslint-plugin-import-x';
 import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
@@ -41,7 +43,7 @@ const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
 const TS_DEFAULT_PROJECT_FILES =
   /* TPL_DEFAULT_PROJECT_FILES:START */ []; /* TPL_DEFAULT_PROJECT_FILES:END */
 
-export default tsEslint.config(
+export default defineConfig(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
@@ -77,6 +79,7 @@ export default tsEslint.config(
     ],
     languageOptions: {
       parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
         projectService: {
           // allow default project for root configs
           allowDefaultProject: TS_DEFAULT_PROJECT_FILES,
@@ -238,6 +241,31 @@ export default tsEslint.config(
       'perfectionist/sort-named-exports': ['error'],
     },
   },
+
+  /* TPL_TAILWIND_CONFIG:COMMENT:START */
+
+  // Tailwind CSS Correctness
+  eslintPluginBetterTailwindcss.configs['correctness'],
+  {
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: './src/styles.css',
+      },
+    },
+  },
+  {
+    rules: {
+      'better-tailwindcss/no-unknown-classes': [
+        'error',
+        {
+          detectComponentClasses: true,
+          ignore: ['toaster'],
+        },
+      ],
+    },
+  },
+
+  /* TPL_TAILWIND_CONFIG:COMMENT:END */
 
   /* TPL_EXTRA_CONFIGS:COMMENT:START */
 

@@ -109,7 +109,7 @@ export const Console = ({ className }: Props): React.JSX.Element => {
   return (
     <code
       className={clsx(
-        'border-gray-200 bg-slate-900 text-neutral-400 block h-72 w-full overflow-y-scroll border p-4 text-sm break-words whitespace-pre-wrap shadow-inner',
+        `block h-72 w-full overflow-y-scroll border border-border bg-muted p-4 text-sm whitespace-pre-wrap text-muted-foreground shadow-inner`,
         className,
       )}
       ref={codeRef}

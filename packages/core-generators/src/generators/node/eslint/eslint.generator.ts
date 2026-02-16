@@ -17,6 +17,7 @@ import { nodeProvider } from '../node/index.js';
 import { typescriptFileProvider } from '../typescript/index.js';
 import { NODE_ESLINT_GENERATED } from './generated/index.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
+import { TAILWIND_ESLINT_CONFIG } from './tailwind-rules.js';
 import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
 const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
@@ -101,6 +102,8 @@ export const eslintGenerator = createGenerator({
                 'eslint-plugin-jsx-a11y',
                 'eslint-plugin-react',
                 'eslint-plugin-react-hooks',
+                'eslint-plugin-better-tailwindcss',
+                'tailwindcss',
               ])
             : {}),
           ...(enableVitest
@@ -162,6 +165,7 @@ export const eslintGenerator = createGenerator({
                     '\n\n',
                   ),
                   TPL_GLOBALS: react ? 'browser' : 'node',
+                  TPL_TAILWIND_CONFIG: react ? TAILWIND_ESLINT_CONFIG : '',
                 },
               }),
             );

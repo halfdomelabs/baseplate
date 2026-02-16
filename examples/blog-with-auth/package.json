@@ -1,5 +1,5 @@
 {
-  "name": "blog-with-auth-root",
+  "name": "@blog-with-auth/root",
   "version": "0.1.0",
   "private": true,
   "description": "Monorepo root for blog-with-auth",

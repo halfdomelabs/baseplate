@@ -124,7 +124,7 @@
       "pathRootRelativePath": "{module-root}/services/email-verification.service.ts",
       "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/email-verification.service.ts",
-      "variables": {}
+      "variables": { "TPL_ACCOUNT_VERIFICATION_EMAIL": {} }
     },
     "services-password-reset": {
       "type": "ts",
@@ -185,7 +185,10 @@
       },
       "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/password-reset.service.ts",
-      "variables": {}
+      "variables": {
+        "TPL_PASSWORD_CHANGED_EMAIL": {},
+        "TPL_PASSWORD_RESET_EMAIL": {}
+      }
     },
     "services-user-password": {
       "type": "ts",

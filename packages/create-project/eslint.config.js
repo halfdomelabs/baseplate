@@ -1,8 +1,5 @@
-import eslintNodeConfig from '@baseplate-dev/tools/eslint-node';
+import { defineNodeEslintConfig } from '@baseplate-dev/tools/eslint-node';
 
-export default [
-  ...eslintNodeConfig,
-  {
-    ignores: ['templates/**'],
-  },
-];
+export default defineNodeEslintConfig({
+  dirname: import.meta.dirname,
+});

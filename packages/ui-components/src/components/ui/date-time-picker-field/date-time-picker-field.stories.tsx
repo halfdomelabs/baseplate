@@ -238,7 +238,7 @@ export const WithFormValidation: Story = {
         />
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 text-white"
+          className="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary-hover"
         >
           Submit
         </button>

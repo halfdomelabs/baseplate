@@ -6,6 +6,7 @@ import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
@@ -13,6 +14,7 @@ import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependenc
 
 /**
  * @typedef {Object} GenerateTypescriptEslintConfigOptions
+ * @property {string} [rootDir] - Absolute path to tsconfig root directory (for tsconfigRootDir)
  * @property {string[]} [extraTsFileGlobs] - Additional file globs to lint with Typescript
  * @property {string[]} [extraDevDependencies] - Additional globs for dev dependencies
  * @property {string[]} [extraDefaultProjectFiles] - Additional default project files
@@ -23,13 +25,10 @@ const KEEP_UNUSED_IMPORTS =
 
 /**
  * Generates a Typescript ESLint configuration
- * @param {GenerateTypescriptEslintConfigOptions[]} [options=[]] - Configuration options
+ * @param {GenerateTypescriptEslintConfigOptions} [options={}] - Configuration options
  */
-export function generateTypescriptEslintConfig(options = []) {
-  const tsFileGlobs = [
-    '**/*.{ts,tsx}',
-    ...options.flatMap((option) => option.extraTsFileGlobs ?? []),
-  ];
+export function generateTypescriptEslintConfig(options = {}) {
+  const tsFileGlobs = ['**/*.{ts,tsx}', ...(options.extraTsFileGlobs ?? [])];
   const devDependencies = [
     // allow dev dependencies for test files
     '**/*.test-helper.{js,ts,jsx,tsx}',
@@ -42,13 +41,13 @@ export function generateTypescriptEslintConfig(options = []) {
     '*.{js,ts}',
     '.*.{js,ts}',
     '.workspace-meta/**/*',
-    ...options.flatMap((option) => option.extraDevDependencies ?? []),
+    ...(options.extraDevDependencies ?? []),
   ];
   const defaultProjectFiles = [
     'vitest.config.ts',
-    ...options.flatMap((option) => option.extraDefaultProjectFiles ?? []),
+    ...(options.extraDefaultProjectFiles ?? []),
   ];
-  return tsEslint.config(
+  return defineConfig(
     // ESLint Configs for all files
     eslint.configs.recommended,
     {
@@ -82,6 +81,7 @@ export function generateTypescriptEslintConfig(options = []) {
       ],
       languageOptions: {
         parserOptions: {
+          ...(options.rootDir ? { tsconfigRootDir: options.rootDir } : {}),
           projectService: {
             // allow default project for root configs
             allowDefaultProject: defaultProjectFiles,
@@ -162,6 +162,7 @@ export function generateTypescriptEslintConfig(options = []) {
     },
 
     // Import-X Configs
+    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     importX.flatConfigs.recommended,
     importX.flatConfigs.typescript,
     {
