@@ -5,6 +5,7 @@ import {
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
 } from '@baseplate-dev/fastify-generators';
+import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import {
   createGenerator,
   createGeneratorTask,
@@ -19,6 +20,7 @@ import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } 
 
 const descriptorSchema = z.object({
   adminRoles: z.array(z.string()),
+  devWebDomainPort: z.number(),
 });
 
 /**
@@ -28,16 +30,16 @@ export const authEmailPasswordGenerator = createGenerator({
   name: 'local-auth/core/auth-email-password',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ adminRoles }) => ({
+  buildTasks: ({ adminRoles, devWebDomainPort }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
-      configService.configFields.set('PASSWORD_RESET_DOMAIN', {
+      configService.configFields.set('AUTH_FRONTEND_URL', {
         validator: tsCodeFragment('z.url()'),
         comment:
-          'Base domain for password reset links (e.g., https://app.example.com)',
-        exampleValue: 'http://localhost:3030',
+          'Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)',
+        exampleValue: `http://localhost:${devWebDomainPort}`,
       });
     }),
     appModule: createGeneratorTask({
@@ -56,13 +58,17 @@ export const authEmailPasswordGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
+        transactionalLibConfig: transactionalLibConfigProvider,
         userObjectType: pothosTypeOutputProvider
           .dependency()
           .reference(
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
       },
-      run({ renderers, userObjectType }) {
+      run({ renderers, transactionalLibConfig, userObjectType }) {
+        const transactionalLibPackageName =
+          transactionalLibConfig.getTransactionalLibPackageName();
+
         return {
           build: async (builder) => {
             await builder.apply(
@@ -75,11 +81,30 @@ export const authEmailPasswordGenerator = createGenerator({
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,
                   },
+                  servicesPasswordReset: {
+                    TPL_PASSWORD_RESET_EMAIL: TsCodeUtils.importFragment(
+                      'PasswordResetEmail',
+                      transactionalLibPackageName,
+                    ),
+                    TPL_PASSWORD_CHANGED_EMAIL: TsCodeUtils.importFragment(
+                      'PasswordChangedEmail',
+                      transactionalLibPackageName,
+                    ),
+                  },
                 },
               }),
             );
             await builder.apply(renderers.servicesAuthVerification.render({}));
-            await builder.apply(renderers.servicesEmailVerification.render({}));
+            await builder.apply(
+              renderers.servicesEmailVerification.render({
+                variables: {
+                  TPL_ACCOUNT_VERIFICATION_EMAIL: TsCodeUtils.importFragment(
+                    'AccountVerificationEmail',
+                    transactionalLibPackageName,
+                  ),
+                },
+              }),
+            );
             await builder.apply(
               renderers.schemaEmailVerificationMutations.render({}),
             );

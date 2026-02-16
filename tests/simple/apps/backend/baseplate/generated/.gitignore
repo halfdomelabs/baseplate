@@ -30,7 +30,8 @@ baseplate/.build
 /.env
 /.*.env
 
-/dist
-
 # Prisma generated files
 src/generated/prisma/*
+
+# TypeScript build output
+/dist

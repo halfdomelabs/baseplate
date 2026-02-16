@@ -41,6 +41,7 @@ import { extractPackageVersions } from '#src/utils/extract-packages.js';
 import type { TypescriptCompilerOptions } from './compiler-types.js';
 
 import { writeJsonToBuilder } from '../../../writers/index.js';
+import { nodeGitIgnoreProvider } from '../node-git-ignore/index.js';
 import { createNodePackagesTask, nodeProvider } from '../node/index.js';
 
 const typescriptGeneratorDescriptorSchema = z.object({});
@@ -188,6 +189,22 @@ export const typescriptGenerator = createGenerator({
     setup: createGeneratorTask(setupTask),
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
+    }),
+    gitIgnore: createGeneratorTask({
+      dependencies: {
+        nodeGitIgnore: nodeGitIgnoreProvider,
+        typescriptConfig: typescriptSetupValuesProvider,
+      },
+      run({ nodeGitIgnore, typescriptConfig }) {
+        const { compilerOptions } = typescriptConfig;
+        // Add outDir to gitignore if noEmit is false or unset
+        if (!compilerOptions.noEmit && compilerOptions.outDir) {
+          nodeGitIgnore.exclusions.set('typescript', [
+            `# TypeScript build output`,
+            `/${compilerOptions.outDir}`,
+          ]);
+        }
+      },
     }),
     node: createGeneratorTask({
       dependencies: {

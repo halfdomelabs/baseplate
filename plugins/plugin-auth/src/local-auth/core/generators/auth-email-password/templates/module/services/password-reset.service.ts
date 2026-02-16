@@ -20,10 +20,6 @@ import {
 import { createPasswordHash } from '%passwordHasherServiceImports';
 import { prisma } from '%prismaImports';
 import { memoizeRateLimiter } from '%rateLimitImports';
-import {
-  PasswordChangedEmail,
-  PasswordResetEmail,
-} from '@blog-with-auth/transactional';
 import z from 'zod';
 
 const PROVIDER_ID = 'email-password';
@@ -110,10 +106,10 @@ export async function requestPasswordReset({
     });
 
     // Construct reset URL using configured domain
-    const resetLink = `${config.PASSWORD_RESET_DOMAIN}/auth/reset-password?token=${encodeURIComponent(token)}`;
+    const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
-    await sendEmail(PasswordResetEmail, {
+    await sendEmail(TPL_PASSWORD_RESET_EMAIL, {
       to: user.email,
       data: { resetLink },
     });
@@ -224,7 +220,7 @@ export async function completePasswordReset({
   ]);
 
   // Send password changed confirmation email
-  await sendEmail(PasswordChangedEmail, {
+  await sendEmail(TPL_PASSWORD_CHANGED_EMAIL, {
     to: user.email,
     data: {},
   });

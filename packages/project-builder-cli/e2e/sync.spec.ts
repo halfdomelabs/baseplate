@@ -24,6 +24,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
         name: 'test-app',
         id: appId,
         type: 'backend',
+        devPort: 5001,
       },
     ],
     features: [

@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.20
+
 # Base stage: Minimal node image with corepack enabled
 FROM node:22.18.0-alpine AS base
 RUN apk add --no-cache tini
@@ -15,22 +17,24 @@ ENV COREPACK_DEFAULT_TO_LATEST=0
 RUN corepack enable
 
 # Copy only necessary files for dependency installation
-COPY apps/backend/package.json ./apps/backend/package.json
+COPY --parents libs/*/package.json .
+COPY --parents apps/*/package.json .
 COPY apps/backend/tsconfig.json ./apps/backend/tsconfig.json
 COPY apps/backend/prisma/schema.prisma ./apps/backend/prisma/schema.prisma
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 
 # Install dependencies for backend
-RUN pnpm install --frozen-lockfile --filter=blog-with-auth-backend...
+RUN pnpm install --frozen-lockfile --filter=@blog-with-auth/backend... --filter=@blog-with-auth/root
 
 # Copy application source code
+COPY libs ./libs
 COPY apps/backend ./apps/backend
 
 # Build the project
-RUN pnpm turbo run blog-with-auth-backend#build
+RUN pnpm turbo run @blog-with-auth/backend#build
 
 # Deploy production-ready app
-RUN pnpm --filter=blog-with-auth-backend deploy --prod /prod/backend --legacy
+RUN pnpm --filter=@blog-with-auth/backend deploy --prod /prod/backend --legacy
 
 # Final production stage
 FROM base AS production

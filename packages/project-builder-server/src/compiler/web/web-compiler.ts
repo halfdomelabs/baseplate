@@ -115,7 +115,10 @@ function buildAdminRoutes(
  *
  * Combines React Router, Apollo Client, Tailwind, Sentry, and admin panel
  */
-function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
+function buildReact(
+  builder: AppEntryBuilder<WebAppConfig>,
+  devWebPort: number,
+): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
@@ -163,7 +166,8 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
       },
     },
     {
-      devBackendHost: `http://localhost:${projectDefinition.settings.general.portOffset + 1}`,
+      devBackendHost: `http://localhost:${backendApp.devPort}`,
+      devWebPort,
     },
   );
 }
@@ -195,7 +199,7 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
       description: `Web app for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
-        react: buildReact(appBuilder),
+        react: buildReact(appBuilder, this.appConfig.devPort),
         vitest: vitestGenerator({}),
       },
     });

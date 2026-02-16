@@ -12,7 +12,6 @@ import { sendEmail } from '%emailModuleImports';
 import { BadRequestError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
 import { memoizeRateLimiter } from '%rateLimitImports';
-import { AccountVerificationEmail } from '@blog-with-auth/transactional';
 
 const EMAIL_VERIFY_TYPE = 'email-verify';
 
@@ -88,9 +87,9 @@ export async function requestEmailVerification({
   });
 
   // Construct verification URL using configured domain
-  const verifyLink = `${config.PASSWORD_RESET_DOMAIN}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
-  await sendEmail(AccountVerificationEmail, {
+  await sendEmail(TPL_ACCOUNT_VERIFICATION_EMAIL, {
     to: user.email,
     data: { verifyLink },
   });

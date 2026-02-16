@@ -4,7 +4,7 @@ export const CORE_PACKAGES = {
 
   // Linting
   '@eslint/js': '9.39.2',
-  '@vitest/eslint-plugin': '1.6.6',
+  '@vitest/eslint-plugin': '1.6.9',
   eslint: '9.39.2',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',

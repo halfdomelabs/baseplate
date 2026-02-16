@@ -1,6 +1,11 @@
 {
   "apps": [
-    { "id": "app:mR1UDTfwWdRw", "name": "backend", "type": "backend" },
+    {
+      "id": "app:mR1UDTfwWdRw",
+      "name": "backend",
+      "devPort": 3001,
+      "type": "backend"
+    },
     {
       "adminApp": { "enabled": false, "pathPrefix": "/admin" },
       "description": "",
@@ -11,6 +16,7 @@
       "includeUploadComponents": false,
       "name": "web",
       "packageLocation": "",
+      "devPort": 3030,
       "title": "",
       "type": "web"
     }
@@ -74,7 +80,7 @@
     }
   ],
   "plugins": [],
-  "schemaVersion": 22,
+  "schemaVersion": 23,
   "settings": {
     "general": { "name": "simple", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

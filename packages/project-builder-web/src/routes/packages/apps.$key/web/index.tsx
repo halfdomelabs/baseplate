@@ -28,7 +28,7 @@ export const Route = createFileRoute('/packages/apps/$key/web/')({
 });
 
 function WebAppGeneralForm(): React.JSX.Element {
-  const { saveDefinitionWithFeedback } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, definition } = useProjectDefinition();
   const { webDefinition } = Route.useRouteContext();
 
   const webAppSchema = useDefinitionSchema(createWebAppSchema);
@@ -36,15 +36,29 @@ function WebAppGeneralForm(): React.JSX.Element {
     resolver: zodResolver(webAppSchema),
     values: webDefinition,
   });
-  const { control, handleSubmit, reset } = formProps;
+  const { control, handleSubmit, reset, setError } = formProps;
 
-  const onSubmit = handleSubmit((data) =>
-    saveDefinitionWithFeedback((draftConfig) => {
+  const onSubmit = handleSubmit((data) => {
+    // Check for port conflicts
+    if (data.devPort) {
+      const conflictingApp = definition.apps.find(
+        (app) => app.id !== webDefinition.id && app.devPort === data.devPort,
+      );
+      if (conflictingApp) {
+        setError('devPort', {
+          type: 'manual',
+          message: `Port ${data.devPort} is already used by app "${conflictingApp.name}"`,
+        });
+        return;
+      }
+    }
+
+    return saveDefinitionWithFeedback((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
         app.id === webDefinition.id ? data : app,
       );
-    }),
-  );
+    });
+  });
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
@@ -69,6 +83,14 @@ function WebAppGeneralForm(): React.JSX.Element {
               label="Description Meta Tag"
               control={control}
               name="description"
+            />
+            <InputFieldController
+              label="Development Port"
+              control={control}
+              name="devPort"
+              type="number"
+              registerOptions={{ valueAsNumber: true }}
+              description="Port number for the development server (e.g., 5030)"
             />
           </SectionListSectionContent>
         </SectionListSection>

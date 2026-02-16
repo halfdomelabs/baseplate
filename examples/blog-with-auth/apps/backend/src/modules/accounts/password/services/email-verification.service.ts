@@ -88,12 +88,15 @@ export async function requestEmailVerification({
   });
 
   // Construct verification URL using configured domain
-  const verifyLink = `${config.PASSWORD_RESET_DOMAIN}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
-  await sendEmail(AccountVerificationEmail, {
-    to: user.email,
-    data: { verifyLink },
-  });
+  await sendEmail(
+    /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
+    {
+      to: user.email,
+      data: { verifyLink },
+    },
+  );
 
   return { success: true };
 }

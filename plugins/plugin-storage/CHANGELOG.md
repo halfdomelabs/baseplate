@@ -1,5 +1,71 @@
 # @baseplate-dev/plugin-storage
 
+## 4.0.2
+
+### Patch Changes
+
+- [#762](https://github.com/halfdomelabs/baseplate/pull/762) [`bf95b7b`](https://github.com/halfdomelabs/baseplate/commit/bf95b7b910e879633d78e65576521a93e0eca55d) Thanks [@kingston](https://github.com/kingston)! - Add filename to file input query
+
+- [#764](https://github.com/halfdomelabs/baseplate/pull/764) [`57deaae`](https://github.com/halfdomelabs/baseplate/commit/57deaae7becf62ac67f3a7d6baa8b7eb050be6d5) Thanks [@kingston](https://github.com/kingston)! - Upgrade AWS SDK packages to 3.990.0
+  - @aws-sdk/client-s3: 3.934.0 → 3.990.0
+  - @aws-sdk/lib-storage: 3.934.0 → 3.990.0
+  - @aws-sdk/s3-presigned-post: 3.934.0 → 3.990.0
+  - @aws-sdk/s3-request-presigner: 3.934.0 → 3.990.0
+
+- [#755](https://github.com/halfdomelabs/baseplate/pull/755) [`02740a6`](https://github.com/halfdomelabs/baseplate/commit/02740a6e230c7fbf28fc768543353e847671c51b) Thanks [@kingston](https://github.com/kingston)! - Upgrade linting packages
+
+  **Major version bumps:**
+  - eslint: 9.32.0 → 9.39.2
+  - @eslint/js: 9.32.0 → 9.39.2
+  - eslint-plugin-perfectionist: 4.15.0 → 5.4.0
+  - eslint-plugin-react-hooks: 5.2.0 → 7.0.1
+  - eslint-plugin-unicorn: 60.0.0 → 62.0.0
+  - globals: 16.4.0 → 17.3.0
+  - prettier-plugin-packagejson: 2.5.19 → 3.0.0
+  - storybook: 10.1.10 → 10.2.8
+
+  **Minor/patch bumps:**
+  - @vitest/eslint-plugin: 1.3.4 → 1.6.6 (tools), 1.6.5 → 1.6.6 (core-generators)
+  - eslint-plugin-storybook: 10.1.10 → 10.2.3
+  - prettier-plugin-tailwindcss: 0.6.14 → 0.7.2
+  - typescript-eslint: 8.38.0 → 8.54.0
+  - @types/eslint-plugin-jsx-a11y: 6.10.0 → 6.10.1
+
+  **Config changes:**
+  - Updated eslint-plugin-react-hooks v7 API: `configs['recommended-latest']` → `configs.flat['recommended-latest']`
+  - Disabled new strict rules from react-hooks v7 (refs, set-state-in-effect, preserve-manual-memoization, incompatible-library)
+
+- [#756](https://github.com/halfdomelabs/baseplate/pull/756) [`dd40bcd`](https://github.com/halfdomelabs/baseplate/commit/dd40bcd219c79f0cd7b66c0427c77deda0664072) Thanks [@kingston](https://github.com/kingston)! - Upgrade packages to fix security vulnerabilities and update to latest versions
+
+  **Security fixes:**
+  - @modelcontextprotocol/sdk: 1.25.1 → 1.26.0 (fixes CVE-2026-25536 - cross-client data leak)
+  - fastify: 5.6.2 → 5.7.4 (security patches)
+  - diff: 8.0.2 → 8.0.3 (fixes CVE-2026-24001 - DoS vulnerability)
+  - testcontainers: 11.10.0 → 11.11.0 (fixes undici vulnerability)
+
+  **Package updates (monorepo):**
+  - @tailwindcss/vite: 4.1.13 → 4.1.18
+  - tailwindcss: 4.1.13 → 4.1.18
+  - @tanstack/react-router: 1.139.7 → 1.159.5
+  - @tanstack/router-plugin: 1.139.7 → 1.159.5
+  - @testing-library/jest-dom: 6.6.3 → 6.9.1
+  - concurrently: 9.0.1 → 9.2.1
+  - ts-morph: 26.0.0 → 27.0.2
+
+  **Package updates (generated projects):**
+  - prisma/@prisma/client/@prisma/adapter-pg: 7.2.0 → 7.4.0
+  - postmark: 4.0.2 → 4.0.5
+  - axios: 1.12.0 → 1.13.5
+
+- Updated dependencies [[`ef1354d`](https://github.com/halfdomelabs/baseplate/commit/ef1354da11e2c48a80af03f44834555ce63a2948), [`b4db947`](https://github.com/halfdomelabs/baseplate/commit/b4db947f256c4b8639d7f18ffb58bb2b1646c497), [`683eb15`](https://github.com/halfdomelabs/baseplate/commit/683eb15c2c37259266959e0760b419e07f70a27e), [`938a7b1`](https://github.com/halfdomelabs/baseplate/commit/938a7b113550a7a245b65b5dfe3cc641f11096b7), [`02740a6`](https://github.com/halfdomelabs/baseplate/commit/02740a6e230c7fbf28fc768543353e847671c51b), [`dd40bcd`](https://github.com/halfdomelabs/baseplate/commit/dd40bcd219c79f0cd7b66c0427c77deda0664072), [`7d1a9d6`](https://github.com/halfdomelabs/baseplate/commit/7d1a9d6d381279434f2ac632e9f8accde34dda25), [`63bd074`](https://github.com/halfdomelabs/baseplate/commit/63bd074b3b24b0978d4271a5bc76a8531b0f60c2)]:
+  - @baseplate-dev/fastify-generators@0.5.2
+  - @baseplate-dev/project-builder-lib@0.5.2
+  - @baseplate-dev/react-generators@0.5.2
+  - @baseplate-dev/core-generators@0.5.2
+  - @baseplate-dev/ui-components@0.5.2
+  - @baseplate-dev/sync@0.5.2
+  - @baseplate-dev/utils@0.5.2
+
 ## 4.0.1
 
 ### Patch Changes

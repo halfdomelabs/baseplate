@@ -8,14 +8,14 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
     .transform((val) => (val ? val.split(',').map((s) => s.trim()) : [])),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
+  // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
+  AUTH_FRONTEND_URL: z.url(),
   // Secret key for signing auth cookie (at least 20 alphanumeric characters)
   AUTH_SECRET: z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Default sender email address for transactional emails
-  EMAIL_DEFAULT_FROM: z.email().default('noreply@example.com'),
-  // Base domain for password reset links (e.g., https://app.example.com)
-  PASSWORD_RESET_DOMAIN: z.url(),
+  EMAIL_DEFAULT_FROM: z.string().default('noreply@example.com'),
   // Postmark API server token for sending emails
   POSTMARK_SERVER_TOKEN: z.string().min(1),
   // Sentry DSN

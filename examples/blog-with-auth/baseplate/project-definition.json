@@ -79,12 +79,14 @@
         ]
       },
       "description": "admin",
+      "devPort": 5030,
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
       "title": "Blog Admin",
       "type": "web"
     },
     {
+      "devPort": 5001,
       "enableAxios": false,
       "enableStripe": false,
       "enableSubscriptions": false,
@@ -921,7 +923,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 22,
+  "schemaVersion": 23,
   "settings": {
     "general": {
       "name": "blog-with-auth",
