@@ -4,7 +4,6 @@ import {
   createNodeTask,
   extractPackageVersions,
   nodeConfigProvider,
-  nodeGitIgnoreProvider,
   nodeProvider,
   packageScope,
 } from '@baseplate-dev/core-generators';
@@ -12,7 +11,6 @@ import {
   createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
-  createProviderTask,
   createProviderType,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
@@ -117,9 +115,6 @@ export const fastifyGenerator = createGenerator({
       node.extraProperties.merge({
         main: 'dist/index.js',
       });
-    }),
-    gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
-      nodeGitIgnore.exclusions.set('fastify', ['/dist']);
     }),
     main: createGeneratorTask({
       dependencies: {
