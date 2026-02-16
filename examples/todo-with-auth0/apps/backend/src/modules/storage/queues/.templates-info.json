@@ -1,0 +1,7 @@
+{
+  "clean-unused-files.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "queues-clean-unused-files"
+  }
+}

@@ -1672,6 +1672,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
+      '@baseplate-dev/plugin-queue':
+        specifier: workspace:*
+        version: link:../plugin-queue
       '@baseplate-dev/react-generators':
         specifier: workspace:*
         version: link:../../packages/react-generators

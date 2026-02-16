@@ -6,10 +6,12 @@ export interface FastifyStorageModulePaths {
   adaptersUrl: string;
   configAdapters: string;
   configCategories: string;
+  queuesCleanUnusedFiles: string;
   schemaFileCategory: string;
   schemaFileInput: string;
   schemaPresignedMutations: string;
   schemaPublicUrl: string;
+  servicesCleanUnusedFiles: string;
   servicesCreatePresignedDownloadUrl: string;
   servicesCreatePresignedUploadUrl: string;
   servicesDownloadFile: string;
@@ -40,10 +42,12 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           adaptersUrl: `${moduleRoot}/adapters/url.ts`,
           configAdapters: `${moduleRoot}/config/adapters.config.ts`,
           configCategories: `${moduleRoot}/config/categories.config.ts`,
+          queuesCleanUnusedFiles: `${moduleRoot}/queues/clean-unused-files.ts`,
           schemaFileCategory: `${moduleRoot}/schema/file-category.enum.ts`,
           schemaFileInput: `${moduleRoot}/schema/file-input.input-type.ts`,
           schemaPresignedMutations: `${moduleRoot}/schema/presigned.mutations.ts`,
           schemaPublicUrl: `${moduleRoot}/schema/public-url.field.ts`,
+          servicesCleanUnusedFiles: `${moduleRoot}/services/clean-unused-files.ts`,
           servicesCreatePresignedDownloadUrl: `${moduleRoot}/services/create-presigned-download-url.ts`,
           servicesCreatePresignedUploadUrl: `${moduleRoot}/services/create-presigned-upload-url.ts`,
           servicesDownloadFile: `${moduleRoot}/services/download-file.ts`,

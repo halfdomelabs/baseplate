@@ -8,11 +8,13 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   dataUtilsImportsProvider,
   errorHandlerServiceImportsProvider,
+  loggerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
@@ -49,6 +51,16 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  queuesCleanUnusedFiles: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFiles
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   schemaGroup: {
     render: (
       options: Omit<
@@ -56,6 +68,16 @@ export interface FastifyStorageModuleRenderers {
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.schemaGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  servicesCleanUnusedFiles: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.servicesCleanUnusedFiles
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -80,10 +102,12 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
   dependencies: {
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
     paths: FASTIFY_STORAGE_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    queueServiceImports: queueServiceImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
@@ -93,10 +117,12 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
   run({
     dataUtilsImports,
     errorHandlerServiceImports,
+    loggerServiceImports,
     paths,
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
+    queueServiceImports,
     serviceContextImports,
     typescriptFile,
   }) {
@@ -136,6 +162,19 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
+          queuesCleanUnusedFiles: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFiles,
+                destination: paths.queuesCleanUnusedFiles,
+                importMapProviders: {
+                  queueServiceImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           schemaGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -143,6 +182,21 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   pothosImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesCleanUnusedFiles: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  FASTIFY_STORAGE_MODULE_TEMPLATES.servicesCleanUnusedFiles,
+                destination: paths.servicesCleanUnusedFiles,
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                  loggerServiceImports,
+                  prismaImports,
                 },
                 generatorPaths: paths,
                 ...options,

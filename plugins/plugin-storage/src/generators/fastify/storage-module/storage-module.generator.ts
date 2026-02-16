@@ -19,6 +19,7 @@ import {
   prismaGeneratedImportsProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
+import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -191,6 +192,7 @@ export const storageModuleGenerator = createGenerator({
         storageModuleImports: storageModuleImportsProvider,
         storageModuleConfigValues: storageModuleConfigValuesProvider,
         prismaGeneratedImports: prismaGeneratedImportsProvider,
+        queueConfig: queueConfigProvider.dependency().optional(),
       },
       run({
         prismaOutput,
@@ -199,6 +201,7 @@ export const storageModuleGenerator = createGenerator({
         storageModuleImports,
         storageModuleConfigValues,
         prismaGeneratedImports,
+        queueConfig,
       }) {
         return {
           build: async (builder) => {
@@ -294,6 +297,23 @@ export const storageModuleGenerator = createGenerator({
                 },
               }),
             );
+
+            // Render clean-unused-files service
+            await builder.apply(renderers.servicesCleanUnusedFiles.render({}));
+
+            // Render queue only if queue plugin is available
+            if (queueConfig) {
+              await builder.apply(renderers.queuesCleanUnusedFiles.render({}));
+
+              // Register with queue system
+              queueConfig.queues.set(
+                'clean-unused-files',
+                tsCodeFragment(
+                  'cleanUnusedFilesQueue',
+                  storageModuleImports.cleanUnusedFilesQueue.declaration(),
+                ),
+              );
+            }
           },
         };
       },
