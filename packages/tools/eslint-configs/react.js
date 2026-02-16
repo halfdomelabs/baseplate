@@ -14,8 +14,8 @@ import eslintPluginImportX from 'eslint-plugin-import-x';
 import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
-import tsEslint from 'typescript-eslint';
 
 /** @type {GenerateTypescriptEslintConfigOptions} */
 export const reactTypescriptEslintOptions = {
@@ -27,7 +27,7 @@ export const reactTypescriptEslintOptions = {
  * @param {GenerateReactEslintConfigOptions} options - Configuration options
  */
 export function generateReactEslintConfig(options) {
-  return tsEslint.config(
+  return defineConfig(
     // React & A11y
     {
       files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
@@ -80,6 +80,7 @@ export function generateReactEslintConfig(options) {
     },
 
     // Import-X
+    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     eslintPluginImportX.flatConfigs.react,
 
     // Better Tailwindcss - correctness rules only (formatting handled by Prettier)

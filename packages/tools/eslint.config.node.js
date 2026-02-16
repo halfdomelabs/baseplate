@@ -1,6 +1,6 @@
 // @ts-check
 
-import tsEslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
 import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
@@ -19,7 +19,7 @@ import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
 export function defineNodeEslintConfig(options) {
   const { dirname, extraDefaultProjectFiles = [], ignores = [] } = options;
 
-  return tsEslint.config(
+  return defineConfig(
     ...generateTypescriptEslintConfig({
       rootDir: dirname,
       extraDefaultProjectFiles,

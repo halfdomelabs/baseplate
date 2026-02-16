@@ -1,7 +1,7 @@
 // @ts-check
 
+import { defineConfig } from 'eslint/config';
 import path from 'node:path';
-import tsEslint from 'typescript-eslint';
 
 import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import { generateReactEslintConfig } from './eslint-configs/react.js';
@@ -34,7 +34,7 @@ export function defineReactEslintConfig(options) {
   const absoluteTailwindPath =
     tailwindEntryPoint === null ? null : path.join(dirname, tailwindEntryPoint);
 
-  return tsEslint.config(
+  return defineConfig(
     ...generateTypescriptEslintConfig({
       rootDir: dirname,
       extraDevDependencies: includeStorybook

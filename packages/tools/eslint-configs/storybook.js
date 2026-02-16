@@ -1,7 +1,7 @@
 // @ts-check
 
 import storybook from 'eslint-plugin-storybook';
-import tsEslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
 /** @type {string[]} */
 export const storybookTypescriptExtraDevDependencies = [
@@ -13,7 +13,7 @@ export const storybookTypescriptExtraDevDependencies = [
   '**/*.mdx',
 ];
 
-export const storybookEslintConfig = tsEslint.config(
+export const storybookEslintConfig = defineConfig(
   // Storybook
   // @ts-ignore -- TypeScript resolution bug where it expects a named export called default
   storybook.configs['flat/recommended'],

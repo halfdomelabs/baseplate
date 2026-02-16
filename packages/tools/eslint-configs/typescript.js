@@ -6,6 +6,7 @@ import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
@@ -46,7 +47,7 @@ export function generateTypescriptEslintConfig(options = {}) {
     'vitest.config.ts',
     ...(options.extraDefaultProjectFiles ?? []),
   ];
-  return tsEslint.config(
+  return defineConfig(
     // ESLint Configs for all files
     eslint.configs.recommended,
     {
@@ -161,6 +162,7 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Import-X Configs
+    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     importX.flatConfigs.recommended,
     importX.flatConfigs.typescript,
     {
