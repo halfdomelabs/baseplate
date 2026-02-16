@@ -101,6 +101,10 @@ export async function cleanUnusedFiles(): Promise<number> {
     logger.info(
       `Cleaned up ${deletedFileIds.length} file records from database`,
     );
+  } else if (unusedFiles.length > 0) {
+    logger.warn(
+      `Found ${unusedFiles.length} unused files but failed to delete any — check adapter errors above`,
+    );
   } else {
     logger.info('No unused files found to clean up');
   }

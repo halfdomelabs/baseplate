@@ -1,5 +1,6 @@
 import type { Queue } from '../types/queue.types.js';
 
+import { cleanupAuthVerificationQueue } from '../modules/accounts/queues/cleanup-auth-verification.queue.js';
 import { sendEmailQueue } from '../modules/emails/queues/send-email.queue.js';
 
 /**

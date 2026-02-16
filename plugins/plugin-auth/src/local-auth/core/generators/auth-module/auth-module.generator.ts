@@ -74,8 +74,9 @@ export const authModuleGenerator = createGenerator({
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
         queueConfig: queueConfigProvider.dependency().optional(),
+        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ prismaOutput, renderers, userObjectType, queueConfig }) {
+      run({ prismaOutput, renderers, userObjectType, queueConfig, paths }) {
         return {
           providers: {
             authModule: {},
@@ -123,10 +124,13 @@ export const authModuleGenerator = createGenerator({
                 renderers.queuesCleanupAuthVerification.render({}),
               );
 
-              // Register with queue system
+              // Register with` queue system
               queueConfig.queues.set(
                 'cleanup-auth-verification',
-                tsCodeFragment('cleanupAuthVerificationQueue'),
+                TsCodeUtils.importFragment(
+                  'cleanupAuthVerificationQueue',
+                  paths.queuesCleanupAuthVerification,
+                ),
               );
             }
           },
