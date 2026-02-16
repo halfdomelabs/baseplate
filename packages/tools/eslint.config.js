@@ -1,7 +1,9 @@
-import nodeConfig from './eslint.config.node.js';
+import { defineNodeEslintConfig } from './eslint.config.node.js';
 
 export default [
-  ...nodeConfig,
+  ...defineNodeEslintConfig({
+    dirname: import.meta.dirname,
+  }),
   {
     rules: {
       // by default, we allow dev dependencies in all root configs

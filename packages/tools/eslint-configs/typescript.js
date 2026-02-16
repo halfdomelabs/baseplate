@@ -13,6 +13,7 @@ import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependenc
 
 /**
  * @typedef {Object} GenerateTypescriptEslintConfigOptions
+ * @property {string} [rootDir] - Absolute path to tsconfig root directory (for tsconfigRootDir)
  * @property {string[]} [extraTsFileGlobs] - Additional file globs to lint with Typescript
  * @property {string[]} [extraDevDependencies] - Additional globs for dev dependencies
  * @property {string[]} [extraDefaultProjectFiles] - Additional default project files
@@ -23,13 +24,10 @@ const KEEP_UNUSED_IMPORTS =
 
 /**
  * Generates a Typescript ESLint configuration
- * @param {GenerateTypescriptEslintConfigOptions[]} [options=[]] - Configuration options
+ * @param {GenerateTypescriptEslintConfigOptions} [options={}] - Configuration options
  */
-export function generateTypescriptEslintConfig(options = []) {
-  const tsFileGlobs = [
-    '**/*.{ts,tsx}',
-    ...options.flatMap((option) => option.extraTsFileGlobs ?? []),
-  ];
+export function generateTypescriptEslintConfig(options = {}) {
+  const tsFileGlobs = ['**/*.{ts,tsx}', ...(options.extraTsFileGlobs ?? [])];
   const devDependencies = [
     // allow dev dependencies for test files
     '**/*.test-helper.{js,ts,jsx,tsx}',
@@ -42,11 +40,11 @@ export function generateTypescriptEslintConfig(options = []) {
     '*.{js,ts}',
     '.*.{js,ts}',
     '.workspace-meta/**/*',
-    ...options.flatMap((option) => option.extraDevDependencies ?? []),
+    ...(options.extraDevDependencies ?? []),
   ];
   const defaultProjectFiles = [
     'vitest.config.ts',
-    ...options.flatMap((option) => option.extraDefaultProjectFiles ?? []),
+    ...(options.extraDefaultProjectFiles ?? []),
   ];
   return tsEslint.config(
     // ESLint Configs for all files
@@ -82,6 +80,7 @@ export function generateTypescriptEslintConfig(options = []) {
       ],
       languageOptions: {
         parserOptions: {
+          ...(options.rootDir ? { tsconfigRootDir: options.rootDir } : {}),
           projectService: {
             // allow default project for root configs
             allowDefaultProject: defaultProjectFiles,
