@@ -81,7 +81,7 @@ export function FileTransformerForm({
           File Category Configuration
         </h3>
 
-        <div className="sm:storage:grid-cols-2 storage:grid storage:grid-cols-1 storage:gap-4">
+        <div className="storage:grid storage:grid-cols-1 storage:gap-4 storage:sm:grid-cols-2">
           <InputFieldController
             className="storage:w-full"
             control={controlTyped}
@@ -105,7 +105,7 @@ export function FileTransformerForm({
           />
         </div>
 
-        <div className="sm:storage:grid-cols-2 storage:grid storage:grid-cols-1 storage:gap-4">
+        <div className="storage:grid storage:grid-cols-1 storage:gap-4 storage:sm:grid-cols-2">
           <MultiComboboxFieldController
             className="storage:w-full"
             control={controlTyped}

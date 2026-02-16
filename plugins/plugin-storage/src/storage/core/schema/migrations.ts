@@ -28,7 +28,7 @@ export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
   {
     name: 'move-categories-to-transformers',
     version: 2,
-    migrate: (config, _projectDefinition) => {
+    migrate: (config) => {
       interface OldCategory {
         name: string;
         defaultAdapterRef: string;

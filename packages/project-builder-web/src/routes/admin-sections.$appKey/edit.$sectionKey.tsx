@@ -84,7 +84,7 @@ function EditAdminSectionPage(): React.JSX.Element {
   const { control, handleSubmit, reset } = formProps;
 
   const onSubmit = handleSubmit((data) => {
-    const { id: _dataId, ...sectionData } = data;
+    const { id: _, ...sectionData } = data;
     return saveDefinitionWithFeedback((draftConfig) => {
       const webApp = draftConfig.apps.find((a) => a.id === app.id);
       if (webApp?.type !== 'web' || !webApp.adminApp) return;
