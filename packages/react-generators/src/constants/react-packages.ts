@@ -52,7 +52,7 @@ export const REACT_PACKAGES = {
   '@types/use-subscription': '^1.0.0',
 
   // Validation
-  zod: '4.1.13',
+  zod: '4.3.6',
 
   // Sentry
   '@sentry/react': '9.17.0',

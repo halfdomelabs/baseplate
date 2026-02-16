@@ -63,7 +63,7 @@
     "pino": "9.5.0",
     "postmark": "4.0.5",
     "rate-limiter-flexible": "9.1.0",
-    "zod": "4.1.13"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@envelop/types": "5.2.1",

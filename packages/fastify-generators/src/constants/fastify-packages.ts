@@ -65,7 +65,7 @@ export const FASTIFY_PACKAGES = {
   '@pothos/tracing-sentry': '1.1.1',
 
   // Validation
-  zod: '4.1.13',
+  zod: '4.3.6',
 
   // Testing
   'vitest-mock-extended': '3.1.0',
