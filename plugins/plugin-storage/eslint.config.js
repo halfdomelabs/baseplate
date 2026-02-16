@@ -1,3 +1,6 @@
-import eslintReactConfig from '@baseplate-dev/tools/eslint-react';
+import { defineReactEslintConfig } from '@baseplate-dev/tools/eslint-react';
 
-export default [...eslintReactConfig, { ignores: ['**/templates/**'] }];
+export default defineReactEslintConfig({
+  dirname: import.meta.dirname,
+  ignores: ['**/templates/**'],
+});

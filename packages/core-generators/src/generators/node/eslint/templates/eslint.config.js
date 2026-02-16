@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import eslint from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import { importX } from 'eslint-plugin-import-x';
@@ -22,7 +23,7 @@ const IGNORE_FILES = TPL_IGNORE_FILES;
 // This is useful for certain files outside the src directory, e.g. config files
 const TS_DEFAULT_PROJECT_FILES = TPL_DEFAULT_PROJECT_FILES;
 
-export default tsEslint.config(
+export default defineConfig(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
@@ -58,6 +59,7 @@ export default tsEslint.config(
     ],
     languageOptions: {
       parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
         projectService: {
           // allow default project for root configs
           allowDefaultProject: TS_DEFAULT_PROJECT_FILES,
@@ -219,6 +221,8 @@ export default tsEslint.config(
       'perfectionist/sort-named-exports': ['error'],
     },
   },
+
+  /* TPL_TAILWIND_CONFIG */
 
   /* TPL_EXTRA_CONFIGS */
 

@@ -54,7 +54,7 @@ export function ModelMergerResultAlert({
                 <p>The following changes will be applied to the model:</p>
               )}
 
-              <ul className="list-disc pl-4 space-y-1">
+              <ul className="list-disc space-y-1 pl-4">
                 {Object.entries(change.changes).map(([key, value]) => {
                   const field =
                     modelMergerDefinitionDiffConfig[

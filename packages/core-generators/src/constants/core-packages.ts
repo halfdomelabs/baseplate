@@ -8,6 +8,7 @@ export const CORE_PACKAGES = {
   eslint: '9.39.2',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
+  'eslint-plugin-better-tailwindcss': '4.2.0',
   'eslint-plugin-import-x': '4.16.1',
   'eslint-plugin-jsx-a11y': '6.10.2',
   'eslint-plugin-perfectionist': '5.4.0',
@@ -16,6 +17,7 @@ export const CORE_PACKAGES = {
   'eslint-plugin-unicorn': '62.0.0',
   'typescript-eslint': '8.54.0',
   globals: '17.3.0',
+  tailwindcss: '4.1.18',
 
   // Formatting
   prettier: '3.8.1',

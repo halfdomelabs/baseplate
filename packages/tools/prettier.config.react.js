@@ -1,4 +1,5 @@
 // @ts-check
+
 import { fileURLToPath } from 'node:url';
 
 import basePrettierConfig from './prettier.config.node.js';
@@ -11,11 +12,13 @@ import basePrettierConfig from './prettier.config.node.js';
 /** @type {import("prettier").Config} */
 export default {
   ...basePrettierConfig,
+  // Tailwind-specific configuration
   tailwindFunctions: ['clsx', 'cn', 'cva'],
   tailwindStylesheet: './src/styles.css',
+  // Plugins must be specified as absolute paths due to Prettier limitations
+  // See: https://github.com/prettier/prettier/issues/8056
   plugins: [
     ...(basePrettierConfig.plugins ?? []),
-    // workaround for this bug: https://github.com/prettier/prettier-vscode/issues/3641
     fileURLToPath(import.meta.resolve('prettier-plugin-tailwindcss')),
   ],
 };

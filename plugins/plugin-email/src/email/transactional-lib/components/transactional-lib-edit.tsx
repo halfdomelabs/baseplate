@@ -95,13 +95,13 @@ function TransactionalLibEditComponent({
                 </p>
                 <ul className="email:list-inside email:list-disc email:space-y-1 email:text-sm">
                   <li>
-                    <code className="email:rounded email:bg-muted email:px-1">
+                    <code className="email:rounded-sm email:bg-muted email:px-1">
                       src/constants/theme.ts
                     </code>{' '}
                     - Colors, typography, and spacing tokens
                   </li>
                   <li>
-                    <code className="email:rounded email:bg-muted email:px-1">
+                    <code className="email:rounded-sm email:bg-muted email:px-1">
                       src/components/layout.tsx
                     </code>{' '}
                     - Email header, footer, and branding
