@@ -113,11 +113,11 @@ export class RootPackageCompiler extends PackageCompiler {
 
     const { cliVersion } = this.definitionContainer.parserContext;
 
+    const packageName = buildPackageName(generalSettings, 'root');
+
     const rootBundle = nodeGenerator({
       name: generalSettings.name,
-      packageName: generalSettings.packageScope
-        ? `@${generalSettings.packageScope}/root`
-        : `${generalSettings.name}-root`,
+      packageName,
       description: `Monorepo root for ${generalSettings.name}`,
       private: true,
       rootPackage: true,
