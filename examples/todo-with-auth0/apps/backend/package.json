@@ -70,7 +70,7 @@
     "nanoid": "5.1.6",
     "pino": "9.5.0",
     "stripe": "14.5.0",
-    "zod": "4.1.13"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@envelop/types": "5.2.1",
