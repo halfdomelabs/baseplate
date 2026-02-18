@@ -1,5 +1,6 @@
 import type {
   ModelConfigInput,
+  ModelScalarFieldConfigInput,
   ScalarFieldType,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
@@ -18,6 +19,10 @@ interface ModelFieldTypeInputProps {
   control: Control<ModelConfigInput>;
   idx: number;
 }
+type EnumOptions = Extract<
+  ModelScalarFieldConfigInput,
+  { type: 'enum' }
+>['options'];
 
 export function ModelFieldTypeInput({
   control,
@@ -66,7 +71,7 @@ export function ModelFieldTypeInput({
     }
   };
 
-  const enumRef = fieldOptions?.enumRef;
+  const enumRef = (fieldOptions as EnumOptions | undefined)?.enumRef;
 
   return (
     <div className="space-y-2">
