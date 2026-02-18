@@ -23,7 +23,10 @@ export const generalSettingsSchema = z.object({
    * Example: "my-org" → "@my-org/backend", "@my-org/web"
    */
   packageScope: z
-    .union([z.literal(''), CASE_VALIDATORS.KEBAB_CASE])
+    .string()
+    .regex(/^([a-z0-9-]+)?$/, {
+      message: 'Must be kebab case (e.g. "my-org") or empty',
+    })
     .default(''),
 
   /**
