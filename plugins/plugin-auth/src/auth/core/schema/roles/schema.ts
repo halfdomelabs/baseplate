@@ -45,23 +45,14 @@ export const createAuthRolesSchema = definitionSchema((ctx) =>
         });
       }
     })
-    .transform((roles) => [
-      ...AUTH_DEFAULT_ROLES.map((r) => {
-        const existingRole = roles.find((role) => role.name === r.name);
-        return existingRole
-          ? {
-              ...existingRole,
-              builtIn: true,
-            }
-          : {
-              ...r,
-              builtIn: true,
-              id: authRoleEntityType.generateNewId(),
-            };
-      }),
-      // Filter out the built-in roles
-      ...roles.filter(
-        (r) => !AUTH_DEFAULT_ROLES.map((v) => v.name).includes(r.name),
-      ),
-    ]),
+    .superRefine((roles, ctx) => {
+      for (const defaultRole of AUTH_DEFAULT_ROLES) {
+        if (!roles.some((r) => r.name === defaultRole.name)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: `Missing built-in role: ${defaultRole.name}`,
+          });
+        }
+      }
+    }),
 );
