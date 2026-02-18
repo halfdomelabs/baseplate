@@ -22,7 +22,7 @@ export function createDefinitionSchemaParserContext(
 ): DefinitionSchemaParserContext {
   return {
     ...options,
-    ...extendParserContextWithRefs(options),
+    ...extendParserContextWithRefs(),
     ...extendParserContextWithDefaults(options),
   };
 }

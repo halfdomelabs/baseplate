@@ -2,7 +2,9 @@ import type { z } from 'zod';
 
 import type { DefinitionSchemaCreatorOptions } from './types.js';
 
-function isEmpty(value: unknown): boolean {
+import { definitionDefaultRegistry } from './definition-default-registry.js';
+
+export function isEmpty(value: unknown): boolean {
   if (value === undefined || value === null) {
     return true;
   }
@@ -53,22 +55,12 @@ export function extendParserContextWithDefaults(
           return schema.prefault(defaultValue).optional();
         }
         case 'strip': {
-          // Use transform to remove values matching defaults after validation
-          return schema
-            .transform((value) => {
-              if (value === defaultValue) return undefined;
-              if (isEmpty(value)) {
-                return undefined;
-              }
-
-              return value;
-            })
-            .optional();
-        }
-        case 'preserve': {
-          // Return schema with .optional() added
-
-          return schema.transform((x) => x).optional();
+          // Build the schema the same as populate mode. The stripping of
+          // default-matching values happens in a post-parse walk via
+          // `stripDefaultsFromData()`, which reads the registry annotation.
+          const result = schema.prefault(defaultValue).optional();
+          definitionDefaultRegistry.set(result, { defaultValue });
+          return result;
         }
       }
     },

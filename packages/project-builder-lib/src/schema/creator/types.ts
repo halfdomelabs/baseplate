@@ -23,11 +23,9 @@ export interface DefinitionSchemaCreatorOptions {
    */
   plugins: PluginSpecStore;
   /**
-   * If true, the schema will be transformed to include references.
-   *
-   * Note: The parsed data will not match the Typescript type definition of the schema
-   * because refs will be replaced with special marker classes. You must call extractRefs
-   * to convert the parsed data to the correct type.
+   * @deprecated No longer used. Entity/reference/expression metadata is now stored in
+   * a registry and extracted via a parallel schema+data walk after validation.
+   * This field is kept for backwards compatibility and will be removed in a future version.
    */
   transformReferences?: boolean;
   /**
@@ -35,11 +33,10 @@ export interface DefinitionSchemaCreatorOptions {
    *
    * - 'populate': Ensure defaults are present (useful for React Hook Form)
    * - 'strip': Remove values that match their defaults (useful for clean JSON serialization)
-   * - 'preserve': Keep values as-is without transformation
    *
    * @default 'populate'
    */
-  defaultMode?: 'populate' | 'strip' | 'preserve';
+  defaultMode?: 'populate' | 'strip';
 }
 
 export interface DefinitionSchemaParserContext {
@@ -48,13 +45,13 @@ export interface DefinitionSchemaParserContext {
    */
   plugins: PluginSpecStore;
   /**
-   * If true, the schema will be transformed to include references.
+   * @deprecated No longer used. See DefinitionSchemaCreatorOptions.transformReferences.
    */
   transformReferences?: boolean;
   /**
    * How to handle default values in the schema.
    */
-  defaultMode?: 'populate' | 'strip' | 'preserve';
+  defaultMode?: 'populate' | 'strip';
   /**
    * Adds a reference to the schema.
    */
@@ -65,9 +62,8 @@ export interface DefinitionSchemaParserContext {
   withEnt: WithEntType;
   /**
    * Wraps a schema with default value handling based on the defaultMode.
-   * - 'populate': Uses preprocess to ensure defaults are present
-   * - 'strip': Uses transform to remove values matching defaults
-   * - 'preserve': Returns schema unchanged
+   * - 'populate': Uses prefault to ensure defaults are present
+   * - 'strip': Annotates the schema so `stripDefaultsFromData()` removes matching values after parsing
    */
   withDefault: WithDefaultType;
   /**
