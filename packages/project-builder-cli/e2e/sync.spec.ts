@@ -43,7 +43,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
             {
               name: 'id',
               id: fieldId,
-              type: 'string',
+              type: 'uuid',
               isOptional: false,
               options: {
                 default: '',
