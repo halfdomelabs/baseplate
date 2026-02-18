@@ -42,7 +42,7 @@
     "test:e2e:affected": "turbo run test:e2e --affected --continue",
     "test:generate": "pnpm run --filter @baseplate-dev/project-builder-test start generate",
     "test:only": "pnpm run -r test",
-    "typecheck": "turbo run typecheck --affected",
+    "typecheck": "turbo run typecheck --affected --continue",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
