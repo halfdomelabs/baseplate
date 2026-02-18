@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | { read file_path; if [ -n \"$file_path\" ] && [ \"$file_path\" != \"null\" ]; then scripts/format-and-lint.ts \"$file_path\"; fi; }"
+            "command": "jq -r '.tool_input.file_path' | { read file_path; if [ -n \"$file_path\" ] && [ \"$file_path\" != \"null\" ]; then node $CLAUDE_PROJECT_DIR/scripts/format-and-lint.ts \"$file_path\"; fi; }"
           }
         ]
       }
