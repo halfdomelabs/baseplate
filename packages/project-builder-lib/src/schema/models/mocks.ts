@@ -24,9 +24,11 @@ export function generateMockUniqueConstraint(
   };
 }
 
-export function generateMockModelScalarField(
-  field?: Partial<ModelScalarFieldConfigInput>,
-): ModelScalarFieldConfig {
+export function generateMockModelScalarField<
+  TType extends ModelScalarFieldConfig['type'] = 'string',
+>(
+  field?: Partial<ModelScalarFieldConfigInput & { type: TType }>,
+): ModelScalarFieldConfig & { type: TType } {
   return {
     id: modelScalarFieldEntityType.generateNewId(),
     name: 'mockField',
@@ -37,7 +39,7 @@ export function generateMockModelScalarField(
       default: '',
       ...field?.options,
     },
-  };
+  } as ModelScalarFieldConfig & { type: TType };
 }
 
 export function generateMockModelRelationField(

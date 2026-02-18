@@ -29,7 +29,6 @@ function buildScalarField(
   field: ModelScalarFieldConfig,
   order: number,
 ): GeneratorBundle {
-  const { options } = field;
   const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
   const isId =
     primaryKeyFieldRefs.length === 1 && primaryKeyFieldRefs.includes(field.id);
@@ -37,23 +36,26 @@ function buildScalarField(
     (c) =>
       c.fields.length === 1 && c.fields.some((f) => f.fieldRef === field.id),
   );
+  const generatorOptions =
+    field.type === 'enum'
+      ? {
+          defaultEnumValue: builder.definitionContainer.nameFromId(
+            field.options.defaultEnumValueRef,
+          ),
+        }
+      : field.options;
   return prismaFieldGenerator({
     name: field.name,
     type: field.type,
     order,
     id: isId,
-    options: {
-      autoGenerate: options.genUuid,
-      defaultToNow: options.defaultToNow,
-      updatedAt: options.updatedAt,
-      default: options.default,
-      defaultEnumValue: builder.definitionContainer.nameFromId(
-        options.defaultEnumValueRef,
-      ),
-    },
+    options: generatorOptions,
     optional: field.isOptional,
     unique: isUnique,
-    enumType: options.enumRef && builder.nameFromId(options.enumRef),
+    enumType:
+      field.type === 'enum'
+        ? builder.nameFromId(field.options.enumRef)
+        : undefined,
   });
 }
 
