@@ -142,7 +142,14 @@ async function runEslint(filePaths: string[], cwd: string): Promise<void> {
   );
   try {
     const filesToLint = filePaths.map((f) => `"${f}"`).join(' ');
-    await execPromise(`npx eslint --fix ${filesToLint}`, { cwd });
+    await execPromise(`npx eslint --fix ${filesToLint}`, {
+      cwd,
+      env: {
+        ...process.env,
+        // Make sure we don't strip out unused imports when running ESLint.
+        BASEPLATE_KEEP_UNUSED_IMPORTS: 'true',
+      },
+    });
     console.info(
       `✅ ESLint completed successfully for ${filePaths.length} file(s).`,
     );
