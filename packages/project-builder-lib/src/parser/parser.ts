@@ -59,7 +59,8 @@ export function createPluginSpecStore(
       module: m.module,
     }));
   });
-  return initializePlugins([...modulesWithKey, ...coreModules]);
+  const pluginKeys = plugins.map((p) => pluginEntityType.keyFromId(p.id));
+  return initializePlugins([...modulesWithKey, ...coreModules], pluginKeys);
 }
 
 /**

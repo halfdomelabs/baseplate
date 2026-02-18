@@ -146,6 +146,16 @@ export const definitionRefRegistry: {
     add(schema: z.ZodType, meta: DefinitionRefMeta): void {
       const existing = map.get(schema);
       if (existing) {
+        if (
+          (meta.kind === 'entity' || meta.kind === 'reference') &&
+          existing.some((e) => e.kind === meta.kind && e.type === meta.type)
+        ) {
+          throw new Error(
+            `Duplicate definition ref metadata kind "${meta.kind}" for type "${meta.type.name}" on the same schema instance. ` +
+              `This usually means a shared/module-level schema was passed to withEnt/withRef multiple times. ` +
+              `Create a fresh schema instance instead.`,
+          );
+        }
         existing.push(meta);
       } else {
         map.set(schema, [meta]);

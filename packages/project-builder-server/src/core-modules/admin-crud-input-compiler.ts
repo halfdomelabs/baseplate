@@ -42,7 +42,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
       );
       if (!enumBlock) {
         throw new Error(
-          `Could not find enum type ${fieldConfig.options.enumRef ?? ''}`,
+          `Could not find enum type ${fieldConfig.options.enumRef}`,
         );
       }
       const fieldName = definitionContainer.nameFromId(

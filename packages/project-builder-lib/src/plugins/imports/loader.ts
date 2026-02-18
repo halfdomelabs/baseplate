@@ -51,10 +51,11 @@ export function initializeOrderedModules(
  */
 export function initializePlugins(
   pluginModules: PluginModuleWithKey[],
+  pluginKeys: string[] = [],
 ): PluginSpecStore {
   assertNoDuplicates(pluginModules, 'plugin modules', (m) => m.key);
 
   const instances = initializeOrderedModules(pluginModules);
 
-  return new PluginSpecStore(instances);
+  return new PluginSpecStore(instances, pluginKeys);
 }
