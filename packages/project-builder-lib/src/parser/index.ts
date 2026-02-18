@@ -1,3 +1,3 @@
 export * from './parser.js';
-export * from './schema-walker.js';
+export { walkSchemaWithData } from './schema-walker.js';
 export type * from './types.js';

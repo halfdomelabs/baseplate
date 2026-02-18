@@ -196,7 +196,6 @@ function walkNode(
       break;
     }
     case 'default': {
-      // Provides a default for missing values; still walk with whatever data we have
       walkNode(
         (schema as ZodDefault)._zod.def.innerType as z.ZodType,
         data,
@@ -227,7 +226,9 @@ function walkNode(
           walkNode(matchingOption, data, path, visitors);
         }
       } else {
-        throw new Error('Plain z.union() is not supported');
+        throw new Error(
+          `Plain z.union() is not supported (path: ${path.join('.')})`,
+        );
       }
       break;
     }
@@ -238,8 +239,7 @@ function walkNode(
       walkNode(typed._zod.def.right as z.ZodType, data, path, visitors);
       break;
     }
-    // Opaque / non-structural types: no descent needed. Ref metadata is always
-    // registered on outermost schema nodes, never inside transforms or pipes.
+    // Opaque / non-structural types are not supported in definition schemas.
     case 'transform':
     case 'pipe':
     case 'custom':
@@ -256,7 +256,9 @@ function walkNode(
     case 'set':
     case 'success':
     case 'template_literal': {
-      break;
+      throw new Error(
+        `Schema type "${type}" is not supported in definition schemas (path: ${path.join('.')})`,
+      );
     }
     // Serializable leaf types — no structural descent needed.
     // Explicitly listed so that if Zod adds a new type that we haven't
