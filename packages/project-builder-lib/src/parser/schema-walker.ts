@@ -215,22 +215,19 @@ function walkNode(
       break;
     }
     case 'union': {
-      // Only discriminated unions are supported — plain unions can't be walked
-      // safely since we'd visit collectors on branches that don't match the data.
       const typed = schema as ZodDiscriminatedUnion;
       const { discriminator, options } = typed._zod.def;
-      if (!discriminator) {
-        throw new Error(
-          `Plain z.union() is not supported in definition schemas — use z.discriminatedUnion() (path: ${JSON.stringify(path)})`,
+      if (discriminator) {
+        const matchingOption = findDiscriminatedUnionMatch(
+          options as z.ZodType[],
+          discriminator,
+          data,
         );
-      }
-      const matchingOption = findDiscriminatedUnionMatch(
-        options as z.ZodType[],
-        discriminator,
-        data,
-      );
-      if (matchingOption) {
-        walkNode(matchingOption, data, path, visitors);
+        if (matchingOption) {
+          walkNode(matchingOption, data, path, visitors);
+        }
+      } else {
+        throw new Error('Plain z.union() is not supported');
       }
       break;
     }
@@ -241,8 +238,10 @@ function walkNode(
       walkNode(typed._zod.def.right as z.ZodType, data, path, visitors);
       break;
     }
-    // Non-serializable / opaque types not supported in definition schemas
+    // Opaque / non-structural types: no descent needed. Ref metadata is always
+    // registered on outermost schema nodes, never inside transforms or pipes.
     case 'transform':
+    case 'pipe':
     case 'custom':
     case 'file':
     case 'symbol':
@@ -255,12 +254,9 @@ function walkNode(
     case 'catch':
     case 'map':
     case 'set':
-    case 'pipe':
     case 'success':
     case 'template_literal': {
-      throw new Error(
-        `Schema type "${type}" is not supported in definition schemas (path: ${JSON.stringify(path)})`,
-      );
+      break;
     }
     // Serializable leaf types — no structural descent needed.
     // Explicitly listed so that if Zod adds a new type that we haven't
