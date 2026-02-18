@@ -69,7 +69,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
         ...commonFields,
         type: z.literal('boolean'),
         options: z
-          .object({ default: z.enum(['true', 'false']).optional() })
+          .object({ default: z.enum(['', 'true', 'false']).optional() })
           .default({}),
       }),
       z.object({

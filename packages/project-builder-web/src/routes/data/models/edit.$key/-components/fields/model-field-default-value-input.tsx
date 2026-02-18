@@ -225,12 +225,7 @@ function DateTimeDefaultValueInput({
 
   return (
     <div className="flex items-center space-x-1">
-      <InputFieldController
-        placeholder="NULL"
-        control={control}
-        name={`model.fields.${idx}.options.default`}
-        className="flex-1"
-      />
+      <InputField placeholder="NULL" disabled className="flex-1" />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button title="Options" variant="ghost" size="icon">

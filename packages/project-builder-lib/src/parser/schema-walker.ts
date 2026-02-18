@@ -10,6 +10,8 @@ import type {
   ZodOptional,
   ZodPrefault,
   ZodReadonly,
+  ZodRecord,
+  ZodTuple,
 } from 'zod';
 
 import type { ReferencePath } from '#src/references/types.js';
@@ -97,7 +99,8 @@ export function findDiscriminatedUnionMatch(
  * Non-serializable types (transform, custom, file, symbol, promise, function,
  * lazy, etc.) will throw at walk time.
  *
- * Only discriminated unions are supported — plain `z.union()` throws.
+ * Discriminated unions are fully supported. Plain `z.union()` is allowed only
+ * when every option is a leaf type (string, enum, or literal); otherwise it throws.
  */
 export function walkSchemaWithData(
   schema: z.ZodType,
@@ -105,6 +108,17 @@ export function walkSchemaWithData(
   visitors: readonly SchemaNodeVisitor[],
 ): void {
   walkNode(schema, data, [], visitors);
+}
+
+/** Leaf types that are allowed in a plain `z.union()` without a discriminator. */
+const LEAF_UNION_TYPES = new Set(['string', 'enum', 'literal']);
+
+/**
+ * Returns `true` if every option in the union is a leaf type
+ * (string, enum, or literal), meaning no structural descent is needed.
+ */
+function isLeafUnion(options: z.ZodType[]): boolean {
+  return options.every((opt) => LEAF_UNION_TYPES.has(opt._zod.def.type));
 }
 
 function walkNode(
@@ -225,10 +239,42 @@ function walkNode(
         if (matchingOption) {
           walkNode(matchingOption, data, path, visitors);
         }
+      } else if (isLeafUnion(options as z.ZodType[])) {
+        // Plain union of only leaf types (string, enum, literal) — treat as a leaf.
+        break;
       } else {
         throw new Error(
-          `Plain z.union() is not supported (path: ${path.join('.')})`,
+          `Plain z.union() is not supported unless all options are string/enum/literal (path: ${path.join('.')})`,
         );
+      }
+      break;
+    }
+    case 'tuple': {
+      if (!Array.isArray(data)) break;
+      const typed = schema as ZodTuple;
+      const { items, rest } = typed._zod.def;
+      for (const [i, itemSchema] of (items as z.ZodType[]).entries()) {
+        if (i < data.length) {
+          walkNode(itemSchema, data[i], [...path, i], visitors);
+        }
+      }
+      // Walk rest elements if the tuple has a rest schema
+      if (rest) {
+        for (let i = items.length; i < data.length; i++) {
+          walkNode(rest as z.ZodType, data[i], [...path, i], visitors);
+        }
+      }
+      break;
+    }
+    case 'record': {
+      if (data === null || data === undefined || typeof data !== 'object')
+        break;
+      const typed = schema as ZodRecord;
+      const { valueType } = typed._zod.def;
+      for (const [key, value] of Object.entries(
+        data as Record<string, unknown>,
+      )) {
+        walkNode(valueType as z.ZodType, value, [...path, key], visitors);
       }
       break;
     }
@@ -273,8 +319,6 @@ function walkNode(
     case 'any':
     case 'unknown':
     case 'date':
-    case 'record':
-    case 'tuple':
     case 'enum':
     case 'literal': {
       break;

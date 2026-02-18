@@ -145,11 +145,71 @@ describe('walkSchemaWithData — simple schemas', () => {
     }).toThrow('is not supported in definition schemas');
   });
 
-  it('throws for plain z.union()', () => {
+  it('throws for plain z.union() with non-leaf options', () => {
     const schema = z.union([z.string(), z.number()]);
     expect(() => {
       walkSchemaWithData(schema, 'hello', [makeRecordingVisitor()]);
     }).toThrow('Plain z.union() is not supported');
+  });
+
+  it('allows plain z.union() when all options are string/enum/literal', () => {
+    const schema = z.union([z.string(), z.literal('foo'), z.enum(['a', 'b'])]);
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, 'foo', [visitor]);
+
+    expect(visitor.calls).toEqual([{ path: [], type: 'union' }]);
+  });
+
+  it('visits tuple items with correct indices', () => {
+    const schema = z.tuple([z.string(), z.number(), z.boolean()]);
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, ['hello', 42, true], [visitor]);
+
+    expect(visitor.calls).toEqual([
+      { path: [], type: 'tuple' },
+      { path: [0], type: 'string' },
+      { path: [1], type: 'number' },
+      { path: [2], type: 'boolean' },
+    ]);
+  });
+
+  it('skips tuple items beyond data length', () => {
+    const schema = z.tuple([z.string(), z.number()]);
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, ['only-one'], [visitor]);
+
+    expect(visitor.calls).toEqual([
+      { path: [], type: 'tuple' },
+      { path: [0], type: 'string' },
+    ]);
+  });
+
+  it('does not descend into tuple when data is not an array', () => {
+    const schema = z.tuple([z.string()]);
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, null, [visitor]);
+
+    expect(visitor.calls).toEqual([{ path: [], type: 'tuple' }]);
+  });
+
+  it('visits record values with string keys as path segments', () => {
+    const schema = z.record(z.string(), z.number());
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, { x: 1, y: 2 }, [visitor]);
+
+    expect(visitor.calls).toEqual([
+      { path: [], type: 'record' },
+      { path: ['x'], type: 'number' },
+      { path: ['y'], type: 'number' },
+    ]);
+  });
+
+  it('does not descend into record when data is null', () => {
+    const schema = z.record(z.string(), z.number());
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, null, [visitor]);
+
+    expect(visitor.calls).toEqual([{ path: [], type: 'record' }]);
   });
 });
 
@@ -242,6 +302,59 @@ describe('walkSchemaWithData — complex schemas', () => {
     expect(types).toContain('number');
     // rect-only field 'width' path not visited
     expect(visitor.calls.some((c) => c.path.includes('width'))).toBe(false);
+  });
+
+  it('walks a tuple with rest elements', () => {
+    const schema = z.tuple([z.string()]).rest(z.number());
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, ['hello', 1, 2, 3], [visitor]);
+
+    expect(visitor.calls).toEqual([
+      { path: [], type: 'tuple' },
+      { path: [0], type: 'string' },
+      { path: [1], type: 'number' },
+      { path: [2], type: 'number' },
+      { path: [3], type: 'number' },
+    ]);
+  });
+
+  it('walks a record with nested object values', () => {
+    const schema = z.record(
+      z.string(),
+      z.object({ name: z.string(), count: z.number() }),
+    );
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(
+      schema,
+      { foo: { name: 'a', count: 1 }, bar: { name: 'b', count: 2 } },
+      [visitor],
+    );
+
+    expect(visitor.calls).toContainEqual({
+      path: ['foo'],
+      type: 'object',
+    });
+    expect(visitor.calls).toContainEqual({
+      path: ['foo', 'name'],
+      type: 'string',
+    });
+    expect(visitor.calls).toContainEqual({
+      path: ['bar', 'count'],
+      type: 'number',
+    });
+  });
+
+  it('walks a plain leaf union inside an object field', () => {
+    const schema = z.object({
+      status: z.union([z.literal('active'), z.literal('inactive')]),
+    });
+    const visitor = makeRecordingVisitor();
+    walkSchemaWithData(schema, { status: 'active' }, [visitor]);
+
+    expect(visitor.calls).toEqual([
+      { path: [], type: 'object' },
+      { path: ['status'], type: 'union' },
+    ]);
   });
 
   it('walks an array of objects with slot-scope-style cleanup correctly', () => {
