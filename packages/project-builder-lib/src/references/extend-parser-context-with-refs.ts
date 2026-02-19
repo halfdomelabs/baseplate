@@ -78,7 +78,20 @@ export interface WithExpressionType {
   ): z.ZodType<TValue, TValue>;
 }
 
-function withRef<TEntityType extends DefinitionEntityType>(
+/**
+ * Creates a string schema annotated as a reference to another entity.
+ *
+ * Can be used standalone:
+ * ```typescript
+ * withRef({ type: modelEnumEntityType, onDelete: 'RESTRICT' })
+ * ```
+ *
+ * Or on the parser context:
+ * ```typescript
+ * ctx.withRef({ type: modelEnumEntityType, onDelete: 'RESTRICT' })
+ * ```
+ */
+export function withRef<TEntityType extends DefinitionEntityType>(
   reference: DefinitionReferenceInput<TEntityType>,
 ): z.ZodType<string, string> {
   const schema = z.string();
@@ -92,24 +105,37 @@ function withRef<TEntityType extends DefinitionEntityType>(
   return schema;
 }
 
-function withEnt<
-  TType extends z.ZodType,
-  TEntityType extends DefinitionEntityType,
-  TIdPath extends TuplePaths<z.output<TType>> | undefined = undefined,
->(
-  schema: TType,
-  entity: DefinitionEntityInput<z.output<TType>, TEntityType, TIdPath>,
-): ZodTypeWithOptional<TType> {
-  const idPath = (entity.idPath as (string | number)[] | undefined) ?? ['id'];
-  definitionRefRegistry.add(schema, {
-    kind: 'entity',
-    type: entity.type,
-    idPath,
-    getNameResolver: entity.getNameResolver,
-    parentSlot: entity.parentSlot,
-    provides: entity.provides,
-  });
-  return schema as unknown as ZodTypeWithOptional<TType>;
+/**
+ * Creates a schema decorator that marks a schema as defining an entity.
+ *
+ * Can be used with `.apply()`:
+ * ```typescript
+ * schema.apply(withEnt({ type: modelEntityType, provides: modelSlot }))
+ * ```
+ *
+ * @param entity - The entity definition input
+ * @returns A function that decorates a schema with entity metadata
+ */
+export function withEnt<TEntityType extends DefinitionEntityType>(
+  entity: DefinitionEntityInput<unknown, TEntityType>,
+): <TType extends z.ZodType>(schema: TType) => ZodTypeWithOptional<TType> {
+  return <TType extends z.ZodType>(
+    schema: TType,
+  ): ZodTypeWithOptional<TType> => {
+    const idPath = (entity.idPath as (string | number)[] | undefined) ?? ['id'];
+    definitionRefRegistry.add(schema, {
+      kind: 'entity',
+      type: entity.type,
+      idPath,
+      getNameResolver: entity.getNameResolver as DefinitionEntityInput<
+        z.output<TType>,
+        TEntityType
+      >['getNameResolver'],
+      parentSlot: entity.parentSlot,
+      provides: entity.provides,
+    });
+    return schema as unknown as ZodTypeWithOptional<TType>;
+  };
 }
 
 /**
@@ -199,7 +225,27 @@ export function extendParserContextWithRefs(): {
 } {
   return {
     withRef,
-    withEnt,
+    withEnt<
+      TType extends z.ZodType,
+      TEntityType extends DefinitionEntityType,
+      TIdPath extends TuplePaths<z.output<TType>> | undefined = undefined,
+    >(
+      schema: TType,
+      entity: DefinitionEntityInput<z.output<TType>, TEntityType, TIdPath>,
+    ): ZodTypeWithOptional<TType> {
+      const idPath = (entity.idPath as (string | number)[] | undefined) ?? [
+        'id',
+      ];
+      definitionRefRegistry.add(schema, {
+        kind: 'entity',
+        type: entity.type,
+        idPath,
+        getNameResolver: entity.getNameResolver,
+        parentSlot: entity.parentSlot,
+        provides: entity.provides,
+      });
+      return schema as unknown as ZodTypeWithOptional<TType>;
+    },
     refContext,
     withExpression,
   };
