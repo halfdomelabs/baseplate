@@ -55,8 +55,8 @@ function ServiceTransformerRecord({
 
   const field = useWatch({
     control,
-    name: `service.transformers.${idx}`,
-  });
+    name: `service.transformers.${idx}` as const,
+  }) as TransformerConfig;
 
   const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
   const transformerConfig = transformerWeb.getWebConfigOrThrow(field.type);

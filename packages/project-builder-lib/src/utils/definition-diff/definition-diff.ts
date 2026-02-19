@@ -161,7 +161,7 @@ export class DefinitionDiffReplacementField<
     if (desired === undefined) {
       return [];
     }
-    if (!isMatch(current, desired)) {
+    if (!isMatch(current as object, desired as object)) {
       return [{ type: 'update', key: '*', item: desired }];
     }
     return [];
