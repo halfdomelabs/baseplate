@@ -1,5 +1,26 @@
 # @baseplate-dev/project-builder-web
 
+## 0.5.4
+
+### Patch Changes
+
+- [#776](https://github.com/halfdomelabs/baseplate/pull/776) [`a616ae7`](https://github.com/halfdomelabs/baseplate/commit/a616ae7609285e9aa446997fd342cdb5b303a45d) Thanks [@kingston](https://github.com/kingston)! - Fix model form not marking as dirty when deleting relations or unique constraints
+  - Replace `setValue` with `useController` in `ModelRelationsSection` and `ModelUniqueConstraintsSection` so that deletions properly dirty the form
+
+- [#775](https://github.com/halfdomelabs/baseplate/pull/775) [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to v10, react-hook-form, and es-toolkit
+  - @sentry/react: 9.17.0 → 10.39.0
+  - @sentry/core: 9.17.0 → 10.39.0
+  - @sentry/node: 9.17.0 → 10.39.0
+  - @sentry/profiling-node: 9.17.0 → 10.39.0
+  - @pothos/tracing-sentry: 1.1.1 → 1.1.4
+  - react-hook-form: 7.60.0 → 7.71.1
+  - es-toolkit: 1.31.0 → 1.44.0
+
+- Updated dependencies [[`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3)]:
+  - @baseplate-dev/project-builder-lib@0.5.4
+  - @baseplate-dev/ui-components@0.5.4
+  - @baseplate-dev/utils@0.5.4
+
 ## 0.5.3
 
 ### Patch Changes
