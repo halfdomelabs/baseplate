@@ -44,10 +44,7 @@ const DELETED_SENTINEL_ID = 'deleted-sentinel-id';
 export function fixRefDeletions<T extends DefinitionSchemaCreator>(
   schemaCreator: T,
   value: unknown,
-  schemaCreatorOptions: Omit<
-    DefinitionSchemaCreatorOptions,
-    'transformReferences'
-  >,
+  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
 ): FixRefDeletionResult<T> {
   const issues: FixRefDeletionError[] = [];
 

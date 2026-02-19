@@ -23,12 +23,6 @@ export interface DefinitionSchemaCreatorOptions {
    */
   plugins: PluginSpecStore;
   /**
-   * @deprecated No longer used. Entity/reference/expression metadata is now stored in
-   * a registry and extracted via a parallel schema+data walk after validation.
-   * This field is kept for backwards compatibility and will be removed in a future version.
-   */
-  transformReferences?: boolean;
-  /**
    * How to handle default values in the schema.
    *
    * - 'populate': Ensure defaults are present (useful for React Hook Form)
@@ -44,10 +38,6 @@ export interface DefinitionSchemaParserContext {
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
   plugins: PluginSpecStore;
-  /**
-   * @deprecated No longer used. See DefinitionSchemaCreatorOptions.transformReferences.
-   */
-  transformReferences?: boolean;
   /**
    * How to handle default values in the schema.
    */

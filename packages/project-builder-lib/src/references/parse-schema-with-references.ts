@@ -33,10 +33,7 @@ export function parseSchemaWithTransformedReferences<
 >(
   schemaCreator: T,
   input: unknown,
-  schemaCreatorOptions: Omit<
-    DefinitionSchemaCreatorOptions,
-    'transformReferences'
-  >,
+  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
   options?: ResolveZodRefPayloadNamesOptions,
 ): ResolvedZodRefPayload<def.InferOutput<T>> {
   const schemaContext =

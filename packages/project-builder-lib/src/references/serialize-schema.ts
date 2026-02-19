@@ -41,10 +41,7 @@ export function serializeSchemaFromRefPayload<TValue>(
 export function serializeSchema<T extends DefinitionSchemaCreator>(
   schemaCreator: T,
   value: unknown,
-  schemaCreatorOptions: Omit<
-    DefinitionSchemaCreatorOptions,
-    'transformReferences'
-  >,
+  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
 ): def.InferOutput<T> {
   const payload = parseSchemaWithTransformedReferences(
     schemaCreator,
