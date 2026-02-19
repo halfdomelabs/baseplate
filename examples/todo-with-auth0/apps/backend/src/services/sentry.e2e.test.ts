@@ -8,7 +8,7 @@ import { buildServer } from '@src/server.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
 import { logErrorToSentry } from './sentry.js';
-import { getSentryTestkit } from './sentry.test-kit.test-helper.js';
+import { sentryTestCollector } from './sentry.test-collector.test-helper.js';
 
 vi.mock('@src/services/logger', () => ({
   logger: {
@@ -28,10 +28,8 @@ vi.mock('@src/services/config', async (importOriginal) => {
   };
 });
 
-const { testkit } = getSentryTestkit();
-
 beforeEach(() => {
-  testkit.reset();
+  sentryTestCollector.reset();
 });
 
 it('should handle fastify request errors', async () => {
@@ -69,19 +67,17 @@ it('should handle fastify request errors', async () => {
       method: 'GET',
     });
 
-    await vi.waitUntil(() => testkit.reports().length === 1, {
+    await vi.waitUntil(() => sentryTestCollector.reports().length === 1, {
       timeout: 500,
     });
 
-    const report = testkit.reports()[0];
+    const report = sentryTestCollector.reports()[0];
 
-    expect(report.level).toBe('error');
-    expect(report.error?.message).toBe('test error');
-    expect(report.originalReport.transaction).toBe('GET /error');
+    expect(report.event.level).toBe('error');
+    expect(report.event.exception?.values?.[0]?.value).toBe('test error');
+    expect(report.event.transaction).toBe('GET /error');
     // make sure we don't log the cookie or authorization header
-    const headerKeys = Object.keys(
-      report.originalReport.request?.headers ?? {},
-    );
+    const headerKeys = Object.keys(report.event.request?.headers ?? {});
     expect(headerKeys).not.toContain('cookie');
     expect(headerKeys).not.toContain('authorization');
     expect(headerKeys).toContain('user-agent');
@@ -95,13 +91,13 @@ describe('logErrorToSentry', () => {
     const error = new Error('test error');
     logErrorToSentry(error);
 
-    await vi.waitUntil(() => testkit.reports().length === 1, {
+    await vi.waitUntil(() => sentryTestCollector.reports().length === 1, {
       timeout: 500,
     });
 
-    expect(testkit.reports()).toHaveLength(1);
-    const report = testkit.reports()[0];
-    expect(report.level).toBe('error');
-    expect(report.error?.message).toBe('test error');
+    expect(sentryTestCollector.reports()).toHaveLength(1);
+    const report = sentryTestCollector.reports()[0];
+    expect(report.event.level).toBe('error');
+    expect(report.event.exception?.values?.[0]?.value).toBe('test error');
   });
 });
