@@ -114,6 +114,25 @@ pnpm test:affected
 pnpm build
 ```
 
+After verifying the monorepo, also check that example projects still build and typecheck correctly. Example projects are standalone monorepos not included in the pnpm workspace, so use the `run:example` script:
+
+```bash
+# Install updated dependencies in an example project
+pnpm run:example todo-with-auth0 -- pnpm install
+
+# Typecheck an example project
+pnpm run:example todo-with-auth0 -- pnpm typecheck
+
+# Build an example project
+pnpm run:example todo-with-auth0 -- pnpm build
+```
+
+Repeat for each example that may be affected by the upgrade. To run a command across all examples at once:
+
+```bash
+pnpm run:all -- pnpm typecheck
+```
+
 ### 8. Create Changeset
 
 After successfully upgrading packages, create a changeset:
@@ -171,7 +190,7 @@ Common packages: `typescript`, `eslint`, `prettier`, `vitest`
 
 1. **Batch Related Updates** - Group related packages together (e.g., React ecosystem, Vite ecosystem)
 2. **Test Major Upgrades Separately** - Create a separate branch for major version upgrades
-3. **Check Example Projects** - Manually test generated example projects after upgrading
+3. **Check Example Projects** - Verify example projects still build and typecheck after upgrading (`pnpm run:example <name> -- pnpm typecheck`)
 4. **Version Pinning Strategy:**
    - Patch versions: Generally safe to auto-update
    - Minor versions: Review changelog, usually safe
