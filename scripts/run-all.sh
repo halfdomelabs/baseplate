@@ -2,9 +2,14 @@
 set -euo pipefail
 
 if [ $# -eq 0 ]; then
-  echo "Usage: pnpm run:all <command...>"
-  echo "Example: pnpm run:all pnpm install"
+  echo "Usage: pnpm run:all -- <command...>"
+  echo "Example: pnpm run:all -- pnpm install"
   exit 1
+fi
+
+# Skip the -- separator if present
+if [ "$1" = "--" ]; then
+  shift
 fi
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
