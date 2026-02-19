@@ -20,6 +20,7 @@ import { migration020MoveRedisToInfrastructure } from './migration-020-move-redi
 import { migration021MigrateBullmqToPlugin } from './migration-021-migrate-bullmq-to-plugin.js';
 import { migration022RenamePackagesToLibraries } from './migration-022-rename-packages-to-libraries.js';
 import { migration023AssignAppPorts } from './migration-023-assign-app-ports.js';
+import { migration024GraphqlObjectTypeFieldAuth } from './migration-024-graphql-object-type-field-auth.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -41,6 +42,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration021MigrateBullmqToPlugin,
   migration022RenamePackagesToLibraries,
   migration023AssignAppPorts,
+  migration024GraphqlObjectTypeFieldAuth,
 ];
 
 export function isMigrateableProjectDefinition(

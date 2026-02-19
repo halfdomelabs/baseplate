@@ -8,6 +8,7 @@ import {
 } from '#src/schema/creator/schema-creator.js';
 
 import { authRoleEntityType } from '../auth/index.js';
+import { modelAuthorizerRoleEntityType } from './authorizer/types.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
@@ -38,30 +39,69 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
           enabled: ctx.withDefault(z.boolean(), false),
           fields: ctx.withDefault(
             z.array(
-              ctx.withRef({
-                type: modelScalarFieldEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
+              z.object({
+                ref: ctx.withRef({
+                  type: modelScalarFieldEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+                roles: createRoleArray(ctx),
+                instanceRoles: ctx.withDefault(
+                  z.array(
+                    ctx.withRef({
+                      type: modelAuthorizerRoleEntityType,
+                      onDelete: 'DELETE',
+                      parentSlot: modelSlot,
+                    }),
+                  ),
+                  [],
+                ),
               }),
             ),
             [],
           ),
           localRelations: ctx.withDefault(
             z.array(
-              ctx.withRef({
-                type: modelLocalRelationEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
+              z.object({
+                ref: ctx.withRef({
+                  type: modelLocalRelationEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+                roles: createRoleArray(ctx),
+                instanceRoles: ctx.withDefault(
+                  z.array(
+                    ctx.withRef({
+                      type: modelAuthorizerRoleEntityType,
+                      onDelete: 'DELETE',
+                      parentSlot: modelSlot,
+                    }),
+                  ),
+                  [],
+                ),
               }),
             ),
             [],
           ),
           foreignRelations: ctx.withDefault(
             z.array(
-              ctx.withRef({
-                type: modelForeignRelationEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
+              z.object({
+                ref: ctx.withRef({
+                  type: modelForeignRelationEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+                roles: createRoleArray(ctx),
+                instanceRoles: ctx.withDefault(
+                  z.array(
+                    ctx.withRef({
+                      type: modelAuthorizerRoleEntityType,
+                      onDelete: 'DELETE',
+                      parentSlot: modelSlot,
+                    }),
+                  ),
+                  [],
+                ),
               }),
             ),
             [],

@@ -535,7 +535,7 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: false,
-            fields: ['id'],
+            fields: [{ ref: 'id' }],
           },
         },
       },
@@ -562,7 +562,7 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: true,
-            fields: ['id', 'name'],
+            fields: [{ ref: 'id' }, { ref: 'name' }],
           },
         },
       },
@@ -572,10 +572,11 @@ describe('GraphQL support', () => {
       current,
       desired,
     );
-    expect(serializedDefinition.models[0].graphql?.objectType?.fields).toEqual([
-      'id',
-      'name',
-    ]);
+    expect(
+      serializedDefinition.models[0].graphql?.objectType?.fields?.map(
+        (f) => f.ref,
+      ),
+    ).toEqual(['id', 'name']);
   });
 
   it('should not remove existing GraphQL fields when using ArrayIncludesField', () => {
@@ -611,7 +612,7 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: true,
-            fields: ['id', 'name', 'email'],
+            fields: [{ ref: 'id' }, { ref: 'name' }, { ref: 'email' }],
           },
         },
       },
@@ -642,7 +643,7 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: true,
-            fields: ['id', 'name'], // Missing 'email' but it should not be removed
+            fields: [{ ref: 'id' }, { ref: 'name' }], // Missing 'email' but it should not be removed
           },
         },
       },
@@ -753,8 +754,8 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: true,
-            fields: ['id', 'name'],
-            foreignRelations: ['posts'],
+            fields: [{ ref: 'id' }, { ref: 'name' }],
+            foreignRelations: [{ ref: 'posts' }],
           },
         },
       },
@@ -796,8 +797,8 @@ describe('GraphQL support', () => {
         graphql: {
           objectType: {
             enabled: true,
-            fields: ['id', 'title'],
-            localRelations: ['author'],
+            fields: [{ ref: 'id' }, { ref: 'title' }],
+            localRelations: [{ ref: 'author' }],
           },
         },
       },
@@ -815,19 +816,19 @@ describe('GraphQL support', () => {
       (m) => m.name === 'Post',
     );
 
-    expect(authorModelResult?.graphql?.objectType?.fields).toEqual([
-      'id',
-      'name',
-    ]);
-    expect(authorModelResult?.graphql?.objectType?.foreignRelations).toEqual([
-      'posts',
-    ]);
-    expect(postModelResult?.graphql?.objectType?.fields).toEqual([
-      'id',
-      'title',
-    ]);
-    expect(postModelResult?.graphql?.objectType?.localRelations).toEqual([
-      'author',
-    ]);
+    expect(
+      authorModelResult?.graphql?.objectType?.fields?.map((f) => f.ref),
+    ).toEqual(['id', 'name']);
+    expect(
+      authorModelResult?.graphql?.objectType?.foreignRelations?.map(
+        (r) => r.ref,
+      ),
+    ).toEqual(['posts']);
+    expect(
+      postModelResult?.graphql?.objectType?.fields?.map((f) => f.ref),
+    ).toEqual(['id', 'title']);
+    expect(
+      postModelResult?.graphql?.objectType?.localRelations?.map((r) => r.ref),
+    ).toEqual(['author']);
   });
 });

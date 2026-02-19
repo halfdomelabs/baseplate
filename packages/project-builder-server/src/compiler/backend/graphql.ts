@@ -59,7 +59,7 @@ function buildObjectTypeFile(
       objectType: pothosPrismaObjectGenerator({
         modelName: model.name,
         exposedFields: [...fields, ...foreignRelations, ...localRelations].map(
-          (id) => appBuilder.nameFromId(id),
+          (entry) => appBuilder.nameFromId(entry.ref),
         ),
         order: 1,
       }),

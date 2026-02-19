@@ -41,7 +41,7 @@ export function createAuth0Models({
       graphql: {
         objectType: {
           enabled: true,
-          fields: ['id', 'email'],
+          fields: [{ ref: 'id' }, { ref: 'email' }],
         },
       },
     },

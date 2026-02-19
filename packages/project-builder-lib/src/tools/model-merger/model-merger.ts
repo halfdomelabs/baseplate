@@ -97,12 +97,15 @@ export const modelMergerDefinitionDiffConfig =
     ),
     'graphql.objectType.fields': new DefinitionDiffArrayIncludesField(
       'GraphQL object type fields',
+      (f: { ref: string }) => f.ref,
     ),
     'graphql.objectType.localRelations': new DefinitionDiffArrayIncludesField(
       'GraphQL object type local relations',
+      (r: { ref: string }) => r.ref,
     ),
     'graphql.objectType.foreignRelations': new DefinitionDiffArrayIncludesField(
       'GraphQL object type foreign relations',
+      (r: { ref: string }) => r.ref,
     ),
   });
 
@@ -176,14 +179,21 @@ function serializeModelMergerModelInput(
       ...input.graphql,
       objectType: {
         ...input.graphql?.objectType,
-        fields: input.graphql?.objectType?.fields?.map(fieldNameFromId) ?? [],
+        fields:
+          input.graphql?.objectType?.fields?.map((entry) => ({
+            ...entry,
+            ref: fieldNameFromId(entry.ref),
+          })) ?? [],
         localRelations:
-          input.graphql?.objectType?.localRelations?.map(relationNameFromId) ??
-          [],
+          input.graphql?.objectType?.localRelations?.map((entry) => ({
+            ...entry,
+            ref: relationNameFromId(entry.ref),
+          })) ?? [],
         foreignRelations:
-          input.graphql?.objectType?.foreignRelations?.map(
-            relationNameFromId,
-          ) ?? [],
+          input.graphql?.objectType?.foreignRelations?.map((entry) => ({
+            ...entry,
+            ref: relationNameFromId(entry.ref),
+          })) ?? [],
       },
     },
   };
@@ -282,17 +292,20 @@ function deserializeModelMergerModelInput(
       objectType: {
         ...inputWithIds.graphql?.objectType,
         fields:
-          inputWithIds.graphql?.objectType?.fields?.map((fieldRef) =>
-            resolveLocalFieldName(fieldRef),
-          ) ?? [],
+          inputWithIds.graphql?.objectType?.fields?.map((entry) => ({
+            ...entry,
+            ref: resolveLocalFieldName(entry.ref),
+          })) ?? [],
         localRelations:
-          inputWithIds.graphql?.objectType?.localRelations?.map((relationRef) =>
-            resolveLocalRelationName(relationRef),
-          ) ?? [],
+          inputWithIds.graphql?.objectType?.localRelations?.map((entry) => ({
+            ...entry,
+            ref: resolveLocalRelationName(entry.ref),
+          })) ?? [],
         foreignRelations:
-          inputWithIds.graphql?.objectType?.foreignRelations?.map(
-            (relationRef) => resolveForeignRelationRef(relationRef),
-          ) ?? [],
+          inputWithIds.graphql?.objectType?.foreignRelations?.map((entry) => ({
+            ...entry,
+            ref: resolveForeignRelationRef(entry.ref),
+          })) ?? [],
       },
     },
   };
