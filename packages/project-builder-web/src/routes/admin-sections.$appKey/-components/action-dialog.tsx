@@ -5,6 +5,7 @@ import type {
 import type React from 'react';
 
 import {
+  adminCrudActionEntityType,
   createAdminCrudActionSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -62,7 +63,7 @@ export function ActionDialog({
       value: config.name,
     }));
 
-  const form = useForm({
+  const form = useForm<AdminCrudActionInput>({
     resolver: zodResolver(actionSchema),
     values: action ?? {
       type: 'edit',
@@ -95,7 +96,11 @@ export function ActionDialog({
   const WebForm = actionWebConfig?.Form;
 
   const onSubmit = handleSubmit((data) => {
-    onSave(data);
+    onSave({
+      ...data,
+      id: data.id ?? adminCrudActionEntityType.generateNewId(),
+      position: data.position ?? 'dropdown',
+    });
     onOpenChange(false);
   });
 

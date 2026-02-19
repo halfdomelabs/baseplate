@@ -1,18 +1,21 @@
+import z from 'zod';
+
 import type { def } from '#src/schema/creator/index.js';
 
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
+import type { baseAdminCrudActionSchema } from './types.js';
+
 import { adminCrudActionSpec } from './admin-action-spec.js';
-import { baseAdminCrudActionSchema } from './types.js';
 
 export const createAdminCrudActionSchema = definitionSchema((ctx) => {
-  const adminCrudActions = ctx.plugins.use(adminCrudActionSpec).actions;
-
-  return baseAdminCrudActionSchema.transform((data) => {
-    const actionDef = adminCrudActions.get(data.type);
-    if (!actionDef) return data;
-    return actionDef.createSchema(ctx).parse(data);
-  });
+  const { actions } = ctx.plugins.use(adminCrudActionSpec);
+  return z.discriminatedUnion(
+    'type',
+    [...actions.values()].map((action) => action.createSchema(ctx)) as [
+      typeof baseAdminCrudActionSchema,
+    ],
+  );
 });
 
 export type AdminCrudActionConfig = def.InferOutput<

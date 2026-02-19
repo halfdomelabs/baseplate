@@ -5,6 +5,7 @@ import type {
 import type React from 'react';
 
 import {
+  adminCrudInputEntityType,
   createAdminCrudInputSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -61,7 +62,7 @@ export function FieldDialog({
     value: config.name,
   }));
 
-  const form = useForm({
+  const form = useForm<AdminCrudInputInput>({
     resolver: zodResolver(fieldSchema),
     values: field ?? {
       type: 'text',
@@ -92,7 +93,10 @@ export function FieldDialog({
   const WebForm = inputWebConfig?.Form;
 
   const onSubmit = handleSubmit((data) => {
-    onSave(data);
+    onSave({
+      ...data,
+      id: data.id ?? adminCrudInputEntityType.generateNewId(),
+    });
     onOpenChange(false);
   });
 

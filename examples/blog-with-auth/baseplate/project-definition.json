@@ -95,7 +95,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.5.1",
+  "cliVersion": "0.5.3",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
@@ -112,7 +112,6 @@
   ],
   "models": [
     {
-      "authorizer": { "roles": [] },
       "featureRef": "auth",
       "id": "model:wGEO1hZs5XQE",
       "model": {
@@ -163,14 +162,14 @@
             "id": "model-scalar-field:JBzoMuV1SZO8",
             "isOptional": false,
             "name": "expiresAt",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:i1R3iha91I8Q",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -203,7 +202,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
@@ -240,18 +238,14 @@
             "id": "model-scalar-field:G5ODFua2_9E_",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:fOVkXTd3P1Jy",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -279,7 +273,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:ZYGsFp93vRhv",
       "model": {
@@ -323,18 +316,14 @@
             "id": "model-scalar-field:lKjrrVtoNkEP",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:wJJXYvWWcOOS",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -372,7 +361,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "blogs",
       "id": "model:at_hVtN6XVWX",
       "model": {
@@ -395,18 +383,14 @@
             "id": "model-scalar-field:vQybRRnJi3TW",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:u0mMHdHGq4u6",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -444,7 +428,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "utilities",
       "id": "model:TO3fGEXsMhzX",
       "model": {
@@ -467,7 +450,7 @@
             "id": "model-scalar-field:OBYWG0Ngi9Ze",
             "isOptional": true,
             "name": "expire",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           }
         ],
@@ -538,18 +521,14 @@
             "id": "model-scalar-field:AETlnfzdbjWt",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:ejT1yp4u8OHD",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
@@ -591,7 +570,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:brCokD6pIz7E",
       "model": {
@@ -621,18 +599,14 @@
             "id": "model-scalar-field:fm33dSfRzjKE",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:UKyqtZ6HlWKN",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
@@ -682,7 +656,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "graphql": {
         "objectType": { "enabled": true, "fields": ["userId", "role"] }
@@ -708,18 +681,14 @@
             "id": "model-scalar-field:SGKA5W77rUL5",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:uT7TyReHg24r",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -747,7 +716,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts",
       "id": "model:8koW3IyW42e_",
       "model": {
@@ -777,36 +745,28 @@
             "id": "model-scalar-field:Y1Mg5lJh4IG0",
             "isOptional": false,
             "name": "expiresAt",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:sEIUglst63xV",
             "isOptional": false,
             "name": "renewedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": false
-            },
+            "options": { "defaultToNow": true, "updatedAt": false },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:SFSrsPqRYtLD",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:__RpraUxczSN",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           }
         ],

@@ -1,6 +1,6 @@
 import { mapGroupBy } from '@baseplate-dev/utils';
 
-import type { CollectedRefs } from './collect-refs.js';
+import type { CollectedRefs } from './definition-ref-registry.js';
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { ReferencePath } from './types.js';
 

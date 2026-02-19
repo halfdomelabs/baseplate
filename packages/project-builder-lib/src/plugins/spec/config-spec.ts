@@ -73,6 +73,7 @@ export const pluginConfigSpec = createFieldMapSpec(
           sortAndValidateMigrations(migrations, pluginKey),
       );
       return {
+        getAllSchemaCreators: () => values.schemas,
         getSchemaCreator: (pluginKey: string) => values.schemas.get(pluginKey),
         getMigrations: (pluginKey: string) =>
           validatedMigrations.get(pluginKey),

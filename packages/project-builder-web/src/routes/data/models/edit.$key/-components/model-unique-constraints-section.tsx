@@ -1,6 +1,6 @@
 import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
-import type { Control, UseFormSetValue } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 
 import {
   Button,
@@ -15,6 +15,7 @@ import {
   SectionListSectionTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
+import { useController } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../-hooks/use-edited-model-config.js';
@@ -22,17 +23,18 @@ import { ModelUniqueConstraintDialog } from './fields/unique-constraints/model-u
 
 interface Props {
   control: Control<ModelConfigInput>;
-  setValue: UseFormSetValue<ModelConfigInput>;
 }
 
 export function ModelUniqueConstraintsSection({
   control,
-  setValue,
 }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
-  const uniqueConstraints = useEditedModelConfig(
-    ({ model }) => model.uniqueConstraints ?? [],
-  );
+  const {
+    field: { value: uniqueConstraints = [], onChange: onConstraintsChange },
+  } = useController({
+    name: 'model.uniqueConstraints',
+    control,
+  });
   const fieldIdsToNames = useEditedModelConfig(({ model }) =>
     Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
   );
@@ -42,8 +44,7 @@ export function ModelUniqueConstraintsSection({
       title: 'Delete Unique Constraint',
       content: 'Are you sure you want to delete this unique constraint?',
       onConfirm: () => {
-        setValue(
-          'model.uniqueConstraints',
+        onConstraintsChange(
           uniqueConstraints.filter(
             (constraint) => constraint.id !== constraintId,
           ),

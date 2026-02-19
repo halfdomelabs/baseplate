@@ -7,7 +7,6 @@ import {
   definitionSchema,
   definitionSchemaWithSlots,
 } from '#src/schema/creator/schema-creator.js';
-import { SCALAR_FIELD_TYPES } from '#src/types/field-types.js';
 
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
@@ -27,81 +26,116 @@ import {
 
 export const createModelScalarFieldSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType },
-  (ctx, { modelSlot }) =>
-    ctx
-      .withEnt(
-        z.object({
-          id: z.string(),
-          name: VALIDATORS.CAMEL_CASE_STRING,
-          type: z.enum(SCALAR_FIELD_TYPES),
-          isOptional: z.boolean().default(false),
-          options: ctx.refContext(
-            { enumSlot: modelEnumEntityType },
-            ({ enumSlot }) =>
-              z
-                .object({
-                  // string options
-                  default: z.string().default(''),
-                  // uuid options
-                  genUuid: z.boolean().optional(),
-                  // date options
-                  updatedAt: z.boolean().optional(),
-                  defaultToNow: z.boolean().optional(),
-                  // enum options
-                  enumRef: ctx
-                    .withRef({
-                      type: modelEnumEntityType,
-                      onDelete: 'RESTRICT',
-                      provides: enumSlot,
-                    })
-                    .optional(),
-                  defaultEnumValueRef: ctx
-                    .withRef({
-                      type: modelEnumValueEntityType,
-                      onDelete: 'RESTRICT',
-                      parentSlot: enumSlot,
-                    })
-                    .optional(),
-                })
-                .transform((val) => ({
-                  ...val,
-                  ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
-                }))
-                .prefault({}),
-          ),
-        }),
-        {
-          type: modelScalarFieldEntityType,
-          parentSlot: modelSlot,
-        },
-      )
-      .superRefine((arg, ctx) => {
-        // check default values
-        const defaultValue = arg.options.default;
-        const { type } = arg;
-        if (!defaultValue) {
-          return;
-        }
-        if (type === 'boolean' && !['true', 'false'].includes(defaultValue)) {
-          ctx.addIssue({
-            path: ['options', 'default'],
-            code: 'custom',
-            message: 'Default value must be true or false',
-          });
-        }
-      })
-      .transform((value) => {
-        if (value.type !== 'enum' && value.options.enumRef) {
-          return {
-            ...value,
-            options: {
-              ...value.options,
-              enumRef: undefined,
-            },
-          };
-        }
-        return value;
+  (ctx, { modelSlot }) => {
+    const commonFields = {
+      id: z.string(),
+      name: VALIDATORS.CAMEL_CASE_STRING,
+      isOptional: z.boolean().default(false),
+    };
+
+    const defaultOptionsSchema = z
+      .object({ default: z.string().optional() })
+      .default({});
+
+    const union = z.discriminatedUnion('type', [
+      z.object({
+        ...commonFields,
+        type: z.literal('string'),
+        options: defaultOptionsSchema,
       }),
+      z.object({
+        ...commonFields,
+        type: z.literal('uuid'),
+        options: z
+          .object({
+            default: z.string().optional(),
+            genUuid: z.boolean().optional(),
+          })
+          .default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('int'),
+        options: z
+          .object({
+            default: z
+              .string()
+              .regex(/^-?\d*$/, { error: 'Default value must be a number' })
+              .optional(),
+          })
+          .default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('boolean'),
+        options: z
+          .object({ default: z.enum(['', 'true', 'false']).optional() })
+          .default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('dateTime'),
+        options: z
+          .object({
+            defaultToNow: z.boolean().optional(),
+            updatedAt: z.boolean().optional(),
+          })
+          .default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('float'),
+        options: defaultOptionsSchema,
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('decimal'),
+        options: z.object({ default: z.string().optional() }).default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('json'),
+        options: z.object({ default: z.string().optional() }).default({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('date'),
+        options: z
+          .object({
+            default: z.string().optional(),
+            defaultToNow: z.boolean().optional(),
+          })
+          .prefault({}),
+      }),
+      z.object({
+        ...commonFields,
+        type: z.literal('enum'),
+        options: ctx.refContext(
+          { enumSlot: modelEnumEntityType },
+          ({ enumSlot }) =>
+            z.object({
+              enumRef: ctx.withRef({
+                type: modelEnumEntityType,
+                onDelete: 'RESTRICT',
+                provides: enumSlot,
+              }),
+              defaultEnumValueRef: ctx
+                .withRef({
+                  type: modelEnumValueEntityType,
+                  onDelete: 'RESTRICT',
+                  parentSlot: enumSlot,
+                })
+                .optional(),
+            }),
+        ),
+      }),
+    ]);
+
+    return ctx.withEnt(union, {
+      type: modelScalarFieldEntityType,
+      parentSlot: modelSlot,
+    });
+  },
 );
 
 export type ModelScalarFieldConfig = def.InferOutput<

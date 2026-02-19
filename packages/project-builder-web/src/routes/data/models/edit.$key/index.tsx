@@ -59,11 +59,8 @@ function ModelEditModelPage(): React.JSX.Element {
         >
           <ModelFieldsForm control={control} setValue={setValue} />
           <SectionList>
-            <ModelRelationsSection control={control} setValue={setValue} />
-            <ModelUniqueConstraintsSection
-              control={control}
-              setValue={setValue}
-            />
+            <ModelRelationsSection control={control} />
+            <ModelUniqueConstraintsSection control={control} />
           </SectionList>
           <FormActionBar form={form} />
         </form>

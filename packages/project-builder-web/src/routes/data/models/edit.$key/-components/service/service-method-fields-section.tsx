@@ -85,7 +85,7 @@ export function ServiceMethodFieldsSection({
                 <td>
                   <BadgeWithTypeLabel
                     type={
-                      field.type === 'enum' && field.options?.enumRef
+                      field.type === 'enum' && field.options.enumRef
                         ? definitionContainer.nameFromId(field.options.enumRef)
                         : SCALAR_FIELD_TYPE_OPTIONS[field.type].label
                     }

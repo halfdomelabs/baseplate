@@ -22,24 +22,6 @@ export interface DefinitionSchemaCreatorOptions {
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
   plugins: PluginSpecStore;
-  /**
-   * If true, the schema will be transformed to include references.
-   *
-   * Note: The parsed data will not match the Typescript type definition of the schema
-   * because refs will be replaced with special marker classes. You must call extractRefs
-   * to convert the parsed data to the correct type.
-   */
-  transformReferences?: boolean;
-  /**
-   * How to handle default values in the schema.
-   *
-   * - 'populate': Ensure defaults are present (useful for React Hook Form)
-   * - 'strip': Remove values that match their defaults (useful for clean JSON serialization)
-   * - 'preserve': Keep values as-is without transformation
-   *
-   * @default 'populate'
-   */
-  defaultMode?: 'populate' | 'strip' | 'preserve';
 }
 
 export interface DefinitionSchemaParserContext {
@@ -47,14 +29,6 @@ export interface DefinitionSchemaParserContext {
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
   plugins: PluginSpecStore;
-  /**
-   * If true, the schema will be transformed to include references.
-   */
-  transformReferences?: boolean;
-  /**
-   * How to handle default values in the schema.
-   */
-  defaultMode?: 'populate' | 'strip' | 'preserve';
   /**
    * Adds a reference to the schema.
    */
@@ -64,10 +38,9 @@ export interface DefinitionSchemaParserContext {
    */
   withEnt: WithEntType;
   /**
-   * Wraps a schema with default value handling based on the defaultMode.
-   * - 'populate': Uses preprocess to ensure defaults are present
-   * - 'strip': Uses transform to remove values matching defaults
-   * - 'preserve': Returns schema unchanged
+   * Wraps a schema with default value handling. Uses prefault to ensure defaults
+   * are populated during parsing, and registers the default so it can be stripped
+   * during serialization via `cleanDefaultValues()`.
    */
   withDefault: WithDefaultType;
   /**

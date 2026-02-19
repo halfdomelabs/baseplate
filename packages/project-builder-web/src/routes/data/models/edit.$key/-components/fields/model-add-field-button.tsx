@@ -95,7 +95,7 @@ export function ModelAddFieldButton({
         appendField({
           id: fieldId,
           ...field,
-        });
+        } as ModelScalarFieldConfigInput);
       }
       if (isPrimaryKey) {
         setValue('model.primaryKeyFieldRefs', [fieldId], { shouldDirty: true });

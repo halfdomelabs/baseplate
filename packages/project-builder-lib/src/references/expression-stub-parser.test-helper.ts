@@ -21,7 +21,10 @@ import { RefExpressionParser } from './expression-types.js';
  */
 class StubParser extends RefExpressionParser<string, undefined> {
   readonly name = 'stub';
-  readonly schema = z.string();
+
+  createSchema(): z.ZodType<string> {
+    return z.string();
+  }
 
   parse(): undefined {
     // No-op - returns undefined as the parse result
@@ -71,7 +74,9 @@ export class StubParserWithSlots<
   TSlots extends Record<string, DefinitionEntityType>,
 > extends RefExpressionParser<string, undefined, TSlots> {
   readonly name = 'stub-with-slots';
-  readonly schema = z.string();
+  createSchema(): z.ZodType<string> {
+    return z.string();
+  }
 
   parse(): undefined {
     return undefined;

@@ -238,6 +238,9 @@ export function generateTypescriptEslintConfig(options = {}) {
         // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
         // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
         'unicorn/text-encoding-identifier-case': 'off',
+
+        // This rule can cause performance issues (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/2819)
+        'unicorn/no-unnecessary-polyfills': 'off',
       },
     },
 

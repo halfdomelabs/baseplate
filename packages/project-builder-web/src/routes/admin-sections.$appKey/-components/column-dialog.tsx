@@ -5,6 +5,7 @@ import type {
 import type React from 'react';
 
 import {
+  adminCrudColumnEntityType,
   createAdminCrudColumnSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -63,7 +64,7 @@ export function ColumnDialog({
       value: config.name,
     }));
 
-  const form = useForm({
+  const form = useForm<AdminCrudColumnInput>({
     resolver: zodResolver(columnSchema),
     values: column ?? {
       type: 'text',
@@ -96,7 +97,10 @@ export function ColumnDialog({
   const WebForm = columnWebConfig?.Form;
 
   const onSubmit = handleSubmit((data) => {
-    onSave(data);
+    onSave({
+      ...data,
+      id: data.id ?? adminCrudColumnEntityType.generateNewId(),
+    });
     onOpenChange(false);
   });
 

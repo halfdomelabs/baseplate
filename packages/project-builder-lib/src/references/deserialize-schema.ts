@@ -23,7 +23,7 @@ function referenceToNameParentId(name: string, parentId?: string): string {
  * @template T - The schema creator type
  * @param schemaCreator - The schema creator function
  * @param input - The input data with names instead of IDs
- * @param options - Options for the schema creator (excluding transformReferences)
+ * @param options - Options for the schema creator
  * @returns The resolved payload with IDs instead of names
  */
 export function deserializeSchemaWithTransformedReferences<
@@ -31,7 +31,7 @@ export function deserializeSchemaWithTransformedReferences<
 >(
   schemaCreator: T,
   input: unknown,
-  options: Omit<DefinitionSchemaCreatorOptions, 'transformReferences'>,
+  options: DefinitionSchemaCreatorOptions,
 ): ResolvedZodRefPayload<def.InferOutput<T>> {
   const payload = parseSchemaWithTransformedReferences(
     schemaCreator,

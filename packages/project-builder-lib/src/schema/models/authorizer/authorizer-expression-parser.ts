@@ -42,10 +42,12 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   readonly name = 'authorizer-expression';
 
   /**
-   * Zod schema for validating expression strings.
+   * Creates a Zod schema for validating expression strings.
    * Requires a non-empty string value.
    */
-  readonly schema = z.string().min(1, 'Expression is required');
+  createSchema(): z.ZodType<string> {
+    return z.string().min(1, 'Expression is required');
+  }
 
   /**
    * Parse the expression string into an AST.

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  generateMockModel,
-  generateMockModelRelationField,
-  generateMockModelScalarField,
-  generateMockUniqueConstraint,
-} from '#src/schema/models/mocks.js';
+  createTestModel,
+  createTestRelationField,
+  createTestScalarField,
+  createTestUniqueConstraint,
+} from '#src/schema/definition.test-helper.js';
 
 import { ModelFieldUtils } from './model-field-utils.js';
 
@@ -14,20 +14,20 @@ const { getRelationLocalFields, isRelationOneToOne, isRelationOptional } =
 
 describe('getRelationLocalFields', () => {
   it('should return a single local field of a relation', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['localField'],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local',
             name: 'localField',
             type: 'date',
           }),
-          generateMockModelScalarField({ id: 'other', name: 'otherField' }),
+          createTestScalarField({ id: 'other', name: 'otherField' }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [{ localRef: 'local', foreignRef: 'foreign' }],
     });
 
@@ -37,25 +37,25 @@ describe('getRelationLocalFields', () => {
   });
 
   it('should return the local fields of a relation', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['local-id', 'local-id2'],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id',
             name: 'localField',
             type: 'date',
           }),
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id2',
             name: 'localField2',
             type: 'date',
           }),
-          generateMockModelScalarField({ name: 'otherField' }),
+          createTestScalarField({ name: 'otherField' }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [
         { localRef: 'local-id', foreignRef: 'foreignField' },
         { localRef: 'local-id2', foreignRef: 'foreignField2' },
@@ -70,21 +70,21 @@ describe('getRelationLocalFields', () => {
 
 describe('isRelationOptional', () => {
   it('should return true if any local field is optional', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['local-id'],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id',
             name: 'localField',
             type: 'date',
             isOptional: true,
           }),
-          generateMockModelScalarField({ name: 'otherField' }),
+          createTestScalarField({ name: 'otherField' }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
@@ -94,23 +94,23 @@ describe('isRelationOptional', () => {
   });
 
   it('should return false if no local field is optional', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['local-id'],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id',
             name: 'localField',
             type: 'date',
           }),
-          generateMockModelScalarField({
+          createTestScalarField({
             name: 'otherField',
             isOptional: true,
           }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
@@ -122,22 +122,22 @@ describe('isRelationOptional', () => {
 
 describe('isRelationOneToOne', () => {
   it('should return true if the relation is a primary key', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['local-id'],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id',
             name: 'localField',
           }),
-          generateMockModelScalarField({
+          createTestScalarField({
             name: 'otherField',
             isOptional: true,
           }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
@@ -147,31 +147,31 @@ describe('isRelationOneToOne', () => {
   });
 
   it('should return true if the relation is a unique constraint', () => {
-    const model = generateMockModel({
+    const model = createTestModel({
       model: {
         primaryKeyFieldRefs: ['local-id'],
         uniqueConstraints: [
-          generateMockUniqueConstraint({
+          createTestUniqueConstraint({
             fields: [{ fieldRef: 'local-id' }, { fieldRef: 'local-id2' }],
           }),
         ],
         fields: [
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id',
             name: 'localField',
           }),
-          generateMockModelScalarField({
+          createTestScalarField({
             id: 'local-id2',
             name: 'localField2',
           }),
-          generateMockModelScalarField({
+          createTestScalarField({
             name: 'otherField',
             isOptional: true,
           }),
         ],
       },
     });
-    const relation = generateMockModelRelationField({
+    const relation = createTestRelationField({
       references: [
         { localRef: 'local-id', foreignRef: 'foreignField' },
         { localRef: 'local-id2', foreignRef: 'foreignField' },

@@ -41,7 +41,8 @@ import {
 } from './model-merger.js';
 
 const testFeature = createTestFeature();
-const existingModel = createTestModel(testFeature.name, {
+const existingModel = createTestModel({
+  featureRef: testFeature.name,
   name: 'ExistingModel',
 });
 const testProjectDefinition = createTestProjectDefinition({
@@ -336,7 +337,8 @@ describe('applyModelMergerDiff', () => {
       type: 'uuid',
       options: { genUuid: true, default: '123' },
     });
-    const current: ModelConfigInput = createTestModel(testFeature.id, {
+    const current: ModelConfigInput = createTestModel({
+      featureRef: testFeature.id,
       model: {
         fields: [idField],
         primaryKeyFieldRefs: [idField.id],

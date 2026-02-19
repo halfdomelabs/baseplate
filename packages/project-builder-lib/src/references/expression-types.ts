@@ -102,12 +102,11 @@ export abstract class RefExpressionParser<
   abstract readonly name: string;
 
   /**
-   * Zod schema for validating the expression value.
-   * This schema is used by `withExpression()` for input validation.
+   * Creates a new Zod schema instance for validating the expression value.
    *
-   * @returns A Zod schema that validates the raw expression value
+   * @returns A fresh Zod schema that validates the raw expression value
    */
-  abstract readonly schema: z.ZodType<TValue>;
+  abstract createSchema(): z.ZodType<TValue>;
 
   /**
    * Parse the raw value and return the parse result.

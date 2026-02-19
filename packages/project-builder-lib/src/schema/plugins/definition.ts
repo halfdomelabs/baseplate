@@ -16,26 +16,45 @@ export const basePluginDefinitionSchema = z.object({
 
 export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
-export const createPluginWithConfigSchema = definitionSchema((ctx) =>
-  ctx
-    .withEnt(basePluginDefinitionSchema, {
+export const createPluginWithConfigSchema = definitionSchema((ctx) => {
+  const pluginKeys = ctx.plugins.getPluginKeys();
+  const schemaCreators = ctx.plugins
+    .use(pluginConfigSpec)
+    .getAllSchemaCreators();
+
+  if (pluginKeys.length === 0) {
+    // Create a fresh schema instance to avoid accumulating entity metadata
+    // on the shared basePluginDefinitionSchema via the global ref registry.
+    return ctx.withEnt(
+      basePluginDefinitionSchema.refine(() => true),
+      {
+        type: pluginEntityType,
+      },
+    );
+  }
+
+  const variants = pluginKeys.map((key) => {
+    const configSchema = schemaCreators.get(key)?.(ctx) ?? z.unknown();
+    return z.object({
+      id: z.literal(pluginEntityType.idFromKey(key)),
+      packageName: z.string(),
+      name: z.string(),
+      version: z.string(),
+      config: configSchema,
+      configSchemaVersion: z.number().optional(),
+    });
+  });
+
+  return ctx.withEnt(
+    z.discriminatedUnion(
+      'id',
+      variants as unknown as [typeof basePluginDefinitionSchema],
+    ),
+    {
       type: pluginEntityType,
-    })
-    .transform((data) => {
-      const pluginKey = pluginEntityType.keyFromId(data.id);
-
-      const createConfigSchema = ctx.plugins
-        .use(pluginConfigSpec)
-        .getSchemaCreator(pluginKey);
-
-      if (!createConfigSchema) return data;
-
-      return {
-        ...data,
-        config: createConfigSchema(ctx).parse(data.config),
-      };
-    }),
-);
+    },
+  );
+});
 
 export const createPluginsSchema = definitionSchema((ctx) =>
   z.array(createPluginWithConfigSchema(ctx)),

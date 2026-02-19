@@ -86,6 +86,7 @@ export interface PluginModuleWithKey {
    */
   module: PluginModule;
 }
+
 /**
  * The plugin store containing all available plugins and additional core modules (project-builder-lib core modules are always included).
  */

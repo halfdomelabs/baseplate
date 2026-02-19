@@ -9,9 +9,21 @@ import type { PluginSpec, PluginSpecInitializerResult } from '../spec/types.js';
 export class PluginSpecStore {
   private instances: Map<string, PluginSpecInitializerResult>;
   private useInstances = new Map<string, object>();
+  private pluginKeys_: string[];
 
-  constructor(instances = new Map<string, PluginSpecInitializerResult>()) {
+  constructor(
+    instances = new Map<string, PluginSpecInitializerResult>(),
+    pluginKeys: string[] = [],
+  ) {
     this.instances = instances;
+    this.pluginKeys_ = pluginKeys;
+  }
+
+  /**
+   * Gets the plugin keys that were loaded into this store.
+   */
+  getPluginKeys(): string[] {
+    return this.pluginKeys_;
   }
 
   /**

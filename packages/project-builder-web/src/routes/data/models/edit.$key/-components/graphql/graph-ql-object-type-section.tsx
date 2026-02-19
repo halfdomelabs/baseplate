@@ -161,7 +161,7 @@ export function GraphQLObjectTypeSection({
                   <td>
                     <BadgeWithTypeLabel
                       type={
-                        field.type === 'enum' && field.options?.enumRef
+                        field.type === 'enum' && field.options.enumRef
                           ? definitionContainer.nameFromId(
                               field.options.enumRef,
                             )
