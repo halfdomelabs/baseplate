@@ -4,25 +4,6 @@ import type { DefinitionSchemaCreatorOptions } from './types.js';
 
 import { definitionDefaultRegistry } from './definition-default-registry.js';
 
-export function isEmpty(value: unknown): boolean {
-  if (value === undefined || value === null) {
-    return true;
-  }
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  }
-  if (
-    typeof value === 'object' &&
-    Object.getPrototypeOf(value) === Object.prototype
-  ) {
-    return Object.values(value).every((val) => val === undefined);
-  }
-  if (typeof value === 'string') {
-    return value === '';
-  }
-  return false;
-}
-
 export type WithDefaultType = <T extends z.ZodType>(
   schema: T,
   defaultValue: z.input<T>,
@@ -57,7 +38,7 @@ export function extendParserContextWithDefaults(
         case 'strip': {
           // Build the schema the same as populate mode. The stripping of
           // default-matching values happens in a post-parse walk via
-          // `stripDefaultsFromData()`, which reads the registry annotation.
+          // `cleanDefaultValues()`, which reads the registry annotation.
           const result = schema.prefault(defaultValue).optional();
           definitionDefaultRegistry.set(result, { defaultValue });
           return result;

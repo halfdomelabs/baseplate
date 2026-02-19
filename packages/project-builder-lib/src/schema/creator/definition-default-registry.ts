@@ -14,7 +14,7 @@ export interface DefaultSchemaMeta {
  * Registry that stores default-value metadata on Zod schema instances.
  *
  * Uses a WeakMap to avoid interfering with Zod's type system.
- * Annotated by `withDefault()` in strip mode; read by `stripDefaultsFromData()`.
+ * Annotated by `withDefault()` in strip mode; read by `cleanDefaultValues()`.
  */
 
 export const definitionDefaultRegistry = (() => {

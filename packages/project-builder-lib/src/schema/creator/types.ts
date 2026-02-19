@@ -63,7 +63,7 @@ export interface DefinitionSchemaParserContext {
   /**
    * Wraps a schema with default value handling based on the defaultMode.
    * - 'populate': Uses prefault to ensure defaults are present
-   * - 'strip': Annotates the schema so `stripDefaultsFromData()` removes matching values after parsing
+   * - 'strip': Annotates the schema so `cleanDefaultValues()` removes matching values after parsing
    */
   withDefault: WithDefaultType;
   /**

@@ -7,5 +7,4 @@ export * from './fix-ref-deletions.js';
 export * from './ref-context-slot.js';
 export * from './ref-schema-visitor.js';
 export * from './serialize-schema.js';
-export * from './strip-defaults-from-data.js';
 export * from './types.js';
