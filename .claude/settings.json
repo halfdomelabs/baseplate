@@ -25,6 +25,7 @@
       "Bash(pnpm check)",
       "Bash(pnpm run check)",
       "Bash(pnpm why *)",
+      "Bash(pnpm dedupe)",
       "Bash(npm view *)",
       "Bash(git log *)",
       "Bash(pnpm --filter @baseplate-dev/* lint*)",

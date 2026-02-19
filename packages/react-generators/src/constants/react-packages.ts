@@ -24,7 +24,7 @@ export const REACT_PACKAGES = {
   // Components
   '@hookform/resolvers': '5.2.2',
   clsx: '2.1.1',
-  'react-hook-form': '7.60.0',
+  'react-hook-form': '7.71.1',
   'react-icons': '5.5.0',
   'react-select': '5.10.1',
   zustand: '5.0.3',
@@ -55,5 +55,5 @@ export const REACT_PACKAGES = {
   zod: '4.3.6',
 
   // Sentry
-  '@sentry/react': '9.17.0',
+  '@sentry/react': '10.39.0',
 } as const;

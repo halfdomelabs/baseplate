@@ -88,9 +88,10 @@ pnpm dedupe
 
 Update all example projects to use the new package versions:
 
-```bash
-# Sync all example projects
-pnpm start sync-examples
+```javascript
+mcp__baseplate_dev_server__sync_all_projects({
+  overwrite: true,
+});
 ```
 
 This command:

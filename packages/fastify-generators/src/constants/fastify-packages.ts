@@ -43,7 +43,7 @@ export const FASTIFY_PACKAGES = {
   ms: '2.1.3',
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
-  'es-toolkit': '1.31.0',
+  'es-toolkit': '1.44.0',
 
   // Environment
   'cross-env': '7.0.3',
@@ -58,11 +58,11 @@ export const FASTIFY_PACKAGES = {
   ioredis: '5.8.1',
 
   // Sentry
-  '@sentry/core': '9.17.0',
-  '@sentry/node': '9.17.0',
-  '@sentry/profiling-node': '9.17.0',
+  '@sentry/core': '10.39.0',
+  '@sentry/node': '10.39.0',
+  '@sentry/profiling-node': '10.39.0',
   '@pothos/plugin-tracing': '1.1.0',
-  '@pothos/tracing-sentry': '1.1.1',
+  '@pothos/tracing-sentry': '1.1.4',
 
   // Validation
   zod: '4.3.6',
