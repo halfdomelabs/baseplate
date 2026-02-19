@@ -225,8 +225,9 @@ Make changes in the appropriate example project (e.g., `examples/blog-with-auth`
 **Note:** You only need to modify one project at a time.
 
 ```bash
-# Validate changes work
-pnpm build && pnpm lint
+# Validate changes work in the example project
+pnpm run:example blog-with-auth -- pnpm build
+pnpm run:example blog-with-auth -- pnpm typecheck
 ```
 
 ### 2. Review Changes with User
@@ -413,6 +414,14 @@ mcp__baseplate_dev_server__diff_project({
 
 The diff should show no changes or only expected/snapshotted differences.
 
+Also verify the example project still builds and typechecks after the sync:
+
+```bash
+pnpm run:example blog-with-auth -- pnpm install
+pnpm run:example blog-with-auth -- pnpm typecheck
+pnpm run:example blog-with-auth -- pnpm build
+```
+
 ### 10. Sync All Projects
 
 Sync all example projects to apply your generator changes:
@@ -534,7 +543,7 @@ If you encounter issues with core generator logic (e.g., providers not wiring co
 1. **Start with working code** - Always develop features in a concrete codebase first
 2. **Use snapshots judiciously** - Only for intentional differences, not generator bugs
 3. **Validate frequently** - Run diff commands often during development
-4. **Test generated code** - Ensure `pnpm build && pnpm lint` passes on synced code
+4. **Test generated code** - Ensure example projects build and typecheck after syncing (`pnpm run:example <name> -- pnpm typecheck`)
 5. **Keep commits focused** - Separate generator changes from template changes when possible
 6. **Document template variables** - Use clear, descriptive names for template variables
 7. **Sync all projects when done** - Always run `sync_all_projects` to ensure all examples are updated
