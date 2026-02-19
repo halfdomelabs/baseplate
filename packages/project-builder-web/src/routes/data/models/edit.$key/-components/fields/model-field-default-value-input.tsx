@@ -197,7 +197,7 @@ function DateTimeDefaultValueInput({
   const optionsValue = rawOptions as DateTimeOptions | undefined;
   const { defaultToNow, updatedAt } = optionsValue ?? {};
 
-  if (defaultToNow ?? updatedAt) {
+  if (defaultToNow || updatedAt) {
     return (
       <div className="flex items-center gap-1">
         <InputField
@@ -307,7 +307,7 @@ function EnumDefaultValueInput({
           onClick={() => {
             onOptionsChange({
               ...optionsValue,
-              defaultEnumValueRef: '',
+              defaultEnumValueRef: undefined,
             });
           }}
           variant="ghost"

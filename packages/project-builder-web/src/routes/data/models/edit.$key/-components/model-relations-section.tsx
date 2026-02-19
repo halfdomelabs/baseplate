@@ -1,6 +1,6 @@
 import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
-import type { Control, UseFormSetValue } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -16,6 +16,7 @@ import {
   SectionListSectionTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
+import { useController } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../-hooks/use-edited-model-config.js';
@@ -23,16 +24,17 @@ import { ModelRelationDialog } from './fields/relations/model-relation-dialog.js
 
 interface Props {
   control: Control<ModelConfigInput>;
-  setValue: UseFormSetValue<ModelConfigInput>;
 }
 
-export function ModelRelationsSection({
-  control,
-  setValue,
-}: Props): React.JSX.Element {
+export function ModelRelationsSection({ control }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { definitionContainer } = useProjectDefinition();
-  const relations = useEditedModelConfig(({ model }) => model.relations ?? []);
+  const {
+    field: { value: relations = [], onChange: onRelationsChange },
+  } = useController({
+    name: 'model.relations',
+    control,
+  });
   const fieldIdsToNames = useEditedModelConfig(({ model }) =>
     Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
   );
@@ -43,8 +45,7 @@ export function ModelRelationsSection({
       title: 'Delete Relation',
       content: `Are you sure you want to delete the relation "${relation?.name ?? '<invalid>'}"?`,
       onConfirm: () => {
-        setValue(
-          'model.relations',
+        onRelationsChange(
           relations.filter((relation) => relation.id !== relationId),
         );
       },

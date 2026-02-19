@@ -47,7 +47,7 @@ export const createAuthRolesSchema = definitionSchema((ctx) =>
     })
     .superRefine((roles, ctx) => {
       for (const defaultRole of AUTH_DEFAULT_ROLES) {
-        if (!roles.some((r) => r.name === defaultRole.name)) {
+        if (!roles.some((r) => r.name === defaultRole.name && r.builtIn)) {
           ctx.addIssue({
             code: 'custom',
             message: `Missing built-in role: ${defaultRole.name}`,
