@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type {
   RefContextSlotDefinition,
   RefContextSlotMap,
@@ -17,20 +18,37 @@ import type {
 
 import { extendParserContextWithDefaults } from './extend-parser-context-with-defaults.js';
 
+const contextCache = new WeakMap<
+  PluginSpecStore,
+  DefinitionSchemaParserContext
+>();
+
 export function createDefinitionSchemaParserContext(
   options: DefinitionSchemaCreatorOptions,
 ): DefinitionSchemaParserContext {
-  return {
+  const cached = contextCache.get(options.plugins);
+  if (cached) return cached;
+
+  const context: DefinitionSchemaParserContext = {
     ...options,
     ...extendParserContextWithRefs(),
     ...extendParserContextWithDefaults(),
   };
+  contextCache.set(options.plugins, context);
+  return context;
 }
 
 export function definitionSchema<T extends z.ZodType>(
   creator: DefinitionSchemaCreator<T>,
 ): (context: DefinitionSchemaParserContext) => T {
-  return (context) => creator(context);
+  const cache = new WeakMap<DefinitionSchemaParserContext, T>();
+  return (context) => {
+    const cached = cache.get(context);
+    if (cached) return cached;
+    const result = creator(context);
+    cache.set(context, result);
+    return result;
+  };
 }
 
 /**

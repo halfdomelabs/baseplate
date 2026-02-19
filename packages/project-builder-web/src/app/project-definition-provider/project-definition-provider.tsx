@@ -157,10 +157,7 @@ export function ProjectDefinitionProvider({
       schemaParserContext,
       updatedExternally,
       definitionSchemaParserContext: createDefinitionSchemaParserContext({
-        plugins: createPluginSpecStore(
-          schemaParserContext.pluginStore,
-          definition,
-        ),
+        plugins: projectDefinitionContainer.pluginStore,
       }),
     };
   }, [

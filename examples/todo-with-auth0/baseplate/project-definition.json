@@ -221,33 +221,32 @@
         ]
       },
       "description": "admin",
+      "devPort": 6030,
       "id": "app:NmEolDU3Iggt",
       "name": "admin",
-      "devPort": 6030,
       "title": "Admin Page",
       "type": "web"
     },
     {
+      "devPort": 6001,
       "enableAxios": true,
       "enableStripe": true,
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
-      "devPort": 6001,
       "type": "backend"
     },
     {
-      "adminApp": { "enabled": false, "pathPrefix": "/admin" },
       "description": "An app for cool todoers",
+      "devPort": 6031,
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
-      "devPort": 6031,
       "title": "Todoer App",
       "type": "web"
     }
   ],
-  "cliVersion": "0.5.1",
+  "cliVersion": "0.5.3",
   "enums": [
     {
       "featureRef": "todos",
@@ -287,7 +286,6 @@
   "libraries": [],
   "models": [
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -338,7 +336,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "storage",
       "graphql": {
         "objectType": {
@@ -421,14 +418,14 @@
             "id": "model-scalar-field:0zurWIYRT21d",
             "isOptional": true,
             "name": "referencedAt",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:GV9yHW82wdmp",
             "isOptional": true,
             "name": "expiredAt",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           },
           {
@@ -442,18 +439,14 @@
             "id": "model-scalar-field:LzZ9J_n3_JTO",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:lpS5K__i_FfX",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -481,7 +474,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -550,18 +542,14 @@
             "id": "model-scalar-field:3jH4AtQDjHSW",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:IODaTmY6ArZ9",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
@@ -623,7 +611,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "objectType": {
@@ -675,18 +662,14 @@
             "id": "model-scalar-field:_OAxQ3JQUPaJ",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:8UpAxHEMH0zq",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -721,7 +704,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "objectType": {
@@ -773,7 +755,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -834,18 +815,14 @@
             "id": "model-scalar-field:csmaHD2RPRaW",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:VFUjdkUanVAS",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
@@ -853,7 +830,6 @@
             "isOptional": true,
             "name": "status",
             "options": {
-              "default": "",
               "defaultEnumValueRef": "ACTIVE",
               "enumRef": "TodoListStatus"
             },
@@ -926,7 +902,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -965,18 +940,14 @@
             "id": "model-scalar-field:ggaHhb6o9uoP",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:BHLcoCM4ZnYz",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
@@ -1076,25 +1047,21 @@
             "id": "model-scalar-field:0Q9XyNQ-s404",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:KLhZ8CtXE0ek",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:QSC8rlLAMcXq",
             "isOptional": true,
             "name": "tokensNotBefore",
-            "options": { "default": "" },
+            "options": {},
             "type": "dateTime"
           },
           {
@@ -1174,7 +1141,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1261,7 +1227,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1393,7 +1358,6 @@
       }
     },
     {
-      "authorizer": { "roles": [] },
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1423,18 +1387,14 @@
             "id": "model-scalar-field:2-zT2hChCDMQ",
             "isOptional": false,
             "name": "updatedAt",
-            "options": {
-              "default": "",
-              "defaultToNow": true,
-              "updatedAt": true
-            },
+            "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:Zgvc6bBe-WDe",
             "isOptional": false,
             "name": "createdAt",
-            "options": { "default": "", "defaultToNow": true },
+            "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
