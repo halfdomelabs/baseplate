@@ -1,7 +1,5 @@
 import type { z } from 'zod';
 
-import type { DefinitionSchemaCreatorOptions } from './types.js';
-
 import { definitionDefaultRegistry } from './definition-default-registry.js';
 
 export type WithDefaultType = <T extends z.ZodType>(
@@ -14,16 +12,15 @@ export type WithDefaultType = <T extends z.ZodType>(
 /**
  * Extends the parser context with default value handling functionality.
  *
- * @param options - The schema creator options containing the defaultMode
+ * Uses `prefault` to ensure defaults are populated during Zod parse, and
+ * registers the default value in the registry so `cleanDefaultValues()` can
+ * strip matching values during serialization.
+ *
  * @returns An object containing the withDefault method
  */
-export function extendParserContextWithDefaults(
-  options: DefinitionSchemaCreatorOptions,
-): {
+export function extendParserContextWithDefaults(): {
   withDefault: WithDefaultType;
 } {
-  const mode = options.defaultMode ?? 'populate';
-
   return {
     withDefault: function withDefault<T extends z.ZodType>(
       schema: T,
@@ -31,19 +28,9 @@ export function extendParserContextWithDefaults(
     ): z.ZodOptional<
       z.ZodType<z.output<z.ZodOptional<T>>, z.input<z.ZodOptional<T>>>
     > {
-      switch (mode) {
-        case 'populate': {
-          return schema.prefault(defaultValue).optional();
-        }
-        case 'strip': {
-          // Build the schema the same as populate mode. The stripping of
-          // default-matching values happens in a post-parse walk via
-          // `cleanDefaultValues()`, which reads the registry annotation.
-          const result = schema.prefault(defaultValue).optional();
-          definitionDefaultRegistry.set(result, { defaultValue });
-          return result;
-        }
-      }
+      const result = schema.prefault(defaultValue).optional();
+      definitionDefaultRegistry.set(result, { defaultValue });
+      return result;
     },
   };
 }

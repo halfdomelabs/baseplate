@@ -106,7 +106,6 @@ export class ProjectDefinitionContainer {
       createProjectDefinitionSchema,
       this.definition,
       {
-        defaultMode: 'strip',
         plugins: this.pluginStore,
       },
     );

@@ -22,15 +22,6 @@ export interface DefinitionSchemaCreatorOptions {
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
   plugins: PluginSpecStore;
-  /**
-   * How to handle default values in the schema.
-   *
-   * - 'populate': Ensure defaults are present (useful for React Hook Form)
-   * - 'strip': Remove values that match their defaults (useful for clean JSON serialization)
-   *
-   * @default 'populate'
-   */
-  defaultMode?: 'populate' | 'strip';
 }
 
 export interface DefinitionSchemaParserContext {
@@ -38,10 +29,6 @@ export interface DefinitionSchemaParserContext {
    * The plugin implementation store that contains the instantiated plugin spec implementations.
    */
   plugins: PluginSpecStore;
-  /**
-   * How to handle default values in the schema.
-   */
-  defaultMode?: 'populate' | 'strip';
   /**
    * Adds a reference to the schema.
    */
@@ -51,9 +38,9 @@ export interface DefinitionSchemaParserContext {
    */
   withEnt: WithEntType;
   /**
-   * Wraps a schema with default value handling based on the defaultMode.
-   * - 'populate': Uses prefault to ensure defaults are present
-   * - 'strip': Annotates the schema so `cleanDefaultValues()` removes matching values after parsing
+   * Wraps a schema with default value handling. Uses prefault to ensure defaults
+   * are populated during parsing, and registers the default so it can be stripped
+   * during serialization via `cleanDefaultValues()`.
    */
   withDefault: WithDefaultType;
   /**

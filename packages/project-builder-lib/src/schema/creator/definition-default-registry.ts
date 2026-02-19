@@ -1,10 +1,10 @@
 import type { z } from 'zod';
 
 /**
- * Metadata stored on a schema node annotated by `withDefault` in strip mode.
+ * Metadata stored on a schema node annotated by `withDefault`.
  *
- * When the default mode is 'strip', the serialization path walks the schema
- * and uses this metadata to identify and remove values that match their defaults.
+ * During serialization, `cleanDefaultValues()` walks the schema and uses this
+ * metadata to identify and remove values that match their defaults.
  */
 export interface DefaultSchemaMeta {
   readonly defaultValue: unknown;
@@ -14,7 +14,7 @@ export interface DefaultSchemaMeta {
  * Registry that stores default-value metadata on Zod schema instances.
  *
  * Uses a WeakMap to avoid interfering with Zod's type system.
- * Annotated by `withDefault()` in strip mode; read by `cleanDefaultValues()`.
+ * Annotated by `withDefault()`; read by `cleanDefaultValues()`.
  */
 
 export const definitionDefaultRegistry = (() => {
