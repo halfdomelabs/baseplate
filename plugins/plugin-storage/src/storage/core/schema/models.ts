@@ -104,7 +104,7 @@ export function createStorageModels(
       graphql: {
         objectType: {
           enabled: true,
-          fields: ['id', 'filename'],
+          fields: [{ ref: 'id' }, { ref: 'filename' }],
         },
       },
     },

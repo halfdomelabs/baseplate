@@ -44,6 +44,12 @@ function buildObjectTypeFile(
     foreignRelations = [],
   } = objectType;
 
+  const authConfig =
+    appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
+  const isAuthEnabled = !!authConfig.getAuthConfig(
+    appBuilder.projectDefinition,
+  );
+
   return pothosTypesFileGenerator({
     id: `${model.id}-object-type`,
     fileName: `${kebabCase(model.name)}.object-type`,
@@ -59,7 +65,15 @@ function buildObjectTypeFile(
       objectType: pothosPrismaObjectGenerator({
         modelName: model.name,
         exposedFields: [...fields, ...foreignRelations, ...localRelations].map(
-          (id) => appBuilder.nameFromId(id),
+          (entry) => ({
+            name: appBuilder.nameFromId(entry.ref),
+            globalRoles: isAuthEnabled
+              ? (entry.globalRoles ?? []).map((r) => appBuilder.nameFromId(r))
+              : [],
+            instanceRoles: isAuthEnabled
+              ? (entry.instanceRoles ?? []).map((r) => appBuilder.nameFromId(r))
+              : [],
+          }),
         ),
         order: 1,
       }),

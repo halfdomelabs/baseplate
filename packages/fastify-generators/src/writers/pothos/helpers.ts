@@ -15,6 +15,7 @@ interface PothosFieldOptions {
   required?: boolean;
   nullable?: boolean;
   type?: TsCodeFragment;
+  authorize?: TsCodeFragment;
 }
 
 /**
@@ -32,6 +33,7 @@ export function writePothosFieldOptions(
     required: fieldOptions.required ? 'true' : undefined,
     nullable: fieldOptions.nullable ? 'true' : undefined,
     type: fieldOptions.type,
+    authorize: fieldOptions.authorize,
   };
 
   const hasFieldOptions = Object.values(formattedFieldOptions).some(

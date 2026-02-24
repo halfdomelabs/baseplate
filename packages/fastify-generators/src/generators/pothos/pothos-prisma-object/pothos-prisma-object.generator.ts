@@ -1,6 +1,10 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { packageScope, TsCodeUtils } from '@baseplate-dev/core-generators';
+import {
+  packageScope,
+  TsCodeUtils,
+  tsTemplate,
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -10,6 +14,7 @@ import {
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { prismaModelAuthorizerProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
@@ -22,8 +27,15 @@ import {
   pothosFieldScope,
   pothosTypeOutputProvider,
 } from '../_providers/index.js';
+import { pothosAuthProvider } from '../pothos-auth/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosSchemaBaseTypesProvider } from '../pothos/index.js';
+
+const exposedFieldSchema = z.object({
+  name: z.string().min(1),
+  globalRoles: z.array(z.string().min(1)).default([]),
+  instanceRoles: z.array(z.string().min(1)).default([]),
+});
 
 const descriptorSchema = z.object({
   /**
@@ -31,9 +43,9 @@ const descriptorSchema = z.object({
    */
   modelName: z.string().min(1),
   /**
-   * The fields to expose.
+   * The fields to expose, with optional per-field auth config.
    */
-  exposedFields: z.array(z.string().min(1)),
+  exposedFields: z.array(exposedFieldSchema),
   /**
    * The order of the type in the types file.
    */
@@ -64,6 +76,10 @@ export const pothosPrismaObjectGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         pothosTypeFile: pothosTypesFileProvider,
         pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
+        pothosAuth: pothosAuthProvider.dependency().optional(),
+        modelAuthorizer: prismaModelAuthorizerProvider
+          .dependency()
+          .optionalReference(modelName),
       },
       exports: {
         pothosPrismaObject: pothosPrismaObjectProvider.export(pothosFieldScope),
@@ -72,7 +88,13 @@ export const pothosPrismaObjectGenerator = createGenerator({
           createPothosPrismaObjectTypeOutputName(modelName),
         ),
       },
-      run({ prismaOutput, pothosTypeFile, pothosSchemaBaseTypes }) {
+      run({
+        prismaOutput,
+        pothosTypeFile,
+        pothosSchemaBaseTypes,
+        pothosAuth,
+        modelAuthorizer,
+      }) {
         const model = prismaOutput.getPrismaModel(modelName);
 
         const variableName = `${lowerCaseFirst(model.name)}ObjectType`;
@@ -80,6 +102,53 @@ export const pothosPrismaObjectGenerator = createGenerator({
         const customFields = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({});
+
+        // Build lookup: fieldName → auth config
+        const fieldAuthMap = new Map(
+          exposedFields
+            .filter(
+              (f) => f.globalRoles.length > 0 || f.instanceRoles.length > 0,
+            )
+            .map((f) => [
+              f.name,
+              { globalRoles: f.globalRoles, instanceRoles: f.instanceRoles },
+            ]),
+        );
+
+        /**
+         * Build an authorize TsCodeFragment for a field, if it has auth config.
+         */
+        function buildAuthorizeFragment(
+          fieldName: string,
+        ): TsCodeFragment | undefined {
+          const fieldAuth = fieldAuthMap.get(fieldName);
+          if (!fieldAuth || !pothosAuth) {
+            return undefined;
+          }
+
+          const instanceRoleFragments = fieldAuth.instanceRoles.map(
+            (roleName) => {
+              if (!modelAuthorizer) {
+                throw new Error(
+                  `Field '${fieldName}' on model '${modelName}' references instance role '${roleName}' but no authorizer is configured for this model.`,
+                );
+              }
+              return modelAuthorizer.getRoleFragment(roleName);
+            },
+          );
+
+          if (
+            fieldAuth.globalRoles.length === 0 &&
+            instanceRoleFragments.length === 0
+          ) {
+            return undefined;
+          }
+
+          return pothosAuth.formatMixedAuthorizeConfig({
+            globalRoles: fieldAuth.globalRoles,
+            instanceRoleFragments,
+          });
+        }
 
         return {
           providers: {
@@ -102,7 +171,9 @@ export const pothosPrismaObjectGenerator = createGenerator({
               prismaOutput.getServiceEnum(enumName),
             );
 
-            const missingField = exposedFields.find(
+            const exposedFieldNames = exposedFields.map((f) => f.name);
+
+            const missingField = exposedFieldNames.find(
               (exposedFieldName) =>
                 !outputDto.fields.some(
                   (field) => field.name === exposedFieldName,
@@ -116,21 +187,36 @@ export const pothosPrismaObjectGenerator = createGenerator({
             }
 
             const fieldDefinitions = outputDto.fields
-              .filter((field) => exposedFields.includes(field.name))
-              .map((field) => ({
-                name: field.name,
-                fragment:
-                  field.type === 'scalar'
-                    ? writePothosExposeFieldFromDtoScalarField(field, {
-                        schemaBuilder: pothosTypeFile.getBuilderFragment(),
-                        fieldBuilder: 't',
-                        pothosSchemaBaseTypes,
-                        typeReferences: [],
-                      })
-                    : `t.relation('${field.name}'${
-                        field.isNullable ? ', { nullable: true }' : ''
-                      })`,
-              }));
+              .filter((field) => exposedFieldNames.includes(field.name))
+              .map((field) => {
+                const authorize = buildAuthorizeFragment(field.name);
+
+                let fragment: string | TsCodeFragment;
+                if (field.type === 'scalar') {
+                  fragment = writePothosExposeFieldFromDtoScalarField(field, {
+                    schemaBuilder: pothosTypeFile.getBuilderFragment(),
+                    fieldBuilder: 't',
+                    pothosSchemaBaseTypes,
+                    typeReferences: [],
+                    authorize,
+                  });
+                } else if (authorize || field.isNullable) {
+                  // Relation with options (nullable and/or authorize)
+                  const options: Record<string, string | TsCodeFragment> = {};
+                  if (field.isNullable) {
+                    options.nullable = 'true';
+                  }
+                  if (authorize) {
+                    options.authorize = authorize;
+                  }
+                  fragment = tsTemplate`t.relation(${quot(field.name)}, ${TsCodeUtils.mergeFragmentsAsObject(options)})`;
+                } else {
+                  // Simple relation with no options
+                  fragment = `t.relation('${field.name}')`;
+                }
+
+                return { name: field.name, fragment };
+              });
 
             const objectTypeBlock = TsCodeUtils.formatFragment(
               `export const VARIABLE_NAME = BUILDER.prismaObject(MODEL_NAME, {

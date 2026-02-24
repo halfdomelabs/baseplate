@@ -290,8 +290,17 @@
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": ["stripeCustomerId", "id"],
-          "localRelations": ["user"]
+          "fields": [
+            {
+              "globalRoles": [],
+              "instanceRoles": [],
+              "ref": "stripeCustomerId"
+            },
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "user" }
+          ]
         }
       },
       "id": "model:1sOpF6IeE-5r",
@@ -341,14 +350,16 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            "id",
-            "category",
-            "updatedAt",
-            "createdAt",
-            "mimeType",
-            "filename"
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "category" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "mimeType" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "filename" }
           ],
-          "localRelations": ["uploader"]
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "uploader" }
+          ]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user", "admin"] },
@@ -484,16 +495,20 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            "id",
-            "todoListId",
-            "position",
-            "text",
-            "done",
-            "updatedAt",
-            "createdAt"
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoListId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "position" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "text" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "done" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" }
           ],
-          "foreignRelations": ["attachments"],
-          "localRelations": ["todoList"]
+          "foreignRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "attachments" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoList" }
+          ]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user"] },
@@ -616,15 +631,19 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            "id",
-            "todoItemId",
-            "position",
-            "url",
-            "updatedAt",
-            "createdAt"
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoItemId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "position" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "url" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" }
           ],
-          "foreignRelations": ["tags"],
-          "localRelations": ["todoItem"]
+          "foreignRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "tags" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoItem" }
+          ]
         }
       },
       "id": "model:x2Fv9AGfXo3h",
@@ -708,8 +727,21 @@
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": ["todoItemAttachmentId", "tag"],
-          "localRelations": ["todoItemAttachment"]
+          "fields": [
+            {
+              "globalRoles": [],
+              "instanceRoles": [],
+              "ref": "todoItemAttachmentId"
+            },
+            { "globalRoles": [], "instanceRoles": [], "ref": "tag" }
+          ],
+          "localRelations": [
+            {
+              "globalRoles": [],
+              "instanceRoles": [],
+              "ref": "todoItemAttachment"
+            }
+          ]
         }
       },
       "id": "model:Z8tn1IzZwHPj",
@@ -765,15 +797,18 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            "id",
-            "ownerId",
-            "position",
-            "name",
-            "updatedAt",
-            "createdAt",
-            "status"
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "ownerId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "position" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "name" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "status" }
           ],
-          "localRelations": ["owner", "coverPhoto"]
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "owner" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "coverPhoto" }
+          ]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user"] },
@@ -911,8 +946,16 @@
         },
         "objectType": {
           "enabled": true,
-          "fields": ["todoListId", "userId", "createdAt", "updatedAt"],
-          "localRelations": ["todoList", "user"]
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoListId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "userId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoList" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "user" }
+          ]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user"] },
@@ -1011,8 +1054,19 @@
         },
         "objectType": {
           "enabled": true,
-          "fields": ["id", "name", "email", "updatedAt", "createdAt"],
-          "foreignRelations": ["roles", "todoLists", "userProfile", "customer"]
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "name" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "email" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" }
+          ],
+          "foreignRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "roles" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "todoLists" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "userProfile" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "customer" }
+          ]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user"] },
@@ -1145,8 +1199,14 @@
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": ["id", "userId", "fileId"],
-          "localRelations": ["file"]
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "userId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "fileId" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "file" }
+          ]
         }
       },
       "id": "model:VBQ_nqxAJc7X",
@@ -1232,14 +1292,17 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            "id",
-            "userId",
-            "bio",
-            "birthDay",
-            "avatarId",
-            "twitterHandle"
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "userId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "bio" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "birthDay" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "avatarId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "twitterHandle" }
           ],
-          "localRelations": ["user", "avatar"]
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "user" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "avatar" }
+          ]
         }
       },
       "id": "model:TXFx87PWHTOT",
@@ -1362,8 +1425,15 @@
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": ["userId", "role", "updatedAt", "createdAt"],
-          "localRelations": ["user"]
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "userId" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "role" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "updatedAt" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "createdAt" }
+          ],
+          "localRelations": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "user" }
+          ]
         }
       },
       "id": "model:BaCMR4fAOCPM",
@@ -1501,7 +1571,7 @@
       "version": "1.0.0"
     }
   ],
-  "schemaVersion": 23,
+  "schemaVersion": 24,
   "settings": {
     "general": {
       "name": "todo-with-auth0",
