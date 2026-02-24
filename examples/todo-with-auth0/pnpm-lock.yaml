@@ -1178,9 +1178,6 @@ packages:
   '@fastify/cookie@11.0.2':
     resolution: {integrity: sha512-GWdwdGlgJxyvNv+QcKiGNevSspMQXncjMZ1J8IvuDQk0jvkzgWWZFNC2En3s+nHndZBGV8IbLwOI/sxCZw/mzA==}
 
-  '@fastify/error@4.0.0':
-    resolution: {integrity: sha512-OO/SA8As24JtT1usTUTKgGH7uLvhfwZPwlptRi2Dp5P4KKmJI3gvsZ8MIHnNwDs4sLf/aai5LzTyl66xr7qMxA==}
-
   '@fastify/error@4.2.0':
     resolution: {integrity: sha512-RSo3sVDXfHskiBZKBPRgnQTtIqpi/7zhJOEmAxCiBcM7d0uwdGdxLlsCaLzGs8v8NnxIRlfG0N51p5yFaOentQ==}
 
@@ -2919,10 +2916,6 @@ packages:
 
   '@smithy/util-retry@4.2.8':
     resolution: {integrity: sha512-CfJqwvoRY0kTGe5AkQokpURNCT1u/MkRzMTASWMPPo2hNSnKtF1D45dQl3DE2LKLr4m+PW9mCeBMJr5mCAVThg==}
-    engines: {node: '>=18.0.0'}
-
-  '@smithy/util-stream@4.5.12':
-    resolution: {integrity: sha512-D8tgkrmhAX/UNeCZbqbEO3uqyghUnEmmoO9YEvRuwxjlkKKUE7FOgCJnqpTlQPe9MApdWPky58mNQQHbnCzoNg==}
     engines: {node: '>=18.0.0'}
 
   '@smithy/util-stream@4.5.13':
@@ -6630,7 +6623,7 @@ snapshots:
       '@smithy/util-endpoints': 3.2.8
       '@smithy/util-middleware': 4.2.8
       '@smithy/util-retry': 4.2.8
-      '@smithy/util-stream': 4.5.12
+      '@smithy/util-stream': 4.5.13
       '@smithy/util-utf8': 4.2.0
       '@smithy/util-waiter': 4.2.8
       tslib: 2.8.1
@@ -6719,7 +6712,7 @@ snapshots:
       '@smithy/protocol-http': 5.3.8
       '@smithy/smithy-client': 4.11.6
       '@smithy/types': 4.12.0
-      '@smithy/util-stream': 4.5.12
+      '@smithy/util-stream': 4.5.13
       tslib: 2.8.1
 
   '@aws-sdk/credential-provider-ini@3.972.9':
@@ -6846,7 +6839,7 @@ snapshots:
       '@smithy/protocol-http': 5.3.8
       '@smithy/types': 4.12.0
       '@smithy/util-middleware': 4.2.8
-      '@smithy/util-stream': 4.5.12
+      '@smithy/util-stream': 4.5.13
       '@smithy/util-utf8': 4.2.0
       tslib: 2.8.1
 
@@ -6890,7 +6883,7 @@ snapshots:
       '@smithy/types': 4.12.0
       '@smithy/util-config-provider': 4.2.0
       '@smithy/util-middleware': 4.2.8
-      '@smithy/util-stream': 4.5.12
+      '@smithy/util-stream': 4.5.13
       '@smithy/util-utf8': 4.2.0
       tslib: 2.8.1
 
@@ -7409,8 +7402,6 @@ snapshots:
       cookie: 1.0.2
       fastify-plugin: 5.1.0
 
-  '@fastify/error@4.0.0': {}
-
   '@fastify/error@4.2.0': {}
 
   '@fastify/fast-json-stringify-compiler@5.0.1':
@@ -7450,7 +7441,7 @@ snapshots:
       '@lukeed/ms': 2.0.2
       escape-html: 1.0.3
       fast-decode-uri-component: 1.0.1
-      http-errors: 2.0.0
+      http-errors: 2.0.1
       mime: 3.0.0
 
   '@fastify/static@8.3.0':
@@ -9465,17 +9456,6 @@ snapshots:
       '@smithy/types': 4.12.0
       tslib: 2.8.1
 
-  '@smithy/util-stream@4.5.12':
-    dependencies:
-      '@smithy/fetch-http-handler': 5.3.9
-      '@smithy/node-http-handler': 4.4.10
-      '@smithy/types': 4.12.0
-      '@smithy/util-base64': 4.3.0
-      '@smithy/util-buffer-from': 4.2.0
-      '@smithy/util-hex-encoding': 4.2.0
-      '@smithy/util-utf8': 4.2.0
-      tslib: 2.8.1
-
   '@smithy/util-stream@4.5.13':
     dependencies:
       '@smithy/fetch-http-handler': 5.3.9
@@ -10294,7 +10274,7 @@ snapshots:
 
   avvio@9.1.0:
     dependencies:
-      '@fastify/error': 4.0.0
+      '@fastify/error': 4.2.0
       fastq: 1.17.1
 
   aws-ssl-profiles@1.1.2: {}
@@ -11153,7 +11133,7 @@ snapshots:
   fastify@5.7.4:
     dependencies:
       '@fastify/ajv-compiler': 4.0.5
-      '@fastify/error': 4.0.0
+      '@fastify/error': 4.2.0
       '@fastify/fast-json-stringify-compiler': 5.0.1
       '@fastify/proxy-addr': 5.0.0
       abstract-logging: 2.0.1
