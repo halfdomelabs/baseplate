@@ -31,7 +31,7 @@ interface GraphQLObjectTypeSectionProps {
 
 interface FieldEntry {
   ref: string;
-  roles?: string[];
+  globalRoles?: string[];
   instanceRoles?: string[];
 }
 
@@ -63,7 +63,9 @@ function getUpdatedFieldEntries(
  */
 function clearEntryRoles(entries: FieldEntry[], ref: string): FieldEntry[] {
   return entries.map((entry) =>
-    entry.ref === ref ? { ...entry, roles: [], instanceRoles: [] } : entry,
+    entry.ref === ref
+      ? { ...entry, globalRoles: [], instanceRoles: [] }
+      : entry,
   );
 }
 
@@ -73,7 +75,7 @@ function clearEntryRoles(entries: FieldEntry[], ref: string): FieldEntry[] {
 function updateEntryRoles(
   entries: FieldEntry[],
   ref: string,
-  key: 'roles' | 'instanceRoles',
+  key: 'globalRoles' | 'instanceRoles',
   value: string[],
 ): FieldEntry[] {
   return entries.map((entry) =>
@@ -90,7 +92,7 @@ function getConfiguredRoleNames(
   instanceRoleOptions: { label: string; value: string }[],
 ): string[] {
   const names: string[] = [];
-  for (const roleId of entry.roles ?? []) {
+  for (const roleId of entry.globalRoles ?? []) {
     const role = roleOptions.find((r) => r.value === roleId);
     if (role) {
       names.push(role.label);
@@ -110,7 +112,7 @@ interface FieldAuthPopoverProps {
   roleOptions: { label: string; value: string }[];
   instanceRoleOptions: { label: string; value: string }[];
   disabled?: boolean;
-  onRolesChange: (roles: string[]) => void;
+  onGlobalRolesChange: (globalRoles: string[]) => void;
   onInstanceRolesChange: (instanceRoles: string[]) => void;
   onClearAll: () => void;
 }
@@ -120,12 +122,13 @@ function FieldAuthPopover({
   roleOptions,
   instanceRoleOptions,
   disabled,
-  onRolesChange,
+  onGlobalRolesChange,
   onInstanceRolesChange,
   onClearAll,
 }: FieldAuthPopoverProps): React.ReactElement {
   const hasRoles =
-    (entry.roles?.length ?? 0) > 0 || (entry.instanceRoles?.length ?? 0) > 0;
+    (entry.globalRoles?.length ?? 0) > 0 ||
+    (entry.instanceRoles?.length ?? 0) > 0;
   const configuredNames = getConfiguredRoleNames(
     entry,
     roleOptions,
@@ -179,8 +182,8 @@ function FieldAuthPopover({
           <MultiSwitchField
             label="Global Roles"
             options={roleOptions}
-            value={entry.roles ?? []}
-            onChange={onRolesChange}
+            value={entry.globalRoles ?? []}
+            onChange={onGlobalRolesChange}
           />
         )}
         {instanceRoleOptions.length > 0 && (
@@ -331,12 +334,12 @@ export function GraphQLObjectTypeSection({
                           roleOptions={roleOptions}
                           instanceRoleOptions={instanceRoleOptions}
                           disabled={!isChecked}
-                          onRolesChange={(roles) => {
+                          onGlobalRolesChange={(roles) => {
                             fieldsOnChange(
                               updateEntryRoles(
                                 fieldsValue,
                                 field.id,
-                                'roles',
+                                'globalRoles',
                                 roles,
                               ),
                             );
@@ -412,12 +415,12 @@ export function GraphQLObjectTypeSection({
                             roleOptions={roleOptions}
                             instanceRoleOptions={instanceRoleOptions}
                             disabled={!isChecked}
-                            onRolesChange={(roles) => {
+                            onGlobalRolesChange={(roles) => {
                               localRelationsOnChange(
                                 updateEntryRoles(
                                   localRelationsValue,
                                   relation.id,
-                                  'roles',
+                                  'globalRoles',
                                   roles,
                                 ),
                               );
@@ -499,12 +502,12 @@ export function GraphQLObjectTypeSection({
                             roleOptions={roleOptions}
                             instanceRoleOptions={instanceRoleOptions}
                             disabled={!isChecked}
-                            onRolesChange={(roles) => {
+                            onGlobalRolesChange={(roles) => {
                               foreignRelationsOnChange(
                                 updateEntryRoles(
                                   foreignRelationsValue,
                                   relation.foreignId,
-                                  'roles',
+                                  'globalRoles',
                                   roles,
                                 ),
                               );

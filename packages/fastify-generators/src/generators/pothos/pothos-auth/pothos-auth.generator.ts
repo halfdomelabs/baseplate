@@ -10,6 +10,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { pothosConfigProvider, pothosSchemaProvider } from '../pothos/index.js';
@@ -27,8 +28,16 @@ export interface PothosAuthorizeConfig {
   roles: string[];
 }
 
+export interface PothosMixedAuthorizeConfig {
+  globalRoles: string[];
+  instanceRoleFragments: TsCodeFragment[];
+}
+
 export interface PothosAuthProvider {
   formatAuthorizeConfig(config: PothosAuthorizeConfig): TsCodeFragment;
+  formatMixedAuthorizeConfig(
+    config: PothosMixedAuthorizeConfig,
+  ): TsCodeFragment;
 }
 
 export const pothosAuthProvider =
@@ -93,6 +102,13 @@ export const pothosAuthGenerator = createGenerator({
               formatAuthorizeConfig: (config) =>
                 // TODO: Validate roles
                 tsCodeFragment(JSON.stringify(config.roles)),
+              formatMixedAuthorizeConfig: (config) => {
+                const elements: (string | TsCodeFragment)[] = [
+                  ...config.globalRoles.map((role) => quot(role)),
+                  ...config.instanceRoleFragments,
+                ];
+                return TsCodeUtils.mergeFragmentsAsArrayPresorted(elements);
+              },
             },
           },
         };

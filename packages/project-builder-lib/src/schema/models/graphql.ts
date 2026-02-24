@@ -45,7 +45,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   onDelete: 'DELETE',
                   parentSlot: modelSlot,
                 }),
-                roles: createRoleArray(ctx),
+                globalRoles: createRoleArray(ctx),
                 instanceRoles: ctx.withDefault(
                   z.array(
                     ctx.withRef({
@@ -68,7 +68,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   onDelete: 'DELETE',
                   parentSlot: modelSlot,
                 }),
-                roles: createRoleArray(ctx),
+                globalRoles: createRoleArray(ctx),
                 instanceRoles: ctx.withDefault(
                   z.array(
                     ctx.withRef({
@@ -91,7 +91,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   onDelete: 'DELETE',
                   parentSlot: modelSlot,
                 }),
-                roles: createRoleArray(ctx),
+                globalRoles: createRoleArray(ctx),
                 instanceRoles: ctx.withDefault(
                   z.array(
                     ctx.withRef({

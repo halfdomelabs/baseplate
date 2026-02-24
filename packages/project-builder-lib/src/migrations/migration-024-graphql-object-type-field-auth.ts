@@ -2,18 +2,28 @@ import { createSchemaMigration } from './types.js';
 
 interface ObjectTypeFieldEntry {
   ref: string;
-  roles: string[];
+  globalRoles: string[];
   instanceRoles: string[];
 }
+
+// Input entries may be plain strings or objects with either `roles` (old) or `globalRoles` (new)
+type InputEntry =
+  | string
+  | {
+      ref: string;
+      roles?: string[];
+      globalRoles?: string[];
+      instanceRoles?: string[];
+    };
 
 interface Config {
   models?: {
     graphql?: {
       objectType?: {
         enabled?: boolean;
-        fields?: (string | ObjectTypeFieldEntry)[];
-        localRelations?: (string | ObjectTypeFieldEntry)[];
-        foreignRelations?: (string | ObjectTypeFieldEntry)[];
+        fields?: InputEntry[];
+        localRelations?: InputEntry[];
+        foreignRelations?: InputEntry[];
         [key: string]: unknown;
       };
       [key: string]: unknown;
@@ -24,19 +34,26 @@ interface Config {
 }
 
 function migrateRefArray(
-  refs: (string | ObjectTypeFieldEntry)[] | undefined,
+  refs: InputEntry[] | undefined,
 ): ObjectTypeFieldEntry[] | undefined {
   if (!refs) {
     return undefined;
   }
-  return refs.map((ref) =>
-    typeof ref === 'string' ? { ref, roles: [], instanceRoles: [] } : ref,
-  );
+  return refs.map((ref) => {
+    if (typeof ref === 'string') {
+      return { ref, globalRoles: [], instanceRoles: [] };
+    }
+    return {
+      ref: ref.ref,
+      globalRoles: ref.globalRoles ?? ref.roles ?? [],
+      instanceRoles: ref.instanceRoles ?? [],
+    };
+  });
 }
 
 /**
  * Migration to convert GraphQL objectType fields, localRelations, and
- * foreignRelations from string[] (plain ID refs) to Array<{ ref, roles, instanceRoles }>
+ * foreignRelations from string[] (plain ID refs) to Array<{ ref, globalRoles, instanceRoles }>
  * to support per-field authorization configuration.
  */
 export const migration024GraphqlObjectTypeFieldAuth = createSchemaMigration<

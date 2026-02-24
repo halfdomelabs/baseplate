@@ -23,15 +23,15 @@ describe('migration024GraphqlObjectTypeFieldAuth', () => {
     const result = migration024GraphqlObjectTypeFieldAuth.migrate(config);
 
     expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
-      { ref: 'field-1', roles: [], instanceRoles: [] },
-      { ref: 'field-2', roles: [], instanceRoles: [] },
+      { ref: 'field-1', globalRoles: [], instanceRoles: [] },
+      { ref: 'field-2', globalRoles: [], instanceRoles: [] },
     ]);
     expect(result.models?.[0].graphql?.objectType?.localRelations).toEqual([
-      { ref: 'rel-1', roles: [], instanceRoles: [] },
+      { ref: 'rel-1', globalRoles: [], instanceRoles: [] },
     ]);
     expect(result.models?.[0].graphql?.objectType?.foreignRelations).toEqual([
-      { ref: 'frel-1', roles: [], instanceRoles: [] },
-      { ref: 'frel-2', roles: [], instanceRoles: [] },
+      { ref: 'frel-1', globalRoles: [], instanceRoles: [] },
+      { ref: 'frel-2', globalRoles: [], instanceRoles: [] },
     ]);
   });
 
@@ -168,9 +168,38 @@ describe('migration024GraphqlObjectTypeFieldAuth', () => {
 
     const result = migration024GraphqlObjectTypeFieldAuth.migrate(config);
 
-    // Should preserve existing object entries
+    // Should rename roles → globalRoles
     expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
-      { ref: 'field-1', roles: ['role-1'], instanceRoles: [] },
+      { ref: 'field-1', globalRoles: ['role-1'], instanceRoles: [] },
+    ]);
+  });
+
+  it('handles data already using globalRoles', () => {
+    const config = {
+      models: [
+        {
+          name: 'User',
+          graphql: {
+            objectType: {
+              enabled: true,
+              fields: [
+                {
+                  ref: 'field-1',
+                  globalRoles: ['role-1'],
+                  instanceRoles: ['inst-1'],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    };
+
+    const result = migration024GraphqlObjectTypeFieldAuth.migrate(config);
+
+    // Should preserve globalRoles as-is
+    expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
+      { ref: 'field-1', globalRoles: ['role-1'], instanceRoles: ['inst-1'] },
     ]);
   });
 
@@ -202,14 +231,14 @@ describe('migration024GraphqlObjectTypeFieldAuth', () => {
     const result = migration024GraphqlObjectTypeFieldAuth.migrate(config);
 
     expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
-      { ref: 'field-1', roles: [], instanceRoles: [] },
+      { ref: 'field-1', globalRoles: [], instanceRoles: [] },
     ]);
     expect(result.models?.[1].graphql?.objectType?.fields).toEqual([
-      { ref: 'field-2', roles: [], instanceRoles: [] },
-      { ref: 'field-3', roles: [], instanceRoles: [] },
+      { ref: 'field-2', globalRoles: [], instanceRoles: [] },
+      { ref: 'field-3', globalRoles: [], instanceRoles: [] },
     ]);
     expect(result.models?.[1].graphql?.objectType?.localRelations).toEqual([
-      { ref: 'rel-1', roles: [], instanceRoles: [] },
+      { ref: 'rel-1', globalRoles: [], instanceRoles: [] },
     ]);
   });
 });

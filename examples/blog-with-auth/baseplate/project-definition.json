@@ -204,7 +204,10 @@
     {
       "featureRef": "blogs",
       "graphql": {
-        "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
+        "objectType": {
+          "enabled": true,
+          "fields": [{ "ref": "name" }, { "ref": "userId" }, { "ref": "id" }]
+        },
         "queries": {
           "get": { "enabled": true, "roles": ["public"] },
           "list": { "enabled": true, "roles": ["public"] }
@@ -485,8 +488,17 @@
         },
         "objectType": {
           "enabled": true,
-          "fields": ["id", "email", "name", "emailVerified"],
-          "foreignRelations": ["roles"]
+          "fields": [
+            { "ref": "id" },
+            {
+              "globalRoles": ["admin"],
+              "instanceRoles": ["owner"],
+              "ref": "email"
+            },
+            { "ref": "name" },
+            { "ref": "emailVerified" }
+          ],
+          "foreignRelations": [{ "ref": "roles" }]
         },
         "queries": {
           "get": { "enabled": true, "roles": ["user"] },
@@ -658,7 +670,10 @@
     {
       "featureRef": "accounts",
       "graphql": {
-        "objectType": { "enabled": true, "fields": ["userId", "role"] }
+        "objectType": {
+          "enabled": true,
+          "fields": [{ "ref": "userId" }, { "ref": "role" }]
+        }
       },
       "id": "model:3BNvsyfylc9c",
       "model": {
@@ -883,7 +898,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 23,
+  "schemaVersion": 24,
   "settings": {
     "general": {
       "name": "blog-with-auth",
