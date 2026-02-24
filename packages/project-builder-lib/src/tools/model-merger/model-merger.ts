@@ -95,6 +95,9 @@ export const modelMergerDefinitionDiffConfig =
     'graphql.objectType.enabled': new DefinitionDiffReplacementField(
       'GraphQL object type enabled',
     ),
+    // NOTE: ArrayIncludesField is add-only — it ensures fields are present but
+    // does not update properties (e.g. globalRoles, instanceRoles) on existing entries.
+    // This is acceptable for plugin-driven merging where auth config is user-managed.
     'graphql.objectType.fields': new DefinitionDiffArrayIncludesField(
       'GraphQL object type fields',
       (f: { ref: string }) => f.ref,

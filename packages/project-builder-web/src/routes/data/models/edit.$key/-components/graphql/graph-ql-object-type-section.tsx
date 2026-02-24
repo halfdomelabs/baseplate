@@ -107,6 +107,148 @@ function getConfiguredRoleNames(
   return names;
 }
 
+interface RoleOptions {
+  roleOptions: { label: string; value: string }[];
+  instanceRoleOptions: { label: string; value: string }[];
+}
+
+interface FieldEntryRowProps extends RoleOptions {
+  id: string;
+  entryRef: string;
+  label: string;
+  entry: FieldEntry | undefined;
+  entries: FieldEntry[];
+  allItems: { id: string }[];
+  disabled: boolean;
+  showAuth: boolean;
+  onChange: (entries: FieldEntry[]) => void;
+}
+
+function FieldEntryRow({
+  id,
+  entryRef,
+  label,
+  entry,
+  entries,
+  allItems,
+  disabled,
+  showAuth,
+  roleOptions,
+  instanceRoleOptions,
+  onChange,
+}: FieldEntryRowProps): React.ReactElement {
+  const isChecked = !!entry;
+  return (
+    <label
+      key={entryRef}
+      htmlFor={id}
+      className="flex cursor-pointer items-center gap-2 rounded px-1 py-0.5 hover:bg-muted/50"
+    >
+      <Checkbox
+        id={id}
+        aria-label={`Expose ${label}`}
+        disabled={disabled}
+        checked={isChecked}
+        onCheckedChange={(checked) => {
+          onChange(
+            getUpdatedFieldEntries(allItems, entries, !!checked, entryRef),
+          );
+        }}
+      />
+      <div className="flex h-8 w-full items-center gap-4 rounded-md border bg-muted px-3 text-sm">
+        <span>{label}</span>
+        <div
+          role="presentation"
+          className="ml-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          {showAuth && (
+            <FieldAuthPopover
+              entry={entry ?? { ref: entryRef }}
+              roleOptions={roleOptions}
+              instanceRoleOptions={instanceRoleOptions}
+              disabled={!isChecked}
+              onGlobalRolesChange={(roles) => {
+                onChange(
+                  updateEntryRoles(entries, entryRef, 'globalRoles', roles),
+                );
+              }}
+              onInstanceRolesChange={(instanceRoles) => {
+                onChange(
+                  updateEntryRoles(
+                    entries,
+                    entryRef,
+                    'instanceRoles',
+                    instanceRoles,
+                  ),
+                );
+              }}
+              onClearAll={() => {
+                onChange(clearEntryRoles(entries, entryRef));
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </label>
+  );
+}
+
+interface FieldEntryListProps extends RoleOptions {
+  label: string;
+  items: { id: string; name: string }[];
+  entries: FieldEntry[];
+  disabled: boolean;
+  showAuth: boolean;
+  idPrefix: string;
+  onChange: (entries: FieldEntry[]) => void;
+  getId?: (item: { id: string; name: string }) => string;
+  getLabel?: (item: { id: string; name: string }) => string;
+}
+
+function FieldEntryList({
+  label: listLabel,
+  items,
+  entries,
+  disabled,
+  showAuth,
+  idPrefix,
+  roleOptions,
+  instanceRoleOptions,
+  onChange,
+  getId = (item) => item.id,
+  getLabel = (item) => item.name,
+}: FieldEntryListProps): React.ReactElement {
+  return (
+    <div>
+      <Label className="pb-2">{listLabel}</Label>
+      <div className="space-y-0.5">
+        {items.map((item) => {
+          const itemRef = getId(item);
+          return (
+            <FieldEntryRow
+              key={item.id}
+              id={`${idPrefix}-${itemRef}`}
+              entryRef={itemRef}
+              label={getLabel(item)}
+              entry={entries.find((e: FieldEntry) => e.ref === itemRef)}
+              entries={entries}
+              allItems={items.map((i) => ({ id: getId(i) }))}
+              disabled={disabled}
+              showAuth={showAuth}
+              roleOptions={roleOptions}
+              instanceRoleOptions={instanceRoleOptions}
+              onChange={onChange}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 interface FieldAuthPopoverProps {
   entry: FieldEntry;
   roleOptions: { label: string; value: string }[];
@@ -288,257 +430,49 @@ export function GraphQLObjectTypeSection({
           label="Enable Object Type"
           description="Must be enabled for queries, mutations, and any relations to this model"
         />
-        {/* Exposed Fields */}
-        <div>
-          <Label className="pb-2">Exposed Fields</Label>
-          <div className="space-y-0.5">
-            {fields.map((field) => {
-              const entry = fieldsValue.find(
-                (e: FieldEntry) => e.ref === field.id,
-              );
-              const isChecked = !!entry;
-              return (
-                <label
-                  key={field.id}
-                  htmlFor={`field-${field.id}`}
-                  className="flex cursor-pointer items-center gap-2 rounded px-1 py-0.5 hover:bg-muted/50"
-                >
-                  <Checkbox
-                    id={`field-${field.id}`}
-                    aria-label={`Expose ${field.name} field`}
-                    disabled={!isObjectTypeEnabled}
-                    checked={isChecked}
-                    onCheckedChange={(checked) => {
-                      fieldsOnChange(
-                        getUpdatedFieldEntries(
-                          fields,
-                          fieldsValue,
-                          !!checked,
-                          field.id,
-                        ),
-                      );
-                    }}
-                  />
-                  <div className="flex h-8 w-full items-center gap-4 rounded-md border bg-muted px-3 text-sm">
-                    <span>{field.name}</span>
-                    <div
-                      role="presentation"
-                      className="ml-auto"
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      {isObjectTypeEnabled && hasAuthOptions && (
-                        <FieldAuthPopover
-                          entry={entry ?? { ref: field.id }}
-                          roleOptions={roleOptions}
-                          instanceRoleOptions={instanceRoleOptions}
-                          disabled={!isChecked}
-                          onGlobalRolesChange={(roles) => {
-                            fieldsOnChange(
-                              updateEntryRoles(
-                                fieldsValue,
-                                field.id,
-                                'globalRoles',
-                                roles,
-                              ),
-                            );
-                          }}
-                          onInstanceRolesChange={(instanceRoles) => {
-                            fieldsOnChange(
-                              updateEntryRoles(
-                                fieldsValue,
-                                field.id,
-                                'instanceRoles',
-                                instanceRoles,
-                              ),
-                            );
-                          }}
-                          onClearAll={() => {
-                            fieldsOnChange(
-                              clearEntryRoles(fieldsValue, field.id),
-                            );
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-        {/* Exposed Local Relations */}
+        <FieldEntryList
+          label="Exposed Fields"
+          items={fields}
+          entries={fieldsValue}
+          disabled={!isObjectTypeEnabled}
+          showAuth={!!isObjectTypeEnabled && hasAuthOptions}
+          idPrefix="field"
+          roleOptions={roleOptions}
+          instanceRoleOptions={instanceRoleOptions}
+          onChange={fieldsOnChange}
+        />
         {localRelations.length > 0 && (
-          <div>
-            <Label className="pb-2">Exposed Local Relations</Label>
-            <div className="space-y-0.5">
-              {localRelations.map((relation) => {
-                const entry = localRelationsValue.find(
-                  (e: FieldEntry) => e.ref === relation.id,
-                );
-                const isChecked = !!entry;
-                return (
-                  <label
-                    key={relation.id}
-                    htmlFor={`local-rel-${relation.id}`}
-                    className="flex cursor-pointer items-center gap-2 rounded px-1 py-0.5 hover:bg-muted/50"
-                  >
-                    <Checkbox
-                      id={`local-rel-${relation.id}`}
-                      aria-label={`Expose ${relation.name} relation`}
-                      disabled={!isObjectTypeEnabled}
-                      checked={isChecked}
-                      onCheckedChange={(checked) => {
-                        localRelationsOnChange(
-                          getUpdatedFieldEntries(
-                            localRelations,
-                            localRelationsValue,
-                            !!checked,
-                            relation.id,
-                          ),
-                        );
-                      }}
-                    />
-                    <div className="flex h-8 w-full items-center gap-4 rounded-md border bg-muted px-3 text-sm">
-                      <span>{relation.name}</span>
-                      <div
-                        role="presentation"
-                        className="ml-auto"
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                      >
-                        {isObjectTypeEnabled && hasAuthOptions && (
-                          <FieldAuthPopover
-                            entry={entry ?? { ref: relation.id }}
-                            roleOptions={roleOptions}
-                            instanceRoleOptions={instanceRoleOptions}
-                            disabled={!isChecked}
-                            onGlobalRolesChange={(roles) => {
-                              localRelationsOnChange(
-                                updateEntryRoles(
-                                  localRelationsValue,
-                                  relation.id,
-                                  'globalRoles',
-                                  roles,
-                                ),
-                              );
-                            }}
-                            onInstanceRolesChange={(instanceRoles) => {
-                              localRelationsOnChange(
-                                updateEntryRoles(
-                                  localRelationsValue,
-                                  relation.id,
-                                  'instanceRoles',
-                                  instanceRoles,
-                                ),
-                              );
-                            }}
-                            onClearAll={() => {
-                              localRelationsOnChange(
-                                clearEntryRoles(
-                                  localRelationsValue,
-                                  relation.id,
-                                ),
-                              );
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          <FieldEntryList
+            label="Exposed Local Relations"
+            items={localRelations}
+            entries={localRelationsValue}
+            disabled={!isObjectTypeEnabled}
+            showAuth={!!isObjectTypeEnabled && hasAuthOptions}
+            idPrefix="local-rel"
+            roleOptions={roleOptions}
+            instanceRoleOptions={instanceRoleOptions}
+            onChange={localRelationsOnChange}
+          />
         )}
-        {/* Exposed Foreign Relations */}
         {foreignRelations.length > 0 && (
-          <div>
-            <Label className="pb-2">Exposed Foreign Relations</Label>
-            <div className="space-y-0.5">
-              {foreignRelations.map(({ relation }) => {
-                const entry = foreignRelationsValue.find(
-                  (e: FieldEntry) => e.ref === relation.foreignId,
-                );
-                const isChecked = !!entry;
-                return (
-                  <label
-                    key={relation.id}
-                    htmlFor={`foreign-rel-${relation.foreignId}`}
-                    className="flex cursor-pointer items-center gap-2 rounded px-1 py-0.5 hover:bg-muted/50"
-                  >
-                    <Checkbox
-                      id={`foreign-rel-${relation.foreignId}`}
-                      aria-label={`Expose ${relation.foreignRelationName} relation`}
-                      disabled={!isObjectTypeEnabled}
-                      checked={isChecked}
-                      onCheckedChange={(checked) => {
-                        foreignRelationsOnChange(
-                          getUpdatedFieldEntries(
-                            foreignRelations.map(({ relation }) => ({
-                              id: relation.foreignId,
-                            })),
-                            foreignRelationsValue,
-                            !!checked,
-                            relation.foreignId,
-                          ),
-                        );
-                      }}
-                    />
-                    <div className="flex h-8 w-full items-center gap-4 rounded-md border bg-muted px-3 text-sm">
-                      <span>{relation.foreignRelationName}</span>
-                      <div
-                        role="presentation"
-                        className="ml-auto"
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                      >
-                        {isObjectTypeEnabled && hasAuthOptions && (
-                          <FieldAuthPopover
-                            entry={entry ?? { ref: relation.foreignId }}
-                            roleOptions={roleOptions}
-                            instanceRoleOptions={instanceRoleOptions}
-                            disabled={!isChecked}
-                            onGlobalRolesChange={(roles) => {
-                              foreignRelationsOnChange(
-                                updateEntryRoles(
-                                  foreignRelationsValue,
-                                  relation.foreignId,
-                                  'globalRoles',
-                                  roles,
-                                ),
-                              );
-                            }}
-                            onInstanceRolesChange={(instanceRoles) => {
-                              foreignRelationsOnChange(
-                                updateEntryRoles(
-                                  foreignRelationsValue,
-                                  relation.foreignId,
-                                  'instanceRoles',
-                                  instanceRoles,
-                                ),
-                              );
-                            }}
-                            onClearAll={() => {
-                              foreignRelationsOnChange(
-                                clearEntryRoles(
-                                  foreignRelationsValue,
-                                  relation.foreignId,
-                                ),
-                              );
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          <FieldEntryList
+            label="Exposed Foreign Relations"
+            items={foreignRelations.map(({ relation }) => ({
+              id: relation.id,
+              name: relation.foreignRelationName,
+            }))}
+            entries={foreignRelationsValue}
+            disabled={!isObjectTypeEnabled}
+            showAuth={!!isObjectTypeEnabled && hasAuthOptions}
+            idPrefix="foreign-rel"
+            roleOptions={roleOptions}
+            instanceRoleOptions={instanceRoleOptions}
+            onChange={foreignRelationsOnChange}
+            getId={({ id }) => {
+              const rel = foreignRelations.find((fr) => fr.relation.id === id);
+              return rel?.relation.foreignId ?? id;
+            }}
+          />
         )}
       </SectionListSectionContent>
     </SectionListSection>
