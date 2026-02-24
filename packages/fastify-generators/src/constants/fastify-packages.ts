@@ -75,7 +75,7 @@ export const FASTIFY_PACKAGES = {
   '@node-rs/argon2': '2.0.2',
 
   // Postmark
-  postmark: '4.0.5',
+  postmark: '4.0.7',
 
   // Stripe
   stripe: '14.5.0',

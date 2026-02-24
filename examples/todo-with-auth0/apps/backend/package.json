@@ -32,10 +32,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.990.0",
-    "@aws-sdk/lib-storage": "3.990.0",
-    "@aws-sdk/s3-presigned-post": "3.990.0",
-    "@aws-sdk/s3-request-presigner": "3.990.0",
+    "@aws-sdk/client-s3": "3.995.0",
+    "@aws-sdk/lib-storage": "3.995.0",
+    "@aws-sdk/s3-presigned-post": "3.995.0",
+    "@aws-sdk/s3-request-presigner": "3.995.0",
     "@envelop/core": "5.3.0",
     "@envelop/disable-introspection": "8.0.0",
     "@fastify/cookie": "11.0.1",
@@ -59,7 +59,7 @@
     "bullmq": "5.61.2",
     "es-toolkit": "1.44.0",
     "fastify": "5.7.4",
-    "fastify-auth0-verify": "3.0.0",
+    "fastify-auth0-verify": "4.1.0",
     "fastify-plugin": "5.1.0",
     "fastify-raw-body": "5.0.0",
     "graphql": "16.11.0",

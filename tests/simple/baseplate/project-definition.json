@@ -1,14 +1,15 @@
 {
   "apps": [
     {
+      "devPort": 3001,
       "id": "app:mR1UDTfwWdRw",
       "name": "backend",
-      "devPort": 3001,
       "type": "backend"
     },
     {
       "adminApp": { "enabled": false, "pathPrefix": "/admin" },
       "description": "",
+      "devPort": 3030,
       "enableDatadog": false,
       "enableSubscriptions": false,
       "id": "app:UBXtvxZtQ4ap",
@@ -16,7 +17,6 @@
       "includeUploadComponents": false,
       "name": "web",
       "packageLocation": "",
-      "devPort": 3030,
       "title": "",
       "type": "web"
     }
@@ -30,7 +30,11 @@
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": ["id", "title", "content"],
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "title" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "content" }
+          ],
           "foreignRelations": [],
           "localRelations": []
         },
@@ -80,7 +84,7 @@
     }
   ],
   "plugins": [],
-  "schemaVersion": 23,
+  "schemaVersion": 24,
   "settings": {
     "general": { "name": "simple", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

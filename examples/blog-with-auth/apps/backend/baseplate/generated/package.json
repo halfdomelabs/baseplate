@@ -61,7 +61,7 @@
     "nanoid": "5.1.6",
     "pg-boss": "11.1.1",
     "pino": "9.5.0",
-    "postmark": "4.0.5",
+    "postmark": "4.0.7",
     "rate-limiter-flexible": "9.1.0",
     "zod": "4.3.6"
   },
