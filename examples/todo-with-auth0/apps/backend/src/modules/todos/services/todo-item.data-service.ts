@@ -22,14 +22,14 @@ import {
   composeUpdate,
 } from '@src/utils/data-operations/compose-operations.js';
 import {
-  generateCreateSchema,
-  generateUpdateSchema,
-} from '@src/utils/data-operations/define-operations.js';
-import {
   createParentModelConfig,
   nestedOneToManyField,
   scalarField,
 } from '@src/utils/data-operations/field-definitions.js';
+import {
+  generateCreateSchema,
+  generateUpdateSchema,
+} from '@src/utils/data-operations/field-utils.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import { todoItemAttachmentInputFields } from './todo-item-attachment.data-service.js';

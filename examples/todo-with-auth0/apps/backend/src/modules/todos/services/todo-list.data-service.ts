@@ -21,11 +21,11 @@ import {
   composeCreate,
   composeUpdate,
 } from '@src/utils/data-operations/compose-operations.js';
+import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import {
   generateCreateSchema,
   generateUpdateSchema,
-} from '@src/utils/data-operations/define-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
+} from '@src/utils/data-operations/field-utils.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import { fileField } from '../../storage/services/file-field.js';

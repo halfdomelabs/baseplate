@@ -20,7 +20,7 @@ import type {
 
 import { checkInstanceAuthorization } from '../authorizers.js';
 import { NotFoundError } from '../http-errors.js';
-import { invokeHooks } from './define-operations.js';
+import { invokeHooks } from './field-utils.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**

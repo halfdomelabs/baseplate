@@ -26,7 +26,7 @@ import {
   generateCreateSchema,
   invokeHooks,
   transformFields,
-} from './define-operations.js';
+} from './field-utils.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**

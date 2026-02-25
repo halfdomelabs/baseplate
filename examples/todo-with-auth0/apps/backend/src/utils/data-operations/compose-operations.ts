@@ -14,7 +14,7 @@ import {
   checkGlobalAuthorization,
   checkInstanceAuthorization,
 } from '../authorizers.js';
-import { transformFields } from './define-operations.js';
+import { transformFields } from './field-utils.js';
 import { CreatePlan, UpdatePlan } from './types.js';
 
 /**
