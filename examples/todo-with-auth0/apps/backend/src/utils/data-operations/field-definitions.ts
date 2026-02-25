@@ -213,15 +213,13 @@ export interface NestedOneToOneFieldConfig<
  *       avatar: fileField(avatarFileCategory),
  *     },
  *     getWhereUnique: (parent) => ({ userId: parent.id }),
- *     buildData: (data) => ({
- *       create: {
- *         bio: data.create.bio,
- *         avatar: data.create.avatar ? { connect: { id: data.create.avatar } } : undefined,
- *       },
- *       update: {
- *         bio: data.update.bio,
- *         avatar: data.update.avatar ? { connect: { id: data.update.avatar } } : undefined,
- *       },
+ *     buildCreateData: (data) => ({
+ *       bio: data.bio,
+ *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
+ *     }),
+ *     buildUpdateData: (data) => ({
+ *       bio: data.bio,
+ *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
  *     }),
  *   }),
  * };
@@ -508,7 +506,7 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  * @template TRelationName - Relation field name on child model
  * @template TFields - Field definitions for each child item
  * @param config - Configuration object for the one-to-many relationship
- * @returns Field definition for use in `defineCreateOperation` or `defineUpdateOperation`
+ * @returns Field definition for use with `composeCreate`/`composeUpdate` and `commitCreate`/`commitUpdate`
  *
  * @example
  * ```typescript
@@ -522,10 +520,8 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  *       caption: scalarField(z.string()),
  *     },
  *     getWhereUnique: (input) => input.id ? { id: input.id } : undefined,
- *     buildData: (data) => ({
- *       create: { caption: data.caption },
- *       update: { caption: data.caption },
- *     }),
+ *     buildCreateData: (data) => ({ caption: data.caption }),
+ *     buildUpdateData: (data) => ({ caption: data.caption }),
  *   }),
  * };
  *
@@ -626,7 +622,7 @@ export function nestedOneToManyField<
       const processedItems = await Promise.all(
         value.map(async (itemInput, idx) => {
           const whereUnique =
-            existingModel && config.getWhereUnique(itemInput, existingModel);
+            existingModel && getWhereUnique(itemInput, existingModel);
 
           const { data, hooks } = await transformFields(
             config.fields,
@@ -727,7 +723,10 @@ export function nestedOneToManyField<
 
             results[idx] = item.whereUnique
               ? await prismaDelegate.upsert({
-                  where: item.whereUnique,
+                  where: {
+                    ...item.whereUnique,
+                    ...whereFromOriginalModel,
+                  } as WhereUniqueInput<TModelName>,
                   create: builtCreate,
                   update: builtUpdate,
                 })

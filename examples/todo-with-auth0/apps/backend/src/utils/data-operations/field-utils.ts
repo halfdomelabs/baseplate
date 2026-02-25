@@ -162,7 +162,7 @@ export async function transformFields<
  *
  * @template TFields - Record of field definitions
  * @param fields - Field definitions to extract schemas from
- * @returns Zod object schema with all fields required
+ * @returns Zod object schema preserving each field's optionality
  */
 export function generateCreateSchema<
   TFields extends Record<string, AnyFieldDefinition>,

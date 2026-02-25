@@ -227,10 +227,8 @@ export interface FieldDefinition<
   schema: TInputSchema;
 
   /**
-   * Processes and transforms an input value.
-   *
-   * Note: Validation happens at the operation level (defineCreateOperation/defineUpdateOperation),
-   * not at the field level. This function receives already-validated input.
+   * Processes and transforms an already-validated input value into
+   * Prisma-compatible create/update data.
    *
    * @param value - The validated input value to process
    * @param ctx - Context about the operation
