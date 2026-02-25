@@ -26,11 +26,12 @@ Baseplate is organized into several core packages:
 
 ### Project Builder
 
-- **packages/project-builder-cli** (`@baseplate-dev/project-builder-cli`): CLI application that starts the server and web interface
+- **packages/project-builder-cli** (`@baseplate-dev/project-builder-cli`): End-user CLI (`baseplate` binary) for syncing, diffing, and serving projects
+- **packages/project-builder-dev** (`@baseplate-dev/project-builder-dev`): Developer tooling CLI (`baseplate-dev` binary) for plugin authors — templates, snapshots, sync-examples, sync, diff, serve, and full MCP server
 - **packages/project-builder-web** (`@baseplate-dev/project-builder-web`): React app for configuring project definitions
 - **packages/project-builder-server** (`@baseplate-dev/project-builder-server`): Fastify-based backend API for the web interface using TRPC
 - **packages/project-builder-lib** (`@baseplate-dev/project-builder-lib`): Shared library with common logic and schema definitions
-- **packages/project-builder-common** (`@baseplate-dev/project-builder-common`): Common types and utilities shared across builder packages
+- **packages/project-builder-common** (`@baseplate-dev/project-builder-common`): Bundle package that provides default plugins (`plugin-auth`, `plugin-email`, `plugin-queue`, `plugin-rate-limit`, `plugin-storage`) and exposes `getDefaultPlugins()`
 - **packages/project-builder-test** (`@baseplate-dev/project-builder-test`): Test runner and utilities for integration testing
 - **packages/create-project** (`@baseplate-dev/create-project`): CLI tool for bootstrapping new Baseplate projects
 - **packages/ui-components** (`@baseplate-dev/ui-components`): Reusable UI component library with Storybook

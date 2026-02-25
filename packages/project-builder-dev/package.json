@@ -43,10 +43,15 @@
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** --env-file-if-exists=../../.env --env-file-if-exists=.env --env-file-if-exists=.env.local -C development ./src/cli.ts",
+    "dev:dev-server": "pnpm dev dev-server",
+    "dev:serve": "pnpm dev serve",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env --env-file-if-exists=.env.local -C development ./src/cli.ts",
+    "project:generate": "pnpm start sync",
+    "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env -C development ./src/cli.ts",
+    "templates:extract": "pnpm start templates extract",
+    "templates:generate": "pnpm start templates generate",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {

@@ -2,10 +2,12 @@ import { getPackageVersion } from '@baseplate-dev/utils/node';
 import { program } from 'commander';
 
 import { addDevServerCommand } from './commands/dev-server.js';
+import { addDiffCommand } from './commands/diff.js';
 import { addMcpCommand } from './commands/mcp.js';
 import { addServeCommand } from './commands/serve.js';
 import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncExamplesCommand } from './commands/sync-examples.js';
+import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
 
 /**
@@ -17,6 +19,8 @@ export async function runDevCli(): Promise<void> {
 
   program.version(version, '-v, --version');
 
+  addSyncCommand(program);
+  addDiffCommand(program);
   addTemplatesCommand(program);
   addSnapshotCommand(program);
   addSyncExamplesCommand(program);
