@@ -37,7 +37,7 @@ import { makeGenericPrismaDelegate } from './prisma-utils.js';
  *
  * @template TSchema - The Zod schema type for validation
  * @param schema - Zod schema for validation
- * @returns Field definition
+ * @returns Scalar field definition that maps validated input directly to Prisma create/update data
  *
  * @example
  * ```typescript
@@ -429,7 +429,8 @@ export interface NestedOneToManyFieldConfig<
 
   /**
    * Transform validated create field data into final Prisma structure for a single item.
-   * The returned payload should not include the parent relation field, as it will be added automatically.
+   * The parent relation connect is included in the data parameter. You can pass it
+   * through directly (e.g., `(data) => data`) or restructure as needed.
    */
   buildCreateData: (
     data: InferFieldsCreateOutput<TFields> &
@@ -497,6 +498,9 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  * - **Create**: Items without unique identifiers are created as new records
  * - **Delete**: Existing items not present in the input array are removed
  * - **No Change**: Passing `undefined` leaves the collection unchanged
+ *
+ * **Important:** When a value is provided (not `undefined`), the input array is treated
+ * as the complete collection. Existing items not present in the array will be deleted.
  *
  * All operations are performed atomically within the parent operation's transaction,
  * ensuring data consistency even if the operation fails.

@@ -106,7 +106,7 @@ function connectCreate<
  * owner: relationHelpers.connectUpdate({ userId: null, tenantId: 'tenant-1' })
  *
  * @example
- * // Composite key - no change (if any field is undefined)
+ * // Composite key - no change (if any field is undefined, the entire relation is unchanged)
  * owner: relationHelpers.connectUpdate({ userId: undefined, tenantId: 'tenant-1' })
  */
 function connectUpdate<
