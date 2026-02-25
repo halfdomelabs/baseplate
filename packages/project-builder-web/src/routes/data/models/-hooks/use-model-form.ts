@@ -16,7 +16,7 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
-import { toast, useEventCallback } from '@baseplate-dev/ui-components';
+import { useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useMemo, useRef } from 'react';
@@ -88,15 +88,8 @@ export function useModelForm({
           ...model,
           ...data,
         };
-        if (updatedModel.model.fields.length === 0) {
-          toast.error('Model must have at least one field.');
-          return;
-        }
-        if (updatedModel.model.primaryKeyFieldRefs.length === 0) {
-          toast.error('Model must have at least one primary key field.');
-          return;
-        }
-        // check for models with the same name
+
+        // Check for models with the same name
         const existingModel = definition.models.find(
           (m) =>
             m.id !== data.id &&
@@ -107,57 +100,6 @@ export function useModelForm({
             message: `Model with name ${updatedModel.name} already exists.`,
           });
           return;
-        }
-
-        // clear out any service methods that are disabled
-        const { service } = updatedModel;
-        if (service.create.enabled) {
-          if (
-            !service.create.fields?.length &&
-            !service.create.transformerNames?.length
-          ) {
-            toast.error(
-              'Create method must have at least one field or transformer.',
-            );
-            return;
-          }
-        } else {
-          service.create = {
-            enabled: false,
-          };
-        }
-        if (service.update.enabled) {
-          if (
-            !service.update.fields?.length &&
-            !service.update.transformerNames?.length
-          ) {
-            toast.error(
-              'Update method must have at least one field or transformer.',
-            );
-            return;
-          }
-        } else {
-          service.update = {
-            enabled: false,
-          };
-        }
-        if (!service.delete.enabled) {
-          service.delete = {
-            enabled: false,
-          };
-        }
-        if (
-          !service.create.enabled &&
-          !service.update.enabled &&
-          !service.delete.enabled &&
-          service.transformers.length === 0
-        ) {
-          updatedModel.service = {
-            create: { enabled: false },
-            update: { enabled: false },
-            delete: { enabled: false },
-            transformers: [],
-          };
         }
 
         return saveDefinitionWithFeedback(

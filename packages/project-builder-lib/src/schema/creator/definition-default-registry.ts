@@ -6,7 +6,7 @@ import type { z } from 'zod';
  * During serialization, `cleanDefaultValues()` walks the schema and uses this
  * metadata to identify and remove values that match their defaults.
  */
-export interface DefaultSchemaMeta {
+interface DefaultSchemaMeta {
   readonly defaultValue: unknown;
 }
 

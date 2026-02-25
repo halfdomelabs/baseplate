@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
+import type { FieldIssueCheckerContext } from '#src/schema/creator/definition-issue-registry.js';
+import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
 import type { def } from '#src/schema/creator/index.js';
 
 import { createDefinitionEntityNameResolver } from '#src/references/index.js';
+import { withFix } from '#src/schema/creator/definition-fix-registry.js';
+import { withIssueChecker } from '#src/schema/creator/definition-issue-registry.js';
 import {
   definitionSchema,
   definitionSchemaWithSlots,
@@ -251,116 +255,220 @@ export type ModelUniqueConstraintConfigInput = def.InferInput<
   typeof createModelUniqueConstraintSchema
 >;
 
+/**
+ * Checks that enabled service methods have at least one field or transformer.
+ */
+function checkServiceMethods(
+  value: unknown,
+  ctx: FieldIssueCheckerContext,
+): DefinitionIssue[] {
+  const service = value as ModelServiceConfig;
+  const issues: DefinitionIssue[] = [];
+
+  if (
+    service.create.enabled &&
+    !service.create.fields?.length &&
+    !service.create.transformerNames?.length
+  ) {
+    issues.push({
+      message: 'Create method must have at least one field or transformer.',
+      path: [...ctx.path, 'create'],
+      severity: 'error',
+    });
+  }
+
+  if (
+    service.update.enabled &&
+    !service.update.fields?.length &&
+    !service.update.transformerNames?.length
+  ) {
+    issues.push({
+      message: 'Update method must have at least one field or transformer.',
+      path: [...ctx.path, 'update'],
+      severity: 'error',
+    });
+  }
+
+  return issues;
+}
+
 export const createModelServiceSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType },
   (ctx, { modelSlot }) =>
-    z.object({
-      create: z
-        .object({
-          enabled: z.boolean().default(false),
-          fields: z
-            .array(
-              ctx.withRef({
-                type: modelScalarFieldEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
-              }),
-            )
-            .optional(),
-          transformerNames: z
-            .array(
-              ctx.withRef({
-                type: modelTransformerEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
-              }),
-            )
-            .optional(),
-        })
-        .default({ enabled: false }),
-      update: z
-        .object({
-          enabled: z.boolean().default(false),
-          fields: z
-            .array(
-              ctx.withRef({
-                type: modelScalarFieldEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
-              }),
-            )
-            .optional(),
-          transformerNames: z
-            .array(
-              ctx.withRef({
-                type: modelTransformerEntityType,
-                onDelete: 'DELETE',
-                parentSlot: modelSlot,
-              }),
-            )
-            .optional(),
-        })
-        .default({ enabled: false }),
-      delete: z
-        .object({
-          enabled: z.boolean().default(false),
-        })
-        .default({
-          enabled: false,
+    z
+      .object({
+        create: z
+          .object({
+            enabled: z.boolean().default(false),
+            fields: z
+              .array(
+                ctx.withRef({
+                  type: modelScalarFieldEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .optional(),
+            transformerNames: z
+              .array(
+                ctx.withRef({
+                  type: modelTransformerEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .optional(),
+          })
+          .default({ enabled: false }),
+        update: z
+          .object({
+            enabled: z.boolean().default(false),
+            fields: z
+              .array(
+                ctx.withRef({
+                  type: modelScalarFieldEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .optional(),
+            transformerNames: z
+              .array(
+                ctx.withRef({
+                  type: modelTransformerEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .optional(),
+          })
+          .default({ enabled: false }),
+        delete: z
+          .object({
+            enabled: z.boolean().default(false),
+          })
+          .default({
+            enabled: false,
+          }),
+        transformers: z
+          .array(createTransformerSchema(ctx, { modelSlot }))
+          .default([]),
+      })
+      .apply(
+        withFix((value) => {
+          const fixed = { ...value };
+
+          if (!fixed.create.enabled) {
+            fixed.create = { enabled: false };
+          }
+          if (!fixed.update.enabled) {
+            fixed.update = { enabled: false };
+          }
+          if (!fixed.delete.enabled) {
+            fixed.delete = { enabled: false };
+          }
+
+          // If nothing is enabled and there are no transformers, reset entirely
+          if (
+            !fixed.create.enabled &&
+            !fixed.update.enabled &&
+            !fixed.delete.enabled &&
+            fixed.transformers.length === 0
+          ) {
+            return {
+              create: { enabled: false },
+              update: { enabled: false },
+              delete: { enabled: false },
+              transformers: [],
+            };
+          }
+
+          return fixed;
         }),
-      transformers: z
-        .array(createTransformerSchema(ctx, { modelSlot }))
-        .default([]),
-    }),
+      )
+      .apply(withIssueChecker(checkServiceMethods)),
 );
 
 export type ModelServiceConfig = def.InferOutput<
   typeof createModelServiceSchema
 >;
 
+/**
+ * Checks model-level constraints: must have fields and primary keys.
+ */
+function checkModelConstraints(
+  value: unknown,
+  ctx: FieldIssueCheckerContext,
+): DefinitionIssue[] {
+  const model = value as {
+    model: { fields: unknown[]; primaryKeyFieldRefs: string[] };
+  };
+  const issues: DefinitionIssue[] = [];
+
+  if (model.model.fields.length === 0) {
+    issues.push({
+      message: 'Model must have at least one field.',
+      path: [...ctx.path, 'model', 'fields'],
+      severity: 'error',
+    });
+  }
+
+  if (model.model.primaryKeyFieldRefs.length === 0) {
+    issues.push({
+      message: 'Model must have at least one primary key field.',
+      path: [...ctx.path, 'model', 'primaryKeyFieldRefs'],
+      severity: 'error',
+    });
+  }
+
+  return issues;
+}
+
 export const createModelBaseSchema = definitionSchemaWithSlots(
   { modelSlot: modelEntityType },
   (ctx, slots) =>
-    z.object({
-      id: z.string(),
-      name: VALIDATORS.PASCAL_CASE_STRING,
-      featureRef: ctx.withRef({
-        type: featureEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      model: z.object({
-        fields: z.array(createModelScalarFieldSchema(ctx, slots)),
-        relations: z
-          .array(createModelRelationFieldSchema(ctx, slots))
-          .optional(),
-        primaryKeyFieldRefs: z
-          .array(
-            ctx.withRef({
-              type: modelScalarFieldEntityType,
-              onDelete: 'RESTRICT',
-              parentSlot: slots.modelSlot,
-            }),
-          )
-          .min(1),
-        uniqueConstraints: z
-          .array(createModelUniqueConstraintSchema(ctx, slots))
-          .optional(),
-      }),
-      service: createModelServiceSchema(ctx, slots).default({
-        create: { enabled: false },
-        update: { enabled: false },
-        delete: { enabled: false },
-        transformers: [],
-      }),
-      graphql: ctx.withDefault(
-        createModelGraphqlSchema(ctx, slots).optional(),
-        {},
-      ),
-      authorizer: ctx.withDefault(
-        createModelAuthorizerSchema(ctx, slots).optional(),
-        { roles: [] },
-      ),
-    }),
+    z
+      .object({
+        id: z.string(),
+        name: VALIDATORS.PASCAL_CASE_STRING,
+        featureRef: ctx.withRef({
+          type: featureEntityType,
+          onDelete: 'RESTRICT',
+        }),
+        model: z.object({
+          fields: z.array(createModelScalarFieldSchema(ctx, slots)),
+          relations: z
+            .array(createModelRelationFieldSchema(ctx, slots))
+            .optional(),
+          primaryKeyFieldRefs: z
+            .array(
+              ctx.withRef({
+                type: modelScalarFieldEntityType,
+                onDelete: 'RESTRICT',
+                parentSlot: slots.modelSlot,
+              }),
+            )
+            .min(1),
+          uniqueConstraints: z
+            .array(createModelUniqueConstraintSchema(ctx, slots))
+            .optional(),
+        }),
+        service: createModelServiceSchema(ctx, slots).default({
+          create: { enabled: false },
+          update: { enabled: false },
+          delete: { enabled: false },
+          transformers: [],
+        }),
+        graphql: ctx.withDefault(
+          createModelGraphqlSchema(ctx, slots).optional(),
+          {},
+        ),
+        authorizer: ctx.withDefault(
+          createModelAuthorizerSchema(ctx, slots).optional(),
+          { roles: [] },
+        ),
+      })
+      .apply(withIssueChecker(checkModelConstraints)),
 );
 
 export const createModelSchema = definitionSchema((ctx) =>

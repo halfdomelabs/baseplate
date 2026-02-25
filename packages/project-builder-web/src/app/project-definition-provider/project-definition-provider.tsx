@@ -7,10 +7,13 @@ import type {
 import type React from 'react';
 
 import {
+  applyDefinitionFixes,
+  collectDefinitionIssues,
   createDefinitionSchemaParserContext,
   createPluginSpecStore,
   createProjectDefinitionSchema,
   fixRefDeletions,
+  partitionIssuesBySeverity,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { ProjectDefinitionContext } from '@baseplate-dev/project-builder-lib/web';
@@ -33,7 +36,7 @@ import {
   formatError,
   logAndFormatError,
 } from '#src/services/error-formatter.js';
-import { RefDeleteError } from '#src/utils/error.js';
+import { DefinitionIssueError, RefDeleteError } from '#src/utils/error.js';
 
 import { useProjectDefinitionContainer } from './hooks/use-project-definition-container.js';
 import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents.js';
@@ -82,17 +85,41 @@ export function ProjectDefinitionProvider({
     ): Promise<void> {
       setIsSavingDefinition(true);
       try {
-        const newProjectDefinition = produce(definition, newConfig);
+        const rawProjectDefinition = produce(definition, newConfig);
 
         const pluginStore = createPluginSpecStore(
           parserContext.pluginStore,
-          newProjectDefinition,
+          rawProjectDefinition,
         );
+
+        const schemaCreatorOptions = { plugins: pluginStore };
+
+        // Apply auto-fixes from registered validators (e.g. clearing disabled services)
+        const defContext =
+          createDefinitionSchemaParserContext(schemaCreatorOptions);
+        const defSchema = createProjectDefinitionSchema(defContext);
+        const newProjectDefinition = applyDefinitionFixes(
+          defSchema,
+          rawProjectDefinition,
+        );
+
+        // Collect and check definition issues
+        const issues = collectDefinitionIssues(
+          defSchema,
+          newProjectDefinition,
+          pluginStore,
+        );
+        const { errors } = partitionIssuesBySeverity(issues);
+
+        // Block save on errors
+        if (errors.length > 0) {
+          throw new DefinitionIssueError(errors);
+        }
 
         const result = fixRefDeletions(
           createProjectDefinitionSchema,
           newProjectDefinition,
-          { plugins: pluginStore },
+          schemaCreatorOptions,
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
@@ -131,7 +158,11 @@ export function ProjectDefinitionProvider({
           return { success: true };
         })
         .catch((err: unknown) => {
-          if (
+          if (err instanceof DefinitionIssueError) {
+            for (const issue of err.issues) {
+              toast.error(issue.message);
+            }
+          } else if (
             err instanceof RefDeleteError &&
             !options.disableDeleteRefDialog
           ) {
