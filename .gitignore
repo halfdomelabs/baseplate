@@ -55,7 +55,7 @@ jspm_packages/
 .yarn-integrity
 
 # environment variable files
-.env
+/.env
 .env.development.local
 .env.test.local
 .env.production.local

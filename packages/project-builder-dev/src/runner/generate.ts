@@ -1,17 +1,24 @@
 import type { SyncProjectResult } from '@baseplate-dev/project-builder-server';
 
-import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import {
   createNodeSchemaParserContext,
   syncProject,
 } from '@baseplate-dev/project-builder-server';
+import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 
-import { logger } from '#src/utils/console.js';
+import { logger } from '#src/services/logger.js';
 
+/**
+ * Generates (syncs) a Baseplate project from its project-definition.json.
+ * Plugins are auto-discovered from the project directory's package.json.
+ *
+ * @param projectDirectory - Absolute path to the project directory
+ * @returns The sync result
+ */
 export async function generateProject(
   projectDirectory: string,
 ): Promise<SyncProjectResult> {
-  const defaultPlugins = await getDefaultPlugins(logger);
+  const plugins = await discoverPlugins(projectDirectory, logger);
   const nodeSchemaParserContext = await createNodeSchemaParserContext(
     {
       id: 'test-project',
@@ -20,7 +27,7 @@ export async function generateProject(
       isInternalExample: true,
     },
     logger,
-    defaultPlugins,
+    plugins,
     '0.1.0',
   );
   try {

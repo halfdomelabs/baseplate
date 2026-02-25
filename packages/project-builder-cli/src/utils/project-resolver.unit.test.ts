@@ -11,13 +11,6 @@ import {
 } from './project-resolver.js';
 
 vi.mock('node:fs/promises');
-vi.mock('./find-examples-directories.js', () => ({
-  findExamplesDirectories: vi.fn(),
-}));
-
-const mockFindExamplesDirectories = vi.mocked(
-  await import('./find-examples-directories.js'),
-).findExamplesDirectories;
 
 describe('project-resolver', () => {
   beforeEach(() => {
@@ -25,7 +18,6 @@ describe('project-resolver', () => {
     vi.clearAllMocks();
     // Reset environment variables
     delete process.env.PROJECT_DIRECTORIES;
-    delete process.env.INCLUDE_EXAMPLES;
   });
 
   describe('resolveProjects', () => {
@@ -62,49 +54,6 @@ describe('project-resolver', () => {
       });
     });
 
-    it('includes example projects when includeExamples is true', async () => {
-      // Arrange
-      vol.fromJSON(
-        {
-          '/examples/package.json': JSON.stringify({
-            name: '@baseplate-dev/root',
-          }),
-          '/examples/blog-with-auth/baseplate/project-definition.json':
-            JSON.stringify({
-              settings: { general: { name: 'blog-with-auth' } },
-            }),
-          '/examples/todo-app/baseplate/project-definition.json':
-            JSON.stringify({
-              settings: { general: { name: 'todo-app' } },
-            }),
-        },
-        '/',
-      );
-
-      mockFindExamplesDirectories.mockResolvedValue([
-        '/examples/blog-with-auth',
-        '/examples/todo-app',
-      ]);
-
-      // Act
-      const result = await resolveProjects({
-        includeExamples: true,
-      });
-
-      // Assert
-      expect(result.size).toBe(2);
-      expect(result.get('blog-with-auth')).toEqual({
-        name: 'blog-with-auth',
-        path: '/examples/blog-with-auth',
-        isInternalExample: true,
-      });
-      expect(result.get('todo-app')).toEqual({
-        name: 'todo-app',
-        path: '/examples/todo-app',
-        isInternalExample: true,
-      });
-    });
-
     it('uses PROJECT_DIRECTORIES environment variable', async () => {
       // Arrange
       process.env.PROJECT_DIRECTORIES = '/project1,/project2';
@@ -127,36 +76,6 @@ describe('project-resolver', () => {
       expect(result.size).toBe(2);
       expect(result.has('env-project-1')).toBe(true);
       expect(result.has('env-project-2')).toBe(true);
-    });
-
-    it('uses INCLUDE_EXAMPLES environment variable', async () => {
-      // Arrange
-      process.env.INCLUDE_EXAMPLES = 'true';
-      vol.fromJSON(
-        {
-          '/examples/package.json': JSON.stringify({
-            name: '@baseplate-dev/root',
-          }),
-          '/examples/test-example/baseplate/project-definition.json':
-            JSON.stringify({
-              settings: { general: { name: 'test-example' } },
-            }),
-        },
-        '/',
-      );
-
-      mockFindExamplesDirectories.mockResolvedValue(['/examples/test-example']);
-
-      // Act
-      const result = await resolveProjects();
-
-      // Assert
-      expect(result.size).toBe(1);
-      expect(result.get('test-example')).toEqual({
-        name: 'test-example',
-        path: '/examples/test-example',
-        isInternalExample: true,
-      });
     });
 
     it('defaults to current working directory when defaultToCwd is true and no projects specified', async () => {

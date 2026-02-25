@@ -2,9 +2,8 @@ import type { Command } from 'commander';
 
 import path from 'node:path';
 
+import { logger } from '#src/services/logger.js';
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
-
-import { logger } from '../services/logger.js';
 
 export function addDevServerCommand(program: Command): void {
   program

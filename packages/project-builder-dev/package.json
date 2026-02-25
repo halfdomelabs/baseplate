@@ -1,19 +1,21 @@
 {
-  "name": "@baseplate-dev/project-builder-test",
-  "version": "0.5.3",
-  "private": true,
-  "description": "Automated E2E testing for the project builder projects",
+  "name": "@baseplate-dev/project-builder-dev",
+  "version": "0.1.0",
+  "description": "Developer tooling CLI for Baseplate plugin authors",
   "keywords": [
-    "baseplate",
+    "cli",
     "full-stack",
-    "typescript",
-    "code-generation"
+    "code-generation",
+    "development-tools",
+    "scaffolding",
+    "baseplate",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
-    "directory": "packages/project-builder-test"
+    "directory": "packages/project-builder-dev"
   },
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
@@ -24,35 +26,40 @@
       "default": "./dist/*"
     }
   },
+  "main": "dist/index.js",
+  "bin": {
+    "baseplate-dev": "./bin/baseplate-dev.js"
+  },
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG.md",
     "dist/**/*",
-    "CHANGELOG"
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
   ],
   "scripts": {
-    "dev": "tsx watch -C development ./src",
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rm -rf ./dist",
+    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** --env-file-if-exists=../../.env --env-file-if-exists=.env --env-file-if-exists=.env.local -C development ./src/cli.ts",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx -C development ./src",
-    "test:e2e": "tsx -C development ./src test",
+    "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env --env-file-if-exists=.env.local -C development ./src/cli.ts",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@baseplate-dev/project-builder-dev": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/project-builder-server": "workspace:*",
     "@baseplate-dev/project-builder-web": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@inquirer/prompts": "7.8.3",
     "commander": "^12.1.0",
-    "execa": "9.3.0",
-    "globby": "^14.0.2",
-    "ora": "^8.0.1",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
     "pkg-dir": "^8.0.0",
-    "testcontainers": "11.11.0"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
@@ -67,5 +74,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
