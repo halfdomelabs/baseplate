@@ -5,6 +5,8 @@ import type { def } from './creator/index.js';
 import { createBackendAppSchema } from './apps/backend/index.js';
 import { createWebAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
+import { checkUniqueField } from './creator/definition-issue-checkers.js';
+import { withIssueChecker } from './creator/definition-issue-registry.js';
 import { definitionSchema } from './creator/schema-creator.js';
 import { createFeaturesSchema } from './features/index.js';
 import { createLibrarySchema } from './libraries/library.js';
@@ -33,11 +35,25 @@ export type AppConfig = def.InferOutput<typeof createAppSchema>;
 export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     cliVersion: z.string().nullish(),
-    apps: z.array(createAppSchema(ctx)).default([]),
+    apps: z
+      .array(createAppSchema(ctx))
+      .apply(withIssueChecker(checkUniqueField('name', { label: 'app name' })))
+      .apply(
+        withIssueChecker(checkUniqueField('devPort', { label: 'dev port' })),
+      )
+      .default([]),
     libraries: z.array(createLibrarySchema(ctx)).default([]),
     features: createFeaturesSchema(ctx),
-    models: z.array(createModelSchema(ctx)).default([]),
-    enums: z.array(createEnumSchema(ctx)).optional(),
+    models: z
+      .array(createModelSchema(ctx))
+      .apply(
+        withIssueChecker(checkUniqueField('name', { label: 'model name' })),
+      )
+      .default([]),
+    enums: z
+      .array(createEnumSchema(ctx))
+      .apply(withIssueChecker(checkUniqueField('name', { label: 'enum name' })))
+      .optional(),
     isInitialized: z.boolean().default(false),
     schemaVersion: z.number(),
     plugins: createPluginsSchema(ctx).optional(),
