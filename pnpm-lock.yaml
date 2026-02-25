@@ -370,9 +370,6 @@ importers:
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../utils
-      '@inquirer/prompts':
-        specifier: 7.8.3
-        version: 7.8.3(@types/node@22.17.2)
       commander:
         specifier: ^12.1.0
         version: 12.1.0
