@@ -315,8 +315,6 @@ export function nestedOneToOneField<
           ],
           afterExecute: [
             async (ctx) => {
-              const awaitedData =
-                typeof data === 'function' ? await data(ctx.tx) : data;
               const whereUnique = config.getWhereUnique(
                 ctx.result as GetPayload<TParentModelName>,
               );
@@ -331,7 +329,7 @@ export function nestedOneToOneField<
               const [builtCreate, builtUpdate] = await Promise.all([
                 config.buildCreateData(
                   {
-                    ...awaitedData.create,
+                    ...data.create,
                     ...({
                       [config.relationName]: { connect: parentWhereUnique },
                     } as Record<
@@ -343,7 +341,7 @@ export function nestedOneToOneField<
                   sharedCtx,
                 ),
                 config.buildUpdateData(
-                  awaitedData.update,
+                  data.update,
                   ctx.result as GetPayload<TParentModelName>,
                   sharedCtx,
                 ),
@@ -697,11 +695,6 @@ export function nestedOneToManyField<
         // Upsert items
         await Promise.all(
           processedItems.map(async (item, idx) => {
-            const awaitedData =
-              typeof item.data === 'function'
-                ? await item.data(ctx.tx)
-                : item.data;
-
             const parentWhereUnique = config.parentModel.getWhereUnique(
               ctx.result,
             );
@@ -718,7 +711,7 @@ export function nestedOneToManyField<
             const [builtCreate, builtUpdate] = await Promise.all([
               config.buildCreateData(
                 {
-                  ...awaitedData.create,
+                  ...item.data.create,
                   ...({
                     [config.relationName]: { connect: parentWhereUnique },
                   } as Record<
@@ -729,7 +722,7 @@ export function nestedOneToManyField<
                 ctx.result,
                 sharedCtx,
               ),
-              config.buildUpdateData(awaitedData.update, ctx.result, sharedCtx),
+              config.buildUpdateData(item.data.update, ctx.result, sharedCtx),
             ]);
 
             results[idx] = item.whereUnique

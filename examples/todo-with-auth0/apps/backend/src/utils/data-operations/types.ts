@@ -166,22 +166,14 @@ export interface FieldTransformData<TCreateOutput, TUpdateOutput> {
 /**
  * Result of field processing, including transformed data and optional hooks.
  *
- * The data can be either synchronous or asynchronous (resolved inside transaction).
  * Hooks allow fields to perform side effects during the operation lifecycle.
  *
  * @template TCreateOutput - Data type for create operations
  * @template TUpdateOutput - Data type for update operations
  */
 export interface FieldTransformResult<TCreateOutput, TUpdateOutput> {
-  /**
-   * Transformed field data or an async function that resolves to field data.
-   * Async functions are resolved inside the transaction, allowing access to tx client.
-   */
-  data?:
-    | FieldTransformData<TCreateOutput, TUpdateOutput>
-    | ((
-        tx: PrismaTransaction,
-      ) => Promise<FieldTransformData<TCreateOutput, TUpdateOutput>>);
+  /** Transformed field data for create and update operations */
+  data?: FieldTransformData<TCreateOutput, TUpdateOutput>;
 
   /** Optional hooks to execute during operation lifecycle */
   hooks?: AnyOperationHooks;

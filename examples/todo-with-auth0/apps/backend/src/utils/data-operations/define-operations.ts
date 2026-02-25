@@ -79,10 +79,6 @@ function hasPostExecuteHooks(hooks: AnyOperationHooks): boolean {
   );
 }
 
-type FieldDataOrFunction<TField extends AnyFieldDefinition> =
-  | InferFieldOutput<TField>
-  | ((tx: PrismaTransaction) => Promise<InferFieldOutput<TField>>);
-
 /**
  * Transforms field definitions into Prisma create/update data structures.
  *
@@ -90,10 +86,6 @@ type FieldDataOrFunction<TField extends AnyFieldDefinition> =
  * 1. Validating the input value against the field's schema
  * 2. Transforming the value into Prisma-compatible create/update data
  * 3. Collecting hooks from each field for execution during the operation lifecycle
- *
- * The function supports both synchronous and asynchronous field transformations.
- * If any field returns an async transformation function, the entire data object
- * becomes async and will be resolved inside the transaction.
  *
  * @template TFields - Record of field definitions
  * @param fields - Field definitions to process
@@ -136,9 +128,7 @@ export async function transformFields<
     loadExisting: () => Promise<object | undefined>;
   },
 ): Promise<{
-  data:
-    | InferFieldsOutput<TFields>
-    | ((tx: PrismaTransaction) => Promise<InferFieldsOutput<TFields>>);
+  data: InferFieldsOutput<TFields>;
   hooks: AnyOperationHooks;
 }> {
   const hooks: Required<AnyOperationHooks> = {
@@ -148,7 +138,7 @@ export async function transformFields<
   };
 
   const data = {} as {
-    [K in keyof TFields]: FieldDataOrFunction<TFields[K]>;
+    [K in keyof TFields]: InferFieldOutput<TFields[K]>;
   };
 
   for (const [key, field] of Object.entries(fields)) {
@@ -165,7 +155,7 @@ export async function transformFields<
     });
 
     if (result.data !== undefined) {
-      data[fieldKey as keyof TFields] = result.data as FieldDataOrFunction<
+      data[fieldKey as keyof TFields] = result.data as InferFieldOutput<
         TFields[keyof TFields]
       >;
     }
@@ -177,54 +167,22 @@ export async function transformFields<
     }
   }
 
-  function splitCreateUpdateData(data: {
-    [K in keyof TFields]: InferFieldOutput<TFields[K]>;
-  }): {
-    create: InferFieldsCreateOutput<TFields>;
-    update: InferFieldsUpdateOutput<TFields>;
-  } {
-    const create = {} as InferFieldsCreateOutput<TFields>;
-    const update = {} as InferFieldsUpdateOutput<TFields>;
-    for (const [key, value] of Object.entries<
-      InferFieldOutput<TFields[keyof TFields]>
-    >(data)) {
-      if (value.create !== undefined) {
-        create[key as keyof TFields] =
-          value.create as InferFieldsCreateOutput<TFields>[keyof TFields];
-      }
-      if (value.update !== undefined) {
-        update[key as keyof TFields] =
-          value.update as InferFieldsUpdateOutput<TFields>[keyof TFields];
-      }
+  const create = {} as InferFieldsCreateOutput<TFields>;
+  const update = {} as InferFieldsUpdateOutput<TFields>;
+  for (const [key, value] of Object.entries<
+    InferFieldOutput<TFields[keyof TFields]>
+  >(data)) {
+    if (value.create !== undefined) {
+      create[key as keyof TFields] =
+        value.create as InferFieldsCreateOutput<TFields>[keyof TFields];
     }
-    return { create, update };
+    if (value.update !== undefined) {
+      update[key as keyof TFields] =
+        value.update as InferFieldsUpdateOutput<TFields>[keyof TFields];
+    }
   }
 
-  const transformedData = Object.values(data).some(
-    (value) => typeof value === 'function',
-  )
-    ? async (tx: PrismaTransaction) => {
-        const awaitedData = Object.fromEntries(
-          await Promise.all(
-            Object.entries(data).map(
-              async ([key, value]: [
-                keyof TFields,
-                FieldDataOrFunction<TFields[keyof TFields]>,
-              ]): Promise<
-                [keyof TFields, InferFieldOutput<TFields[keyof TFields]>]
-              > => [key, typeof value === 'function' ? await value(tx) : value],
-            ),
-          ),
-        ) as {
-          [K in keyof TFields]: InferFieldOutput<TFields[K]>;
-        };
-        return splitCreateUpdateData(awaitedData);
-      }
-    : splitCreateUpdateData(
-        data as { [K in keyof TFields]: InferFieldOutput<TFields[K]> },
-      );
-
-  return { data: transformedData, hooks };
+  return { data: { create, update }, hooks };
 }
 
 /**
@@ -268,6 +226,13 @@ export function generateCreateSchema<
   };
 
   return z.object(shape) as InferInputSchema<TFields>;
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function generateUpdateSchema<
+  TFields extends Record<string, AnyFieldDefinition>,
+>(fields: TFields) {
+  return generateCreateSchema(fields).partial();
 }
 
 /**
@@ -530,9 +495,7 @@ export function defineCreateOperation<
       // Run beforeExecute hooks
       await invokeHooks(allHooks.beforeExecute, txContext);
 
-      // Run all async create data transformations
-      const awaitedFieldsData =
-        typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
+      const awaitedFieldsData = fieldsData;
 
       // If re-fetching, don't include relations in initial create
       const createQuery = needsRefetch
@@ -871,9 +834,7 @@ export function defineUpdateOperation<
       // Run beforeExecute hooks
       await invokeHooks(allHooks.beforeExecute, txContext);
 
-      // Run all async update data transformations
-      const awaitedFieldsData =
-        typeof fieldsData === 'function' ? await fieldsData(tx) : fieldsData;
+      const awaitedFieldsData = fieldsData;
 
       // If re-fetching, don't bother including relations in initial update
       const updateQuery = needsRefetch
