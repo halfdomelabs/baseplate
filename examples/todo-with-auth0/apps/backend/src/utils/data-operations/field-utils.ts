@@ -190,9 +190,14 @@ export function generateCreateSchema<
   return z.object(shape) as InferInputSchema<TFields>;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+type PartialSchema<T extends z.ZodObject<z.ZodRawShape>> = z.ZodObject<{
+  [K in keyof T['shape']]: z.ZodOptional<T['shape'][K]>;
+}>;
+
 export function generateUpdateSchema<
   TFields extends Record<string, AnyFieldDefinition>,
->(fields: TFields) {
-  return generateCreateSchema(fields).partial();
+>(fields: TFields): PartialSchema<InferInputSchema<TFields>> {
+  return generateCreateSchema(fields).partial() as PartialSchema<
+    InferInputSchema<TFields>
+  >;
 }
