@@ -182,7 +182,9 @@ function transformNode(
       }
 
       if (changed) {
-        childResult = Object.fromEntries(entries);
+        childResult = Object.fromEntries(
+          entries.filter(([, v]) => v !== undefined),
+        );
       }
       break;
     }

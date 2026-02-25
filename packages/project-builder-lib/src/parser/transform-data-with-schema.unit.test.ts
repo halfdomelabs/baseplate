@@ -202,6 +202,21 @@ describe('transformDataWithSchema', () => {
     expect(result).toEqual({ a: 11, b: 12 });
   });
 
+  it('removes record keys when transform returns undefined', () => {
+    const schema = z.record(z.string(), z.number());
+    const data = { keep: 1, remove: 2 };
+
+    const result = transformDataWithSchema(schema, data, (value, ctx) => {
+      if (ctx.schema._zod.def.type === 'number' && (value as number) === 2) {
+        return undefined;
+      }
+      return value;
+    });
+
+    expect(result).toEqual({ keep: 1 });
+    expect('remove' in (result as Record<string, unknown>)).toBe(false);
+  });
+
   it('removes object keys when transform returns undefined', () => {
     const schema = z.object({
       keep: z.string(),
