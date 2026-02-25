@@ -26,7 +26,7 @@ export interface SchemaWalkContext {
 }
 
 /**
- * A visitor that plugs into `walkSchemaWithData`.
+ * A visitor that plugs into `walkDataWithSchema`.
  *
  * Called for every node in the schema tree. The visitor receives the schema
  * instance and can call its own registry internally. If the visitor returns a
@@ -102,7 +102,7 @@ export function findDiscriminatedUnionMatch(
  * Discriminated unions are fully supported. Plain `z.union()` is allowed only
  * when every option is a leaf type (string, enum, or literal); otherwise it throws.
  */
-export function walkSchemaWithData(
+export function walkDataWithSchema(
   schema: z.ZodType,
   data: unknown,
   visitors: readonly SchemaNodeVisitor[],

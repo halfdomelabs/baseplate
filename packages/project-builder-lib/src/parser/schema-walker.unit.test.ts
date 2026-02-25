@@ -5,7 +5,7 @@ import type { SchemaNodeVisitor } from './schema-walker.js';
 
 import {
   findDiscriminatedUnionMatch,
-  walkSchemaWithData,
+  walkDataWithSchema,
 } from './schema-walker.js';
 
 // ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ describe('findDiscriminatedUnionMatch', () => {
 });
 
 // ---------------------------------------------------------------------------
-// walkSchemaWithData — helpers
+// walkDataWithSchema — helpers
 // ---------------------------------------------------------------------------
 
 /** Creates a visitor that records every (path, schemaType) pair it sees. */
@@ -81,14 +81,14 @@ function makeRecordingVisitor(): SchemaNodeVisitor & {
 }
 
 // ---------------------------------------------------------------------------
-// walkSchemaWithData — simple schema types
+// walkDataWithSchema — simple schema types
 // ---------------------------------------------------------------------------
 
-describe('walkSchemaWithData — simple schemas', () => {
+describe('walkDataWithSchema — simple schemas', () => {
   it('visits a flat object and all its fields', () => {
     const schema = z.object({ name: z.string(), age: z.number() });
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { name: 'alice', age: 30 }, [visitor]);
+    walkDataWithSchema(schema, { name: 'alice', age: 30 }, [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'object' },
@@ -100,7 +100,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('visits array elements with numeric path segments', () => {
     const schema = z.object({ tags: z.array(z.string()) });
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { tags: ['a', 'b'] }, [visitor]);
+    walkDataWithSchema(schema, { tags: ['a', 'b'] }, [visitor]);
 
     expect(visitor.calls).toContainEqual({ path: ['tags', 0], type: 'string' });
     expect(visitor.calls).toContainEqual({ path: ['tags', 1], type: 'string' });
@@ -113,7 +113,7 @@ describe('walkSchemaWithData — simple schemas', () => {
       c: z.boolean().default(false),
     });
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { a: 'x', b: 1, c: true }, [visitor]);
+    walkDataWithSchema(schema, { a: 'x', b: 1, c: true }, [visitor]);
 
     const types = visitor.calls.map((c) => c.type);
     expect(types).toContain('string');
@@ -128,7 +128,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('skips optional/nullable fields when data is absent', () => {
     const schema = z.object({ a: z.string().optional() });
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, {}, [visitor]);
+    walkDataWithSchema(schema, {}, [visitor]);
 
     // 'optional' wrapper is visited but inner 'string' is not
     expect(
@@ -141,21 +141,21 @@ describe('walkSchemaWithData — simple schemas', () => {
     // z.transform() compiles to a "pipe" in Zod 4
     const schema = z.string().transform((s) => s.toUpperCase());
     expect(() => {
-      walkSchemaWithData(schema, 'hello', [makeRecordingVisitor()]);
+      walkDataWithSchema(schema, 'hello', [makeRecordingVisitor()]);
     }).toThrow('is not supported in definition schemas');
   });
 
   it('throws for plain z.union() with non-leaf options', () => {
     const schema = z.union([z.string(), z.number()]);
     expect(() => {
-      walkSchemaWithData(schema, 'hello', [makeRecordingVisitor()]);
+      walkDataWithSchema(schema, 'hello', [makeRecordingVisitor()]);
     }).toThrow('Plain z.union() is not supported');
   });
 
   it('allows plain z.union() when all options are string/enum/literal', () => {
     const schema = z.union([z.string(), z.literal('foo'), z.enum(['a', 'b'])]);
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, 'foo', [visitor]);
+    walkDataWithSchema(schema, 'foo', [visitor]);
 
     expect(visitor.calls).toEqual([{ path: [], type: 'union' }]);
   });
@@ -163,7 +163,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('visits tuple items with correct indices', () => {
     const schema = z.tuple([z.string(), z.number(), z.boolean()]);
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, ['hello', 42, true], [visitor]);
+    walkDataWithSchema(schema, ['hello', 42, true], [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'tuple' },
@@ -176,7 +176,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('skips tuple items beyond data length', () => {
     const schema = z.tuple([z.string(), z.number()]);
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, ['only-one'], [visitor]);
+    walkDataWithSchema(schema, ['only-one'], [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'tuple' },
@@ -187,7 +187,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('does not descend into tuple when data is not an array', () => {
     const schema = z.tuple([z.string()]);
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, null, [visitor]);
+    walkDataWithSchema(schema, null, [visitor]);
 
     expect(visitor.calls).toEqual([{ path: [], type: 'tuple' }]);
   });
@@ -195,7 +195,7 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('visits record values with string keys as path segments', () => {
     const schema = z.record(z.string(), z.number());
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { x: 1, y: 2 }, [visitor]);
+    walkDataWithSchema(schema, { x: 1, y: 2 }, [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'record' },
@@ -207,17 +207,17 @@ describe('walkSchemaWithData — simple schemas', () => {
   it('does not descend into record when data is null', () => {
     const schema = z.record(z.string(), z.number());
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, null, [visitor]);
+    walkDataWithSchema(schema, null, [visitor]);
 
     expect(visitor.calls).toEqual([{ path: [], type: 'record' }]);
   });
 });
 
 // ---------------------------------------------------------------------------
-// walkSchemaWithData — cleanup (entry/exit)
+// walkDataWithSchema — cleanup (entry/exit)
 // ---------------------------------------------------------------------------
 
-describe('walkSchemaWithData — cleanup functions', () => {
+describe('walkDataWithSchema — cleanup functions', () => {
   it('calls cleanup after children are visited', () => {
     const log: string[] = [];
     const schema = z.object({ child: z.string() });
@@ -230,7 +230,7 @@ describe('walkSchemaWithData — cleanup functions', () => {
       },
     };
 
-    walkSchemaWithData(schema, { child: 'x' }, [visitor]);
+    walkDataWithSchema(schema, { child: 'x' }, [visitor]);
 
     // object entered, then child entered, child exited, object exited
     expect(log).toEqual(['enter:0', 'enter:1', 'exit:1', 'exit:0']);
@@ -248,16 +248,16 @@ describe('walkSchemaWithData — cleanup functions', () => {
       },
     };
 
-    walkSchemaWithData(schema, { a: 'x', b: 1 }, [visitor]);
+    walkDataWithSchema(schema, { a: 'x', b: 1 }, [visitor]);
     expect(cleanupCalled).toHaveBeenCalledOnce();
   });
 });
 
 // ---------------------------------------------------------------------------
-// walkSchemaWithData — complex schemas
+// walkDataWithSchema — complex schemas
 // ---------------------------------------------------------------------------
 
-describe('walkSchemaWithData — complex schemas', () => {
+describe('walkDataWithSchema — complex schemas', () => {
   it('walks a nested object tree, visiting nodes depth-first', () => {
     const schema = z.object({
       user: z.object({
@@ -267,7 +267,7 @@ describe('walkSchemaWithData — complex schemas', () => {
     });
 
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(
+    walkDataWithSchema(
       schema,
       { user: { name: 'alice', address: { city: 'sf' } } },
       [visitor],
@@ -293,7 +293,7 @@ describe('walkSchemaWithData — complex schemas', () => {
     const schema = z.discriminatedUnion('shape', [circle, rect]);
 
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { shape: 'circle', radius: 5 }, [visitor]);
+    walkDataWithSchema(schema, { shape: 'circle', radius: 5 }, [visitor]);
 
     const types = visitor.calls.map((c) => c.type);
     // circle branch visited: object + shape literal + radius number
@@ -307,7 +307,7 @@ describe('walkSchemaWithData — complex schemas', () => {
   it('walks a tuple with rest elements', () => {
     const schema = z.tuple([z.string()]).rest(z.number());
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, ['hello', 1, 2, 3], [visitor]);
+    walkDataWithSchema(schema, ['hello', 1, 2, 3], [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'tuple' },
@@ -324,7 +324,7 @@ describe('walkSchemaWithData — complex schemas', () => {
       z.object({ name: z.string(), count: z.number() }),
     );
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(
+    walkDataWithSchema(
       schema,
       { foo: { name: 'a', count: 1 }, bar: { name: 'b', count: 2 } },
       [visitor],
@@ -349,7 +349,7 @@ describe('walkSchemaWithData — complex schemas', () => {
       status: z.union([z.literal('active'), z.literal('inactive')]),
     });
     const visitor = makeRecordingVisitor();
-    walkSchemaWithData(schema, { status: 'active' }, [visitor]);
+    walkDataWithSchema(schema, { status: 'active' }, [visitor]);
 
     expect(visitor.calls).toEqual([
       { path: [], type: 'object' },
@@ -378,7 +378,7 @@ describe('walkSchemaWithData — complex schemas', () => {
       },
     };
 
-    walkSchemaWithData(schema, { items: [{ id: 'a', value: 1 }] }, [visitor]);
+    walkDataWithSchema(schema, { items: [{ id: 'a', value: 1 }] }, [visitor]);
 
     // Every enter must have a matching exit in reverse order
     const enters = scopeLog.filter((e) => e.startsWith('enter'));
