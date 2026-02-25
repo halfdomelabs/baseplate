@@ -82,15 +82,21 @@ export async function createTodoItem<
 
   return commitCreate(plan, {
     query,
-    execute: async ({ tx, data: { assigneeId, todoListId, ...rest }, query }) =>
-      tx.todoItem.create({
+    execute: async ({
+      tx,
+      data: { assigneeId, todoListId, ...rest },
+      query,
+    }) => {
+      const item = await tx.todoItem.create({
         data: {
           ...rest,
           assignee: relationHelpers.connectCreate({ id: assigneeId }),
           todoList: relationHelpers.connectCreate({ id: todoListId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -118,8 +124,12 @@ export async function updateTodoItem<
 
   return commitUpdate(plan, {
     query,
-    execute: async ({ tx, data: { assigneeId, todoListId, ...rest }, query }) =>
-      tx.todoItem.update({
+    execute: async ({
+      tx,
+      data: { assigneeId, todoListId, ...rest },
+      query,
+    }) => {
+      const item = await tx.todoItem.update({
         where,
         data: {
           ...rest,
@@ -127,7 +137,9 @@ export async function updateTodoItem<
           todoList: relationHelpers.connectUpdate({ id: todoListId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -145,10 +157,12 @@ export async function deleteTodoItem<
     where,
     query,
     context,
-    execute: async ({ tx, where, query }) =>
-      await tx.todoItem.delete({
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.todoItem.delete({
         where,
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }

@@ -7,6 +7,8 @@ import {
   createUser,
   deleteUser,
   updateUser,
+  userCreateSchema,
+  userUpdateSchema,
 } from '../services/user.data-service.js';
 import { userObjectType } from './user.object-type.js';
 
@@ -59,7 +61,7 @@ const createUserDataInputType = builder
       userProfile: t.field({ type: userUserProfileNestedInputInputType }),
     }),
   })
-  .validate(createUser.$dataSchema);
+  .validate(userCreateSchema);
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
@@ -73,7 +75,6 @@ builder.mutationField('createUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
-        skipValidation: true,
       });
       return { user };
     },
@@ -91,7 +92,7 @@ const updateUserDataInputType = builder
       userProfile: t.field({ type: userUserProfileNestedInputInputType }),
     }),
   })
-  .validate(updateUser.$dataSchema);
+  .validate(userUpdateSchema);
 
 builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
@@ -107,7 +108,6 @@ builder.mutationField('updateUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
-        skipValidation: true,
       });
       return { user };
     },

@@ -1,18 +1,20 @@
-import type { GetPayload, ModelPropName } from './prisma-types.js';
+// @ts-nocheck
+
+import type { GetPayload, ModelPropName } from '$prismaTypes';
 import type {
   AnyFieldDefinition,
   AnyOperationHooks,
   ComposeCreateConfig,
   ComposeUpdateConfig,
   InferInput,
-} from './types.js';
+} from '$types';
 
+import { transformFields } from '$fieldUtils';
+import { CreatePlan, UpdatePlan } from '$types';
 import {
   checkGlobalAuthorization,
   checkInstanceAuthorization,
-} from '../authorizers.js';
-import { transformFields } from './field-utils.js';
-import { CreatePlan, UpdatePlan } from './types.js';
+} from '%authorizerUtilsImports';
 
 /**
  * Compose a create operation plan.

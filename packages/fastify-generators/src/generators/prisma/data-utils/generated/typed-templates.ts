@@ -7,27 +7,51 @@ import { serviceContextImportsProvider } from '#src/generators/core/service-cont
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
-const defineOperations = createTsTemplateFile({
+const commitOperations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
   importMapProviders: {
     authorizerUtilsImports: authorizerUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
   },
-  name: 'define-operations',
+  name: 'commit-operations',
   projectExports: {
-    defineCreateOperation: { isTypeOnly: false },
-    defineDeleteOperation: { isTypeOnly: false },
-    defineUpdateOperation: { isTypeOnly: false },
+    commitCreate: { isTypeOnly: false },
+    commitUpdate: { isTypeOnly: false },
+    commitDelete: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: { prismaTypes: {}, prismaUtils: {}, types: {} },
+  referencedGeneratorTemplates: {
+    fieldUtils: {},
+    prismaTypes: {},
+    prismaUtils: {},
+    types: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/utils/data-operations/define-operations.ts',
+      '../templates/src/utils/data-operations/commit-operations.ts',
+    ),
+  },
+  variables: {},
+});
+
+const composeOperations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
+  importMapProviders: {
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
+  },
+  name: 'compose-operations',
+  projectExports: {
+    composeCreate: { isTypeOnly: false },
+    composeUpdate: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { fieldUtils: {}, prismaTypes: {}, types: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/data-operations/compose-operations.ts',
     ),
   },
   variables: {},
@@ -48,7 +72,7 @@ const fieldDefinitions = createTsTemplateFile({
     scalarField: { isTypeOnly: false },
   },
   referencedGeneratorTemplates: {
-    defineOperations: {},
+    fieldUtils: {},
     prismaTypes: {},
     prismaUtils: {},
     types: {},
@@ -57,6 +81,25 @@ const fieldDefinitions = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/utils/data-operations/field-definitions.ts',
+    ),
+  },
+  variables: {},
+});
+
+const fieldUtils = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
+  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  name: 'field-utils',
+  projectExports: {
+    generateCreateSchema: { isTypeOnly: false },
+    generateUpdateSchema: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { types: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/data-operations/field-utils.ts',
     ),
   },
   variables: {},
@@ -73,6 +116,8 @@ const prismaTypes = createTsTemplateFile({
   projectExports: {
     GetPayload: { isTypeOnly: true },
     ModelPropName: { isTypeOnly: true },
+    ModelQuery: { isTypeOnly: true },
+    WhereUniqueInput: { isTypeOnly: true },
   },
   source: {
     path: path.join(
@@ -117,6 +162,7 @@ const types = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
   importMapProviders: {
+    authorizerUtilsImports: authorizerUtilsImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
@@ -124,7 +170,10 @@ const types = createTsTemplateFile({
   projectExports: {
     AnyFieldDefinition: { isTypeOnly: true },
     AnyOperationHooks: { isTypeOnly: true },
+    DataCreateInput: { isTypeOnly: true },
+    DataDeleteInput: { isTypeOnly: true },
     DataOperationType: { isTypeOnly: true },
+    DataUpdateInput: { isTypeOnly: true },
     FieldContext: { isTypeOnly: true },
     FieldDefinition: { isTypeOnly: true },
     FieldTransformData: { isTypeOnly: true },
@@ -136,6 +185,7 @@ const types = createTsTemplateFile({
     PrismaTransaction: { isTypeOnly: true },
     TransactionalOperationContext: { isTypeOnly: true },
   },
+  referencedGeneratorTemplates: { prismaTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -146,8 +196,10 @@ const types = createTsTemplateFile({
 });
 
 export const dataOperationsGroup = {
-  defineOperations,
+  commitOperations,
+  composeOperations,
   fieldDefinitions,
+  fieldUtils,
   prismaTypes,
   prismaUtils,
   relationHelpers,

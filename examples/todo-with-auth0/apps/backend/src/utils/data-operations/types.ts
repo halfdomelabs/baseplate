@@ -568,10 +568,7 @@ export interface ComposeUpdateConfig<
    * and instance-level checks (functions that receive the existing item).
    * Runs before field processing — fails fast on unauthorized access.
    */
-  authorize?: (
-    | GlobalRoleCheck
-    | InstanceRoleCheck<GetPayload<TModelName>>
-  )[];
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 }
 
 /**
@@ -712,10 +709,7 @@ export interface CommitDeleteConfig<
    * and instance-level checks (functions that receive the existing item).
    * Runs before hooks and delete execution.
    */
-  authorize?: (
-    | GlobalRoleCheck
-    | InstanceRoleCheck<GetPayload<TModelName>>
-  )[];
+  authorize?: (GlobalRoleCheck | InstanceRoleCheck<GetPayload<TModelName>>)[];
 
   /** Optional hooks to run during the delete lifecycle */
   hooks?: Partial<AnyOperationHooks>;

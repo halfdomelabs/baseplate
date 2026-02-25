@@ -1,12 +1,31 @@
 import { z } from 'zod';
 
+import type {
+  GetPayload,
+  ModelQuery,
+} from '@src/utils/data-operations/prisma-types.js';
+import type {
+  DataCreateInput,
+  DataDeleteInput,
+  DataUpdateInput,
+} from '@src/utils/data-operations/types.js';
+
 import { $Enums } from '@src/generated/prisma/client.js';
+import { prisma } from '@src/services/prisma.js';
 import {
-  defineCreateOperation,
-  defineDeleteOperation,
-  defineUpdateOperation,
-} from '@src/utils/data-operations/define-operations.js';
+  commitCreate,
+  commitDelete,
+  commitUpdate,
+} from '@src/utils/data-operations/commit-operations.js';
+import {
+  composeCreate,
+  composeUpdate,
+} from '@src/utils/data-operations/compose-operations.js';
 import { scalarField } from '@src/utils/data-operations/field-definitions.js';
+import {
+  generateCreateSchema,
+  generateUpdateSchema,
+} from '@src/utils/data-operations/field-utils.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import { fileField } from '../../storage/services/file-field.js';
@@ -25,39 +44,99 @@ export const todoListInputFields = {
   }),
 };
 
-export const createTodoList = defineCreateOperation({
-  model: 'todoList',
-  fields: todoListInputFields,
-  getWhereUnique: (result) => ({ id: result.id }),
-  create: async ({ tx, data: { ownerId, ...data }, query }) => {
-    const item = await tx.todoList.create({
-      data: { ...data, owner: relationHelpers.connectCreate({ id: ownerId }) },
-      ...query,
-    });
-    return item;
-  },
-});
+export const todoListCreateSchema = generateCreateSchema(todoListInputFields);
 
-export const updateTodoList = defineUpdateOperation({
-  model: 'todoList',
-  fields: todoListInputFields,
-  update: async ({ tx, where, data: { ownerId, ...data }, query }) => {
-    const item = await tx.todoList.update({
-      where,
-      data: { ...data, owner: relationHelpers.connectUpdate({ id: ownerId }) },
-      ...query,
-    });
-    return item;
-  },
-});
+export async function createTodoList<
+  TQueryArgs extends ModelQuery<'todoList'> = ModelQuery<'todoList'>,
+>({
+  data: input,
+  query,
+  context,
+}: DataCreateInput<
+  'todoList',
+  typeof todoListInputFields,
+  TQueryArgs
+>): Promise<GetPayload<'todoList', TQueryArgs>> {
+  const plan = await composeCreate({
+    model: 'todoList',
+    fields: todoListInputFields,
+    input,
+    context,
+  });
 
-export const deleteTodoList = defineDeleteOperation({
-  model: 'todoList',
-  delete: async ({ tx, where, query }) => {
-    const item = await tx.todoList.delete({
-      where,
-      ...query,
-    });
-    return item;
-  },
-});
+  return commitCreate(plan, {
+    query,
+    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
+      const item = await tx.todoList.create({
+        data: {
+          ...rest,
+          owner: relationHelpers.connectCreate({ id: ownerId }),
+        },
+        ...query,
+      });
+      return item;
+    },
+  });
+}
+
+export const todoListUpdateSchema = generateUpdateSchema(todoListInputFields);
+
+export async function updateTodoList<
+  TQueryArgs extends ModelQuery<'todoList'> = ModelQuery<'todoList'>,
+>({
+  where,
+  data: input,
+  query,
+  context,
+}: DataUpdateInput<
+  'todoList',
+  typeof todoListInputFields,
+  TQueryArgs
+>): Promise<GetPayload<'todoList', TQueryArgs>> {
+  const plan = await composeUpdate({
+    model: 'todoList',
+    fields: todoListInputFields,
+    input,
+    context,
+    loadExisting: () => prisma.todoList.findUniqueOrThrow({ where }),
+  });
+
+  return commitUpdate(plan, {
+    query,
+    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
+      const item = await tx.todoList.update({
+        where,
+        data: {
+          ...rest,
+          owner: relationHelpers.connectUpdate({ id: ownerId }),
+        },
+        ...query,
+      });
+      return item;
+    },
+  });
+}
+
+export async function deleteTodoList<
+  TQueryArgs extends ModelQuery<'todoList'> = ModelQuery<'todoList'>,
+>({
+  where,
+  query,
+  context,
+}: DataDeleteInput<'todoList', TQueryArgs>): Promise<
+  GetPayload<'todoList', TQueryArgs>
+> {
+  return commitDelete({
+    model: 'todoList',
+    where,
+    query,
+    context,
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.todoList.delete({
+        where,
+        ...query,
+      });
+      return item;
+    },
+  });
+}

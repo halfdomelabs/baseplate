@@ -58,15 +58,17 @@ export async function createTodoListShare<
 
   return commitCreate(plan, {
     query,
-    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) =>
-      tx.todoListShare.create({
+    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
+      const item = await tx.todoListShare.create({
         data: {
           ...rest,
           todoList: relationHelpers.connectCreate({ id: todoListId }),
           user: relationHelpers.connectCreate({ id: userId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -96,8 +98,8 @@ export async function updateTodoListShare<
 
   return commitUpdate(plan, {
     query,
-    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) =>
-      tx.todoListShare.update({
+    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
+      const item = await tx.todoListShare.update({
         where,
         data: {
           ...rest,
@@ -105,7 +107,9 @@ export async function updateTodoListShare<
           user: relationHelpers.connectUpdate({ id: userId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -123,10 +127,12 @@ export async function deleteTodoListShare<
     where,
     query,
     context,
-    execute: async ({ tx, where, query }) =>
-      await tx.todoListShare.delete({
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.todoListShare.delete({
         where,
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }

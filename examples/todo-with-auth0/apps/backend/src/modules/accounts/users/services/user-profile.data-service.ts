@@ -38,10 +38,12 @@ export async function deleteUserProfile<
     where,
     query,
     context,
-    execute: async ({ tx, where, query }) =>
-      await tx.userProfile.delete({
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.userProfile.delete({
         where,
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }

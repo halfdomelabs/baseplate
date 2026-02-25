@@ -1,7 +1,7 @@
 {
   "name": "prisma/data-utils",
   "templates": {
-    "define-operations": {
+    "commit-operations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "data-operations",
@@ -14,36 +14,43 @@
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         },
-        "prismaGeneratedImportsProvider": {
-          "importName": "prismaGeneratedImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
-        },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
-        "serviceContextImportsProvider": {
-          "importName": "serviceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/utils/data-operations/define-operations.ts",
+      "pathRootRelativePath": "{src-root}/utils/data-operations/commit-operations.ts",
       "projectExports": {
-        "defineCreateOperation": {
-          "isTypeOnly": false,
-          "name": "defineCreateOperation"
-        },
-        "defineDeleteOperation": {
-          "isTypeOnly": false,
-          "name": "defineDeleteOperation"
-        },
-        "defineUpdateOperation": {
-          "isTypeOnly": false,
-          "name": "defineUpdateOperation"
+        "commitCreate": { "isTypeOnly": false, "name": "commitCreate" },
+        "commitUpdate": { "isTypeOnly": false, "name": "commitUpdate" },
+        "commitDelete": { "isTypeOnly": false, "name": "commitDelete" }
+      },
+      "referencedGeneratorTemplates": [
+        "field-utils",
+        "prisma-types",
+        "prisma-utils",
+        "types"
+      ],
+      "sourceFile": "src/utils/data-operations/commit-operations.ts",
+      "variables": {}
+    },
+    "compose-operations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "authorizerUtilsImportsProvider": {
+          "importName": "authorizerUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/authorizer-utils-imports.ts"
         }
       },
-      "referencedGeneratorTemplates": ["prisma-types", "prisma-utils", "types"],
-      "sourceFile": "src/utils/data-operations/define-operations.ts",
+      "pathRootRelativePath": "{src-root}/utils/data-operations/compose-operations.ts",
+      "projectExports": {
+        "composeCreate": { "isTypeOnly": false, "name": "composeCreate" },
+        "composeUpdate": { "isTypeOnly": false, "name": "composeUpdate" }
+      },
+      "referencedGeneratorTemplates": ["field-utils", "prisma-types", "types"],
+      "sourceFile": "src/utils/data-operations/compose-operations.ts",
       "variables": {}
     },
     "field-definitions": {
@@ -85,12 +92,31 @@
         "scalarField": { "isTypeOnly": false, "name": "scalarField" }
       },
       "referencedGeneratorTemplates": [
-        "define-operations",
+        "field-utils",
         "prisma-types",
         "prisma-utils",
         "types"
       ],
       "sourceFile": "src/utils/data-operations/field-definitions.ts",
+      "variables": {}
+    },
+    "field-utils": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-operations/field-utils.ts",
+      "projectExports": {
+        "generateCreateSchema": { "isTypeOnly": false, "name": "generateCreateSchema" },
+        "generateUpdateSchema": { "isTypeOnly": false, "name": "generateUpdateSchema" }
+      },
+      "referencedGeneratorTemplates": ["types"],
+      "sourceFile": "src/utils/data-operations/field-utils.ts",
       "variables": {}
     },
     "prisma-types": {
@@ -110,7 +136,9 @@
       "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-types.ts",
       "projectExports": {
         "GetPayload": { "isTypeOnly": true, "name": "GetPayload" },
-        "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" }
+        "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
+        "ModelQuery": { "isTypeOnly": true, "name": "ModelQuery" },
+        "WhereUniqueInput": { "isTypeOnly": true, "name": "WhereUniqueInput" }
       },
       "sourceFile": "src/utils/data-operations/prisma-types.ts",
       "variables": {}
@@ -142,6 +170,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "data-operations",
       "importMapProviders": {
+        "authorizerUtilsImportsProvider": {
+          "importName": "authorizerUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/authorizer-utils-imports.ts"
+        },
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
@@ -161,9 +193,21 @@
           "isTypeOnly": true,
           "name": "AnyOperationHooks"
         },
+        "DataCreateInput": {
+          "isTypeOnly": true,
+          "name": "DataCreateInput"
+        },
+        "DataDeleteInput": {
+          "isTypeOnly": true,
+          "name": "DataDeleteInput"
+        },
         "DataOperationType": {
           "isTypeOnly": true,
           "name": "DataOperationType"
+        },
+        "DataUpdateInput": {
+          "isTypeOnly": true,
+          "name": "DataUpdateInput"
         },
         "FieldContext": { "isTypeOnly": true, "name": "FieldContext" },
         "FieldDefinition": { "isTypeOnly": true, "name": "FieldDefinition" },
@@ -191,6 +235,7 @@
           "name": "TransactionalOperationContext"
         }
       },
+      "referencedGeneratorTemplates": ["prisma-types"],
       "sourceFile": "src/utils/data-operations/types.ts",
       "variables": {}
     }

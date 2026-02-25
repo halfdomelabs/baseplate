@@ -2,8 +2,10 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PrismaDataUtilsPaths {
-  defineOperations: string;
+  commitOperations: string;
+  composeOperations: string;
   fieldDefinitions: string;
+  fieldUtils: string;
   prismaTypes: string;
   prismaUtils: string;
   relationHelpers: string;
@@ -23,8 +25,10 @@ const prismaDataUtilsPathsTask = createGeneratorTask({
     return {
       providers: {
         prismaDataUtilsPaths: {
-          defineOperations: `${srcRoot}/utils/data-operations/define-operations.ts`,
+          commitOperations: `${srcRoot}/utils/data-operations/commit-operations.ts`,
+          composeOperations: `${srcRoot}/utils/data-operations/compose-operations.ts`,
           fieldDefinitions: `${srcRoot}/utils/data-operations/field-definitions.ts`,
+          fieldUtils: `${srcRoot}/utils/data-operations/field-utils.ts`,
           prismaTypes: `${srcRoot}/utils/data-operations/prisma-types.ts`,
           prismaUtils: `${srcRoot}/utils/data-operations/prisma-utils.ts`,
           relationHelpers: `${srcRoot}/utils/data-operations/relation-helpers.ts`,

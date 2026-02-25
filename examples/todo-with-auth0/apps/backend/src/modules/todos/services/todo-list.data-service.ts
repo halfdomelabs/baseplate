@@ -66,14 +66,16 @@ export async function createTodoList<
 
   return commitCreate(plan, {
     query,
-    execute: async ({ tx, data: { ownerId, ...rest }, query }) =>
-      tx.todoList.create({
+    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
+      const item = await tx.todoList.create({
         data: {
           ...rest,
           owner: relationHelpers.connectCreate({ id: ownerId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -101,15 +103,17 @@ export async function updateTodoList<
 
   return commitUpdate(plan, {
     query,
-    execute: async ({ tx, data: { ownerId, ...rest }, query }) =>
-      tx.todoList.update({
+    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
+      const item = await tx.todoList.update({
         where,
         data: {
           ...rest,
           owner: relationHelpers.connectUpdate({ id: ownerId }),
         },
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
 
@@ -127,10 +131,12 @@ export async function deleteTodoList<
     where,
     query,
     context,
-    execute: async ({ tx, where, query }) =>
-      await tx.todoList.delete({
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.todoList.delete({
         where,
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }

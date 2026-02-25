@@ -13,18 +13,13 @@ import {
 import { z } from 'zod';
 
 import { serviceFileProvider } from '#src/generators/core/index.js';
-import {
-  contextKind,
-  prismaQueryKind,
-  skipValidationKind,
-} from '#src/types/service-dto-kinds.js';
+import { contextKind, prismaQueryKind } from '#src/types/service-dto-kinds.js';
 import {
   createServiceOutputDtoInjectedArg,
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateCreateCallback } from '../_shared/build-data-helpers/index.js';
-import { generateGetWhereUniqueFragment } from '../_shared/crud-method/primary-key-input.js';
+import { generateCreateExecuteCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -69,26 +64,46 @@ export const prismaDataCreateGenerator = createGenerator({
                     tsImportBuilder(['pick']).from('es-toolkit'),
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
-            // Generate create callback that transforms FK fields into relations
+            const modelVar = lowercaseFirstChar(modelName);
+
+            // Generate execute callback that transforms FK fields into relations
             const prismaModel = prismaOutput.getPrismaModel(modelName);
-            const { createCallbackFragment } = generateCreateCallback({
+            const { executeCallbackFragment } = generateCreateExecuteCallback({
               prismaModel,
               inputFieldNames: fields,
               dataUtilsImports,
-              modelVariableName: lowercaseFirstChar(modelName),
+              modelVariableName: modelVar,
             });
 
-            // Generate getWhereUnique based on primary key structure
-            const getWhereUniqueFragment =
-              generateGetWhereUniqueFragment(prismaModel);
+            // Generate the schema export and create function together
+            const schemaName = `${modelVar}CreateSchema`;
 
-            const createOperation = tsTemplate`
-              export const ${name} = ${dataUtilsImports.defineCreateOperation.fragment()}({
-                model: ${quot(lowercaseFirstChar(modelName))},
-                fields: ${fieldsFragment},
-                getWhereUnique: ${getWhereUniqueFragment},
-                create: ${createCallbackFragment},
-              })
+            const createFunction = tsTemplate`
+              export const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsFragment});
+
+              export async function ${name}<
+                TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
+              >({
+                data: input,
+                query,
+                context,
+              }: ${dataUtilsImports.DataCreateInput.typeFragment()}<
+                ${quot(modelVar)},
+                typeof ${fieldsFragment},
+                TQueryArgs
+              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>> {
+                const plan = await ${dataUtilsImports.composeCreate.fragment()}({
+                  model: ${quot(modelVar)},
+                  fields: ${fieldsFragment},
+                  input,
+                  context,
+                });
+
+                return ${dataUtilsImports.commitCreate.fragment()}(plan, {
+                  query,
+                  execute: ${executeCallbackFragment},
+                });
+              }
             `;
 
             const methodFragment = TsCodeUtils.importFragment(
@@ -96,10 +111,15 @@ export const prismaDataCreateGenerator = createGenerator({
               serviceFile.getServicePath(),
             );
 
+            const schemaMethodFragment = TsCodeUtils.importFragment(
+              schemaName,
+              serviceFile.getServicePath(),
+            );
+
             prismaDataService.registerMethod({
               name,
               type: 'create',
-              fragment: createOperation,
+              fragment: createFunction,
               outputMethod: {
                 name,
                 referenceFragment: methodFragment,
@@ -111,7 +131,7 @@ export const prismaDataCreateGenerator = createGenerator({
                       name: `${uppercaseFirstChar(name)}Data`,
                       fields: usedFields.map((field) => field.outputDtoField),
                     },
-                    zodSchemaFragment: tsTemplate`${methodFragment}.$dataSchema`,
+                    zodSchemaFragment: schemaMethodFragment,
                   },
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
@@ -122,11 +142,6 @@ export const prismaDataCreateGenerator = createGenerator({
                     type: 'injected',
                     name: 'query',
                     kind: prismaQueryKind,
-                  }),
-                  createServiceOutputDtoInjectedArg({
-                    type: 'injected',
-                    name: 'skipValidation',
-                    kind: skipValidationKind,
                   }),
                 ],
                 returnType: prismaToServiceOutputDto(

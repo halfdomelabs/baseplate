@@ -35,10 +35,12 @@ export async function deleteUserImage<
     where,
     query,
     context,
-    execute: async ({ tx, where, query }) =>
-      await tx.userImage.delete({
+    execute: async ({ tx, where, query }) => {
+      const item = await tx.userImage.delete({
         where,
         ...query,
-      }),
+      });
+      return item;
+    },
   });
 }
