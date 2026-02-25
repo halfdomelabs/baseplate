@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-dev",
-  "version": "0.1.0",
+  "version": "0.5.3",
   "description": "Developer tooling CLI for Baseplate plugin authors",
   "keywords": [
     "cli",
