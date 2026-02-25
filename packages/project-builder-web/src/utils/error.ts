@@ -1,4 +1,7 @@
-import type { FixRefDeletionError } from '@baseplate-dev/project-builder-lib';
+import type {
+  DefinitionIssue,
+  FixRefDeletionError,
+} from '@baseplate-dev/project-builder-lib';
 import type { ZodError } from 'zod';
 
 export class UserVisibleError extends Error {
@@ -21,6 +24,16 @@ export class RefDeleteError extends UserVisibleError {
         .join(', ')}`,
     );
     this.issues = issues;
+  }
+}
+
+export class DefinitionIssueError extends UserVisibleError {
+  public issues: DefinitionIssue[];
+
+  constructor(issues: DefinitionIssue[]) {
+    super(issues.map((i) => i.message).join('; '));
+    this.issues = issues;
+    this.name = 'DefinitionIssueError';
   }
 }
 

@@ -2,7 +2,7 @@ import type { z } from 'zod';
 
 import { get } from 'es-toolkit/compat';
 
-import { walkSchemaWithData } from '#src/parser/schema-walker.js';
+import { walkDataWithSchema } from '#src/parser/walk-data-with-schema.js';
 
 import type { DefinitionEntityWithNameResolver } from './definition-ref-builder.js';
 import type {
@@ -143,7 +143,7 @@ export function extractDefinitionRefs<T>(
     slotCollector,
     expressionCollector,
   ]);
-  walkSchemaWithData(schema, value, [refVisitor]);
+  walkDataWithSchema(schema, value, [refVisitor]);
 
   // Resolve all slots to paths (reuses existing slot resolution logic)
   const resolvedSlots = resolveSlots({

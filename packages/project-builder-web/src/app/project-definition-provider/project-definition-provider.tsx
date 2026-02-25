@@ -1,4 +1,7 @@
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  PluginSpecStore,
+  ProjectDefinition,
+} from '@baseplate-dev/project-builder-lib';
 import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
@@ -7,10 +10,13 @@ import type {
 import type React from 'react';
 
 import {
+  applyDefinitionFixes,
+  collectDefinitionIssues,
   createDefinitionSchemaParserContext,
   createPluginSpecStore,
   createProjectDefinitionSchema,
   fixRefDeletions,
+  partitionIssuesBySeverity,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { ProjectDefinitionContext } from '@baseplate-dev/project-builder-lib/web';
@@ -33,7 +39,7 @@ import {
   formatError,
   logAndFormatError,
 } from '#src/services/error-formatter.js';
-import { RefDeleteError } from '#src/utils/error.js';
+import { DefinitionIssueError, RefDeleteError } from '#src/utils/error.js';
 
 import { useProjectDefinitionContainer } from './hooks/use-project-definition-container.js';
 import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents.js';
@@ -66,6 +72,13 @@ export function ProjectDefinitionProvider({
   const { showRefIssues } = useDeleteReferenceDialog();
   const [isSavingDefinition, setIsSavingDefinition] = useState(false);
 
+  // Cache the plugin spec store keyed by active plugin IDs to avoid
+  // re-initializing when the same set of plugins is active across saves.
+  const pluginSpecStoreCache = useRef<{
+    key: string;
+    store: PluginSpecStore;
+  } | null>(null);
+
   // Listen for sync metadata changes
   useSyncMetadataListener();
 
@@ -82,17 +95,51 @@ export function ProjectDefinitionProvider({
     ): Promise<void> {
       setIsSavingDefinition(true);
       try {
-        const newProjectDefinition = produce(definition, newConfig);
+        const rawProjectDefinition = produce(definition, newConfig);
 
-        const pluginStore = createPluginSpecStore(
-          parserContext.pluginStore,
-          newProjectDefinition,
+        // Reuse cached plugin spec store if the active plugin set hasn't changed.
+        const pluginIds = (rawProjectDefinition.plugins?.map((p) => p.id) ?? [])
+          .toSorted()
+          .join(',');
+        let pluginStore: PluginSpecStore;
+        if (pluginSpecStoreCache.current?.key === pluginIds) {
+          pluginStore = pluginSpecStoreCache.current.store;
+        } else {
+          pluginStore = createPluginSpecStore(
+            parserContext.pluginStore,
+            rawProjectDefinition,
+          );
+          pluginSpecStoreCache.current = { key: pluginIds, store: pluginStore };
+        }
+
+        const schemaCreatorOptions = { plugins: pluginStore };
+
+        // Apply auto-fixes from registered validators (e.g. clearing disabled services)
+        const defContext =
+          createDefinitionSchemaParserContext(schemaCreatorOptions);
+        const defSchema = createProjectDefinitionSchema(defContext);
+        const newProjectDefinition = applyDefinitionFixes(
+          defSchema,
+          rawProjectDefinition,
         );
+
+        // Collect and check definition issues
+        const issues = collectDefinitionIssues(
+          defSchema,
+          newProjectDefinition,
+          pluginStore,
+        );
+        const { errors } = partitionIssuesBySeverity(issues);
+
+        // Block save on errors
+        if (errors.length > 0) {
+          throw new DefinitionIssueError(errors);
+        }
 
         const result = fixRefDeletions(
           createProjectDefinitionSchema,
           newProjectDefinition,
-          { plugins: pluginStore },
+          schemaCreatorOptions,
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
@@ -131,7 +178,11 @@ export function ProjectDefinitionProvider({
           return { success: true };
         })
         .catch((err: unknown) => {
-          if (
+          if (err instanceof DefinitionIssueError) {
+            for (const issue of err.issues) {
+              toast.error(issue.message);
+            }
+          } else if (
             err instanceof RefDeleteError &&
             !options.disableDeleteRefDialog
           ) {
