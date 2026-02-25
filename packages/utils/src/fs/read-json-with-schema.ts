@@ -16,6 +16,11 @@ export async function readJsonWithSchema<T extends z.ZodType>(
 ): Promise<z.output<T>> {
   try {
     const fileContent = await fs.readFile(filePath, 'utf8');
+    if (!fileContent.trim()) {
+      const error = new Error(`File is empty: ${filePath}`);
+      Object.assign(error, { code: 'ENOENT' });
+      throw error;
+    }
     const parsedData = JSON.parse(fileContent) as unknown;
     return await (schema.parseAsync(parsedData) as Promise<z.output<T>>);
   } catch (error) {
