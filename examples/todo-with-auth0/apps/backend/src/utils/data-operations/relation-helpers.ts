@@ -149,33 +149,28 @@ function connectUpdate<
  * support for both single-field and composite key relations.
  *
  * @example
- * // In a create operation with single field relations
- * buildData: ({ todoListId, assigneeId, ...rest }) => ({
- *   todoList: relationHelpers.connectCreate({ id: todoListId }),
- *   assignee: relationHelpers.connectCreate({ id: assigneeId }), // undefined if assigneeId is null
- *   ...rest,
- * })
+ * // In a create execute function with single field relations
+ * execute: async ({ tx, data: { todoListId, assigneeId, ...rest }, query }) =>
+ *   tx.todoItem.create({
+ *     data: {
+ *       todoList: relationHelpers.connectCreate({ id: todoListId }),
+ *       assignee: relationHelpers.connectCreate({ id: assigneeId }),
+ *       ...rest,
+ *     },
+ *     ...query,
+ *   })
  *
  * @example
- * // In a create operation with composite key relation
- * buildData: ({ userId, tenantId, ...rest }) => ({
- *   owner: relationHelpers.connectCreate({ userId, tenantId }), // undefined if any field is null
- *   ...rest,
- * })
- *
- * @example
- * // In an update operation with single field
- * buildData: ({ assigneeId, ...rest }) => ({
- *   assignee: relationHelpers.connectUpdate({ id: assigneeId }),
- *   ...rest,
- * })
- *
- * @example
- * // In an update operation with composite key
- * buildData: ({ userId, tenantId, ...rest }) => ({
- *   owner: relationHelpers.connectUpdate({ userId, tenantId }),
- *   ...rest,
- * })
+ * // In an update execute function with single field
+ * execute: async ({ tx, data: { assigneeId, ...rest }, query }) =>
+ *   tx.todoItem.update({
+ *     where,
+ *     data: {
+ *       assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+ *       ...rest,
+ *     },
+ *     ...query,
+ *   })
  */
 export const relationHelpers = {
   /**
