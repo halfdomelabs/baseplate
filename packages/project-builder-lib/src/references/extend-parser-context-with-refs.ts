@@ -113,6 +113,11 @@ export function withRef<TEntityType extends DefinitionEntityType>(
  * schema.apply(withEnt({ type: modelEntityType, provides: modelSlot }))
  * ```
  *
+ * Or via the parser context (2-arg legacy form):
+ * ```typescript
+ * ctx.withEnt(schema, { type: modelEntityType, provides: modelSlot })
+ * ```
+ *
  * @param entity - The entity definition input
  * @returns A function that decorates a schema with entity metadata
  */
@@ -225,6 +230,9 @@ export function extendParserContextWithRefs(): {
 } {
   return {
     withRef,
+    // Legacy 2-arg API that delegates to the standalone withEnt decorator.
+    // Uses a cast because the standalone accepts DefinitionEntityInput<unknown, ...>
+    // while this 2-arg form infers the full z.output<TType> for type-safe idPath.
     withEnt<
       TType extends z.ZodType,
       TEntityType extends DefinitionEntityType,
@@ -233,18 +241,9 @@ export function extendParserContextWithRefs(): {
       schema: TType,
       entity: DefinitionEntityInput<z.output<TType>, TEntityType, TIdPath>,
     ): ZodTypeWithOptional<TType> {
-      const idPath = (entity.idPath as (string | number)[] | undefined) ?? [
-        'id',
-      ];
-      definitionRefRegistry.add(schema, {
-        kind: 'entity',
-        type: entity.type,
-        idPath,
-        getNameResolver: entity.getNameResolver,
-        parentSlot: entity.parentSlot,
-        provides: entity.provides,
-      });
-      return schema as unknown as ZodTypeWithOptional<TType>;
+      return schema.apply(
+        withEnt(entity as DefinitionEntityInput<unknown, TEntityType>),
+      );
     },
     refContext,
     withExpression,

@@ -24,9 +24,15 @@ export type DefinitionFieldIssueChecker<T = unknown> = (
 
 /**
  * Metadata stored on a schema node annotated by `withIssueChecker`.
+ * Exposed as readonly; the registry manages mutation internally.
  */
 export interface FieldIssueCheckerSchemaMeta {
-  readonly checkers: DefinitionFieldIssueChecker[];
+  readonly checkers: readonly DefinitionFieldIssueChecker[];
+}
+
+/** Mutable internal representation used by the registry. */
+interface MutableFieldIssueCheckerSchemaMeta {
+  checkers: DefinitionFieldIssueChecker[];
 }
 
 /**
@@ -36,7 +42,7 @@ export interface FieldIssueCheckerSchemaMeta {
  * Annotated by `withIssueChecker()`; read by `collectFieldIssues()`.
  */
 export const definitionFieldIssueRegistry = (() => {
-  const map = new WeakMap<z.ZodType, FieldIssueCheckerSchemaMeta>();
+  const map = new WeakMap<z.ZodType, MutableFieldIssueCheckerSchemaMeta>();
   return {
     add(schema: z.ZodType, checker: DefinitionFieldIssueChecker): void {
       const existing = map.get(schema);

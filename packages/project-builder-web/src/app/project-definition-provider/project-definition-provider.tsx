@@ -1,4 +1,7 @@
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  PluginSpecStore,
+  ProjectDefinition,
+} from '@baseplate-dev/project-builder-lib';
 import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
@@ -69,6 +72,13 @@ export function ProjectDefinitionProvider({
   const { showRefIssues } = useDeleteReferenceDialog();
   const [isSavingDefinition, setIsSavingDefinition] = useState(false);
 
+  // Cache the plugin spec store keyed by active plugin IDs to avoid
+  // re-initializing when the same set of plugins is active across saves.
+  const pluginSpecStoreCache = useRef<{
+    key: string;
+    store: PluginSpecStore;
+  } | null>(null);
+
   // Listen for sync metadata changes
   useSyncMetadataListener();
 
@@ -87,10 +97,20 @@ export function ProjectDefinitionProvider({
       try {
         const rawProjectDefinition = produce(definition, newConfig);
 
-        const pluginStore = createPluginSpecStore(
-          parserContext.pluginStore,
-          rawProjectDefinition,
-        );
+        // Reuse cached plugin spec store if the active plugin set hasn't changed.
+        const pluginIds = (rawProjectDefinition.plugins?.map((p) => p.id) ?? [])
+          .toSorted()
+          .join(',');
+        let pluginStore: PluginSpecStore;
+        if (pluginSpecStoreCache.current?.key === pluginIds) {
+          pluginStore = pluginSpecStoreCache.current.store;
+        } else {
+          pluginStore = createPluginSpecStore(
+            parserContext.pluginStore,
+            rawProjectDefinition,
+          );
+          pluginSpecStoreCache.current = { key: pluginIds, store: pluginStore };
+        }
 
         const schemaCreatorOptions = { plugins: pluginStore };
 

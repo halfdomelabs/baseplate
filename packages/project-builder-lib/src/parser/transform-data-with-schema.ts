@@ -1,22 +1,8 @@
-import type {
-  z,
-  ZodArray,
-  ZodDefault,
-  ZodDiscriminatedUnion,
-  ZodIntersection,
-  ZodNonOptional,
-  ZodNullable,
-  ZodObject,
-  ZodOptional,
-  ZodPrefault,
-  ZodReadonly,
-  ZodRecord,
-  ZodTuple,
-} from 'zod';
+import type { z } from 'zod';
 
 import type { ReferencePath } from '#src/references/types.js';
 
-import { findDiscriminatedUnionMatch } from './schema-walker.js';
+import { getSchemaChildren } from './schema-structure.js';
 
 /**
  * Context passed to the transform callback at each schema node.
@@ -40,17 +26,6 @@ export type SchemaTransformFn = (
   value: unknown,
   ctx: SchemaTransformContext,
 ) => unknown;
-
-/** Leaf types that are allowed in a plain `z.union()` without a discriminator. */
-const LEAF_UNION_TYPES = new Set(['string', 'enum', 'literal']);
-
-/**
- * Returns `true` if every option in the union is a leaf type
- * (string, enum, or literal), meaning no structural descent is needed.
- */
-function isLeafUnion(options: z.ZodType[]): boolean {
-  return options.every((opt) => LEAF_UNION_TYPES.has(opt._zod.def.type));
-}
 
 /**
  * Walks a Zod schema in parallel with data, applying a transform function
@@ -81,20 +56,31 @@ function transformNode(
   // Step 1: Structural descent — recurse into children first (bottom-up).
   let childResult: unknown = data;
 
-  const { type } = schema._zod.def;
-  switch (type) {
+  const children = getSchemaChildren(schema, data, path);
+  switch (children.kind) {
+    case 'leaf': {
+      break;
+    }
+    case 'leaf-union': {
+      break;
+    }
+    case 'wrapper': {
+      if (children.skipIfNullish && (data === undefined || data === null))
+        break;
+      childResult = transformNode(children.innerSchema, data, path, transform);
+      break;
+    }
     case 'object': {
       if (data === null || data === undefined || typeof data !== 'object')
         break;
-      const typed = schema as ZodObject;
       const obj = data as Record<string, unknown>;
       let changed = false;
       const entries: [string, unknown][] = [];
 
-      for (const [key, fieldSchema] of Object.entries(typed._zod.def.shape)) {
+      for (const [key, fieldSchema] of children.entries) {
         const original = obj[key];
         const transformed = transformNode(
-          fieldSchema as z.ZodType,
+          fieldSchema,
           original,
           [...path, key],
           transform,
@@ -121,13 +107,12 @@ function transformNode(
     }
     case 'array': {
       if (!Array.isArray(data)) break;
-      const typed = schema as ZodArray;
       let changed = false;
       const items: unknown[] = [];
 
       for (const [i, datum] of data.entries()) {
         const transformed = transformNode(
-          typed._zod.def.element as z.ZodType,
+          children.elementSchema,
           datum,
           [...path, i],
           transform,
@@ -141,94 +126,12 @@ function transformNode(
       }
       break;
     }
-    case 'optional': {
-      if (data === undefined || data === null) break;
-      childResult = transformNode(
-        (schema as ZodOptional)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'nullable': {
-      if (data === undefined || data === null) break;
-      childResult = transformNode(
-        (schema as ZodNullable)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'nonoptional': {
-      if (data === undefined || data === null) break;
-      childResult = transformNode(
-        (schema as ZodNonOptional)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'readonly': {
-      if (data === undefined || data === null) break;
-      childResult = transformNode(
-        (schema as ZodReadonly)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'default': {
-      childResult = transformNode(
-        (schema as ZodDefault)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'prefault': {
-      childResult = transformNode(
-        (schema as ZodPrefault)._zod.def.innerType as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      break;
-    }
-    case 'union': {
-      const typed = schema as ZodDiscriminatedUnion;
-      const { discriminator, options } = typed._zod.def;
-      if (discriminator) {
-        const matchingOption = findDiscriminatedUnionMatch(
-          options as z.ZodType[],
-          discriminator,
-          data,
-        );
-        if (matchingOption) {
-          childResult = transformNode(matchingOption, data, path, transform);
-        }
-      } else if (isLeafUnion(options as z.ZodType[])) {
-        // Leaf union — no structural descent needed.
-        break;
-      } else {
-        throw new Error(
-          `Plain z.union() is not supported unless all options are string/enum/literal (path: ${path.join('.')})`,
-        );
-      }
-      break;
-    }
     case 'tuple': {
       if (!Array.isArray(data)) break;
-      const typed = schema as ZodTuple;
-      const { items, rest } = typed._zod.def;
       let changed = false;
       const resultItems: unknown[] = [];
 
-      for (const [i, itemSchema] of (items as z.ZodType[]).entries()) {
+      for (const [i, itemSchema] of children.items.entries()) {
         if (i < data.length) {
           const transformed = transformNode(
             itemSchema,
@@ -242,10 +145,10 @@ function transformNode(
       }
 
       // Transform rest elements if the tuple has a rest schema
-      if (rest) {
-        for (let i = items.length; i < data.length; i++) {
+      if (children.rest) {
+        for (let i = children.items.length; i < data.length; i++) {
           const transformed = transformNode(
-            rest as z.ZodType,
+            children.rest,
             data[i],
             [...path, i],
             transform,
@@ -263,15 +166,13 @@ function transformNode(
     case 'record': {
       if (data === null || data === undefined || typeof data !== 'object')
         break;
-      const typed = schema as ZodRecord;
-      const { valueType } = typed._zod.def;
       const obj = data as Record<string, unknown>;
       let changed = false;
       const entries: [string, unknown][] = [];
 
       for (const [key, value] of Object.entries(obj)) {
         const transformed = transformNode(
-          valueType as z.ZodType,
+          children.valueSchema,
           value,
           [...path, key],
           transform,
@@ -285,63 +186,16 @@ function transformNode(
       }
       break;
     }
+    case 'discriminated-union': {
+      if (children.match) {
+        childResult = transformNode(children.match, data, path, transform);
+      }
+      break;
+    }
     case 'intersection': {
       // Transform left first, then transform the result via right
-      const typed = schema as ZodIntersection;
-      const leftResult = transformNode(
-        typed._zod.def.left as z.ZodType,
-        data,
-        path,
-        transform,
-      );
-      childResult = transformNode(
-        typed._zod.def.right as z.ZodType,
-        leftResult,
-        path,
-        transform,
-      );
-      break;
-    }
-    // Opaque / non-structural types are not supported in definition schemas.
-    case 'transform':
-    case 'pipe':
-    case 'custom':
-    case 'file':
-    case 'symbol':
-    case 'promise':
-    case 'function':
-    case 'bigint':
-    case 'void':
-    case 'nan':
-    case 'lazy':
-    case 'catch':
-    case 'map':
-    case 'set':
-    case 'success':
-    case 'template_literal': {
-      throw new Error(
-        `Schema type "${type}" is not supported in definition schemas (path: ${path.join('.')})`,
-      );
-    }
-    // Serializable leaf types — no structural descent needed.
-    case 'string':
-    case 'number':
-    case 'int':
-    case 'boolean':
-    case 'null':
-    case 'undefined':
-    case 'never':
-    case 'any':
-    case 'unknown':
-    case 'date':
-    case 'enum':
-    case 'literal': {
-      break;
-    }
-    default: {
-      // Exhaustive guard: if Zod adds a new type, this will fail to compile.
-      const _exhaustiveCheck: never = type;
-      void _exhaustiveCheck;
+      const leftResult = transformNode(children.left, data, path, transform);
+      childResult = transformNode(children.right, leftResult, path, transform);
       break;
     }
   }

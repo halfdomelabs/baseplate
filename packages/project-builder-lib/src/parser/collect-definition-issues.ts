@@ -6,7 +6,7 @@ import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types
 import { definitionIssueCheckerSpec } from '#src/schema/creator/definition-issue-checker-spec.js';
 import { definitionFieldIssueRegistry } from '#src/schema/creator/definition-issue-registry.js';
 
-import { walkDataWithSchema } from './schema-walker.js';
+import { walkDataWithSchema } from './walk-data-with-schema.js';
 
 /**
  * Issues partitioned by severity level.

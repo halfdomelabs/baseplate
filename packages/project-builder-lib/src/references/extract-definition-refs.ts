@@ -2,7 +2,7 @@ import type { z } from 'zod';
 
 import { get } from 'es-toolkit/compat';
 
-import { walkDataWithSchema } from '#src/parser/schema-walker.js';
+import { walkDataWithSchema } from '#src/parser/walk-data-with-schema.js';
 
 import type { DefinitionEntityWithNameResolver } from './definition-ref-builder.js';
 import type {

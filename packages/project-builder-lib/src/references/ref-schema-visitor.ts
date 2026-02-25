@@ -3,7 +3,7 @@ import type { z } from 'zod';
 import type {
   SchemaNodeVisitor,
   SchemaWalkContext,
-} from '#src/parser/schema-walker.js';
+} from '#src/parser/walk-data-with-schema.js';
 
 import type { DefinitionRefMeta } from './definition-ref-registry.js';
 import type { ReferencePath } from './types.js';

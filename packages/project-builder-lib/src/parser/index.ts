@@ -7,6 +7,7 @@ export {
 } from './collect-definition-issues.js';
 export type { PartitionedIssues } from './collect-definition-issues.js';
 export * from './parser.js';
-export { walkDataWithSchema } from './schema-walker.js';
+export { findDiscriminatedUnionMatch } from './schema-structure.js';
 export { transformDataWithSchema } from './transform-data-with-schema.js';
 export type * from './types.js';
+export { walkDataWithSchema } from './walk-data-with-schema.js';

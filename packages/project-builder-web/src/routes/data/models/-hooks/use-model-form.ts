@@ -89,7 +89,9 @@ export function useModelForm({
           ...data,
         };
 
-        // Check for models with the same name
+        // Check for models with the same name — kept here intentionally as an
+        // early-exit that shows an inline form error. The global save pipeline
+        // also validates uniqueness via checkUniqueField, but would show a toast instead.
         const existingModel = definition.models.find(
           (m) =>
             m.id !== data.id &&

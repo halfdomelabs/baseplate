@@ -22,9 +22,15 @@ export type DefinitionFix<T = unknown> = (
 
 /**
  * Metadata stored on a schema node annotated by `withFix`.
+ * Exposed as readonly; the registry manages mutation internally.
  */
 export interface FixSchemaMeta {
-  readonly fixes: DefinitionFix[];
+  readonly fixes: readonly DefinitionFix[];
+}
+
+/** Mutable internal representation used by the registry. */
+interface MutableFixSchemaMeta {
+  fixes: DefinitionFix[];
 }
 
 /**
@@ -34,7 +40,7 @@ export interface FixSchemaMeta {
  * Annotated by `withFix()`; read by `applyDefinitionFixes()`.
  */
 export const definitionFixRegistry = (() => {
-  const map = new WeakMap<z.ZodType, FixSchemaMeta>();
+  const map = new WeakMap<z.ZodType, MutableFixSchemaMeta>();
   return {
     add(schema: z.ZodType, fix: DefinitionFix): void {
       const existing = map.get(schema);
