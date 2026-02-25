@@ -28,8 +28,8 @@ const descriptorSchema = z.object({
   order: z.number(),
 });
 
-export const pothosPrismaListQueryGenerator = createGenerator({
-  name: 'pothos/pothos-prisma-list-query',
+export const pothosPrismaCountQueryGenerator = createGenerator({
+  name: 'pothos/pothos-prisma-count-query',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
@@ -51,7 +51,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
           throw new Error(`Model ${modelName} does not have an ID field`);
         }
 
-        const queryName = pluralize(lowerCaseFirst(modelName));
+        const queryName = `${pluralize(lowerCaseFirst(modelName))}Count`;
 
         const customFields = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
@@ -69,21 +69,16 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
-            const resolveFunction = tsTemplate`async (query, root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
+            const resolveFunction = tsTemplate`async () => ${prismaModelFragment}.count()`;
 
             const options = {
-              type: `[${quot(modelName)}]`,
-              args: tsTemplate`{
-                skip: t.arg.int(),
-                take: t.arg.int(),
-              }`,
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };
 
             const block = tsTemplate`${pothosTypesFile.getBuilderFragment()}.queryField(
               ${quot(queryName)},
-              (t) => t.prismaField(${TsCodeUtils.mergeFragmentsAsObject(options, { disableSort: true })})
+              (t) => t.int(${TsCodeUtils.mergeFragmentsAsObject(options, { disableSort: true })})
             )`;
 
             pothosTypesFile.typeDefinitions.add({

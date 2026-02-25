@@ -14,7 +14,16 @@ builder.queryField('todoItem', (t) =>
 builder.queryField('todoItems', (t) =>
   t.prismaField({
     type: ['TodoItem'],
+    args: {
+      skip: t.arg.int(),
+      take: t.arg.int(),
+    },
     authorize: ['user'],
-    resolve: async (query) => prisma.todoItem.findMany({ ...query }),
+    resolve: async (query, root, { skip, take }) =>
+      prisma.todoItem.findMany({
+        ...query,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      }),
   }),
 );

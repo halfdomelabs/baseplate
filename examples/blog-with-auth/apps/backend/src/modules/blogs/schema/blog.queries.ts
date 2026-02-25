@@ -14,7 +14,16 @@ builder.queryField('blog', (t) =>
 builder.queryField('blogs', (t) =>
   t.prismaField({
     type: ['Blog'],
+    args: {
+      skip: t.arg.int(),
+      take: t.arg.int(),
+    },
     authorize: ['public'],
-    resolve: async (query) => prisma.blog.findMany({ ...query }),
+    resolve: async (query, root, { skip, take }) =>
+      prisma.blog.findMany({
+        ...query,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      }),
   }),
 );

@@ -7,6 +7,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import {
   pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
+  pothosPrismaCountQueryGenerator,
   pothosPrismaCrudMutationGenerator,
   pothosPrismaEnumGenerator,
   pothosPrismaFindQueryGenerator,
@@ -135,6 +136,21 @@ function buildQueriesFileForModel(
             },
           })
         : undefined,
+      countQuery:
+        list?.enabled && list.count?.enabled
+          ? pothosPrismaCountQueryGenerator({
+              order: 2,
+              modelName: model.name,
+              children: {
+                authorize:
+                  !isAuthEnabled || !list.roles?.length
+                    ? undefined
+                    : pothosAuthorizeFieldGenerator({
+                        roles: list.roles.map((r) => appBuilder.nameFromId(r)),
+                      }),
+              },
+            })
+          : undefined,
     },
   });
 }

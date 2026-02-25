@@ -14,7 +14,16 @@ builder.queryField('file', (t) =>
 builder.queryField('files', (t) =>
   t.prismaField({
     type: ['File'],
+    args: {
+      skip: t.arg.int(),
+      take: t.arg.int(),
+    },
     authorize: ['user', 'admin'],
-    resolve: async (query) => prisma.file.findMany({ ...query }),
+    resolve: async (query, root, { skip, take }) =>
+      prisma.file.findMany({
+        ...query,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      }),
   }),
 );
