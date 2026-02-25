@@ -29,15 +29,15 @@ pnpm baseplate-dev --help
 
 Environment variables (can be set in `.env` or `.env.local`):
 
-| Variable | Description |
-|----------|-------------|
-| `PROJECT_DIRECTORIES` | Comma-separated paths to search for projects |
-| `EXCLUDE_EXAMPLES` | Exclude example projects from discovery in `serve`/`listProjects` (examples included by default) |
-| `EXAMPLES_DIRECTORIES` | Comma-separated paths to example directories (overrides auto-discovery for `sync-examples`) |
-| `PLUGIN_ROOT_DIRECTORIES` | Comma-separated paths to additional root directories whose plugin deps are also discovered |
-| `NO_BROWSER` | Disable auto-opening browser in `serve` |
-| `PORT` | Port for the `serve` command |
-| `PORT_OFFSET` | Offset added to the default port in `serve` |
+| Variable                  | Description                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| `PROJECT_DIRECTORIES`     | Comma-separated paths to search for projects                                                     |
+| `EXCLUDE_EXAMPLES`        | Exclude example projects from discovery in `serve`/`listProjects` (examples included by default) |
+| `EXAMPLES_DIRECTORIES`    | Comma-separated paths to example directories (overrides auto-discovery for `sync-examples`)      |
+| `PLUGIN_ROOT_DIRECTORIES` | Comma-separated paths to additional root directories whose plugin deps are also discovered       |
+| `NO_BROWSER`              | Disable auto-opening browser in `serve`                                                          |
+| `PORT`                    | Port for the `serve` command                                                                     |
+| `PORT_OFFSET`             | Offset added to the default port in `serve`                                                      |
 
 ## Programmatic API
 

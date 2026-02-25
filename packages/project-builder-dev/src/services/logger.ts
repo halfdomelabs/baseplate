@@ -1,6 +1,6 @@
 import { pino } from 'pino';
 
-export const DEFAULT_LOGGER_OPTIONS: pino.LoggerOptions = {
+const DEFAULT_LOGGER_OPTIONS: pino.LoggerOptions = {
   transport: {
     target: 'pino-pretty',
     options: {

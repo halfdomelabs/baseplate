@@ -24,7 +24,7 @@ export default {
       ],
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
-        // necessary for build
+        // react-dom and @types/react-dom are required for the vite/react build
         'react-dom',
         '@types/react-dom',
       ],
@@ -63,6 +63,19 @@ export default {
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',
         // we resolve the package by string in src/server.ts
+        '@baseplate-dev/project-builder-web',
+      ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'packages/project-builder-dev': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
+        'pino-pretty',
+        // we resolve the package by string in src/commands/serve.ts
         '@baseplate-dev/project-builder-web',
       ],
       paths: {

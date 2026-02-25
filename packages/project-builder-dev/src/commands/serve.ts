@@ -19,7 +19,7 @@ interface ServeCommandOptions {
   skipCommands?: boolean;
 }
 
-export async function serveWebServer({
+async function serveWebServer({
   browser,
   port,
   logger: overrideLogger,
