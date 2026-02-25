@@ -6,6 +6,8 @@ import {
   createUser,
   deleteUser,
   updateUser,
+  userCreateSchema,
+  userUpdateSchema,
 } from '../services/user.data-service.js';
 import { userObjectType } from './user.object-type.js';
 
@@ -17,7 +19,7 @@ const createUserDataInputType = builder
       emailVerified: t.boolean(),
     }),
   })
-  .validate(createUser.$dataSchema);
+  .validate(userCreateSchema);
 
 builder.mutationField('createUser', (t) =>
   t.fieldWithInputPayload({
@@ -31,7 +33,6 @@ builder.mutationField('createUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
-        skipValidation: true,
       });
       return { user };
     },
@@ -46,7 +47,7 @@ const updateUserDataInputType = builder
       emailVerified: t.boolean(),
     }),
   })
-  .validate(updateUser.$dataSchema);
+  .validate(userUpdateSchema);
 
 builder.mutationField('updateUser', (t) =>
   t.fieldWithInputPayload({
@@ -62,7 +63,6 @@ builder.mutationField('updateUser', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['user'] }),
-        skipValidation: true,
       });
       return { user };
     },

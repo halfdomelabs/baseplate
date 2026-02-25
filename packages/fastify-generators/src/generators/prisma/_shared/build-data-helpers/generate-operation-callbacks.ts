@@ -9,9 +9,9 @@ import type { DataUtilsImportsProvider } from '../../data-utils/index.js';
 import { generateRelationBuildData } from './generate-relation-build-data.js';
 
 /**
- * Configuration for generating create operation callback
+ * Configuration for generating create/update execute callbacks
  */
-interface GenerateCreateCallbackConfig {
+interface GenerateExecuteCallbackConfig {
   /** Prisma model to analyze for relations */
   prismaModel: PrismaOutputModel;
   /** Field names that are included in the input */
@@ -23,22 +23,22 @@ interface GenerateCreateCallbackConfig {
 }
 
 /**
- * Result of generating create operation callback
+ * Result of generating create execute callback
  */
-interface GenerateCreateCallbackResult {
-  /** Complete create callback fragment: async ({ tx, data, query }) => { const item = await tx.model.create({...}); return item; } */
-  createCallbackFragment: TsCodeFragment;
+interface GenerateCreateExecuteCallbackResult {
+  /** Execute callback fragment: async ({ tx, data, query }) => tx.model.create({ data, ...query }) */
+  executeCallbackFragment: TsCodeFragment;
 }
 
 /**
- * Generates a create operation callback that transforms foreign key fields into Prisma relation objects
+ * Generates a create execute callback that transforms foreign key fields into Prisma relation objects.
  *
  * @param config - Configuration including Prisma model, input fields, and model name
- * @returns Result containing the create callback function fragment
+ * @returns Result containing the execute callback function fragment
  *
  * @example
  * // No relations
- * generateCreateCallback({...})
+ * generateCreateExecuteCallback({...})
  * // Returns: async ({ tx, data, query }) => {
  * //   const item = await tx.user.create({ data, ...query });
  * //   return item;
@@ -46,11 +46,11 @@ interface GenerateCreateCallbackResult {
  *
  * @example
  * // With relations
- * generateCreateCallback({...})
- * // Returns: async ({ tx, data: { assigneeId, todoListId, ...data }, query }) => {
+ * generateCreateExecuteCallback({...})
+ * // Returns: async ({ tx, data: { assigneeId, todoListId, ...rest }, query }) => {
  * //   const item = await tx.todoItem.create({
  * //     data: {
- * //       ...data,
+ * //       ...rest,
  * //       assignee: relationHelpers.connectCreate({ id: assigneeId }),
  * //       todoList: relationHelpers.connectCreate({ id: todoListId }),
  * //     },
@@ -59,9 +59,9 @@ interface GenerateCreateCallbackResult {
  * //   return item;
  * // }
  */
-export function generateCreateCallback(
-  config: GenerateCreateCallbackConfig,
-): GenerateCreateCallbackResult {
+export function generateCreateExecuteCallback(
+  config: GenerateExecuteCallbackConfig,
+): GenerateCreateExecuteCallbackResult {
   const { prismaModel, inputFieldNames, dataUtilsImports, modelVariableName } =
     config;
 
@@ -73,11 +73,12 @@ export function generateCreateCallback(
     prismaModel,
     inputFieldNames,
     dataUtilsImports,
+    dataName: 'rest',
   });
 
   if (passthrough) {
     return {
-      createCallbackFragment: tsTemplate`
+      executeCallbackFragment: tsTemplate`
         async ({ tx, data, query }) => {
           const item = await tx.${modelVariableName}.create({
             data,
@@ -90,7 +91,7 @@ export function generateCreateCallback(
   }
 
   return {
-    createCallbackFragment: tsTemplate`
+    executeCallbackFragment: tsTemplate`
       async ({ tx, data: ${argumentFragment}, query }) => {
         const item = await tx.${modelVariableName}.create({
           data: ${returnFragment},
@@ -103,49 +104,38 @@ export function generateCreateCallback(
 }
 
 /**
- * Configuration for generating update operation callback
+ * Result of generating update execute callback
  */
-interface GenerateUpdateCallbackConfig {
-  /** Prisma model to analyze for relations */
-  prismaModel: PrismaOutputModel;
-  /** Field names that are included in the input */
-  inputFieldNames: string[];
-  /** Data utils imports provider for accessing relationHelpers fragments */
-  dataUtilsImports: DataUtilsImportsProvider;
-  /** Prisma model variable name in camelCase (e.g., 'todoItem', 'user') */
-  modelVariableName: string;
+interface GenerateUpdateExecuteCallbackResult {
+  /** Execute callback fragment: async ({ tx, data, query }) => tx.model.update({ where, data, ...query }) */
+  executeCallbackFragment: TsCodeFragment;
 }
 
 /**
- * Result of generating update operation callback
- */
-interface GenerateUpdateCallbackResult {
-  /** Complete update callback fragment: async ({ tx, where, data, query }) => { const item = await tx.model.update({...}); return item; } */
-  updateCallbackFragment: TsCodeFragment;
-}
-
-/**
- * Generates an update operation callback that transforms foreign key fields into Prisma relation objects
+ * Generates an update execute callback that transforms foreign key fields into Prisma relation objects.
+ *
+ * The `where` clause is captured from the enclosing function scope rather than
+ * passed as a callback argument.
  *
  * @param config - Configuration including Prisma model, input fields, and model name
- * @returns Result containing the update callback function fragment
+ * @returns Result containing the execute callback function fragment
  *
  * @example
  * // No relations
- * generateUpdateCallback({...})
- * // Returns: async ({ tx, where, data, query }) => {
+ * generateUpdateExecuteCallback({...})
+ * // Returns: async ({ tx, data, query }) => {
  * //   const item = await tx.user.update({ where, data, ...query });
  * //   return item;
  * // }
  *
  * @example
  * // With relations
- * generateUpdateCallback({...})
- * // Returns: async ({ tx, where, data: { assigneeId, todoListId, ...data }, query }) => {
+ * generateUpdateExecuteCallback({...})
+ * // Returns: async ({ tx, data: { assigneeId, todoListId, ...rest }, query }) => {
  * //   const item = await tx.todoItem.update({
  * //     where,
  * //     data: {
- * //       ...data,
+ * //       ...rest,
  * //       assignee: relationHelpers.connectUpdate({ id: assigneeId }),
  * //       todoList: relationHelpers.connectUpdate({ id: todoListId }),
  * //     },
@@ -154,9 +144,9 @@ interface GenerateUpdateCallbackResult {
  * //   return item;
  * // }
  */
-export function generateUpdateCallback(
-  config: GenerateUpdateCallbackConfig,
-): GenerateUpdateCallbackResult {
+export function generateUpdateExecuteCallback(
+  config: GenerateExecuteCallbackConfig,
+): GenerateUpdateExecuteCallbackResult {
   const { prismaModel, inputFieldNames, dataUtilsImports, modelVariableName } =
     config;
 
@@ -168,12 +158,13 @@ export function generateUpdateCallback(
     prismaModel,
     inputFieldNames,
     dataUtilsImports,
+    dataName: 'rest',
   });
 
   if (passthrough) {
     return {
-      updateCallbackFragment: tsTemplate`
-        async ({ tx, where, data, query }) => {
+      executeCallbackFragment: tsTemplate`
+        async ({ tx, data, query }) => {
           const item = await tx.${modelVariableName}.update({
             where,
             data,
@@ -186,8 +177,8 @@ export function generateUpdateCallback(
   }
 
   return {
-    updateCallbackFragment: tsTemplate`
-      async ({ tx, where, data: ${argumentFragment}, query }) => {
+    executeCallbackFragment: tsTemplate`
+      async ({ tx, data: ${argumentFragment}, query }) => {
         const item = await tx.${modelVariableName}.update({
           where,
           data: ${returnFragment},
@@ -200,45 +191,46 @@ export function generateUpdateCallback(
 }
 
 /**
- * Configuration for generating delete operation callback
+ * Configuration for generating delete execute callback
  */
-interface GenerateDeleteCallbackConfig {
+interface GenerateDeleteExecuteCallbackConfig {
   /** Prisma model variable name in camelCase (e.g., 'todoItem', 'user') */
   modelVariableName: string;
 }
 
 /**
- * Result of generating delete operation callback
+ * Result of generating delete execute callback
  */
-interface GenerateDeleteCallbackResult {
-  /** Complete delete callback fragment: async ({ tx, where, query }) => { const item = await tx.model.delete({...}); return item; } */
-  deleteCallbackFragment: TsCodeFragment;
+interface GenerateDeleteExecuteCallbackResult {
+  /** Execute callback fragment: async ({ tx, query }) => { const item = await tx.model.delete({ where, ...query }); return item; } */
+  executeCallbackFragment: TsCodeFragment;
 }
 
 /**
- * Generates a delete operation callback
+ * Generates a delete execute callback.
  *
  * Delete operations don't need data transformation, so this simply generates
- * a callback that passes through the where clause and query parameters.
+ * a callback that deletes the record. The `where` clause is captured from the
+ * enclosing function scope rather than passed as a callback argument.
  *
  * @param config - Configuration with model name
- * @returns Result containing the delete callback function fragment
+ * @returns Result containing the execute callback function fragment
  *
  * @example
- * generateDeleteCallback({ modelVariableName: 'todoItem' })
- * // Returns: async ({ tx, where, query }) => {
+ * generateDeleteExecuteCallback({ modelVariableName: 'todoItem' })
+ * // Returns: async ({ tx, query }) => {
  * //   const item = await tx.todoItem.delete({ where, ...query });
  * //   return item;
  * // }
  */
-export function generateDeleteCallback(
-  config: GenerateDeleteCallbackConfig,
-): GenerateDeleteCallbackResult {
+export function generateDeleteExecuteCallback(
+  config: GenerateDeleteExecuteCallbackConfig,
+): GenerateDeleteExecuteCallbackResult {
   const { modelVariableName } = config;
 
   return {
-    deleteCallbackFragment: tsTemplate`
-      async ({ tx, where, query }) => {
+    executeCallbackFragment: tsTemplate`
+      async ({ tx, query }) => {
         const item = await tx.${modelVariableName}.delete({
           where,
           ...query,

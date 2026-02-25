@@ -17,17 +17,19 @@ import {
   contextKind,
   prismaQueryKind,
   prismaWhereUniqueInputKind,
-  skipValidationKind,
 } from '#src/types/service-dto-kinds.js';
 import {
   createServiceOutputDtoInjectedArg,
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateUpdateCallback } from '../_shared/build-data-helpers/index.js';
+import { generateUpdateExecuteCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaOutputProvider } from '../prisma/prisma.generator.js';
+import {
+  prismaImportsProvider,
+  prismaOutputProvider,
+} from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -49,8 +51,15 @@ export const prismaDataUpdateGenerator = createGenerator({
         prismaDataService: prismaDataServiceProvider,
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
+        prismaImports: prismaImportsProvider,
       },
-      run({ serviceFile, prismaDataService, dataUtilsImports, prismaOutput }) {
+      run({
+        serviceFile,
+        prismaDataService,
+        dataUtilsImports,
+        prismaOutput,
+        prismaImports,
+      }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
           fields.includes(field.name),
@@ -69,20 +78,47 @@ export const prismaDataUpdateGenerator = createGenerator({
                     tsImportBuilder(['pick']).from('es-toolkit'),
                   ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
 
-            // Generate update callback that transforms FK fields into relations
-            const { updateCallbackFragment } = generateUpdateCallback({
+            const modelVar = lowercaseFirstChar(modelName);
+
+            // Generate execute callback that transforms FK fields into relations
+            const { executeCallbackFragment } = generateUpdateExecuteCallback({
               prismaModel: prismaOutput.getPrismaModel(modelName),
               inputFieldNames: fields,
               dataUtilsImports,
-              modelVariableName: lowercaseFirstChar(modelName),
+              modelVariableName: modelVar,
             });
 
-            const updateOperation = tsTemplate`
-              export const ${name} = ${dataUtilsImports.defineUpdateOperation.fragment()}({
-                model: ${quot(lowercaseFirstChar(modelName))},
-                fields: ${fieldsFragment},
-                update: ${updateCallbackFragment},
-              })
+            // Generate the schema export and update function together
+            const schemaName = `${modelVar}UpdateSchema`;
+
+            const updateFunction = tsTemplate`
+              export const ${schemaName} = ${dataUtilsImports.generateUpdateSchema.fragment()}(${fieldsFragment});
+
+              export async function ${name}<
+                TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
+              >({
+                where,
+                data: input,
+                query,
+                context,
+              }: ${dataUtilsImports.DataUpdateInput.typeFragment()}<
+                ${quot(modelVar)},
+                typeof ${fieldsFragment},
+                TQueryArgs
+              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>> {
+                const plan = await ${dataUtilsImports.composeUpdate.fragment()}({
+                  model: ${quot(modelVar)},
+                  fields: ${fieldsFragment},
+                  input,
+                  context,
+                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),
+                });
+
+                return ${dataUtilsImports.commitUpdate.fragment()}(plan, {
+                  query,
+                  execute: ${executeCallbackFragment},
+                });
+              }
             `;
 
             const prismaModel = prismaOutput.getPrismaModel(modelName);
@@ -92,10 +128,15 @@ export const prismaDataUpdateGenerator = createGenerator({
               serviceFile.getServicePath(),
             );
 
+            const schemaMethodFragment = TsCodeUtils.importFragment(
+              schemaName,
+              serviceFile.getServicePath(),
+            );
+
             prismaDataService.registerMethod({
               name,
               type: 'update',
-              fragment: updateOperation,
+              fragment: updateFunction,
               outputMethod: {
                 name,
                 referenceFragment: methodFragment,
@@ -118,7 +159,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                         isOptional: true,
                       })),
                     },
-                    zodSchemaFragment: tsTemplate`${methodFragment}.$dataSchema`,
+                    zodSchemaFragment: schemaMethodFragment,
                   },
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
@@ -129,11 +170,6 @@ export const prismaDataUpdateGenerator = createGenerator({
                     type: 'injected',
                     name: 'query',
                     kind: prismaQueryKind,
-                  }),
-                  createServiceOutputDtoInjectedArg({
-                    type: 'injected',
-                    name: 'skipValidation',
-                    kind: skipValidationKind,
                   }),
                 ],
                 returnType: prismaToServiceOutputDto(prismaModel, (enumName) =>

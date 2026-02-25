@@ -19,6 +19,8 @@ interface GenerateRelationBuildDataConfig {
   inputFieldNames: string[];
   /** Data utils imports provider for accessing relationHelpers fragments */
   dataUtilsImports: DataUtilsImportsProvider;
+  /** Name for the spread rest variable in destructuring (default: 'data') */
+  dataName?: string;
 }
 
 /**
@@ -269,7 +271,7 @@ function generateBuildDataBody(
 export function generateRelationBuildData(
   config: GenerateRelationBuildDataConfig,
 ): GenerateRelationBuildDataResult {
-  const { prismaModel, inputFieldNames, dataUtilsImports } = config;
+  const { prismaModel, inputFieldNames, dataUtilsImports, dataName } = config;
 
   // Find all relations that have at least one FK field in the input
   const relevantRelations = findRelevantRelations(prismaModel, inputFieldNames);
@@ -284,6 +286,7 @@ export function generateRelationBuildData(
     dataUtilsImports,
     relevantRelations,
     inputFieldNames,
+    dataName,
   );
   const updateBody = generateBuildDataBody(
     foreignKeyFieldNames,
@@ -291,6 +294,7 @@ export function generateRelationBuildData(
     dataUtilsImports,
     relevantRelations,
     inputFieldNames,
+    dataName,
   );
 
   // Both should have the same passthrough status since they use the same relations

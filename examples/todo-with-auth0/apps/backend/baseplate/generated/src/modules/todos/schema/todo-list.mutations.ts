@@ -6,6 +6,8 @@ import { fileInputInputType } from '../../storage/schema/file-input.input-type.j
 import {
   createTodoList,
   deleteTodoList,
+  todoListCreateSchema,
+  todoListUpdateSchema,
   updateTodoList,
 } from '../services/todo-list.data-service.js';
 import { todoListStatusEnum } from './enums.js';
@@ -22,7 +24,7 @@ const createTodoListDataInputType = builder
       coverPhoto: t.field({ type: fileInputInputType }),
     }),
   })
-  .validate(createTodoList.$dataSchema);
+  .validate(todoListCreateSchema);
 
 builder.mutationField('createTodoList', (t) =>
   t.fieldWithInputPayload({
@@ -39,7 +41,6 @@ builder.mutationField('createTodoList', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
-        skipValidation: true,
       });
       return { todoList };
     },
@@ -57,7 +58,7 @@ const updateTodoListDataInputType = builder
       coverPhoto: t.field({ type: fileInputInputType }),
     }),
   })
-  .validate(updateTodoList.$dataSchema);
+  .validate(todoListUpdateSchema);
 
 builder.mutationField('updateTodoList', (t) =>
   t.fieldWithInputPayload({
@@ -76,7 +77,6 @@ builder.mutationField('updateTodoList', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoList'] }),
-        skipValidation: true,
       });
       return { todoList };
     },

@@ -5,6 +5,8 @@ import { builder } from '@src/plugins/graphql/builder.js';
 import {
   createTodoItem,
   deleteTodoItem,
+  todoItemCreateSchema,
+  todoItemUpdateSchema,
   updateTodoItem,
 } from '../services/todo-item.data-service.js';
 import { todoItemObjectType } from './todo-item.object-type.js';
@@ -39,7 +41,7 @@ const createTodoItemDataInputType = builder
       attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
     }),
   })
-  .validate(createTodoItem.$dataSchema);
+  .validate(todoItemCreateSchema);
 
 builder.mutationField('createTodoItem', (t) =>
   t.fieldWithInputPayload({
@@ -56,7 +58,6 @@ builder.mutationField('createTodoItem', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
-        skipValidation: true,
       });
       return { todoItem };
     },
@@ -74,7 +75,7 @@ const updateTodoItemDataInputType = builder
       attachments: t.field({ type: [todoItemAttachmentsNestedInputInputType] }),
     }),
   })
-  .validate(updateTodoItem.$dataSchema);
+  .validate(todoItemUpdateSchema);
 
 builder.mutationField('updateTodoItem', (t) =>
   t.fieldWithInputPayload({
@@ -93,7 +94,6 @@ builder.mutationField('updateTodoItem', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoItem'] }),
-        skipValidation: true,
       });
       return { todoItem };
     },
