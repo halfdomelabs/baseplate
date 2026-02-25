@@ -1,19 +1,20 @@
 import type {
   GetPayload,
   ModelPropName,
-} from '../data-operations/prisma-types.js';
+} from './prisma-types.js';
 import type {
   AnyFieldDefinition,
   AnyOperationHooks,
+  ComposeCreateConfig,
+  ComposeUpdateConfig,
   InferInput,
-} from '../data-operations/types.js';
-import type { ComposeCreateConfig, ComposeUpdateConfig } from './types.js';
+} from './types.js';
 
 import {
   checkGlobalAuthorization,
   checkInstanceAuthorization,
 } from '../authorizers.js';
-import { transformFields } from '../data-operations/define-operations.js';
+import { transformFields } from './define-operations.js';
 import { CreatePlan, UpdatePlan } from './types.js';
 
 /**

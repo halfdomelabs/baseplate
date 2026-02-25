@@ -1,9 +1,28 @@
 import { z } from 'zod';
 
+import type {
+  GetPayload,
+  ModelQuery,
+} from '@src/utils/data-operations/prisma-types.js';
+import type {
+  DataCreateInput,
+  DataDeleteInput,
+  DataUpdateInput,
+} from '@src/utils/data-operations/types.js';
+
+import { prisma } from '@src/services/prisma.js';
 import {
-  defineCreateOperation,
-  defineDeleteOperation,
-  defineUpdateOperation,
+  commitCreate,
+  commitDelete,
+  commitUpdate,
+} from '@src/utils/data-operations/commit-operations.js';
+import {
+  composeCreate,
+  composeUpdate,
+} from '@src/utils/data-operations/compose-operations.js';
+import {
+  generateCreateSchema,
+  generateUpdateSchema,
 } from '@src/utils/data-operations/define-operations.js';
 import { scalarField } from '@src/utils/data-operations/field-definitions.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
@@ -15,54 +34,99 @@ export const todoListShareInputFields = {
   createdAt: scalarField(z.date().optional()),
 };
 
-export const createTodoListShare = defineCreateOperation({
-  model: 'todoListShare',
-  fields: todoListShareInputFields,
-  getWhereUnique: (result) => ({
-    todoListId_userId: { todoListId: result.todoListId, userId: result.userId },
-  }),
-  create: async ({ tx, data: { todoListId, userId, ...data }, query }) => {
-    const item = await tx.todoListShare.create({
-      data: {
-        ...data,
-        todoList: relationHelpers.connectCreate({ id: todoListId }),
-        user: relationHelpers.connectCreate({ id: userId }),
-      },
-      ...query,
-    });
-    return item;
-  },
-});
+export const todoListShareCreateSchema = generateCreateSchema(
+  todoListShareInputFields,
+);
 
-export const updateTodoListShare = defineUpdateOperation({
-  model: 'todoListShare',
-  fields: todoListShareInputFields,
-  update: async ({
-    tx,
-    where,
-    data: { todoListId, userId, ...data },
+export async function createTodoListShare<
+  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+>({
+  data: input,
+  query,
+  context,
+}: DataCreateInput<
+  'todoListShare',
+  typeof todoListShareInputFields,
+  TQueryArgs
+>): Promise<GetPayload<'todoListShare', TQueryArgs>> {
+  const plan = await composeCreate({
+    model: 'todoListShare',
+    fields: todoListShareInputFields,
+    input,
+    context,
+  });
+
+  return commitCreate(plan, {
     query,
-  }) => {
-    const item = await tx.todoListShare.update({
-      where,
-      data: {
-        ...data,
-        todoList: relationHelpers.connectUpdate({ id: todoListId }),
-        user: relationHelpers.connectUpdate({ id: userId }),
-      },
-      ...query,
-    });
-    return item;
-  },
-});
+    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) =>
+      tx.todoListShare.create({
+        data: {
+          ...rest,
+          todoList: relationHelpers.connectCreate({ id: todoListId }),
+          user: relationHelpers.connectCreate({ id: userId }),
+        },
+        ...query,
+      }),
+  });
+}
 
-export const deleteTodoListShare = defineDeleteOperation({
-  model: 'todoListShare',
-  delete: async ({ tx, where, query }) => {
-    const item = await tx.todoListShare.delete({
-      where,
-      ...query,
-    });
-    return item;
-  },
-});
+export const todoListShareUpdateSchema = generateUpdateSchema(
+  todoListShareInputFields,
+);
+
+export async function updateTodoListShare<
+  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+>({
+  where,
+  data: input,
+  query,
+  context,
+}: DataUpdateInput<
+  'todoListShare',
+  typeof todoListShareInputFields,
+  TQueryArgs
+>): Promise<GetPayload<'todoListShare', TQueryArgs>> {
+  const plan = await composeUpdate({
+    model: 'todoListShare',
+    fields: todoListShareInputFields,
+    input,
+    context,
+    loadExisting: () => prisma.todoListShare.findUniqueOrThrow({ where }),
+  });
+
+  return commitUpdate(plan, {
+    query,
+    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) =>
+      tx.todoListShare.update({
+        where,
+        data: {
+          ...rest,
+          todoList: relationHelpers.connectUpdate({ id: todoListId }),
+          user: relationHelpers.connectUpdate({ id: userId }),
+        },
+        ...query,
+      }),
+  });
+}
+
+export async function deleteTodoListShare<
+  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+>({
+  where,
+  query,
+  context,
+}: DataDeleteInput<'todoListShare', TQueryArgs>): Promise<
+  GetPayload<'todoListShare', TQueryArgs>
+> {
+  return commitDelete({
+    model: 'todoListShare',
+    where,
+    query,
+    context,
+    execute: async ({ tx, where, query }) =>
+      await tx.todoListShare.delete({
+        where,
+        ...query,
+      }),
+  });
+}

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
-import { createTodoItem, updateTodoItem } from './todo-item.data-service-v2.js';
+import { createTodoItem, updateTodoItem } from './todo-item.data-service.js';
 
 const context = createTestServiceContext();
 

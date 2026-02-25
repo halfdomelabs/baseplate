@@ -5,25 +5,23 @@ import type {
   ModelPropName,
   ModelQuery,
   WhereUniqueInput,
-} from '../data-operations/prisma-types.js';
+} from './prisma-types.js';
 import type {
   AnyFieldDefinition,
   AnyOperationHooks,
-  OperationContext,
-  TransactionalOperationContext,
-} from '../data-operations/types.js';
-import type {
   CommitCreateConfig,
   CommitDeleteConfig,
   CommitUpdateConfig,
   CreatePlan,
+  OperationContext,
+  TransactionalOperationContext,
   UpdatePlan,
 } from './types.js';
 
 import { checkInstanceAuthorization } from '../authorizers.js';
-import { invokeHooks } from '../data-operations/define-operations.js';
-import { makeGenericPrismaDelegate } from '../data-operations/prisma-utils.js';
 import { NotFoundError } from '../http-errors.js';
+import { invokeHooks } from './define-operations.js';
+import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**
  * Validate that query does not use `select` — only `include` is supported.
@@ -106,7 +104,7 @@ async function refetchResult<
 export async function commitCreate<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = object,
+  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
 >(
   plan: CreatePlan<TModelName, TFields>,
   config: CommitCreateConfig<TModelName, TFields, TQueryArgs>,
@@ -193,7 +191,7 @@ export async function commitCreate<
 export async function commitUpdate<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = object,
+  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
 >(
   plan: UpdatePlan<TModelName, TFields>,
   config: CommitUpdateConfig<TModelName, TFields, TQueryArgs>,
@@ -284,7 +282,7 @@ export async function commitUpdate<
  */
 export async function commitDelete<
   TModelName extends ModelPropName,
-  TQueryArgs extends ModelQuery<TModelName> = object,
+  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
 >(
   config: CommitDeleteConfig<TModelName, TQueryArgs>,
 ): Promise<GetPayload<TModelName, TQueryArgs>> {
