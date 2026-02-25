@@ -35,10 +35,9 @@ export async function deleteUserProfile<
 > {
   return commitDelete({
     model: 'userProfile',
-    where,
     query,
     context,
-    execute: async ({ tx, where, query }) => {
+    execute: async ({ tx, query }) => {
       const item = await tx.userProfile.delete({
         where,
         ...query,

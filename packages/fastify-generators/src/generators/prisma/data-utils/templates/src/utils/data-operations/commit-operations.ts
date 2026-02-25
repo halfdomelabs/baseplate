@@ -289,7 +289,7 @@ export async function commitDelete<
 ): Promise<GetPayload<TModelName, TQueryArgs>> {
   validateQuery(config.query, 'delete');
 
-  const { where, context, execute, loadExisting: rawLoadExisting } = config;
+  const { context, execute, loadExisting: rawLoadExisting } = config;
 
   // Memoize loadExisting if provided
   let cached: GetPayload<TModelName> | undefined;
@@ -340,7 +340,6 @@ export async function commitDelete<
 
     const result = await execute({
       tx,
-      where,
       query: (config.query ?? {}) as {
         include: NonNullable<TQueryArgs['include']>;
       },

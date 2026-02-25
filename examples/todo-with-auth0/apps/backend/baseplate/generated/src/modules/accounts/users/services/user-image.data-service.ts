@@ -32,10 +32,9 @@ export async function deleteUserImage<
 > {
   return commitDelete({
     model: 'userImage',
-    where,
     query,
     context,
-    execute: async ({ tx, where, query }) => {
+    execute: async ({ tx, query }) => {
       const item = await tx.userImage.delete({
         where,
         ...query,

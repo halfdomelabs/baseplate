@@ -202,7 +202,7 @@ interface GenerateDeleteExecuteCallbackConfig {
  * Result of generating delete execute callback
  */
 interface GenerateDeleteExecuteCallbackResult {
-  /** Execute callback fragment: async ({ tx, where, query }) => await tx.model.delete({ where, ...query }) */
+  /** Execute callback fragment: async ({ tx, query }) => { const item = await tx.model.delete({ where, ...query }); return item; } */
   executeCallbackFragment: TsCodeFragment;
 }
 
@@ -210,14 +210,15 @@ interface GenerateDeleteExecuteCallbackResult {
  * Generates a delete execute callback.
  *
  * Delete operations don't need data transformation, so this simply generates
- * a callback that passes through the where clause and query parameters.
+ * a callback that deletes the record. The `where` clause is captured from the
+ * enclosing function scope rather than passed as a callback argument.
  *
  * @param config - Configuration with model name
  * @returns Result containing the execute callback function fragment
  *
  * @example
  * generateDeleteExecuteCallback({ modelVariableName: 'todoItem' })
- * // Returns: async ({ tx, where, query }) => {
+ * // Returns: async ({ tx, query }) => {
  * //   const item = await tx.todoItem.delete({ where, ...query });
  * //   return item;
  * // }
@@ -229,7 +230,7 @@ export function generateDeleteExecuteCallback(
 
   return {
     executeCallbackFragment: tsTemplate`
-      async ({ tx, where, query }) => {
+      async ({ tx, query }) => {
         const item = await tx.${modelVariableName}.delete({
           where,
           ...query,

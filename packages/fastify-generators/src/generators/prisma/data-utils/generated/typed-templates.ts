@@ -18,8 +18,8 @@ const commitOperations = createTsTemplateFile({
   name: 'commit-operations',
   projectExports: {
     commitCreate: { isTypeOnly: false },
-    commitUpdate: { isTypeOnly: false },
     commitDelete: { isTypeOnly: false },
+    commitUpdate: { isTypeOnly: false },
   },
   referencedGeneratorTemplates: {
     fieldUtils: {},

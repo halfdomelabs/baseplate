@@ -62,7 +62,6 @@ export const prismaDataDeleteGenerator = createGenerator({
               > {
                 return ${dataUtilsImports.commitDelete.fragment()}({
                   model: ${quot(modelVar)},
-                  where,
                   query,
                   context,
                   execute: ${executeCallbackFragment},

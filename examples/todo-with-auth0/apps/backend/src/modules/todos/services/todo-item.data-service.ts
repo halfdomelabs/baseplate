@@ -154,10 +154,9 @@ export async function deleteTodoItem<
 > {
   return commitDelete({
     model: 'todoItem',
-    where,
     query,
     context,
-    execute: async ({ tx, where, query }) => {
+    execute: async ({ tx, query }) => {
       const item = await tx.todoItem.delete({
         where,
         ...query,

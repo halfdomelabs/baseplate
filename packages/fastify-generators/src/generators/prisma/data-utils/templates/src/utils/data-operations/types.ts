@@ -698,9 +698,6 @@ export interface CommitDeleteConfig<
   /** The Prisma model name */
   model: TModelName;
 
-  /** Where clause to identify the record to delete */
-  where: WhereUniqueInput<TModelName>;
-
   /** Prisma query arguments (include) to shape returned data */
   query?: TQueryArgs;
 
@@ -727,7 +724,6 @@ export interface CommitDeleteConfig<
   /** Execute the Prisma delete operation inside the transaction */
   execute: (args: {
     tx: PrismaTransaction;
-    where: WhereUniqueInput<TModelName>;
     query: { include: NonNullable<TQueryArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;
