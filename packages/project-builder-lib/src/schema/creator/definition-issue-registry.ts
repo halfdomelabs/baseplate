@@ -66,7 +66,7 @@ export const definitionFieldIssueRegistry = (() => {
  * z.object({ ... }).apply(withIssueChecker<MyType>((value, ctx) => {
  *   const issues: DefinitionIssue[] = [];
  *   if (someCondition) {
- *     issues.push({ message: '...', path: ctx.path });
+ *     issues.push({ message: '...', path: ctx.path, severity: 'error' });
  *   }
  *   return issues;
  * }))

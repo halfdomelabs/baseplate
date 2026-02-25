@@ -75,7 +75,7 @@ export function collectFieldIssues(
  * - Definition-level checkers are registered via `definitionIssueCheckerSpec`
  *   and operate on the full project definition.
  *
- * Issues do not block saving but block syncing until resolved.
+ * Error-severity issues block saving; warning-severity issues allow saving but block syncing.
  */
 export function collectDefinitionIssues(
   schema: z.ZodType,
