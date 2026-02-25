@@ -163,20 +163,6 @@ export async function transformFields<
  * @template TFields - Record of field definitions
  * @param fields - Field definitions to extract schemas from
  * @returns Zod object schema with all fields required
- *
- * @example
- * ```typescript
- * const fields = {
- *   name: scalarField(z.string()),
- *   email: scalarField(z.email()),
- * };
- *
- * const schema = generateCreateSchema(fields);
- * // schema is z.object({ name: z.string(), email: z.email() })
- *
- * // Use for validation
- * const validated = schema.parse({ name: 'John', email: 'john@example.com' });
- * ```
  */
 export function generateCreateSchema<
   TFields extends Record<string, AnyFieldDefinition>,
@@ -194,6 +180,16 @@ type PartialSchema<T extends z.ZodObject<z.ZodRawShape>> = z.ZodObject<{
   [K in keyof T['shape']]: z.ZodOptional<T['shape'][K]>;
 }>;
 
+/**
+ * Generates a Zod schema for update operations from field definitions.
+ *
+ * Wraps {@link generateCreateSchema} with `.partial()` so every field becomes
+ * optional, allowing callers to supply only the fields they want to change.
+ *
+ * @template TFields - Record of field definitions
+ * @param fields - Field definitions to extract schemas from
+ * @returns Partial Zod object schema where all fields are optional
+ */
 export function generateUpdateSchema<
   TFields extends Record<string, AnyFieldDefinition>,
 >(fields: TFields): PartialSchema<InferInputSchema<TFields>> {
