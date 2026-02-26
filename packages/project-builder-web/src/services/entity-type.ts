@@ -13,6 +13,7 @@ import type {
 } from '@tanstack/react-router';
 
 import { entityTypeUrlWebSpec } from '@baseplate-dev/project-builder-lib/web';
+import { get } from 'es-toolkit/compat';
 
 /**
  * Validates and returns navigate options at definition time.
@@ -92,6 +93,24 @@ export function resolveEntityNavTarget(
   }
 }
 
+function resolveParentEntity(
+  definition: ProjectDefinitionContainer,
+  entity: DefinitionEntity,
+): DefinitionEntity | undefined {
+  if (!entity.parentPath) return undefined;
+  const parentId = get(definition.definition, entity.parentPath) as
+    | string
+    | undefined;
+  if (typeof parentId !== 'string') {
+    console.warn(
+      `[resolveParentEntity] Parent ID is not a string for entity "${entity.id}" (type: ${entity.type.name})`,
+    );
+    return undefined;
+  }
+  if (!parentId) return undefined;
+  return definition.entityFromId(parentId);
+}
+
 export function getEntityNavTarget(
   definitionContainer: ProjectDefinitionContainer,
   entity: DefinitionEntity,
@@ -102,19 +121,23 @@ export function getEntityNavTarget(
     .getNavBuilder(entity.type);
   if (!builder) return undefined;
 
-  const { entities } = definitionContainer;
+  const entityParent = resolveParentEntity(definitionContainer, entity);
 
-  const entityParentPath = entity.parentPath?.join('.');
-  const entityParent = entityParentPath
-    ? entities.find(
-        (parentEntity) => parentEntity.idPath.join('.') === entityParentPath,
-      )
+  if (entity.parentPath && !entityParent) {
+    console.warn(
+      `[getEntityNavTarget] Could not find parent entity for entity "${entity.id}" (type: ${entity.type.name})`,
+    );
+  }
+
+  const entityGrandparent = entityParent
+    ? resolveParentEntity(definitionContainer, entityParent)
     : undefined;
 
-  const grandparentPath = entityParent?.parentPath?.join('.');
-  const entityGrandparent = grandparentPath
-    ? entities.find((e) => e.idPath.join('.') === grandparentPath)
-    : undefined;
+  if (entityParent?.parentPath && !entityGrandparent) {
+    console.warn(
+      `[getEntityNavTarget] Could not find grandparent entity for entity "${entity.id}" (type: ${entity.type.name})`,
+    );
+  }
 
   const params: EntityTypeUrlParams = {
     entityId: entity.id,

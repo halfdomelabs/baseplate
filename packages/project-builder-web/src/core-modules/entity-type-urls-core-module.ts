@@ -12,6 +12,7 @@ import {
   modelEntityType,
   modelEnumEntityType,
   modelEnumValueEntityType,
+  modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelTransformerEntityType,
@@ -34,6 +35,10 @@ export const entityTypeUrlsCoreModule = createPluginModule({
     }));
     entityTypeUrlWeb.register(
       modelLocalRelationEntityType,
+      ({ parentKey }) => ({ page: 'model', key: parentKey }),
+    );
+    entityTypeUrlWeb.register(
+      modelForeignRelationEntityType,
       ({ parentKey }) => ({ page: 'model', key: parentKey }),
     );
     entityTypeUrlWeb.register(modelTransformerEntityType, ({ parentKey }) => ({

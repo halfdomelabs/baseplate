@@ -67,7 +67,7 @@ export function RefIssueDialog(): React.JSX.Element {
                 if (
                   issuePath.startsWith(entityPath) &&
                   (!referenceParent ||
-                    referenceParent.path.length < entityPath.length)
+                    referenceParent.path.length > entityPath.length)
                 ) {
                   referenceParent = e;
                 }

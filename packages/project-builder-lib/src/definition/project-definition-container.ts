@@ -59,6 +59,17 @@ export class ProjectDefinitionContainer {
   }
 
   /**
+   * Fetches a DefinitionEntity by its ID, returning undefined if not found.
+   *
+   * @param id The ID of the entity to fetch
+   * @returns The DefinitionEntity, or undefined if not found
+   */
+  entityFromId(id: string | undefined): DefinitionEntity | undefined {
+    if (!id) return undefined;
+    return this.entities.find((e) => e.id === id);
+  }
+
+  /**
    * Fetches the name of an entity by its ID.
    *
    * @param id The ID of the entity to fetch
