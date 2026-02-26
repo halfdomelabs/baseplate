@@ -210,7 +210,8 @@ for (const [pkgDir, { pkgPath, files }] of filesByProject.entries()) {
   const tasks: Promise<void>[] = [];
 
   // Run ESLint in one batch command for all files in this project.
-  if (dependencies.eslint) {
+  // Set SKIP_ESLINT=1 to skip ESLint (e.g. for faster commits).
+  if (dependencies.eslint && !process.env.SKIP_ESLINT) {
     await runEslint(files, pkgDir);
   }
 
