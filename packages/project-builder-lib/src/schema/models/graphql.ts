@@ -122,6 +122,12 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
               roles: createRoleArray(ctx),
+              count: ctx.withDefault(
+                z.object({
+                  enabled: ctx.withDefault(z.boolean(), false),
+                }),
+                {},
+              ),
             }),
             {},
           ),

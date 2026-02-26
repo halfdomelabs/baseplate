@@ -106,6 +106,15 @@ export function GraphQLQueriesSection({
               className="ml-[52px]" // hardcoded to align with the above switch label
             />
           )}
+          {isListEnabled && (
+            <SwitchFieldController
+              control={control}
+              name="graphql.queries.list.count.enabled"
+              label="Count Query"
+              description="Generate a count query (e.g. usersCount) for total record count, useful for paginated UIs."
+              className="ml-[52px]"
+            />
+          )}
         </div>
       </SectionListSectionContent>
     </SectionListSection>
