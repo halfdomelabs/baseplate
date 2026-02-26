@@ -221,10 +221,20 @@ export const test = base.extend<
           }
 
           async function readProjectDefinition(): Promise<ProjectDefinition> {
-            const contents = await fs.readFile(
-              path.join(tempDir, 'baseplate/project-definition.json'),
-              'utf8',
+            const filePath = path.join(
+              tempDir,
+              'baseplate/project-definition.json',
             );
+            const contents = await fs
+              .readFile(filePath, 'utf8')
+              .catch((err: unknown) => {
+                if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+                  throw new Error(
+                    'Project definition file not found. Pass a definition to addProject() or call writeProjectDefinition() first.',
+                  );
+                }
+                throw err;
+              });
             return JSON.parse(contents) as ProjectDefinition;
           }
 

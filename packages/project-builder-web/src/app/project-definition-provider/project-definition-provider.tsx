@@ -170,7 +170,11 @@ export function ProjectDefinitionProvider({
     ): Promise<{ success: boolean }> {
       return saveDefinition(definition)
         .then(async () => {
-          await router.invalidate();
+          await router
+            .invalidate()
+            .catch((err: unknown) =>
+              logAndFormatError(err, 'Failed to refresh page data'),
+            );
           toast.success(options.successMessage ?? 'Successfully saved!');
           options.onSuccess?.();
           return { success: true };
