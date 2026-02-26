@@ -1,5 +1,41 @@
 # @baseplate-dev/fastify-generators
 
+## 0.5.4
+
+### Patch Changes
+
+- [#783](https://github.com/halfdomelabs/baseplate/pull/783) [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40) Thanks [@kingston](https://github.com/kingston)! - Add offset pagination (skip/take) to list queries and optional count query generation
+
+- [#781](https://github.com/halfdomelabs/baseplate/pull/781) [`1225fda`](https://github.com/halfdomelabs/baseplate/commit/1225fdace3e8da20152e0e78c4decf0c063faa56) Thanks [@kingston](https://github.com/kingston)! - Refactor data services from factory pattern to composable compose/commit pattern
+  - Replace `defineCreateOperation`/`defineUpdateOperation`/`defineDeleteOperation` with explicit `composeCreate`/`commitCreate`, `composeUpdate`/`commitUpdate`, and `commitDelete` functions
+  - Export Zod schemas separately (`generateCreateSchema`/`generateUpdateSchema`) for use in GraphQL input validation
+  - Remove `skipValidation` option from service output methods
+  - Add `field-utils.ts`, `commit-operations.ts`, and `compose-operations.ts` templates; remove `define-operations.ts`
+
+- [#778](https://github.com/halfdomelabs/baseplate/pull/778) [`d6be7a9`](https://github.com/halfdomelabs/baseplate/commit/d6be7a97b5e6970be674bf9b49eddf1499b51f04) Thanks [@kingston](https://github.com/kingston)! - Upgrade packages to fix security vulnerabilities
+  - @aws-sdk/client-s3, @aws-sdk/lib-storage, @aws-sdk/s3-presigned-post, @aws-sdk/s3-request-presigner: 3.990.0 → 3.995.0 (fixes fast-xml-parser CVE-2025-69873 critical, CVE DoS high)
+  - postmark: 4.0.5 → 4.0.7 (fixes axios DoS vulnerability)
+  - fastify-auth0-verify: 3.0.0 → 4.1.0 (updates @fastify/jwt to v10)
+
+- [#777](https://github.com/halfdomelabs/baseplate/pull/777) [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be) Thanks [@kingston](https://github.com/kingston)! - Add per-field authorization support for GraphQL object type fields
+
+- [#775](https://github.com/halfdomelabs/baseplate/pull/775) [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to v10, react-hook-form, and es-toolkit
+  - @sentry/react: 9.17.0 → 10.39.0
+  - @sentry/core: 9.17.0 → 10.39.0
+  - @sentry/node: 9.17.0 → 10.39.0
+  - @sentry/profiling-node: 9.17.0 → 10.39.0
+  - @pothos/tracing-sentry: 1.1.1 → 1.1.4
+  - react-hook-form: 7.60.0 → 7.71.1
+  - es-toolkit: 1.31.0 → 1.44.0
+
+- [#773](https://github.com/halfdomelabs/baseplate/pull/773) [`2104145`](https://github.com/halfdomelabs/baseplate/commit/210414588d8b1f6816c45054be3b7eea5763b5ce) Thanks [@kingston](https://github.com/kingston)! - Upgrade zod to 4.3.6
+  - zod: 4.1.13 → 4.3.6
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.5.4
+  - @baseplate-dev/sync@0.5.4
+  - @baseplate-dev/utils@0.5.4
+
 ## 0.5.3
 
 ### Patch Changes
