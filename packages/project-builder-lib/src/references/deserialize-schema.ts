@@ -1,12 +1,8 @@
+import type { z } from 'zod';
+
 import { toposort } from '@baseplate-dev/utils';
 import { groupBy, keyBy, uniq } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
-
-import type {
-  DefinitionSchemaCreator,
-  DefinitionSchemaCreatorOptions,
-} from '#src/schema/creator/types.js';
-import type { def } from '#src/schema/index.js';
 
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
@@ -20,27 +16,18 @@ function referenceToNameParentId(name: string, parentId?: string): string {
  * Deserialize a schema with references using the new transform-based approach.
  * This function converts human-readable names back to entity IDs.
  *
- * @template T - The schema creator type
- * @param schemaCreator - The schema creator function
+ * @template T - The Zod schema type
+ * @param schema - The already-constructed Zod schema
  * @param input - The input data with names instead of IDs
- * @param options - Options for the schema creator
  * @returns The resolved payload with IDs instead of names
  */
-export function deserializeSchemaWithTransformedReferences<
-  T extends DefinitionSchemaCreator,
->(
-  schemaCreator: T,
+export function deserializeSchemaWithTransformedReferences<T extends z.ZodType>(
+  schema: T,
   input: unknown,
-  options: DefinitionSchemaCreatorOptions,
-): ResolvedZodRefPayload<def.InferOutput<T>> {
-  const payload = parseSchemaWithTransformedReferences(
-    schemaCreator,
-    input,
-    options,
-    {
-      skipReferenceNameResolution: true,
-    },
-  );
+): ResolvedZodRefPayload<z.output<T>> {
+  const payload = parseSchemaWithTransformedReferences(schema, input, {
+    skipReferenceNameResolution: true,
+  });
 
   // Use the same resolution logic as the original function
   return resolveReferencesToIds(payload);

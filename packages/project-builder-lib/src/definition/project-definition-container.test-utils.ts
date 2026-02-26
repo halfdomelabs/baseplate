@@ -7,6 +7,7 @@ import type {
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
+import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
 import { ProjectDefinitionContainer } from './project-definition-container.js';
@@ -52,10 +53,12 @@ export function createTestProjectDefinitionContainer(
   const pluginSpecStore = createPluginSpecStore(pluginStore, {
     plugins: [],
   });
+  const schema = createProjectDefinitionSchema(
+    createDefinitionSchemaParserContext({ plugins: pluginSpecStore }),
+  );
   const resolvedRefPayload = deserializeSchemaWithTransformedReferences(
-    createProjectDefinitionSchema,
+    schema,
     createTestProjectDefinitionInput(input),
-    { plugins: pluginSpecStore },
   );
   return new ProjectDefinitionContainer(
     resolvedRefPayload,
@@ -70,5 +73,6 @@ export function createTestProjectDefinitionContainer(
       },
     },
     pluginSpecStore,
+    schema,
   );
 }

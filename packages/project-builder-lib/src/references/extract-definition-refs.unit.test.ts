@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
-import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+import {
+  createDefinitionSchemaParserContext,
+  definitionSchema,
+} from '#src/schema/creator/schema-creator.js';
 import {
   stubParser,
   StubParserWithSlots,
@@ -16,6 +19,9 @@ import { createEntityType } from './types.js';
 describe('extract-definition-refs', () => {
   describe('Integration Tests (deserializeSchemaWithTransformedReferences)', () => {
     const pluginStore = new PluginSpecStore();
+    const parserContext = createDefinitionSchemaParserContext({
+      plugins: pluginStore,
+    });
 
     describe('Basic Schema Patterns', () => {
       it('should handle schema with no references', () => {
@@ -32,9 +38,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data).toEqual(input);
@@ -65,9 +70,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.ref).toEqual(result.data.entity[0].id);
@@ -111,9 +115,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.ref1).toEqual(result.data.entities[0].id);
@@ -157,9 +160,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.nested.ref).toEqual(result.data.entities[0].id);
@@ -201,9 +203,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.refs[0]).toEqual(result.data.entities[0].id);
@@ -238,9 +239,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.optionalRef).toBeUndefined();
@@ -304,9 +304,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.foreignRelation.modelRef).toEqual(
@@ -403,9 +402,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         const userModel = result.data.models[0];
@@ -457,9 +455,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.ref).toEqual(result.data.person.id);
@@ -501,9 +498,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.personRef).toEqual(result.data.people[0].id);
@@ -559,9 +555,8 @@ describe('extract-definition-refs', () => {
         // Use parseSchemaWithTransformedReferences to test the raw parsing
         // without the reference resolution step
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
           { skipReferenceNameResolution: true },
         );
 
@@ -618,9 +613,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.complexRef.targetName).toEqual(
@@ -669,9 +663,8 @@ describe('extract-definition-refs', () => {
         };
 
         const result = deserializeSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(parserContext),
           input,
-          { plugins: pluginStore },
         );
 
         expect(result.data.ref1).toEqual(result.data.entities[0].id);
@@ -708,9 +701,10 @@ describe('extract-definition-refs', () => {
         };
 
         expect(() =>
-          deserializeSchemaWithTransformedReferences(schemaCreator, input, {
-            plugins: pluginStore,
-          }),
+          deserializeSchemaWithTransformedReferences(
+            schemaCreator(parserContext),
+            input,
+          ),
         ).toThrow('Unable to resolve reference');
       });
     });
@@ -732,11 +726,12 @@ describe('extract-definition-refs', () => {
         };
 
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(
+            createDefinitionSchemaParserContext({
+              plugins: new PluginSpecStore(),
+            }),
+          ),
           input,
-          {
-            plugins: new PluginSpecStore(),
-          },
         );
 
         expect(result.expressions).toHaveLength(1);
@@ -766,11 +761,12 @@ describe('extract-definition-refs', () => {
         };
 
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(
+            createDefinitionSchemaParserContext({
+              plugins: new PluginSpecStore(),
+            }),
+          ),
           input,
-          {
-            plugins: new PluginSpecStore(),
-          },
         );
 
         expect(result.expressions).toHaveLength(2);
@@ -788,7 +784,10 @@ describe('extract-definition-refs', () => {
           }),
         );
 
-        const pluginStore = new PluginSpecStore();
+        const localParserContext = createDefinitionSchemaParserContext({
+          plugins: new PluginSpecStore(),
+        });
+        const schema = schemaCreator(localParserContext);
 
         // With expression
         const inputWithExpr = {
@@ -797,9 +796,8 @@ describe('extract-definition-refs', () => {
         };
 
         const resultWithExpr = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schema,
           inputWithExpr,
-          { plugins: pluginStore },
         );
 
         expect(resultWithExpr.expressions).toHaveLength(1);
@@ -810,9 +808,8 @@ describe('extract-definition-refs', () => {
         };
 
         const resultWithoutExpr = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schema,
           inputWithoutExpr,
-          { plugins: pluginStore },
         );
 
         expect(resultWithoutExpr.expressions).toHaveLength(0);
@@ -861,9 +858,12 @@ describe('extract-definition-refs', () => {
         };
 
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(
+            createDefinitionSchemaParserContext({
+              plugins: new PluginSpecStore(),
+            }),
+          ),
           input,
-          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(2);
@@ -943,9 +943,12 @@ describe('extract-definition-refs', () => {
         };
 
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(
+            createDefinitionSchemaParserContext({
+              plugins: new PluginSpecStore(),
+            }),
+          ),
           input,
-          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(1);
@@ -1021,9 +1024,12 @@ describe('extract-definition-refs', () => {
         };
 
         const result = parseSchemaWithTransformedReferences(
-          schemaCreator,
+          schemaCreator(
+            createDefinitionSchemaParserContext({
+              plugins: new PluginSpecStore(),
+            }),
+          ),
           input,
-          { plugins: new PluginSpecStore() },
         );
 
         expect(result.expressions).toHaveLength(1);

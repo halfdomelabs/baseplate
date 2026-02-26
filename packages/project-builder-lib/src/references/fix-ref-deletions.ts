@@ -1,11 +1,7 @@
+import type { z } from 'zod';
+
 import { sortBy } from 'es-toolkit';
 import { get, groupBy, set } from 'es-toolkit/compat';
-
-import type {
-  def,
-  DefinitionSchemaCreator,
-  DefinitionSchemaCreatorOptions,
-} from '#src/schema/index.js';
 
 import type {
   DefinitionReference,
@@ -15,10 +11,10 @@ import type {
 
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 
-interface FixRefDeletionSuccessResult<T extends DefinitionSchemaCreator> {
+interface FixRefDeletionSuccessResult<T> {
   type: 'success';
-  value: def.InferOutput<T>;
-  refPayload: ResolvedZodRefPayload<def.InferOutput<T>>;
+  value: T;
+  refPayload: ResolvedZodRefPayload<T>;
 }
 
 export interface FixRefDeletionError {
@@ -31,7 +27,7 @@ interface FixRefDeletionFailureResult {
   issues: FixRefDeletionError[];
 }
 
-export type FixRefDeletionResult<T extends DefinitionSchemaCreator> =
+export type FixRefDeletionResult<T> =
   | FixRefDeletionSuccessResult<T>
   | FixRefDeletionFailureResult;
 
@@ -41,11 +37,10 @@ const DELETED_SENTINEL_ID = 'deleted-sentinel-id';
 /**
  * Fixes any reference deletions by performing the appropriate action for the reference
  */
-export function fixRefDeletions<T extends DefinitionSchemaCreator>(
-  schemaCreator: T,
+export function fixRefDeletions<T extends z.ZodType>(
+  schema: T,
   value: unknown,
-  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
-): FixRefDeletionResult<T> {
+): FixRefDeletionResult<z.output<T>> {
   const issues: FixRefDeletionError[] = [];
 
   // find all references that do not have a corresponding entity
@@ -53,9 +48,8 @@ export function fixRefDeletions<T extends DefinitionSchemaCreator>(
   let valueToEdit = value;
   for (iterations = 0; iterations < 100; iterations++) {
     const parseResult = parseSchemaWithTransformedReferences(
-      schemaCreator,
+      schema,
       valueToEdit,
-      schemaCreatorOptions,
       {
         allowInvalidReferences: true,
       },
@@ -76,7 +70,7 @@ export function fixRefDeletions<T extends DefinitionSchemaCreator>(
       }
       return {
         type: 'success',
-        value: valueToEdit as def.InferOutput<T>,
+        value: valueToEdit as z.output<T>,
         refPayload: parseResult,
       };
     }
