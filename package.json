@@ -50,7 +50,8 @@
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
-    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
+    "*.{ts,tsx,js,jsx}": "cross-env SKIP_ESLINT=1 node scripts/format-and-lint.ts",
+    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write"
   },
   "dependencies": {
     "@changesets/cli": "2.29.6"
@@ -60,6 +61,7 @@
     "@changesets/changelog-github": "0.5.1",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
+    "cross-env": "^10.1.0",
     "es-toolkit": "1.44.0",
     "eslint": "catalog:",
     "gql.tada": "^1.9.0",
