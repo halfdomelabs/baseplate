@@ -21,11 +21,11 @@ import { Link } from '@tanstack/react-router';
 
 import { useDeleteReferenceDialogState } from '#src/hooks/use-delete-reference-dialog.js';
 import { usePrevious } from '#src/hooks/use-previous.js';
-import { getEntityTypeUrl } from '#src/services/entity-type.js';
+import { getEntityNavOptions } from '#src/services/entity-type.js';
 
 export function RefIssueDialog(): React.JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();
-  const { definitionContainer } = useProjectDefinition();
+  const { definitionContainer, pluginContainer } = useProjectDefinition();
   const { entities } = definitionContainer;
 
   // We need to store the text content in a ref because the Dialog component
@@ -77,8 +77,12 @@ export function RefIssueDialog(): React.JSX.Element {
                     Math.max(0, referenceParent.path.join('.').length + 1),
                   )
                 : issuePath;
-              const referenceParentUrl = referenceParent
-                ? getEntityTypeUrl(definitionContainer, referenceParent)
+              const navOptions = referenceParent
+                ? getEntityNavOptions(
+                    definitionContainer,
+                    referenceParent,
+                    pluginContainer,
+                  )
                 : undefined;
               return (
                 <TableRow key={issuePath}>
@@ -86,9 +90,9 @@ export function RefIssueDialog(): React.JSX.Element {
                     {referenceParent ? (
                       <div className="text-style-prose">
                         <div>
-                          {referenceParentUrl ? (
+                          {navOptions ? (
                             <Link
-                              to={referenceParentUrl}
+                              {...navOptions}
                               onClick={() => {
                                 setDialogOptions(undefined);
                               }}
