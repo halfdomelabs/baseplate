@@ -26,7 +26,7 @@ import {
   generateCreateSchema,
   invokeHooks,
   transformFields,
-} from './define-operations.js';
+} from './field-utils.js';
 import { makeGenericPrismaDelegate } from './prisma-utils.js';
 
 /**
@@ -37,7 +37,7 @@ import { makeGenericPrismaDelegate } from './prisma-utils.js';
  *
  * @template TSchema - The Zod schema type for validation
  * @param schema - Zod schema for validation
- * @returns Field definition
+ * @returns Scalar field definition that maps validated input directly to Prisma create/update data
  *
  * @example
  * ```typescript
@@ -213,15 +213,13 @@ export interface NestedOneToOneFieldConfig<
  *       avatar: fileField(avatarFileCategory),
  *     },
  *     getWhereUnique: (parent) => ({ userId: parent.id }),
- *     buildData: (data) => ({
- *       create: {
- *         bio: data.create.bio,
- *         avatar: data.create.avatar ? { connect: { id: data.create.avatar } } : undefined,
- *       },
- *       update: {
- *         bio: data.update.bio,
- *         avatar: data.update.avatar ? { connect: { id: data.update.avatar } } : undefined,
- *       },
+ *     buildCreateData: (data) => ({
+ *       bio: data.bio,
+ *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
+ *     }),
+ *     buildUpdateData: (data) => ({
+ *       bio: data.bio,
+ *       avatar: data.avatar ? { connect: { id: data.avatar } } : undefined,
  *     }),
  *   }),
  * };
@@ -315,8 +313,6 @@ export function nestedOneToOneField<
           ],
           afterExecute: [
             async (ctx) => {
-              const awaitedData =
-                typeof data === 'function' ? await data(ctx.tx) : data;
               const whereUnique = config.getWhereUnique(
                 ctx.result as GetPayload<TParentModelName>,
               );
@@ -331,7 +327,7 @@ export function nestedOneToOneField<
               const [builtCreate, builtUpdate] = await Promise.all([
                 config.buildCreateData(
                   {
-                    ...awaitedData.create,
+                    ...data.create,
                     ...({
                       [config.relationName]: { connect: parentWhereUnique },
                     } as Record<
@@ -343,7 +339,7 @@ export function nestedOneToOneField<
                   sharedCtx,
                 ),
                 config.buildUpdateData(
-                  awaitedData.update,
+                  data.update,
                   ctx.result as GetPayload<TParentModelName>,
                   sharedCtx,
                 ),
@@ -433,7 +429,8 @@ export interface NestedOneToManyFieldConfig<
 
   /**
    * Transform validated create field data into final Prisma structure for a single item.
-   * The returned payload should not include the parent relation field, as it will be added automatically.
+   * The parent relation connect is included in the data parameter. You can pass it
+   * through directly (e.g., `(data) => data`) or restructure as needed.
    */
   buildCreateData: (
     data: InferFieldsCreateOutput<TFields> &
@@ -502,6 +499,9 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  * - **Delete**: Existing items not present in the input array are removed
  * - **No Change**: Passing `undefined` leaves the collection unchanged
  *
+ * **Important:** When a value is provided (not `undefined`), the input array is treated
+ * as the complete collection. Existing items not present in the array will be deleted.
+ *
  * All operations are performed atomically within the parent operation's transaction,
  * ensuring data consistency even if the operation fails.
  *
@@ -510,7 +510,7 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  * @template TRelationName - Relation field name on child model
  * @template TFields - Field definitions for each child item
  * @param config - Configuration object for the one-to-many relationship
- * @returns Field definition for use in `defineCreateOperation` or `defineUpdateOperation`
+ * @returns Field definition for use with `composeCreate`/`composeUpdate` and `commitCreate`/`commitUpdate`
  *
  * @example
  * ```typescript
@@ -524,10 +524,8 @@ function expandWhereUnique<TModelName extends ModelPropName>(
  *       caption: scalarField(z.string()),
  *     },
  *     getWhereUnique: (input) => input.id ? { id: input.id } : undefined,
- *     buildData: (data) => ({
- *       create: { caption: data.caption },
- *       update: { caption: data.caption },
- *     }),
+ *     buildCreateData: (data) => ({ caption: data.caption }),
+ *     buildUpdateData: (data) => ({ caption: data.caption }),
  *   }),
  * };
  *
@@ -628,7 +626,7 @@ export function nestedOneToManyField<
       const processedItems = await Promise.all(
         value.map(async (itemInput, idx) => {
           const whereUnique =
-            existingModel && config.getWhereUnique(itemInput, existingModel);
+            existingModel && getWhereUnique(itemInput, existingModel);
 
           const { data, hooks } = await transformFields(
             config.fields,
@@ -697,11 +695,6 @@ export function nestedOneToManyField<
         // Upsert items
         await Promise.all(
           processedItems.map(async (item, idx) => {
-            const awaitedData =
-              typeof item.data === 'function'
-                ? await item.data(ctx.tx)
-                : item.data;
-
             const parentWhereUnique = config.parentModel.getWhereUnique(
               ctx.result,
             );
@@ -718,7 +711,7 @@ export function nestedOneToManyField<
             const [builtCreate, builtUpdate] = await Promise.all([
               config.buildCreateData(
                 {
-                  ...awaitedData.create,
+                  ...item.data.create,
                   ...({
                     [config.relationName]: { connect: parentWhereUnique },
                   } as Record<
@@ -729,12 +722,15 @@ export function nestedOneToManyField<
                 ctx.result,
                 sharedCtx,
               ),
-              config.buildUpdateData(awaitedData.update, ctx.result, sharedCtx),
+              config.buildUpdateData(item.data.update, ctx.result, sharedCtx),
             ]);
 
             results[idx] = item.whereUnique
               ? await prismaDelegate.upsert({
-                  where: item.whereUnique,
+                  where: {
+                    ...item.whereUnique,
+                    ...whereFromOriginalModel,
+                  } as WhereUniqueInput<TModelName>,
                   create: builtCreate,
                   update: builtUpdate,
                 })

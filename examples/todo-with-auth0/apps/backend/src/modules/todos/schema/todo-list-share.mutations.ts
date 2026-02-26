@@ -5,6 +5,8 @@ import { builder } from '@src/plugins/graphql/builder.js';
 import {
   createTodoListShare,
   deleteTodoListShare,
+  todoListShareCreateSchema,
+  todoListShareUpdateSchema,
   updateTodoListShare,
 } from '../services/todo-list-share.data-service.js';
 import {
@@ -21,7 +23,7 @@ const createTodoListShareDataInputType = builder
       createdAt: t.field({ type: 'DateTime' }),
     }),
   })
-  .validate(createTodoListShare.$dataSchema);
+  .validate(todoListShareCreateSchema);
 
 builder.mutationField('createTodoListShare', (t) =>
   t.fieldWithInputPayload({
@@ -40,7 +42,6 @@ builder.mutationField('createTodoListShare', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoListShare'] }),
-        skipValidation: true,
       });
       return { todoListShare };
     },
@@ -56,7 +57,7 @@ const updateTodoListShareDataInputType = builder
       createdAt: t.field({ type: 'DateTime' }),
     }),
   })
-  .validate(updateTodoListShare.$dataSchema);
+  .validate(todoListShareUpdateSchema);
 
 builder.mutationField('updateTodoListShare', (t) =>
   t.fieldWithInputPayload({
@@ -80,7 +81,6 @@ builder.mutationField('updateTodoListShare', (t) =>
         data,
         context,
         query: queryFromInfo({ context, info, path: ['todoListShare'] }),
-        skipValidation: true,
       });
       return { todoListShare };
     },

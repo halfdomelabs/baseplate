@@ -69,10 +69,16 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
-            const resolveFunction = tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
+            const zFragment = TsCodeUtils.importFragment('z', 'zod');
+
+            const resolveFunction = tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
 
             const options = {
               type: `[${quot(modelName)}]`,
+              args: tsTemplate`{
+                skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+                take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+              }`,
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };

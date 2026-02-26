@@ -40,6 +40,34 @@ describe('readJsonWithSchema', () => {
     );
   });
 
+  it('should throw an ENOENT error if the file is empty', async () => {
+    // Arrange
+    const filePath = '/empty.json';
+    vol.fromJSON({
+      [filePath]: '',
+    });
+
+    // Act & Assert
+    await expect(readJsonWithSchema(filePath, schema)).rejects.toMatchObject({
+      code: 'ENOENT',
+      message: `File is empty: ${filePath}`,
+    });
+  });
+
+  it('should throw an ENOENT error if the file contains only whitespace', async () => {
+    // Arrange
+    const filePath = '/whitespace.json';
+    vol.fromJSON({
+      [filePath]: '   \n  ',
+    });
+
+    // Act & Assert
+    await expect(readJsonWithSchema(filePath, schema)).rejects.toMatchObject({
+      code: 'ENOENT',
+      message: `File is empty: ${filePath}`,
+    });
+  });
+
   it('should throw an error if the file contains invalid JSON', async () => {
     // Arrange
     const filePath = '/invalid.json';

@@ -1,10 +1,10 @@
 import { isExampleProject } from '@baseplate-dev/project-builder-server/actions';
-import { readJsonWithSchema } from '@baseplate-dev/utils/node';
+import {
+  expandPathWithTilde,
+  readJsonWithSchema,
+} from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import z from 'zod';
-
-import { findExamplesDirectories } from './find-examples-directories.js';
-import { expandPathWithTilde } from './path.js';
 
 /**
  * Information about a discovered project
@@ -22,8 +22,6 @@ export interface DiscoveredProjectInfo {
  * Options for resolving projects
  */
 interface ResolveProjectsOptions {
-  /** Whether to include example projects (from INCLUDE_EXAMPLES env) */
-  includeExamples?: boolean;
   /** Additional directories to include (from PROJECT_DIRECTORIES env or arguments) */
   directories?: string[];
   /** Whether to default to current working directory if no projects specified */
@@ -40,11 +38,7 @@ interface ResolveProjectsOptions {
 export async function resolveProjects(
   options: ResolveProjectsOptions = {},
 ): Promise<Map<string, DiscoveredProjectInfo>> {
-  const {
-    includeExamples = process.env.INCLUDE_EXAMPLES === 'true',
-    directories = [],
-    defaultToCwd = false,
-  } = options;
+  const { directories = [], defaultToCwd = false } = options;
 
   const allDirectories = new Set<string>();
 
@@ -59,14 +53,6 @@ export async function resolveProjects(
   // Add explicitly provided directories
   for (const dir of directories) {
     allDirectories.add(expandPathWithTilde(dir));
-  }
-
-  // Add example directories if requested
-  if (includeExamples) {
-    const exampleDirs = await findExamplesDirectories();
-    for (const dir of exampleDirs) {
-      allDirectories.add(dir);
-    }
   }
 
   // Default to current working directory if no projects specified
@@ -124,7 +110,6 @@ export async function resolveProject(
 
   // Otherwise, try to resolve by name
   const projectMap = await resolveProjects({
-    includeExamples: process.env.INCLUDE_EXAMPLES === 'true',
     defaultToCwd: false,
   });
 
@@ -185,7 +170,7 @@ async function loadProjectInfo(
     };
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-      throw new Error(`No package.json found in ${directory}`);
+      throw new Error(`No project definition found in ${directory}`);
     }
     throw error;
   }

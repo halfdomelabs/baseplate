@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "references": [{ "path": "./tsconfig.app.json" }]
+}

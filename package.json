@@ -11,7 +11,7 @@
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
     "check": "turbo run lint prettier:write typecheck test --output-logs=errors-only --affected --continue && pnpm run knip && pnpm metadata:sync && pnpm versions:fix",
     "clean": "turbo run clean",
-    "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-cli --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
+    "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-dev --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
     "preinstall": "npx only-allow pnpm",
     "knip": "knip",
     "lint": "turbo run lint --continue",
@@ -28,15 +28,15 @@
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
     "prettier:root:check": "prettier --check .",
     "prettier:write": "turbo run prettier:write",
-    "project:generate": "pnpm --filter @baseplate-dev/project-builder-cli project:generate",
+    "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && pnpm changeset publish",
     "run:all": "bash scripts/run-all.sh",
     "run:example": "bash scripts/run-example.sh",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
-    "start": "pnpm run --filter @baseplate-dev/project-builder-cli start",
+    "start": "pnpm run --filter @baseplate-dev/project-builder-dev start",
     "storybook:build": "turbo run storybook:build --filter=@baseplate-dev/ui-components",
-    "templates:extract": "pnpm --filter @baseplate-dev/project-builder-cli templates:extract",
-    "templates:generate": "pnpm --filter @baseplate-dev/project-builder-cli templates:generate",
+    "templates:extract": "pnpm --filter @baseplate-dev/project-builder-dev templates:extract",
+    "templates:generate": "pnpm --filter @baseplate-dev/project-builder-dev templates:generate",
     "test": "turbo run test --continue",
     "test:affected": "turbo run test --affected --continue",
     "test:e2e": "turbo run test:e2e --continue",
@@ -50,7 +50,8 @@
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
-    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
+    "*.{ts,tsx,js,jsx}": "cross-env SKIP_ESLINT=1 node scripts/format-and-lint.ts",
+    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write"
   },
   "dependencies": {
     "@changesets/cli": "2.29.6"
@@ -60,6 +61,7 @@
     "@changesets/changelog-github": "0.5.1",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
+    "cross-env": "^10.1.0",
     "es-toolkit": "1.44.0",
     "eslint": "catalog:",
     "gql.tada": "^1.9.0",

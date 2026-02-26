@@ -39,7 +39,7 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@baseplate-dev/project-builder-common": "workspace:*",
+    "@baseplate-dev/project-builder-dev": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/project-builder-server": "workspace:*",
     "@baseplate-dev/project-builder-web": "workspace:*",

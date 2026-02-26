@@ -6,7 +6,6 @@ import { resolveProjects } from '../utils/project-resolver.js';
 
 interface ListProjectsOptions {
   json?: boolean;
-  includeExamples?: boolean;
 }
 
 /**
@@ -23,11 +22,6 @@ export function addProjectsCommand(program: Command): void {
     .command('list')
     .description('List all available projects')
     .option('--json', 'Output in JSON format', false)
-    .option(
-      '--include-examples',
-      'Include example projects (overrides INCLUDE_EXAMPLES env)',
-      undefined,
-    )
     .action(async (options: ListProjectsOptions) => {
       await handleListProjects(options);
     });
@@ -36,16 +30,12 @@ export function addProjectsCommand(program: Command): void {
 async function handleListProjects(options: ListProjectsOptions): Promise<void> {
   try {
     const projectMap = await resolveProjects({
-      includeExamples:
-        options.includeExamples ?? process.env.INCLUDE_EXAMPLES === 'true',
       defaultToCwd: true,
     });
 
     if (projectMap.size === 0) {
       console.info('No projects found.');
-      console.info(
-        'Try setting PROJECT_DIRECTORIES or INCLUDE_EXAMPLES=true environment variables.',
-      );
+      console.info('Try setting the PROJECT_DIRECTORIES environment variable.');
       return;
     }
 
@@ -97,9 +87,6 @@ async function handleListProjects(options: ListProjectsOptions): Promise<void> {
       console.info('  pnpm baseplate diff <project-name>');
       console.info('  pnpm baseplate templates extract <project-name> <app>');
       console.info();
-      console.info(
-        'Tip: Set INCLUDE_EXAMPLES=true to automatically include example projects',
-      );
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

@@ -96,14 +96,11 @@ jobs:
         run: |
           echo "Verifying that example '${{ matrix.example }}' has no uncommitted generated code differences..."
 
-          # Set environment variables for project discovery
-          export INCLUDE_EXAMPLES=true
-
-          # Run diff command using project name
+          # Run diff command using example directory path
           cd packages/project-builder-cli
 
           # Use the built CLI to check for differences
-          pnpm start diff ${{ matrix.example }} --compact --fail-on-differences
+          pnpm start diff ../../examples/${{ matrix.example }} --compact --fail-on-differences
 
           if [ $? -eq 0 ]; then
             echo "✅ Example '${{ matrix.example }}' is in sync with generators"
@@ -111,9 +108,9 @@ jobs:
             echo "❌ Example '${{ matrix.example }}' has differences between generated and committed code"
             echo ""
             echo "This means the example project is not in sync with the latest generator code."
-            echo "Please run 'pnpm start diff ${{ matrix.example }}' locally to see the differences"
+            echo "Please run 'pnpm start diff ../../examples/${{ matrix.example }}' locally to see the differences"
             echo "and either:"
             echo "  1. Update the generators to match the current code, or"
-            echo "  2. Regenerate the example code with 'baseplate start sync ${{ matrix.example }}'"
+            echo "  2. Regenerate the example code with 'baseplate start sync ../../examples/${{ matrix.example }}'"
             exit 1
           fi

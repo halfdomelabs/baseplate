@@ -4,17 +4,18 @@ import type { FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
 import { discoverProjects } from '@baseplate-dev/project-builder-server/actions';
+import { getUserConfig } from '@baseplate-dev/project-builder-server/user-config';
+import {
+  expandPathWithTilde,
+  getPackageVersion,
+} from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
-
-import { getUserConfig } from '#src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
 import { createServiceActionContext } from '../utils/create-service-action-context.js';
-import { expandPathWithTilde } from '../utils/path.js';
 import { resolveModule } from '../utils/resolve.js';
-import { getPackageVersion } from '../utils/version.js';
 
 interface ServeCommandOptions {
   browser: boolean;
@@ -36,7 +37,7 @@ export async function serveWebServer(
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
-  const version = await getPackageVersion();
+  const version = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
   if (!projectBuilderWebDir) {
     throw new Error(

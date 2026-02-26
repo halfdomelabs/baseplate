@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
+import { getPackageVersion } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { program } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { generateBaseplateProject } from './project-creator.js';
-import { getCliVersion, getPackageVersion } from './version.js';
+import { getCliVersion } from './version.js';
 
 // check if directory contains a package.json file
 async function checkForPackageJson(directory: string): Promise<boolean> {
@@ -20,7 +21,7 @@ async function checkForPackageJson(directory: string): Promise<boolean> {
 }
 
 async function runMain(): Promise<void> {
-  const version = await getPackageVersion();
+  const version = await getPackageVersion(import.meta.dirname);
 
   if (!version) {
     throw new Error('Could not determine package version');

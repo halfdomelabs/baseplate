@@ -24,7 +24,7 @@ export default {
       ],
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
-        // necessary for build
+        // react-dom and @types/react-dom are required for the vite/react build
         'react-dom',
         '@types/react-dom',
       ],
@@ -69,6 +69,19 @@ export default {
         '#src/*': ['./src/*'],
       },
     },
+    'packages/project-builder-dev': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
+        'pino-pretty',
+        // we resolve the package by string in src/commands/serve.ts
+        '@baseplate-dev/project-builder-web',
+      ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
     'packages/project-builder-server': {
       entry: ['src/index.{ts,tsx}', 'src/**/*worker-script*.ts'],
       project: 'src/**/*.{ts,tsx}',
@@ -77,7 +90,11 @@ export default {
     'packages/project-builder-test': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      ignore: ['src/tests/*.ts'],
+      ignore: [
+        'src/tests/*.ts',
+        // knip false positive: resolve.ts is used via #src/ alias in serve.ts
+        'src/utils/resolve.ts',
+      ],
       ignoreDependencies: [
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',

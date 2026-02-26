@@ -14,7 +14,7 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateDeleteCallback } from '../_shared/build-data-helpers/index.js';
+import { generateDeleteExecuteCallback } from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -42,25 +42,39 @@ export const prismaDataDeleteGenerator = createGenerator({
       run({ serviceFile, prismaDataService, dataUtilsImports, prismaOutput }) {
         return {
           build: () => {
-            // Generate delete callback
-            const { deleteCallbackFragment } = generateDeleteCallback({
-              modelVariableName: lowercaseFirstChar(modelName),
+            const modelVar = lowercaseFirstChar(modelName);
+
+            // Generate execute callback
+            const { executeCallbackFragment } = generateDeleteExecuteCallback({
+              modelVariableName: modelVar,
             });
 
-            const deleteOperation = tsTemplate`
-              export const ${name} = ${dataUtilsImports.defineDeleteOperation.fragment()}({
-                model: ${quot(lowercaseFirstChar(modelName))},
-                delete: ${deleteCallbackFragment},
-              })
+            // Generate the delete function
+            const deleteFunction = tsTemplate`
+              export async function ${name}<
+                TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
+              >({
+                where,
+                query,
+                context,
+              }: ${dataUtilsImports.DataDeleteInput.typeFragment()}<${quot(modelVar)}, TQueryArgs>): Promise<
+                ${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>
+              > {
+                return ${dataUtilsImports.commitDelete.fragment()}({
+                  model: ${quot(modelVar)},
+                  query,
+                  context,
+                  execute: ${executeCallbackFragment},
+                });
+              }
             `;
-            serviceFile.getServicePath();
 
             const prismaModel = prismaOutput.getPrismaModel(modelName);
 
             prismaDataService.registerMethod({
               name,
               type: 'delete',
-              fragment: deleteOperation,
+              fragment: deleteFunction,
               outputMethod: {
                 name,
                 referenceFragment: TsCodeUtils.importFragment(
