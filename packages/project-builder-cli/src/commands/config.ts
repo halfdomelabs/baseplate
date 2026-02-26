@@ -1,9 +1,11 @@
 import type { Command } from 'commander';
 
+import {
+  getUserConfig,
+  writeUserConfig,
+} from '@baseplate-dev/project-builder-server/user-config';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { ZodError } from 'zod';
-
-import { getUserConfig, writeUserConfig } from '../services/user-config.js';
 
 /**
  * Immutably set a deep value in `obj` by `keys` path, returning a new object.

@@ -2,7 +2,6 @@ import type { ProjectDefinitionInput } from '@baseplate-dev/project-builder-lib'
 import type { ServiceActionContext } from '@baseplate-dev/project-builder-server/actions';
 import type { Command } from 'commander';
 
-import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
 import {
   BuilderServiceManager,
@@ -10,6 +9,7 @@ import {
   startWebServer,
 } from '@baseplate-dev/project-builder-server';
 import { loadProjectFromDirectory } from '@baseplate-dev/project-builder-server/actions';
+import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pino } from 'pino';
@@ -66,7 +66,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
-  const builtInPlugins = await getDefaultPlugins(logger);
+  const builtInPlugins = await discoverPlugins(projectDirectory, logger);
 
   if (!projectBuilderWebDir) {
     throw new Error(

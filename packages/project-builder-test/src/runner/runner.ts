@@ -1,3 +1,4 @@
+import { generateProject } from '@baseplate-dev/project-builder-dev';
 import path from 'node:path';
 
 import type {
@@ -14,7 +15,6 @@ import {
 } from '#src/utils/directories.js';
 
 import { discoverTests } from './discover-tests.js';
-import { generateProject } from './generate.js';
 
 async function runTest(test: ProjectBuilderTest): Promise<void> {
   const testProjectsDirectory = await getTestProjectsDirectory();

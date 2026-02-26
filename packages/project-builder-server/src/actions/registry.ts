@@ -25,11 +25,15 @@ import {
   showTemplateMetadataAction,
 } from './templates/index.js';
 
-export const ALL_SERVICE_ACTIONS = [
+export const USER_SERVICE_ACTIONS = [
   diffProjectAction,
   syncProjectAction,
   syncAllProjectsAction,
   syncFileAction,
+];
+
+export const ALL_SERVICE_ACTIONS = [
+  ...USER_SERVICE_ACTIONS,
   discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,

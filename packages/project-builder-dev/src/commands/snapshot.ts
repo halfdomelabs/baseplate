@@ -9,9 +9,8 @@ import {
 } from '@baseplate-dev/project-builder-server/actions';
 import { confirm } from '@inquirer/prompts';
 
+import { logger } from '#src/services/logger.js';
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
-
-import { logger } from '../services/logger.js';
 
 /**
  * Adds snapshot management commands to the program.

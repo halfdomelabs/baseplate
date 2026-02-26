@@ -4,25 +4,22 @@ import {
   discoverProjects,
   loadProjectFromDirectory,
 } from '@baseplate-dev/project-builder-server/actions';
+import { expandPathWithTilde } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
 
 import { getEnvConfig } from './config.js';
-import { findExamplesDirectories } from './find-examples-directories.js';
-import { expandPathWithTilde } from './path.js';
 
 const config = getEnvConfig();
 
-async function getSearchDirectories({
+function getSearchDirectories({
   additionalDirectories,
-  includeExamples,
   defaultToCwd,
 }: {
   additionalDirectories?: string[];
-  includeExamples: boolean;
   defaultToCwd: boolean;
-}): Promise<string[]> {
+}): string[] {
   const allDirectories = new Set<string>();
 
   // Add directories from PROJECT_DIRECTORIES env var
@@ -36,14 +33,6 @@ async function getSearchDirectories({
   // Add explicitly provided directories
   for (const dir of additionalDirectories ?? []) {
     allDirectories.add(expandPathWithTilde(dir));
-  }
-
-  // Add example directories if requested
-  if (includeExamples) {
-    const exampleDirs = await findExamplesDirectories();
-    for (const dir of exampleDirs) {
-      allDirectories.add(dir);
-    }
   }
 
   // Default to current working directory if no projects specified
@@ -60,7 +49,6 @@ async function getSearchDirectories({
  * This function searches for projects in:
  * - Directories specified in PROJECT_DIRECTORIES environment variable
  * - Additional directories provided as parameters
- * - Example directories (if INCLUDE_EXAMPLES is enabled)
  * - Current working directory (as fallback)
  *
  * @param options - Configuration options for project discovery
@@ -83,9 +71,8 @@ export async function listProjects({
 }: {
   additionalDirectories?: string[];
 }): Promise<ProjectInfo[]> {
-  const searchDirectories = await getSearchDirectories({
+  const searchDirectories = getSearchDirectories({
     additionalDirectories,
-    includeExamples: config.INCLUDE_EXAMPLES ?? false,
     defaultToCwd: true,
   });
   return discoverProjects(searchDirectories, logger);
@@ -142,23 +129,4 @@ export async function resolveProject(
     throw new Error(`Project ${projectNameOrDirectory} not found`);
   }
   return project;
-}
-
-/**
- * Lists all example projects by searching through example directories only.
- *
- * This function searches for projects specifically in the examples/ directory
- * of the Baseplate repository.
- *
- * @returns Promise that resolves to an array of example projects
- *
- * @example
- * ```typescript
- * // List all example projects
- * const exampleProjects = await getExampleProjects();
- * ```
- */
-export async function getExampleProjects(): Promise<ProjectInfo[]> {
-  const exampleDirs = await findExamplesDirectories();
-  return discoverProjects(exampleDirs, logger);
 }

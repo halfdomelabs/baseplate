@@ -1,12 +1,12 @@
 import type { Command } from 'commander';
 
-import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
+import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
+import { expandPathWithTilde } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
-import { expandPathWithTilde } from '#src/utils/path.js';
-import { resolveProject } from '#src/utils/project-resolver.js';
+import { resolveProject } from '#src/utils/list-projects.js';
 
 interface ListTemplatesOptions {
   json?: boolean;
@@ -116,7 +116,7 @@ export function addTemplatesCommand(program: Command): void {
   templatesCommand
     .command('create <name> <directory>')
     .description(
-      'Create a new generator with boilerplate code (e.g., "baseplate templates create email/sendgrid packages/fastify-generators/src/generators")',
+      'Create a new generator with boilerplate code (e.g., "baseplate-dev templates create email/sendgrid packages/fastify-generators/src/generators")',
     )
     .option(
       '--no-include-templates',
@@ -143,12 +143,12 @@ async function handleListTemplates(
   const resolvedDirectory = directory
     ? expandPathWithTilde(directory)
     : path.resolve('.');
-  const defaultPlugins = await getDefaultPlugins(logger);
+  const plugins = await discoverPlugins(process.cwd(), logger);
 
   try {
     const generators = await discoverGenerators(
       resolvedDirectory,
-      defaultPlugins,
+      plugins,
       logger,
     );
 
@@ -211,11 +211,11 @@ async function handleDeleteTemplate(
     ? expandPathWithTilde(options.directory)
     : path.resolve('.');
 
-  const defaultPlugins = await getDefaultPlugins(logger);
+  const plugins = await discoverPlugins(process.cwd(), logger);
 
   try {
     await deleteTemplate(generatorName, templateName, {
-      defaultPlugins,
+      defaultPlugins: plugins,
       logger,
       directory: resolvedDirectory,
     });
@@ -241,14 +241,14 @@ async function handleExtractTemplates(
       await import('@baseplate-dev/project-builder-server/template-extractor');
 
     const projectInfo = await resolveProject(project);
-    const defaultPlugins = await getDefaultPlugins(logger);
+    const plugins = await discoverPlugins(process.cwd(), logger);
 
     logger.info(`Extracting templates from project: ${projectInfo.name}`);
 
     await runTemplateExtractorsForProject(
-      projectInfo.path,
+      projectInfo.directory,
       app,
-      defaultPlugins,
+      plugins,
       logger,
       {
         autoGenerateExtractor: options.autoGenerateExtractor,
@@ -273,9 +273,9 @@ async function handleGenerateTemplates(
   const resolvedDirectory = directory
     ? expandPathWithTilde(directory)
     : undefined;
-  const defaultPlugins = await getDefaultPlugins(logger);
+  const plugins = await discoverPlugins(process.cwd(), logger);
 
-  await generateTypedTemplateFiles(resolvedDirectory, defaultPlugins, logger, {
+  await generateTypedTemplateFiles(resolvedDirectory, plugins, logger, {
     skipClean: options.skipClean,
   });
 }

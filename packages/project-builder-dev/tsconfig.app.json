@@ -1,0 +1,9 @@
+{
+  "extends": "@baseplate-dev/tools/tsconfig.node.cli.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"]
+}

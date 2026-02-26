@@ -1,9 +1,9 @@
 import type { Command } from 'commander';
 
+import { generateProject } from '@baseplate-dev/project-builder-dev';
 import path from 'node:path';
 
 import { discoverTests } from '#src/runner/discover-tests.js';
-import { generateProject } from '#src/runner/generate.js';
 import { logger } from '#src/utils/console.js';
 import {
   getTestProjectsDirectory,
