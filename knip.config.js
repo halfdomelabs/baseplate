@@ -90,7 +90,11 @@ export default {
     'packages/project-builder-test': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      ignore: ['src/tests/*.ts'],
+      ignore: [
+        'src/tests/*.ts',
+        // knip false positive: resolve.ts is used via #src/ alias in serve.ts
+        'src/utils/resolve.ts',
+      ],
       ignoreDependencies: [
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',

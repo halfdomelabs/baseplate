@@ -256,7 +256,7 @@ describe('project-resolver', () => {
 
       // Act & Assert
       await expect(resolveProject('/non-existent')).rejects.toThrow(
-        'No package.json found in /non-existent',
+        'No project definition found in /non-existent',
       );
     });
 
