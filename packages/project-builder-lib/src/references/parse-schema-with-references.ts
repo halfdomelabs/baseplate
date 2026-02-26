@@ -1,10 +1,4 @@
-import type {
-  def,
-  DefinitionSchemaCreator,
-  DefinitionSchemaCreatorOptions,
-} from '#src/schema/index.js';
-
-import { createDefinitionSchemaParserContext } from '#src/schema/creator/index.js';
+import type { z } from 'zod';
 
 import type { ResolveZodRefPayloadNamesOptions } from './resolve-zod-ref-payload-names.js';
 import type { ResolvedZodRefPayload } from './types.js';
@@ -18,24 +12,16 @@ import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
  * Validates the input using Zod, then walks the schema structure alongside
  * the parsed data to extract entity/reference/expression metadata.
  *
- * @param schemaCreator - The schema creator function
+ * @param schema - The already-constructed Zod schema
  * @param input - The input to parse
- * @param schemaCreatorOptions - Options for the schema creator
  * @param options - Options for resolving ref payload names
  * @returns The parsed data with resolved ref metadata
  */
-export function parseSchemaWithTransformedReferences<
-  T extends DefinitionSchemaCreator,
->(
-  schemaCreator: T,
+export function parseSchemaWithTransformedReferences<T extends z.ZodType>(
+  schema: T,
   input: unknown,
-  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
   options?: ResolveZodRefPayloadNamesOptions,
-): ResolvedZodRefPayload<def.InferOutput<T>> {
-  const schemaContext =
-    createDefinitionSchemaParserContext(schemaCreatorOptions);
-  const schema = schemaCreator(schemaContext) as def.InferSchema<T>;
-
+): ResolvedZodRefPayload<z.output<T>> {
   // Step 1: Validate with Zod
   const value = schema.parse(input);
 

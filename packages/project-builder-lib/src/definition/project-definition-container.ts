@@ -9,7 +9,10 @@ import type {
   FixRefDeletionResult,
   ResolvedZodRefPayload,
 } from '#src/references/index.js';
-import type { ProjectDefinition } from '#src/schema/index.js';
+import type {
+  ProjectDefinition,
+  ProjectDefinitionSchema,
+} from '#src/schema/index.js';
 
 import {
   createPluginSpecStore,
@@ -20,7 +23,10 @@ import {
   fixRefDeletions,
   serializeSchema,
 } from '#src/references/index.js';
-import { createProjectDefinitionSchema } from '#src/schema/index.js';
+import {
+  createDefinitionSchemaParserContext,
+  createProjectDefinitionSchema,
+} from '#src/schema/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -35,11 +41,13 @@ export class ProjectDefinitionContainer {
   entities: DefinitionEntity[];
   parserContext: SchemaParserContext;
   pluginStore: PluginSpecStore;
+  schema: ProjectDefinitionSchema;
 
   constructor(
     config: ResolvedZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
     pluginStore: PluginSpecStore,
+    schema: ProjectDefinitionSchema,
   ) {
     this.refPayload = config;
     this.definition = config.data;
@@ -47,6 +55,18 @@ export class ProjectDefinitionContainer {
     this.entities = config.entities;
     this.parserContext = parserContext;
     this.pluginStore = pluginStore;
+    this.schema = schema;
+  }
+
+  /**
+   * Fetches a DefinitionEntity by its ID, returning undefined if not found.
+   *
+   * @param id The ID of the entity to fetch
+   * @returns The DefinitionEntity, or undefined if not found
+   */
+  entityFromId(id: string | undefined): DefinitionEntity | undefined {
+    if (!id) return undefined;
+    return this.entities.find((e) => e.id === id);
   }
 
   /**
@@ -89,11 +109,9 @@ export class ProjectDefinitionContainer {
    */
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
-  ): FixRefDeletionResult<typeof createProjectDefinitionSchema> {
+  ): FixRefDeletionResult<ProjectDefinition> {
     const newDefinition = produce(setter)(this.definition);
-    return fixRefDeletions(createProjectDefinitionSchema, newDefinition, {
-      plugins: this.pluginStore,
-    });
+    return fixRefDeletions(this.schema, newDefinition);
   }
 
   /**
@@ -102,13 +120,7 @@ export class ProjectDefinitionContainer {
    * @returns The serialized contents of the project definition
    */
   toSerializedContents(): string {
-    const serializedContents = serializeSchema(
-      createProjectDefinitionSchema,
-      this.definition,
-      {
-        plugins: this.pluginStore,
-      },
-    );
+    const serializedContents = serializeSchema(this.schema, this.definition);
     return stringifyPrettyStable(serializedContents);
   }
 
@@ -125,10 +137,14 @@ export class ProjectDefinitionContainer {
   ): ProjectDefinitionContainer {
     const { definition: parsedDefinition, pluginStore } =
       parseProjectDefinitionWithReferences(definition, context);
+    const schema = createProjectDefinitionSchema(
+      createDefinitionSchemaParserContext({ plugins: pluginStore }),
+    );
     return new ProjectDefinitionContainer(
       parsedDefinition,
       context,
       pluginStore,
+      schema,
     );
   }
 
@@ -144,14 +160,14 @@ export class ProjectDefinitionContainer {
     context: SchemaParserContext,
   ): ProjectDefinitionContainer {
     const plugins = createPluginSpecStore(context.pluginStore, config);
+    const schema = createProjectDefinitionSchema(
+      createDefinitionSchemaParserContext({ plugins }),
+    );
     return new ProjectDefinitionContainer(
-      deserializeSchemaWithTransformedReferences(
-        createProjectDefinitionSchema,
-        config,
-        { plugins },
-      ),
+      deserializeSchemaWithTransformedReferences(schema, config),
       context,
       plugins,
+      schema,
     );
   }
 }

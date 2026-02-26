@@ -1,6 +1,5 @@
 import type React from 'react';
 
-import { modelTransformerEntityType } from '@baseplate-dev/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
@@ -14,17 +13,10 @@ import {
 } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { registerEntityTypeUrl } from '#src/services/entity-type.js';
-
 import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
 import { ServiceMethodFieldsSection } from './-components/service/service-method-fields-section.js';
 import { ServiceTransformersSection } from './-components/service/service-transformers-section.js';
-
-registerEntityTypeUrl(
-  modelTransformerEntityType,
-  `/data/models/edit/{parentKey}`,
-);
 
 export const Route = createFileRoute('/data/models/edit/$key/service')({
   component: ModelEditServicePage,

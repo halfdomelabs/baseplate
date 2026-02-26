@@ -133,11 +133,7 @@ export function ProjectDefinitionProvider({
           throw new DefinitionIssueError(errors);
         }
 
-        const result = fixRefDeletions(
-          createProjectDefinitionSchema,
-          newProjectDefinition,
-          schemaCreatorOptions,
-        );
+        const result = fixRefDeletions(defSchema, newProjectDefinition);
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
@@ -150,6 +146,7 @@ export function ProjectDefinitionProvider({
           result.refPayload,
           parserContext,
           pluginStore,
+          defSchema,
         );
         const serializedContents = definitionContainer.toSerializedContents();
 

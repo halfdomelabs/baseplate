@@ -145,10 +145,13 @@ export function parseProjectDefinitionWithReferences(
 } {
   const { pluginStore } = context;
   const pluginSpecStore = createPluginSpecStore(pluginStore, projectDefinition);
+  const definitionContext = createDefinitionSchemaParserContext({
+    plugins: pluginSpecStore,
+  });
+  const schema = createProjectDefinitionSchema(definitionContext);
   const definition = parseSchemaWithTransformedReferences(
-    createProjectDefinitionSchema,
+    schema,
     projectDefinition,
-    { plugins: pluginSpecStore },
   );
   return { definition, pluginStore: pluginSpecStore };
 }

@@ -2,13 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
-import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+import {
+  createDefinitionSchemaParserContext,
+  definitionSchema,
+} from '#src/schema/creator/schema-creator.js';
 
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
 import { createEntityType } from './types.js';
 
 describe('deserializeSchemaWithTransformedReferences', () => {
   const pluginStore = new PluginSpecStore();
+  const parserContext = createDefinitionSchemaParserContext({
+    plugins: pluginStore,
+  });
 
   it('should work with a no-reference object', () => {
     const schemaCreator = definitionSchema(() =>
@@ -18,9 +24,8 @@ describe('deserializeSchemaWithTransformedReferences', () => {
     );
 
     const refPayload = deserializeSchemaWithTransformedReferences(
-      schemaCreator,
+      schemaCreator(parserContext),
       { test: 'hi' },
-      { plugins: pluginStore },
     );
 
     expect(refPayload).toMatchObject({
@@ -53,9 +58,8 @@ describe('deserializeSchemaWithTransformedReferences', () => {
     };
 
     const parsedData = deserializeSchemaWithTransformedReferences(
-      schemaCreator,
+      schemaCreator(parserContext),
       dataInput,
-      { plugins: pluginStore },
     );
 
     expect(parsedData.data.ref).toEqual(parsedData.data.entity[0].id);
@@ -86,9 +90,8 @@ describe('deserializeSchemaWithTransformedReferences', () => {
     };
 
     const parsedData = deserializeSchemaWithTransformedReferences(
-      schemaCreator,
+      schemaCreator(parserContext),
       dataInput,
-      { plugins: pluginStore },
     );
 
     expect(parsedData.data.optionalRef).toBeUndefined();
@@ -117,9 +120,10 @@ describe('deserializeSchemaWithTransformedReferences', () => {
     };
 
     expect(() =>
-      deserializeSchemaWithTransformedReferences(schemaCreator, dataInput, {
-        plugins: pluginStore,
-      }),
+      deserializeSchemaWithTransformedReferences(
+        schemaCreator(parserContext),
+        dataInput,
+      ),
     ).toThrow('Unable to resolve reference');
   });
 
@@ -159,9 +163,8 @@ describe('deserializeSchemaWithTransformedReferences', () => {
     };
 
     const parsedData = deserializeSchemaWithTransformedReferences(
-      schemaCreator,
+      schemaCreator(parserContext),
       dataInput,
-      { plugins: pluginStore },
     );
 
     expect(parsedData.data.ref).toEqual(parsedData.data.entity[2].id);

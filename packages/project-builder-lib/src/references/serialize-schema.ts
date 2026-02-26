@@ -1,14 +1,9 @@
+import type { z } from 'zod';
+
 import { get, set } from 'es-toolkit/compat';
 import { produce } from 'immer';
 
-import type {
-  def,
-  DefinitionSchemaCreator,
-  DefinitionSchemaCreatorOptions,
-} from '#src/schema/index.js';
-
 import { cleanDefaultValues } from '#src/parser/clean-default-values.js';
-import { createDefinitionSchemaParserContext } from '#src/schema/creator/index.js';
 
 import type { ResolvedZodRefPayload } from './types.js';
 
@@ -49,17 +44,12 @@ export function serializeSchemaFromRefPayload<TValue>(
  * 3. Extracting and resolving entity/reference metadata
  * 4. Replacing entity IDs with their human-readable names
  */
-export function serializeSchema<T extends DefinitionSchemaCreator>(
-  schemaCreator: T,
+export function serializeSchema<T extends z.ZodType>(
+  schema: T,
   value: unknown,
-  schemaCreatorOptions: DefinitionSchemaCreatorOptions,
-): def.InferOutput<T> {
-  const schemaContext =
-    createDefinitionSchemaParserContext(schemaCreatorOptions);
-  const schema = schemaCreator(schemaContext) as def.InferSchema<T>;
-
+): z.output<T> {
   // Step 1: Validate with Zod (prefault populates defaults)
-  const rawValue = schema.parse(value);
+  const rawValue = schema.parse(value) as z.output<T>;
 
   // Step 2: Strip values matching their registered defaults
   const cleanedValue = cleanDefaultValues(schema, rawValue);

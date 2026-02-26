@@ -2,27 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
-import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+import {
+  createDefinitionSchemaParserContext,
+  definitionSchema,
+} from '#src/schema/creator/schema-creator.js';
 
 import { serializeSchema } from './serialize-schema.js';
 import { createEntityType } from './types.js';
 
 describe('serializeSchema', () => {
   const pluginStore = new PluginSpecStore();
+  const parserContext = createDefinitionSchemaParserContext({
+    plugins: pluginStore,
+  });
+
   it('should work with a no-reference object', () => {
-    const schemaCreator = definitionSchema(() =>
+    const schema = definitionSchema(() =>
       z.object({
         test: z.string(),
       }),
-    );
+    )(parserContext);
 
-    const refPayload = serializeSchema(
-      schemaCreator,
-      { test: 'hi' },
-      {
-        plugins: pluginStore,
-      },
-    );
+    const refPayload = serializeSchema(schema, { test: 'hi' });
 
     expect(refPayload).toMatchObject({
       test: 'hi',
@@ -31,7 +32,7 @@ describe('serializeSchema', () => {
 
   it('should work with a simple reference', () => {
     const entityType = createEntityType('entity');
-    const schemaCreator = definitionSchema((ctx) =>
+    const schema = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
           ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
@@ -43,16 +44,14 @@ describe('serializeSchema', () => {
           onDelete: 'DELETE',
         }),
       }),
-    );
+    )(parserContext);
 
     const data = {
       entity: [{ id: entityType.idFromKey('test-id'), name: 'test-name' }],
       ref: entityType.idFromKey('test-id'),
     };
 
-    const refPayload = serializeSchema(schemaCreator, data, {
-      plugins: pluginStore,
-    });
+    const refPayload = serializeSchema(schema, data);
 
     expect(refPayload).toMatchObject({
       entity: [{ id: entityType.idFromKey('test-id'), name: 'test-name' }],
@@ -62,7 +61,7 @@ describe('serializeSchema', () => {
 
   it('should work with a multiple references', () => {
     const entityType = createEntityType('entity');
-    const schemaCreator = definitionSchema((ctx) =>
+    const schema = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
           ctx.withEnt(
@@ -84,7 +83,7 @@ describe('serializeSchema', () => {
           onDelete: 'RESTRICT',
         }),
       }),
-    );
+    )(parserContext);
 
     const data = {
       entity: [
@@ -98,9 +97,7 @@ describe('serializeSchema', () => {
       ref: entityType.idFromKey('test-id3'),
     };
 
-    const refPayload = serializeSchema(schemaCreator, data, {
-      plugins: pluginStore,
-    });
+    const refPayload = serializeSchema(schema, data);
 
     expect(refPayload).toMatchObject({
       entity: [
@@ -120,7 +117,7 @@ describe('serializeSchema', () => {
     const fieldType = createEntityType('field', {
       parentType: modelType,
     });
-    const schemaCreator = definitionSchema((ctx) =>
+    const schema = definitionSchema((ctx) =>
       ctx.refContext(
         { modelSlot: modelType, foreignModelSlot: modelType },
         ({ modelSlot, foreignModelSlot }) =>
@@ -161,7 +158,7 @@ describe('serializeSchema', () => {
             ),
           }),
       ),
-    );
+    )(parserContext);
 
     const data = {
       models: [
@@ -191,9 +188,7 @@ describe('serializeSchema', () => {
       ],
     };
 
-    const refPayload = serializeSchema(schemaCreator, data, {
-      plugins: pluginStore,
-    });
+    const refPayload = serializeSchema(schema, data);
 
     expect(refPayload).toMatchObject({
       models: [
