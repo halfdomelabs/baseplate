@@ -14,6 +14,6 @@ export async function getPackageVersion(cwd: string): Promise<string | null> {
     return null;
   }
   const fileContent = await readFile(packageJsonPath, 'utf8');
-  const packageJson = JSON.parse(fileContent) as { version?: string };
-  return packageJson.version ?? null;
+  const packageJson = JSON.parse(fileContent) as { version?: unknown };
+  return typeof packageJson.version === 'string' ? packageJson.version : null;
 }

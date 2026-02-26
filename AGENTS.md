@@ -52,6 +52,7 @@ Baseplate is organized into several core packages:
 ### Plugins
 
 - **plugins/plugin-auth** (`@baseplate-dev/plugin-auth`): Authentication plugin (includes auth0 and local auth implementations)
+- **plugins/plugin-email** (`@baseplate-dev/plugin-email`): Email plugin
 - **plugins/plugin-storage** (`@baseplate-dev/plugin-storage`): Storage plugin (S3 and local file storage)
 - **plugins/plugin-queue** (`@baseplate-dev/plugin-queue`): Queue plugin (BullMQ and PgBoss)
 - **plugins/plugin-rate-limit** (`@baseplate-dev/plugin-rate-limit`): Rate limit plugin (Prisma/Redis)

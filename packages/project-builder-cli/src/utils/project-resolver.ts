@@ -170,7 +170,7 @@ async function loadProjectInfo(
     };
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-      throw new Error(`No package.json found in ${directory}`);
+      throw new Error(`No project definition found in ${directory}`);
     }
     throw error;
   }

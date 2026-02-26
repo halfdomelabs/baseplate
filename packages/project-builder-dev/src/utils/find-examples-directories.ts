@@ -6,9 +6,6 @@ import path from 'node:path';
  * Find all example directories by walking up from process.cwd() until an
  * `examples/` directory is found. Works in any repo (monorepo or plugin repo).
  *
- * Override with EXAMPLES_DIRECTORIES env var (comma-separated paths) to skip
- * discovery entirely.
- *
  * @returns Array of absolute paths to example subdirectories
  * @throws Error if no examples directory is found
  */
@@ -26,8 +23,7 @@ export async function findExamplesDirectories(): Promise<string[]> {
     const parent = path.dirname(dir);
     if (parent === dir) {
       throw new Error(
-        `Could not find an examples/ directory walking up from ${process.cwd()}. ` +
-          `Set EXAMPLES_DIRECTORIES env var to specify example project paths explicitly.`,
+        `Could not find an examples/ directory walking up from ${process.cwd()}.`,
       );
     }
     dir = parent;

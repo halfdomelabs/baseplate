@@ -4,6 +4,7 @@ import {
   createNodeSchemaParserContext,
   syncProject,
 } from '@baseplate-dev/project-builder-server';
+import { loadProjectFromDirectory } from '@baseplate-dev/project-builder-server/actions';
 import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 
 import { logger } from '#src/services/logger.js';
@@ -19,13 +20,9 @@ export async function generateProject(
   projectDirectory: string,
 ): Promise<SyncProjectResult> {
   const plugins = await discoverPlugins(projectDirectory, logger);
+  const projectInfo = await loadProjectFromDirectory(projectDirectory);
   const nodeSchemaParserContext = await createNodeSchemaParserContext(
-    {
-      id: 'test-project',
-      name: 'Test Project',
-      directory: projectDirectory,
-      isInternalExample: true,
-    },
+    projectInfo,
     logger,
     plugins,
     '0.1.0',

@@ -73,7 +73,9 @@ export async function resolveProject(
   if (
     projectNameOrDirectory.startsWith('.') ||
     path.isAbsolute(projectNameOrDirectory) ||
-    projectNameOrDirectory.startsWith('~')
+    projectNameOrDirectory.startsWith('~') ||
+    projectNameOrDirectory.includes(path.sep) ||
+    projectNameOrDirectory.includes('/')
   ) {
     const resolvedPath = expandPathWithTilde(projectNameOrDirectory);
     return loadProjectFromDirectory(resolvedPath);
@@ -90,10 +92,6 @@ export async function resolveProject(
 }
 
 export async function getExampleProjects(): Promise<ProjectInfo[]> {
-  const exampleDirs: string[] = config.EXAMPLES_DIRECTORIES
-    ? config.EXAMPLES_DIRECTORIES.split(',')
-        .map((d) => expandPathWithTilde(d.trim()))
-        .filter(Boolean)
-    : await findExamplesDirectories();
+  const exampleDirs = await findExamplesDirectories();
   return discoverProjects(exampleDirs, logger);
 }

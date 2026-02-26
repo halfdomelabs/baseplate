@@ -35,6 +35,10 @@ export function addSyncCommand(program: Command): void {
           packages?: string[];
         },
       ) => {
+        if (options.snapshot && !options.overwrite) {
+          throw new Error('--snapshot requires --overwrite');
+        }
+
         const context = await createServiceActionContext();
         const projectWithDefault =
           project ??

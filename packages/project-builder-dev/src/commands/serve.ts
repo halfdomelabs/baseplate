@@ -30,9 +30,14 @@ async function serveWebServer({
   const { BuilderServiceManager, DEFAULT_SERVER_PORT, startWebServer } =
     await import('@baseplate-dev/project-builder-server');
 
-  const projectBuilderWebDir = await packageDirectory({
-    cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
-  });
+  let projectBuilderWebDir: string | undefined;
+  try {
+    projectBuilderWebDir = await packageDirectory({
+      cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
+    });
+  } catch {
+    // resolveModule throws when the package is not installed
+  }
   const version = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
   if (!projectBuilderWebDir) {
@@ -52,9 +57,10 @@ async function serveWebServer({
   });
 
   // Apply PORT_OFFSET if set
-  const portOffset = process.env.PORT_OFFSET
+  const parsedOffset = process.env.PORT_OFFSET
     ? Number.parseInt(process.env.PORT_OFFSET, 10)
     : 0;
+  const portOffset = Number.isNaN(parsedOffset) ? 0 : parsedOffset;
   const effectivePort = port ?? DEFAULT_SERVER_PORT + portOffset;
 
   await startWebServer({
@@ -75,7 +81,7 @@ export function addServeCommand(program: Command): void {
   program
     .command('serve')
     .description(
-      'Starts the project builder web service for discovered projects (respects EXCLUDE_EXAMPLES and EXAMPLES_DIRECTORIES)',
+      'Starts the project builder web service for discovered projects',
     )
     .option(
       '--browser',
@@ -86,7 +92,7 @@ export function addServeCommand(program: Command): void {
     .option(
       '--port <number>',
       'Port to listen on',
-      Number.parseInt,
+      (v: string) => Number.parseInt(v, 10),
       process.env.PORT ? Number.parseInt(process.env.PORT, 10) : undefined,
     )
     .action(async ({ browser, port }: ServeCommandOptions) => {
