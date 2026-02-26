@@ -28,7 +28,7 @@ function makeNavOptions<T>(
 /**
  * Maps an EntityNavTarget discriminated union to type-safe TanStack navigate options.
  */
-export function resolveEntityNavTarget(
+function resolveEntityNavTarget(
   target: EntityNavTarget,
 ): ValidateNavigateOptions {
   switch (target.page) {
@@ -111,7 +111,7 @@ function resolveParentEntity(
   return definition.entityFromId(parentId);
 }
 
-export function getEntityNavTarget(
+function getEntityNavTarget(
   definitionContainer: ProjectDefinitionContainer,
   entity: DefinitionEntity,
   pluginContainer: PluginSpecStore,
