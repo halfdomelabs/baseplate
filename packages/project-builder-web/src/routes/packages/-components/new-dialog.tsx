@@ -1,6 +1,7 @@
 import type {
   AppConfig,
   BaseLibraryDefinition,
+  ProjectDefinition,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
@@ -29,8 +30,9 @@ import {
   TabsTrigger,
   useControlledState,
 } from '@baseplate-dev/ui-components';
+import { compareStrings } from '@baseplate-dev/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useRouter } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { sortBy, startCase } from 'es-toolkit';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,6 +40,44 @@ import { useForm } from 'react-hook-form';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 type TabValue = 'app' | 'library';
+
+/**
+ * Computes the next available devPort for a new app, following the same logic
+ * as migration-023-assign-app-ports:
+ * - Backend apps: portOffset + 1
+ * - Web apps: portOffset + 30 + alphabeticalIndex
+ *
+ * If the computed port conflicts with an existing app, increments until a free port is found.
+ */
+function getNextDevPort(
+  config: ProjectDefinition,
+  appType: string,
+  appName: string,
+): number {
+  const { portOffset } = config.settings.general;
+  const existingPorts = new Set(config.apps.map((app) => app.devPort));
+
+  let port: number;
+  if (appType === 'backend') {
+    port = portOffset + 1;
+  } else {
+    // For web apps, compute alphabetical index including the new app
+    const webAppNames = config.apps
+      .filter((app) => app.type === 'web')
+      .map((app) => app.name);
+    webAppNames.push(appName);
+    webAppNames.sort((a, b) => compareStrings(a, b));
+    const webAppIndex = webAppNames.indexOf(appName);
+    port = portOffset + 30 + webAppIndex;
+  }
+
+  // Find a free port if there's a conflict
+  while (existingPorts.has(port)) {
+    port += 1;
+  }
+
+  return port;
+}
 
 interface NewDialogProps {
   children: React.ReactNode;
@@ -62,7 +102,6 @@ export function NewDialog({
   const librarySpec = pluginContainer.use(libraryTypeSpec);
   const libraryWebConfigs = [...librarySpec.webConfigs.entries()];
   const navigate = useNavigate();
-  const router = useRouter();
 
   // App form
   const appForm = useForm({
@@ -98,11 +137,13 @@ export function NewDialog({
     const newId = appEntityType.generateNewId();
     return saveDefinitionWithFeedback(
       (draftConfig) => {
+        const devPort = getNextDevPort(draftConfig, data.type, data.name);
         const newApps = [
           ...draftConfig.apps,
           {
             ...data,
             id: newId,
+            devPort,
             ...(data.type === 'web' && {
               title: startCase(data.name),
               description: `A ${data.type} application`,
@@ -115,14 +156,9 @@ export function NewDialog({
         successMessage: `Successfully created ${data.name}!`,
         onSuccess: () => {
           handleOpenChange(false);
-          router
-            .invalidate()
-            .then(() => {
-              navigate({
-                to: `/packages/apps/${appEntityType.keyFromId(newId)}`,
-              });
-            })
-            .catch(logAndFormatError);
+          navigate({
+            to: `/packages/apps/${appEntityType.keyFromId(newId)}`,
+          }).catch(logAndFormatError);
         },
       },
     );
@@ -147,15 +183,10 @@ export function NewDialog({
         successMessage: `Successfully created ${data.name}!`,
         onSuccess: () => {
           handleOpenChange(false);
-          router
-            .invalidate()
-            .then(() => {
-              navigate({
-                to: `/packages/libs/$key`,
-                params: { key: libraryEntityType.keyFromId(newId) },
-              });
-            })
-            .catch(logAndFormatError);
+          navigate({
+            to: `/packages/libs/$key`,
+            params: { key: libraryEntityType.keyFromId(newId) },
+          }).catch(logAndFormatError);
         },
       },
     );

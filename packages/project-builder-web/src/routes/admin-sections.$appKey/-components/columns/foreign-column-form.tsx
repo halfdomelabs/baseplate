@@ -19,11 +19,10 @@ function ForeignColumnForm({
   const { control } = formProps;
   const { definitionContainer } = useProjectDefinition();
 
-  const localRelationOptions =
-    model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
-      value: relation.id,
-    })) ?? [];
+  const localRelationOptions = model.model.relations.map((relation) => ({
+    label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
+    value: relation.id,
+  }));
 
   return (
     <>
@@ -60,7 +59,7 @@ export const adminCrudForeignColumnWebConfig =
     isAvailableForModel: (definition, modelId) => {
       // Foreign columns are available if the model has relations
       const model = definition.models.find((m) => m.id === modelId);
-      return (model?.model.relations?.length ?? 0) > 0;
+      return (model?.model.relations.length ?? 0) > 0;
     },
     Form: ForeignColumnForm,
     getNewColumn: () => ({

@@ -160,7 +160,7 @@ export function compileAdminCrudSection(
                   idx,
                 ),
               ),
-              actions: crudSection.table.actions?.map((action, idx) =>
+              actions: crudSection.table.actions.map((action, idx) =>
                 compileAdminCrudAction(
                   action,
                   crudSection.modelRef,

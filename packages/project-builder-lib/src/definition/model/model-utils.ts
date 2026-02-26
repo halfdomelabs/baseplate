@@ -59,11 +59,10 @@ function getRelationsToModel(
   projectDefinition: ProjectDefinition,
   modelId: string,
 ): { model: ModelConfig; relation: ModelRelationFieldConfig }[] {
-  return projectDefinition.models.flatMap(
-    (m) =>
-      m.model.relations
-        ?.filter((r) => r.modelRef === modelId)
-        .map((r) => ({ model: m, relation: r })) ?? [],
+  return projectDefinition.models.flatMap((m) =>
+    m.model.relations
+      .filter((r) => r.modelRef === modelId)
+      .map((r) => ({ model: m, relation: r })),
   );
 }
 

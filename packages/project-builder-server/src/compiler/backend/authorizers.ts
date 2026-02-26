@@ -67,12 +67,9 @@ export function buildAuthorizersForFeature(
   );
 
   return models
-    .filter((model) => model.authorizer && model.authorizer.roles.length > 0)
+    .filter((model) => model.authorizer.roles.length > 0)
     .map((model) => {
       const { authorizer } = model;
-      if (!authorizer) {
-        throw new Error(`Model '${model.name}' has no authorizer config`);
-      }
 
       const primaryKeyFields = ModelUtils.getPrimaryKeyFields(model);
       if (primaryKeyFields.length !== 1) {

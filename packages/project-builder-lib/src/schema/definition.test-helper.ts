@@ -4,12 +4,14 @@ import { capitalize } from 'es-toolkit';
 import type { FeatureConfig } from './features/feature.js';
 import type {
   ModelConfig,
+  ModelConfigInput,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfig,
 } from './models/index.js';
 
+import { createEmptyParserContext } from './creator/parser-context.test-helper.js';
 import { featureEntityType } from './features/feature.js';
 import {
   modelEntityType,
@@ -18,6 +20,9 @@ import {
   modelScalarFieldEntityType,
   modelUniqueConstraintEntityType,
 } from './models/index.js';
+import { createModelSchema } from './models/models.js';
+
+const modelSchema = createModelSchema(createEmptyParserContext());
 
 export function createTestFeature(
   feature: Partial<FeatureConfig> = {},
@@ -29,11 +34,14 @@ export function createTestFeature(
   };
 }
 
-export function createTestModel(model: Partial<ModelConfig> = {}): ModelConfig {
-  return {
+export function createTestModel(
+  model: Partial<ModelConfigInput> = {},
+): ModelConfig {
+  const input: ModelConfigInput = {
     id: modelEntityType.generateNewId(),
     name: capitalize(faker.word.noun()),
     featureRef: 'mockFeature',
+    ...model,
     model: {
       fields: [
         {
@@ -54,8 +62,8 @@ export function createTestModel(model: Partial<ModelConfig> = {}): ModelConfig {
       transformers: [],
       ...model.service,
     },
-    ...model,
   };
+  return modelSchema.parse(input);
 }
 
 export function createTestScalarField<

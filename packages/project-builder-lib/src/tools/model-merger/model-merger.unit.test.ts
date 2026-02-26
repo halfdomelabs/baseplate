@@ -573,7 +573,7 @@ describe('GraphQL support', () => {
       desired,
     );
     expect(
-      serializedDefinition.models[0].graphql?.objectType?.fields?.map(
+      serializedDefinition.models[0].graphql.objectType.fields.map(
         (f) => f.ref,
       ),
     ).toEqual(['id', 'name']);
@@ -817,18 +817,16 @@ describe('GraphQL support', () => {
     );
 
     expect(
-      authorModelResult?.graphql?.objectType?.fields?.map((f) => f.ref),
+      authorModelResult?.graphql.objectType.fields.map((f) => f.ref),
     ).toEqual(['id', 'name']);
     expect(
-      authorModelResult?.graphql?.objectType?.foreignRelations?.map(
-        (r) => r.ref,
-      ),
+      authorModelResult?.graphql.objectType.foreignRelations.map((r) => r.ref),
     ).toEqual(['posts']);
     expect(
-      postModelResult?.graphql?.objectType?.fields?.map((f) => f.ref),
+      postModelResult?.graphql.objectType.fields.map((f) => f.ref),
     ).toEqual(['id', 'title']);
     expect(
-      postModelResult?.graphql?.objectType?.localRelations?.map((r) => r.ref),
+      postModelResult?.graphql.objectType.localRelations.map((r) => r.ref),
     ).toEqual(['author']);
   });
 });

@@ -12,7 +12,7 @@ import { ModelUtils } from './model-utils.js';
 
 function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
   const { primaryKeyFieldRefs } = model.model;
-  const uniqueConstraints = model.model.uniqueConstraints ?? [];
+  const { uniqueConstraints } = model.model;
   return (
     (primaryKeyFieldRefs.length === 1 &&
       primaryKeyFieldRefs.includes(fieldId)) ||
@@ -55,7 +55,7 @@ function relationByIdOrThrow(
   model: ModelConfig,
   relationId: string,
 ): ModelRelationFieldConfig {
-  const relation = model.model.relations?.find((r) => r.id === relationId);
+  const relation = model.model.relations.find((r) => r.id === relationId);
   if (!relation) {
     throw new Error(`Relation ${relationId} not found in model ${model.name}`);
   }

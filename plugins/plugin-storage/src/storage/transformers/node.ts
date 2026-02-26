@@ -15,7 +15,7 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
     compileField(definition, { model }) {
       const { fileRelationRef, category } = definition;
 
-      const foreignRelation = model.model.relations?.find(
+      const foreignRelation = model.model.relations.find(
         (relation) => relation.id === fileRelationRef,
       );
 

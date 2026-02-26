@@ -1,5 +1,8 @@
 /* eslint-disable no-empty-pattern -- required by Playwright */
-import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  ProjectDefinition,
+  ProjectDefinitionInput,
+} from '@baseplate-dev/project-builder-lib';
 import type { BuilderServiceManager } from '@baseplate-dev/project-builder-server';
 import type { FastifyInstance } from 'fastify';
 
@@ -17,7 +20,7 @@ import { DEFAULT_LOGGER_OPTIONS } from '#src/services/logger.js';
 /**
  * Get a project definition that is initialized
  */
-export function getInitializedTestProjectDefinition(): ProjectDefinition {
+export function getInitializedTestProjectDefinition(): ProjectDefinitionInput {
   return {
     settings: {
       general: {
@@ -117,7 +120,7 @@ interface ProjectPayload {
 export const test = base.extend<
   {
     addProject: (
-      projectDefinition?: ProjectDefinition,
+      projectDefinition?: ProjectDefinitionInput,
     ) => Promise<ProjectPayload>;
     addInitializedProject: () => Promise<ProjectPayload>;
   },
@@ -165,80 +168,88 @@ export const test = base.extend<
     );
     let projectIdx = 0;
     try {
-      await use(async (projectDefinition: ProjectDefinition | undefined) => {
-        // Generate a unique temp directory for this test run
-        const tempDir = path.join(temporaryDirectory, `project-${projectIdx}`);
-        projectIdx++;
+      await use(
+        async (projectDefinition: ProjectDefinitionInput | undefined) => {
+          // Generate a unique temp directory for this test run
+          const tempDir = path.join(
+            temporaryDirectory,
+            `project-${projectIdx}`,
+          );
+          projectIdx++;
 
-        // Delete the temp directory if it exists
-        try {
-          await fs.rm(tempDir, { recursive: true, force: true });
-        } catch (err) {
-          console.warn(`Failed to clean up temp directory: ${tempDir}`, err);
-        }
+          // Delete the temp directory if it exists
+          try {
+            await fs.rm(tempDir, { recursive: true, force: true });
+          } catch (err) {
+            console.warn(`Failed to clean up temp directory: ${tempDir}`, err);
+          }
 
-        // Create temp directory
-        await fs.mkdir(path.join(tempDir, 'baseplate'), { recursive: true });
+          // Create temp directory
+          await fs.mkdir(path.join(tempDir, 'baseplate'), { recursive: true });
 
-        // Write package.json for the project
-        const rootPackageJson = JSON.stringify(
-          {
-            name: 'test-project',
-            version: '0.0.1',
-            private: true,
-          },
-          null,
-          2,
-        );
-        await fs.writeFile(path.join(tempDir, 'package.json'), rootPackageJson);
-
-        // Write clean package JSON for the project
-        await fs.mkdir(path.join(tempDir, 'baseplate/generated'), {
-          recursive: true,
-        });
-        await fs.writeFile(
-          path.join(tempDir, 'baseplate/generated/package.json'),
-          rootPackageJson,
-        );
-
-        async function writeProjectDefinition(
-          projectDefinition: ProjectDefinition,
-        ): Promise<void> {
+          // Write package.json for the project
+          const rootPackageJson = JSON.stringify(
+            {
+              name: 'test-project',
+              version: '0.0.1',
+              private: true,
+            },
+            null,
+            2,
+          );
           await fs.writeFile(
-            path.join(tempDir, 'baseplate/project-definition.json'),
-            stringifyPrettyStable(projectDefinition),
+            path.join(tempDir, 'package.json'),
+            rootPackageJson,
           );
-        }
 
-        async function readProjectDefinition(): Promise<ProjectDefinition> {
-          const contents = await fs.readFile(
-            path.join(tempDir, 'baseplate/project-definition.json'),
-            'utf8',
+          // Write clean package JSON for the project
+          await fs.mkdir(path.join(tempDir, 'baseplate/generated'), {
+            recursive: true,
+          });
+          await fs.writeFile(
+            path.join(tempDir, 'baseplate/generated/package.json'),
+            rootPackageJson,
           );
-          return JSON.parse(contents) as ProjectDefinition;
-        }
 
-        if (projectDefinition) {
-          await writeProjectDefinition(projectDefinition);
-        }
+          async function writeProjectDefinition(
+            projectDefinition: ProjectDefinitionInput,
+          ): Promise<void> {
+            await fs.writeFile(
+              path.join(tempDir, 'baseplate/project-definition.json'),
+              stringifyPrettyStable(projectDefinition),
+            );
+          }
 
-        // Add service to the server
-        const service = server.builderServiceManager.addService({
-          id: 'test-project',
-          directory: tempDir,
-          name: 'test-project',
-          isInternalExample: false,
-        });
+          async function readProjectDefinition(): Promise<ProjectDefinition> {
+            const contents = await fs.readFile(
+              path.join(tempDir, 'baseplate/project-definition.json'),
+              'utf8',
+            );
+            return JSON.parse(contents) as ProjectDefinition;
+          }
 
-        return {
-          id: service.id,
-          startUrl: `${server.url}/?projectId=${service.id}`,
-          makeUrl: (path: string) =>
-            `${server.url}/${path}?projectId=${service.id}`,
-          writeProjectDefinition,
-          readProjectDefinition,
-        };
-      });
+          if (projectDefinition) {
+            await writeProjectDefinition(projectDefinition);
+          }
+
+          // Add service to the server
+          const service = server.builderServiceManager.addService({
+            id: 'test-project',
+            directory: tempDir,
+            name: 'test-project',
+            isInternalExample: false,
+          });
+
+          return {
+            id: service.id,
+            startUrl: `${server.url}/?projectId=${service.id}`,
+            makeUrl: (path: string) =>
+              `${server.url}/${path}?projectId=${service.id}`,
+            writeProjectDefinition,
+            readProjectDefinition,
+          };
+        },
+      );
     } finally {
       // Remove all services from the server
       await server.builderServiceManager.removeAllServices();

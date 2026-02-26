@@ -2,9 +2,7 @@ import type { z } from 'zod';
 
 import { definitionDefaultRegistry } from './definition-default-registry.js';
 
-type WithDefaultResult<T extends z.ZodType> = z.ZodOptional<
-  z.ZodType<z.output<z.ZodOptional<T>>, z.input<z.ZodOptional<T>>>
->;
+type WithDefaultResult<T extends z.ZodType> = z.ZodPrefault<T>;
 
 export type WithDefaultType = <T extends z.ZodType>(
   schema: T,
@@ -30,7 +28,7 @@ export function withDefault(
   defaultValue: unknown,
 ): <T extends z.ZodType>(schema: T) => WithDefaultResult<T> {
   return <T extends z.ZodType>(schema: T): WithDefaultResult<T> => {
-    const result = (schema as z.ZodType).prefault(defaultValue).optional();
+    const result = (schema as z.ZodType).prefault(defaultValue);
     definitionDefaultRegistry.set(result, { defaultValue });
     return result as WithDefaultResult<T>;
   };

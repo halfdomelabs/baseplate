@@ -45,7 +45,7 @@ export const Route = createFileRoute(
   beforeLoad: ({ params: { sectionKey }, context: { adminApp } }) => {
     if (!adminApp) return {};
 
-    const section = adminApp.sections?.find(
+    const section = adminApp.sections.find(
       (s) => adminSectionEntityType.idFromKey(sectionKey) === s.id,
     );
 
@@ -87,17 +87,13 @@ function EditAdminSectionPage(): React.JSX.Element {
     const { id: _, ...sectionData } = data;
     return saveDefinitionWithFeedback((draftConfig) => {
       const webApp = draftConfig.apps.find((a) => a.id === app.id);
-      if (webApp?.type !== 'web' || !webApp.adminApp) return;
+      if (webApp?.type !== 'web') return;
 
-      const existingIndex = webApp.adminApp.sections?.findIndex(
+      const existingIndex = webApp.adminApp.sections.findIndex(
         (s) => s.id === adminSectionEntityType.idFromKey(sectionKey),
       );
 
-      if (
-        existingIndex !== undefined &&
-        existingIndex >= 0 &&
-        webApp.adminApp.sections
-      ) {
+      if (existingIndex !== -1) {
         webApp.adminApp.sections[existingIndex] = {
           ...sectionData,
           id: section.id,
@@ -110,9 +106,9 @@ function EditAdminSectionPage(): React.JSX.Element {
     void saveDefinitionWithFeedback(
       (draftConfig) => {
         const webApp = draftConfig.apps.find((a) => a.id === app.id);
-        if (webApp?.type !== 'web' || !webApp.adminApp) return;
+        if (webApp?.type !== 'web') return;
 
-        webApp.adminApp.sections = webApp.adminApp.sections?.filter(
+        webApp.adminApp.sections = webApp.adminApp.sections.filter(
           (s) => s.id !== section.id,
         );
       },

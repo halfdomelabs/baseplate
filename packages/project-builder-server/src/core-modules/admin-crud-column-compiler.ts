@@ -33,7 +33,7 @@ const adminCrudForeignColumnCompiler: AdminCrudColumnCompiler<AdminCrudForeignCo
   {
     name: 'foreign',
     compileColumn: (column, { definitionContainer, model, order }) => {
-      const relation = model.model.relations?.find(
+      const relation = model.model.relations.find(
         (r) => r.id === column.localRelationRef,
       );
       const localRelationName = definitionContainer.nameFromId(
