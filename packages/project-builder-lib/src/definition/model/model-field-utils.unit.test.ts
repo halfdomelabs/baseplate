@@ -5,7 +5,7 @@ import {
   createTestRelationField,
   createTestScalarField,
   createTestUniqueConstraint,
-} from '#src/schema/definition.test-helper.js';
+} from '#src/testing/definition-helpers.test-helper.js';
 
 import { ModelFieldUtils } from './model-field-utils.js';
 

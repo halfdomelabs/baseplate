@@ -57,7 +57,7 @@ function AdminSectionsLayout(): React.JSX.Element {
   const { adminApp, app } = Route.useLoaderData();
   const { appKey } = Route.useParams();
 
-  const {sections} = adminApp;
+  const { sections } = adminApp;
   const sortedSections = sortBy(sections, [(section) => section.name]);
 
   return (

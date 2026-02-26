@@ -1,8 +1,7 @@
-import { createPluginSpecStore } from '#src/parser/parser.js';
+import type { DefinitionSchemaParserContext } from '../schema/creator/types.js';
 
-import type { DefinitionSchemaParserContext } from './types.js';
-
-import { createDefinitionSchemaParserContext } from './schema-creator.js';
+import { createPluginSpecStore } from '../parser/parser.js';
+import { createDefinitionSchemaParserContext } from '../schema/creator/schema-creator.js';
 
 const emptyPluginStore = {
   availablePlugins: [],

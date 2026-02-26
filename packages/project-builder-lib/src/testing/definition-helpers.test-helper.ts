@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { capitalize } from 'es-toolkit';
 
-import type { FeatureConfig } from './features/feature.js';
+import type { FeatureConfig } from '#src/schema/features/feature.js';
 import type {
   ModelConfig,
   ModelConfigInput,
@@ -9,18 +9,19 @@ import type {
   ModelScalarFieldConfig,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfig,
-} from './models/index.js';
+} from '#src/schema/models/index.js';
 
-import { createEmptyParserContext } from './creator/parser-context.test-helper.js';
-import { featureEntityType } from './features/feature.js';
+import { featureEntityType } from '#src/schema/features/feature.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelUniqueConstraintEntityType,
-} from './models/index.js';
-import { createModelSchema } from './models/models.js';
+} from '#src/schema/models/index.js';
+import { createModelSchema } from '#src/schema/models/models.js';
+
+import { createEmptyParserContext } from './parser-context.test-helper.js';
 
 const modelSchema = createModelSchema(createEmptyParserContext());
 

@@ -26,7 +26,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./web": "./dist/web/index.js",
-    "./plugin-tools": "./dist/plugin-tools/index.js"
+    "./plugin-tools": "./dist/plugin-tools/index.js",
+    "./testing": "./dist/testing/index.js"
   },
   "main": "dist/index.js",
   "files": [

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import type { DefinitionEntityType } from './types.js';
+import type { DefinitionEntityType } from '#src/references/types.js';
 
-import { RefExpressionParser } from './expression-types.js';
+import { RefExpressionParser } from '#src/references/expression-types.js';
 
 /**
  * A no-op stub parser for testing the expression infrastructure.

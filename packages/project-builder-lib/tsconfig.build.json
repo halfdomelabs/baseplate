@@ -10,7 +10,7 @@
   },
   "exclude": [
     "src/**/*.test.ts",
-    "src/**/*.test-helper.ts",
+    "src/!(testing)/**/*.test-helper.ts",
     "**/__mocks__/**/*"
   ],
   "references": [

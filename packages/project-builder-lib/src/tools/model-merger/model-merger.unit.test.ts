@@ -14,16 +14,16 @@ import {
 } from '#src/definition/project-definition-container.test-utils.js';
 import { serializeSchemaFromRefPayload } from '#src/references/serialize-schema.js';
 import {
-  createTestFeature,
-  createTestModel,
-  createTestScalarField,
-} from '#src/schema/definition.test-helper.js';
-import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/index.js';
+import {
+  createTestFeature,
+  createTestModel,
+  createTestScalarField,
+} from '#src/testing/definition-helpers.test-helper.js';
 
 import type {
   ModelMergerDefinitionDiffOutput,

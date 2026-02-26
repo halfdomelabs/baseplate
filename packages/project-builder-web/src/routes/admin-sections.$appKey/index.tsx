@@ -20,7 +20,7 @@ function AdminSectionsIndexPage(): React.JSX.Element {
   const { appKey } = Route.useParams();
 
   // Find the web app definition and its admin sections
-  const {sections} = adminApp;
+  const { sections } = adminApp;
 
   if (sections.length === 0) {
     return (
