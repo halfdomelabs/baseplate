@@ -102,11 +102,18 @@ export function getEntityNavTarget(
     .getNavBuilder(entity.type);
   if (!builder) return undefined;
 
+  const { entities } = definitionContainer;
+
   const entityParentPath = entity.parentPath?.join('.');
   const entityParent = entityParentPath
-    ? definitionContainer.entities.find(
+    ? entities.find(
         (parentEntity) => parentEntity.idPath.join('.') === entityParentPath,
       )
+    : undefined;
+
+  const grandparentPath = entityParent?.parentPath?.join('.');
+  const entityGrandparent = grandparentPath
+    ? entities.find((e) => e.idPath.join('.') === grandparentPath)
     : undefined;
 
   const params: EntityTypeUrlParams = {
@@ -114,6 +121,8 @@ export function getEntityNavTarget(
     entityKey: entity.type.keyFromId(entity.id),
     parentId: entityParent?.id,
     parentKey: entityParent?.type.keyFromId(entityParent.id),
+    grandparentId: entityGrandparent?.id,
+    grandparentKey: entityGrandparent?.type.keyFromId(entityGrandparent.id),
   };
 
   return builder(params);

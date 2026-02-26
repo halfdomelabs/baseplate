@@ -4,14 +4,17 @@ import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 /**
  * Parameters passed to an entity type nav builder, conditioned on whether the
- * entity type has a parent. If THasParent is true, parentId and parentKey are
- * required strings. If false, they are undefined.
+ * entity type has a parent. If THasParent is true, parentId/parentKey are required
+ * strings. If false, they are undefined. grandparentId/grandparentKey follow the
+ * same pattern based on whether the parent type itself has a parent.
  */
 export interface EntityTypeUrlParams<THasParent extends boolean = boolean> {
   entityId: string;
   entityKey: string;
   parentId: THasParent extends true ? string : undefined;
   parentKey: THasParent extends true ? string : undefined;
+  grandparentId: string | undefined;
+  grandparentKey: string | undefined;
 }
 
 /**
@@ -36,7 +39,8 @@ export type EntityNavTarget =
 /**
  * Builder function type conditioned on whether the entity has a parent.
  * If THasParent is true, parentId and parentKey are required strings.
- * If false, they are undefined.
+ * If false, they are undefined. grandparentId/grandparentKey are always
+ * string | undefined since the parent's parent may or may not exist.
  */
 export type EntityTypeNavBuilder<THasParent extends boolean = boolean> = (
   params: EntityTypeUrlParams<THasParent>,
@@ -46,8 +50,9 @@ export type EntityTypeNavBuilder<THasParent extends boolean = boolean> = (
  * Spec for registering navigation builder functions for definition entity types.
  *
  * Use `register(entityType, builder)` during initialization. If the entity type
- * has a parent (parentType is defined), the builder's params will have required
- * parentId and parentKey fields.
+ * has a parent (THasParent = true), parentId and parentKey are required strings
+ * in the builder's params. grandparentId/grandparentKey are always optional and
+ * available for grandchild entity types.
  *
  * After initialization, use `getNavBuilder(entityType)` to retrieve the builder.
  */
