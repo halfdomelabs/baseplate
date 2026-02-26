@@ -133,13 +133,13 @@ function buildQueriesFileForModel(
           })
         : undefined,
       countQuery:
-        list?.enabled && list.count?.enabled
+        list.enabled && list.count.enabled
           ? pothosPrismaCountQueryGenerator({
               order: 2,
               modelName: model.name,
               children: {
                 authorize:
-                  !isAuthEnabled || !list.roles?.length
+                  !isAuthEnabled || list.roles.length === 0
                     ? undefined
                     : pothosAuthorizeFieldGenerator({
                         roles: list.roles.map((r) => appBuilder.nameFromId(r)),
