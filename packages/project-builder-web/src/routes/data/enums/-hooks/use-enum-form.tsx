@@ -17,7 +17,7 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import { useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useRouter } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useMemo, useRef } from 'react';
 
@@ -55,7 +55,6 @@ export function useEnumForm({
   const { definition, saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
   const navigate = useNavigate();
-  const router = useRouter();
 
   const urlEnumId = isCreate
     ? undefined
@@ -149,19 +148,12 @@ export function useEnumForm({
               : 'Successfully saved enum!',
             onSuccess: () => {
               if (isCreate) {
-                router
-                  .invalidate()
-                  .then(() =>
-                    navigate({
-                      to: '/data/enums/edit/$key',
-                      params: {
-                        key: modelEnumEntityType.keyFromId(
-                          updatedDefinition.id,
-                        ),
-                      },
-                    }),
-                  )
-                  .catch(logAndFormatError);
+                navigate({
+                  to: '/data/enums/edit/$key',
+                  params: {
+                    key: modelEnumEntityType.keyFromId(updatedDefinition.id),
+                  },
+                }).catch(logAndFormatError);
                 reset(newEnumDefinition);
               } else {
                 reset(data);
@@ -174,7 +166,6 @@ export function useEnumForm({
     [
       navigate,
       reset,
-      router,
       saveDefinitionWithFeedback,
       setError,
       handleSubmit,

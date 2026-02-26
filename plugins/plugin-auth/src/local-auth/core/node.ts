@@ -60,26 +60,23 @@ export default createPluginModule({
 
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
             seedInitialUser: seedInitialUserGenerator({
-              initialUserRoles:
-                localAuthDefinition.initialUserRoles?.map((role) =>
-                  definitionContainer.nameFromId(role),
-                ) ?? [],
+              initialUserRoles: localAuthDefinition.initialUserRoles.map(
+                (role) => definitionContainer.nameFromId(role),
+              ),
             }),
             authModule: authModuleGenerator({
-              userAdminRoles:
-                localAuthDefinition.userAdminRoles?.map((role) =>
-                  definitionContainer.nameFromId(role),
-                ) ?? [],
+              userAdminRoles: localAuthDefinition.userAdminRoles.map((role) =>
+                definitionContainer.nameFromId(role),
+              ),
             }),
             emailPassword: appModuleGenerator({
               id: 'email-password',
               name: 'password',
               children: {
                 module: authEmailPasswordGenerator({
-                  adminRoles:
-                    localAuthDefinition.userAdminRoles?.map((role) =>
-                      definitionContainer.nameFromId(role),
-                    ) ?? [],
+                  adminRoles: localAuthDefinition.userAdminRoles.map((role) =>
+                    definitionContainer.nameFromId(role),
+                  ),
                   devWebDomainPort,
                 }),
                 hasher: passwordHasherServiceGenerator({}),

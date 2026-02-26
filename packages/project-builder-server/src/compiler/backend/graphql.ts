@@ -27,23 +27,19 @@ function buildObjectTypeFile(
   model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { graphql } = model;
-  const { objectType, mutations, queries } = graphql ?? {};
+  const { objectType, mutations, queries } = graphql;
 
-  const buildQuery = queries?.get?.enabled ?? queries?.list?.enabled;
+  const buildQuery = queries.get.enabled || queries.list.enabled;
   const buildMutations =
-    !!mutations?.create?.enabled ||
-    !!mutations?.update?.enabled ||
-    !!mutations?.delete?.enabled;
+    mutations.create.enabled ||
+    mutations.update.enabled ||
+    mutations.delete.enabled;
 
-  if (!objectType?.enabled) {
+  if (!objectType.enabled) {
     return undefined;
   }
 
-  const {
-    fields = [],
-    localRelations = [],
-    foreignRelations = [],
-  } = objectType;
+  const { fields, localRelations, foreignRelations } = objectType;
 
   const authConfig =
     appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
@@ -69,10 +65,10 @@ function buildObjectTypeFile(
           (entry) => ({
             name: appBuilder.nameFromId(entry.ref),
             globalRoles: isAuthEnabled
-              ? (entry.globalRoles ?? []).map((r) => appBuilder.nameFromId(r))
+              ? entry.globalRoles.map((r) => appBuilder.nameFromId(r))
               : [],
             instanceRoles: isAuthEnabled
-              ? (entry.instanceRoles ?? []).map((r) => appBuilder.nameFromId(r))
+              ? entry.instanceRoles.map((r) => appBuilder.nameFromId(r))
               : [],
           }),
         ),
@@ -87,9 +83,9 @@ function buildQueriesFileForModel(
   model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { graphql } = model;
-  const { queries } = graphql ?? {};
+  const { queries } = graphql;
 
-  if (!queries?.get?.enabled && !queries?.list?.enabled) {
+  if (!queries.get.enabled && !queries.list.enabled) {
     return undefined;
   }
 
@@ -106,7 +102,7 @@ function buildQueriesFileForModel(
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
     children: {
-      findQuery: get?.enabled
+      findQuery: get.enabled
         ? pothosPrismaFindQueryGenerator({
             order: 0,
             modelName: model.name,
@@ -114,7 +110,7 @@ function buildQueriesFileForModel(
               ModelUtils.getModelIdFields(model).length > 1,
             children: {
               authorize:
-                !isAuthEnabled || !get.roles?.length
+                !isAuthEnabled || get.roles.length === 0
                   ? undefined
                   : pothosAuthorizeFieldGenerator({
                       roles: get.roles.map((r) => appBuilder.nameFromId(r)),
@@ -122,13 +118,13 @@ function buildQueriesFileForModel(
             },
           })
         : undefined,
-      listQuery: list?.enabled
+      listQuery: list.enabled
         ? pothosPrismaListQueryGenerator({
             order: 1,
             modelName: model.name,
             children: {
               authorize:
-                !isAuthEnabled || !list.roles?.length
+                !isAuthEnabled || list.roles.length === 0
                   ? undefined
                   : pothosAuthorizeFieldGenerator({
                       roles: list.roles.map((r) => appBuilder.nameFromId(r)),
@@ -137,13 +133,13 @@ function buildQueriesFileForModel(
           })
         : undefined,
       countQuery:
-        list?.enabled && list.count?.enabled
+        list.enabled && list.count.enabled
           ? pothosPrismaCountQueryGenerator({
               order: 2,
               modelName: model.name,
               children: {
                 authorize:
-                  !isAuthEnabled || !list.roles?.length
+                  !isAuthEnabled || list.roles.length === 0
                     ? undefined
                     : pothosAuthorizeFieldGenerator({
                         roles: list.roles.map((r) => appBuilder.nameFromId(r)),
@@ -160,13 +156,12 @@ function buildMutationsFileForModel(
   model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { graphql } = model;
-  const { mutations } = graphql ?? {};
+  const { mutations } = graphql;
 
   const buildMutations =
-    !!mutations &&
-    (!!mutations.create?.enabled ||
-      !!mutations.update?.enabled ||
-      !!mutations.delete?.enabled);
+    mutations.create.enabled ||
+    mutations.update.enabled ||
+    mutations.delete.enabled;
 
   if (!buildMutations) {
     return undefined;
@@ -190,14 +185,14 @@ function buildMutationsFileForModel(
     id: `${model.id}-mutations`,
     fileName: `${kebabCase(model.name)}.mutations`,
     children: {
-      create: create?.enabled
+      create: create.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 0,
             name: `create${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
-                isAuthEnabled && create.roles
+                isAuthEnabled && create.roles.length > 0
                   ? pothosAuthorizeFieldGenerator({
                       roles: create.roles.map((r) => appBuilder.nameFromId(r)),
                     })
@@ -205,14 +200,14 @@ function buildMutationsFileForModel(
             },
           })
         : undefined,
-      update: update?.enabled
+      update: update.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 1,
             name: `update${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
-                isAuthEnabled && update.roles
+                isAuthEnabled && update.roles.length > 0
                   ? pothosAuthorizeFieldGenerator({
                       roles: update.roles.map((r) => appBuilder.nameFromId(r)),
                     })
@@ -220,14 +215,14 @@ function buildMutationsFileForModel(
             },
           })
         : undefined,
-      delete: del?.enabled
+      delete: del.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 2,
             name: `delete${uppercaseFirstChar(model.name)}`,
             children: {
               authorize:
-                isAuthEnabled && del.roles
+                isAuthEnabled && del.roles.length > 0
                   ? pothosAuthorizeFieldGenerator({
                       roles: del.roles.map((r) => appBuilder.nameFromId(r)),
                     })
@@ -266,12 +261,11 @@ export function buildGraphqlForFeature(
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,
-  ).filter((m) => m.graphql);
+  );
 
-  const enums =
-    appBuilder.projectDefinition.enums?.filter(
-      (e) => e.featureRef === featureId && e.isExposed,
-    ) ?? [];
+  const enums = (appBuilder.projectDefinition.enums ?? []).filter(
+    (e) => e.featureRef === featureId && e.isExposed,
+  );
 
   return [
     ...models.flatMap((model) => [

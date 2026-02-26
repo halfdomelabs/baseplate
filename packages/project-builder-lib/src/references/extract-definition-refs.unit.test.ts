@@ -3,13 +3,13 @@ import { z } from 'zod';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
-
-import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
-import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
 import {
   stubParser,
   StubParserWithSlots,
-} from './expression-stub-parser.test-helper.js';
+} from '#src/testing/expression-stub-parser.test-helper.js';
+
+import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
+import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 import { createEntityType } from './types.js';
 

@@ -94,7 +94,7 @@ export interface WithExpressionType {
 export function withRef<TEntityType extends DefinitionEntityType>(
   reference: DefinitionReferenceInput<TEntityType>,
 ): z.ZodType<string, string> {
-  const schema = z.string();
+  const schema = z.string().min(1);
   definitionRefRegistry.add(schema, {
     kind: 'reference',
     type: reference.type,

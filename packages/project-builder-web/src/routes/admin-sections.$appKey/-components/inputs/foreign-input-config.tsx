@@ -18,11 +18,10 @@ function AdminCrudForeignInputForm({
   model,
 }: AdminCrudInputWebFormProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
-  const localRelationOptions =
-    model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
-      value: relation.id,
-    })) ?? [];
+  const localRelationOptions = model.model.relations.map((relation) => ({
+    label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
+    value: relation.id,
+  }));
   const prefix = name as 'prefix';
   const controlTyped = formProps.control as Control<{
     prefix: AdminCrudForeignInputConfig;

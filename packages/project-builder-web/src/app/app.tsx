@@ -28,6 +28,7 @@ import { ProjectSelectorGate } from './project-selector-gate/project-selector-ga
 function AppRoutes(): React.ReactElement {
   const { definition: projectDefinition, schemaParserContext } =
     useProjectDefinition();
+
   return (
     <RouterProvider
       router={router}

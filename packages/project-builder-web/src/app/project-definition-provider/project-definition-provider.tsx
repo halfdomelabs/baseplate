@@ -1,7 +1,4 @@
-import type {
-  PluginSpecStore,
-  ProjectDefinition,
-} from '@baseplate-dev/project-builder-lib';
+import type { PluginSpecStore } from '@baseplate-dev/project-builder-lib';
 import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
@@ -27,7 +24,7 @@ import {
   toast,
 } from '@baseplate-dev/ui-components';
 import { produce } from 'immer';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import semver from 'semver';
 
 import { useClientVersion } from '#src/hooks/use-client-version.js';
@@ -172,7 +169,12 @@ export function ProjectDefinitionProvider({
       options: SaveDefinitionWithFeedbackOptions = {},
     ): Promise<{ success: boolean }> {
       return saveDefinition(definition)
-        .then(() => {
+        .then(async () => {
+          await router
+            .invalidate()
+            .catch((err: unknown) =>
+              logAndFormatError(err, 'Failed to refresh page data'),
+            );
           toast.success(options.successMessage ?? 'Successfully saved!');
           options.onSuccess?.();
           return { success: true };
@@ -221,16 +223,6 @@ export function ProjectDefinitionProvider({
     showRefIssues,
     cacheProjectDefinitionContainer,
   ]);
-
-  const previousDefinition = useRef<ProjectDefinition>(result?.definition);
-  useEffect(() => {
-    if (!result?.definition) return;
-    if (previousDefinition.current !== result.definition) {
-      // Invalidate the router cache when we update the project definition
-      router.invalidate().catch(logAndFormatError);
-    }
-    previousDefinition.current = result.definition;
-  }, [result?.definition]);
 
   const error = contextError ?? definitionError ?? containerError;
 

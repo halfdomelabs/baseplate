@@ -11,7 +11,7 @@ export function compileAdminSections(
 ): GeneratorBundle[] | undefined {
   const { adminApp } = builder.appConfig;
 
-  if (!adminApp?.enabled) {
+  if (!adminApp.enabled) {
     return undefined;
   }
 

@@ -53,7 +53,7 @@ function buildAdminNavigationLinks(
   const { adminApp } = builder.appConfig;
   const { projectDefinition } = builder;
 
-  if (!adminApp?.enabled || !adminApp.sections) {
+  if (!adminApp.enabled) {
     return [];
   }
 
@@ -79,7 +79,7 @@ function buildAdminRoutes(
   const { adminApp } = builder.appConfig;
   const { definitionContainer } = builder;
 
-  if (!adminApp?.enabled) {
+  if (!adminApp.enabled) {
     return undefined;
   }
 
@@ -99,10 +99,9 @@ function buildAdminRoutes(
           },
           ...buildAdminNavigationLinks(builder),
         ],
-        requiredRoles:
-          adminApp.allowedRoles?.map((roleId) =>
-            definitionContainer.nameFromId(roleId),
-          ) ?? [],
+        requiredRoles: adminApp.allowedRoles.map((roleId) =>
+          definitionContainer.nameFromId(roleId),
+        ),
       }),
       admin: adminHomeGenerator({}),
       routes: compileAdminSections(builder),
@@ -160,7 +159,7 @@ function buildReact(
           },
         }),
         apolloError: apolloErrorGenerator({}),
-        ...(appConfig.adminApp?.enabled
+        ...(appConfig.adminApp.enabled
           ? { adminComponents: adminComponentsGenerator({}) }
           : {}),
       },

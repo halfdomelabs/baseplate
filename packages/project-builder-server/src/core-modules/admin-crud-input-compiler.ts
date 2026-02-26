@@ -65,7 +65,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
   {
     name: 'foreign',
     compileInput: (definition, { order, definitionContainer, model }) => {
-      const relation = model.model.relations?.find(
+      const relation = model.model.relations.find(
         (r) => r.id === definition.localRelationRef,
       );
 

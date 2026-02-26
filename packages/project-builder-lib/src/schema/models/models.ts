@@ -7,6 +7,7 @@ import type { def } from '#src/schema/creator/index.js';
 import { createDefinitionEntityNameResolver } from '#src/references/index.js';
 import { withFix } from '#src/schema/creator/definition-fix-registry.js';
 import { withIssueChecker } from '#src/schema/creator/definition-issue-registry.js';
+import { withDefault } from '#src/schema/creator/index.js';
 import {
   definitionSchema,
   definitionSchemaWithSlots,
@@ -439,7 +440,7 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
           fields: z.array(createModelScalarFieldSchema(ctx, slots)),
           relations: z
             .array(createModelRelationFieldSchema(ctx, slots))
-            .optional(),
+            .apply(withDefault([])),
           primaryKeyFieldRefs: z
             .array(
               ctx.withRef({
@@ -451,7 +452,7 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
             .min(1),
           uniqueConstraints: z
             .array(createModelUniqueConstraintSchema(ctx, slots))
-            .optional(),
+            .apply(withDefault([])),
         }),
         service: createModelServiceSchema(ctx, slots).default({
           create: { enabled: false },
@@ -459,14 +460,10 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
           delete: { enabled: false },
           transformers: [],
         }),
-        graphql: ctx.withDefault(
-          createModelGraphqlSchema(ctx, slots).optional(),
-          {},
-        ),
-        authorizer: ctx.withDefault(
-          createModelAuthorizerSchema(ctx, slots).optional(),
-          { roles: [] },
-        ),
+        graphql: ctx.withDefault(createModelGraphqlSchema(ctx, slots), {}),
+        authorizer: ctx.withDefault(createModelAuthorizerSchema(ctx, slots), {
+          roles: [],
+        }),
       })
       .apply(withIssueChecker(checkModelConstraints)),
 );

@@ -65,7 +65,7 @@ function CrudTableActionsForm({
   const actions = useWatch({ control, name: 'table.actions' });
 
   function handleEditAction(actionIdx: number): void {
-    setEditingAction(actions?.[actionIdx]);
+    setEditingAction(actions[actionIdx]);
     setIsEditing(true);
   }
 
@@ -76,7 +76,7 @@ function CrudTableActionsForm({
 
   function handleSaveAction(actionData: AdminCrudActionDefinition): void {
     if (editingAction) {
-      const existingIndex = (actions ?? []).findIndex(
+      const existingIndex = actions.findIndex(
         (action) => action.id === editingAction.id,
       );
       if (existingIndex !== -1) {

@@ -19,7 +19,7 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
         (t): t is FileTransformerDefinition =>
           t.id === definition.modelRelationRef && t.type === 'file',
       );
-      const relation = model.model.relations?.find(
+      const relation = model.model.relations.find(
         (r) => r.id === transformer?.fileRelationRef,
       );
 

@@ -15,11 +15,9 @@ function compileAdminSections(
   sectionsId: string,
 ): GeneratorBundle[] | undefined {
   const { adminApp } = builder.appConfig;
-  const sections = adminApp?.sections?.filter(
-    (s) => s.featureRef === featureId,
-  );
+  const sections = adminApp.sections.filter((s) => s.featureRef === featureId);
 
-  if (!sections?.length) {
+  if (sections.length === 0) {
     return undefined;
   }
 

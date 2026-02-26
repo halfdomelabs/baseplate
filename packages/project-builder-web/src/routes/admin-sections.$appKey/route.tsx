@@ -44,7 +44,7 @@ export const Route = createFileRoute('/admin-sections/$appKey')({
   },
   loader: ({ context: { app, adminApp } }) => {
     if (!app) throw notFound();
-    if (!adminApp)
+    if (!adminApp.enabled)
       throw redirect({
         to: '/packages/apps/$key/web/admin',
         params: { key: appEntityType.keyFromId(app.id) },
@@ -57,7 +57,7 @@ function AdminSectionsLayout(): React.JSX.Element {
   const { adminApp, app } = Route.useLoaderData();
   const { appKey } = Route.useParams();
 
-  const sections = adminApp.sections ?? [];
+  const { sections } = adminApp;
   const sortedSections = sortBy(sections, [(section) => section.name]);
 
   return (

@@ -100,14 +100,8 @@ function NewAdminSectionDialog({
         const webApp = draftConfig.apps.find((a) => a.id === appId);
         if (webApp?.type !== 'web') return;
 
-        webApp.adminApp ??= {
-          enabled: true,
-          pathPrefix: '/admin',
-          sections: [],
-        };
-
         webApp.adminApp.sections = [
-          ...(webApp.adminApp.sections ?? []),
+          ...webApp.adminApp.sections,
           { ...data, id: newId },
         ].toSorted((a, b) => compareStrings(a.name, b.name));
       },

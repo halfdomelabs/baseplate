@@ -49,7 +49,7 @@ export default createPluginModule({
             m.service.transformers
               .filter((m): m is FileTransformerDefinition => m.type === 'file')
               .map((t) => {
-                const relation = m.model.relations?.find(
+                const relation = m.model.relations.find(
                   (r) => r.id === t.fileRelationRef,
                 );
                 if (!relation) {
@@ -100,7 +100,7 @@ export default createPluginModule({
         compile: ({ appCompiler, appDefinition }) => {
           if (
             !appDefinition.includeUploadComponents &&
-            !appDefinition.adminApp?.enabled
+            !appDefinition.adminApp.enabled
           ) {
             return;
           }

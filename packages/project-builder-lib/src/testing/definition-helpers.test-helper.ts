@@ -1,23 +1,29 @@
 import { faker } from '@faker-js/faker';
 import { capitalize } from 'es-toolkit';
 
-import type { FeatureConfig } from './features/feature.js';
+import type { FeatureConfig } from '#src/schema/features/feature.js';
 import type {
   ModelConfig,
+  ModelConfigInput,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfig,
-} from './models/index.js';
+} from '#src/schema/models/index.js';
 
-import { featureEntityType } from './features/feature.js';
+import { featureEntityType } from '#src/schema/features/feature.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelUniqueConstraintEntityType,
-} from './models/index.js';
+} from '#src/schema/models/index.js';
+import { createModelSchema } from '#src/schema/models/models.js';
+
+import { createEmptyParserContext } from './parser-context.test-helper.js';
+
+const modelSchema = createModelSchema(createEmptyParserContext());
 
 export function createTestFeature(
   feature: Partial<FeatureConfig> = {},
@@ -29,11 +35,14 @@ export function createTestFeature(
   };
 }
 
-export function createTestModel(model: Partial<ModelConfig> = {}): ModelConfig {
-  return {
+export function createTestModel(
+  model: Partial<ModelConfigInput> = {},
+): ModelConfig {
+  const input: ModelConfigInput = {
     id: modelEntityType.generateNewId(),
     name: capitalize(faker.word.noun()),
     featureRef: 'mockFeature',
+    ...model,
     model: {
       fields: [
         {
@@ -54,8 +63,8 @@ export function createTestModel(model: Partial<ModelConfig> = {}): ModelConfig {
       transformers: [],
       ...model.service,
     },
-    ...model,
   };
+  return modelSchema.parse(input);
 }
 
 export function createTestScalarField<

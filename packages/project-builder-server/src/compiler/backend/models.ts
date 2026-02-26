@@ -32,7 +32,7 @@ function buildScalarField(
   const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
   const isId =
     primaryKeyFieldRefs.length === 1 && primaryKeyFieldRefs.includes(field.id);
-  const isUnique = uniqueConstraints?.some(
+  const isUnique = uniqueConstraints.some(
     (c) =>
       c.fields.length === 1 && c.fields.some((f) => f.fieldRef === field.id),
   );
@@ -85,7 +85,7 @@ function buildRelationField(
   )
     ? 'oneToOne'
     : 'oneToMany';
-  const relations = parentModel.model.relations ?? [];
+  const { relations } = parentModel.model;
 
   // If there are multiple relations between the same models, we need to specify the
   // relation name to avoid conflicts in Prisma
@@ -127,7 +127,7 @@ function buildModel(
       fields: model.model.fields.map((field, idx) =>
         buildScalarField(appBuilder, model, field, idx),
       ),
-      relations: model.model.relations?.map((r) =>
+      relations: model.model.relations.map((r) =>
         buildRelationField(appBuilder, r, model),
       ),
       primaryKey:
@@ -139,7 +139,7 @@ function buildModel(
               ),
             }),
       uniqueConstraints: model.model.uniqueConstraints
-        ?.filter(({ fields }) => fields.length > 1)
+        .filter(({ fields }) => fields.length > 1)
         .map(({ fields }) =>
           prismaModelUniqueGenerator({
             fields: fields.map((f) => ({
