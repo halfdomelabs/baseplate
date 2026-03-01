@@ -10,6 +10,6 @@ import './schema/user-session.queries.js';
 export const /* TPL_MODULE_NAME:START */ authModule /* TPL_MODULE_NAME:END */ =
     flattenAppModule(
       /* TPL_MODULE_CONTENTS:START */ {
-        plugins: [betterAuthPlugin, authPlugin],
+        plugins: [authPlugin, betterAuthPlugin],
       } /* TPL_MODULE_CONTENTS:END */,
     );

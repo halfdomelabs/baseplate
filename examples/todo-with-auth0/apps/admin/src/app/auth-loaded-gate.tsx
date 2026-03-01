@@ -20,7 +20,7 @@ export function AuthLoadedGate({
   children: React.ReactNode;
 }): React.ReactElement {
   const { isPending, error } = authClient.useSession();
-  const logout = useLogOut();
+  const logOut = useLogOut();
 
   useEffect(() => {
     if (error) {
@@ -38,7 +38,7 @@ export function AuthLoadedGate({
               Please try logging out and logging in again.
             </AlertDescription>
           </Alert>
-          <Button onClick={logout}>Log Out</Button>
+          <Button onClick={logOut}>Log Out</Button>
         </Card>
       </div>
     );

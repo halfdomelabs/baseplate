@@ -115,9 +115,10 @@ export function ProjectDefinitionProvider({
         const defContext =
           createDefinitionSchemaParserContext(schemaCreatorOptions);
         const defSchema = createProjectDefinitionSchema(defContext);
+        const parsedProjectDefinition = defSchema.parse(rawProjectDefinition);
         const newProjectDefinition = applyDefinitionFixes(
           defSchema,
-          rawProjectDefinition,
+          parsedProjectDefinition,
         );
 
         // Collect and check definition issues

@@ -15,7 +15,7 @@
     "template": "hooks-use-controller-merged"
   },
   "use-log-out.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
     "instanceData": {},
     "template": "use-log-out"
   },
@@ -25,12 +25,12 @@
     "template": "use-mobile"
   },
   "use-required-user-id.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
     "instanceData": {},
     "template": "use-required-user-id"
   },
   "use-session.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
     "instanceData": {},
     "template": "use-session"
   },

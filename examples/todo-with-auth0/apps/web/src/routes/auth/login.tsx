@@ -59,8 +59,8 @@ function LoginPage(): React.JSX.Element {
 
   const onSubmit = (data: FormData): void => {
     setIsSubmitting(true);
-    authClient
-      .signIn.email({
+    authClient.signIn
+      .email({
         email: data.email,
         password: data.password,
       })

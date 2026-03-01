@@ -10,7 +10,14 @@ interface Props {
 }
 
 export function AppApolloProvider({ children }: Props): ReactElement {
-  const client = useMemo(() => createApolloClient(), []);
+  /* TPL_RENDER_BODY:BLOCK */
+
+  const client = useMemo(
+    () => createApolloClient(/* TPL_CREATE_ARGS:INLINE */),
+    [
+      /* TPL_MEMO_DEPENDENCIES:INLINE */
+    ],
+  );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }

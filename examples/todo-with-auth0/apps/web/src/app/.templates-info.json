@@ -10,7 +10,7 @@
     "template": "app"
   },
   "auth-loaded-gate.tsx": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/react-auth0",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/react-better-auth",
     "instanceData": {},
     "template": "auth-loaded-gate"
   },

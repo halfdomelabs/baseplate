@@ -29,8 +29,8 @@ export * from "./enums.js"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Customers
- * const customers = await prisma.customer.findMany()
+ * // Fetch zero or more Accounts
+ * const accounts = await prisma.account.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,6 +39,11 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model Account
+ * 
+ */
+export type Account = Prisma.AccountModel
 /**
  * Model Customer
  * 
@@ -49,6 +54,11 @@ export type Customer = Prisma.CustomerModel
  * 
  */
 export type File = Prisma.FileModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
 /**
  * Model TodoItem
  * 
@@ -80,21 +90,6 @@ export type TodoListShare = Prisma.TodoListShareModel
  */
 export type User = Prisma.UserModel
 /**
- * Model Session
- * 
- */
-export type Session = Prisma.SessionModel
-/**
- * Model Account
- * 
- */
-export type Account = Prisma.AccountModel
-/**
- * Model Verification
- * 
- */
-export type Verification = Prisma.VerificationModel
-/**
  * Model UserImage
  * 
  */
@@ -109,3 +104,8 @@ export type UserProfile = Prisma.UserProfileModel
  * 
  */
 export type UserRole = Prisma.UserRoleModel
+/**
+ * Model Verification
+ * 
+ */
+export type Verification = Prisma.VerificationModel

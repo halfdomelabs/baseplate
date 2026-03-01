@@ -6,6 +6,8 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 interface RunnerContext {
   /** The ID of the task being executed */
   taskId: string;
+  /** The name of the generator */
+  generatorName: string;
 }
 
 // Create the AsyncLocalStorage instance for the runner context

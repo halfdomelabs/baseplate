@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createFileRoute,
+  Link,
   redirect,
   useRouter,
 } from '@tanstack/react-router';
@@ -96,9 +97,9 @@ function LoginPage(): React.JSX.Element {
     <div className="flex h-full items-center justify-center">
       <Card className="w-sm">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
+          <CardTitle>Login to your account</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin panel
+            Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -109,7 +110,7 @@ function LoginPage(): React.JSX.Element {
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="admin@example.com"
+                placeholder="user@example.com"
               />
               <InputFieldController
                 control={control}
@@ -121,6 +122,17 @@ function LoginPage(): React.JSX.Element {
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Login
               </Button>
+            </div>
+            <div className="mt-4 flex flex-col gap-4 text-center text-sm">
+              <div>
+                Don&apos;t have an account?{' '}
+                <Link
+                  to="/auth/register"
+                  className="underline underline-offset-4"
+                >
+                  Sign up
+                </Link>
+              </div>
             </div>
           </form>
         </CardContent>

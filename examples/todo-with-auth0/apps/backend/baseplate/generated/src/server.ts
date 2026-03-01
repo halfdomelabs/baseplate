@@ -4,7 +4,6 @@ import fastifyCookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import * as Sentry from '@sentry/node';
 import Fastify from 'fastify';
-import fastifyAuth0Verify from 'fastify-auth0-verify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { nanoid } from 'nanoid';
 
@@ -16,7 +15,6 @@ import { graphqlPlugin } from './plugins/graphql/index.js';
 import { healthCheckPlugin } from './plugins/health-check.js';
 import { requestContextPlugin } from './plugins/request-context.js';
 import { stripeWebhookPlugin } from './plugins/stripe-webhook.js';
-import { config } from './services/config.js';
 import { registerSentryEventProcessor } from './services/sentry.js';
 
 export async function buildServer(
@@ -41,10 +39,6 @@ export async function buildServer(
   await fastify.register(helmet);
   await fastify.register(bullMQPlugin);
   await fastify.register(fastifyCookie);
-  await fastify.register(fastifyAuth0Verify, {
-    domain: config.AUTH0_DOMAIN,
-    audience: config.AUTH0_AUDIENCE,
-  });
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);

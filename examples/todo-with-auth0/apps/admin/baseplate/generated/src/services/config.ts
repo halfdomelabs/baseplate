@@ -2,12 +2,6 @@ import { z } from 'zod';
 
 const configSchema = z.object(
   /* TPL_CONFIG_SCHEMA:START */ {
-    // Auth0 Audience
-    VITE_AUTH0_AUDIENCE: z.string().min(1),
-    // Auth0 Client ID
-    VITE_AUTH0_CLIENT_ID: z.string().min(1),
-    // Auth0 Domain
-    VITE_AUTH0_DOMAIN: z.string().min(1),
     // Environment the app is running in
     VITE_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
     // URL for the GraphQL API endpoint

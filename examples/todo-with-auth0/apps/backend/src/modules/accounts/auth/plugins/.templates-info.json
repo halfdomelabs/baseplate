@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
     "instanceData": {},
     "template": "auth-plugin"
+  },
+  "better-auth.plugin.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+    "instanceData": {},
+    "template": "better-auth-plugin"
   }
 }

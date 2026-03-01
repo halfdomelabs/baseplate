@@ -1,14 +1,10 @@
 import { z } from 'zod';
 
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
+  // Comma-separated list of allowed CORS origins (e.g. https://example.com,https://app.example.com)
+  ALLOWED_ORIGINS: z.string().default(''),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
-  // Comma-separated list of allowed origins for CORS/CSRF
-  ALLOWED_ORIGINS: z.string().default(''),
-  // Secret key for Better Auth (min 32 characters)
-  BETTER_AUTH_SECRET: z.string().min(32),
-  // Base URL for Better Auth (e.g. http://localhost:6001)
-  BETTER_AUTH_URL: z.url(),
   // AWS access key ID
   AWS_ACCESS_KEY_ID: z.string().min(1),
   // AWS default region
@@ -19,6 +15,10 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   AWS_UPLOADS_BUCKET: z.string().min(1),
   // Hosted URL prefix for uploads, e.g. https://uploads.example.com
   AWS_UPLOADS_URL: z.string().min(1),
+  // Better Auth secret key for signing sessions
+  BETTER_AUTH_SECRET: z.string().min(32),
+  // Better Auth base URL (backend server URL)
+  BETTER_AUTH_URL: z.url(),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Redis key prefix for namespace isolation (optional)

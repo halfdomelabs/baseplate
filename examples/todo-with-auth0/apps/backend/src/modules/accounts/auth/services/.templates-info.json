@@ -1,11 +1,11 @@
 {
-  "management.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+  "auth.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
     "instanceData": {},
-    "template": "management"
+    "template": "auth"
   },
   "user-session.service.ts": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
     "instanceData": {},
     "template": "user-session-service"
   }

@@ -19,7 +19,7 @@ export interface ErrorExtensions {
 }
 /* HOISTED:error-extensions:END */
 
-export function createApolloClient(): ApolloClient {
+export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
   /* TPL_LINK_BODIES:START */
   const errorLink = new ErrorLink(({ error, operation }) => {
     // log query/subscription errors but not mutations since it should be handled by caller

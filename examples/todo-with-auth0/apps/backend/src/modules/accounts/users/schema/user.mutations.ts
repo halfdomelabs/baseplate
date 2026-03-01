@@ -53,7 +53,7 @@ const userUserProfileNestedInputInputType = builder.inputType(
 const createUserDataInputType = builder
   .inputType('CreateUserData', {
     fields: (t) => ({
-      name: t.string(),
+      name: t.string({ required: true }),
       email: t.string({ required: true }),
       customer: t.field({ type: userCustomerNestedInputInputType }),
       images: t.field({ type: [userImagesNestedInputInputType] }),

@@ -1,7 +1,12 @@
 {
   "login.tsx": {
-    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
     "instanceData": {},
     "template": "login"
+  },
+  "register.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+    "instanceData": {},
+    "template": "register"
   }
 }

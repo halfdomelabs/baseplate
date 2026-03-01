@@ -10,13 +10,13 @@ import { AppRoutes } from './router';
 export function App(): ReactElement {
   return (
     /* TPL_RENDER_ROOT:START */ <ErrorBoundary>
-      <AppApolloProvider>
-        <AuthLoadedGate>
+      <AuthLoadedGate>
+        <AppApolloProvider>
           <AppRoutes />
           <ConfirmDialog />
           <Toaster />
-        </AuthLoadedGate>
-      </AppApolloProvider>
+        </AppApolloProvider>
+      </AuthLoadedGate>
     </ErrorBoundary> /* TPL_RENDER_ROOT:END */
   );
 }

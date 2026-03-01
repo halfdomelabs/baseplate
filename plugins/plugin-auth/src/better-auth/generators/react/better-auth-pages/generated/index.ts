@@ -1,0 +1,9 @@
+import { BETTER_AUTH_BETTER_AUTH_PAGES_PATHS } from './template-paths.js';
+import { BETTER_AUTH_BETTER_AUTH_PAGES_RENDERERS } from './template-renderers.js';
+import { BETTER_AUTH_BETTER_AUTH_PAGES_TEMPLATES } from './typed-templates.js';
+
+export const BETTER_AUTH_BETTER_AUTH_PAGES_GENERATED = {
+  paths: BETTER_AUTH_BETTER_AUTH_PAGES_PATHS,
+  renderers: BETTER_AUTH_BETTER_AUTH_PAGES_RENDERERS,
+  templates: BETTER_AUTH_BETTER_AUTH_PAGES_TEMPLATES,
+};

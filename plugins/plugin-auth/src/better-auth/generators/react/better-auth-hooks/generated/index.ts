@@ -1,0 +1,11 @@
+import { BETTER_AUTH_BETTER_AUTH_HOOKS_PATHS } from './template-paths.js';
+import { BETTER_AUTH_BETTER_AUTH_HOOKS_RENDERERS } from './template-renderers.js';
+import { BETTER_AUTH_BETTER_AUTH_HOOKS_IMPORTS } from './ts-import-providers.js';
+import { BETTER_AUTH_BETTER_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
+
+export const BETTER_AUTH_BETTER_AUTH_HOOKS_GENERATED = {
+  imports: BETTER_AUTH_BETTER_AUTH_HOOKS_IMPORTS,
+  paths: BETTER_AUTH_BETTER_AUTH_HOOKS_PATHS,
+  renderers: BETTER_AUTH_BETTER_AUTH_HOOKS_RENDERERS,
+  templates: BETTER_AUTH_BETTER_AUTH_HOOKS_TEMPLATES,
+};

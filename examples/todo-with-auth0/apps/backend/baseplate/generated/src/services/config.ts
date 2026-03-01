@@ -1,18 +1,10 @@
 import { z } from 'zod';
 
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
+  // Comma-separated list of allowed CORS origins (e.g. https://example.com,https://app.example.com)
+  ALLOWED_ORIGINS: z.string().default(''),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
-  // Auth0 audience
-  AUTH0_AUDIENCE: z.string().min(1),
-  // Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)
-  AUTH0_CLIENT_ID: z.string().min(1),
-  // Auth0 management client secret
-  AUTH0_CLIENT_SECRET: z.string().min(1),
-  // Auth0 domain (can be custom domain)
-  AUTH0_DOMAIN: z.string().min(1),
-  // Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com
-  AUTH0_TENANT_DOMAIN: z.string().min(1),
   // AWS access key ID
   AWS_ACCESS_KEY_ID: z.string().min(1),
   // AWS default region
@@ -23,6 +15,10 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   AWS_UPLOADS_BUCKET: z.string().min(1),
   // Hosted URL prefix for uploads, e.g. https://uploads.example.com
   AWS_UPLOADS_URL: z.string().min(1),
+  // Better Auth secret key for signing sessions
+  BETTER_AUTH_SECRET: z.string().min(32),
+  // Better Auth base URL (backend server URL)
+  BETTER_AUTH_URL: z.url(),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Redis key prefix for namespace isolation (optional)

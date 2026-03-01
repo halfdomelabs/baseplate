@@ -3,7 +3,7 @@ import { builder } from '@src/plugins/graphql/builder.js';
 export const userObjectType = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
-    name: t.exposeString('name', { nullable: true }),
+    name: t.exposeString('name'),
     email: t.exposeString('email'),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),

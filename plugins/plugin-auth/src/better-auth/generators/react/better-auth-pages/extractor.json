@@ -1,0 +1,51 @@
+{
+  "name": "better-auth/better-auth-pages",
+  "templates": {
+    "login": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/login.tsx",
+      "sourceFile": "routes/auth/login.tsx",
+      "variables": {}
+    },
+    "register": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/register.tsx",
+      "sourceFile": "routes/auth/register.tsx",
+      "variables": {}
+    }
+  }
+}

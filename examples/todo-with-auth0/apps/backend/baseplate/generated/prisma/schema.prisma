@@ -14,6 +14,25 @@ datasource db {
   provider = "postgresql"
 }
 
+model Account {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id") @db.Uuid
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("account")
+}
+
 model Customer {
   id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   stripeCustomerId String @map("stripe_customer_id")
@@ -42,6 +61,20 @@ model File {
   userProfileAvatar  UserProfile[]
 
   @@map("file")
+}
+
+model Session {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  token     String   @unique
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("session")
 }
 
 model TodoItem {
@@ -119,22 +152,23 @@ enum TodoListStatus {
 }
 
 model User {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String?
-  email           String
-  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
-  tokensNotBefore DateTime?       @map("tokens_not_before") @db.Timestamptz(3)
-  passwordHash    String?         @map("password_hash")
-  auth0Id         String?         @unique @map("auth0_id")
-  assignedItems   TodoItem[]
-  customer        Customer?
-  files           File[]
-  images          UserImage[]
-  roles           UserRole[]
-  todoLists       TodoList[]
-  todoListShares  TodoListShare[]
-  userProfile     UserProfile?
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  email          String          @unique
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  emailVerified  Boolean         @default(false) @map("email_verified")
+  image          String?
+  accounts       Account[]
+  assignedItems  TodoItem[]
+  customer       Customer?
+  files          File[]
+  images         UserImage[]
+  roles          UserRole[]
+  sessions       Session[]
+  todoLists      TodoList[]
+  todoListShares TodoListShare[]
+  userProfile    UserProfile?
 
   @@map("user")
 }
@@ -174,4 +208,15 @@ model UserRole {
 
   @@id([userId, role])
   @@map("user_role")
+}
+
+model Verification {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("verification")
 }

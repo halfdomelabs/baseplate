@@ -1,0 +1,11 @@
+import { BETTER_AUTH_REACT_BETTER_AUTH_PATHS } from './template-paths.js';
+import { BETTER_AUTH_REACT_BETTER_AUTH_RENDERERS } from './template-renderers.js';
+import { BETTER_AUTH_REACT_BETTER_AUTH_IMPORTS } from './ts-import-providers.js';
+import { BETTER_AUTH_REACT_BETTER_AUTH_TEMPLATES } from './typed-templates.js';
+
+export const BETTER_AUTH_REACT_BETTER_AUTH_GENERATED = {
+  imports: BETTER_AUTH_REACT_BETTER_AUTH_IMPORTS,
+  paths: BETTER_AUTH_REACT_BETTER_AUTH_PATHS,
+  renderers: BETTER_AUTH_REACT_BETTER_AUTH_RENDERERS,
+  templates: BETTER_AUTH_REACT_BETTER_AUTH_TEMPLATES,
+};

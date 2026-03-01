@@ -1,0 +1,65 @@
+{
+  "name": "better-auth/better-auth-hooks",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/react-generators:authHooksImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
+  "templates": {
+    "use-log-out": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/hooks/use-log-out.ts",
+      "projectExports": { "useLogOut": {} },
+      "sourceFile": "src/hooks/use-log-out.ts",
+      "variables": {}
+    },
+    "use-required-user-id": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-required-user-id.ts",
+      "projectExports": { "useRequiredUserId": {} },
+      "referencedGeneratorTemplates": ["use-session"],
+      "sourceFile": "src/hooks/use-required-user-id.ts",
+      "variables": {}
+    },
+    "use-session": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/hooks/use-session.ts",
+      "projectExports": {
+        "AuthRole": { "isTypeOnly": true },
+        "SessionData": { "isTypeOnly": true },
+        "useSession": {}
+      },
+      "sourceFile": "src/hooks/use-session.ts",
+      "variables": { "TPL_AUTH_ROLES": {} }
+    }
+  }
+}

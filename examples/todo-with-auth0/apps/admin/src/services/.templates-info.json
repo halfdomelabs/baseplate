@@ -1,4 +1,9 @@
 {
+  "auth-client.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/react-better-auth",
+    "instanceData": {},
+    "template": "auth-client"
+  },
   "config.ts": {
     "generator": "@baseplate-dev/react-generators#core/react-config",
     "instanceData": {},

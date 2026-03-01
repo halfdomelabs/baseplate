@@ -83,7 +83,7 @@ input CreateUserData {
   customer: UserCustomerNestedInput
   email: String!
   images: [UserImagesNestedInput!]
-  name: String
+  name: String!
   roles: [UserRolesNestedInput!]
   userProfile: UserUserProfileNestedInput
 }
@@ -385,7 +385,7 @@ type User {
   customer: Customer
   email: String!
   id: ID!
-  name: String
+  name: String!
   roles: [UserRole!]!
   todoLists: [TodoList!]!
   updatedAt: DateTime!
