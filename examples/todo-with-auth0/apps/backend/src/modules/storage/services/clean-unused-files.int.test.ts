@@ -62,7 +62,7 @@ async function countFiles(): Promise<number> {
 async function createTestUser(): Promise<string> {
   const user = await prisma.user.create({
     data: {
-      auth0Id: `test-auth0-${Date.now()}`,
+      name: `Test User`,
       email: `test-${Date.now()}@example.com`,
       userProfile: {
         create: {},

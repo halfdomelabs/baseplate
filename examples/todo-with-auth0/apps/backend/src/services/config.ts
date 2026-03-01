@@ -3,16 +3,12 @@ import { z } from 'zod';
 const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
-  // Auth0 audience
-  AUTH0_AUDIENCE: z.string().min(1),
-  // Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)
-  AUTH0_CLIENT_ID: z.string().min(1),
-  // Auth0 management client secret
-  AUTH0_CLIENT_SECRET: z.string().min(1),
-  // Auth0 domain (can be custom domain)
-  AUTH0_DOMAIN: z.string().min(1),
-  // Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com
-  AUTH0_TENANT_DOMAIN: z.string().min(1),
+  // Comma-separated list of allowed origins for CORS/CSRF
+  ALLOWED_ORIGINS: z.string().default(''),
+  // Secret key for Better Auth (min 32 characters)
+  BETTER_AUTH_SECRET: z.string().min(32),
+  // Base URL for Better Auth (e.g. http://localhost:6001)
+  BETTER_AUTH_URL: z.url(),
   // AWS access key ID
   AWS_ACCESS_KEY_ID: z.string().min(1),
   // AWS default region

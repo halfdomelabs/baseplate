@@ -13,6 +13,7 @@ describe('create', () => {
 
     const owner = await prisma.user.create({
       data: {
+        name: 'Test User',
         email: 'foo@example.com',
       },
     });
@@ -122,7 +123,7 @@ describe('create', () => {
     await prisma.user.deleteMany({});
 
     const owner = await prisma.user.create({
-      data: { email: 'test@example.com' },
+      data: { name: 'Test User', email: 'test@example.com' },
     });
     const todoList = await prisma.todoList.create({
       data: { ownerId: owner.id, position: 1, name: 'Test List' },
@@ -160,7 +161,7 @@ describe('create', () => {
     await prisma.user.deleteMany({});
 
     const owner = await prisma.user.create({
-      data: { email: 'test@example.com' },
+      data: { name: 'Test User', email: 'test@example.com' },
     });
     const todoList = await prisma.todoList.create({
       data: { ownerId: owner.id, position: 1, name: 'Test List' },
@@ -205,7 +206,7 @@ describe('create', () => {
     await prisma.user.deleteMany({});
 
     const owner = await prisma.user.create({
-      data: { email: 'test@example.com' },
+      data: { name: 'Test User', email: 'test@example.com' },
     });
     const todoList = await prisma.todoList.create({
       data: { ownerId: owner.id, position: 1, name: 'Test List' },

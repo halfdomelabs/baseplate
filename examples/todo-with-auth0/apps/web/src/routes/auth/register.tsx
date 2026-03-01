@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createFileRoute,
+  Link,
   redirect,
   useRouter,
 } from '@tanstack/react-router';
@@ -20,72 +21,62 @@ import { InputFieldController } from '@src/components/ui/input-field';
 import { authClient } from '@src/services/auth-client';
 import { logError } from '@src/services/error-logger';
 
-export const Route = createFileRoute('/auth/login')({
-  validateSearch: z.object({
-    return_to: z
-      .string()
-      .regex(/^\/[a-zA-Z0-9\-._~!$&'()*+,;=:@?/]*$/)
-      .optional(),
-  }),
-  beforeLoad: ({ context: { userId }, search: { return_to } }) => {
+export const Route = createFileRoute('/auth/register')({
+  beforeLoad: ({ context: { userId } }) => {
     if (userId) {
-      throw redirect({ to: return_to ?? '/', replace: true });
+      throw redirect({ to: '/', replace: true });
     }
   },
-  component: LoginPage,
+  component: RegisterPage,
 });
 
-const formSchema = z.object({
-  email: z.email().transform((value) => value.toLowerCase()),
-  password: z.string().min(8).max(128),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.email().transform((value) => value.toLowerCase()),
+    password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
-function LoginPage(): React.JSX.Element {
-  const {
-    control,
-    handleSubmit,
-    resetField,
-    setError: setFormError,
-  } = useForm<FormData>({
+function RegisterPage(): React.JSX.Element {
+  const { control, handleSubmit, setError: setFormError } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     reValidateMode: 'onBlur',
   });
   const router = useRouter();
-  const { return_to } = Route.useSearch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = (data: FormData): void => {
     setIsSubmitting(true);
-    authClient.signIn
-      .email({
+    authClient
+      .signUp.email({
+        name: data.name,
         email: data.email,
         password: data.password,
       })
       .then(({ error }) => {
         if (error) {
-          resetField('password');
-          setFormError(
-            'password',
-            { message: error.message ?? 'Invalid email or password' },
-            { shouldFocus: true },
-          );
+          setFormError('email', {
+            message: error.message ?? 'Could not create account',
+          });
           return;
         }
         router
           .invalidate()
-          .then(() => router.navigate({ to: return_to ?? '/', replace: true }))
+          .then(() => router.navigate({ to: '/', replace: true }))
           .catch(logError);
       })
       .catch((err: unknown) => {
         logError(err);
-        resetField('password');
-        setFormError(
-          'password',
-          { message: 'Sorry, we could not log you in.' },
-          { shouldFocus: true },
-        );
+        setFormError('email', {
+          message: 'Sorry, we could not create your account.',
+        });
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -96,9 +87,9 @@ function LoginPage(): React.JSX.Element {
     <div className="flex h-full items-center justify-center">
       <Card className="w-sm">
         <CardHeader>
-          <CardTitle>Admin Login</CardTitle>
+          <CardTitle>Create an account</CardTitle>
           <CardDescription>
-            Enter your credentials to access the admin panel
+            Enter your details below to create your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -106,21 +97,41 @@ function LoginPage(): React.JSX.Element {
             <div className="flex flex-col gap-6">
               <InputFieldController
                 control={control}
+                name="name"
+                type="text"
+                autoComplete="name"
+                placeholder="Your name"
+              />
+              <InputFieldController
+                control={control}
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="admin@example.com"
+                placeholder="user@example.com"
               />
               <InputFieldController
                 control={control}
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 placeholder="Password"
               />
+              <InputFieldController
+                control={control}
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Confirm password"
+              />
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                Login
+                Sign Up
               </Button>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{' '}
+              <Link to="/auth/login" className="underline underline-offset-4">
+                Login
+              </Link>
             </div>
           </form>
         </CardContent>

@@ -217,15 +217,15 @@ type PresignedUrlField {
 
 type Query {
   file(id: Uuid!): File!
-  files: [File!]!
+  files(skip: Int, take: Int): [File!]!
   todoItem(id: Uuid!): TodoItem!
-  todoItems: [TodoItem!]!
+  todoItems(skip: Int, take: Int): [TodoItem!]!
   todoList(id: Uuid!): TodoList!
   todoListShare(id: TodoListSharePrimaryKey!): TodoListShare!
-  todoListShares: [TodoListShare!]!
-  todoLists: [TodoList!]!
+  todoListShares(skip: Int, take: Int): [TodoListShare!]!
+  todoLists(skip: Int, take: Int): [TodoList!]!
   user(id: Uuid!): User!
-  users: [User!]!
+  users(skip: Int, take: Int): [User!]!
 
   """The currently authenticated user"""
   viewer: User
@@ -436,6 +436,7 @@ input UserUserProfileNestedInput {
   avatar: FileInput
   bio: String
   birthDay: Date
+  favoriteTodoListId: Uuid
   id: ID
 }
 

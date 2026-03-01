@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "declaration": true,
     "paths": {
       "@src/*": ["./src/*"]
     },

@@ -41,7 +41,7 @@ const parentModel = createParentModelConfig('user', (value) => ({
 }));
 
 export const userInputFields = {
-  name: scalarField(z.string().nullish()),
+  name: scalarField(z.string()),
   email: scalarField(z.string()),
   customer: nestedOneToOneField({
     buildCreateData: (data) => data,

@@ -83,6 +83,7 @@ describe('createUser', () => {
     const testUser = await prisma.user.create({
       data: {
         id: TEST_USER_ID,
+        name: 'Test Uploader',
         email: 'test-uploader@example.com',
       },
     });
@@ -141,6 +142,7 @@ describe('createUser', () => {
     const testUser = await prisma.user.create({
       data: {
         id: TEST_USER_ID,
+        name: 'Test Uploader',
         email: 'test-uploader@example.com',
       },
     });

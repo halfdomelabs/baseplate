@@ -1,6 +1,5 @@
 import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
 import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
-import { SetContextLink } from '@apollo/client/link/context';
 import { ErrorLink } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
@@ -11,12 +10,6 @@ import { logger } from '../logger';
 import { apolloSentryLink } from './apollo-sentry-link';
 import { createApolloCache } from './cache';
 
-/* HOISTED:create-apollo-client-options:START */
-interface CreateApolloClientOptions {
-  getAccessToken: () => Promise<string | undefined>;
-}
-/* HOISTED:create-apollo-client-options:END */
-
 /* HOISTED:error-extensions:START */
 export interface ErrorExtensions {
   code?: string;
@@ -26,11 +19,7 @@ export interface ErrorExtensions {
 }
 /* HOISTED:error-extensions:END */
 
-export function createApolloClient(
-  /* TPL_CREATE_ARGS:START */ {
-    getAccessToken,
-  }: CreateApolloClientOptions /* TPL_CREATE_ARGS:END */,
-): ApolloClient {
+export function createApolloClient(): ApolloClient {
   /* TPL_LINK_BODIES:START */
   const errorLink = new ErrorLink(({ error, operation }) => {
     // log query/subscription errors but not mutations since it should be handled by caller
@@ -67,14 +56,6 @@ export function createApolloClient(
     }
   });
 
-  const authLink = new SetContextLink(async () => {
-    const accessToken = await getAccessToken();
-    if (!accessToken) {
-      return {};
-    }
-    return { headers: { authorization: `Bearer ${accessToken}` } };
-  });
-
   const httpLink = new HttpLink({
     uri: config.VITE_GRAPH_API_ENDPOINT,
   });
@@ -84,7 +65,6 @@ export function createApolloClient(
       /* TPL_LINKS:START */ [
         errorLink,
         apolloSentryLink,
-        authLink,
         httpLink,
       ] /* TPL_LINKS:END */,
     ),

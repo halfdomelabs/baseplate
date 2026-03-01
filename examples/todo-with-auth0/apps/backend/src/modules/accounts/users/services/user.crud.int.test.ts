@@ -13,6 +13,7 @@ describe('create', () => {
 
     const createdItem = await createUser({
       data: {
+        name: 'Test User',
         email: 'foo@example.com',
         roles: [{ role: 'admin' }, { role: 'user' }],
         customer: {
