@@ -9,6 +9,7 @@ import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncExamplesCommand } from './commands/sync-examples.js';
 import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
+import { addTestCommand } from './commands/test.js';
 
 /**
  * This is the entry point for the dev CLI. It provides developer tooling
@@ -27,6 +28,7 @@ export async function runDevCli(): Promise<void> {
   addServeCommand(program);
   addDevServerCommand(program);
   addMcpCommand(program);
+  addTestCommand(program);
 
   await program.parseAsync(process.argv);
 }

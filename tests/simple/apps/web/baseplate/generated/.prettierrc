@@ -1,9 +1,0 @@
-{
-  "tabWidth": 2,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "semi": true,
-  "tailwindFunctions": ["clsx", "cn", "cva"],
-  "tailwindStylesheet": "./src/styles.css",
-  "plugins": ["prettier-plugin-packagejson", "prettier-plugin-tailwindcss"]
-}

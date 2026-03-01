@@ -11,7 +11,7 @@ export async function getTestsDirectory(): Promise<string> {
   return path.join(path.dirname(packageRoot), 'src/tests');
 }
 
-export async function getTestProjectsDirectory(): Promise<string> {
+async function getRepoRoot(): Promise<string> {
   const packageRoot = await findNearestPackageJson({
     cwd: import.meta.dirname,
   });
@@ -24,5 +24,15 @@ export async function getTestProjectsDirectory(): Promise<string> {
   if (!rootPackageRoot) {
     throw new Error('Could not find root package root');
   }
-  return path.join(path.dirname(rootPackageRoot), 'tests');
+  return path.dirname(rootPackageRoot);
+}
+
+export async function getTestProjectsDirectory(): Promise<string> {
+  const repoRoot = await getRepoRoot();
+  return path.join(repoRoot, 'tests');
+}
+
+export async function getGeneratedTestsDirectory(): Promise<string> {
+  const repoRoot = await getRepoRoot();
+  return path.join(repoRoot, 'generated-tests');
 }

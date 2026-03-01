@@ -1,17 +1,25 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
+import { DEFAULT_SNAPSHOTS_DIR } from '#src/diff/index.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
 const snapshotSaveInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
-  app: z.string().describe('The app name within the project.'),
+  app: z
+    .string()
+    .optional()
+    .describe(
+      'The app name within the project. If omitted, saves snapshots for all apps.',
+    ),
   snapshotDirectory: z
     .string()
     .optional()
-    .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
+    .describe(
+      'Custom snapshot directory (defaults to baseplate/snapshots/<app>/). Only valid when a single app is specified.',
+    ),
   force: z
     .boolean()
     .optional()
@@ -24,6 +32,10 @@ const snapshotSaveOutputSchema = z.object({
     .describe('Whether the snapshot save operation was successful.'),
   message: z.string().describe('Result message.'),
   snapshotPath: z.string().optional().describe('Path to the saved snapshot.'),
+  savedApps: z
+    .array(z.string())
+    .optional()
+    .describe('List of app names that had snapshots saved.'),
 });
 
 /**
@@ -37,19 +49,21 @@ export const snapshotSaveAction = createServiceAction({
   inputSchema: snapshotSaveInputSchema,
   outputSchema: snapshotSaveOutputSchema,
   handler: async (input, context) => {
-    const {
-      project: projectId,
-      app,
-      snapshotDirectory = '.baseplate-snapshot',
-      force = false,
-    } = input;
+    const { project: projectId, app, snapshotDirectory, force = false } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     try {
+      if (snapshotDirectory && !app) {
+        throw new Error(
+          'Cannot use snapshotDirectory when saving all apps. Specify an app name to use a custom snapshot directory.',
+        );
+      }
+
       // Find the project by name or ID
       const project = getProjectByNameOrId(projects, projectId);
 
-      logger.info(`Saving snapshot for project: ${project.name}, app: ${app}`);
+      const target = app ? `app: ${app}` : 'all apps';
+      logger.info(`Saving snapshot for project: ${project.name}, ${target}`);
 
       // Create schema parser context
       const schemaContext = await createNodeSchemaParserContext(
@@ -74,7 +88,7 @@ export const snapshotSaveAction = createServiceAction({
       const { createSnapshotForProject } =
         await import('#src/diff/snapshot/create-snapshot-for-project.js');
 
-      await createSnapshotForProject({
+      const savedApps = await createSnapshotForProject({
         projectDirectory: project.directory,
         app,
         logger,
@@ -83,10 +97,18 @@ export const snapshotSaveAction = createServiceAction({
         snapshotDir: snapshotDirectory,
       });
 
+      const snapshotPath =
+        app && snapshotDirectory
+          ? `${project.directory}/${snapshotDirectory}`
+          : app
+            ? `${project.directory}/${DEFAULT_SNAPSHOTS_DIR}/${app}`
+            : undefined;
+
       return {
         success: true,
-        message: `Snapshot saved successfully for ${project.name}/${app}`,
-        snapshotPath: `${project.directory}/${app}/${snapshotDirectory}`,
+        message: `Snapshot saved successfully for ${project.name}${app ? `/${app}` : ` (${savedApps.length} app(s))`}`,
+        snapshotPath,
+        savedApps,
       };
     } catch (error) {
       logger.error(
@@ -103,6 +125,15 @@ export const snapshotSaveAction = createServiceAction({
       console.info(`✓ ${output.message}`);
       if (output.snapshotPath) {
         console.info(`   Saved to: ${output.snapshotPath}`);
+      }
+      if (
+        output.savedApps &&
+        output.savedApps.length > 0 &&
+        !output.snapshotPath
+      ) {
+        for (const app of output.savedApps) {
+          console.info(`   Saved: ${app}`);
+        }
       }
     } else {
       console.error(`✗ ${output.message}`);

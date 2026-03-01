@@ -3,7 +3,7 @@ import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  DEFAULT_SNAPSHOT_DIR,
+  DEFAULT_SNAPSHOTS_DIR,
   DIFFS_DIRNAME,
   MANIFEST_FILENAME,
 } from './snapshot-types.js';
@@ -73,29 +73,30 @@ describe('snapshot-utils', () => {
   });
 
   describe('createSnapshotDirectory', () => {
-    it('should create snapshot directory with default name', async () => {
-      const result = await createSnapshotDirectory('/test');
+    it('should create snapshot directory with default path', async () => {
+      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
+      const result = await createSnapshotDirectory('/test', 'backend');
 
       expect(result).toEqual({
-        path: path.resolve('/test', DEFAULT_SNAPSHOT_DIR),
-        manifestPath: path.resolve(
-          '/test',
-          DEFAULT_SNAPSHOT_DIR,
-          MANIFEST_FILENAME,
-        ),
-        diffsPath: path.resolve('/test', DEFAULT_SNAPSHOT_DIR, DIFFS_DIRNAME),
+        path: path.resolve('/test', defaultPath),
+        manifestPath: path.resolve('/test', defaultPath, MANIFEST_FILENAME),
+        diffsPath: path.resolve('/test', defaultPath, DIFFS_DIRNAME),
       });
 
       // Check directories were created
       const files = vol.toJSON();
       expect(files).toHaveProperty(
-        path.resolve('/test', DEFAULT_SNAPSHOT_DIR, DIFFS_DIRNAME),
+        path.resolve('/test', defaultPath, DIFFS_DIRNAME),
       );
     });
 
     it('should create snapshot directory with custom name', async () => {
       const customDir = '.custom-snapshot';
-      const result = await createSnapshotDirectory('/test', customDir);
+      const result = await createSnapshotDirectory(
+        '/test',
+        'backend',
+        customDir,
+      );
 
       expect(result).toEqual({
         path: path.resolve('/test', customDir),
@@ -111,36 +112,33 @@ describe('snapshot-utils', () => {
     });
 
     it('should handle existing directories', async () => {
+      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
       // Pre-create the directory
       vol.fromJSON({
-        [path.resolve('/test', DEFAULT_SNAPSHOT_DIR, 'existing.txt')]:
-          'content',
+        [path.resolve('/test', defaultPath, 'existing.txt')]: 'content',
       });
 
-      const result = await createSnapshotDirectory('/test');
+      const result = await createSnapshotDirectory('/test', 'backend');
 
-      expect(result.path).toBe(path.resolve('/test', DEFAULT_SNAPSHOT_DIR));
+      expect(result.path).toBe(path.resolve('/test', defaultPath));
 
       // Should still have existing file
       const files = vol.toJSON();
       expect(files).toHaveProperty(
-        path.resolve('/test', DEFAULT_SNAPSHOT_DIR, 'existing.txt'),
+        path.resolve('/test', defaultPath, 'existing.txt'),
       );
     });
   });
 
   describe('resolveSnapshotDirectory', () => {
     it('should resolve paths without creating directories', () => {
-      const result = resolveSnapshotDirectory('/test');
+      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
+      const result = resolveSnapshotDirectory('/test', 'backend');
 
       expect(result).toEqual({
-        path: path.resolve('/test', DEFAULT_SNAPSHOT_DIR),
-        manifestPath: path.resolve(
-          '/test',
-          DEFAULT_SNAPSHOT_DIR,
-          MANIFEST_FILENAME,
-        ),
-        diffsPath: path.resolve('/test', DEFAULT_SNAPSHOT_DIR, DIFFS_DIRNAME),
+        path: path.resolve('/test', defaultPath),
+        manifestPath: path.resolve('/test', defaultPath, MANIFEST_FILENAME),
+        diffsPath: path.resolve('/test', defaultPath, DIFFS_DIRNAME),
       });
 
       // Should not create any directories
@@ -150,7 +148,7 @@ describe('snapshot-utils', () => {
 
     it('should resolve paths with custom snapshot directory', () => {
       const customDir = '.custom-snapshot';
-      const result = resolveSnapshotDirectory('/test', {
+      const result = resolveSnapshotDirectory('/test', 'backend', {
         snapshotDir: customDir,
       });
 

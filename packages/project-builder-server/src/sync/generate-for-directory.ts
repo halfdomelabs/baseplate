@@ -65,9 +65,11 @@ export async function generateForDirectory({
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
 
-  const resolvedSnapshotDirectory = resolveSnapshotDirectory(projectDirectory, {
-    snapshotDir: snapshotDirectory,
-  });
+  const resolvedSnapshotDirectory = resolveSnapshotDirectory(
+    baseDirectory,
+    name,
+    { snapshotDir: snapshotDirectory },
+  );
 
   const snapshot = await loadSnapshotManifest(resolvedSnapshotDirectory);
 

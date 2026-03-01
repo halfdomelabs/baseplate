@@ -28,11 +28,7 @@ export function addSnapshotCommand(program: Command): void {
       'Add files to snapshot (use --deleted for intentionally deleted files)',
     )
     .option('--deleted', 'Mark files as intentionally deleted in snapshot')
-    .option(
-      '--snapshot-dir <directory>',
-      'Snapshot directory',
-      '.baseplate-snapshot',
-    )
+    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
     .action(
       async (
         project: string,
@@ -53,6 +49,7 @@ export function addSnapshotCommand(program: Command): void {
               app,
               files,
               deleted: options.deleted,
+              snapshotDirectory: options.snapshotDir,
             },
             context,
           );
@@ -67,11 +64,7 @@ export function addSnapshotCommand(program: Command): void {
   snapshotCommand
     .command('remove <project> <app> <files...>')
     .description('Remove files from snapshot tracking')
-    .option(
-      '--snapshot-dir <directory>',
-      'Snapshot directory',
-      '.baseplate-snapshot',
-    )
+    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
     .action(
       async (
         project: string,
@@ -103,26 +96,23 @@ export function addSnapshotCommand(program: Command): void {
 
   // snapshot save command
   snapshotCommand
-    .command('save <project> <app>')
+    .command('save <project> [app]')
     .description(
-      'Save snapshot of current differences (overwrites existing snapshot)',
+      'Save snapshot of current differences (overwrites existing snapshot). If app is omitted, saves all apps.',
     )
-    .option(
-      '--snapshot-dir <directory>',
-      'Snapshot directory',
-      '.baseplate-snapshot',
-    )
+    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
     .action(
       async (
         project: string,
-        app: string,
+        app: string | undefined,
         options: {
           snapshotDir?: string;
         },
       ) => {
         // Confirm with user before overwriting existing snapshot
+        const target = app ?? 'all apps';
         console.warn(
-          '⚠️  This will overwrite any existing snapshot for this app.',
+          `⚠️  This will overwrite any existing snapshot for ${target}.`,
         );
         console.info(
           'Use granular commands (snapshot add/remove) for safer updates.',
@@ -154,11 +144,7 @@ export function addSnapshotCommand(program: Command): void {
   snapshotCommand
     .command('show <project> <app>')
     .description('Show current snapshot contents')
-    .option(
-      '--snapshot-dir <directory>',
-      'Snapshot directory',
-      '.baseplate-snapshot',
-    )
+    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
     .action(
       async (
         project: string,

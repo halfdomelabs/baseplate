@@ -16,8 +16,8 @@ export interface SnapshotManifest {
 export interface SnapshotFiles {
   /** Files that were modified (have diffs stored) */
   modified: ModifiedFileEntry[];
-  /** Files that were added (exist in generated but not working) */
-  added: string[];
+  /** Files that were added by the user (not produced by generator, content stored) */
+  added: AddedFileEntry[];
   /** Files that were deleted (exist in working but not generated) */
   deleted: string[];
 }
@@ -27,6 +27,13 @@ export interface ModifiedFileEntry {
   path: string;
   /** Name of the diff file in the diffs/ directory */
   diffFile: string;
+}
+
+export interface AddedFileEntry {
+  /** Relative path to the file */
+  path: string;
+  /** Name of the content file in the diffs/ directory. Only present when content is stored. */
+  contentFile?: string;
 }
 
 export interface SnapshotDirectory {
@@ -39,7 +46,7 @@ export interface SnapshotDirectory {
 }
 
 export interface SnapshotOptions {
-  /** Custom name for the snapshot directory (default: .baseplate-snapshot) */
+  /** Custom path for the snapshot directory (default: baseplate/snapshots/<appName>/) */
   snapshotDir?: string;
   /** Whether to use strict comparison mode */
   strict?: boolean;
@@ -82,7 +89,7 @@ export interface PatchFailure {
 }
 
 export const SNAPSHOT_VERSION = '1';
-export const DEFAULT_SNAPSHOT_DIR = '.baseplate-snapshot';
+export const DEFAULT_SNAPSHOTS_DIR = 'baseplate/snapshots';
 export const MANIFEST_FILENAME = 'manifest.json';
 export const DIFFS_DIRNAME = 'diffs';
 
@@ -92,9 +99,14 @@ export const modifiedFileEntrySchema = z.object({
   diffFile: z.string(),
 });
 
+export const addedFileEntrySchema = z.object({
+  path: z.string(),
+  contentFile: z.string().optional(),
+});
+
 export const snapshotFilesSchema = z.object({
   modified: z.array(modifiedFileEntrySchema),
-  added: z.array(z.string()),
+  added: z.array(addedFileEntrySchema),
   deleted: z.array(z.string()),
 });
 

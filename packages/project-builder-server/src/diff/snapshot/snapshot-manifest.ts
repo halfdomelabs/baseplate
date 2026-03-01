@@ -34,7 +34,9 @@ export async function saveSnapshotManifest(
   const sortedManifest = {
     version: manifest.version,
     files: {
-      added: manifest.files.added.toSorted(),
+      added: manifest.files.added.toSorted((a, b) =>
+        compareStrings(a.path, b.path),
+      ),
       deleted: manifest.files.deleted.toSorted(),
       modified: manifest.files.modified.toSorted((a, b) =>
         compareStrings(a.path, b.path),
@@ -88,8 +90,9 @@ function addModifiedFile(
 function addAddedFile(
   manifest: SnapshotManifest,
   filePath: string,
+  contentFile?: string,
 ): SnapshotManifest {
-  if (manifest.files.added.includes(filePath)) {
+  if (manifest.files.added.some((entry) => entry.path === filePath)) {
     return manifest;
   }
 
@@ -97,7 +100,10 @@ function addAddedFile(
     ...manifest,
     files: {
       ...manifest.files,
-      added: [...manifest.files.added, filePath],
+      added: [
+        ...manifest.files.added.filter((entry) => entry.path !== filePath),
+        { path: filePath, ...(contentFile && { contentFile }) },
+      ],
     },
   };
 }
@@ -136,7 +142,7 @@ function removeFile(
       modified: manifest.files.modified.filter(
         (entry) => entry.path !== filePath,
       ),
-      added: manifest.files.added.filter((path) => path !== filePath),
+      added: manifest.files.added.filter((entry) => entry.path !== filePath),
       deleted: manifest.files.deleted.filter((path) => path !== filePath),
     },
   };

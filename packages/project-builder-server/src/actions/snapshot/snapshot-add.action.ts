@@ -18,7 +18,9 @@ const snapshotAddInputSchema = z.object({
   snapshotDirectory: z
     .string()
     .optional()
-    .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
+    .describe(
+      'Custom snapshot directory (defaults to baseplate/snapshots/<app>/).',
+    ),
 });
 
 const snapshotAddOutputSchema = z.object({
@@ -44,7 +46,7 @@ export const snapshotAddAction = createServiceAction({
       app,
       files,
       deleted = false,
-      snapshotDirectory = '.baseplate-snapshot',
+      snapshotDirectory,
     } = input;
     const { projects, logger, plugins, cliVersion } = context;
 

@@ -9,7 +9,6 @@ import path from 'node:path';
 import type { GeneratorOperations } from '#src/sync/types.js';
 
 import { compilePackages } from '#src/compiler/index.js';
-import { getSingleAppDirectoryForProject } from '#src/project-definition/get-single-app-directory-for-project.js';
 import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from '#src/sync/types.js';
@@ -66,9 +65,11 @@ export async function addFilesToSnapshot(
       compiledApp.packageDirectory,
     );
 
-    const snapshotDirectories = resolveSnapshotDirectory(appDirectory, {
-      snapshotDir: snapshotDirectory,
-    });
+    const snapshotDirectories = resolveSnapshotDirectory(
+      projectDirectory,
+      appName,
+      { snapshotDir: snapshotDirectory },
+    );
 
     logger.info(`Generating project to create snapshot...`);
 
@@ -134,7 +135,7 @@ export async function addFilesToSnapshot(
             diffFileName,
           );
         } else {
-          // Mark file as added
+          // Mark as added (path only, no content stored)
           manifest = snapshotManifestUtils.addAddedFile(manifest, relativePath);
         }
 
@@ -160,22 +161,11 @@ export async function removeFilesFromSnapshot(
     projectDirectory,
     appName,
     snapshotDirectory,
-    context,
     logger,
   }: SnapshotManagementOptions,
 ): Promise<void> {
   try {
-    const { definition } = await loadProjectDefinition(
-      projectDirectory,
-      context,
-    );
-    const appDirectory = getSingleAppDirectoryForProject(
-      projectDirectory,
-      definition,
-      appName,
-    );
-
-    const snapshotDir = resolveSnapshotDirectory(appDirectory, {
+    const snapshotDir = resolveSnapshotDirectory(projectDirectory, appName, {
       snapshotDir: snapshotDirectory,
     });
 
@@ -192,6 +182,13 @@ export async function removeFilesFromSnapshot(
       );
       if (modifiedFile?.diffFile) {
         await removeSnapshotDiffFile(snapshotDir, modifiedFile.diffFile);
+      }
+
+      const addedFile = manifest.files.added.find(
+        (entry) => entry.path === relativePath,
+      );
+      if (addedFile?.contentFile) {
+        await removeSnapshotDiffFile(snapshotDir, addedFile.contentFile);
       }
 
       manifest = snapshotManifestUtils.removeFile(manifest, relativePath);
@@ -213,7 +210,6 @@ export interface SnapshotListOptions {
   projectDirectory: string;
   appName: string;
   snapshotDirectory?: string;
-  context: SchemaParserContext;
   logger: Logger;
 }
 
@@ -224,21 +220,10 @@ export async function listSnapshotContents({
   projectDirectory,
   snapshotDirectory,
   appName,
-  context,
   logger,
 }: SnapshotListOptions): Promise<void> {
   try {
-    const { definition } = await loadProjectDefinition(
-      projectDirectory,
-      context,
-    );
-    const appDirectory = getSingleAppDirectoryForProject(
-      projectDirectory,
-      definition,
-      appName,
-    );
-
-    const snapshotDir = resolveSnapshotDirectory(appDirectory, {
+    const snapshotDir = resolveSnapshotDirectory(projectDirectory, appName, {
       snapshotDir: snapshotDirectory,
     });
 
@@ -260,8 +245,8 @@ export async function listSnapshotContents({
 
     if (manifest.files.added.length > 0) {
       logger.info(`\nAdded files (${manifest.files.added.length}):`);
-      for (const file of manifest.files.added) {
-        logger.info(`  ${file}`);
+      for (const entry of manifest.files.added) {
+        logger.info(`  ${entry.path}`);
       }
     }
 

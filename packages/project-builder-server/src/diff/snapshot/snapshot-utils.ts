@@ -1,10 +1,10 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { SnapshotDirectory, SnapshotOptions } from './snapshot-types.js';
+import type { SnapshotDirectory } from './snapshot-types.js';
 
 import {
-  DEFAULT_SNAPSHOT_DIR,
+  DEFAULT_SNAPSHOTS_DIR,
   DIFFS_DIRNAME,
   MANIFEST_FILENAME,
 } from './snapshot-types.js';
@@ -29,13 +29,37 @@ export function safeDiffFilenameToPath(diffFilename: string): string {
 }
 
 /**
- * Creates the snapshot directory structure
+ * Resolves the snapshot path for a given project directory and app name.
+ * If snapshotDir is provided, it is resolved as an absolute path or relative to projectDirectory.
+ * Otherwise, defaults to `<projectDirectory>/baseplate/snapshots/<appName>/`.
+ */
+function resolveSnapshotPath(
+  projectDirectory: string,
+  appName: string,
+  snapshotDir?: string,
+): string {
+  if (snapshotDir) {
+    return path.resolve(projectDirectory, snapshotDir);
+  }
+  return path.join(projectDirectory, DEFAULT_SNAPSHOTS_DIR, appName);
+}
+
+/**
+ * Creates the snapshot directory structure.
+ * @param projectDirectory - The project root directory
+ * @param appName - The app name within the project
+ * @param snapshotDir - Optional custom snapshot directory (absolute or relative to projectDirectory)
  */
 export async function createSnapshotDirectory(
-  baseDirectory: string,
-  snapshotDir: string = DEFAULT_SNAPSHOT_DIR,
+  projectDirectory: string,
+  appName: string,
+  snapshotDir?: string,
 ): Promise<SnapshotDirectory> {
-  const snapshotPath = path.resolve(baseDirectory, snapshotDir);
+  const snapshotPath = resolveSnapshotPath(
+    projectDirectory,
+    appName,
+    snapshotDir,
+  );
   const manifestPath = path.join(snapshotPath, MANIFEST_FILENAME);
   const diffsPath = path.join(snapshotPath, DIFFS_DIRNAME);
 
@@ -51,14 +75,21 @@ export async function createSnapshotDirectory(
 }
 
 /**
- * Resolves the snapshot directory paths without creating them
+ * Resolves the snapshot directory paths without creating them.
+ * @param projectDirectory - The project root directory
+ * @param appName - The app name within the project
+ * @param options - Optional snapshot directory override
  */
 export function resolveSnapshotDirectory(
-  baseDirectory: string,
-  options: SnapshotOptions = {},
+  projectDirectory: string,
+  appName: string,
+  options: { snapshotDir?: string } = {},
 ): SnapshotDirectory {
-  const snapshotDirName = options.snapshotDir ?? DEFAULT_SNAPSHOT_DIR;
-  const snapshotPath = path.resolve(baseDirectory, snapshotDirName);
+  const snapshotPath = resolveSnapshotPath(
+    projectDirectory,
+    appName,
+    options.snapshotDir,
+  );
   const manifestPath = path.join(snapshotPath, MANIFEST_FILENAME);
   const diffsPath = path.join(snapshotPath, DIFFS_DIRNAME);
 

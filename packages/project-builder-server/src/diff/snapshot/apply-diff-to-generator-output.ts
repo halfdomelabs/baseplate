@@ -40,6 +40,25 @@ export async function applySnapshotToGeneratorOutput(
     }
     fileData.contents = newContents;
   }
+
+  // Inject added files that have stored content (user-created files not produced by generator)
+  for (const addedEntry of snapshot.files.added) {
+    if (!addedEntry.contentFile) {
+      continue; // path-only entry, file exists on disk
+    }
+    const contentFilePath = path.join(diffDirectory, addedEntry.contentFile);
+    const contents = await readFile(contentFilePath, 'utf-8').catch(
+      handleFileNotFoundError,
+    );
+    if (!contents) {
+      throw new Error(`Content file not found: ${contentFilePath}`);
+    }
+    generatorFiles.set(addedEntry.path, {
+      id: addedEntry.path,
+      contents,
+    });
+  }
+
   return {
     ...generatorOutput,
     files: generatorFiles,
