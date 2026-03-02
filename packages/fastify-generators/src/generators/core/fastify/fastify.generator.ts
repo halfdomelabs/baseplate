@@ -158,11 +158,13 @@ export const fastifyGenerator = createGenerator({
                 executable?: string;
               } = {},
             ): string {
+              // We need to ignore node_modules because otherwise tsx will watch all the files in the node_modules directory in a monorepo
+              // See https://github.com/privatenumber/tsx/issues/221
               const executable =
                 executableOverride ??
                 (targetEnvironment === 'prod'
                   ? 'node'
-                  : 'tsx watch --clear-screen=false');
+                  : 'tsx watch --ignore /**/node_modules/** --clear-screen=false');
               const outputFormatter =
                 devOutputFormatter && targetEnvironment === 'dev'
                   ? `| ${devOutputFormatter}`

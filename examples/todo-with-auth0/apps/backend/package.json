@@ -14,8 +14,8 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "concurrently pnpm:dev:*",
-    "dev:server": "tsx watch --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/index.ts | pino-pretty -t",
-    "dev:workers": "tsx watch --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/scripts/run-workers.ts | pino-pretty -t",
+    "dev:server": "tsx watch --ignore /**/node_modules/** --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/index.ts | pino-pretty -t",
+    "dev:workers": "tsx watch --ignore /**/node_modules/** --clear-screen=false --env-file-if-exists=.env --import ./src/instrument.ts src/scripts/run-workers.ts | pino-pretty -t",
     "generate:schema": "tsx --env-file-if-exists=.env src/index.ts --exit-after-generate-schema",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "prisma generate",
