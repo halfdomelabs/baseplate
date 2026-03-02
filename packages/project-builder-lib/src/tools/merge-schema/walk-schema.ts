@@ -101,8 +101,7 @@ function walkSchemaNode(
     case 'discriminated-union': {
       // Walk all branches since we don't have data to pick one
       const unwrapped = unwrapSchema(schema) as ZodDiscriminatedUnion;
-      const { options } = unwrapped._zod.def;
-      for (const option of options as z.ZodType[]) {
+      for (const option of unwrapped.options as z.ZodType[]) {
         walkSchemaNode(option, pathParts, result, visited);
       }
       break;

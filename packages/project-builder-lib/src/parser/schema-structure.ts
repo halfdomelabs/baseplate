@@ -95,7 +95,7 @@ export function findDiscriminatedUnionMatch(
         `findDiscriminatedUnionMatch: discriminated union option must be an object schema (got type: "${option._zod.def.type}")`,
       );
     }
-    const { shape } = (option as ZodObject)._zod.def;
+    const { shape } = option as ZodObject;
     const discField = shape[discriminator] as z.ZodType | undefined;
     if (discField?._zod.def.type !== 'literal') {
       throw new Error(
@@ -134,46 +134,44 @@ export function getSchemaChildren(
       const typed = schema as ZodObject;
       return {
         kind: 'object',
-        entries: Object.entries(typed._zod.def.shape) as [string, z.ZodType][],
+        entries: Object.entries(typed.shape) as [string, z.ZodType][],
       };
     }
     case 'array': {
       const typed = schema as ZodArray;
       return {
         kind: 'array',
-        elementSchema: typed._zod.def.element as z.ZodType,
+        elementSchema: typed.element as z.ZodType,
       };
     }
     case 'optional':
     case 'nullable':
     case 'nonoptional':
     case 'readonly': {
-      // All four wrapper types share the same innerType structure and
-      // should skip descent when data is nullish.
       const innerSchema = (
         schema as ZodOptional | ZodNullable | ZodNonOptional | ZodReadonly
-      )._zod.def.innerType as z.ZodType;
+      ).unwrap() as z.ZodType;
       return { kind: 'wrapper', innerSchema, skipIfNullish: true };
     }
     case 'default':
     case 'prefault': {
       // Default/prefault wrappers always descend regardless of data value.
-      const innerSchema = (schema as ZodDefault | ZodPrefault)._zod.def
-        .innerType as z.ZodType;
+      // Both support `.unwrap()` to access the inner schema.
+      const innerSchema = (
+        schema as ZodDefault | ZodPrefault
+      ).unwrap() as z.ZodType;
       return { kind: 'wrapper', innerSchema, skipIfNullish: false };
     }
     case 'union': {
       const typed = schema as ZodDiscriminatedUnion;
-      const { discriminator, options } = typed._zod.def;
+      const options = typed.options as z.ZodType[];
+      // discriminator has no public API — must use internal access
+      const { discriminator } = typed._zod.def;
       if (discriminator) {
-        const match = findDiscriminatedUnionMatch(
-          options as z.ZodType[],
-          discriminator,
-          data,
-        );
+        const match = findDiscriminatedUnionMatch(options, discriminator, data);
         return { kind: 'discriminated-union', match };
       }
-      if (isLeafUnion(options as z.ZodType[])) {
+      if (isLeafUnion(options)) {
         return { kind: 'leaf-union' };
       }
       throw new Error(
@@ -181,6 +179,7 @@ export function getSchemaChildren(
       );
     }
     case 'tuple': {
+      // items/rest have no public API on ZodTuple — must use internal access
       const typed = schema as ZodTuple;
       return {
         kind: 'tuple',
@@ -192,10 +191,11 @@ export function getSchemaChildren(
       const typed = schema as ZodRecord;
       return {
         kind: 'record',
-        valueSchema: typed._zod.def.valueType as z.ZodType,
+        valueSchema: typed.valueType as z.ZodType,
       };
     }
     case 'intersection': {
+      // left/right have no public API on ZodIntersection — must use internal access
       const typed = schema as ZodIntersection;
       return {
         kind: 'intersection',

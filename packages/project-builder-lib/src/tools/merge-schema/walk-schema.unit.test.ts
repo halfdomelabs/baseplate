@@ -54,6 +54,5 @@ describe('collectEntityArrays', () => {
     const modelsInfo = entityArrays.find((info) => info.path === 'models');
 
     expect(modelsInfo?.elementSchema).toBeDefined();
-    expect(modelsInfo?.elementSchema._zod.def.type).toBeDefined();
   });
 });
