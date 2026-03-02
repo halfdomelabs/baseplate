@@ -2,13 +2,12 @@ import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  createAndApplyModelMergerResults,
-  createModelMergerResults,
-  doesModelMergerResultsHaveChanges,
+  applyMergedDefinition,
+  diffDefinition,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  ModelMergerResultAlert,
+  DefinitionDiffAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -27,12 +26,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
 import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
-import { AUTH0_MODELS } from '#src/auth0/constants/model-names.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createAuth0Models } from '../schema/models.js';
+import { createAuth0PartialDefinition } from '../schema/models.js';
 import { createAuth0PluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
@@ -65,15 +63,29 @@ export function Auth0DefinitionEditor({
 
   const authDefinition = getAuthPluginDefinition(definition);
 
-  const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuth0Models(authDefinition);
-
-    return createModelMergerResults(
-      AUTH0_MODELS,
-      desiredModels,
-      definitionContainer,
+  const authFeature = definition.features.find(
+    (f) => f.id === authDefinition.authFeatureRef,
+  );
+  if (!authFeature) {
+    throw new Error(
+      `Auth feature not found for ref: ${authDefinition.authFeatureRef}`,
     );
-  }, [definitionContainer, authDefinition]);
+  }
+
+  const partialDef = useMemo(
+    () => createAuth0PartialDefinition(authFeature.name),
+    [authFeature.name],
+  );
+
+  const diff = useMemo(
+    () =>
+      diffDefinition(
+        definitionContainer.schema,
+        definitionContainer.definition,
+        partialDef,
+      ),
+    [definitionContainer, partialDef],
+  );
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -81,12 +93,7 @@ export function Auth0DefinitionEditor({
         const updatedData = {
           ...data,
         };
-        createAndApplyModelMergerResults(
-          draftConfig,
-          AUTH0_MODELS,
-          createAuth0Models(authDefinition),
-          definitionContainer,
-        );
+        applyMergedDefinition(definitionContainer, partialDef)(draftConfig);
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
@@ -129,8 +136,9 @@ export function Auth0DefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
-                  <ModelMergerResultAlert
-                    pendingModelChanges={pendingModelChanges}
+                  <DefinitionDiffAlert
+                    diff={diff}
+                    upToDateMessage="All required models are already configured correctly. No changes needed."
                   />
                 </SectionListSectionContent>
               </SectionListSection>
@@ -139,10 +147,7 @@ export function Auth0DefinitionEditor({
 
           <FormActionBar
             form={form}
-            allowSaveWithoutDirty={
-              !pluginMetadata ||
-              doesModelMergerResultsHaveChanges(pendingModelChanges)
-            }
+            allowSaveWithoutDirty={!pluginMetadata || diff.hasChanges}
           />
         </form>
       </div>

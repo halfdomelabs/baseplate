@@ -2,13 +2,12 @@ import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  createAndApplyModelMergerResults,
-  createModelMergerResults,
-  doesModelMergerResultsHaveChanges,
+  applyMergedDefinition,
+  diffDefinition,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  ModelMergerResultAlert,
+  DefinitionDiffAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -28,11 +27,10 @@ import { useMemo } from 'react';
 
 import { getAuthPluginDefinition } from '#src/auth/index.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
-import { PLACEHOLDER_AUTH_MODELS } from '#src/placeholder-auth/constants/model-names.js';
 
 import type { PlaceholderAuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createAuthModels } from '../schema/models.js';
+import { createPlaceholderAuthPartialDefinition } from '../schema/models.js';
 import { createPlaceholderAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
@@ -65,15 +63,29 @@ export function PlaceholderAuthDefinitionEditor({
   });
   const { control, reset, handleSubmit } = form;
 
-  const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuthModels(authDefinition);
-
-    return createModelMergerResults(
-      PLACEHOLDER_AUTH_MODELS,
-      desiredModels,
-      definitionContainer,
+  const authFeature = definition.features.find(
+    (f) => f.id === authDefinition.authFeatureRef,
+  );
+  if (!authFeature) {
+    throw new Error(
+      `Auth feature not found for ref: ${authDefinition.authFeatureRef}`,
     );
-  }, [definitionContainer, authDefinition]);
+  }
+
+  const partialDef = useMemo(
+    () => createPlaceholderAuthPartialDefinition(authFeature.name),
+    [authFeature.name],
+  );
+
+  const diff = useMemo(
+    () =>
+      diffDefinition(
+        definitionContainer.schema,
+        definitionContainer.definition,
+        partialDef,
+      ),
+    [definitionContainer, partialDef],
+  );
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -81,12 +93,7 @@ export function PlaceholderAuthDefinitionEditor({
         const updatedData = {
           ...data,
         };
-        createAndApplyModelMergerResults(
-          draftConfig,
-          PLACEHOLDER_AUTH_MODELS,
-          createAuthModels(authDefinition),
-          definitionContainer,
-        );
+        applyMergedDefinition(definitionContainer, partialDef)(draftConfig);
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
@@ -129,8 +136,9 @@ export function PlaceholderAuthDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
-                  <ModelMergerResultAlert
-                    pendingModelChanges={pendingModelChanges}
+                  <DefinitionDiffAlert
+                    diff={diff}
+                    upToDateMessage="All required models are already configured correctly. No changes needed."
                   />
                 </SectionListSectionContent>
               </SectionListSection>
@@ -139,10 +147,7 @@ export function PlaceholderAuthDefinitionEditor({
 
           <FormActionBar
             form={form}
-            allowSaveWithoutDirty={
-              !pluginMetadata ||
-              doesModelMergerResultsHaveChanges(pendingModelChanges)
-            }
+            allowSaveWithoutDirty={!pluginMetadata || diff.hasChanges}
           />
         </form>
       </div>
