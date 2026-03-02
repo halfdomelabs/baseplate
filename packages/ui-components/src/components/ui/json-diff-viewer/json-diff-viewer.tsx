@@ -5,6 +5,16 @@ import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer-continued';
 
 import { cn } from '#src/utils/index.js';
 
+function serializeForDiff(value: unknown): string {
+  if (value !== null && typeof value === 'object') {
+    return stringifyPrettyStable(value);
+  }
+  if (value === undefined) {
+    return 'undefined\n';
+  }
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
 interface JsonDiffViewerProps {
   /** The original value to compare */
   oldValue: unknown;
@@ -28,8 +38,8 @@ function JsonDiffViewer({
   rightTitle = 'Updated',
   className,
 }: JsonDiffViewerProps): React.ReactElement {
-  const oldStr = stringifyPrettyStable(oldValue as object);
-  const newStr = stringifyPrettyStable(newValue as object);
+  const oldStr = serializeForDiff(oldValue);
+  const newStr = serializeForDiff(newValue);
 
   return (
     <div className={cn('overflow-auto text-xs', className)}>

@@ -174,9 +174,9 @@ describe('mergeDefinitionContainer', () => {
     // Serialize to get the current state including both models
     const serialized = serializeSchema(container.schema, container.definition);
 
-    // Merge with the same models array to ensure both are preserved
+    // Merge with only one model in patch input; the other should still be preserved
     const result = mergeDefinitionContainer(container, {
-      models: serialized.models,
+      models: serialized.models.filter((m) => m.name === 'User'),
     });
 
     expect(result.definition.models).toHaveLength(2);

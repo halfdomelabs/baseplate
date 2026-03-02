@@ -49,20 +49,18 @@ export function withMergeRule(
 }
 
 /**
- * Applies a `by-key` merge rule to an array schema.
+ * Creates a schema decorator that registers a `by-key` merge rule on an array schema.
  *
  * Infers the element type from the array schema so `getKey` is strongly typed.
  *
  * ```typescript
- * withByKeyMergeRule(
- *   z.array(z.object({ ref: z.string(), value: z.number() })),
- *   { getKey: (item) => item.ref },
- * )
+ * z
+ *   .array(z.object({ ref: z.string(), value: z.number() }))
+ *   .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
  * ```
  *
- * @param schema - A Zod array schema
  * @param options - Options with a typed `getKey` function
- * @returns The same schema instance, annotated with the merge rule
+ * @returns A schema decorator that annotates the array node with a by-key merge rule
  */
 export function withByKeyMergeRule<T extends ZodArray>(options: {
   getKey: (item: z.output<T>[number]) => string;

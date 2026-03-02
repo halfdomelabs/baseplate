@@ -3,7 +3,8 @@ import type { z, ZodDiscriminatedUnion } from 'zod';
 import type { EntitySchemaMeta } from '#src/references/definition-ref-registry.js';
 
 import { getSchemaChildren } from '#src/parser/schema-structure.js';
-import { definitionRefRegistry } from '#src/references/definition-ref-registry.js';
+
+import { getEntityMeta } from './entity-utils.js';
 
 /**
  * Information about an entity array found during schema walking.
@@ -15,24 +16,6 @@ export interface EntityArrayInfo {
   entityMeta: EntitySchemaMeta;
   /** The Zod schema for the array element */
   elementSchema: z.ZodType;
-}
-
-/**
- * Returns the first EntitySchemaMeta found on the given schema or any inner
- * schema reachable through wrappers (optional/nullable/default).
- */
-function getEntityMeta(schema: z.ZodType): EntitySchemaMeta | undefined {
-  const meta = definitionRefRegistry
-    .getAll(schema)
-    .find((m): m is EntitySchemaMeta => m.kind === 'entity');
-  if (meta) {
-    return meta;
-  }
-  const children = getSchemaChildren(schema, undefined, []);
-  if (children.kind === 'wrapper') {
-    return getEntityMeta(children.innerSchema);
-  }
-  return undefined;
 }
 
 /**

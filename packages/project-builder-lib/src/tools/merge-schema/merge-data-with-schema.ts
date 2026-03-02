@@ -1,5 +1,5 @@
 import type { PartialDeep } from 'type-fest';
-import type { z, ZodArray } from 'zod';
+import type { z } from 'zod';
 
 import { cloneDeep, toMerged } from 'es-toolkit';
 import { set } from 'es-toolkit/compat';
@@ -7,29 +7,11 @@ import { set } from 'es-toolkit/compat';
 import type { EntitySchemaMeta } from '#src/references/definition-ref-registry.js';
 
 import { getSchemaChildren } from '#src/parser/schema-structure.js';
-import { definitionRefRegistry } from '#src/references/definition-ref-registry.js';
 
+import { getEntityMeta, getEntityName } from './entity-utils.js';
 import { getMergeRule } from './merge-rule-registry.js';
 
 type PlainObject = Record<string, unknown>;
-
-/**
- * Returns the first EntitySchemaMeta found on the given schema or any inner
- * schema reachable through wrappers (optional/nullable/default).
- */
-function getEntityMeta(schema: z.ZodType): EntitySchemaMeta | undefined {
-  const meta = definitionRefRegistry
-    .getAll(schema)
-    .find((m): m is EntitySchemaMeta => m.kind === 'entity');
-  if (meta) {
-    return meta;
-  }
-  const children = getSchemaChildren(schema, undefined, []);
-  if (children.kind === 'wrapper') {
-    return getEntityMeta(children.innerSchema);
-  }
-  return undefined;
-}
 
 /**
  * Merges two values according to the given Zod schema and any registered merge rules.
@@ -120,8 +102,7 @@ function mergeDataWithSchemaInternal(
     }
 
     case 'array': {
-      const typed = schema as unknown as ZodArray;
-      const elementSchema = typed._zod.def.element as z.ZodType;
+      const { elementSchema } = children;
       const entityMeta = getEntityMeta(elementSchema);
 
       // Auto-detect entity arrays: merge by `name` field
@@ -139,11 +120,19 @@ function mergeDataWithSchemaInternal(
     }
 
     case 'discriminated-union': {
-      if (children.match) {
-        return mergeDataWithSchemaInternal(children.match, current, desired);
+      if (!children.match) {
+        // No matching branch found for desired — replace
+        return desired;
       }
-      // No matching branch found — replace
-      return desired;
+      // If current matches a different branch, replace to avoid leaking stale fields
+      const currentChildren = getSchemaChildren(schema, current, []);
+      if (
+        currentChildren.kind !== 'discriminated-union' ||
+        currentChildren.match !== children.match
+      ) {
+        return desired;
+      }
+      return mergeDataWithSchemaInternal(children.match, current, desired);
     }
 
     case 'tuple':
@@ -153,34 +142,6 @@ function mergeDataWithSchemaInternal(
       return desired;
     }
   }
-}
-
-/**
- * Resolves the name of an entity from its serialized (name-based) data using
- * the entity schema's name resolver.
- *
- * Since the data is already serialized, reference IDs are already names —
- * no cross-entity resolution or toposort is needed.
- */
-function getEntityName(
-  entityMeta: EntitySchemaMeta,
-  item: PlainObject,
-): string {
-  if (!entityMeta.getNameResolver) {
-    return item.name as string;
-  }
-  const resolver = entityMeta.getNameResolver(item);
-  if (typeof resolver === 'string') {
-    return resolver;
-  }
-  // In serialized data, reference IDs are already names — pass them through
-  const resolvedIds = Object.fromEntries(
-    Object.entries(resolver.idsToResolve ?? {}).map(([key, idOrIds]) => [
-      key,
-      idOrIds,
-    ]),
-  );
-  return resolver.resolveName(resolvedIds);
 }
 
 /**
@@ -234,6 +195,7 @@ function mergeEntityArray(
       result.push(
         mergeDataWithSchemaInternal(elementSchema, {}, baseItem) as PlainObject,
       );
+      seen.add(name);
     }
   }
 
@@ -277,6 +239,7 @@ function mergeByKey(
     const key = getKey(desiredItem);
     if (!seen.has(key)) {
       result.push(desiredItem);
+      seen.add(key);
     }
   }
 

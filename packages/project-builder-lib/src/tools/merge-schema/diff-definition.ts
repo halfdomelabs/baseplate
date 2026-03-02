@@ -11,6 +11,7 @@ import type {
 
 import { serializeSchema } from '#src/references/serialize-schema.js';
 
+import { getEntityName } from './entity-utils.js';
 import { mergeDefinition } from './merge-definition.js';
 import { collectEntityArrays } from './walk-schema.js';
 
@@ -69,10 +70,10 @@ function diffEntityArray(
   const label = capitalize(entityMeta.type.name);
 
   const currentByName = new Map(
-    currentArray.map((item) => [item.name as string, item]),
+    currentArray.map((item) => [getEntityName(entityMeta, item), item]),
   );
   const mergedByName = new Map(
-    mergedArray.map((item) => [item.name as string, item]),
+    mergedArray.map((item) => [getEntityName(entityMeta, item), item]),
   );
 
   // Only diff entities named in the partial definition
@@ -173,7 +174,7 @@ export function diffDefinition(
         Array.isArray(partialObj[key]) ? partialObj[key] : []
       ) as PlainObject[];
       const partialNames = new Set(
-        partialArray.map((item) => item.name as string),
+        partialArray.map((item) => getEntityName(entityInfo.entityMeta, item)),
       );
 
       entries.push(
