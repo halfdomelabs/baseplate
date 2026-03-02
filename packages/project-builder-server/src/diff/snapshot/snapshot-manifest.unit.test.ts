@@ -116,14 +116,27 @@ describe('snapshot-manifest', () => {
     });
 
     describe('addAddedFile', () => {
-      it('should return new manifest with added file', () => {
+      it('should return new manifest with added file and contentFile', () => {
         const originalManifest = initializeSnapshotManifest();
-        const updatedManifest = addAddedFile(originalManifest, 'src/new.ts');
+        const updatedManifest = addAddedFile(
+          originalManifest,
+          'src/new.ts',
+          'src_new.ts',
+        );
 
-        expect(updatedManifest.files.added).toEqual(['src/new.ts']);
+        expect(updatedManifest.files.added).toEqual([
+          { path: 'src/new.ts', contentFile: 'src_new.ts' },
+        ]);
 
         // Original manifest should be unchanged
         expect(originalManifest.files.added).toEqual([]);
+      });
+
+      it('should return new manifest with added file without contentFile', () => {
+        const originalManifest = initializeSnapshotManifest();
+        const updatedManifest = addAddedFile(originalManifest, 'src/new.ts');
+
+        expect(updatedManifest.files.added).toEqual([{ path: 'src/new.ts' }]);
       });
     });
 
@@ -150,13 +163,19 @@ describe('snapshot-manifest', () => {
           'src/test.ts',
           'test.diff',
         );
-        updatedManifest = addAddedFile(updatedManifest, 'src/added.ts');
+        updatedManifest = addAddedFile(
+          updatedManifest,
+          'src/added.ts',
+          'src_added.ts',
+        );
         updatedManifest = addDeletedFile(updatedManifest, 'src/deleted.ts');
 
         const finalManifest = removeFile(updatedManifest, 'src/test.ts');
 
         expect(finalManifest.files.modified).toEqual([]);
-        expect(finalManifest.files.added).toEqual(['src/added.ts']);
+        expect(finalManifest.files.added).toEqual([
+          { path: 'src/added.ts', contentFile: 'src_added.ts' },
+        ]);
         expect(finalManifest.files.deleted).toEqual(['src/deleted.ts']);
       });
     });

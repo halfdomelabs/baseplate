@@ -1,4 +1,7 @@
-import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
+import type {
+  ProjectDefinition,
+  SchemaParserContext,
+} from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
 import {
@@ -9,6 +12,7 @@ import {
 } from '@baseplate-dev/sync';
 import path from 'node:path';
 
+import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { compilePackages } from '#src/compiler/index.js';
@@ -26,9 +30,9 @@ export interface CreateSnapshotForProjectOptions {
    */
   projectDirectory: string;
   /**
-   * The app to create a snapshot for.
+   * The app to create a snapshot for. If omitted, saves snapshots for all apps.
    */
-  app: string;
+  app?: string;
   /**
    * The logger to use for logging.
    */
@@ -46,24 +50,94 @@ export interface CreateSnapshotForProjectOptions {
    */
   useIgnoreFile?: boolean;
   /**
-   * Custom snapshot directory name.
+   * Custom baseplate directory. Defaults to `path.join(projectDirectory, 'baseplate')`.
    */
-  snapshotDir?: string;
+  baseplateDirectory?: string;
+  /**
+   * When true, store full content of added files in the snapshot.
+   * Use for test cases where files aren't committed. Default: false.
+   */
+  includeAddedFileContents?: boolean;
+}
+
+interface CreateSnapshotForAppOptions {
+  app: PackageEntry;
+  directory: string;
+  projectJson: ProjectDefinition;
+  logger: Logger;
+  useIgnoreFile: boolean;
+  baseplateDirectory?: string;
+  includeAddedFileContents?: boolean;
 }
 
 /**
- * Creates a snapshot of the current diff state for a particular app
+ * Creates a snapshot for a single app entry.
+ */
+async function createSnapshotForApp({
+  app,
+  directory,
+  projectJson,
+  logger,
+  useIgnoreFile,
+  baseplateDirectory,
+  includeAddedFileContents,
+}: CreateSnapshotForAppOptions): Promise<void> {
+  const appDirectory = path.join(directory, app.packageDirectory);
+
+  logger.info(
+    `Creating snapshot for app: ${app.name} (${app.packageDirectory})`,
+  );
+
+  // Load ignore patterns for this app directory
+  const ignoreInstance = useIgnoreFile
+    ? await loadIgnorePatterns(appDirectory)
+    : undefined;
+
+  // Generate the output without writing files
+  const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
+  const generatorOutput = await executeGeneratorEntry(generatorEntry, {
+    templateMetadataOptions: createTemplateMetadataOptions(projectJson),
+  });
+
+  // Format the output
+  const formattedGeneratorOutput = await formatGeneratorOutput(
+    generatorOutput,
+    { outputDirectory: appDirectory },
+  );
+
+  // Create snapshot
+  const result = await saveSnapshot(
+    appDirectory,
+    directory,
+    app.name,
+    formattedGeneratorOutput,
+    {
+      baseplateDirectory,
+      ignoreInstance,
+      includeAddedFileContents,
+    },
+  );
+
+  logger.info(
+    `✓ Snapshot created at ${result.snapshotPath} (${result.fileCount.modified} modified, ${result.fileCount.added} added, ${result.fileCount.deleted} deleted)`,
+  );
+}
+
+/**
+ * Creates snapshots for one or all apps in a project.
+ * Returns the list of app names that were processed.
  */
 export async function createSnapshotForProject(
   options: CreateSnapshotForProjectOptions,
-): Promise<void> {
+): Promise<string[]> {
   const {
     projectDirectory: directory,
     app: appName,
     logger,
     context,
     useIgnoreFile = true,
-    snapshotDir,
+    baseplateDirectory,
+    includeAddedFileContents,
   } = options;
 
   try {
@@ -71,54 +145,43 @@ export async function createSnapshotForProject(
     const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
+      baseplateDirectory,
     );
 
     logger.info('Compiling applications...');
     const apps = compilePackages(projectJson, context);
 
-    // Filter apps if specified
-    const app = apps.find((app) => appName === app.name);
+    let appsToProcess: PackageEntry[];
 
-    if (!app) {
-      throw new Error(
-        `No applications found named ${appName}. Available apps: ${apps.map((a) => a.name).join(', ')}`,
-      );
+    if (appName) {
+      const app = apps.find((a) => appName === a.name);
+      if (!app) {
+        throw new Error(
+          `No applications found named ${appName}. Available apps: ${apps.map((a) => a.name).join(', ')}`,
+        );
+      }
+      appsToProcess = [app];
+    } else {
+      appsToProcess = apps;
     }
 
-    const appDirectory = path.join(directory, app.packageDirectory);
+    const savedApps: string[] = [];
 
-    logger.info(
-      `Creating snapshot for app: ${app.name} (${app.packageDirectory})`,
-    );
-
-    // Load ignore patterns for this app directory
-    const ignoreInstance = useIgnoreFile
-      ? await loadIgnorePatterns(appDirectory)
-      : undefined;
-
-    // Generate the output without writing files
-    const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
-    const generatorOutput = await executeGeneratorEntry(generatorEntry, {
-      templateMetadataOptions: createTemplateMetadataOptions(projectJson),
-    });
-
-    // Format the output
-    const formattedGeneratorOutput = await formatGeneratorOutput(
-      generatorOutput,
-      { outputDirectory: appDirectory },
-    );
-
-    // Create snapshot
-    const result = await saveSnapshot(appDirectory, formattedGeneratorOutput, {
-      snapshotDir,
-      ignoreInstance,
-    });
-
-    logger.info(
-      `✓ Snapshot created at ${result.snapshotPath} (${result.fileCount.modified} modified, ${result.fileCount.added} added, ${result.fileCount.deleted} deleted)`,
-    );
+    for (const app of appsToProcess) {
+      await createSnapshotForApp({
+        app,
+        directory,
+        projectJson,
+        logger,
+        useIgnoreFile,
+        baseplateDirectory,
+        includeAddedFileContents,
+      });
+      savedApps.push(app.name);
+    }
 
     logger.info('✓ Snapshots created successfully');
+    return savedApps;
   } catch (error) {
     logger.error(`Error creating snapshot: ${String(error)}`);
     throw error;

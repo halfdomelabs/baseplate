@@ -146,7 +146,11 @@ export async function diffProject(
       );
 
       // Apply snapshot to generator output
-      const snapshotDirectory = resolveSnapshotDirectory(appDirectory);
+      const baseplateDirectory = path.join(project.directory, 'baseplate');
+      const snapshotDirectory = resolveSnapshotDirectory(
+        baseplateDirectory,
+        app.name,
+      );
       const snapshot = await loadSnapshotManifest(snapshotDirectory);
 
       const diffedGeneratorOutput = snapshot
@@ -162,7 +166,7 @@ export async function diffProject(
 
       // Add added files to ignore pattern
       if (snapshot) {
-        ignorePatterns.add(snapshot.files.added);
+        ignorePatterns.add(snapshot.files.added.map((entry) => entry.path));
       }
 
       // Compare generated output with working directory

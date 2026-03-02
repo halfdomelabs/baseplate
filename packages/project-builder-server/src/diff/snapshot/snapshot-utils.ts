@@ -1,13 +1,24 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { SnapshotDirectory, SnapshotOptions } from './snapshot-types.js';
+import type { SnapshotDirectory } from './snapshot-types.js';
 
 import {
-  DEFAULT_SNAPSHOT_DIR,
   DIFFS_DIRNAME,
   MANIFEST_FILENAME,
+  SNAPSHOTS_DIRNAME,
 } from './snapshot-types.js';
+
+/**
+ * Resolves the baseplate directory for a project.
+ * Defaults to `<projectDirectory>/baseplate` when no explicit override is provided.
+ */
+export function resolveBaseplateDir(
+  projectDirectory: string,
+  baseplateDirectory?: string,
+): string {
+  return baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+}
 
 /**
  * Converts a file path to a safe filename for storing diffs
@@ -29,13 +40,26 @@ export function safeDiffFilenameToPath(diffFilename: string): string {
 }
 
 /**
- * Creates the snapshot directory structure
+ * Resolves the snapshot path for a given baseplate directory and app name.
+ * Computes `<baseplateDirectory>/snapshots/<appName>/`.
+ */
+function resolveSnapshotPath(
+  baseplateDirectory: string,
+  appName: string,
+): string {
+  return path.join(baseplateDirectory, SNAPSHOTS_DIRNAME, appName);
+}
+
+/**
+ * Creates the snapshot directory structure.
+ * @param baseplateDirectory - The baseplate directory (e.g. `<projectDir>/baseplate`)
+ * @param appName - The app name within the project
  */
 export async function createSnapshotDirectory(
-  baseDirectory: string,
-  snapshotDir: string = DEFAULT_SNAPSHOT_DIR,
+  baseplateDirectory: string,
+  appName: string,
 ): Promise<SnapshotDirectory> {
-  const snapshotPath = path.resolve(baseDirectory, snapshotDir);
+  const snapshotPath = resolveSnapshotPath(baseplateDirectory, appName);
   const manifestPath = path.join(snapshotPath, MANIFEST_FILENAME);
   const diffsPath = path.join(snapshotPath, DIFFS_DIRNAME);
 
@@ -51,14 +75,15 @@ export async function createSnapshotDirectory(
 }
 
 /**
- * Resolves the snapshot directory paths without creating them
+ * Resolves the snapshot directory paths without creating them.
+ * @param baseplateDirectory - The baseplate directory (e.g. `<projectDir>/baseplate`)
+ * @param appName - The app name within the project
  */
 export function resolveSnapshotDirectory(
-  baseDirectory: string,
-  options: SnapshotOptions = {},
+  baseplateDirectory: string,
+  appName: string,
 ): SnapshotDirectory {
-  const snapshotDirName = options.snapshotDir ?? DEFAULT_SNAPSHOT_DIR;
-  const snapshotPath = path.resolve(baseDirectory, snapshotDirName);
+  const snapshotPath = resolveSnapshotPath(baseplateDirectory, appName);
   const manifestPath = path.join(snapshotPath, MANIFEST_FILENAME);
   const diffsPath = path.join(snapshotPath, DIFFS_DIRNAME);
 

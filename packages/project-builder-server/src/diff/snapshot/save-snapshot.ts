@@ -5,7 +5,8 @@
 import type { GeneratorOutput } from '@baseplate-dev/sync';
 import type ignore from 'ignore';
 
-import { mkdir, rm } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 import type { SnapshotManifest } from './snapshot-types.js';
 
@@ -16,11 +17,15 @@ import { SNAPSHOT_VERSION } from './snapshot-types.js';
 import {
   createSnapshotDirectory,
   pathToSafeDiffFilename,
+  resolveBaseplateDir,
 } from './snapshot-utils.js';
 
 interface SaveSnapshotOptions {
   ignoreInstance?: ignore.Ignore;
-  snapshotDir?: string;
+  /** Custom baseplate directory for snapshot storage. Defaults to `path.join(projectDirectory, 'baseplate')`. */
+  baseplateDirectory?: string;
+  /** When true, store full content of added files in the snapshot. Default: false. */
+  includeAddedFileContents?: boolean;
 }
 
 interface SaveSnapshotResult {
@@ -35,16 +40,32 @@ interface SaveSnapshotResult {
 }
 
 /**
- * Creates a snapshot from the current diff state
+ * Creates a snapshot from the current diff state.
+ * @param appDirectory - The app directory to compare files against
+ * @param projectDirectory - The project root directory
+ * @param appName - The app name within the project
+ * @param generatorOutput - The generated output to diff against
+ * @param options - Optional snapshot options
  */
 export async function saveSnapshot(
-  directory: string,
+  appDirectory: string,
+  projectDirectory: string,
+  appName: string,
   generatorOutput: GeneratorOutput,
-  { ignoreInstance, snapshotDir }: SaveSnapshotOptions = {},
+  {
+    ignoreInstance,
+    baseplateDirectory,
+    includeAddedFileContents = false,
+  }: SaveSnapshotOptions = {},
 ): Promise<SaveSnapshotResult> {
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    projectDirectory,
+    baseplateDirectory,
+  );
+
   // Get current diff state
   const diffSummary = await compareFiles(
-    directory,
+    appDirectory,
     generatorOutput,
     undefined,
     ignoreInstance,
@@ -52,8 +73,8 @@ export async function saveSnapshot(
 
   // Create snapshot directory structure
   const snapshotDirectory = await createSnapshotDirectory(
-    directory,
-    snapshotDir,
+    resolvedBaseplateDir,
+    appName,
   );
 
   // Create manifest
@@ -63,6 +84,9 @@ export async function saveSnapshot(
   const modifiedTextDiffs = diffs.filter(
     (diff) => diff.type === 'modified' && !diff.isBinary,
   );
+  const addedTextDiffs = diffs.filter(
+    (diff) => diff.type === 'added' && !diff.isBinary,
+  );
   const manifest: SnapshotManifest = {
     version: SNAPSHOT_VERSION,
     files: {
@@ -70,9 +94,12 @@ export async function saveSnapshot(
         path: diff.path,
         diffFile: pathToSafeDiffFilename(diff.path),
       })),
-      added: diffs
-        .filter((diff) => diff.type === 'added')
-        .map((diff) => diff.path),
+      added: addedTextDiffs.map((diff) => ({
+        path: diff.path,
+        ...(includeAddedFileContents && {
+          contentFile: pathToSafeDiffFilename(diff.path),
+        }),
+      })),
       deleted: diffs
         .filter((diff) => diff.type === 'deleted')
         .map((diff) => diff.path),
@@ -83,7 +110,7 @@ export async function saveSnapshot(
   await rm(snapshotDirectory.diffsPath, { recursive: true });
   await mkdir(snapshotDirectory.diffsPath, { recursive: true });
 
-  // Save diffs to diffs folder
+  // Save diffs for modified files
   for (const diff of modifiedTextDiffs) {
     await saveSnapshotDiffFile(
       snapshotDirectory,
@@ -91,6 +118,18 @@ export async function saveSnapshot(
       diff.generatedContent,
       diff.workingContent,
     );
+  }
+
+  // Save full content for added files (only when content storage is enabled)
+  if (includeAddedFileContents) {
+    for (const diff of addedTextDiffs) {
+      const contentFileName = pathToSafeDiffFilename(diff.path);
+      const contentFilePath = path.join(
+        snapshotDirectory.diffsPath,
+        contentFileName,
+      );
+      await writeFile(contentFilePath, diff.workingContent, 'utf8');
+    }
   }
 
   // Save manifest

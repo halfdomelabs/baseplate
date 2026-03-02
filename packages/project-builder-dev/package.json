@@ -26,6 +26,16 @@
       "default": "./dist/*"
     }
   },
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./e2e-runner": {
+      "development": "./src/e2e-runner/index.ts",
+      "default": "./dist/e2e-runner/index.js"
+    }
+  },
   "main": "dist/index.js",
   "bin": {
     "baseplate-dev": "./bin/baseplate-dev.js"
@@ -61,9 +71,14 @@
     "@baseplate-dev/utils": "workspace:*",
     "@inquirer/prompts": "7.8.3",
     "commander": "^12.1.0",
+    "execa": "9.3.0",
+    "globby": "^14.0.2",
+    "ora": "^8.0.1",
+    "p-limit": "6.1.0",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
     "pkg-dir": "^8.0.0",
+    "testcontainers": "11.11.0",
     "zod": "catalog:"
   },
   "devDependencies": {

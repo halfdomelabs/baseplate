@@ -1,0 +1,12 @@
+{
+  "files": {
+    "added": [
+      { "path": "build.sh" },
+      { "path": "CLAUDE.md" },
+      { "path": "Dockerfile" }
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}

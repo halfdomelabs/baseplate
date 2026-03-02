@@ -1,17 +1,18 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
 const snapshotShowInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
-  snapshotDirectory: z
+  baseplateDirectory: z
     .string()
     .optional()
-    .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
+    .describe(
+      'Custom baseplate directory for snapshot resolution. Defaults to <projectDirectory>/baseplate.',
+    ),
 });
 
 const snapshotFileEntry = z.object({
@@ -33,7 +34,17 @@ const snapshotShowOutputSchema = z.object({
       modified: z
         .array(snapshotFileEntry)
         .describe('Modified files in snapshot.'),
-      added: z.array(z.string()).describe('Added files in snapshot.'),
+      added: z
+        .array(
+          z.object({
+            path: z.string().describe('File path.'),
+            contentFile: z
+              .string()
+              .optional()
+              .describe('Associated content file.'),
+          }),
+        )
+        .describe('Added files in snapshot.'),
       deleted: z.array(z.string()).describe('Deleted files in snapshot.'),
     })
     .describe('Files tracked in the snapshot.'),
@@ -50,12 +61,8 @@ export const snapshotShowAction = createServiceAction({
   inputSchema: snapshotShowInputSchema,
   outputSchema: snapshotShowOutputSchema,
   handler: async (input, context) => {
-    const {
-      project: projectId,
-      app,
-      snapshotDirectory = '.baseplate-snapshot',
-    } = input;
-    const { projects, logger, plugins, cliVersion } = context;
+    const { project: projectId, app } = input;
+    const { projects, logger } = context;
 
     try {
       // Find the project by name or ID
@@ -65,38 +72,15 @@ export const snapshotShowAction = createServiceAction({
         `Showing snapshot contents for project: ${project.name}, app: ${app}`,
       );
 
-      // Create schema parser context
-      const schemaContext = await createNodeSchemaParserContext(
-        project,
-        logger,
-        plugins,
-        cliVersion,
-      );
-
-      // We need to capture the output instead of just logging it
-      // Let's load the snapshot manifest directly
       const { loadSnapshotManifest } =
         await import('#src/diff/snapshot/snapshot-manifest.js');
-      const { resolveSnapshotDirectory } =
+      const { resolveSnapshotDirectory, resolveBaseplateDir } =
         await import('#src/diff/snapshot/snapshot-utils.js');
-      const { getSingleAppDirectoryForProject } =
-        await import('#src/project-definition/get-single-app-directory-for-project.js');
-      const { loadProjectDefinition } =
-        await import('#src/project-definition/index.js');
-
-      const { definition } = await loadProjectDefinition(
+      const baseplateDirectory = resolveBaseplateDir(
         project.directory,
-        schemaContext,
+        input.baseplateDirectory,
       );
-      const appDirectory = getSingleAppDirectoryForProject(
-        project.directory,
-        definition,
-        app,
-      );
-
-      const snapshotDir = resolveSnapshotDirectory(appDirectory, {
-        snapshotDir: snapshotDirectory,
-      });
+      const snapshotDir = resolveSnapshotDirectory(baseplateDirectory, app);
 
       const manifest = await loadSnapshotManifest(snapshotDir);
 
@@ -156,8 +140,8 @@ export const snapshotShowAction = createServiceAction({
 
       if (output.files.added.length > 0) {
         console.info(`\nAdded files (${output.files.added.length}):`);
-        for (const file of output.files.added) {
-          console.info(`  ${file}`);
+        for (const entry of output.files.added) {
+          console.info(`  ${entry.path}`);
         }
       }
 

@@ -15,10 +15,6 @@ const snapshotAddInputSchema = z.object({
     .boolean()
     .optional()
     .describe('Mark files as intentionally deleted in snapshot.'),
-  snapshotDirectory: z
-    .string()
-    .optional()
-    .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
 });
 
 const snapshotAddOutputSchema = z.object({
@@ -39,13 +35,7 @@ export const snapshotAddAction = createServiceAction({
   inputSchema: snapshotAddInputSchema,
   outputSchema: snapshotAddOutputSchema,
   handler: async (input, context) => {
-    const {
-      project: projectId,
-      app,
-      files,
-      deleted = false,
-      snapshotDirectory = '.baseplate-snapshot',
-    } = input;
+    const { project: projectId, app, files, deleted = false } = input;
     const { projects, logger, plugins, cliVersion } = context;
 
     try {
@@ -69,7 +59,6 @@ export const snapshotAddAction = createServiceAction({
 
       await addFilesToSnapshot(files, deleted, {
         projectDirectory: project.directory,
-        snapshotDirectory,
         appName: app,
         context: schemaContext,
         logger,

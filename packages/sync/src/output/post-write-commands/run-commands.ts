@@ -41,6 +41,7 @@ export async function runPostWriteCommands(
     const commandString = command.command;
 
     logger.info(`Running ${commandString}...`);
+
     try {
       if (abortSignal?.aborted) {
         throw new Error('Sync cancelled');

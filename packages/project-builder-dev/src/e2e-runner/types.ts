@@ -1,0 +1,55 @@
+export interface TestRunnerContext {
+  projectDirectoryPath: string;
+  streamCommandOutput: boolean;
+}
+
+interface RunCommandOptions {
+  cwd?: string;
+  // timeout in ms
+  timeout?: number;
+}
+
+interface WaitForURLOptions {
+  urls: string | string[];
+  /**
+   * Timeout in milliseconds after which the checking should stop if not successful.
+   *
+   * @default 10000
+   */
+  timeout?: number;
+}
+
+interface StartBackgroundCommandOptions extends RunCommandOptions {
+  waitForURL?: WaitForURLOptions;
+}
+
+export interface SetupEnvironmentHelpers {
+  startDockerCompose: (composeFilePath: string) => Promise<void>;
+  runCommand: (command: string, options?: RunCommandOptions) => Promise<void>;
+  startBackgroundCommand: (
+    command: string,
+    options?: StartBackgroundCommandOptions,
+  ) => Promise<void>;
+  shutdown: (showOutput: boolean) => Promise<void>;
+}
+
+export interface TestRunnerHelpers {
+  runCommand: (command: string, options?: RunCommandOptions) => Promise<void>;
+}
+
+export interface ProjectBuilderTest {
+  /**
+   * Path of output relative to the test projects directory.
+   *
+   * e.g. 'simple' maps to test-projects/simple/
+   */
+  projectDirectory: string;
+  setupEnvironment: (
+    context: TestRunnerContext,
+    helpers: SetupEnvironmentHelpers,
+  ) => Promise<void>;
+  runTests: (
+    context: TestRunnerContext,
+    helpers: TestRunnerHelpers,
+  ) => Promise<void>;
+}
