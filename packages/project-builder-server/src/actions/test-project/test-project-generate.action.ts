@@ -7,11 +7,7 @@ import { z } from 'zod';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
-import { syncProject } from '#src/sync/sync-project.js';
-
 import { createServiceAction } from '../types.js';
-import { loadProjectFromDirectory } from '../utils/project-discovery.js';
 
 /**
  * Generates a test project into the output directory by copying the project
@@ -36,6 +32,12 @@ export async function generateTestProject(
   userConfig: BaseplateUserConfig,
   overwrite = true,
 ): Promise<void> {
+  const { loadProjectFromDirectory } =
+    await import('../utils/project-discovery.js');
+  const { createNodeSchemaParserContext } =
+    await import('#src/plugins/node-plugin-store.js');
+  const { syncProject } = await import('#src/sync/sync-project.js');
+
   // Load context — baseplateDirectory points at testProjectDir where project-definition.json lives
   const projectInfo = await loadProjectFromDirectory(outputDir, testProjectDir);
 

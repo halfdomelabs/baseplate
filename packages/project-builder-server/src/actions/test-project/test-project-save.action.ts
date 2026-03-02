@@ -9,12 +9,7 @@ import { z } from 'zod';
 import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { compilePackages } from '#src/compiler/compile-packages.js';
-import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
-import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
-
 import { createServiceAction } from '../types.js';
-import { loadProjectFromDirectory } from '../utils/project-discovery.js';
 
 interface TestProjectContext {
   context: SchemaParserContext;
@@ -32,6 +27,14 @@ async function loadTestProjectContext(
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
 ): Promise<TestProjectContext> {
+  const { loadProjectFromDirectory } =
+    await import('../utils/project-discovery.js');
+  const { createNodeSchemaParserContext } =
+    await import('#src/plugins/node-plugin-store.js');
+  const { loadProjectDefinition } =
+    await import('#src/project-definition/load-project-definition.js');
+  const { compilePackages } = await import('#src/compiler/compile-packages.js');
+
   const projectInfo = await loadProjectFromDirectory(
     outputDir,
     baseplateDirectory,

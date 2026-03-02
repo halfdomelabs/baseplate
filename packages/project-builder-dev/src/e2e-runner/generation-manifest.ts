@@ -1,8 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import pLimit from 'p-limit';
 
 const MANIFEST_FILENAME = '.generation-manifest.json';
+const FILE_HASH_CONCURRENCY = 20;
 
 interface GenerationManifest {
   generatedAt: string;
@@ -56,11 +58,14 @@ export async function writeGenerationManifest(
 ): Promise<void> {
   const files = await collectFiles(outputDir, outputDir);
   const fileHashes: Record<string, string> = {};
+  const limit = pLimit(FILE_HASH_CONCURRENCY);
 
   await Promise.all(
-    files.map(async (file) => {
-      fileHashes[file] = await hashFile(path.join(outputDir, file));
-    }),
+    files.map((file) =>
+      limit(async () => {
+        fileHashes[file] = await hashFile(path.join(outputDir, file));
+      }),
+    ),
   );
 
   const manifest: GenerationManifest = {
@@ -101,17 +106,20 @@ async function checkStaleness(outputDir: string): Promise<StalenessResult> {
   const currentFiles = await collectFiles(outputDir, outputDir);
   const modifiedFiles: string[] = [];
   const newFiles: string[] = [];
+  const limit = pLimit(FILE_HASH_CONCURRENCY);
 
   // Check for modified and new files
   await Promise.all(
-    currentFiles.map(async (file) => {
-      const currentHash = await hashFile(path.join(outputDir, file));
-      if (!(file in manifest.files)) {
-        newFiles.push(file);
-      } else if (currentHash !== manifest.files[file]) {
-        modifiedFiles.push(file);
-      }
-    }),
+    currentFiles.map((file) =>
+      limit(async () => {
+        const currentHash = await hashFile(path.join(outputDir, file));
+        if (!(file in manifest.files)) {
+          newFiles.push(file);
+        } else if (currentHash !== manifest.files[file]) {
+          modifiedFiles.push(file);
+        }
+      }),
+    ),
   );
 
   return {
