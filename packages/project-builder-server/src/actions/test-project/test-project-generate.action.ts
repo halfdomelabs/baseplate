@@ -20,25 +20,25 @@ import { syncProject } from '#src/sync/sync-project.js';
 import { createServiceAction } from '../types.js';
 import { loadProjectFromDirectory } from '../utils/project-discovery.js';
 import {
-  resolveTestCaseSnapshotDirectory,
-  TEST_CASE_DEFINITION_FILENAME,
-} from './test-case-paths.js';
+  resolveTestProjectSnapshotDirectory,
+  TEST_PROJECT_DEFINITION_FILENAME,
+} from './test-project-paths.js';
 
-export interface TestCaseContext {
+export interface TestProjectContext {
   context: SchemaParserContext;
   apps: PackageEntry[];
 }
 
 /**
- * Loads the schema parser context and compiled package entries for a test case
+ * Loads the schema parser context and compiled package entries for a test project
  * output directory. Requires `outputDir/baseplate/project-definition.json` to exist.
  */
-export async function loadTestCaseContext(
+export async function loadTestProjectContext(
   outputDir: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
-): Promise<TestCaseContext> {
+): Promise<TestProjectContext> {
   const projectInfo = await loadProjectFromDirectory(outputDir);
   const context = await createNodeSchemaParserContext(
     projectInfo,
@@ -55,39 +55,39 @@ export async function loadTestCaseContext(
 
 /**
  * Sets up the generated test output directory by copying the project definition
- * and per-app snapshots from the test case directory.
+ * and per-app snapshots from the test project directory.
  */
 async function setupGeneratedTestDirectory(
-  testCaseDir: string,
+  testProjectDir: string,
   outputDir: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
-): Promise<TestCaseContext> {
+): Promise<TestProjectContext> {
   // Copy project definition to output dir
   await mkdir(path.join(outputDir, 'baseplate'), { recursive: true });
   await writeFile(
-    path.join(outputDir, 'baseplate', TEST_CASE_DEFINITION_FILENAME),
+    path.join(outputDir, 'baseplate', TEST_PROJECT_DEFINITION_FILENAME),
     await readFile(
-      path.join(testCaseDir, TEST_CASE_DEFINITION_FILENAME),
+      path.join(testProjectDir, TEST_PROJECT_DEFINITION_FILENAME),
       'utf-8',
     ),
   );
 
   // Load context + apps to know packageDirectory for each app
-  const testCaseContext = await loadTestCaseContext(
+  const testProjectContext = await loadTestProjectContext(
     outputDir,
     logger,
     plugins,
     cliVersion,
   );
-  const { apps } = testCaseContext;
+  const { apps } = testProjectContext;
 
-  // Copy per-app snapshots from testCaseDir/snapshots/<appName>/ → outputDir/baseplate/snapshots/<appName>/
+  // Copy per-app snapshots from testProjectDir/snapshots/<appName>/ → outputDir/baseplate/snapshots/<appName>/
   await Promise.all(
     apps.map(async (app) => {
-      const sourceSnapshotDir = resolveTestCaseSnapshotDirectory(
-        testCaseDir,
+      const sourceSnapshotDir = resolveTestProjectSnapshotDirectory(
+        testProjectDir,
         app.name,
       );
       const destSnapshotDir = path.join(
@@ -106,22 +106,22 @@ async function setupGeneratedTestDirectory(
     }),
   );
 
-  return testCaseContext;
+  return testProjectContext;
 }
 
 /**
- * Expands a test case into the output directory by generating the project
+ * Expands a test project into the output directory by generating the project
  * and applying per-app snapshots.
  *
- * @param testCaseDir - Path to the test case directory (tests/<name>/)
+ * @param testProjectDir - Path to the test project directory (test-projects/<name>/)
  * @param outputDir - Path to the generated output directory (generated-tests/<name>/)
  * @param logger - Logger instance
  * @param plugins - Discovered plugin metadata
  * @param cliVersion - CLI version string
  * @param userConfig - User configuration
  */
-export async function expandTestCase(
-  testCaseDir: string,
+export async function expandTestProject(
+  testProjectDir: string,
   outputDir: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
@@ -129,7 +129,7 @@ export async function expandTestCase(
   userConfig: BaseplateUserConfig,
 ): Promise<void> {
   const { context } = await setupGeneratedTestDirectory(
-    testCaseDir,
+    testProjectDir,
     outputDir,
     logger,
     plugins,
@@ -146,46 +146,46 @@ export async function expandTestCase(
 
   if (result.status === 'error') {
     throw new Error(
-      `Test case generation failed for ${path.basename(testCaseDir)}`,
+      `Test project generation failed for ${path.basename(testProjectDir)}`,
     );
   }
 }
 
-const testCaseGenerateInputSchema = z.object({
-  testCaseDirectory: z
+const testProjectGenerateInputSchema = z.object({
+  testProjectDirectory: z
     .string()
     .describe(
-      'Absolute path to the test case directory (e.g. tests/<test-name>/).',
+      'Absolute path to the test project directory (e.g. test-projects/<name>/).',
     ),
   outputDirectory: z
     .string()
     .describe(
-      'Absolute path to the generated output directory (e.g. generated-tests/<test-name>/).',
+      'Absolute path to the generated output directory (e.g. generated-tests/<name>/).',
     ),
 });
 
-const testCaseGenerateOutputSchema = z.object({
+const testProjectGenerateOutputSchema = z.object({
   success: z.boolean().describe('Whether the generation was successful.'),
   message: z.string().describe('Result message.'),
 });
 
 /**
- * Service action to generate a test case from its definition and snapshots.
+ * Service action to generate a test project from its definition and snapshots.
  */
-export const testCaseGenerateAction = createServiceAction({
-  name: 'test-case-generate',
-  title: 'Generate Test Case',
+export const testProjectGenerateAction = createServiceAction({
+  name: 'test-project-generate',
+  title: 'Generate Test Project',
   description:
-    'Generate test case output from a test case definition and snapshots',
-  inputSchema: testCaseGenerateInputSchema,
-  outputSchema: testCaseGenerateOutputSchema,
+    'Generate test project output from a test project definition and snapshots',
+  inputSchema: testProjectGenerateInputSchema,
+  outputSchema: testProjectGenerateOutputSchema,
   handler: async (input, context) => {
-    const { testCaseDirectory, outputDirectory } = input;
+    const { testProjectDirectory, outputDirectory } = input;
     const { logger, plugins, cliVersion, userConfig } = context;
 
     try {
-      await expandTestCase(
-        testCaseDirectory,
+      await expandTestProject(
+        testProjectDirectory,
         outputDirectory,
         logger,
         plugins,
@@ -195,13 +195,13 @@ export const testCaseGenerateAction = createServiceAction({
 
       return {
         success: true,
-        message: `Test case generated at ${outputDirectory}`,
+        message: `Test project generated at ${outputDirectory}`,
       };
     } catch (error) {
-      logger.error(`Failed to generate test case: ${String(error)}`);
+      logger.error(`Failed to generate test project: ${String(error)}`);
       return {
         success: false,
-        message: `Failed to generate test case: ${error instanceof Error ? error.message : String(error)}`,
+        message: `Failed to generate test project: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
   },

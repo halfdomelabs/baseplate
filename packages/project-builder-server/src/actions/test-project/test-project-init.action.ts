@@ -8,20 +8,20 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { createServiceAction } from '../types.js';
-import { TEST_CASE_DEFINITION_FILENAME } from './test-case-paths.js';
+import { TEST_PROJECT_DEFINITION_FILENAME } from './test-project-paths.js';
 
-const testCaseInitInputSchema = z.object({
-  testCaseDirectory: z
+const testProjectInitInputSchema = z.object({
+  testProjectDirectory: z
     .string()
     .describe(
-      'Absolute path to the test case directory (e.g. tests/<test-name>/).',
+      'Absolute path to the test project directory (e.g. test-projects/<name>/).',
     ),
   testName: z
     .string()
-    .describe('The name of the test case (used as the project name).'),
+    .describe('The name of the test project (used as the project name).'),
 });
 
-const testCaseInitOutputSchema = z.object({
+const testProjectInitOutputSchema = z.object({
   success: z.boolean().describe('Whether the initialization was successful.'),
   message: z.string().describe('Result message.'),
   definitionPath: z
@@ -31,31 +31,31 @@ const testCaseInitOutputSchema = z.object({
 });
 
 /**
- * Service action to initialize a new test case with a default project definition.
+ * Service action to initialize a new test project with a default project definition.
  */
-export const testCaseInitAction = createServiceAction({
-  name: 'test-case-init',
-  title: 'Initialize Test Case',
-  description: 'Create a new test case with an initial project definition',
-  inputSchema: testCaseInitInputSchema,
-  outputSchema: testCaseInitOutputSchema,
+export const testProjectInitAction = createServiceAction({
+  name: 'test-project-init',
+  title: 'Initialize Test Project',
+  description: 'Create a new test project with an initial project definition',
+  inputSchema: testProjectInitInputSchema,
+  outputSchema: testProjectInitOutputSchema,
   handler: async (input, context) => {
-    const { testCaseDirectory, testName } = input;
+    const { testProjectDirectory, testName } = input;
     const { logger } = context;
 
     try {
-      if (await dirExists(testCaseDirectory)) {
+      if (await dirExists(testProjectDirectory)) {
         return {
           success: false,
-          message: `Test case already exists at ${testCaseDirectory}. Use 'test-case-generate' to regenerate it.`,
+          message: `Test project already exists at ${testProjectDirectory}. Use 'test-project generate' to regenerate it.`,
         };
       }
 
-      await mkdir(testCaseDirectory, { recursive: true });
+      await mkdir(testProjectDirectory, { recursive: true });
 
       const definitionPath = path.join(
-        testCaseDirectory,
-        TEST_CASE_DEFINITION_FILENAME,
+        testProjectDirectory,
+        TEST_PROJECT_DEFINITION_FILENAME,
       );
 
       const initialDefinition = {
@@ -76,18 +76,18 @@ export const testCaseInitAction = createServiceAction({
 
       await writeFile(definitionPath, stringifyPrettyStable(initialDefinition));
 
-      logger.info(`Created test case at ${testCaseDirectory}`);
+      logger.info(`Created test project at ${testProjectDirectory}`);
 
       return {
         success: true,
-        message: `Test case '${testName}' initialized at ${testCaseDirectory}`,
+        message: `Test project '${testName}' initialized at ${testProjectDirectory}`,
         definitionPath,
       };
     } catch (error) {
-      logger.error(`Failed to initialize test case: ${String(error)}`);
+      logger.error(`Failed to initialize test project: ${String(error)}`);
       return {
         success: false,
-        message: `Failed to initialize test case: ${error instanceof Error ? error.message : String(error)}`,
+        message: `Failed to initialize test project: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
   },
@@ -96,7 +96,7 @@ export const testCaseInitAction = createServiceAction({
       console.info(`✓ ${output.message}`);
       if (output.definitionPath) {
         console.info(
-          `  Next: Configure the project definition, then run 'baseplate-dev test generate <test-name>'`,
+          `  Next: Configure the project definition, then run 'baseplate-dev test-project generate <test-name>'`,
         );
       }
     } else {

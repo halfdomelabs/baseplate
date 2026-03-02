@@ -25,10 +25,10 @@ import {
   showTemplateMetadataAction,
 } from './templates/index.js';
 import {
-  testCaseGenerateAction,
-  testCaseInitAction,
-  testCaseSaveAction,
-} from './test-case/index.js';
+  testProjectGenerateAction,
+  testProjectInitAction,
+  testProjectSaveAction,
+} from './test-project/index.js';
 
 export const USER_SERVICE_ACTIONS = [
   diffProjectAction,
@@ -53,7 +53,7 @@ export const ALL_SERVICE_ACTIONS = [
   snapshotRemoveAction,
   snapshotSaveAction,
   snapshotShowAction,
-  testCaseGenerateAction,
-  testCaseInitAction,
-  testCaseSaveAction,
+  testProjectGenerateAction,
+  testProjectInitAction,
+  testProjectSaveAction,
 ];

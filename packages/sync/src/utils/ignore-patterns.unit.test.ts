@@ -15,8 +15,6 @@ describe('ignore-patterns', () => {
       const ig = await loadIgnorePatterns('/test/dir');
 
       // Test default patterns
-      expect(ig.ignores('.env')).toBe(true);
-      expect(ig.ignores('.env.local')).toBe(true);
       expect(ig.ignores('debug.log')).toBe(true);
       expect(ig.ignores('node_modules/something')).toBe(true);
       expect(ig.ignores('dist/file.js')).toBe(true);
@@ -26,10 +24,14 @@ describe('ignore-patterns', () => {
       expect(ig.ignores('.paths-metadata.json')).toBe(true);
       expect(ig.ignores('baseplate/project-definition.json')).toBe(true);
       expect(ig.ignores('baseplate/some-file.ts')).toBe(true);
+
+      // Test that project-specific files are NOT ignored by default
+      expect(ig.ignores('.env')).toBe(false);
+      expect(ig.ignores('.env.local')).toBe(false);
+      expect(ig.ignores('pnpm-lock.yaml')).toBe(false);
       expect(ig.ignores('prisma/migrations/20231201_init/migration.sql')).toBe(
-        true,
+        false,
       );
-      expect(ig.ignores('prisma/migrations/some-migration/up.sql')).toBe(true);
 
       // Test that normal files are not ignored
       expect(ig.ignores('src/file.ts')).toBe(false);
@@ -51,7 +53,6 @@ describe('ignore-patterns', () => {
       expect(ig.ignores('secret/file.txt')).toBe(true);
 
       // Test default patterns still work
-      expect(ig.ignores('.env')).toBe(true);
       expect(ig.ignores('node_modules/something')).toBe(true);
 
       // Test that normal files are not ignored
@@ -66,7 +67,6 @@ describe('ignore-patterns', () => {
       const ig = await loadIgnorePatterns('/test/dir');
 
       // Test default patterns still work
-      expect(ig.ignores('.env')).toBe(true);
       expect(ig.ignores('node_modules/something')).toBe(true);
 
       // Test that normal files are not ignored
@@ -95,17 +95,17 @@ describe('ignore-patterns', () => {
     it('should exclude files based on default patterns', async () => {
       const ig = await loadIgnorePatterns('/test/dir');
 
-      expect(shouldIncludeFile('.env', ig)).toBe(false);
       expect(shouldIncludeFile('node_modules/package/file.js', ig)).toBe(false);
       expect(shouldIncludeFile('dist/bundle.js', ig)).toBe(false);
       expect(shouldIncludeFile('baseplate/project-definition.json', ig)).toBe(
         false,
       );
-      expect(
-        shouldIncludeFile('prisma/migrations/001_init/migration.sql', ig),
-      ).toBe(false);
       expect(shouldIncludeFile('src/component.tsx', ig)).toBe(true);
       expect(shouldIncludeFile('prisma/schema.prisma', ig)).toBe(true);
+      expect(shouldIncludeFile('.env', ig)).toBe(true);
+      expect(
+        shouldIncludeFile('prisma/migrations/001_init/migration.sql', ig),
+      ).toBe(true);
     });
   });
 });

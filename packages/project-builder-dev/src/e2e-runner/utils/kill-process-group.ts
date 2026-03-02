@@ -8,8 +8,6 @@ import type { Subprocess } from 'execa';
 
 import { execa } from 'execa';
 
-import { logger } from './console.js';
-
 const isWin = process.platform === 'win32';
 
 /**
@@ -63,7 +61,7 @@ export async function safeKillProcessGroup(
     if (subprocess.killed) return;
     killProcessGroup(subprocess, { signal: 'SIGKILL' }).catch(
       (err: unknown) => {
-        logger.error(`Unable to kill process group`, err);
+        console.error(`Unable to kill process group`, err);
       },
     );
   }, timeout);

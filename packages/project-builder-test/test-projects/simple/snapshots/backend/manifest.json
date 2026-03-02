@@ -1,0 +1,19 @@
+{
+  "files": {
+    "added": [
+      {
+        "contentFile": "prisma_migrations_20260302140329_initial_migration_migration.sql.diff",
+        "path": "prisma/migrations/20260302140329_initial_migration/migration.sql"
+      },
+      {
+        "contentFile": "prisma_migrations_migration_lock.toml.diff",
+        "path": "prisma/migrations/migration_lock.toml"
+      }
+    ],
+    "deleted": [],
+    "modified": [
+      { "diffFile": "src_prisma_seed.ts.diff", "path": "src/prisma/seed.ts" }
+    ]
+  },
+  "version": "1"
+}

@@ -1,2 +1,3 @@
 /apps/**
 /packages/**
+pnpm-lock.yaml

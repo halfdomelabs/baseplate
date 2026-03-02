@@ -1,5 +1,3 @@
-import { logger } from './console.js';
-
 let isExiting = false;
 const exitCallbacks: (() => void)[] = [];
 
@@ -15,7 +13,7 @@ export function onProcessExit(callback: () => void): () => void {
 }
 
 const handleInterrupt: NodeJS.SignalsListener = (signal) => {
-  logger.info(`\nReceived ${signal}, exiting...`);
+  console.info(`\nReceived ${signal}, exiting...`);
   isExiting = true;
   for (const callback of exitCallbacks) callback();
 };

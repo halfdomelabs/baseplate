@@ -1,12 +1,11 @@
 // Simple repository with just one backend, one admin, and one web
 
-import type { ProjectBuilderTest } from '#src/types.js';
+import type { ProjectBuilderTest } from '@baseplate-dev/project-builder-dev/e2e-runner';
 
 export default {
   projectDirectory: 'simple',
   async setupEnvironment(context, helpers) {
-    // disable frozen lockfile to test migrations
-    await helpers.runCommand('pnpm install --no-frozen-lockfile');
+    await helpers.runCommand('pnpm install');
     await helpers.startDockerCompose('docker/docker-compose.yml');
     await (context.streamCommandOutput
       ? helpers.runCommand('pnpm prisma migrate dev', {
@@ -29,8 +28,7 @@ export default {
       timeout: 60_000,
     });
     await helpers.runCommand('pnpm lint');
-    // TODO: Fix prettier due to weird bug that only happens on CI
-    // await helpers.runCommand('pnpm prettier:check');
+    await helpers.runCommand('pnpm prettier:check');
     await helpers.runCommand('pnpm build');
   },
 } satisfies ProjectBuilderTest;

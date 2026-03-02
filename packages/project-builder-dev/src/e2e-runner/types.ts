@@ -39,9 +39,9 @@ export interface TestRunnerHelpers {
 
 export interface ProjectBuilderTest {
   /**
-   * Path of output relative to root baseplate repo tests directory
+   * Path of output relative to the test projects directory.
    *
-   * baseplate/tests/<directory>
+   * e.g. 'simple' maps to test-projects/simple/
    */
   projectDirectory: string;
   setupEnvironment: (

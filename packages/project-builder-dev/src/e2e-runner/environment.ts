@@ -5,14 +5,13 @@ import path from 'node:path';
 import ora, { oraPromise } from 'ora';
 import { DockerComposeEnvironment } from 'testcontainers';
 
-import type { SetupEnvironmentHelpers, TestRunnerContext } from '#src/types.js';
+import type { SetupEnvironmentHelpers, TestRunnerContext } from './types.js';
 
-import { HandledError } from '#src/errors/handled-error.js';
-import { logger } from '#src/utils/console.js';
-import { safeKillProcessGroup } from '#src/utils/kill-process-group.js';
-import { shouldEnableOra } from '#src/utils/ora.js';
-import { isExitingProcess, onProcessExit } from '#src/utils/process.js';
-import { waitForHealthyUrl } from '#src/utils/url.js';
+import { HandledError } from './errors.js';
+import { safeKillProcessGroup } from './utils/kill-process-group.js';
+import { shouldEnableOra } from './utils/ora.js';
+import { isExitingProcess, onProcessExit } from './utils/process.js';
+import { waitForHealthyUrl } from './utils/url.js';
 
 export function createEnvironmentHelpers({
   projectDirectoryPath,
@@ -86,7 +85,7 @@ export function createEnvironmentHelpers({
               `Failed to run command: ${command} (exit code ${execErr.exitCode}): ${execErr.shortMessage}`,
             );
             if (!streamCommandOutput) {
-              logger.log(execErr.all);
+              console.info(execErr.all);
             }
 
             throw new HandledError();
@@ -139,7 +138,7 @@ export function createEnvironmentHelpers({
           const all = await childProcess
             .then((result) => result.all)
             .catch((err: unknown) => (err as ExecaError).all);
-          logger.log(all);
+          console.info(all);
         }
       });
 
@@ -156,7 +155,7 @@ export function createEnvironmentHelpers({
           },
         );
       } else {
-        logger.log(`Started command in background: ${command}`);
+        console.info(`Started command in background: ${command}`);
       }
     },
     async shutdown(showOutput: boolean): Promise<void> {
@@ -172,7 +171,7 @@ export function createEnvironmentHelpers({
         spinner.succeed(`Project environment shut down.`);
       } catch (e) {
         spinner.fail(`Failed to shut down project environment.`);
-        logger.error(e);
+        console.error(e);
       }
     },
   };

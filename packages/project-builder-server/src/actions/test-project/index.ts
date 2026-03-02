@@ -1,9 +1,9 @@
 export {
-  expandTestCase,
-  testCaseGenerateAction,
-} from './test-case-generate.action.js';
-export { testCaseInitAction } from './test-case-init.action.js';
+  expandTestProject,
+  testProjectGenerateAction,
+} from './test-project-generate.action.js';
+export { testProjectInitAction } from './test-project-init.action.js';
 export {
-  saveTestCaseSnapshots,
-  testCaseSaveAction,
-} from './test-case-save.action.js';
+  saveTestProjectSnapshots,
+  testProjectSaveAction,
+} from './test-project-save.action.js';

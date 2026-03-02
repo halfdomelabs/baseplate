@@ -15,7 +15,7 @@ fi
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DIRS=("$ROOT_DIR")
 
-for dir in "$ROOT_DIR"/examples/*/package.json "$ROOT_DIR"/tests/*/package.json; do
+for dir in "$ROOT_DIR"/examples/*/package.json; do
   [ -f "$dir" ] && DIRS+=("$(dirname "$dir")")
 done
 

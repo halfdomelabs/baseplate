@@ -10,31 +10,31 @@ import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js
 import { DEFAULT_SNAPSHOTS_DIR } from '#src/diff/snapshot/snapshot-types.js';
 
 import { createServiceAction } from '../types.js';
-import { loadTestCaseContext } from './test-case-generate.action.js';
-import { resolveTestCaseSnapshotDirectory } from './test-case-paths.js';
+import { loadTestProjectContext } from './test-project-generate.action.js';
+import { resolveTestProjectSnapshotDirectory } from './test-project-paths.js';
 
 /**
  * Saves the current state of the generated output directory as snapshots
- * back into the test case directory.
+ * back into the test project directory.
  *
- * Requires the output directory to exist (run `expandTestCase` first).
+ * Requires the output directory to exist (run `expandTestProject` first).
  *
- * @param testCaseDir - Path to the test case directory (tests/<name>/)
+ * @param testProjectDir - Path to the test project directory (test-projects/<name>/)
  * @param outputDir - Path to the generated output directory (generated-tests/<name>/)
  * @param logger - Logger instance
  * @param plugins - Discovered plugin metadata
  * @param cliVersion - CLI version string
  * @param userConfig - User configuration
  */
-export async function saveTestCaseSnapshots(
-  testCaseDir: string,
+export async function saveTestProjectSnapshots(
+  testProjectDir: string,
   outputDir: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
   userConfig: BaseplateUserConfig,
 ): Promise<string[]> {
-  const { context } = await loadTestCaseContext(
+  const { context } = await loadTestProjectContext(
     outputDir,
     logger,
     plugins,
@@ -44,7 +44,7 @@ export async function saveTestCaseSnapshots(
   const { createSnapshotForProject } =
     await import('#src/diff/snapshot/create-snapshot-for-project.js');
 
-  // Save snapshots for all apps at once (with content for added files since test cases aren't committed)
+  // Save snapshots for all apps at once (with content for added files since test projects aren't committed)
   const savedApps = await createSnapshotForProject({
     projectDirectory: outputDir,
     logger,
@@ -53,15 +53,15 @@ export async function saveTestCaseSnapshots(
     includeAddedFileContents: true,
   });
 
-  // Copy snapshots back from output dir to test case dir
+  // Copy snapshots back from output dir to test project dir
   for (const appName of savedApps) {
     const sourceSnapshotDir = path.join(
       outputDir,
       DEFAULT_SNAPSHOTS_DIR,
       appName,
     );
-    const destSnapshotDir = resolveTestCaseSnapshotDirectory(
-      testCaseDir,
+    const destSnapshotDir = resolveTestProjectSnapshotDirectory(
+      testProjectDir,
       appName,
     );
     await mkdir(path.dirname(destSnapshotDir), { recursive: true });
@@ -71,42 +71,42 @@ export async function saveTestCaseSnapshots(
   return savedApps;
 }
 
-const testCaseSaveInputSchema = z.object({
-  testCaseDirectory: z
+const testProjectSaveInputSchema = z.object({
+  testProjectDirectory: z
     .string()
     .describe(
-      'Absolute path to the test case directory (e.g. tests/<test-name>/).',
+      'Absolute path to the test project directory (e.g. test-projects/<name>/).',
     ),
   outputDirectory: z
     .string()
     .describe(
-      'Absolute path to the generated output directory (e.g. generated-tests/<test-name>/).',
+      'Absolute path to the generated output directory (e.g. generated-tests/<name>/).',
     ),
 });
 
-const testCaseSaveOutputSchema = z.object({
+const testProjectSaveOutputSchema = z.object({
   success: z.boolean().describe('Whether the save was successful.'),
   message: z.string().describe('Result message.'),
   apps: z.array(z.string()).describe('App names that had snapshots saved.'),
 });
 
 /**
- * Service action to save snapshots from generated output back to the test case directory.
+ * Service action to save snapshots from generated output back to the test project directory.
  */
-export const testCaseSaveAction = createServiceAction({
-  name: 'test-case-save',
-  title: 'Save Test Case Snapshots',
+export const testProjectSaveAction = createServiceAction({
+  name: 'test-project-save',
+  title: 'Save Test Project Snapshots',
   description:
-    'Save snapshots from generated output back to test case directory',
-  inputSchema: testCaseSaveInputSchema,
-  outputSchema: testCaseSaveOutputSchema,
+    'Save snapshots from generated output back to test project directory',
+  inputSchema: testProjectSaveInputSchema,
+  outputSchema: testProjectSaveOutputSchema,
   handler: async (input, context) => {
-    const { testCaseDirectory, outputDirectory } = input;
+    const { testProjectDirectory, outputDirectory } = input;
     const { logger, plugins, cliVersion, userConfig } = context;
 
     try {
-      const apps = await saveTestCaseSnapshots(
-        testCaseDirectory,
+      const apps = await saveTestProjectSnapshots(
+        testProjectDirectory,
         outputDirectory,
         logger,
         plugins,
@@ -120,7 +120,7 @@ export const testCaseSaveAction = createServiceAction({
         apps,
       };
     } catch (error) {
-      logger.error(`Failed to save test case snapshots: ${String(error)}`);
+      logger.error(`Failed to save test project snapshots: ${String(error)}`);
       return {
         success: false,
         message: `Failed to save snapshots: ${error instanceof Error ? error.message : String(error)}`,

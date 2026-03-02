@@ -1,0 +1,10 @@
+{
+  "files": {
+    "added": [
+      { "contentFile": "pnpm-lock.yaml.diff", "path": "pnpm-lock.yaml" }
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}

@@ -1,1 +1,5 @@
 .env
+.env.*
+prisma/migrations/**/*
+prisma/migrations_file.txt
+pnpm-lock.yaml

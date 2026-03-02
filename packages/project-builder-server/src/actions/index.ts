@@ -4,6 +4,6 @@ export * from './registry.js';
 export * from './snapshot/index.js';
 export * from './sync/index.js';
 export * from './template-extractor/index.js';
-export * from './test-case/index.js';
+export * from './test-project/index.js';
 export * from './types.js';
 export * from './utils/index.js';

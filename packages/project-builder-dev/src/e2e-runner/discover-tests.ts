@@ -2,9 +2,9 @@ import { globby } from 'globby';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { ProjectBuilderTest } from '#src/types.js';
+import type { ProjectBuilderTest } from './types.js';
 
-interface TestFile {
+export interface TestFile {
   filename: string;
   content: ProjectBuilderTest;
 }
@@ -13,7 +13,7 @@ export async function discoverTests(
   testDirectory: string,
   filter?: string,
 ): Promise<TestFile[]> {
-  const testFiles = await globby('**.test.ts', {
+  const testFiles = await globby('**.gen.ts', {
     cwd: testDirectory,
     gitignore: true,
   });

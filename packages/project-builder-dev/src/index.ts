@@ -9,6 +9,7 @@ import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncExamplesCommand } from './commands/sync-examples.js';
 import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
+import { addTestProjectCommand } from './commands/test-project.js';
 import { addTestCommand } from './commands/test.js';
 
 /**
@@ -28,6 +29,7 @@ export async function runDevCli(): Promise<void> {
   addServeCommand(program);
   addDevServerCommand(program);
   addMcpCommand(program);
+  addTestProjectCommand(program);
   addTestCommand(program);
 
   await program.parseAsync(process.argv);
