@@ -2,7 +2,9 @@ import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
 import { CancelledSyncError } from '@baseplate-dev/sync';
+import { dirExists } from '@baseplate-dev/utils/node';
 import { mapValues } from 'es-toolkit';
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 
@@ -60,9 +62,9 @@ export interface SyncProjectOptions {
    */
   overwrite?: boolean;
   /**
-   * Directory containing snapshot to use when generating.
+   * Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
    */
-  snapshotDirectory?: string;
+  baseplateDirectory?: string;
   /**
    * Only sync specific packages by name.
    */
@@ -98,9 +100,14 @@ export async function syncProject({
   skipCommands,
   cliFilePath,
   overwrite,
-  snapshotDirectory,
+  baseplateDirectory,
   packageFilter,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
+  const outputDirExists = await dirExists(directory);
+  if (!outputDirExists) {
+    await mkdir(directory, { recursive: true });
+  }
+
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
     status: 'in-progress',
@@ -117,6 +124,7 @@ export async function syncProject({
     const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
+      baseplateDirectory,
     );
     const apps = compilePackages(projectJson, context);
 
@@ -194,7 +202,7 @@ export async function syncProject({
           abortSignal,
           skipCommands,
           overwrite,
-          snapshotDirectory,
+          baseplateDirectory,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {

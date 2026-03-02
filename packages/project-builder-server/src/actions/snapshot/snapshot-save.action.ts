@@ -7,11 +7,12 @@ import { getProjectByNameOrId } from '../utils/projects.js';
 
 const snapshotSaveInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
-  app: z.string().describe('The app name within the project.'),
-  snapshotDirectory: z
+  app: z
     .string()
     .optional()
-    .describe('Custom snapshot directory (defaults to .baseplate-snapshot).'),
+    .describe(
+      'The app name within the project. If omitted, saves snapshots for all apps.',
+    ),
   force: z
     .boolean()
     .optional()
@@ -24,6 +25,10 @@ const snapshotSaveOutputSchema = z.object({
     .describe('Whether the snapshot save operation was successful.'),
   message: z.string().describe('Result message.'),
   snapshotPath: z.string().optional().describe('Path to the saved snapshot.'),
+  savedApps: z
+    .array(z.string())
+    .optional()
+    .describe('List of app names that had snapshots saved.'),
 });
 
 /**
@@ -37,19 +42,15 @@ export const snapshotSaveAction = createServiceAction({
   inputSchema: snapshotSaveInputSchema,
   outputSchema: snapshotSaveOutputSchema,
   handler: async (input, context) => {
-    const {
-      project: projectId,
-      app,
-      snapshotDirectory = '.baseplate-snapshot',
-      force = false,
-    } = input;
+    const { project: projectId, app, force = false } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     try {
       // Find the project by name or ID
       const project = getProjectByNameOrId(projects, projectId);
 
-      logger.info(`Saving snapshot for project: ${project.name}, app: ${app}`);
+      const target = app ? `app: ${app}` : 'all apps';
+      logger.info(`Saving snapshot for project: ${project.name}, ${target}`);
 
       // Create schema parser context
       const schemaContext = await createNodeSchemaParserContext(
@@ -74,19 +75,18 @@ export const snapshotSaveAction = createServiceAction({
       const { createSnapshotForProject } =
         await import('#src/diff/snapshot/create-snapshot-for-project.js');
 
-      await createSnapshotForProject({
+      const savedApps = await createSnapshotForProject({
         projectDirectory: project.directory,
         app,
         logger,
         context: schemaContext,
         userConfig,
-        snapshotDir: snapshotDirectory,
       });
 
       return {
         success: true,
-        message: `Snapshot saved successfully for ${project.name}/${app}`,
-        snapshotPath: `${project.directory}/${app}/${snapshotDirectory}`,
+        message: `Snapshot saved successfully for ${project.name}${app ? `/${app}` : ` (${savedApps.length} app(s))`}`,
+        savedApps,
       };
     } catch (error) {
       logger.error(
@@ -103,6 +103,15 @@ export const snapshotSaveAction = createServiceAction({
       console.info(`✓ ${output.message}`);
       if (output.snapshotPath) {
         console.info(`   Saved to: ${output.snapshotPath}`);
+      }
+      if (
+        output.savedApps &&
+        output.savedApps.length > 0 &&
+        !output.snapshotPath
+      ) {
+        for (const app of output.savedApps) {
+          console.info(`   Saved: ${app}`);
+        }
       }
     } else {
       console.error(`✗ ${output.message}`);

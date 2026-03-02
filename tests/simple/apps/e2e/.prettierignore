@@ -1,8 +1,0 @@
-/baseplate
-/build
-/coverage
-/dist
-/lib
-/node_modules
-/schema.graphql
-pnpm-lock.yaml

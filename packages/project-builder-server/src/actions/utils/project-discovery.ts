@@ -9,18 +9,27 @@ import { fileExists } from '@baseplate-dev/utils/node';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { resolveBaseplateDir } from '#src/diff/snapshot/snapshot-utils.js';
+
 import { isExampleProject } from './is-example-project.js';
 import { generateProjectId } from './project-id.js';
 
 /**
  * Checks if a directory contains a valid Baseplate project.
  * @param directory - The directory path to check.
+ * @param baseplateDirectory - Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
  * @returns True if the directory contains a valid Baseplate project.
  */
-export async function isBaseplateProject(directory: string): Promise<boolean> {
-  const projectDefPath = path.join(
+export async function isBaseplateProject(
+  directory: string,
+  baseplateDirectory?: string,
+): Promise<boolean> {
+  const resolvedBaseplateDir = resolveBaseplateDir(
     directory,
-    'baseplate',
+    baseplateDirectory,
+  );
+  const projectDefPath = path.join(
+    resolvedBaseplateDir,
     'project-definition.json',
   );
   return await fileExists(projectDefPath);
@@ -29,15 +38,20 @@ export async function isBaseplateProject(directory: string): Promise<boolean> {
 /**
  * Loads project information from a directory containing a Baseplate project.
  * @param directory - The absolute path to the project directory.
+ * @param baseplateDirectory - Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
  * @returns ProjectInfo for the project.
  * @throws Error if directory doesn't contain a valid Baseplate project or loading fails.
  */
 export async function loadProjectFromDirectory(
   directory: string,
+  baseplateDirectory?: string,
 ): Promise<ProjectInfo> {
-  const projectDefPath = path.join(
+  const resolvedBaseplateDir = resolveBaseplateDir(
     directory,
-    'baseplate',
+    baseplateDirectory,
+  );
+  const projectDefPath = path.join(
+    resolvedBaseplateDir,
     'project-definition.json',
   );
 

@@ -477,6 +477,18 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
+      execa:
+        specifier: 9.3.0
+        version: 9.3.0
+      globby:
+        specifier: ^14.0.2
+        version: 14.0.2
+      ora:
+        specifier: ^8.0.1
+        version: 8.0.1
+      p-limit:
+        specifier: 6.1.0
+        version: 6.1.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -486,6 +498,9 @@ importers:
       pkg-dir:
         specifier: ^8.0.0
         version: 8.0.0
+      testcontainers:
+        specifier: 11.11.0
+        version: 11.11.0
       zod:
         specifier: 'catalog:'
         version: 4.3.6
@@ -720,45 +735,6 @@ importers:
       '@baseplate-dev/project-builder-dev':
         specifier: workspace:*
         version: link:../project-builder-dev
-      '@baseplate-dev/project-builder-lib':
-        specifier: workspace:*
-        version: link:../project-builder-lib
-      '@baseplate-dev/project-builder-server':
-        specifier: workspace:*
-        version: link:../project-builder-server
-      '@baseplate-dev/project-builder-web':
-        specifier: workspace:*
-        version: link:../project-builder-web
-      '@baseplate-dev/sync':
-        specifier: workspace:*
-        version: link:../sync
-      '@baseplate-dev/utils':
-        specifier: workspace:*
-        version: link:../utils
-      commander:
-        specifier: ^12.1.0
-        version: 12.1.0
-      execa:
-        specifier: 9.3.0
-        version: 9.3.0
-      globby:
-        specifier: ^14.0.2
-        version: 14.0.2
-      ora:
-        specifier: ^8.0.1
-        version: 8.0.1
-      pino:
-        specifier: 9.5.0
-        version: 9.5.0
-      pino-pretty:
-        specifier: 13.0.0
-        version: 13.0.0
-      pkg-dir:
-        specifier: ^8.0.0
-        version: 8.0.0
-      testcontainers:
-        specifier: 11.11.0
-        version: 11.11.0
     devDependencies:
       '@baseplate-dev/tools':
         specifier: workspace:*
@@ -772,9 +748,6 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
-      tsx:
-        specifier: 'catalog:'
-        version: 4.20.6
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

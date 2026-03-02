@@ -1,0 +1,15 @@
+{
+  "files": {
+    "added": [
+      { "path": "migrate.sh" },
+      {
+        "path": "src/modules/accounts/services/auth-verification.service.int.test.ts"
+      },
+      { "path": "src/modules/accounts/utils/cookie-signer.unit.test.ts" },
+      { "path": "src/services/pg-boss.service.int.test.ts" }
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}

@@ -13,8 +13,6 @@ export async function loadIgnorePatterns(
 
   // Add default patterns
   ig.add([
-    '.env',
-    '.env.*',
     '*.log',
     'node_modules/',
     'dist/',
@@ -23,12 +21,9 @@ export async function loadIgnorePatterns(
     'Thumbs.db',
     '.paths-metadata.json',
     'baseplate/**/*',
-    'prisma/migrations/**/*',
-    'prisma/migrations_file.txt',
     'schema.graphql',
     '/apps/**/*',
     '/libs/**/*',
-    'pnpm-lock.yaml',
   ]);
 
   try {

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "added": [],
+    "deleted": [],
+    "modified": [
+      { "diffFile": "src_prisma_seed.ts.diff", "path": "src/prisma/seed.ts" }
+    ]
+  },
+  "version": "1"
+}

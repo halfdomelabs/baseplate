@@ -1,0 +1,93 @@
+{
+  "apps": [
+    {
+      "devPort": 3001,
+      "id": "app:mR1UDTfwWdRw",
+      "name": "backend",
+      "type": "backend"
+    },
+    {
+      "adminApp": { "enabled": false, "pathPrefix": "/admin" },
+      "description": "",
+      "devPort": 3030,
+      "enableDatadog": false,
+      "enableSubscriptions": false,
+      "id": "app:UBXtvxZtQ4ap",
+      "includeAuth": false,
+      "includeUploadComponents": false,
+      "name": "web",
+      "packageLocation": "",
+      "title": "",
+      "type": "web"
+    }
+  ],
+  "cliVersion": "0.7.8",
+  "features": [{ "id": "feature:EHdFHsD17AHI", "name": "blog" }],
+  "isInitialized": true,
+  "models": [
+    {
+      "featureRef": "blog",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "title" },
+            { "globalRoles": [], "instanceRoles": [], "ref": "content" }
+          ],
+          "foreignRelations": [],
+          "localRelations": []
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": [] },
+          "list": { "enabled": true, "roles": [] }
+        }
+      },
+      "id": "model:f114nGvsZGt9",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:fbIBoKK_DQIj",
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:xMyexPrN92E3",
+            "name": "title",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:cKhKDU3JESoo",
+            "name": "content",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:clW4YVGSeDyB",
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:DIlyj8ZH6CMW",
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "uniqueConstraints": []
+      },
+      "name": "BlogPost"
+    }
+  ],
+  "plugins": [],
+  "schemaVersion": 24,
+  "settings": {
+    "general": { "name": "simple", "portOffset": 3000 },
+    "infrastructure": { "redis": { "enabled": false } }
+  },
+  "version": "0.1.0"
+}

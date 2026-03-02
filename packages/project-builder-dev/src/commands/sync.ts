@@ -53,7 +53,7 @@ export function addSyncCommand(program: Command): void {
           {
             project: projectWithDefault,
             overwrite: options.overwrite,
-            snapshotDirectory: options.snapshot,
+            baseplateDirectory: options.snapshot,
             packages: options.packages,
           },
           context,

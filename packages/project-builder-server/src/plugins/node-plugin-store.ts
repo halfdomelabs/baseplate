@@ -61,11 +61,12 @@ export async function createNodeSchemaParserContext(
   logger: Logger,
   builtinPlugins: PluginMetadataWithPaths[],
   cliVersion: string,
+  pluginDiscoveryDirectory?: string,
 ): Promise<SchemaParserContext> {
   return {
     project,
     pluginStore: await createNodePluginStoreFromDirectory(
-      project.directory,
+      pluginDiscoveryDirectory ?? project.directory,
       logger,
       builtinPlugins,
     ),

@@ -250,9 +250,9 @@ export const prettierGenerator = createGenerator({
                   ...config,
                   filepath: fullPath,
                 });
-              } catch {
-                logger.info(
-                  'Prettier formatting failed. Falling back to base config without plugins. Run again once dependencies have been installed.',
+              } catch (err) {
+                logger.error(
+                  `Prettier formatting failed: ${err instanceof Error ? err.message : String(err)}. Falling back to base config without plugins. Run again once dependencies have been installed.`,
                 );
                 return prettierModule.format(input, {
                   tabWidth: descriptor.tabWidth,

@@ -9,7 +9,6 @@ import path from 'node:path';
 import type { GeneratorOperations } from '#src/sync/types.js';
 
 import { compilePackages } from '#src/compiler/index.js';
-import { getSingleAppDirectoryForProject } from '#src/project-definition/get-single-app-directory-for-project.js';
 import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from '#src/sync/types.js';
@@ -24,12 +23,16 @@ import {
   saveSnapshotManifest,
   snapshotManifestUtils,
 } from './snapshot-manifest.js';
-import { resolveSnapshotDirectory } from './snapshot-utils.js';
+import {
+  resolveBaseplateDir,
+  resolveSnapshotDirectory,
+} from './snapshot-utils.js';
 
 export interface SnapshotManagementOptions {
   projectDirectory: string;
   appName: string;
-  snapshotDirectory?: string;
+  /** Custom baseplate directory. Defaults to `path.join(projectDirectory, 'baseplate')`. */
+  baseplateDirectory?: string;
   context: SchemaParserContext;
   logger: Logger;
   generatorOperations?: GeneratorOperations;
@@ -43,7 +46,7 @@ export async function addFilesToSnapshot(
   isDeleted: boolean,
   {
     projectDirectory,
-    snapshotDirectory,
+    baseplateDirectory,
     appName,
     context,
     logger,
@@ -51,9 +54,14 @@ export async function addFilesToSnapshot(
   }: SnapshotManagementOptions,
 ): Promise<void> {
   try {
+    const resolvedBaseplateDir = resolveBaseplateDir(
+      projectDirectory,
+      baseplateDirectory,
+    );
     const { definition } = await loadProjectDefinition(
       projectDirectory,
       context,
+      resolvedBaseplateDir,
     );
     const compiledApps = compilePackages(definition, context);
     const compiledApp = compiledApps.find((a) => a.name === appName);
@@ -66,9 +74,10 @@ export async function addFilesToSnapshot(
       compiledApp.packageDirectory,
     );
 
-    const snapshotDirectories = resolveSnapshotDirectory(appDirectory, {
-      snapshotDir: snapshotDirectory,
-    });
+    const snapshotDirectories = resolveSnapshotDirectory(
+      resolvedBaseplateDir,
+      appName,
+    );
 
     logger.info(`Generating project to create snapshot...`);
 
@@ -134,7 +143,7 @@ export async function addFilesToSnapshot(
             diffFileName,
           );
         } else {
-          // Mark file as added
+          // Mark as added (path only, no content stored)
           manifest = snapshotManifestUtils.addAddedFile(manifest, relativePath);
         }
 
@@ -159,25 +168,16 @@ export async function removeFilesFromSnapshot(
   {
     projectDirectory,
     appName,
-    snapshotDirectory,
-    context,
+    baseplateDirectory,
     logger,
   }: SnapshotManagementOptions,
 ): Promise<void> {
   try {
-    const { definition } = await loadProjectDefinition(
+    const resolvedBaseplateDir = resolveBaseplateDir(
       projectDirectory,
-      context,
+      baseplateDirectory,
     );
-    const appDirectory = getSingleAppDirectoryForProject(
-      projectDirectory,
-      definition,
-      appName,
-    );
-
-    const snapshotDir = resolveSnapshotDirectory(appDirectory, {
-      snapshotDir: snapshotDirectory,
-    });
+    const snapshotDir = resolveSnapshotDirectory(resolvedBaseplateDir, appName);
 
     // Load existing manifest
     let manifest = await loadSnapshotManifest(snapshotDir);
@@ -192,6 +192,13 @@ export async function removeFilesFromSnapshot(
       );
       if (modifiedFile?.diffFile) {
         await removeSnapshotDiffFile(snapshotDir, modifiedFile.diffFile);
+      }
+
+      const addedFile = manifest.files.added.find(
+        (entry) => entry.path === relativePath,
+      );
+      if (addedFile?.contentFile) {
+        await removeSnapshotDiffFile(snapshotDir, addedFile.contentFile);
       }
 
       manifest = snapshotManifestUtils.removeFile(manifest, relativePath);
@@ -212,8 +219,8 @@ export async function removeFilesFromSnapshot(
 export interface SnapshotListOptions {
   projectDirectory: string;
   appName: string;
-  snapshotDirectory?: string;
-  context: SchemaParserContext;
+  /** Custom baseplate directory. Defaults to `path.join(projectDirectory, 'baseplate')`. */
+  baseplateDirectory?: string;
   logger: Logger;
 }
 
@@ -222,25 +229,16 @@ export interface SnapshotListOptions {
  */
 export async function listSnapshotContents({
   projectDirectory,
-  snapshotDirectory,
+  baseplateDirectory,
   appName,
-  context,
   logger,
 }: SnapshotListOptions): Promise<void> {
   try {
-    const { definition } = await loadProjectDefinition(
+    const resolvedBaseplateDir = resolveBaseplateDir(
       projectDirectory,
-      context,
+      baseplateDirectory,
     );
-    const appDirectory = getSingleAppDirectoryForProject(
-      projectDirectory,
-      definition,
-      appName,
-    );
-
-    const snapshotDir = resolveSnapshotDirectory(appDirectory, {
-      snapshotDir: snapshotDirectory,
-    });
+    const snapshotDir = resolveSnapshotDirectory(resolvedBaseplateDir, appName);
 
     // Load manifest
     const manifest = await loadSnapshotManifest(snapshotDir);
@@ -260,8 +258,8 @@ export async function listSnapshotContents({
 
     if (manifest.files.added.length > 0) {
       logger.info(`\nAdded files (${manifest.files.added.length}):`);
-      for (const file of manifest.files.added) {
-        logger.info(`  ${file}`);
+      for (const entry of manifest.files.added) {
+        logger.info(`  ${entry.path}`);
       }
     }
 

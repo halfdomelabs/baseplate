@@ -2,7 +2,7 @@
   "name": "@baseplate-dev/project-builder-test",
   "version": "0.5.3",
   "private": true,
-  "description": "Automated E2E testing for the project builder projects",
+  "description": "E2E test definitions and test project data for the project builder",
   "keywords": [
     "baseplate",
     "full-stack",
@@ -18,48 +18,23 @@
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
-  "imports": {
-    "#src/*": {
-      "development": "./src/*",
-      "default": "./dist/*"
-    }
-  },
-  "files": [
-    "LICENSE",
-    "dist/**/*",
-    "CHANGELOG"
-  ],
   "scripts": {
-    "dev": "tsx watch -C development ./src",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx -C development ./src",
-    "test:e2e": "tsx -C development ./src test",
-    "typecheck": "tsc -b --noEmit"
+    "test:gen": "baseplate-dev test gen",
+    "test-project:generate": "baseplate-dev test-project generate",
+    "test-project:run-env": "baseplate-dev test-project run-env",
+    "test-project:save": "baseplate-dev test-project save"
   },
   "dependencies": {
-    "@baseplate-dev/project-builder-dev": "workspace:*",
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/project-builder-server": "workspace:*",
-    "@baseplate-dev/project-builder-web": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
-    "@baseplate-dev/utils": "workspace:*",
-    "commander": "^12.1.0",
-    "execa": "9.3.0",
-    "globby": "^14.0.2",
-    "ora": "^8.0.1",
-    "pino": "9.5.0",
-    "pino-pretty": "13.0.0",
-    "pkg-dir": "^8.0.0",
-    "testcontainers": "11.11.0"
+    "@baseplate-dev/project-builder-dev": "workspace:*"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "tsx": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {
