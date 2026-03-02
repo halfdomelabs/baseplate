@@ -165,6 +165,8 @@ export function addTestProjectCommand(program: Command): void {
         },
         context,
       );
+
+      await writeGenerationManifest(outputDir);
     });
 
   // test-project run-env <test-name>

@@ -2,7 +2,9 @@ import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
 import { CancelledSyncError } from '@baseplate-dev/sync';
+import { dirExists } from '@baseplate-dev/utils/node';
 import { mapValues } from 'es-toolkit';
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 
@@ -101,6 +103,11 @@ export async function syncProject({
   baseplateDirectory,
   packageFilter,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
+  const outputDirExists = await dirExists(directory);
+  if (!outputDirExists) {
+    await mkdir(directory, { recursive: true });
+  }
+
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
     status: 'in-progress',

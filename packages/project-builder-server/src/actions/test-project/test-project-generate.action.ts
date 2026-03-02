@@ -1,7 +1,7 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirExists } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -12,7 +12,6 @@ import { syncProject } from '#src/sync/sync-project.js';
 
 import { createServiceAction } from '../types.js';
 import { loadProjectFromDirectory } from '../utils/project-discovery.js';
-import { TEST_PROJECT_DEFINITION_FILENAME } from './test-project-paths.js';
 
 /**
  * Generates a test project into the output directory by copying the project
@@ -37,18 +36,9 @@ export async function generateTestProject(
   userConfig: BaseplateUserConfig,
   overwrite = true,
 ): Promise<void> {
-  // Copy project definition to output dir
-  await mkdir(path.join(outputDir, 'baseplate'), { recursive: true });
-  await writeFile(
-    path.join(outputDir, 'baseplate', TEST_PROJECT_DEFINITION_FILENAME),
-    await readFile(
-      path.join(testProjectDir, TEST_PROJECT_DEFINITION_FILENAME),
-      'utf-8',
-    ),
-  );
+  // Load context — baseplateDirectory points at testProjectDir where project-definition.json lives
+  const projectInfo = await loadProjectFromDirectory(outputDir, testProjectDir);
 
-  // Load context from the output dir (which now has the project definition)
-  const projectInfo = await loadProjectFromDirectory(outputDir);
   const context = await createNodeSchemaParserContext(
     projectInfo,
     logger,
@@ -58,12 +48,13 @@ export async function generateTestProject(
 
   // Sync with baseplateDirectory pointing at the test project dir
   // so snapshots resolve from testProjectDir/snapshots/<app>/
+  const outputDirExists = await dirExists(outputDir);
   const result = await syncProject({
     directory: outputDir,
     logger,
     context,
     userConfig,
-    overwrite,
+    overwrite: overwrite || !outputDirExists,
     baseplateDirectory: testProjectDir,
   });
 
@@ -89,7 +80,7 @@ const testProjectGenerateInputSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      'Whether to overwrite existing files and apply snapshots (default: true).',
+      'Whether to overwrite existing files and apply snapshots. Always true if first generation.',
     ),
 });
 

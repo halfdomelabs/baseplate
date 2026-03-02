@@ -23,15 +23,19 @@ interface TestProjectContext {
 
 /**
  * Loads the schema parser context and compiled package entries for a test project
- * output directory. Requires `outputDir/baseplate/project-definition.json` to exist.
+ * output directory, using baseplateDirectory for project definition resolution.
  */
 async function loadTestProjectContext(
   outputDir: string,
+  baseplateDirectory: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
 ): Promise<TestProjectContext> {
-  const projectInfo = await loadProjectFromDirectory(outputDir);
+  const projectInfo = await loadProjectFromDirectory(
+    outputDir,
+    baseplateDirectory,
+  );
   const context = await createNodeSchemaParserContext(
     projectInfo,
     logger,
@@ -39,7 +43,11 @@ async function loadTestProjectContext(
     cliVersion,
   );
 
-  const { definition } = await loadProjectDefinition(outputDir, context);
+  const { definition } = await loadProjectDefinition(
+    outputDir,
+    context,
+    baseplateDirectory,
+  );
   const apps = compilePackages(definition, context);
 
   return { context, apps };
@@ -68,6 +76,7 @@ export async function saveTestProjectSnapshots(
 ): Promise<string[]> {
   const { context } = await loadTestProjectContext(
     outputDir,
+    testProjectDir,
     logger,
     plugins,
     cliVersion,
