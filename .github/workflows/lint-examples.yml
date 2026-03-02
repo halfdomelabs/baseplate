@@ -61,10 +61,10 @@ jobs:
       - name: Copy backend/.env secrets
         run: |
           echo "$BLOG_WITH_AUTH_BACKEND_ENV" > ./examples/blog-with-auth/apps/backend/.env
-          echo "$TODO_WITH_AUTH0_BACKEND_ENV" > ./examples/todo-with-auth0/apps/backend/.env
+          echo "$TODO_WITH_BETTER_AUTH_BACKEND_ENV" > ./examples/todo-with-better-auth/apps/backend/.env
         env:
           BLOG_WITH_AUTH_BACKEND_ENV: ${{secrets.BLOG_WITH_AUTH_BACKEND_ENV}}
-          TODO_WITH_AUTH0_BACKEND_ENV: ${{secrets.TODO_WITH_AUTH0_BACKEND_ENV}}
+          TODO_WITH_BETTER_AUTH_BACKEND_ENV: ${{secrets.TODO_WITH_BETTER_AUTH_BACKEND_ENV}}
 
       - name: Derive appropriate SHAs for base for `turbo --affected` commands
         uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # v4.3.0

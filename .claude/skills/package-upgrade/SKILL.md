@@ -119,13 +119,13 @@ After verifying the monorepo, also check that example projects still build and t
 
 ```bash
 # Install updated dependencies in an example project
-pnpm run:example todo-with-auth0 -- pnpm install
+pnpm run:example todo-with-better-auth -- pnpm install
 
 # Typecheck an example project
-pnpm run:example todo-with-auth0 -- pnpm typecheck
+pnpm run:example todo-with-better-auth -- pnpm typecheck
 
 # Build an example project
-pnpm run:example todo-with-auth0 -- pnpm build
+pnpm run:example todo-with-better-auth -- pnpm build
 ```
 
 Repeat for each example that may be affected by the upgrade. To run a command across all examples at once:
