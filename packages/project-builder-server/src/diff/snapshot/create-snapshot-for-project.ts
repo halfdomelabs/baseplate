@@ -50,9 +50,9 @@ export interface CreateSnapshotForProjectOptions {
    */
   useIgnoreFile?: boolean;
   /**
-   * Custom snapshot directory name. Only valid when a single app is specified.
+   * Custom baseplate directory. Defaults to `path.join(projectDirectory, 'baseplate')`.
    */
-  snapshotDir?: string;
+  baseplateDirectory?: string;
   /**
    * When true, store full content of added files in the snapshot.
    * Use for test cases where files aren't committed. Default: false.
@@ -69,7 +69,7 @@ async function createSnapshotForApp(
   projectJson: ProjectDefinition,
   logger: Logger,
   useIgnoreFile: boolean,
-  snapshotDir?: string,
+  baseplateDirectory?: string,
   includeAddedFileContents?: boolean,
 ): Promise<void> {
   const appDirectory = path.join(directory, app.packageDirectory);
@@ -102,7 +102,7 @@ async function createSnapshotForApp(
     app.name,
     formattedGeneratorOutput,
     {
-      snapshotDir,
+      baseplateDirectory,
       ignoreInstance,
       includeAddedFileContents,
     },
@@ -126,7 +126,7 @@ export async function createSnapshotForProject(
     logger,
     context,
     useIgnoreFile = true,
-    snapshotDir,
+    baseplateDirectory,
     includeAddedFileContents,
   } = options;
 
@@ -135,6 +135,7 @@ export async function createSnapshotForProject(
     const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
+      baseplateDirectory,
     );
 
     logger.info('Compiling applications...');
@@ -163,7 +164,7 @@ export async function createSnapshotForProject(
         projectJson,
         logger,
         useIgnoreFile,
-        snapshotDir,
+        baseplateDirectory,
         includeAddedFileContents,
       );
       savedApps.push(app.name);

@@ -1,4 +1,4 @@
-import { expandTestProject } from '@baseplate-dev/project-builder-server/actions';
+import { generateTestProject } from '@baseplate-dev/project-builder-server/actions';
 import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 import { dirExists, getPackageVersion } from '@baseplate-dev/utils/node';
 import { rm } from 'node:fs/promises';
@@ -37,7 +37,7 @@ async function runTest(
   console.info(`Generating project for ${test.projectDirectory}...`);
   const plugins = await discoverPlugins(process.cwd(), console);
   const cliVersion = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
-  await expandTestProject(
+  await generateTestProject(
     testProjectDir,
     projectDirectoryPath,
     console,

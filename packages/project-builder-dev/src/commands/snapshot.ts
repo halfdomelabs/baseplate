@@ -28,7 +28,6 @@ export function addSnapshotCommand(program: Command): void {
       'Add files to snapshot (use --deleted for intentionally deleted files)',
     )
     .option('--deleted', 'Mark files as intentionally deleted in snapshot')
-    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
     .action(
       async (
         project: string,
@@ -36,7 +35,6 @@ export function addSnapshotCommand(program: Command): void {
         files: string[],
         options: {
           deleted?: boolean;
-          snapshotDir?: string;
         },
       ) => {
         try {
@@ -49,7 +47,6 @@ export function addSnapshotCommand(program: Command): void {
               app,
               files,
               deleted: options.deleted,
-              snapshotDirectory: options.snapshotDir,
             },
             context,
           );
@@ -64,35 +61,24 @@ export function addSnapshotCommand(program: Command): void {
   snapshotCommand
     .command('remove <project> <app> <files...>')
     .description('Remove files from snapshot tracking')
-    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
-    .action(
-      async (
-        project: string,
-        app: string,
-        files: string[],
-        options: {
-          snapshotDir?: string;
-        },
-      ) => {
-        try {
-          const context = await createServiceActionContext();
+    .action(async (project: string, app: string, files: string[]) => {
+      try {
+        const context = await createServiceActionContext();
 
-          await invokeServiceActionAsCli(
-            snapshotRemoveAction,
-            {
-              project,
-              app,
-              files,
-              snapshotDirectory: options.snapshotDir,
-            },
-            context,
-          );
-        } catch (error) {
-          logger.error('Failed to remove files from snapshot:', error);
-          throw error;
-        }
-      },
-    );
+        await invokeServiceActionAsCli(
+          snapshotRemoveAction,
+          {
+            project,
+            app,
+            files,
+          },
+          context,
+        );
+      } catch (error) {
+        logger.error('Failed to remove files from snapshot:', error);
+        throw error;
+      }
+    });
 
   // snapshot save command
   snapshotCommand
@@ -100,70 +86,50 @@ export function addSnapshotCommand(program: Command): void {
     .description(
       'Save snapshot of current differences (overwrites existing snapshot). If app is omitted, saves all apps.',
     )
-    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
-    .action(
-      async (
-        project: string,
-        app: string | undefined,
-        options: {
-          snapshotDir?: string;
+    .action(async (project: string, app: string | undefined) => {
+      // Confirm with user before overwriting existing snapshot
+      const target = app ?? 'all apps';
+      console.warn(
+        `⚠️  This will overwrite any existing snapshot for ${target}.`,
+      );
+      console.info(
+        'Use granular commands (snapshot add/remove) for safer updates.',
+      );
+      const proceed: boolean = await confirm({
+        message: 'Are you sure you want to overwrite the existing snapshot?',
+        default: false,
+      });
+      if (!proceed) {
+        logger.info('Aborted snapshot save.');
+        return;
+      }
+
+      const context = await createServiceActionContext();
+
+      await invokeServiceActionAsCli(
+        snapshotSaveAction,
+        {
+          project,
+          app,
         },
-      ) => {
-        // Confirm with user before overwriting existing snapshot
-        const target = app ?? 'all apps';
-        console.warn(
-          `⚠️  This will overwrite any existing snapshot for ${target}.`,
-        );
-        console.info(
-          'Use granular commands (snapshot add/remove) for safer updates.',
-        );
-        const proceed: boolean = await confirm({
-          message: 'Are you sure you want to overwrite the existing snapshot?',
-          default: false,
-        });
-        if (!proceed) {
-          logger.info('Aborted snapshot save.');
-          return;
-        }
-
-        const context = await createServiceActionContext();
-
-        await invokeServiceActionAsCli(
-          snapshotSaveAction,
-          {
-            project,
-            app,
-            snapshotDirectory: options.snapshotDir,
-          },
-          context,
-        );
-      },
-    );
+        context,
+      );
+    });
 
   // snapshot show command
   snapshotCommand
     .command('show <project> <app>')
     .description('Show current snapshot contents')
-    .option('--snapshot-dir <directory>', 'Custom snapshot directory')
-    .action(
-      async (
-        project: string,
-        app: string,
-        options: {
-          snapshotDir?: string;
-        },
-      ) => {
-        const context = await createServiceActionContext();
+    .action(async (project: string, app: string) => {
+      const context = await createServiceActionContext();
 
-        await invokeServiceActionAsCli(
-          snapshotShowAction,
-          {
-            project,
-            app,
-            snapshotDirectory: options.snapshotDir,
-          },
-          context,
-        );
-      },
-    );
+      await invokeServiceActionAsCli(
+        snapshotShowAction,
+        {
+          project,
+          app,
+        },
+        context,
+      );
+    });
 }

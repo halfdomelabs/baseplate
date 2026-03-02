@@ -109,6 +109,7 @@ export function addTestProjectCommand(program: Command): void {
           {
             testProjectDirectory: testProjectDir,
             outputDirectory: outputDir,
+            overwrite: opts.overwrite,
           },
           context,
         );

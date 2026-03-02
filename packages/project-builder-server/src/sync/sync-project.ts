@@ -60,9 +60,9 @@ export interface SyncProjectOptions {
    */
   overwrite?: boolean;
   /**
-   * Directory containing snapshot to use when generating.
+   * Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
    */
-  snapshotDirectory?: string;
+  baseplateDirectory?: string;
   /**
    * Only sync specific packages by name.
    */
@@ -98,7 +98,7 @@ export async function syncProject({
   skipCommands,
   cliFilePath,
   overwrite,
-  snapshotDirectory,
+  baseplateDirectory,
   packageFilter,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
@@ -117,6 +117,7 @@ export async function syncProject({
     const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
+      baseplateDirectory,
     );
     const apps = compilePackages(projectJson, context);
 
@@ -194,7 +195,7 @@ export async function syncProject({
           abortSignal,
           skipCommands,
           overwrite,
-          snapshotDirectory,
+          baseplateDirectory,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {

@@ -2,8 +2,8 @@
   "files": {
     "added": [
       {
-        "contentFile": "prisma_migrations_20260302140329_initial_migration_migration.sql.diff",
-        "path": "prisma/migrations/20260302140329_initial_migration/migration.sql"
+        "contentFile": "prisma_migrations_20260302151454_initial_migration_migration.sql.diff",
+        "path": "prisma/migrations/20260302151454_initial_migration/migration.sql"
       },
       {
         "contentFile": "prisma_migrations_migration_lock.toml.diff",

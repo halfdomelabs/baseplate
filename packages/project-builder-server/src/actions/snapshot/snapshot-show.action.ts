@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -7,12 +8,6 @@ import { getProjectByNameOrId } from '../utils/projects.js';
 const snapshotShowInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
   app: z.string().describe('The app name within the project.'),
-  snapshotDirectory: z
-    .string()
-    .optional()
-    .describe(
-      'Custom snapshot directory (defaults to baseplate/snapshots/<app>/).',
-    ),
 });
 
 const snapshotFileEntry = z.object({
@@ -61,7 +56,7 @@ export const snapshotShowAction = createServiceAction({
   inputSchema: snapshotShowInputSchema,
   outputSchema: snapshotShowOutputSchema,
   handler: async (input, context) => {
-    const { project: projectId, app, snapshotDirectory } = input;
+    const { project: projectId, app } = input;
     const { projects, logger } = context;
 
     try {
@@ -76,10 +71,8 @@ export const snapshotShowAction = createServiceAction({
         await import('#src/diff/snapshot/snapshot-manifest.js');
       const { resolveSnapshotDirectory } =
         await import('#src/diff/snapshot/snapshot-utils.js');
-
-      const snapshotDir = resolveSnapshotDirectory(project.directory, app, {
-        snapshotDir: snapshotDirectory,
-      });
+      const baseplateDirectory = path.join(project.directory, 'baseplate');
+      const snapshotDir = resolveSnapshotDirectory(baseplateDirectory, app);
 
       const manifest = await loadSnapshotManifest(snapshotDir);
 

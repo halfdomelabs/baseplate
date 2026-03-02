@@ -21,10 +21,6 @@ export function addSyncCommand(program: Command): void {
       '--overwrite',
       'Force overwrite existing files and apply snapshots automatically',
     )
-    .option(
-      '--snapshot <directory>',
-      'Apply diffs from snapshot directory (requires --overwrite)',
-    )
     .option('--packages <packages...>', 'Only sync specific packages by name.')
     .action(
       async (
@@ -49,7 +45,6 @@ export function addSyncCommand(program: Command): void {
           {
             project: projectWithDefault,
             overwrite: options.overwrite,
-            snapshotDirectory: options.snapshot,
             packages: options.packages,
           },
           context,

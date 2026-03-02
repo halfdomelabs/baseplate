@@ -45,7 +45,7 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
 
 /**
  * Creates and writes a generation manifest for the given directory.
- * Call this after `expandTestProject` completes.
+ * Call this after `generateTestProject` completes.
  */
 export async function writeGenerationManifest(
   outputDir: string,

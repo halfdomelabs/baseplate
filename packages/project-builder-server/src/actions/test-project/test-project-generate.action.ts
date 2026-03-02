@@ -1,69 +1,42 @@
-import type {
-  PluginMetadataWithPaths,
-  SchemaParserContext,
-} from '@baseplate-dev/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { compilePackages } from '#src/compiler/compile-packages.js';
-import { DEFAULT_SNAPSHOTS_DIR } from '#src/diff/snapshot/snapshot-types.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
-import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
 import { syncProject } from '#src/sync/sync-project.js';
 
 import { createServiceAction } from '../types.js';
 import { loadProjectFromDirectory } from '../utils/project-discovery.js';
-import {
-  resolveTestProjectSnapshotDirectory,
-  TEST_PROJECT_DEFINITION_FILENAME,
-} from './test-project-paths.js';
-
-export interface TestProjectContext {
-  context: SchemaParserContext;
-  apps: PackageEntry[];
-}
+import { TEST_PROJECT_DEFINITION_FILENAME } from './test-project-paths.js';
 
 /**
- * Loads the schema parser context and compiled package entries for a test project
- * output directory. Requires `outputDir/baseplate/project-definition.json` to exist.
+ * Generates a test project into the output directory by copying the project
+ * definition from the test project directory and running syncProject with
+ * baseplateDirectory pointing at the test project dir (so snapshots resolve
+ * from testProjectDir/snapshots/<app>/).
+ *
+ * @param testProjectDir - Path to the test project directory (test-projects/<name>/)
+ * @param outputDir - Path to the generated output directory (generated-tests/<name>/)
+ * @param logger - Logger instance
+ * @param plugins - Discovered plugin metadata
+ * @param cliVersion - CLI version string
+ * @param userConfig - User configuration
+ * @param overwrite - Whether to overwrite existing files and apply snapshots (default: true)
  */
-export async function loadTestProjectContext(
-  outputDir: string,
-  logger: Logger,
-  plugins: PluginMetadataWithPaths[],
-  cliVersion: string,
-): Promise<TestProjectContext> {
-  const projectInfo = await loadProjectFromDirectory(outputDir);
-  const context = await createNodeSchemaParserContext(
-    projectInfo,
-    logger,
-    plugins,
-    cliVersion,
-  );
-
-  const { definition } = await loadProjectDefinition(outputDir, context);
-  const apps = compilePackages(definition, context);
-
-  return { context, apps };
-}
-
-/**
- * Sets up the generated test output directory by copying the project definition
- * and per-app snapshots from the test project directory.
- */
-async function setupGeneratedTestDirectory(
+export async function generateTestProject(
   testProjectDir: string,
   outputDir: string,
   logger: Logger,
   plugins: PluginMetadataWithPaths[],
   cliVersion: string,
-): Promise<TestProjectContext> {
+  userConfig: BaseplateUserConfig,
+  overwrite = true,
+): Promise<void> {
   // Copy project definition to output dir
   await mkdir(path.join(outputDir, 'baseplate'), { recursive: true });
   await writeFile(
@@ -74,74 +47,24 @@ async function setupGeneratedTestDirectory(
     ),
   );
 
-  // Load context + apps to know packageDirectory for each app
-  const testProjectContext = await loadTestProjectContext(
-    outputDir,
-    logger,
-    plugins,
-    cliVersion,
-  );
-  const { apps } = testProjectContext;
-
-  // Copy per-app snapshots from testProjectDir/snapshots/<appName>/ → outputDir/baseplate/snapshots/<appName>/
-  await Promise.all(
-    apps.map(async (app) => {
-      const sourceSnapshotDir = resolveTestProjectSnapshotDirectory(
-        testProjectDir,
-        app.name,
-      );
-      const destSnapshotDir = path.join(
-        outputDir,
-        DEFAULT_SNAPSHOTS_DIR,
-        app.name,
-      );
-      try {
-        await cp(sourceSnapshotDir, destSnapshotDir, { recursive: true });
-      } catch (error) {
-        // Source snapshot doesn't exist — skip (empty snapshot is fine)
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-          throw error;
-        }
-      }
-    }),
-  );
-
-  return testProjectContext;
-}
-
-/**
- * Expands a test project into the output directory by generating the project
- * and applying per-app snapshots.
- *
- * @param testProjectDir - Path to the test project directory (test-projects/<name>/)
- * @param outputDir - Path to the generated output directory (generated-tests/<name>/)
- * @param logger - Logger instance
- * @param plugins - Discovered plugin metadata
- * @param cliVersion - CLI version string
- * @param userConfig - User configuration
- */
-export async function expandTestProject(
-  testProjectDir: string,
-  outputDir: string,
-  logger: Logger,
-  plugins: PluginMetadataWithPaths[],
-  cliVersion: string,
-  userConfig: BaseplateUserConfig,
-): Promise<void> {
-  const { context } = await setupGeneratedTestDirectory(
-    testProjectDir,
-    outputDir,
+  // Load context from the output dir (which now has the project definition)
+  const projectInfo = await loadProjectFromDirectory(outputDir);
+  const context = await createNodeSchemaParserContext(
+    projectInfo,
     logger,
     plugins,
     cliVersion,
   );
 
+  // Sync with baseplateDirectory pointing at the test project dir
+  // so snapshots resolve from testProjectDir/snapshots/<app>/
   const result = await syncProject({
     directory: outputDir,
     logger,
     context,
     userConfig,
-    overwrite: true,
+    overwrite,
+    baseplateDirectory: testProjectDir,
   });
 
   if (result.status === 'error') {
@@ -162,6 +85,12 @@ const testProjectGenerateInputSchema = z.object({
     .describe(
       'Absolute path to the generated output directory (e.g. generated-tests/<name>/).',
     ),
+  overwrite: z
+    .boolean()
+    .optional()
+    .describe(
+      'Whether to overwrite existing files and apply snapshots (default: true).',
+    ),
 });
 
 const testProjectGenerateOutputSchema = z.object({
@@ -180,17 +109,18 @@ export const testProjectGenerateAction = createServiceAction({
   inputSchema: testProjectGenerateInputSchema,
   outputSchema: testProjectGenerateOutputSchema,
   handler: async (input, context) => {
-    const { testProjectDirectory, outputDirectory } = input;
+    const { testProjectDirectory, outputDirectory, overwrite = true } = input;
     const { logger, plugins, cliVersion, userConfig } = context;
 
     try {
-      await expandTestProject(
+      await generateTestProject(
         testProjectDirectory,
         outputDirectory,
         logger,
         plugins,
         cliVersion,
         userConfig,
+        overwrite,
       );
 
       return {

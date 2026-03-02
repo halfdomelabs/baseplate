@@ -1,13 +1,1 @@
-{
-  "files": {
-    "added": [],
-    "deleted": [],
-    "modified": [
-      {
-        "diffFile": "src_routes_index.tsx.diff",
-        "path": "src/routes/index.tsx"
-      }
-    ]
-  },
-  "version": "1"
-}
+{ "files": { "added": [], "deleted": [], "modified": [] }, "version": "1" }

@@ -11,12 +11,6 @@ const snapshotRemoveInputSchema = z.object({
   files: z
     .array(z.string())
     .describe('Array of file paths to remove from snapshot.'),
-  snapshotDirectory: z
-    .string()
-    .optional()
-    .describe(
-      'Custom snapshot directory (defaults to baseplate/snapshots/<app>/).',
-    ),
 });
 
 const snapshotRemoveOutputSchema = z.object({
@@ -39,7 +33,7 @@ export const snapshotRemoveAction = createServiceAction({
   inputSchema: snapshotRemoveInputSchema,
   outputSchema: snapshotRemoveOutputSchema,
   handler: async (input, context) => {
-    const { project: projectId, app, files, snapshotDirectory } = input;
+    const { project: projectId, app, files } = input;
     const { projects, logger, plugins, cliVersion } = context;
 
     try {
@@ -63,7 +57,6 @@ export const snapshotRemoveAction = createServiceAction({
 
       await removeFilesFromSnapshot(files, {
         projectDirectory: project.directory,
-        snapshotDirectory,
         appName: app,
         context: schemaContext,
         logger,

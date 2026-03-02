@@ -1,5 +1,5 @@
 export {
-  expandTestProject,
+  generateTestProject,
   testProjectGenerateAction,
 } from './test-project-generate.action.js';
 export { testProjectInitAction } from './test-project-init.action.js';

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { DEFAULT_SNAPSHOTS_DIR } from '#src/diff/index.js';
 import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
@@ -13,12 +12,6 @@ const snapshotSaveInputSchema = z.object({
     .optional()
     .describe(
       'The app name within the project. If omitted, saves snapshots for all apps.',
-    ),
-  snapshotDirectory: z
-    .string()
-    .optional()
-    .describe(
-      'Custom snapshot directory (defaults to baseplate/snapshots/<app>/). Only valid when a single app is specified.',
     ),
   force: z
     .boolean()
@@ -49,16 +42,10 @@ export const snapshotSaveAction = createServiceAction({
   inputSchema: snapshotSaveInputSchema,
   outputSchema: snapshotSaveOutputSchema,
   handler: async (input, context) => {
-    const { project: projectId, app, snapshotDirectory, force = false } = input;
+    const { project: projectId, app, force = false } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
 
     try {
-      if (snapshotDirectory && !app) {
-        throw new Error(
-          'Cannot use snapshotDirectory when saving all apps. Specify an app name to use a custom snapshot directory.',
-        );
-      }
-
       // Find the project by name or ID
       const project = getProjectByNameOrId(projects, projectId);
 
@@ -94,20 +81,11 @@ export const snapshotSaveAction = createServiceAction({
         logger,
         context: schemaContext,
         userConfig,
-        snapshotDir: snapshotDirectory,
       });
-
-      const snapshotPath =
-        app && snapshotDirectory
-          ? `${project.directory}/${snapshotDirectory}`
-          : app
-            ? `${project.directory}/${DEFAULT_SNAPSHOTS_DIR}/${app}`
-            : undefined;
 
       return {
         success: true,
         message: `Snapshot saved successfully for ${project.name}${app ? `/${app}` : ` (${savedApps.length} app(s))`}`,
-        snapshotPath,
         savedApps,
       };
     } catch (error) {

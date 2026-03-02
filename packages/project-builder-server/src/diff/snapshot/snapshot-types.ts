@@ -46,8 +46,6 @@ export interface SnapshotDirectory {
 }
 
 export interface SnapshotOptions {
-  /** Custom path for the snapshot directory (default: baseplate/snapshots/<appName>/) */
-  snapshotDir?: string;
   /** Whether to use strict comparison mode */
   strict?: boolean;
 }
@@ -89,7 +87,7 @@ export interface PatchFailure {
 }
 
 export const SNAPSHOT_VERSION = '1';
-export const DEFAULT_SNAPSHOTS_DIR = 'baseplate/snapshots';
+export const SNAPSHOTS_DIRNAME = 'snapshots';
 export const MANIFEST_FILENAME = 'manifest.json';
 export const DIFFS_DIRNAME = 'diffs';
 

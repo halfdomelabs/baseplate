@@ -21,7 +21,8 @@ import {
 
 interface SaveSnapshotOptions {
   ignoreInstance?: ignore.Ignore;
-  snapshotDir?: string;
+  /** Custom baseplate directory for snapshot storage. Defaults to `path.join(projectDirectory, 'baseplate')`. */
+  baseplateDirectory?: string;
   /** When true, store full content of added files in the snapshot. Default: false. */
   includeAddedFileContents?: boolean;
 }
@@ -40,7 +41,7 @@ interface SaveSnapshotResult {
 /**
  * Creates a snapshot from the current diff state.
  * @param appDirectory - The app directory to compare files against
- * @param projectDirectory - The project root directory (for snapshot storage)
+ * @param projectDirectory - The project root directory
  * @param appName - The app name within the project
  * @param generatorOutput - The generated output to diff against
  * @param options - Optional snapshot options
@@ -52,10 +53,13 @@ export async function saveSnapshot(
   generatorOutput: GeneratorOutput,
   {
     ignoreInstance,
-    snapshotDir,
+    baseplateDirectory,
     includeAddedFileContents = false,
   }: SaveSnapshotOptions = {},
 ): Promise<SaveSnapshotResult> {
+  const resolvedBaseplateDir =
+    baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+
   // Get current diff state
   const diffSummary = await compareFiles(
     appDirectory,
@@ -66,9 +70,8 @@ export async function saveSnapshot(
 
   // Create snapshot directory structure
   const snapshotDirectory = await createSnapshotDirectory(
-    projectDirectory,
+    resolvedBaseplateDir,
     appName,
-    snapshotDir,
   );
 
   // Create manifest

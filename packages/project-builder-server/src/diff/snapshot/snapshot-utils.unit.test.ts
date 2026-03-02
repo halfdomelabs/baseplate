@@ -2,11 +2,7 @@ import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  DEFAULT_SNAPSHOTS_DIR,
-  DIFFS_DIRNAME,
-  MANIFEST_FILENAME,
-} from './snapshot-types.js';
+import { DIFFS_DIRNAME, MANIFEST_FILENAME } from './snapshot-types.js';
 import {
   createSnapshotDirectory,
   pathToSafeDiffFilename,
@@ -73,90 +69,82 @@ describe('snapshot-utils', () => {
   });
 
   describe('createSnapshotDirectory', () => {
-    it('should create snapshot directory with default path', async () => {
-      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
-      const result = await createSnapshotDirectory('/test', 'backend');
-
-      expect(result).toEqual({
-        path: path.resolve('/test', defaultPath),
-        manifestPath: path.resolve('/test', defaultPath, MANIFEST_FILENAME),
-        diffsPath: path.resolve('/test', defaultPath, DIFFS_DIRNAME),
-      });
-
-      // Check directories were created
-      const files = vol.toJSON();
-      expect(files).toHaveProperty(
-        path.resolve('/test', defaultPath, DIFFS_DIRNAME),
-      );
-    });
-
-    it('should create snapshot directory with custom name', async () => {
-      const customDir = '.custom-snapshot';
+    it('should create snapshot directory structure', async () => {
       const result = await createSnapshotDirectory(
-        '/test',
+        '/test/baseplate',
         'backend',
-        customDir,
       );
 
       expect(result).toEqual({
-        path: path.resolve('/test', customDir),
-        manifestPath: path.resolve('/test', customDir, MANIFEST_FILENAME),
-        diffsPath: path.resolve('/test', customDir, DIFFS_DIRNAME),
+        path: path.resolve('/test/baseplate', 'snapshots', 'backend'),
+        manifestPath: path.resolve(
+          '/test/baseplate',
+          'snapshots',
+          'backend',
+          MANIFEST_FILENAME,
+        ),
+        diffsPath: path.resolve(
+          '/test/baseplate',
+          'snapshots',
+          'backend',
+          DIFFS_DIRNAME,
+        ),
       });
 
       // Check directories were created
       const files = vol.toJSON();
       expect(files).toHaveProperty(
-        path.resolve('/test', customDir, DIFFS_DIRNAME),
+        path.resolve('/test/baseplate', 'snapshots', 'backend', DIFFS_DIRNAME),
       );
     });
 
     it('should handle existing directories', async () => {
-      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
+      const snapshotPath = path.resolve(
+        '/test/baseplate',
+        'snapshots',
+        'backend',
+      );
       // Pre-create the directory
       vol.fromJSON({
-        [path.resolve('/test', defaultPath, 'existing.txt')]: 'content',
+        [path.join(snapshotPath, 'existing.txt')]: 'content',
       });
 
-      const result = await createSnapshotDirectory('/test', 'backend');
+      const result = await createSnapshotDirectory(
+        '/test/baseplate',
+        'backend',
+      );
 
-      expect(result.path).toBe(path.resolve('/test', defaultPath));
+      expect(result.path).toBe(snapshotPath);
 
       // Should still have existing file
       const files = vol.toJSON();
-      expect(files).toHaveProperty(
-        path.resolve('/test', defaultPath, 'existing.txt'),
-      );
+      expect(files).toHaveProperty(path.join(snapshotPath, 'existing.txt'));
     });
   });
 
   describe('resolveSnapshotDirectory', () => {
     it('should resolve paths without creating directories', () => {
-      const defaultPath = path.join(DEFAULT_SNAPSHOTS_DIR, 'backend');
-      const result = resolveSnapshotDirectory('/test', 'backend');
+      const result = resolveSnapshotDirectory('/test/baseplate', 'backend');
 
       expect(result).toEqual({
-        path: path.resolve('/test', defaultPath),
-        manifestPath: path.resolve('/test', defaultPath, MANIFEST_FILENAME),
-        diffsPath: path.resolve('/test', defaultPath, DIFFS_DIRNAME),
+        path: path.resolve('/test/baseplate', 'snapshots', 'backend'),
+        manifestPath: path.resolve(
+          '/test/baseplate',
+          'snapshots',
+          'backend',
+          MANIFEST_FILENAME,
+        ),
+        diffsPath: path.resolve(
+          '/test/baseplate',
+          'snapshots',
+          'backend',
+          DIFFS_DIRNAME,
+        ),
       });
 
       // Should not create any directories
       const files = vol.toJSON();
       expect(Object.keys(files)).toHaveLength(0);
-    });
-
-    it('should resolve paths with custom snapshot directory', () => {
-      const customDir = '.custom-snapshot';
-      const result = resolveSnapshotDirectory('/test', 'backend', {
-        snapshotDir: customDir,
-      });
-
-      expect(result).toEqual({
-        path: path.resolve('/test', customDir),
-        manifestPath: path.resolve('/test', customDir, MANIFEST_FILENAME),
-        diffsPath: path.resolve('/test', customDir, DIFFS_DIRNAME),
-      });
     });
   });
 

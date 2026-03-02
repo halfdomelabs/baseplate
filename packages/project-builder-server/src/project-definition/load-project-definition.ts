@@ -21,15 +21,19 @@ import path from 'node:path';
  * Loads the project definition from the given directory and runs migrations on it.
  * @param directory - The directory to load the project definition from.
  * @param context - The context to use for parsing the project.
+ * @param baseplateDirectory - Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
  * @returns The project definition and the hash of the project definition.
  */
 export async function loadProjectDefinition(
   directory: string,
   context: SchemaParserContext,
+  baseplateDirectory?: string,
 ): Promise<{ definition: ProjectDefinition; hash: string }> {
+  const resolvedBaseplateDir =
+    baseplateDirectory ?? path.join(directory, 'baseplate');
   const projectJsonPath = path.join(
-    directory,
-    'baseplate/project-definition.json',
+    resolvedBaseplateDir,
+    'project-definition.json',
   );
 
   const projectJsonExists = await fileExists(projectJsonPath);

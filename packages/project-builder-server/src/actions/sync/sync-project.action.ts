@@ -17,10 +17,12 @@ const syncProjectInputSchema = z.object({
     .boolean()
     .optional()
     .describe('Whether to skip running commands.'),
-  snapshotDirectory: z
+  baseplateDirectory: z
     .string()
     .optional()
-    .describe('Directory containing snapshot to use when generating.'),
+    .describe(
+      'Custom baseplate directory for snapshot resolution. Defaults to <projectDirectory>/baseplate.',
+    ),
   packages: z
     .array(z.string())
     .optional()
@@ -52,7 +54,7 @@ export const syncProjectAction = createServiceAction({
       project: projectId,
       overwrite,
       skipCommands,
-      snapshotDirectory,
+      baseplateDirectory,
       packages,
     } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
@@ -87,7 +89,7 @@ export const syncProjectAction = createServiceAction({
         syncMetadataController,
         overwrite,
         skipCommands,
-        snapshotDirectory,
+        baseplateDirectory,
         packageFilter: packages,
       });
 

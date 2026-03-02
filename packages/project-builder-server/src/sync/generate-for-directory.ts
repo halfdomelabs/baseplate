@@ -36,7 +36,8 @@ interface GenerateForDirectoryOptions {
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
   overwrite?: boolean;
-  snapshotDirectory?: string;
+  /** Custom baseplate directory. Defaults to `path.join(baseDirectory, 'baseplate')`. */
+  baseplateDirectory?: string;
 }
 
 export async function generateForDirectory({
@@ -50,7 +51,7 @@ export async function generateForDirectory({
   abortSignal,
   skipCommands,
   overwrite,
-  snapshotDirectory,
+  baseplateDirectory,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { packageDirectory, name, generatorBundle } = appEntry;
 
@@ -65,10 +66,11 @@ export async function generateForDirectory({
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
 
+  const resolvedBaseplateDir =
+    baseplateDirectory ?? path.join(baseDirectory, 'baseplate');
   const resolvedSnapshotDirectory = resolveSnapshotDirectory(
-    baseDirectory,
+    resolvedBaseplateDir,
     name,
-    { snapshotDir: snapshotDirectory },
   );
 
   const snapshot = await loadSnapshotManifest(resolvedSnapshotDirectory);

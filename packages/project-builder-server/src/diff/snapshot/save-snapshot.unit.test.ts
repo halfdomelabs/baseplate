@@ -233,7 +233,7 @@ describe('saveSnapshot', () => {
     expect(result.fileCount.deleted).toBe(1);
   });
 
-  it('should use custom snapshot directory when provided', async () => {
+  it('should use custom baseplate directory when provided', async () => {
     vol.fromJSON({
       [path.join(APP_DIR, 'src/index.ts')]: 'export const x = 2;',
     });
@@ -244,15 +244,17 @@ describe('saveSnapshot', () => {
       },
     });
 
-    const customDir = 'custom/snapshots/backend';
+    const customBaseplateDir = '/custom-baseplate';
     const result = await saveSnapshot(
       APP_DIR,
       PROJECT_DIR,
       APP_NAME,
       generatorOutput,
-      { snapshotDir: customDir },
+      { baseplateDirectory: customBaseplateDir },
     );
 
-    expect(result.snapshotPath).toBe(path.resolve(PROJECT_DIR, customDir));
+    expect(result.snapshotPath).toBe(
+      path.join(customBaseplateDir, 'snapshots', APP_NAME),
+    );
   });
 });
