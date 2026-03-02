@@ -2,6 +2,8 @@ packages:
   - packages/*
   - plugins/*
 
+blockExoticSubdeps: true
+
 catalog:
   '@eslint/js': 9.39.2
   '@tailwindcss/vite': 4.1.18
@@ -31,8 +33,6 @@ ignoredBuiltDependencies:
   - protobufjs
   - ssh2
   - unrs-resolver
-
-blockExoticSubdeps: true
 
 linkWorkspacePackages: true
 
