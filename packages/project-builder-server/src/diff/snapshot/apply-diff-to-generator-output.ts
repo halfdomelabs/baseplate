@@ -52,7 +52,7 @@ export async function applySnapshotToGeneratorOutput(
     const contents = await readFile(contentFilePath, 'utf-8').catch(
       handleFileNotFoundError,
     );
-    if (!contents) {
+    if (contents === undefined) {
       throw new Error(`Content file not found: ${contentFilePath}`);
     }
     generatorFiles.set(addedEntry.path, {

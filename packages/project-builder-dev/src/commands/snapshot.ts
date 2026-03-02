@@ -86,35 +86,46 @@ export function addSnapshotCommand(program: Command): void {
     .description(
       'Save snapshot of current differences (overwrites existing snapshot). If app is omitted, saves all apps.',
     )
-    .action(async (project: string, app: string | undefined) => {
-      // Confirm with user before overwriting existing snapshot
-      const target = app ?? 'all apps';
-      console.warn(
-        `⚠️  This will overwrite any existing snapshot for ${target}.`,
-      );
-      console.info(
-        'Use granular commands (snapshot add/remove) for safer updates.',
-      );
-      const proceed: boolean = await confirm({
-        message: 'Are you sure you want to overwrite the existing snapshot?',
-        default: false,
-      });
-      if (!proceed) {
-        logger.info('Aborted snapshot save.');
-        return;
-      }
+    .option('--force', 'Skip confirmation prompt')
+    .action(
+      async (
+        project: string,
+        app: string | undefined,
+        options: { force?: boolean },
+      ) => {
+        if (!options.force) {
+          // Confirm with user before overwriting existing snapshot
+          const target = app ?? 'all apps';
+          logger.warn(
+            `This will overwrite any existing snapshot for ${target}.`,
+          );
+          console.info(
+            'Use granular commands (snapshot add/remove) for safer updates.',
+          );
+          const proceed: boolean = await confirm({
+            message:
+              'Are you sure you want to overwrite the existing snapshot?',
+            default: false,
+          });
+          if (!proceed) {
+            logger.info('Aborted snapshot save.');
+            return;
+          }
+        }
 
-      const context = await createServiceActionContext();
+        const context = await createServiceActionContext();
 
-      await invokeServiceActionAsCli(
-        snapshotSaveAction,
-        {
-          project,
-          app,
-        },
-        context,
-      );
-    });
+        await invokeServiceActionAsCli(
+          snapshotSaveAction,
+          {
+            project,
+            app,
+            force: options.force,
+          },
+          context,
+        );
+      },
+    );
 
   // snapshot show command
   snapshotCommand

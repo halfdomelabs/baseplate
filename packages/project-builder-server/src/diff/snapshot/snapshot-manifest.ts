@@ -92,10 +92,6 @@ function addAddedFile(
   filePath: string,
   contentFile?: string,
 ): SnapshotManifest {
-  if (manifest.files.added.some((entry) => entry.path === filePath)) {
-    return manifest;
-  }
-
   return {
     ...manifest,
     files: {

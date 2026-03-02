@@ -13,7 +13,7 @@ export async function discoverTests(
   testDirectory: string,
   filter?: string,
 ): Promise<TestFile[]> {
-  const testFiles = await globby('**.gen.ts', {
+  const testFiles = await globby('**/*.gen.ts', {
     cwd: testDirectory,
     gitignore: true,
   });

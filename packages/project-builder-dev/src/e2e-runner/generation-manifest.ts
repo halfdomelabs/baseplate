@@ -83,6 +83,7 @@ interface StalenessResult {
   isStale: boolean;
   modifiedFiles: string[];
   newFiles: string[];
+  deletedFiles: string[];
 }
 
 /**
@@ -98,9 +99,17 @@ async function checkStaleness(outputDir: string): Promise<StalenessResult> {
   try {
     const content = await readFile(manifestPath, 'utf-8');
     manifest = JSON.parse(content) as GenerationManifest;
-  } catch {
-    // No manifest means we can't check — treat as not stale
-    return { isStale: false, modifiedFiles: [], newFiles: [] };
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+      // No manifest means we can't check — treat as not stale
+      return {
+        isStale: false,
+        modifiedFiles: [],
+        newFiles: [],
+        deletedFiles: [],
+      };
+    }
+    throw error;
   }
 
   const currentFiles = await collectFiles(outputDir, outputDir);
@@ -122,10 +131,20 @@ async function checkStaleness(outputDir: string): Promise<StalenessResult> {
     ),
   );
 
+  // Check for deleted files (in manifest but no longer on disk)
+  const currentFileSet = new Set(currentFiles);
+  const deletedFiles = Object.keys(manifest.files).filter(
+    (file) => !currentFileSet.has(file),
+  );
+
   return {
-    isStale: modifiedFiles.length > 0 || newFiles.length > 0,
+    isStale:
+      modifiedFiles.length > 0 ||
+      newFiles.length > 0 ||
+      deletedFiles.length > 0,
     modifiedFiles,
     newFiles,
+    deletedFiles,
   };
 }
 
@@ -147,6 +166,9 @@ export async function assertNotStale(outputDir: string): Promise<void> {
   }
   for (const file of result.newFiles) {
     lines.push(`  - ${file} (new)`);
+  }
+  for (const file of result.deletedFiles) {
+    lines.push(`  - ${file} (deleted)`);
   }
 
   lines.push(
