@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: 'playwright-browsers-${{ runner.os }}-${{ steps.get-playwright-version.outputs.version }}'
+          key: "playwright-browsers-${{ runner.os }}-${{ steps.get-playwright-version.outputs.version }}"
 
       - name: Install Playwright with dependencies
         run: pnpm playwright install --with-deps
@@ -56,3 +56,6 @@ jobs:
 
       - name: Run E2E Tests
         run: pnpm test:e2e:affected
+
+      - name: Test generation
+        run: pnpm test:gen

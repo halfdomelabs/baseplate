@@ -3,7 +3,7 @@
     "added": [
       { "contentFile": "pnpm-lock.yaml.diff", "path": "pnpm-lock.yaml" }
     ],
-    "deleted": ["package.json", "pnpm-workspace.yaml", "turbo.json"],
+    "deleted": [],
     "modified": []
   },
   "version": "1"
