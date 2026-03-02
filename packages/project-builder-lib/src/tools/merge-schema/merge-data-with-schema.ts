@@ -37,7 +37,7 @@ function getEntityMeta(schema: z.ZodType): EntitySchemaMeta | undefined {
  * Default behaviors:
  * - Leaf scalar → desired replaces current
  * - Object → merge fields recursively; `undefined` desired fields keep current value (partial patch)
- * - Array whose element has `withEnt` annotation → merge by entity `name` field (add/update/remove)
+ * - Array whose element has `withEnt` annotation → merge by entity name (add-only, order-preserving)
  * - Any other array → full replace with desired
  * - Wrapper (optional/nullable/default) → descend to inner schema
  * - Discriminated union → find matching branch by discriminator, merge
@@ -156,11 +156,40 @@ function mergeDataWithSchemaInternal(
 }
 
 /**
- * Merges an array of entity objects by the `name` field.
+ * Resolves the name of an entity from its serialized (name-based) data using
+ * the entity schema's name resolver.
  *
- * - Entities in `desired` that exist in `current` (by name) are merged recursively
- * - Entities in `desired` not in `current` are appended with a fresh generated ID
- * - Entities in `current` not in `desired` are removed (full desired-list semantics)
+ * Since the data is already serialized, reference IDs are already names —
+ * no cross-entity resolution or toposort is needed.
+ */
+function getEntityName(
+  entityMeta: EntitySchemaMeta,
+  item: PlainObject,
+): string {
+  if (!entityMeta.getNameResolver) {
+    return item.name as string;
+  }
+  const resolver = entityMeta.getNameResolver(item);
+  if (typeof resolver === 'string') {
+    return resolver;
+  }
+  // In serialized data, reference IDs are already names — pass them through
+  const resolvedIds = Object.fromEntries(
+    Object.entries(resolver.idsToResolve ?? {}).map(([key, idOrIds]) => [
+      key,
+      idOrIds,
+    ]),
+  );
+  return resolver.resolveName(resolvedIds);
+}
+
+/**
+ * Merges an array of entity objects by name (add-only, order-preserving).
+ *
+ * - Current items are kept in their original order
+ * - Matched items (by name) are merged recursively via schema
+ * - Current items not in desired are kept as-is
+ * - New desired items are appended at the end with fresh generated IDs
  */
 function mergeEntityArray(
   current: PlainObject[] | undefined,
@@ -169,31 +198,46 @@ function mergeEntityArray(
   entityMeta: EntitySchemaMeta,
 ): PlainObject[] {
   const currentItems = current ?? [];
-  const currentByName = new Map(
-    currentItems.map((item) => [item.name as string, item]),
+  const desiredByName = new Map(
+    desired.map((item) => [getEntityName(entityMeta, item), item]),
   );
+  const seen = new Set<string>();
+  const result: PlainObject[] = [];
 
-  return desired.map((desiredItem) => {
-    const name = desiredItem.name as string;
-    const currentItem = currentByName.get(name);
+  // Walk current items in order — merge matched, keep unmatched
+  for (const currentItem of currentItems) {
+    const name = getEntityName(entityMeta, currentItem);
+    const desiredItem = desiredByName.get(name);
+    if (desiredItem) {
+      result.push(
+        mergeDataWithSchemaInternal(
+          elementSchema,
+          currentItem,
+          desiredItem,
+        ) as PlainObject,
+      );
+      seen.add(name);
+    } else {
+      result.push(currentItem);
+    }
+  }
 
-    // For new entities, build a skeleton current with a fresh ID so that
-    // recursive mergeDataWithSchema generates IDs for all nested entity arrays too.
-    const baseItem =
-      currentItem ??
-      set(
+  // Append new desired items at the end, with fresh IDs
+  for (const desiredItem of desired) {
+    const name = getEntityName(entityMeta, desiredItem);
+    if (!seen.has(name)) {
+      const baseItem = set(
         cloneDeep(desiredItem),
         entityMeta.idPath,
         entityMeta.type.generateNewId(),
       );
+      result.push(
+        mergeDataWithSchemaInternal(elementSchema, {}, baseItem) as PlainObject,
+      );
+    }
+  }
 
-    return mergeDataWithSchemaInternal(
-      elementSchema,
-      currentItem ? currentItem : {},
-      // For new entities, inject the generated ID into desired before merging
-      currentItem ? desiredItem : baseItem,
-    ) as PlainObject;
-  });
+  return result;
 }
 
 /**
@@ -209,29 +253,29 @@ function mergeByKey(
   getKey: (item: unknown) => string,
 ): unknown[] {
   const currentItems = current ?? [];
-  const currentByKey = new Map(
-    currentItems.map((item) => [getKey(item), item]),
-  );
   const desiredByKey = new Map(desired.map((item) => [getKey(item), item]));
+  const seen = new Set<string>();
 
   const result: unknown[] = [];
 
-  // Keep current items not in desired
-  for (const [key, item] of currentByKey) {
-    if (!desiredByKey.has(key)) {
-      result.push(item);
-    }
-  }
-
-  // Add/update from desired
-  for (const desiredItem of desired) {
-    const key = getKey(desiredItem);
-    const currentItem = currentByKey.get(key);
-    if (currentItem) {
+  // Walk current items in order — merge matched, keep unmatched
+  for (const currentItem of currentItems) {
+    const key = getKey(currentItem);
+    const desiredItem = desiredByKey.get(key);
+    if (desiredItem) {
       result.push(
         toMerged(currentItem as PlainObject, desiredItem as PlainObject),
       );
+      seen.add(key);
     } else {
+      result.push(currentItem);
+    }
+  }
+
+  // Append new desired items (not in current) at the end
+  for (const desiredItem of desired) {
+    const key = getKey(desiredItem);
+    if (!seen.has(key)) {
       result.push(desiredItem);
     }
   }

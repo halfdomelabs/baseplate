@@ -11,7 +11,7 @@ import {
 } from '#src/testing/definition-helpers.test-helper.js';
 
 import { mergeDataWithSchema } from './merge-data-with-schema.js';
-import { mergeDefinition } from './merge-definition.js';
+import { mergeDefinitionContainer } from './merge-definition.js';
 import { withByKeyMergeRule, withMergeRule } from './merge-rule-registry.js';
 
 // ---------------------------------------------------------------------------
@@ -152,6 +152,28 @@ describe('mergeDataWithSchema — withByKeyMergeRule', () => {
     expect(result.find((i) => i.key === 'a')?.value).toBe(99);
     expect(result.find((i) => i.key === 'b')?.value).toBe(2);
   });
+
+  it('preserves current order and appends new items at end', () => {
+    const current = [
+      { key: 'c', value: 3 },
+      { key: 'a', value: 1 },
+      { key: 'b', value: 2 },
+    ];
+    const desired = [
+      { key: 'a', value: 10 },
+      { key: 'd', value: 4 },
+    ];
+    const result = mergeDataWithSchema(
+      schema,
+      current,
+      desired,
+    ) as typeof current;
+    expect(result).toHaveLength(4);
+    // Current order preserved: c, a (updated), b, then new d appended
+    expect(result.map((i) => i.key)).toEqual(['c', 'a', 'b', 'd']);
+    expect(result[1].value).toBe(10); // a was updated
+    expect(result[3].value).toBe(4); // d is new
+  });
 });
 
 describe('mergeDataWithSchema — discriminated union', () => {
@@ -204,7 +226,7 @@ function mergeDefinitionModels(
   container: ProjectDefinitionContainer,
   desiredModels: Record<string, unknown>[],
 ): ProjectDefinitionContainer {
-  return mergeDefinition(container, { models: desiredModels });
+  return mergeDefinitionContainer(container, { models: desiredModels });
 }
 
 describe('mergeDataWithSchema — model schema integration', () => {
@@ -261,7 +283,7 @@ describe('mergeDataWithSchema — model schema integration', () => {
     expect(userModel?.id).toBe(currentModel.id);
   });
 
-  it('removes a field not in desired list', () => {
+  it('keeps fields not in desired (add-only semantics)', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
@@ -286,7 +308,7 @@ describe('mergeDataWithSchema — model schema integration', () => {
         name: 'User',
         featureRef: testFeature.name,
         model: {
-          // Only id — email is absent, so should be removed
+          // Only id — email is not in desired but should be kept (add-only)
           fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
           primaryKeyFieldRefs: ['id'],
         },
@@ -296,8 +318,11 @@ describe('mergeDataWithSchema — model schema integration', () => {
     const result = mergeDefinitionModels(container, desired);
     const userModel = result.definition.models.find((m) => m.name === 'User');
 
-    expect(userModel?.model.fields).toHaveLength(1);
+    // Both fields are kept — email is preserved from current
+    expect(userModel?.model.fields).toHaveLength(2);
     expect(userModel?.model.fields[0].name).toBe('id');
+    expect(userModel?.model.fields[1].name).toBe('email');
+    expect(userModel?.model.fields[1].id).toBe(emailField.id);
   });
 
   it('updates an existing field', () => {
@@ -396,5 +421,169 @@ describe('mergeDataWithSchema — model schema integration', () => {
     // Existing model preserved
     const userModel = result.definition.models.find((m) => m.name === 'User');
     expect(userModel?.id).toBe(currentModel.id);
+  });
+
+  it('keeps current field properties when not specified in desired (deep merge)', () => {
+    const idField = createTestScalarField({
+      name: 'id',
+      type: 'uuid',
+      options: { genUuid: true },
+    });
+    const emailField = createTestScalarField({
+      name: 'email',
+      type: 'string',
+      isOptional: true,
+    });
+    const currentModel = createTestModel({
+      name: 'User',
+      featureRef: testFeature.name,
+      model: {
+        fields: [idField, emailField],
+        primaryKeyFieldRefs: [idField.name],
+      },
+    });
+    const container = createTestProjectDefinitionContainer({
+      features: [testFeature],
+      models: [currentModel],
+    });
+
+    // Desired does NOT include isOptional — current value is preserved via deep merge
+    const desired = [
+      {
+        name: 'User',
+        featureRef: testFeature.name,
+        model: {
+          fields: [
+            { name: 'id', type: 'uuid', options: { genUuid: true } },
+            { name: 'email', type: 'string' },
+          ],
+          primaryKeyFieldRefs: ['id'],
+        },
+      },
+    ];
+
+    const result = mergeDefinitionModels(container, desired);
+    const userModel = result.definition.models.find((m) => m.name === 'User');
+    const emailResult = userModel?.model.fields.find((f) => f.name === 'email');
+
+    // isOptional kept from current via deep merge (partial patch semantics)
+    expect(emailResult?.isOptional).toBe(true);
+    // Field ID is still preserved
+    expect(emailResult?.id).toBe(emailField.id);
+  });
+
+  it('preserves current model order and appends new models at end', () => {
+    const idField1 = createTestScalarField({
+      name: 'id',
+      type: 'uuid',
+      options: { genUuid: true },
+    });
+    const idField2 = createTestScalarField({
+      name: 'id',
+      type: 'uuid',
+      options: { genUuid: true },
+    });
+    const userModel = createTestModel({
+      name: 'User',
+      featureRef: testFeature.name,
+      model: { fields: [idField1], primaryKeyFieldRefs: [idField1.name] },
+    });
+    const postModel = createTestModel({
+      name: 'Post',
+      featureRef: testFeature.name,
+      model: { fields: [idField2], primaryKeyFieldRefs: [idField2.name] },
+    });
+    const container = createTestProjectDefinitionContainer({
+      features: [testFeature],
+      models: [userModel, postModel],
+    });
+
+    // Desired mentions Post first, then User, plus a new Comment model
+    const desired = [
+      {
+        name: 'Post',
+        featureRef: testFeature.name,
+        model: {
+          fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+          primaryKeyFieldRefs: ['id'],
+        },
+      },
+      {
+        name: 'User',
+        featureRef: testFeature.name,
+        model: {
+          fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+          primaryKeyFieldRefs: ['id'],
+        },
+      },
+      {
+        name: 'Comment',
+        featureRef: testFeature.name,
+        model: {
+          fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+          primaryKeyFieldRefs: ['id'],
+        },
+      },
+    ];
+
+    const result = mergeDefinitionModels(container, desired);
+
+    // Current order preserved: User, Post — then new Comment appended
+    expect(result.definition.models.map((m) => m.name)).toEqual([
+      'User',
+      'Post',
+      'Comment',
+    ]);
+    expect(result.definition.models[0].id).toBe(userModel.id);
+    expect(result.definition.models[1].id).toBe(postModel.id);
+    expect(result.definition.models[2].id).toBeTruthy();
+  });
+
+  it('keeps current models not in desired', () => {
+    const idField1 = createTestScalarField({
+      name: 'id',
+      type: 'uuid',
+      options: { genUuid: true },
+    });
+    const idField2 = createTestScalarField({
+      name: 'id',
+      type: 'uuid',
+      options: { genUuid: true },
+    });
+    const userModel = createTestModel({
+      name: 'User',
+      featureRef: testFeature.name,
+      model: { fields: [idField1], primaryKeyFieldRefs: [idField1.name] },
+    });
+    const postModel = createTestModel({
+      name: 'Post',
+      featureRef: testFeature.name,
+      model: { fields: [idField2], primaryKeyFieldRefs: [idField2.name] },
+    });
+    const container = createTestProjectDefinitionContainer({
+      features: [testFeature],
+      models: [userModel, postModel],
+    });
+
+    // Desired only mentions User — Post should be kept (add-only)
+    const desired = [
+      {
+        name: 'User',
+        featureRef: testFeature.name,
+        model: {
+          fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+          primaryKeyFieldRefs: ['id'],
+        },
+      },
+    ];
+
+    const result = mergeDefinitionModels(container, desired);
+
+    expect(result.definition.models).toHaveLength(2);
+    expect(result.definition.models.map((m) => m.name)).toEqual([
+      'User',
+      'Post',
+    ]);
+    expect(result.definition.models[1].id).toBe(postModel.id);
   });
 });

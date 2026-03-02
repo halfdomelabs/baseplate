@@ -8,9 +8,9 @@ import {
   createTestScalarField,
 } from '#src/testing/definition-helpers.test-helper.js';
 
-import { mergeDefinition } from './merge-definition.js';
+import { mergeDefinitionContainer } from './merge-definition.js';
 
-describe('mergeDefinition', () => {
+describe('mergeDefinitionContainer', () => {
   const testFeature = createTestFeature();
 
   it('adds a new model to the definition', () => {
@@ -29,7 +29,7 @@ describe('mergeDefinition', () => {
       models: [currentModel],
     });
 
-    const result = mergeDefinition(container, {
+    const result = mergeDefinitionContainer(container, {
       models: [
         {
           name: 'User',
@@ -85,7 +85,7 @@ describe('mergeDefinition', () => {
       models: [currentModel],
     });
 
-    const result = mergeDefinition(container, {
+    const result = mergeDefinitionContainer(container, {
       models: [
         {
           name: 'User',
@@ -125,7 +125,7 @@ describe('mergeDefinition', () => {
     });
 
     // Merge with only models — features, settings, etc. should be preserved
-    const result = mergeDefinition(container, {
+    const result = mergeDefinitionContainer(container, {
       models: [
         {
           name: 'User',
@@ -175,7 +175,7 @@ describe('mergeDefinition', () => {
     const serialized = serializeSchema(container.schema, container.definition);
 
     // Merge with the same models array to ensure both are preserved
-    const result = mergeDefinition(container, {
+    const result = mergeDefinitionContainer(container, {
       models: serialized.models,
     });
 
@@ -211,7 +211,7 @@ describe('mergeDefinition', () => {
       models: [currentModel],
     });
 
-    const result = mergeDefinition(container, {
+    const result = mergeDefinitionContainer(container, {
       models: [
         {
           name: 'User',
