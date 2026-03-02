@@ -1,0 +1,41 @@
+{
+  "name": "@prisma-crud/root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo root for todo-with-better-auth",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "baseplate:generate": "baseplate generate",
+    "baseplate:serve": "baseplate serve",
+    "build": "turbo run build",
+    "build:affected": "turbo run build --affected",
+    "dev": "turbo run dev",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "turbo run lint",
+    "lint:affected": "turbo run lint --affected",
+    "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
+    "prettier:check:affected": "turbo run prettier:check --affected",
+    "prettier:check:root": "prettier --check . \"!apps/**\" \"!libs/**\"",
+    "prettier:write": "turbo run prettier:write && pnpm run prettier:write:root",
+    "prettier:write:root": "prettier --write . \"!apps/**\" \"!libs/**\"",
+    "test": "turbo run test",
+    "test:affected": "turbo run test --affected",
+    "typecheck": "turbo run typecheck"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "prettier": "3.8.1",
+    "prettier-plugin-packagejson": "3.0.0",
+    "turbo": "2.5.0",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.27.0",
+  "engines": {
+    "node": "^22.18.0",
+    "pnpm": "^10.27.0"
+  },
+  "volta": {
+    "node": "22.18.0"
+  }
+}
