@@ -23,7 +23,10 @@ import {
   saveSnapshotManifest,
   snapshotManifestUtils,
 } from './snapshot-manifest.js';
-import { resolveSnapshotDirectory } from './snapshot-utils.js';
+import {
+  resolveBaseplateDir,
+  resolveSnapshotDirectory,
+} from './snapshot-utils.js';
 
 export interface SnapshotManagementOptions {
   projectDirectory: string;
@@ -51,8 +54,10 @@ export async function addFilesToSnapshot(
   }: SnapshotManagementOptions,
 ): Promise<void> {
   try {
-    const resolvedBaseplateDir =
-      baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+    const resolvedBaseplateDir = resolveBaseplateDir(
+      projectDirectory,
+      baseplateDirectory,
+    );
     const { definition } = await loadProjectDefinition(
       projectDirectory,
       context,
@@ -168,8 +173,10 @@ export async function removeFilesFromSnapshot(
   }: SnapshotManagementOptions,
 ): Promise<void> {
   try {
-    const resolvedBaseplateDir =
-      baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+    const resolvedBaseplateDir = resolveBaseplateDir(
+      projectDirectory,
+      baseplateDirectory,
+    );
     const snapshotDir = resolveSnapshotDirectory(resolvedBaseplateDir, appName);
 
     // Load existing manifest
@@ -227,8 +234,10 @@ export async function listSnapshotContents({
   logger,
 }: SnapshotListOptions): Promise<void> {
   try {
-    const resolvedBaseplateDir =
-      baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+    const resolvedBaseplateDir = resolveBaseplateDir(
+      projectDirectory,
+      baseplateDirectory,
+    );
     const snapshotDir = resolveSnapshotDirectory(resolvedBaseplateDir, appName);
 
     // Load manifest

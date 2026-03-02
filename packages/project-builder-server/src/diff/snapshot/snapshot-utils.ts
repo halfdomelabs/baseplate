@@ -10,6 +10,17 @@ import {
 } from './snapshot-types.js';
 
 /**
+ * Resolves the baseplate directory for a project.
+ * Defaults to `<projectDirectory>/baseplate` when no explicit override is provided.
+ */
+export function resolveBaseplateDir(
+  projectDirectory: string,
+  baseplateDirectory?: string,
+): string {
+  return baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+}
+
+/**
  * Converts a file path to a safe filename for storing diffs
  * Example: "src/components/button.tsx" -> "src_components_button.tsx.diff"
  */

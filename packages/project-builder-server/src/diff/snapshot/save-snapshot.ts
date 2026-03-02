@@ -17,6 +17,7 @@ import { SNAPSHOT_VERSION } from './snapshot-types.js';
 import {
   createSnapshotDirectory,
   pathToSafeDiffFilename,
+  resolveBaseplateDir,
 } from './snapshot-utils.js';
 
 interface SaveSnapshotOptions {
@@ -57,8 +58,10 @@ export async function saveSnapshot(
     includeAddedFileContents = false,
   }: SaveSnapshotOptions = {},
 ): Promise<SaveSnapshotResult> {
-  const resolvedBaseplateDir =
-    baseplateDirectory ?? path.join(projectDirectory, 'baseplate');
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    projectDirectory,
+    baseplateDirectory,
+  );
 
   // Get current diff state
   const diffSummary = await compareFiles(

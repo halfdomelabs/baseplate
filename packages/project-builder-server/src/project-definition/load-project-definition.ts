@@ -17,6 +17,8 @@ import { fileExists } from '@baseplate-dev/utils/node';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { resolveBaseplateDir } from '#src/diff/snapshot/snapshot-utils.js';
+
 /**
  * Loads the project definition from the given directory and runs migrations on it.
  * @param directory - The directory to load the project definition from.
@@ -29,8 +31,10 @@ export async function loadProjectDefinition(
   context: SchemaParserContext,
   baseplateDirectory?: string,
 ): Promise<{ definition: ProjectDefinition; hash: string }> {
-  const resolvedBaseplateDir =
-    baseplateDirectory ?? path.join(directory, 'baseplate');
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    directory,
+    baseplateDirectory,
+  );
   const projectJsonPath = path.join(
     resolvedBaseplateDir,
     'project-definition.json',

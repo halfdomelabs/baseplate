@@ -6,6 +6,7 @@ import { DIFFS_DIRNAME, MANIFEST_FILENAME } from './snapshot-types.js';
 import {
   createSnapshotDirectory,
   pathToSafeDiffFilename,
+  resolveBaseplateDir,
   resolveSnapshotDirectory,
   safeDiffFilenameToPath,
 } from './snapshot-utils.js';
@@ -145,6 +146,25 @@ describe('snapshot-utils', () => {
       // Should not create any directories
       const files = vol.toJSON();
       expect(Object.keys(files)).toHaveLength(0);
+    });
+  });
+
+  describe('resolveBaseplateDir', () => {
+    it('should default to <projectDir>/baseplate when no override provided', () => {
+      expect(resolveBaseplateDir('/project')).toBe(
+        path.join('/project', 'baseplate'),
+      );
+    });
+
+    it('should use explicit baseplateDirectory when provided', () => {
+      expect(resolveBaseplateDir('/project', '/custom/baseplate')).toBe(
+        '/custom/baseplate',
+      );
+    });
+
+    it('should use explicit baseplateDirectory even when it equals the default', () => {
+      const explicit = path.join('/project', 'baseplate');
+      expect(resolveBaseplateDir('/project', explicit)).toBe(explicit);
     });
   });
 

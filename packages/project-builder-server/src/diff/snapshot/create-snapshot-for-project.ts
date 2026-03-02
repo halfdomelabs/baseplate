@@ -60,18 +60,28 @@ export interface CreateSnapshotForProjectOptions {
   includeAddedFileContents?: boolean;
 }
 
+interface CreateSnapshotForAppOptions {
+  app: PackageEntry;
+  directory: string;
+  projectJson: ProjectDefinition;
+  logger: Logger;
+  useIgnoreFile: boolean;
+  baseplateDirectory?: string;
+  includeAddedFileContents?: boolean;
+}
+
 /**
  * Creates a snapshot for a single app entry.
  */
-async function createSnapshotForApp(
-  app: PackageEntry,
-  directory: string,
-  projectJson: ProjectDefinition,
-  logger: Logger,
-  useIgnoreFile: boolean,
-  baseplateDirectory?: string,
-  includeAddedFileContents?: boolean,
-): Promise<void> {
+async function createSnapshotForApp({
+  app,
+  directory,
+  projectJson,
+  logger,
+  useIgnoreFile,
+  baseplateDirectory,
+  includeAddedFileContents,
+}: CreateSnapshotForAppOptions): Promise<void> {
   const appDirectory = path.join(directory, app.packageDirectory);
 
   logger.info(
@@ -158,7 +168,7 @@ export async function createSnapshotForProject(
     const savedApps: string[] = [];
 
     for (const app of appsToProcess) {
-      await createSnapshotForApp(
+      await createSnapshotForApp({
         app,
         directory,
         projectJson,
@@ -166,7 +176,7 @@ export async function createSnapshotForProject(
         useIgnoreFile,
         baseplateDirectory,
         includeAddedFileContents,
-      );
+      });
       savedApps.push(app.name);
     }
 

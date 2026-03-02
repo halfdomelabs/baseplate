@@ -142,8 +142,8 @@ export function addTestProjectCommand(program: Command): void {
         );
       }
 
-      console.warn(
-        '⚠️  This will overwrite any existing snapshots for this test project.',
+      logger.warn(
+        'This will overwrite any existing snapshots for this test project.',
       );
       const proceed: boolean = await confirm({
         message: `Save snapshots for test project '${testName}'?`,

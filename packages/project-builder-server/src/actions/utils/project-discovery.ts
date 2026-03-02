@@ -9,6 +9,8 @@ import { fileExists } from '@baseplate-dev/utils/node';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { resolveBaseplateDir } from '#src/diff/snapshot/snapshot-utils.js';
+
 import { isExampleProject } from './is-example-project.js';
 import { generateProjectId } from './project-id.js';
 
@@ -22,8 +24,10 @@ export async function isBaseplateProject(
   directory: string,
   baseplateDirectory?: string,
 ): Promise<boolean> {
-  const resolvedBaseplateDir =
-    baseplateDirectory ?? path.join(directory, 'baseplate');
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    directory,
+    baseplateDirectory,
+  );
   const projectDefPath = path.join(
     resolvedBaseplateDir,
     'project-definition.json',
@@ -42,8 +46,10 @@ export async function loadProjectFromDirectory(
   directory: string,
   baseplateDirectory?: string,
 ): Promise<ProjectInfo> {
-  const resolvedBaseplateDir =
-    baseplateDirectory ?? path.join(directory, 'baseplate');
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    directory,
+    baseplateDirectory,
+  );
   const projectDefPath = path.join(
     resolvedBaseplateDir,
     'project-definition.json',

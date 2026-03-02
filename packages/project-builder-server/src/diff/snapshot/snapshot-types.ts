@@ -18,7 +18,7 @@ export interface SnapshotFiles {
   modified: ModifiedFileEntry[];
   /** Files that were added by the user (not produced by generator, content stored) */
   added: AddedFileEntry[];
-  /** Files that were deleted (exist in working but not generated) */
+  /** Files that exist in generator output but were intentionally removed from working directory */
   deleted: string[];
 }
 

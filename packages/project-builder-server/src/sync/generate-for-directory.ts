@@ -23,7 +23,10 @@ import type { PackageSyncResult } from './sync-metadata.js';
 import type { GeneratorOperations } from './types.js';
 
 import { loadSnapshotManifest } from '../diff/snapshot/snapshot-manifest.js';
-import { resolveSnapshotDirectory } from '../diff/snapshot/snapshot-utils.js';
+import {
+  resolveBaseplateDir,
+  resolveSnapshotDirectory,
+} from '../diff/snapshot/snapshot-utils.js';
 import { writeGeneratedFileIdMap } from './file-id-map.js';
 import { GENERATED_DIRECTORY } from './get-previous-generated-payload.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
@@ -69,8 +72,10 @@ export async function generateForDirectory({
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
 
-  const resolvedBaseplateDir =
-    baseplateDirectory ?? path.join(baseDirectory, 'baseplate');
+  const resolvedBaseplateDir = resolveBaseplateDir(
+    baseDirectory,
+    baseplateDirectory,
+  );
   const resolvedSnapshotDirectory = resolveSnapshotDirectory(
     resolvedBaseplateDir,
     name,
@@ -104,8 +109,11 @@ export async function generateForDirectory({
     },
   );
 
-  // When overwriting, apply snapshot to the full generator output so added files
-  // are injected and patches are applied before the sync engine writes files.
+  // Snapshot application has two modes with intentionally different error strategies:
+  // - Overwrite mode (below): applies patches to generator output before writing.
+  //   Throws on failure because the output would be corrupt.
+  // - Incremental mode (applyDiff callback): applies patches per-file during 3-way merge.
+  //   Returns false on failure and warns, because the user can manually reconcile.
   const snapshotAppliedOutput =
     overwrite && snapshot
       ? await (async () => {
