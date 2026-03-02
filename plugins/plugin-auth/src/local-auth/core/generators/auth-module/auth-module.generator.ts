@@ -21,32 +21,45 @@ import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './
 
 const descriptorSchema = z.object({
   userAdminRoles: z.array(z.string()).default([]),
+  devWebPorts: z.array(z.number()).default([]),
 });
 
 export const authModuleGenerator = createGenerator({
   name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userAdminRoles }) => ({
+  buildTasks: ({ userAdminRoles, devWebPorts }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
+      const allowedOrigins = devWebPorts
+        .map((p) => `http://localhost:${String(p)}`)
+        .join(',');
+      console.log(allowedOrigins);
       configService.configFields.set('ALLOWED_ORIGINS', {
         validator: tsCodeFragment(
           "z.string().optional().transform((val) => (val ? val.split(',').map((s) => s.trim()) : []))",
         ),
         comment:
           'Comma-separated list of additional allowed origins for CSRF protection (e.g. https://example.com,https://app.example.com)',
+        ...(allowedOrigins
+          ? {
+              seedValue: allowedOrigins,
+              exampleValue: allowedOrigins,
+            }
+          : {}),
       });
+
+      const authSecret = 'a-secret-key-1234567890';
       configService.configFields.set('AUTH_SECRET', {
         validator: tsCodeFragment(
           'z.string().regex(/^[a-zA-Z0-9-_+=/]{20,}$/)',
         ),
         comment:
           'Secret key for signing auth cookie (at least 20 alphanumeric characters)',
-        seedValue: 'a-secret-key-1234567890',
-        exampleValue: '<AUTH_SECRET>',
+        seedValue: authSecret,
+        exampleValue: authSecret,
       });
     }),
     appModule: createGeneratorTask({

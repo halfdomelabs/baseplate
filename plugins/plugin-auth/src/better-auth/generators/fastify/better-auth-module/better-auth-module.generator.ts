@@ -21,37 +21,47 @@ import { BETTER_AUTH_PACKAGES } from '#src/better-auth/constants/packages.js';
 
 import { BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  devWebPorts: z.array(z.number()).default([]),
+  devBackendPort: z.number(),
+});
 
 export const betterAuthModuleGenerator = createGenerator({
   name: 'better-auth/better-auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ devWebPorts, devBackendPort }) => ({
     paths: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.paths.task,
     imports: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.imports.task,
     renderers: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
+      const betterAuthSecret = 'dev-secret-change-me-in-production';
       configService.configFields.set('BETTER_AUTH_SECRET', {
         validator: tsCodeFragment('z.string().min(32)'),
         comment: 'Better Auth secret key for signing sessions',
-        seedValue: 'dev-secret-change-me-in-production',
-        exampleValue: '<BETTER_AUTH_SECRET>',
+        seedValue: betterAuthSecret,
+        exampleValue: betterAuthSecret,
       });
+
+      const betterAuthUrl = `http://localhost:${String(devBackendPort)}`;
 
       configService.configFields.set('BETTER_AUTH_URL', {
         validator: tsCodeFragment('z.url()'),
         comment: 'Better Auth base URL (backend server URL)',
-        seedValue: 'http://localhost:4000',
-        exampleValue: '<BETTER_AUTH_URL>',
+        seedValue: betterAuthUrl,
+        exampleValue: betterAuthUrl,
       });
+
+      const allowedOrigins = devWebPorts
+        .map((p) => `http://localhost:${String(p)}`)
+        .join(',');
 
       configService.configFields.set('ALLOWED_ORIGINS', {
         validator: tsCodeFragment('z.string().default("")'),
         comment:
           'Comma-separated list of allowed CORS origins (e.g. https://example.com,https://app.example.com)',
-        seedValue: 'http://localhost:5173,http://localhost:5174', // TODO: Fix default value
-        exampleValue: '<ALLOWED_ORIGINS>',
+        seedValue: allowedOrigins,
+        exampleValue: allowedOrigins,
       });
     }),
     main: createGeneratorTask({

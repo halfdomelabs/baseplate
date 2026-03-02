@@ -25,11 +25,20 @@ export default createPluginModule({
       {
         pluginKey,
         appType: backendAppEntryType,
-        compile: ({ projectDefinition, appCompiler }) => {
+        compile: ({ projectDefinition, appDefinition, appCompiler }) => {
           const auth = getAuthPluginDefinition(projectDefinition);
 
+          // Get web app ports
+          const webApps = projectDefinition.apps.filter(
+            (app) => app.type === 'web',
+          );
+          const devWebPorts = webApps.map((app) => app.devPort);
+
           appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-            betterAuthModule: betterAuthModuleGenerator({}),
+            betterAuthModule: betterAuthModuleGenerator({
+              devWebPorts,
+              devBackendPort: appDefinition.devPort,
+            }),
           });
         },
       },

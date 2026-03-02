@@ -50,12 +50,13 @@ export default createPluginModule({
 
           const authDefinition = getAuthPluginDefinition(projectDefinition);
 
-          // Get first web app's port for auth domain that supports auth
-          const firstWebApp = projectDefinition.apps.find(
-            (app) => app.type === 'web' && app.includeAuth,
+          // Get web app ports
+          const webApps = projectDefinition.apps.filter(
+            (app) => app.type === 'web',
           );
+          const devWebPorts = webApps.map((app) => app.devPort);
           const devWebDomainPort =
-            firstWebApp?.devPort ??
+            devWebPorts[0] ??
             projectDefinition.settings.general.portOffset + 30;
 
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
@@ -68,6 +69,7 @@ export default createPluginModule({
               userAdminRoles: localAuthDefinition.userAdminRoles.map((role) =>
                 definitionContainer.nameFromId(role),
               ),
+              devWebPorts,
             }),
             emailPassword: appModuleGenerator({
               id: 'email-password',
