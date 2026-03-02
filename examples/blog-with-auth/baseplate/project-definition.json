@@ -112,7 +112,7 @@
   ],
   "models": [
     {
-      "featureRef": "auth",
+      "featureRef": "accounts",
       "id": "model:wGEO1hZs5XQE",
       "model": {
         "fields": [
@@ -264,8 +264,7 @@
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
-        ],
-        "uniqueConstraints": []
+        ]
       },
       "name": "Blog",
       "service": {
@@ -352,8 +351,7 @@
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "blogId" }]
           }
-        ],
-        "uniqueConstraints": []
+        ]
       },
       "name": "BlogPost",
       "service": {
@@ -419,8 +417,7 @@
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
-        ],
-        "uniqueConstraints": []
+        ]
       },
       "name": "BlogUser",
       "service": {
@@ -457,9 +454,7 @@
             "type": "dateTime"
           }
         ],
-        "primaryKeyFieldRefs": ["key"],
-        "relations": [],
-        "uniqueConstraints": []
+        "primaryKeyFieldRefs": ["key"]
       },
       "name": "RateLimiterFlexible",
       "service": {
@@ -559,7 +554,6 @@
           }
         ],
         "primaryKeyFieldRefs": ["id"],
-        "relations": [],
         "uniqueConstraints": [
           {
             "fields": [{ "fieldRef": "email" }],
@@ -719,8 +713,7 @@
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "userId" }]
           }
-        ],
-        "uniqueConstraints": []
+        ]
       },
       "name": "UserRole",
       "service": {

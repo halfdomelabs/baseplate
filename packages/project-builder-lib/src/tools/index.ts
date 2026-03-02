@@ -1,1 +1,1 @@
-export * from './model-merger/index.js';
+export * from './merge-schema/index.js';
