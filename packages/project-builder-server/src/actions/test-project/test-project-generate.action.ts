@@ -44,6 +44,7 @@ export async function generateTestProject(
     logger,
     plugins,
     cliVersion,
+    testProjectDir,
   );
 
   // Sync with baseplateDirectory pointing at the test project dir

@@ -14,7 +14,10 @@ import path from 'node:path';
 import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { applySnapshotToFileContents } from '#src/diff/index.js';
+import {
+  applySnapshotToFileContents,
+  applySnapshotToGeneratorOutput,
+} from '#src/diff/index.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
 import type { GeneratorOperations } from './types.js';
@@ -101,28 +104,39 @@ export async function generateForDirectory({
     },
   );
 
-  if (overwrite && snapshot) {
-    logger.info(`Applying snapshot to generator output for ${name}...`);
-  }
+  // When overwriting, apply snapshot to the full generator output so added files
+  // are injected and patches are applied before the sync engine writes files.
+  const snapshotAppliedOutput =
+    overwrite && snapshot
+      ? await (async () => {
+          logger.info(`Applying snapshot to generator output for ${name}...`);
+          return applySnapshotToGeneratorOutput(
+            output,
+            snapshot,
+            resolvedSnapshotDirectory.diffsPath,
+          );
+        })()
+      : output;
 
   const overwriteOptions: OverwriteOptions = {
     enabled: !!overwrite,
     applyDiff:
-      snapshot &&
-      (async (relativePath, generatedContents) => {
-        const result = await applySnapshotToFileContents(
-          relativePath,
-          generatedContents,
-          snapshot,
-          resolvedSnapshotDirectory.diffsPath,
-        );
-        if (result === false) {
-          logger.warn(
-            `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
-          );
-        }
-        return result;
-      }),
+      !overwrite && snapshot
+        ? async (relativePath, generatedContents) => {
+            const result = await applySnapshotToFileContents(
+              relativePath,
+              generatedContents,
+              snapshot,
+              resolvedSnapshotDirectory.diffsPath,
+            );
+            if (result === false) {
+              logger.warn(
+                `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
+              );
+            }
+            return result;
+          }
+        : undefined,
     skipFile: (relativePath) => {
       if (!ignorePatterns) {
         return false;
@@ -133,23 +147,27 @@ export async function generateForDirectory({
 
   try {
     const { failedCommands, filesWithConflicts, fileIdToRelativePathMap } =
-      await operations.writeGeneratorOutput(output, projectDirectory, {
-        previousGeneratedPayload,
-        generatedContentsDirectory: generatedTemporaryDirectory,
-        rerunCommands: previousPackageSyncResult?.failedCommands?.map(
-          (c) => c.command,
-        ),
-        logger,
-        mergeDriver: userConfig.sync?.customMergeDriver
-          ? {
-              name: 'baseplate-custom-merge-driver',
-              driver: userConfig.sync.customMergeDriver,
-            }
-          : undefined,
-        abortSignal,
-        skipCommands,
-        overwriteOptions,
-      });
+      await operations.writeGeneratorOutput(
+        snapshotAppliedOutput,
+        projectDirectory,
+        {
+          previousGeneratedPayload,
+          generatedContentsDirectory: generatedTemporaryDirectory,
+          rerunCommands: previousPackageSyncResult?.failedCommands?.map(
+            (c) => c.command,
+          ),
+          logger,
+          mergeDriver: userConfig.sync?.customMergeDriver
+            ? {
+                name: 'baseplate-custom-merge-driver',
+                driver: userConfig.sync.customMergeDriver,
+              }
+            : undefined,
+          abortSignal,
+          skipCommands,
+          overwriteOptions,
+        },
+      );
 
     // write metadata to the generated directory
     if (writeTemplateMetadataOptions?.includeTemplateMetadata) {

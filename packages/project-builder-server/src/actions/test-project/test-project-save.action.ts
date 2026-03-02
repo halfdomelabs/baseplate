@@ -41,6 +41,7 @@ async function loadTestProjectContext(
     logger,
     plugins,
     cliVersion,
+    baseplateDirectory,
   );
 
   const { definition } = await loadProjectDefinition(

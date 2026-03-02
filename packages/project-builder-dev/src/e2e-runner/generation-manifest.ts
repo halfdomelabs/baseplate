@@ -29,7 +29,11 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
     const fullPath = path.join(dir, entry.name);
     const relativePath = path.relative(rootDir, fullPath);
 
-    if (entry.name === 'node_modules' || entry.name === MANIFEST_FILENAME) {
+    if (
+      entry.name === 'node_modules' ||
+      entry.name === MANIFEST_FILENAME ||
+      entry.name === 'baseplate'
+    ) {
       continue;
     }
 
