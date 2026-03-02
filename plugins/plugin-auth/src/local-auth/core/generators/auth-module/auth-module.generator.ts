@@ -36,7 +36,6 @@ export const authModuleGenerator = createGenerator({
       const allowedOrigins = devWebPorts
         .map((p) => `http://localhost:${String(p)}`)
         .join(',');
-      console.log(allowedOrigins);
       configService.configFields.set('ALLOWED_ORIGINS', {
         validator: tsCodeFragment(
           "z.string().optional().transform((val) => (val ? val.split(',').map((s) => s.trim()) : []))",

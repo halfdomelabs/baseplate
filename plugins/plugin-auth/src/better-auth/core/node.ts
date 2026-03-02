@@ -2,6 +2,7 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPluginModule,
+  pluginAppCompiler,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
@@ -22,7 +23,7 @@ export default createPluginModule({
   },
   initialize: ({ appCompiler }, { pluginKey }) => {
     appCompiler.compilers.push(
-      {
+      pluginAppCompiler({
         pluginKey,
         appType: backendAppEntryType,
         compile: ({ projectDefinition, appDefinition, appCompiler }) => {
@@ -41,8 +42,8 @@ export default createPluginModule({
             }),
           });
         },
-      },
-      {
+      }),
+      pluginAppCompiler({
         pluginKey,
         appType: webAppEntryType,
         compile: ({ appCompiler, projectDefinition }) => {
@@ -61,7 +62,7 @@ export default createPluginModule({
             }),
           });
         },
-      },
+      }),
     );
   },
 });
