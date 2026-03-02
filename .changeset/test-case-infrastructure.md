@@ -4,10 +4,10 @@
 '@baseplate-dev/project-builder-test': patch
 ---
 
-Add test project infrastructure with `baseplate-dev test-project` and `baseplate-dev test` commands for managing snapshot-based test projects. Test projects store the project definition and per-app snapshot diffs in `test-projects/<name>/`, with generated output written to gitignored `generated-tests/<name>/`. Core logic implemented as service actions (`test-project-generate`, `test-project-save`, `test-project-init`) in project-builder-server, accessible via CLI, MCP, and TRPC.
+Introduce centralized snapshot-based test project infrastructure with new CLI commands and improved storage structure:
 
-CLI split into two command groups: `test-project` for lifecycle management (init, generate, save, run-env) and `test` for execution (gen, web). The `pnpm-lock.yaml` is stored in the test project directory and copied during generate/save for reproducible installs. Test definitions use `*.gen.ts` for generated code tests and `*.web.ts` for web UI tests.
-
-Move snapshot storage from `<app>/.baseplate-snapshot/` to `<projectRoot>/baseplate/snapshots/<appName>/`, centralizing all project metadata under the `baseplate/` folder. Existing `.baseplate-snapshot/` directories should be manually moved to the new location.
-
-Move E2E test runner infrastructure from project-builder-test into project-builder-dev as a new `e2e-runner` subpath export, enabling plugins to define and run their own E2E test cases. Simplify project-builder-test to a scripts-only container that invokes `baseplate-dev` commands.
+- Adds `baseplate-dev test-project` and `baseplate-dev test` CLI commands to manage and execute snapshot-based test projects.
+- Test projects live in `test-projects/<name>/`, storing the project definition and app-level snapshot diffs; generated output is written to gitignored `generated-tests/<name>/`.
+- CLI split into two command groups:
+  - `test-project` for lifecycle operations (init, generate, save, run-env)
+  - `test` for actual execution (gen, web)
