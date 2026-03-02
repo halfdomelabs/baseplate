@@ -2,15 +2,15 @@ import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  createAndApplyModelMergerResults,
-  createModelMergerResults,
-  doesModelMergerResultsHaveChanges,
+  applyMergedDefinition,
+  diffDefinition,
+  featureEntityType,
   FeatureUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  DefinitionDiffAlert,
   FeatureComboboxFieldController,
-  ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -28,14 +28,22 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { RATE_LIMIT_MODELS } from '#src/rate-limit/constants/model-names.js';
-
 import type { RateLimitPluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createRateLimitModels } from '../schema/models.js';
+import { createRateLimitPartialDefinition } from '../schema/models.js';
 import { createRateLimitPluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
+
+function resolveFeatureName(
+  definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
+  featureRef: string,
+): string {
+  if (featureEntityType.isId(featureRef)) {
+    return FeatureUtils.getFeaturePathById(definition, featureRef);
+  }
+  return featureRef;
+}
 
 export function RateLimitDefinitionEditor({
   definition: pluginMetadata,
@@ -75,18 +83,19 @@ export function RateLimitDefinitionEditor({
     | RateLimitPluginDefinitionInput
     | undefined;
 
-  const pendingModelChanges = useMemo(() => {
+  const diff = useMemo(() => {
     const featureRef = pluginConfig?.rateLimitFeatureRef ?? '';
     if (!featureRef) return undefined;
 
-    const desiredModels = createRateLimitModels(featureRef);
+    const featureName = resolveFeatureName(definition, featureRef);
+    const partialDef = createRateLimitPartialDefinition(featureName);
 
-    return createModelMergerResults(
-      RATE_LIMIT_MODELS,
-      desiredModels,
-      definitionContainer,
+    return diffDefinition(
+      definitionContainer.schema,
+      definitionContainer.definition,
+      partialDef,
     );
-  }, [definitionContainer, pluginConfig?.rateLimitFeatureRef]);
+  }, [definitionContainer, definition, pluginConfig?.rateLimitFeatureRef]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -95,12 +104,9 @@ export function RateLimitDefinitionEditor({
           draftConfig,
           data.rateLimitFeatureRef,
         );
-        createAndApplyModelMergerResults(
-          draftConfig,
-          RATE_LIMIT_MODELS,
-          createRateLimitModels(featureRef),
-          definitionContainer,
-        );
+        const featureName = resolveFeatureName(draftConfig, featureRef);
+        const partialDef = createRateLimitPartialDefinition(featureName);
+        applyMergedDefinition(definitionContainer, partialDef)(draftConfig);
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
@@ -168,9 +174,10 @@ export function RateLimitDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="ratelimit:space-y-6">
-                  {pendingModelChanges ? (
-                    <ModelMergerResultAlert
-                      pendingModelChanges={pendingModelChanges}
+                  {diff ? (
+                    <DefinitionDiffAlert
+                      diff={diff}
+                      upToDateMessage="All required models are already configured correctly. No changes needed."
                     />
                   ) : (
                     <p className="ratelimit:text-sm ratelimit:text-muted-foreground">
@@ -186,9 +193,7 @@ export function RateLimitDefinitionEditor({
           <FormActionBar
             form={form}
             allowSaveWithoutDirty={
-              !pluginMetadata ||
-              (pendingModelChanges != null &&
-                doesModelMergerResultsHaveChanges(pendingModelChanges))
+              !pluginMetadata || (diff?.hasChanges ?? false)
             }
           />
         </form>

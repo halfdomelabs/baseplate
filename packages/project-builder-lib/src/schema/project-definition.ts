@@ -1,3 +1,5 @@
+import type { PartialDeep } from 'type-fest';
+
 import { z } from 'zod';
 
 import type { def } from './creator/index.js';
@@ -71,4 +73,13 @@ export type ProjectDefinition = def.InferOutput<
 
 export type ProjectDefinitionSchema = def.InferSchema<
   typeof createProjectDefinitionSchema
+>;
+
+/**
+ * A deeply partial version of ProjectDefinitionInput that recurses into arrays.
+ * Use this for providing partial definition patches to `mergeDefinition` and `diffDefinition`.
+ */
+export type PartialProjectDefinitionInput = PartialDeep<
+  ProjectDefinitionInput,
+  { recurseIntoArrays: true }
 >;

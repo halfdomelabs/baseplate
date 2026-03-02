@@ -2,15 +2,16 @@ import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  createAndApplyModelMergerResults,
-  createModelMergerResults,
-  doesModelMergerResultsHaveChanges,
+  applyMergedDefinition,
+  authModelsSpec,
+  diffDefinition,
+  featureEntityType,
   FeatureUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  DefinitionDiffAlert,
   FeatureComboboxFieldController,
-  ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -28,13 +29,21 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
-
 import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createStorageModels } from '../schema/models.js';
+import { createStoragePartialDefinition } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
+
+function resolveFeatureName(
+  definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
+  featureRef: string,
+): string {
+  if (featureEntityType.isId(featureRef)) {
+    return FeatureUtils.getFeaturePathById(definition, featureRef);
+  }
+  return featureRef;
+}
 
 export function StorageDefinitionEditor({
   definition: pluginMetadata,
@@ -70,18 +79,25 @@ export function StorageDefinitionEditor({
 
   const storageFeatureRef = watch('storageFeatureRef');
 
-  const pendingModelChanges = useMemo(() => {
-    const desiredModels = createStorageModels(
-      { storageFeatureRef },
-      definitionContainer,
-    );
+  const authModels = definitionContainer.pluginStore.use(authModelsSpec);
+  const userModelName = authModels.getAuthModelsOrThrow(definition).user;
 
-    return createModelMergerResults(
-      STORAGE_MODELS,
-      desiredModels,
-      definitionContainer,
-    );
-  }, [definitionContainer, storageFeatureRef]);
+  const storageFeatureName = resolveFeatureName(definition, storageFeatureRef);
+
+  const partialDef = useMemo(
+    () => createStoragePartialDefinition(storageFeatureName, userModelName),
+    [storageFeatureName, userModelName],
+  );
+
+  const diff = useMemo(
+    () =>
+      diffDefinition(
+        definitionContainer.schema,
+        definitionContainer.definition,
+        partialDef,
+      ),
+    [definitionContainer, partialDef],
+  );
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -90,20 +106,22 @@ export function StorageDefinitionEditor({
           draftConfig,
           data.storageFeatureRef,
         );
-        const updatedData = {
-          ...data,
-          storageFeatureRef: featureRef,
-        };
-        createAndApplyModelMergerResults(
-          draftConfig,
-          STORAGE_MODELS,
-          createStorageModels(updatedData, definitionContainer),
-          definitionContainer,
+        const featureName = resolveFeatureName(draftConfig, featureRef);
+        const updatedPartialDef = createStoragePartialDefinition(
+          featureName,
+          userModelName,
         );
+        applyMergedDefinition(
+          definitionContainer,
+          updatedPartialDef,
+        )(draftConfig);
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
-          updatedData,
+          {
+            ...data,
+            storageFeatureRef: featureRef,
+          },
           definitionContainer,
         );
       },
@@ -137,8 +155,9 @@ export function StorageDefinitionEditor({
               </SectionListSectionDescription>
             </SectionListSectionHeader>
             <SectionListSectionContent className="storage:space-y-6">
-              <ModelMergerResultAlert
-                pendingModelChanges={pendingModelChanges}
+              <DefinitionDiffAlert
+                diff={diff}
+                upToDateMessage="All required models are already configured correctly. No changes needed."
               />
 
               <FeatureComboboxFieldController
@@ -157,10 +176,7 @@ export function StorageDefinitionEditor({
 
       <FormActionBar
         form={form}
-        allowSaveWithoutDirty={
-          !pluginMetadata ||
-          doesModelMergerResultsHaveChanges(pendingModelChanges)
-        }
+        allowSaveWithoutDirty={!pluginMetadata || diff.hasChanges}
       />
     </form>
   );

@@ -2,10 +2,12 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
+import { withDefault } from '#src/schema/creator/index.js';
 import {
   definitionSchema,
   definitionSchemaWithSlots,
 } from '#src/schema/creator/schema-creator.js';
+import { withByKeyMergeRule } from '#src/tools/merge-schema/merge-rule-registry.js';
 
 import { authRoleEntityType } from '../auth/index.js';
 import { modelAuthorizerRoleEntityType } from './authorizer/types.js';
@@ -37,8 +39,8 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
       objectType: ctx.withDefault(
         z.object({
           enabled: ctx.withDefault(z.boolean(), false),
-          fields: ctx.withDefault(
-            z.array(
+          fields: z
+            .array(
               z.object({
                 ref: ctx.withRef({
                   type: modelScalarFieldEntityType,
@@ -57,11 +59,11 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   [],
                 ),
               }),
-            ),
-            [],
-          ),
-          localRelations: ctx.withDefault(
-            z.array(
+            )
+            .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
+            .apply(withDefault([])),
+          localRelations: z
+            .array(
               z.object({
                 ref: ctx.withRef({
                   type: modelLocalRelationEntityType,
@@ -80,11 +82,11 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   [],
                 ),
               }),
-            ),
-            [],
-          ),
-          foreignRelations: ctx.withDefault(
-            z.array(
+            )
+            .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
+            .apply(withDefault([])),
+          foreignRelations: z
+            .array(
               z.object({
                 ref: ctx.withRef({
                   type: modelForeignRelationEntityType,
@@ -103,9 +105,9 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   [],
                 ),
               }),
-            ),
-            [],
-          ),
+            )
+            .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
+            .apply(withDefault([])),
         }),
         {},
       ),
