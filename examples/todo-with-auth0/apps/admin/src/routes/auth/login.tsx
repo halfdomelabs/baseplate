@@ -25,7 +25,7 @@ export const Route = createFileRoute('/auth/login')({
   validateSearch: z.object({
     return_to: z
       .string()
-      .regex(/^\/[a-zA-Z0-9\-._~!$&'()*+,;=:@?/]*$/)
+      .refine((v) => v.startsWith('/') && !v.startsWith('//'))
       .optional(),
   }),
   beforeLoad: ({ context: { userId }, search: { return_to } }) => {
@@ -128,6 +128,7 @@ function LoginPage(): React.JSX.Element {
                 Don&apos;t have an account?{' '}
                 <Link
                   to="/auth/register"
+                  search={{ return_to }}
                   className="underline underline-offset-4"
                 >
                   Sign up

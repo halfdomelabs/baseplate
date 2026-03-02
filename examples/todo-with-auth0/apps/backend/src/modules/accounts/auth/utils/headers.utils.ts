@@ -6,7 +6,14 @@ import type { FastifyRequest } from 'fastify';
 export function toWebHeaders(headers: FastifyRequest['headers']): Headers {
   const webHeaders = new Headers();
   for (const [key, value] of Object.entries(headers)) {
-    if (value) webHeaders.append(key, value.toString());
+    if (value == null) continue;
+    if (Array.isArray(value)) {
+      for (const v of value) {
+        webHeaders.append(key, v);
+      }
+    } else {
+      webHeaders.append(key, value);
+    }
   }
   return webHeaders;
 }

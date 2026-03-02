@@ -8,7 +8,7 @@ export const Route = createFileRoute('/auth/login')({
   validateSearch: z.object({
     return_to: z
       .string()
-      .regex(/^\/[a-zA-Z0-9\-._~!$&'()*+,;=:@?/]*$/)
+      .refine((v) => v.startsWith('/') && !v.startsWith('//'))
       .optional(),
     screen_hint: z.enum(['signup', 'login']).optional(),
   }),

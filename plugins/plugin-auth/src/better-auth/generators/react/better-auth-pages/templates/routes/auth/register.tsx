@@ -25,9 +25,15 @@ import { logError } from '%reactErrorImports';
 import { authClient } from '%betterAuthImports';
 
 export const Route = createFileRoute('/auth/register')({
-  beforeLoad: ({ context: { userId } }) => {
+  validateSearch: z.object({
+    return_to: z
+      .string()
+      .refine((v) => v.startsWith('/') && !v.startsWith('//'))
+      .optional(),
+  }),
+  beforeLoad: ({ context: { userId }, search: { return_to } }) => {
     if (userId) {
-      throw redirect({ to: '/', replace: true });
+      throw redirect({ to: return_to ?? '/', replace: true });
     }
   },
   component: RegisterPage,
@@ -60,6 +66,7 @@ function RegisterPage(): React.JSX.Element {
     reValidateMode: 'onBlur',
   });
   const router = useRouter();
+  const { return_to } = Route.useSearch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = (data: FormData): void => {
@@ -79,7 +86,7 @@ function RegisterPage(): React.JSX.Element {
         }
         router
           .invalidate()
-          .then(() => router.navigate({ to: '/', replace: true }))
+          .then(() => router.navigate({ to: return_to ?? '/', replace: true }))
           .catch(logError);
       })
       .catch((err: unknown) => {
@@ -139,7 +146,11 @@ function RegisterPage(): React.JSX.Element {
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <Link to="/auth/login" className="underline underline-offset-4">
+              <Link
+                to="/auth/login"
+                search={{ return_to }}
+                className="underline underline-offset-4"
+              >
                 Login
               </Link>
             </div>
