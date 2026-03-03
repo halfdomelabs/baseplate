@@ -173,8 +173,8 @@ export async function assertNotStale(outputDir: string): Promise<void> {
 
   lines.push(
     '',
-    `Run 'baseplate-dev test-project save <name>' to save changes first, or`,
-    `use --force to overwrite anyway.`,
+    `Run 'baseplate-dev snapshot save <name>' to save changes first, or`,
+    `re-generate with 'baseplate-dev sync <name> --overwrite'.`,
   );
 
   throw new Error(lines.join('\n'));

@@ -13,6 +13,10 @@ import type { ProjectBuilderTest, TestRunnerHelpers } from './types.js';
 
 import { discoverTests } from './discover-tests.js';
 import { createEnvironmentHelpers } from './environment.js';
+import {
+  assertNotStale,
+  writeGenerationManifest,
+} from './generation-manifest.js';
 
 export interface RunTestsOptions {
   /** Directory where **.gen.ts files live */
@@ -29,6 +33,9 @@ async function runTest(
 ): Promise<void> {
   const testProjectDir = path.join(testProjectsDir, test.projectDirectory);
   const outputDir = path.join(testProjectDir, '.output');
+
+  // Check if the output directory has been modified since last generation
+  await assertNotStale(outputDir);
 
   // Expand test project (generate + apply snapshots)
   console.info(`Generating project for ${test.projectDirectory}...`);
@@ -66,6 +73,7 @@ async function runTest(
     );
   }
 
+  await writeGenerationManifest(outputDir);
   console.info(`Project generated for ${test.projectDirectory}!`);
 
   const runnerContext = {
