@@ -77,7 +77,7 @@ export interface PluginModuleWithDirectory {
  * A plugin module with a key and plugin key metadata.
  */
 export interface PluginModuleWithKey {
-  /** The unique key for this module (e.g., "core/server/auth-compiler" or "auth/auth0/core/web") */
+  /** The unique key for this module (e.g., "core/server/auth-compiler" or "auth/better-auth/core/web") */
   key: string;
   /** The plugin key (or "core" for core modules) */
   pluginKey: string;

@@ -19,7 +19,7 @@ Baseplate follows a **code-first** development approach:
 **Example projects:**
 
 - `examples/blog-with-auth` - Blog application with authentication
-- `examples/todo-with-better-auth` - Todo application with Auth0 integration
+- `examples/todo-with-better-auth` - Todo application with Better Auth integration
 
 ## Documentation References
 
