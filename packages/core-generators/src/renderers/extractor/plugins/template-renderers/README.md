@@ -21,7 +21,7 @@ For each generator, the plugin generates:
 ```typescript
 await builder.apply(
   typescriptFile.renderTemplateGroup({
-    group: AUTH0_HOOKS_GENERATED.templates.hooksGroup,
+    group: BETTER_AUTH_HOOKS_GENERATED.templates.hooksGroup,
     paths,
     variables: { useCurrentUser: { TPL_USER: userQueryName } },
     importMapProviders: {
