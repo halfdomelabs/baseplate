@@ -24,7 +24,7 @@ import {
   listTemplatesAction,
   showTemplateMetadataAction,
 } from './templates/index.js';
-import { testProjectInitAction } from './test-project/index.js';
+import { initProjectAction } from './test-project/index.js';
 
 export const USER_SERVICE_ACTIONS = [
   diffProjectAction,
@@ -49,5 +49,5 @@ export const ALL_SERVICE_ACTIONS = [
   snapshotRemoveAction,
   snapshotSaveAction,
   snapshotShowAction,
-  testProjectInitAction,
+  initProjectAction,
 ];

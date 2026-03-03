@@ -13,12 +13,12 @@ const devConfigSchema = z
      * Directory containing example projects (subdirectories are individual examples).
      * Relative to config file location.
      */
-    exampleDirectory: z.string().optional(),
+    examplesDirectory: z.string().optional(),
     /**
      * Directory containing test projects (subdirectories are individual tests).
      * Relative to config file location.
      */
-    testDirectory: z.string().optional(),
+    testProjectsDirectory: z.string().optional(),
     /**
      * Directories to search for plugins.
      * Relative to config file location.
@@ -28,17 +28,17 @@ const devConfigSchema = z
   .strict();
 
 export interface ResolvedDevConfig {
-  /** Absolute path to the example directory, or undefined if not configured. */
-  exampleDirectory: string | undefined;
-  /** Absolute path to the test directory, or undefined if not configured. */
-  testDirectory: string | undefined;
+  /** Absolute path to the examples directory, or undefined if not configured. */
+  examplesDirectory: string | undefined;
+  /** Absolute path to the test projects directory, or undefined if not configured. */
+  testProjectsDirectory: string | undefined;
   /** Absolute paths to plugin root directories. */
   pluginRootDirectories: string[];
 }
 
 const DEFAULT_CONFIG: ResolvedDevConfig = {
-  exampleDirectory: undefined,
-  testDirectory: undefined,
+  examplesDirectory: undefined,
+  testProjectsDirectory: undefined,
   pluginRootDirectories: [],
 };
 
@@ -69,11 +69,11 @@ export async function loadDevConfig(): Promise<ResolvedDevConfig> {
   const rootDir = process.cwd();
 
   cachedConfig = {
-    exampleDirectory: rawConfig.exampleDirectory
-      ? path.resolve(rootDir, rawConfig.exampleDirectory)
+    examplesDirectory: rawConfig.examplesDirectory
+      ? path.resolve(rootDir, rawConfig.examplesDirectory)
       : undefined,
-    testDirectory: rawConfig.testDirectory
-      ? path.resolve(rootDir, rawConfig.testDirectory)
+    testProjectsDirectory: rawConfig.testProjectsDirectory
+      ? path.resolve(rootDir, rawConfig.testProjectsDirectory)
       : undefined,
     pluginRootDirectories: rawConfig.pluginRootDirectories.map((dir) =>
       path.resolve(rootDir, dir),

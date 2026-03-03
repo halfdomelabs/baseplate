@@ -69,10 +69,9 @@ export const syncProjectAction = createServiceAction({
     const resolvedBaseplateDir =
       baseplateDirectory ?? project.baseplateDirectory;
 
-    // For test projects, auto-overwrite if output directory doesn't exist yet
+    // Auto-overwrite if output directory doesn't exist yet
     const outputDirExists = await dirExists(project.directory);
-    const effectiveOverwrite =
-      overwrite || (project.type === 'test' && !outputDirExists);
+    const effectiveOverwrite = !!overwrite || !outputDirExists;
 
     try {
       // Create schema parser context

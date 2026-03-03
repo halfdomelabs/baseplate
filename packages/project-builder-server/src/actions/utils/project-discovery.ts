@@ -84,7 +84,7 @@ export interface DiscoverProjectsOptions {
   /** Example project directories (baseplateDir = dir/baseplate, outputDir = dir) */
   exampleDirectories?: string[];
   /** Test project directories (baseplateDir = dir, outputDir = dir/.output) */
-  testDirectories?: string[];
+  testProjectDirectories?: string[];
 }
 
 /**
@@ -120,7 +120,7 @@ export async function discoverProjects(
       resolveBaseplateDir: (dir) => path.join(dir, 'baseplate'),
     },
     {
-      directories: options.testDirectories ?? [],
+      directories: options.testProjectDirectories ?? [],
       type: 'test',
       resolveOutputDir: (dir) => path.join(dir, '.output'),
       resolveBaseplateDir: (dir) => dir,

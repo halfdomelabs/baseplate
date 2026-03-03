@@ -71,14 +71,14 @@ export async function listProjects({
     additionalDirectories,
     defaultToCwd: true,
   });
-  const exampleDirs = await listSubdirectories(config.exampleDirectory);
-  const testDirs = await listSubdirectories(config.testDirectory);
+  const exampleDirs = await listSubdirectories(config.examplesDirectory);
+  const testDirs = await listSubdirectories(config.testProjectsDirectory);
 
   return discoverProjects(
     {
       projectDirectories: projectDirs,
       exampleDirectories: exampleDirs,
-      testDirectories: testDirs,
+      testProjectDirectories: testDirs,
     },
     logger,
   );
@@ -114,6 +114,6 @@ export async function resolveProject(
 
 export async function getExampleProjects(): Promise<ProjectInfo[]> {
   const config = await loadDevConfig();
-  const exampleDirs = await listSubdirectories(config.exampleDirectory);
+  const exampleDirs = await listSubdirectories(config.examplesDirectory);
   return discoverProjects({ exampleDirectories: exampleDirs }, logger);
 }

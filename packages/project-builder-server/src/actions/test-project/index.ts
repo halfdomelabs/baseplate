@@ -1,1 +1,1 @@
-export { testProjectInitAction } from './test-project-init.action.js';
+export { initProjectAction } from './test-project-init.action.js';

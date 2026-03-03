@@ -21,6 +21,8 @@ pnpm baseplate-dev --help
 - **`templates`** — Extract, generate, create, list, and delete generator templates
 - **`snapshot`** — Add, remove, save, and show project snapshots
 - **`sync-examples`** — Sync all example projects in the nearest `examples/` directory
+- **`init <name> --type example|test`** — Initialize a new example or test project
+- **`run-env <test-name>`** — Start a test project environment for development
 - **`serve`** — Start the project builder web UI
 - **`dev-server`** — Start the MCP-integrated development server
 - **`mcp`** — Start the MCP stdio server with full action set (templates, snapshots, sync, diff)
@@ -33,17 +35,17 @@ Place a `baseplate.config.json` in the directory where you run `baseplate-dev`:
 
 ```json
 {
-  "exampleDirectory": "examples",
-  "testDirectory": "tests",
+  "examplesDirectory": "examples",
+  "testProjectsDirectory": "tests",
   "pluginRootDirectories": ["plugins"]
 }
 ```
 
-| Field                   | Description                                                              |
-| ----------------------- | ------------------------------------------------------------------------ |
-| `exampleDirectory`      | Directory whose subdirectories are example projects                      |
-| `testDirectory`         | Directory whose subdirectories are test projects                         |
-| `pluginRootDirectories` | Array of directories to search for plugins                               |
+| Field                   | Description                                         |
+| ----------------------- | --------------------------------------------------- |
+| `examplesDirectory`     | Directory whose subdirectories are example projects |
+| `testProjectsDirectory` | Directory whose subdirectories are test projects    |
+| `pluginRootDirectories` | Array of directories to search for plugins          |
 
 All paths are relative to the config file location. All fields are optional.
 

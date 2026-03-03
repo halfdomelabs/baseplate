@@ -8,20 +8,24 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { createServiceAction } from '../types.js';
-import { TEST_PROJECT_DEFINITION_FILENAME } from './test-project-paths.js';
 
-const testProjectInitInputSchema = z.object({
-  testProjectDirectory: z
+const projectTypeSchema = z
+  .enum(['example', 'test'])
+  .describe('The type of project to initialize.');
+
+const initProjectInputSchema = z.object({
+  projectDirectory: z
     .string()
     .describe(
-      'Absolute path to the test project directory (e.g. test-projects/<name>/).',
+      'Absolute path to the project directory (e.g. examples/<name>/ or tests/<name>/).',
     ),
-  testName: z
+  projectName: z
     .string()
-    .describe('The name of the test project (used as the project name).'),
+    .describe('The name of the project (used as the project name).'),
+  type: projectTypeSchema,
 });
 
-const testProjectInitOutputSchema = z.object({
+const initProjectOutputSchema = z.object({
   success: z.boolean().describe('Whether the initialization was successful.'),
   message: z.string().describe('Result message.'),
   definitionPath: z
@@ -31,37 +35,45 @@ const testProjectInitOutputSchema = z.object({
 });
 
 /**
- * Service action to initialize a new test project with a default project definition.
+ * Service action to initialize a new example or test project with a default project definition.
  */
-export const testProjectInitAction = createServiceAction({
-  name: 'test-project-init',
-  title: 'Initialize Test Project',
-  description: 'Create a new test project with an initial project definition',
-  inputSchema: testProjectInitInputSchema,
-  outputSchema: testProjectInitOutputSchema,
+export const initProjectAction = createServiceAction({
+  name: 'init-project',
+  title: 'Initialize Project',
+  description:
+    'Create a new example or test project with an initial project definition',
+  inputSchema: initProjectInputSchema,
+  outputSchema: initProjectOutputSchema,
   handler: async (input, context) => {
-    const { testProjectDirectory, testName } = input;
+    const { projectDirectory, projectName, type } = input;
     const { logger } = context;
 
     try {
-      if (await dirExists(testProjectDirectory)) {
+      if (await dirExists(projectDirectory)) {
         return {
           success: false,
-          message: `Test project already exists at ${testProjectDirectory}. Use 'test-project generate' to regenerate it.`,
+          message: `Project already exists at ${projectDirectory}.`,
         };
       }
 
-      await mkdir(testProjectDirectory, { recursive: true });
+      // Test projects: project-definition.json at root
+      // Example projects: baseplate/project-definition.json
+      const definitionDir =
+        type === 'test'
+          ? projectDirectory
+          : path.join(projectDirectory, 'baseplate');
+
+      await mkdir(definitionDir, { recursive: true });
 
       const definitionPath = path.join(
-        testProjectDirectory,
-        TEST_PROJECT_DEFINITION_FILENAME,
+        definitionDir,
+        'project-definition.json',
       );
 
       const initialDefinition = {
         settings: {
           general: {
-            name: testName,
+            name: projectName,
             packageScope: '',
             portOffset: 3000,
           },
@@ -76,18 +88,18 @@ export const testProjectInitAction = createServiceAction({
 
       await writeFile(definitionPath, stringifyPrettyStable(initialDefinition));
 
-      logger.info(`Created test project at ${testProjectDirectory}`);
+      logger.info(`Created ${type} project at ${projectDirectory}`);
 
       return {
         success: true,
-        message: `Test project '${testName}' initialized at ${testProjectDirectory}`,
+        message: `${type === 'test' ? 'Test' : 'Example'} project '${projectName}' initialized at ${projectDirectory}`,
         definitionPath,
       };
     } catch (error) {
-      logger.error(`Failed to initialize test project: ${String(error)}`);
+      logger.error(`Failed to initialize project: ${String(error)}`);
       return {
         success: false,
-        message: `Failed to initialize test project: ${error instanceof Error ? error.message : String(error)}`,
+        message: `Failed to initialize project: ${error instanceof Error ? error.message : String(error)}`,
       };
     }
   },
@@ -96,7 +108,7 @@ export const testProjectInitAction = createServiceAction({
       console.info(`✓ ${output.message}`);
       if (output.definitionPath) {
         console.info(
-          `  Next: Configure the project definition, then run 'baseplate-dev test-project generate <test-name>'`,
+          `  Next: Configure the project definition, then run 'baseplate-dev sync <project-name>'`,
         );
       }
     } else {

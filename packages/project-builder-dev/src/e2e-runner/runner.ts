@@ -6,8 +6,7 @@ import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@baseplate-dev/project-builder-server/plugins';
-import { dirExists, getPackageVersion } from '@baseplate-dev/utils/node';
-import { rm } from 'node:fs/promises';
+import { getPackageVersion } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 
 import type { ProjectBuilderTest, TestRunnerHelpers } from './types.js';
@@ -30,11 +29,6 @@ async function runTest(
 ): Promise<void> {
   const testProjectDir = path.join(testProjectsDir, test.projectDirectory);
   const outputDir = path.join(testProjectDir, '.output');
-
-  // Clean output directory before generating
-  if (await dirExists(outputDir)) {
-    await rm(outputDir, { recursive: true, force: true });
-  }
 
   // Expand test project (generate + apply snapshots)
   console.info(`Generating project for ${test.projectDirectory}...`);
@@ -110,20 +104,8 @@ export async function runTests(options: RunTestsOptions): Promise<void> {
   console.info(`Found ${tests.length} matching tests!`);
 
   for (const test of tests) {
-    const outputDir = path.join(
-      testProjectsDir,
-      test.content.projectDirectory,
-      '.output',
-    );
-
     console.info(`Running test: ${test.filename}`);
     await runTest(test.content, testProjectsDir);
     console.info(`Test ${test.filename} completed!`);
-
-    // Auto-cleanup on success
-    if (await dirExists(outputDir)) {
-      await rm(outputDir, { recursive: true, force: true });
-      console.info(`Cleaned up ${outputDir}.`);
-    }
   }
 }

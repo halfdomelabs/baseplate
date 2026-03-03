@@ -39,12 +39,12 @@ export function addTestCommand(program: Command): void {
           testProjectsDir = path.resolve(opts.testProjectsDir);
         } else {
           const config = await loadDevConfig();
-          if (!config.testDirectory) {
+          if (!config.testProjectsDirectory) {
             throw new Error(
-              'No test directory configured. Set "testDirectory" in baseplate.config.json or use --test-projects-dir.',
+              'No test directory configured. Set "testProjectsDirectory" in baseplate.config.json or use --test-projects-dir.',
             );
           }
-          testProjectsDir = config.testDirectory;
+          testProjectsDir = config.testProjectsDirectory;
         }
 
         await runTests({
