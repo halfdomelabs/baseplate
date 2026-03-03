@@ -1,0 +1,44 @@
+{
+  "name": "better-auth/react-better-auth",
+  "extractors": {
+    "ts": {
+      "defaultImportProviderName": "betterAuthImportsProvider"
+    }
+  },
+  "templates": {
+    "auth-client": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/react-better-auth",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/auth-client.ts",
+      "projectExports": { "authClient": {} },
+      "sourceFile": "src/services/auth-client.ts",
+      "variables": {}
+    },
+    "auth-loaded-gate": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/react-better-auth",
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/app/auth-loaded-gate.tsx",
+      "projectExports": { "AuthLoadedGate": {} },
+      "referencedGeneratorTemplates": ["auth-client"],
+      "sourceFile": "src/app/auth-loaded-gate.tsx",
+      "variables": {}
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "name": "better-auth/better-auth-module",
+  "extractors": {
+    "ts": {
+      "defaultImportProviderName": "betterAuthModuleImportsProvider",
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
+      ]
+    }
+  },
+  "templates": {
+    "auth": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/auth.ts",
+      "projectExports": { "auth": {}, "cookiePrefix": {} },
+      "sourceFile": "module/services/auth.ts",
+      "variables": { "TPL_USER_ROLE_MODEL": {} }
+    },
+    "better-auth-plugin": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/plugins/better-auth.plugin.ts",
+      "projectExports": { "betterAuthPlugin": {} },
+      "referencedGeneratorTemplates": ["auth", "headers-utils"],
+      "sourceFile": "module/plugins/better-auth.plugin.ts",
+      "variables": {}
+    },
+    "headers-utils": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/headers.utils.ts",
+      "projectExports": { "toWebHeaders": {} },
+      "sourceFile": "module/utils/headers.utils.ts",
+      "variables": {}
+    },
+    "user-session-queries": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
+      "sourceFile": "module/schema/user-session.queries.ts",
+      "variables": {}
+    },
+    "user-session-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+      "importMapProviders": {
+        "authContextImportsProvider": {
+          "importName": "authContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
+      "projectExports": { "userSessionService": {} },
+      "referencedGeneratorTemplates": ["auth", "headers-utils"],
+      "sourceFile": "module/services/user-session.service.ts",
+      "variables": {}
+    }
+  }
+}

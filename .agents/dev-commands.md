@@ -22,8 +22,8 @@
 Example projects (`examples/`) are standalone monorepos not included in the pnpm workspace.
 
 - Run a command in a specific example: `pnpm run:example <example-name> -- <command>`
-  - Install: `pnpm run:example todo-with-auth0 -- pnpm install`
+  - Install: `pnpm run:example todo-with-better-auth -- pnpm install`
   - Lint: `pnpm run:example blog-with-auth -- pnpm lint`
-  - Test: `pnpm run:example todo-with-auth0 -- pnpm test`
-  - Typecheck: `pnpm run:example todo-with-auth0 -- pnpm typecheck`
+  - Test: `pnpm run:example todo-with-better-auth -- pnpm test`
+  - Typecheck: `pnpm run:example todo-with-better-auth -- pnpm typecheck`
 - Run a command in all examples + root + tests: `pnpm run:all -- <command>`

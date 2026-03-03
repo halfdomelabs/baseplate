@@ -30,7 +30,7 @@ export const Route = createFileRoute('/auth_/login')({
   validateSearch: z.object({
     return_to: z
       .string()
-      .regex(/^\/[a-zA-Z0-9\-._~!$&'()*+,;=:@?/]*$/)
+      .refine((v) => v.startsWith('/') && !v.startsWith('//'))
       .optional(),
   }),
   component: LoginPage,

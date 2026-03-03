@@ -89,6 +89,7 @@ export async function executeGeneratorEntry(
       try {
         const { task, generatorId } = taskEntriesById[taskId];
         const { dependencies = {}, exports = {}, outputs = {} } = task;
+        const entry = taskEntriesById[taskId];
         if (action === 'init') {
           // run through init step
 
@@ -144,7 +145,7 @@ export async function executeGeneratorEntry(
 
           const taskInstance = runInRunnerContext<
             GeneratorTaskResult | undefined
-          >({ taskId }, () =>
+          >({ taskId, generatorName: entry.generatorInfo.name }, () =>
             task.run(resolvedDependencies, {
               taskId,
             }),
@@ -176,7 +177,6 @@ export async function executeGeneratorEntry(
           }
         } else if (action === 'build') {
           // run through build step
-          const entry = taskEntriesById[taskId];
           const generator = taskInstanceById[taskId];
 
           const outputBuilder = new GeneratorTaskOutputBuilder({
@@ -188,8 +188,9 @@ export async function executeGeneratorEntry(
           if (generator.build) {
             const outputResult =
               ((await Promise.resolve(
-                runInRunnerContext({ taskId }, () =>
-                  generator.build?.(outputBuilder),
+                runInRunnerContext(
+                  { taskId, generatorName: entry.generatorInfo.name },
+                  () => generator.build?.(outputBuilder),
                 ),
               )) as Record<string, Provider> | undefined) ?? {};
 

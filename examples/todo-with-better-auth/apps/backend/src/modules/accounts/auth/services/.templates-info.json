@@ -1,0 +1,12 @@
+{
+  "auth.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+    "instanceData": {},
+    "template": "auth"
+  },
+  "user-session.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+    "instanceData": {},
+    "template": "user-session-service"
+  }
+}

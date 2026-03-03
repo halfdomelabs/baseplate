@@ -15,6 +15,7 @@ export function createConfigFieldMap<S extends FieldMapSchema>(
   schemaBuilder: (t: FieldMapSchemaBuilder) => S,
 ): FieldMap<S> {
   return createFieldMap(schemaBuilder, {
-    getDynamicSource: () => getRunnerContext()?.taskId,
+    getDynamicSource: () =>
+      `${getRunnerContext()?.taskId} (${getRunnerContext()?.generatorName})`,
   });
 }

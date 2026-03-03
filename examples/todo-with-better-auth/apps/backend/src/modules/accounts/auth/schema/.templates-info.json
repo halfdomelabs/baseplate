@@ -1,0 +1,7 @@
+{
+  "user-session.queries.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
+    "instanceData": {},
+    "template": "user-session-queries"
+  }
+}

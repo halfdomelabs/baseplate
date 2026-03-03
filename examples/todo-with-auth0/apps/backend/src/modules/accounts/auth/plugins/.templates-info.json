@@ -1,7 +1,0 @@
-{
-  "auth.plugin.ts": {
-    "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
-    "instanceData": {},
-    "template": "auth-plugin"
-  }
-}

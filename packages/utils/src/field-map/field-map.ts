@@ -38,14 +38,15 @@ export class ScalarContainer<T> implements FieldContainer<T> {
   }
 
   set(value: T, source?: string): void {
+    const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
     if (this.isSet) {
       throw new Error(
-        `Value has already been set by ${this.setBySource} and cannot be overwritten by ${source}`,
+        `Value has already been set by ${this.setBySource} and cannot be overwritten by ${setBySource}`,
       );
     }
     this._value = value;
     this.isSet = true;
-    this.setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
+    this.setBySource = setBySource;
   }
 }
 
@@ -100,14 +101,15 @@ export class ObjectContainer<
 
   set(key: keyof T, value: T[keyof T], source?: string): void {
     const existingValue = this.map.get(key);
+    const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
     if (existingValue?.setBySource) {
       throw new Error(
-        `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
+        `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${setBySource}`,
       );
     }
     this.map.set(key, {
       value,
-      setBySource: source ?? this.getDynamicSource?.(),
+      setBySource,
     });
   }
 
@@ -149,14 +151,15 @@ export class MapContainer<
 
   set(key: K, value: V, source?: string): void {
     const existingValue = this._value.get(key);
+    const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
     if (existingValue?.setBySource) {
       throw new Error(
-        `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
+        `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${setBySource}`,
       );
     }
     this._value.set(key, {
       value,
-      setBySource: source ?? this.getDynamicSource?.(),
+      setBySource,
     });
   }
 
@@ -209,14 +212,15 @@ export class NamedArrayFieldContainer<
 
   add(value: V, source?: string): void {
     const existingValue = this._value.get(value.name);
+    const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
     if (existingValue?.setBySource) {
       throw new Error(
-        `Value for name ${value.name} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
+        `Value for name ${value.name} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${setBySource}`,
       );
     }
     this._value.set(value.name, {
       value,
-      setBySource: source ?? this.getDynamicSource?.(),
+      setBySource,
     });
   }
 
@@ -303,17 +307,17 @@ export class MapOfMapsContainer<
 
   set(key1: K1, key2: K2, value: V, source?: string): void {
     const existingOuterValue = this._value.get(key1);
-    const sourceToUse = source ?? this.getDynamicSource?.() ?? 'unknown';
+    const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
 
     // If the outer key doesn't exist yet, create a new map for it
     if (!existingOuterValue) {
       const newInnerMap = new Map<
         K2,
         { value: V; setBySource: string | undefined }
-      >([[key2, { value, setBySource: sourceToUse }]]);
+      >([[key2, { value, setBySource }]]);
       this._value.set(key1, {
         value: newInnerMap,
-        setBySource: sourceToUse,
+        setBySource,
       });
       return;
     }
@@ -322,14 +326,14 @@ export class MapOfMapsContainer<
     const existingInnerValue = existingOuterValue.value.get(key2);
     if (existingInnerValue?.setBySource) {
       throw new Error(
-        `Value for keys ${key1 as string}+${key2 as string} has already been set by ${existingInnerValue.setBySource} and cannot be overwritten by ${sourceToUse}`,
+        `Value for keys ${key1 as string}+${key2 as string} has already been set by ${existingInnerValue.setBySource} and cannot be overwritten by ${setBySource}`,
       );
     }
 
     // Add the new value to the existing inner map
     existingOuterValue.value.set(key2, {
       value,
-      setBySource: sourceToUse,
+      setBySource,
     });
   }
 
