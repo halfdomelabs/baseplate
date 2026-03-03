@@ -21,22 +21,40 @@ pnpm baseplate-dev --help
 - **`templates`** — Extract, generate, create, list, and delete generator templates
 - **`snapshot`** — Add, remove, save, and show project snapshots
 - **`sync-examples`** — Sync all example projects in the nearest `examples/` directory
-- **`serve`** — Start the project builder web UI (respects `EXCLUDE_EXAMPLES`)
+- **`serve`** — Start the project builder web UI
 - **`dev-server`** — Start the MCP-integrated development server
 - **`mcp`** — Start the MCP stdio server with full action set (templates, snapshots, sync, diff)
 
 ## Configuration
 
-Environment variables (can be set in `.env` or `.env.local`):
+### `baseplate.config.json`
 
-| Variable                  | Description                                                                                      |
-| ------------------------- | ------------------------------------------------------------------------------------------------ |
-| `PROJECT_DIRECTORIES`     | Comma-separated paths to search for projects                                                     |
-| `EXCLUDE_EXAMPLES`        | Exclude example projects from discovery in `serve`/`listProjects` (examples included by default) |
-| `PLUGIN_ROOT_DIRECTORIES` | Comma-separated paths to additional root directories whose plugin deps are also discovered       |
-| `NO_BROWSER`              | Disable auto-opening browser in `serve`                                                          |
-| `PORT`                    | Port for the `serve` command                                                                     |
-| `PORT_OFFSET`             | Offset added to the default port in `serve`                                                      |
+Place a `baseplate.config.json` in the directory where you run `baseplate-dev`:
+
+```json
+{
+  "exampleDirectory": "examples",
+  "testDirectory": "tests",
+  "pluginRootDirectories": ["plugins"]
+}
+```
+
+| Field                   | Description                                                              |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `exampleDirectory`      | Directory whose subdirectories are example projects                      |
+| `testDirectory`         | Directory whose subdirectories are test projects                         |
+| `pluginRootDirectories` | Array of directories to search for plugins                               |
+
+All paths are relative to the config file location. All fields are optional.
+
+### Environment Variables
+
+| Variable              | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `PROJECT_DIRECTORIES` | Comma-separated paths to search for projects |
+| `NO_BROWSER`          | Disable auto-opening browser in `serve`      |
+| `PORT`                | Port for the `serve` command                 |
+| `PORT_OFFSET`         | Offset added to the default port in `serve`  |
 
 ## Programmatic API
 

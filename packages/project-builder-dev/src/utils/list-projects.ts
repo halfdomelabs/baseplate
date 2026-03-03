@@ -4,25 +4,23 @@ import {
   discoverProjects,
   loadProjectFromDirectory,
 } from '@baseplate-dev/project-builder-server/actions';
-import { expandPathWithTilde } from '@baseplate-dev/utils/node';
+import { dirExists, expandPathWithTilde } from '@baseplate-dev/utils/node';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
 
 import { getEnvConfig } from './config.js';
-import { findExamplesDirectories } from './find-examples-directories.js';
+import { loadDevConfig } from './dev-config.js';
 
-const config = getEnvConfig();
-
-async function getSearchDirectories({
+function getProjectDirectories({
   additionalDirectories,
-  includeExamples,
   defaultToCwd,
 }: {
   additionalDirectories?: string[];
-  includeExamples: boolean;
   defaultToCwd: boolean;
-}): Promise<string[]> {
+}): string[] {
+  const config = getEnvConfig();
   const allDirectories = new Set<string>();
 
   // Add directories from PROJECT_DIRECTORIES env var
@@ -38,14 +36,6 @@ async function getSearchDirectories({
     allDirectories.add(expandPathWithTilde(dir));
   }
 
-  // Add example directories if requested
-  if (includeExamples) {
-    const exampleDirs = await findExamplesDirectories();
-    for (const dir of exampleDirs) {
-      allDirectories.add(dir);
-    }
-  }
-
   // Default to current working directory if no projects specified
   if (allDirectories.size === 0 && defaultToCwd) {
     allDirectories.add(process.cwd());
@@ -54,17 +44,44 @@ async function getSearchDirectories({
   return [...allDirectories];
 }
 
+/**
+ * Lists subdirectories within a configured directory, or returns an empty array
+ * if the directory is not configured or doesn't exist.
+ */
+async function listSubdirectories(
+  directory: string | undefined,
+): Promise<string[]> {
+  if (!directory || !(await dirExists(directory))) {
+    return [];
+  }
+
+  const entries = await fs.readdir(directory, { withFileTypes: true });
+  return entries
+    .filter((e) => e.isDirectory())
+    .map((e) => path.join(directory, e.name));
+}
+
 export async function listProjects({
   additionalDirectories,
 }: {
   additionalDirectories?: string[];
 }): Promise<ProjectInfo[]> {
-  const searchDirectories = await getSearchDirectories({
+  const config = await loadDevConfig();
+  const projectDirs = getProjectDirectories({
     additionalDirectories,
-    includeExamples: !(config.EXCLUDE_EXAMPLES ?? false),
     defaultToCwd: true,
   });
-  return discoverProjects(searchDirectories, logger);
+  const exampleDirs = await listSubdirectories(config.exampleDirectory);
+  const testDirs = await listSubdirectories(config.testDirectory);
+
+  return discoverProjects(
+    {
+      projectDirectories: projectDirs,
+      exampleDirectories: exampleDirs,
+      testDirectories: testDirs,
+    },
+    logger,
+  );
 }
 
 export async function resolveProject(
@@ -78,7 +95,11 @@ export async function resolveProject(
     projectNameOrDirectory.includes('/')
   ) {
     const resolvedPath = expandPathWithTilde(projectNameOrDirectory);
-    return loadProjectFromDirectory(resolvedPath);
+    return loadProjectFromDirectory(
+      resolvedPath,
+      path.join(resolvedPath, 'baseplate'),
+      'user',
+    );
   }
 
   const projects = await listProjects({});
@@ -92,6 +113,7 @@ export async function resolveProject(
 }
 
 export async function getExampleProjects(): Promise<ProjectInfo[]> {
-  const exampleDirs = await findExamplesDirectories();
-  return discoverProjects(exampleDirs, logger);
+  const config = await loadDevConfig();
+  const exampleDirs = await listSubdirectories(config.exampleDirectory);
+  return discoverProjects({ exampleDirectories: exampleDirs }, logger);
 }

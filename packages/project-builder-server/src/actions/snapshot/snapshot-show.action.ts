@@ -74,13 +74,11 @@ export const snapshotShowAction = createServiceAction({
 
       const { loadSnapshotManifest } =
         await import('#src/diff/snapshot/snapshot-manifest.js');
-      const { resolveSnapshotDirectory, resolveBaseplateDir } =
+      const { resolveSnapshotDirectory } =
         await import('#src/diff/snapshot/snapshot-utils.js');
-      const baseplateDirectory = resolveBaseplateDir(
-        project.directory,
-        input.baseplateDirectory,
-      );
-      const snapshotDir = resolveSnapshotDirectory(baseplateDirectory, app);
+      const baseplateDir =
+        input.baseplateDirectory ?? project.baseplateDirectory;
+      const snapshotDir = resolveSnapshotDirectory(baseplateDir, app);
 
       const manifest = await loadSnapshotManifest(snapshotDir);
 

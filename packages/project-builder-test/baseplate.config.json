@@ -1,0 +1,4 @@
+{
+  "testDirectory": "../../tests",
+  "pluginRootDirectories": ["../project-builder-common"]
+}

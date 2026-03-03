@@ -1,3 +1,4 @@
+import { dirExists } from '@baseplate-dev/utils/node';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -64,13 +65,24 @@ export const syncProjectAction = createServiceAction({
 
     logger.info(`Starting sync for project: ${project.name}`);
 
+    // Resolve baseplate directory: explicit input overrides project default
+    const resolvedBaseplateDir =
+      baseplateDirectory ?? project.baseplateDirectory;
+
+    // For test projects, auto-overwrite if output directory doesn't exist yet
+    const outputDirExists = await dirExists(project.directory);
+    const effectiveOverwrite =
+      overwrite || (project.type === 'test' && !outputDirExists);
+
     try {
       // Create schema parser context
+      // Use baseplateDirectory for plugin discovery when the output dir may not exist
       const schemaParserContext = await createNodeSchemaParserContext(
         project,
         logger,
         plugins,
         cliVersion,
+        resolvedBaseplateDir,
       );
 
       // Create sync metadata controller
@@ -87,9 +99,9 @@ export const syncProjectAction = createServiceAction({
         context: schemaParserContext,
         userConfig,
         syncMetadataController,
-        overwrite,
+        overwrite: effectiveOverwrite,
         skipCommands,
-        baseplateDirectory,
+        baseplateDirectory: resolvedBaseplateDir,
         packageFilter: packages,
       });
 

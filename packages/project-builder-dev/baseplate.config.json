@@ -1,0 +1,5 @@
+{
+  "exampleDirectory": "../../examples",
+  "testDirectory": "../../tests",
+  "pluginRootDirectories": ["../project-builder-common"]
+}

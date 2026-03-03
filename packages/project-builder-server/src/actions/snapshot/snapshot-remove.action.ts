@@ -50,6 +50,7 @@ export const snapshotRemoveAction = createServiceAction({
         logger,
         plugins,
         cliVersion,
+        project.baseplateDirectory,
       );
 
       const { removeFilesFromSnapshot } =
@@ -57,6 +58,7 @@ export const snapshotRemoveAction = createServiceAction({
 
       await removeFilesFromSnapshot(files, {
         projectDirectory: project.directory,
+        baseplateDirectory: project.baseplateDirectory,
         appName: app,
         context: schemaContext,
         logger,

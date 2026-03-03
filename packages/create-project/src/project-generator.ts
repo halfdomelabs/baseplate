@@ -98,7 +98,8 @@ export async function generateRootPackage(
       id: generateProjectId(config.directory),
       name: config.name,
       directory: config.directory,
-      isInternalExample: false,
+      type: 'user',
+      baseplateDirectory: path.join(config.directory, 'baseplate'),
     },
   };
 

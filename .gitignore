@@ -110,6 +110,7 @@ CLAUDE.local.md
 
 # Baseplate test case expanded output
 /generated-tests
+tests/*/.output/
 
 # Dev Container files
 .pnpm-store

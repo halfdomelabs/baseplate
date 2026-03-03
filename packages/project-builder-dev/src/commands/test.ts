@@ -3,10 +3,9 @@ import type { Command } from 'commander';
 import path from 'node:path';
 
 import { runTests } from '#src/e2e-runner/runner.js';
+import { loadDevConfig } from '#src/utils/dev-config.js';
 
-const DEFAULT_TEST_PROJECTS_DIR = 'test-projects';
 const DEFAULT_TEST_DEFS_DIR = path.join('src', 'tests');
-const DEFAULT_OUTPUT_DIR = 'generated-tests';
 
 /**
  * Adds the test execution commands to the program.
@@ -22,11 +21,7 @@ export function addTestCommand(program: Command): void {
     .description(
       'Run generated code test suite (generate, setup environment, run tests)',
     )
-    .option(
-      '--test-projects-dir <dir>',
-      'Directory containing test projects',
-      DEFAULT_TEST_PROJECTS_DIR,
-    )
+    .option('--test-projects-dir <dir>', 'Directory containing test projects')
     .option(
       '--test-defs-dir <dir>',
       'Directory containing test definition files (*.gen.ts)',
@@ -35,16 +30,26 @@ export function addTestCommand(program: Command): void {
     .action(
       async (
         filter: string | undefined,
-        opts: { testProjectsDir: string; testDefsDir: string },
+        opts: { testProjectsDir?: string; testDefsDir: string },
       ) => {
         const testDefinitionsDir = path.resolve(opts.testDefsDir);
-        const testProjectsDir = path.resolve(opts.testProjectsDir);
-        const outputDir = path.resolve(DEFAULT_OUTPUT_DIR);
+
+        let testProjectsDir: string;
+        if (opts.testProjectsDir) {
+          testProjectsDir = path.resolve(opts.testProjectsDir);
+        } else {
+          const config = await loadDevConfig();
+          if (!config.testDirectory) {
+            throw new Error(
+              'No test directory configured. Set "testDirectory" in baseplate.config.json or use --test-projects-dir.',
+            );
+          }
+          testProjectsDir = config.testDirectory;
+        }
 
         await runTests({
           testDefinitionsDir,
           testProjectsDir,
-          outputDir,
           filter,
         });
       },

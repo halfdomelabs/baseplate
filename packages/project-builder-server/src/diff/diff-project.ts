@@ -146,9 +146,8 @@ export async function diffProject(
       );
 
       // Apply snapshot to generator output
-      const baseplateDirectory = path.join(project.directory, 'baseplate');
       const snapshotDirectory = resolveSnapshotDirectory(
-        baseplateDirectory,
+        project.baseplateDirectory,
         app.name,
       );
       const snapshot = await loadSnapshotManifest(snapshotDirectory);
