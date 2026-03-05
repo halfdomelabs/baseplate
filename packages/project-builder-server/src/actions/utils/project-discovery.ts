@@ -62,7 +62,7 @@ export async function loadProjectFromDirectory(
 
     return {
       id: generateProjectId(outputDirectory),
-      name,
+      name: type === 'test' ? `test:${name}` : name,
       directory: outputDirectory,
       type,
       baseplateDirectory,

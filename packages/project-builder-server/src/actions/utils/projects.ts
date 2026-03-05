@@ -14,7 +14,8 @@ export function getProjectByNameOrId(
     (project) =>
       project.name === projectNameOrId ||
       project.id === projectNameOrId ||
-      project.directory === projectNameOrId,
+      project.directory === projectNameOrId ||
+      (project.type === 'test' && project.name === `test:${projectNameOrId}`),
   );
 
   if (!project) {

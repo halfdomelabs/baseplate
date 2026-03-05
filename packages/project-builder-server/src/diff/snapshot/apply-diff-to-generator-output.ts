@@ -11,37 +11,34 @@ export async function applySnapshotToGeneratorOutput(
   generatorOutput: GeneratorOutput,
   snapshot: SnapshotManifest,
   diffDirectory: string,
-  { skipModified = false }: { skipModified?: boolean } = {},
 ): Promise<GeneratorOutput> {
   const generatorFiles = new Map<string, FileData>(
     [...generatorOutput.files].filter(
       ([filePath]) => !snapshot.files.deleted.includes(filePath),
     ),
   );
-  if (!skipModified) {
-    for (const fileEntry of snapshot.files.modified) {
-      const fileData = generatorFiles.get(fileEntry.path);
-      if (!fileData) {
-        throw new Error(
-          `File not found in generator output: ${fileEntry.path}. Please fix the diffs and save the snapshot again to fix the diffs.`,
-        );
-      }
-      const diffFilePath = path.join(diffDirectory, fileEntry.diffFile);
-      const diffFile = await readFile(diffFilePath, 'utf-8').catch(
-        handleFileNotFoundError,
+  for (const fileEntry of snapshot.files.modified) {
+    const fileData = generatorFiles.get(fileEntry.path);
+    if (!fileData) {
+      throw new Error(
+        `File not found in generator output: ${fileEntry.path}. Please fix the diffs and save the snapshot again to fix the diffs.`,
       );
-      if (!diffFile) {
-        throw new Error(`Diff file not found: ${diffFilePath}`);
-      }
-
-      const newContents = applyPatch(fileData.contents.toString(), diffFile);
-      if (!newContents) {
-        throw new Error(
-          `Failed to apply patch to file ${fileEntry.path}. The patch may be invalid. Please fix the diffs and save the snapshot again to fix the diffs.`,
-        );
-      }
-      fileData.contents = newContents;
     }
+    const diffFilePath = path.join(diffDirectory, fileEntry.diffFile);
+    const diffFile = await readFile(diffFilePath, 'utf-8').catch(
+      handleFileNotFoundError,
+    );
+    if (!diffFile) {
+      throw new Error(`Diff file not found: ${diffFilePath}`);
+    }
+
+    const newContents = applyPatch(fileData.contents.toString(), diffFile);
+    if (!newContents) {
+      throw new Error(
+        `Failed to apply patch to file ${fileEntry.path}. The patch may be invalid. Please fix the diffs and save the snapshot again to fix the diffs.`,
+      );
+    }
+    fileData.contents = newContents;
   }
 
   // Inject added files that have stored content (user-created files not produced by generator)
