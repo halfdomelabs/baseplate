@@ -3,12 +3,19 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import pLimit from 'p-limit';
 
-const MANIFEST_FILENAME = '.generation-manifest.json';
+const MANIFEST_FILENAME = 'generation-manifest.json';
 const FILE_HASH_CONCURRENCY = 20;
 
 interface GenerationManifest {
   generatedAt: string;
   files: Record<string, string>;
+}
+
+/**
+ * Returns the path to the generation manifest file inside the baseplate directory.
+ */
+function getManifestPath(outputDir: string): string {
+  return path.join(outputDir, 'baseplate', MANIFEST_FILENAME);
 }
 
 /**
@@ -52,6 +59,7 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
 /**
  * Creates and writes a generation manifest for the given directory.
  * Call this after generating a test project to enable staleness detection.
+ * The manifest is stored at `<outputDir>/baseplate/generation-manifest.json`.
  */
 export async function writeGenerationManifest(
   outputDir: string,
@@ -74,7 +82,7 @@ export async function writeGenerationManifest(
   };
 
   await writeFile(
-    path.join(outputDir, MANIFEST_FILENAME),
+    getManifestPath(outputDir),
     JSON.stringify(manifest, null, 2),
   );
 }
@@ -93,7 +101,7 @@ interface StalenessResult {
  * If no manifest exists, returns not stale (assumes a fresh or manual directory).
  */
 async function checkStaleness(outputDir: string): Promise<StalenessResult> {
-  const manifestPath = path.join(outputDir, MANIFEST_FILENAME);
+  const manifestPath = getManifestPath(outputDir);
 
   let manifest: GenerationManifest;
   try {

@@ -10,6 +10,7 @@ import {
 vi.mock('node:fs/promises');
 
 const TEST_DIR = '/test/project';
+const BASEPLATE_DIR = path.join(TEST_DIR, 'baseplate');
 
 interface ManifestJson {
   generatedAt: string;
@@ -18,7 +19,7 @@ interface ManifestJson {
 
 function readManifestFromVol(): ManifestJson {
   const files = vol.toJSON();
-  const manifestPath = path.join(TEST_DIR, '.generation-manifest.json');
+  const manifestPath = path.join(BASEPLATE_DIR, 'generation-manifest.json');
   const content = files[manifestPath];
   if (typeof content !== 'string') {
     throw new TypeError(`Manifest not found at ${manifestPath}`);
@@ -30,14 +31,19 @@ describe('generation-manifest', () => {
   beforeEach(() => {
     vol.reset();
     vi.clearAllMocks();
+    // Ensure the baseplate directory exists in the virtual filesystem
+    vol.mkdirSync(BASEPLATE_DIR, { recursive: true });
   });
 
   describe('writeGenerationManifest', () => {
     it('should write a manifest file with file hashes', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'console.info("hello");',
-        [path.join(TEST_DIR, 'package.json')]: '{"name": "test"}',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'console.info("hello");',
+          [path.join(TEST_DIR, 'package.json')]: '{"name": "test"}',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -51,11 +57,14 @@ describe('generation-manifest', () => {
     });
 
     it('should skip node_modules and baseplate directories', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-        [path.join(TEST_DIR, 'node_modules/pkg/index.js')]: 'module code',
-        [path.join(TEST_DIR, 'baseplate/project-definition.json')]: '{}',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+          [path.join(TEST_DIR, 'node_modules/pkg/index.js')]: 'module code',
+          [path.join(BASEPLATE_DIR, 'project-definition.json')]: '{}',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -64,11 +73,14 @@ describe('generation-manifest', () => {
     });
 
     it('should not include the manifest file itself', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-        [path.join(TEST_DIR, '.generation-manifest.json')]:
-          '{"old": "manifest"}',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+          [path.join(TEST_DIR, 'generation-manifest.json')]:
+            '{"old": "manifest"}',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -79,27 +91,36 @@ describe('generation-manifest', () => {
 
   describe('assertNotStale', () => {
     it('should not throw when no manifest exists', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+        },
+        undefined,
+      );
 
       await expect(assertNotStale(TEST_DIR)).resolves.toBeUndefined();
     });
 
     it('should not throw when files are unchanged', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-        [path.join(TEST_DIR, 'package.json')]: '{}',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+          [path.join(TEST_DIR, 'package.json')]: '{}',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
       await expect(assertNotStale(TEST_DIR)).resolves.toBeUndefined();
     });
 
     it('should throw when a file is modified', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'original',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'original',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -109,7 +130,6 @@ describe('generation-manifest', () => {
           [path.join(TEST_DIR, 'src/index.ts')]: 'modified',
         },
         undefined,
-        // Do not reset the volume — merge with existing
       );
 
       await expect(assertNotStale(TEST_DIR)).rejects.toThrow(
@@ -118,9 +138,12 @@ describe('generation-manifest', () => {
     });
 
     it('should throw when a new file is added', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -138,10 +161,13 @@ describe('generation-manifest', () => {
     });
 
     it('should throw when a file is deleted', async () => {
-      vol.fromJSON({
-        [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-        [path.join(TEST_DIR, 'src/other.ts')]: 'other',
-      });
+      vol.fromJSON(
+        {
+          [path.join(TEST_DIR, 'src/index.ts')]: 'code',
+          [path.join(TEST_DIR, 'src/other.ts')]: 'other',
+        },
+        undefined,
+      );
 
       await writeGenerationManifest(TEST_DIR);
 
@@ -150,7 +176,7 @@ describe('generation-manifest', () => {
       vol.reset();
       vol.fromJSON({
         [path.join(TEST_DIR, 'src/index.ts')]: 'code',
-        [path.join(TEST_DIR, '.generation-manifest.json')]:
+        [path.join(BASEPLATE_DIR, 'generation-manifest.json')]:
           JSON.stringify(manifest),
       });
 
