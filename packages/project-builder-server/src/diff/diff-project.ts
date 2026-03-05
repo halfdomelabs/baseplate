@@ -164,7 +164,7 @@ export async function diffProject(
       const ignorePatterns = await loadIgnorePatterns(appDirectory);
 
       // Add added files to ignore pattern
-      if (snapshot) {
+      if (snapshot && project.type !== 'test') {
         ignorePatterns.add(snapshot.files.added.map((entry) => entry.path));
       }
 
