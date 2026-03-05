@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { createEnvironmentHelpers } from '#src/e2e-runner/environment.js';
 import { waitForSignal } from '#src/e2e-runner/utils/wait-for-signal.js';
-import { loadDevConfig } from '#src/utils/dev-config.js';
+import { getTestProjects } from '#src/utils/list-projects.js';
 
 import { discoverTests } from '../e2e-runner/discover-tests.js';
 
@@ -24,15 +24,18 @@ export function addRunEnvCommand(program: Command): void {
       DEFAULT_TEST_DEFS_DIR,
     )
     .action(async (testName: string, opts: { testDefsDir: string }) => {
-      const config = await loadDevConfig();
-      if (!config.testProjectsDirectory) {
+      const testProjects = await getTestProjects();
+      const projectInfo = testProjects.find(
+        (p) => p.name === `test:${testName}` || p.name === testName,
+      );
+      if (!projectInfo) {
         throw new Error(
-          'No test directory configured. Set "testProjectsDirectory" in baseplate.config.json.',
+          `No test project found for "${testName}". ` +
+            `Available test projects: ${testProjects.map((p) => p.name).join(', ')}`,
         );
       }
 
-      const testProjectDir = path.join(config.testProjectsDirectory, testName);
-      const projectDirectoryPath = path.join(testProjectDir, '.output');
+      const projectDirectoryPath = projectInfo.directory;
       const testDefinitionsDir = path.resolve(opts.testDefsDir);
 
       // Check if generated project exists

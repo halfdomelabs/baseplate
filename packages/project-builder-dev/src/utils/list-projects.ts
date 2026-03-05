@@ -117,3 +117,9 @@ export async function getExampleProjects(): Promise<ProjectInfo[]> {
   const exampleDirs = await listSubdirectories(config.examplesDirectory);
   return discoverProjects({ exampleDirectories: exampleDirs }, logger);
 }
+
+export async function getTestProjects(): Promise<ProjectInfo[]> {
+  const config = await loadDevConfig();
+  const testDirs = await listSubdirectories(config.testProjectsDirectory);
+  return discoverProjects({ testProjectDirectories: testDirs }, logger);
+}

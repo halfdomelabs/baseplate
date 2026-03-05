@@ -1,13 +1,11 @@
 import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
 
 import { syncProject } from '@baseplate-dev/project-builder-server';
-import { generateProjectId } from '@baseplate-dev/project-builder-server/actions';
 import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@baseplate-dev/project-builder-server/plugins';
 import { getPackageVersion } from '@baseplate-dev/utils/node';
-import path from 'node:path';
 
 import type { ProjectBuilderTest, TestRunnerHelpers } from './types.js';
 
@@ -21,18 +19,17 @@ import {
 export interface RunTestsOptions {
   /** Directory where **.gen.ts files live */
   testDefinitionsDir: string;
-  /** Directory where test project data lives (e.g. tests/) */
-  testProjectsDir: string;
+  /** Discovered test projects to run against */
+  testProjects: ProjectInfo[];
   /** Optional filter to match test files by substring */
   filter?: string;
 }
 
 async function runTest(
   test: ProjectBuilderTest,
-  testProjectsDir: string,
+  projectInfo: ProjectInfo,
 ): Promise<void> {
-  const testProjectDir = path.join(testProjectsDir, test.projectDirectory);
-  const outputDir = path.join(testProjectDir, '.output');
+  const { directory: outputDir, baseplateDirectory } = projectInfo;
 
   // Check if the output directory has been modified since last generation
   await assertNotStale(outputDir);
@@ -42,20 +39,12 @@ async function runTest(
   const plugins = await discoverPlugins(process.cwd(), console);
   const cliVersion = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
-  const projectInfo: ProjectInfo = {
-    id: generateProjectId(testProjectDir),
-    name: `test:${test.projectDirectory}`,
-    directory: outputDir,
-    type: 'test',
-    baseplateDirectory: testProjectDir,
-  };
-
   const context = await createNodeSchemaParserContext(
     projectInfo,
     console,
     plugins,
     cliVersion,
-    testProjectDir,
+    baseplateDirectory,
   );
 
   const result = await syncProject({
@@ -64,7 +53,7 @@ async function runTest(
     context,
     userConfig: {},
     overwrite: true,
-    baseplateDirectory: testProjectDir,
+    baseplateDirectory,
   });
 
   if (result.status === 'error') {
@@ -106,14 +95,25 @@ async function runTest(
 }
 
 export async function runTests(options: RunTestsOptions): Promise<void> {
-  const { testDefinitionsDir, testProjectsDir, filter } = options;
+  const { testDefinitionsDir, testProjects, filter } = options;
   const tests = await discoverTests(testDefinitionsDir, filter);
 
   console.info(`Found ${tests.length} matching tests!`);
 
   for (const test of tests) {
+    // Match test definition to discovered project by name (strip "test:" prefix)
+    const projectInfo = testProjects.find(
+      (p) => p.name === `test:${test.content.projectDirectory}`,
+    );
+    if (!projectInfo) {
+      throw new Error(
+        `No test project found for "${test.content.projectDirectory}". ` +
+          `Available test projects: ${testProjects.map((p) => p.name).join(', ')}`,
+      );
+    }
+
     console.info(`Running test: ${test.filename}`);
-    await runTest(test.content, testProjectsDir);
+    await runTest(test.content, projectInfo);
     console.info(`Test ${test.filename} completed!`);
   }
 }
