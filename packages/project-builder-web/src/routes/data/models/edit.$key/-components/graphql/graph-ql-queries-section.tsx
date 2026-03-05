@@ -19,6 +19,8 @@ import {
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 
+import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
+
 interface GraphQLQueriesSectionProps {
   control: Control<ModelConfigInput>;
 }
@@ -33,7 +35,7 @@ export function GraphQLQueriesSection({
     name: 'graphql.objectType.enabled',
   });
 
-  const roleOptions = pluginContainer
+  const globalRoleOptions = pluginContainer
     .use(authConfigSpec)
     .getAuthConfig(definition)
     ?.roles.filter((role) => role.name !== 'system')
@@ -41,6 +43,13 @@ export function GraphQLQueriesSection({
       label: role.name,
       value: role.id,
     }));
+
+  const authorizerRoles =
+    useEditedModelConfig((model) => model.authorizer?.roles) ?? [];
+  const instanceRoleOptions = authorizerRoles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   const isGetEnabled = useWatch({
     control,
@@ -51,6 +60,10 @@ export function GraphQLQueriesSection({
     control,
     name: 'graphql.queries.list.enabled',
   });
+
+  const hasAnyQueryEnabled =
+    (isGetEnabled ?? false) || (isListEnabled ?? false);
+  const hasInstanceRoles = instanceRoleOptions.length > 0;
 
   return (
     <SectionListSection>
@@ -72,42 +85,20 @@ export function GraphQLQueriesSection({
             </AlertDescription>
           </Alert>
         )}
-        <div className="space-y-4">
-          <SwitchFieldController
-            control={control}
-            name="graphql.queries.get.enabled"
-            label="Get By ID Query"
-            disabled={!isObjectTypeEnabled}
-            description="Expose method for querying a single instance of this model by its ID, e.g. user(id: $id)."
-          />
-          {isGetEnabled && roleOptions && (
-            <MultiSwitchField.Controller
-              control={control}
-              name="graphql.queries.get.roles"
-              label="Allowed Roles"
-              options={roleOptions}
-              className="ml-10"
-            />
-          )}
-        </div>
-        <div className="space-y-4">
-          <SwitchFieldController
-            control={control}
-            name="graphql.queries.list.enabled"
-            disabled={!isObjectTypeEnabled}
-            label="List Query"
-            description="Expose method for querying a list of instances of this model, e.g. users."
-          />
-          {isListEnabled && roleOptions && (
-            <MultiSwitchField.Controller
-              control={control}
-              name="graphql.queries.list.roles"
-              label="Allowed Roles"
-              options={roleOptions}
-              className="ml-10"
-            />
-          )}
-        </div>
+        <SwitchFieldController
+          control={control}
+          name="graphql.queries.get.enabled"
+          label="Get By ID Query"
+          disabled={!isObjectTypeEnabled}
+          description="Expose method for querying a single instance of this model by its ID, e.g. user(id: $id)."
+        />
+        <SwitchFieldController
+          control={control}
+          name="graphql.queries.list.enabled"
+          disabled={!isObjectTypeEnabled}
+          label="List Query"
+          description="Expose method for querying a list of instances of this model, e.g. users."
+        />
         {isListEnabled && (
           <SwitchFieldController
             control={control}
@@ -115,6 +106,23 @@ export function GraphQLQueriesSection({
             name="graphql.queries.list.count.enabled"
             label="Count Query"
             description="Generate a count query (e.g. usersCount) for total record count, useful for paginated UIs."
+          />
+        )}
+        {hasAnyQueryEnabled && globalRoleOptions && (
+          <MultiSwitchField.Controller
+            control={control}
+            name="graphql.queries.globalRoles"
+            label="Allowed Roles"
+            options={globalRoleOptions}
+          />
+        )}
+        {hasAnyQueryEnabled && hasInstanceRoles && (
+          <MultiSwitchField.Controller
+            control={control}
+            name="graphql.queries.instanceRoles"
+            label="Instance Roles"
+            description="Filter query results based on the user's relationship to each record."
+            options={instanceRoleOptions}
           />
         )}
       </SectionListSectionContent>

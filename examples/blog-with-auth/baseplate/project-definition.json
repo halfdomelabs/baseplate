@@ -217,8 +217,10 @@
           "fields": [{ "ref": "name" }, { "ref": "userId" }, { "ref": "id" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["public"] },
-          "list": { "enabled": true, "roles": ["public"] }
+          "get": { "enabled": true },
+          "globalRoles": ["public"],
+          "instanceRoles": [],
+          "list": { "count": {}, "enabled": true }
         }
       },
       "id": "model:h7nbXcuLcUmy",
@@ -497,8 +499,10 @@
           "foreignRelations": [{ "ref": "roles" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["admin"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user", "admin"],
+          "instanceRoles": [],
+          "list": { "count": {}, "enabled": true }
         }
       },
       "id": "model:jZxZ8T0aLW5C",
@@ -879,7 +883,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "settings": {
     "general": {
       "name": "blog-with-auth",

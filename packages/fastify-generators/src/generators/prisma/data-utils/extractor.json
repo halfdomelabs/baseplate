@@ -144,6 +144,7 @@
         "GetPayload": { "isTypeOnly": true, "name": "GetPayload" },
         "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
         "ModelQuery": { "isTypeOnly": true, "name": "ModelQuery" },
+        "WhereInput": { "isTypeOnly": true, "name": "WhereInput" },
         "WhereUniqueInput": { "isTypeOnly": true, "name": "WhereUniqueInput" }
       },
       "sourceFile": "src/utils/data-operations/prisma-types.ts",
