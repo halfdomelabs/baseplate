@@ -29,6 +29,14 @@ export const listEntityTypesAction = createServiceAction({
     'List all available entity types in the project definition schema. Returns type names and parent relationships.',
   inputSchema: listEntityTypesInputSchema,
   outputSchema: listEntityTypesOutputSchema,
+  writeCliOutput: (output) => {
+    for (const entityType of output.entityTypes) {
+      const parent = entityType.parentEntityTypeName
+        ? ` (parent: ${entityType.parentEntityTypeName})`
+        : '';
+      console.info(`  ${entityType.name}${parent}`);
+    }
+  },
   handler: async (input, context) => {
     const { entityContext } = await loadEntityServiceContext(
       input.project,

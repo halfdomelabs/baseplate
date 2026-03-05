@@ -1,8 +1,14 @@
 import {
+  commitDraftAction,
+  discardDraftAction,
   getEntityAction,
   getEntitySchemaAction,
   listEntitiesAction,
   listEntityTypesAction,
+  showDraftAction,
+  stageCreateEntityAction,
+  stageDeleteEntityAction,
+  stageUpdateEntityAction,
 } from './definition/index.js';
 import { diffProjectAction } from './diff/diff-project.action.js';
 import { createGeneratorAction } from './generators/index.js';
@@ -45,6 +51,12 @@ export const USER_SERVICE_ACTIONS = [
   listEntityTypesAction,
   getEntityAction,
   getEntitySchemaAction,
+  stageCreateEntityAction,
+  stageUpdateEntityAction,
+  stageDeleteEntityAction,
+  commitDraftAction,
+  discardDraftAction,
+  showDraftAction,
 ];
 
 export const ALL_SERVICE_ACTIONS = [

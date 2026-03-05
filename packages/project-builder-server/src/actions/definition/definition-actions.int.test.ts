@@ -1,23 +1,43 @@
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
+
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
 } from '@baseplate-dev/project-builder-lib/testing';
+import { vol } from 'memfs';
+import { readFile } from 'node:fs/promises';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { invokeServiceActionAsCli } from '#src/actions/utils/cli.js';
+
+import type { DraftSessionContext } from './draft-session.js';
 
 import {
   createTestActionContext,
   createTestEntityServiceContext,
 } from '../__tests__/action-test-utils.js';
+import { getOrCreateDraftSession } from './draft-session.js';
 import { getEntitySchemaAction } from './get-entity-schema.action.js';
 import { getEntityAction } from './get-entity.action.js';
 import { listEntitiesAction } from './list-entities.action.js';
 import { listEntityTypesAction } from './list-entity-types.action.js';
 import { loadEntityServiceContext } from './load-entity-service-context.js';
+import { stageCreateEntityAction } from './stage-create-entity.action.js';
+import { stageDeleteEntityAction } from './stage-delete-entity.action.js';
+import { stageUpdateEntityAction } from './stage-update-entity.action.js';
 
 vi.mock('./load-entity-service-context.js');
+vi.mock('node:fs/promises');
+
+// Only mock getOrCreateDraftSession — let saveDraftSession use memfs
+vi.mock('./draft-session.js', async () => {
+  const actual = await vi.importActual('./draft-session.js');
+  return {
+    ...actual,
+    getOrCreateDraftSession: vi.fn(),
+  };
+});
 
 // -- Test fixtures -----------------------------------------------------------
 
@@ -48,17 +68,37 @@ const testEntityServiceContext = createTestEntityServiceContext({
   models: [blogPostModel],
 });
 
+const PROJECT_DIR = '/test-project';
+
 const context = createTestActionContext();
+
+function createMockDraftSessionContext(): DraftSessionContext {
+  return {
+    session: {
+      sessionId: 'default',
+      definitionHash: 'test-hash',
+      draftDefinition:
+        testEntityServiceContext.entityContext.serializedDefinition,
+    },
+    entityContext: testEntityServiceContext.entityContext,
+    parserContext: {} as SchemaParserContext,
+    projectDirectory: PROJECT_DIR,
+  };
+}
 
 // -- Setup -------------------------------------------------------------------
 
 beforeEach(() => {
+  vol.reset();
   vi.mocked(loadEntityServiceContext).mockResolvedValue(
     testEntityServiceContext,
   );
+  vi.mocked(getOrCreateDraftSession).mockResolvedValue(
+    createMockDraftSessionContext(),
+  );
 });
 
-// -- Tests -------------------------------------------------------------------
+// -- Read action tests -------------------------------------------------------
 
 describe('list-entity-types', () => {
   it('should return available entity types', async () => {
@@ -167,5 +207,98 @@ describe('get-entity-schema', () => {
         context,
       ),
     ).rejects.toThrow(/Unknown entity type/);
+  });
+});
+
+// -- Write action tests ------------------------------------------------------
+
+describe('stage-create-entity', () => {
+  it('should stage a new feature and write draft files to disk', async () => {
+    const result = await invokeServiceActionAsCli(
+      stageCreateEntityAction,
+      {
+        project: 'test-project',
+        entityTypeName: 'feature',
+        entityData: { name: 'payments' },
+      },
+      context,
+    );
+
+    expect(result.message).toContain('Staged creation');
+
+    // Verify draft files were written via memfs
+    const sessionContents = await readFile(
+      `${PROJECT_DIR}/baseplate/.build/draft-session.json`,
+      'utf-8',
+    );
+    const session = JSON.parse(sessionContents) as {
+      sessionId: string;
+      definitionHash: string;
+    };
+    expect(session.sessionId).toBe('default');
+    expect(session.definitionHash).toBe('test-hash');
+
+    const defContents = await readFile(
+      `${PROJECT_DIR}/baseplate/.build/draft-definition.json`,
+      'utf-8',
+    );
+    const definition = JSON.parse(defContents) as {
+      features: { name: string }[];
+    };
+    // The new feature should be in the draft definition
+    expect(definition.features.some((f) => f.name === 'payments')).toBe(true);
+  });
+});
+
+describe('stage-update-entity', () => {
+  it('should stage an entity update and write draft files', async () => {
+    const result = await invokeServiceActionAsCli(
+      stageUpdateEntityAction,
+      {
+        project: 'test-project',
+        entityTypeName: 'feature',
+        entityId: blogFeature.id,
+        entityData: { id: blogFeature.id, name: 'blog-updated' },
+      },
+      context,
+    );
+
+    expect(result.message).toContain('Staged update');
+
+    const defContents = await readFile(
+      `${PROJECT_DIR}/baseplate/.build/draft-definition.json`,
+      'utf-8',
+    );
+    const definition = JSON.parse(defContents) as {
+      features: { name: string }[];
+    };
+    expect(definition.features.some((f) => f.name === 'blog-updated')).toBe(
+      true,
+    );
+  });
+});
+
+describe('stage-delete-entity', () => {
+  it('should stage an entity deletion and write draft files', async () => {
+    const result = await invokeServiceActionAsCli(
+      stageDeleteEntityAction,
+      {
+        project: 'test-project',
+        entityTypeName: 'feature',
+        entityId: blogFeature.id,
+      },
+      context,
+    );
+
+    expect(result.message).toContain('Staged deletion');
+
+    const defContents = await readFile(
+      `${PROJECT_DIR}/baseplate/.build/draft-definition.json`,
+      'utf-8',
+    );
+    const definition = JSON.parse(defContents) as {
+      features: { name: string }[];
+    };
+    expect(definition.features.some((f) => f.name === 'blog')).toBe(false);
   });
 });

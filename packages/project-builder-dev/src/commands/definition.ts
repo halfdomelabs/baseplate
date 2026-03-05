@@ -1,26 +1,33 @@
 import type { Command } from 'commander';
 
 import {
+  commitDraftAction,
+  discardDraftAction,
   getEntityAction,
   getEntitySchemaAction,
   invokeServiceActionAsCli,
   listEntitiesAction,
   listEntityTypesAction,
+  showDraftAction,
+  stageCreateEntityAction,
+  stageDeleteEntityAction,
+  stageUpdateEntityAction,
 } from '@baseplate-dev/project-builder-server/actions';
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 import { resolveProject } from '#src/utils/list-projects.js';
 
 /**
- * Adds definition inspection commands to the program.
+ * Adds definition inspection and mutation commands to the program.
  * @param program - The program to add the commands to.
  */
 export function addDefinitionCommand(program: Command): void {
   const definitionCommand = program
     .command('definition')
     .alias('def')
-    .description('Inspect project definition entities and schemas');
+    .description('Inspect and modify project definition entities');
+
+  // --- Read commands ---
 
   definitionCommand
     .command('list-entity-types [project]')
@@ -29,18 +36,11 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
-      const result = await invokeServiceActionAsCli(
+      await invokeServiceActionAsCli(
         listEntityTypesAction,
         { project: resolvedProject.name },
         context,
       );
-
-      for (const entityType of result.entityTypes) {
-        const parent = entityType.parentEntityTypeName
-          ? ` (parent: ${entityType.parentEntityTypeName})`
-          : '';
-        console.info(`  ${entityType.name}${parent}`);
-      }
     });
 
   definitionCommand
@@ -59,7 +59,7 @@ export function addDefinitionCommand(program: Command): void {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
 
-        const result = await invokeServiceActionAsCli(
+        await invokeServiceActionAsCli(
           listEntitiesAction,
           {
             project: resolvedProject.name,
@@ -68,10 +68,6 @@ export function addDefinitionCommand(program: Command): void {
           },
           context,
         );
-
-        for (const entity of result.entities) {
-          console.info(`  ${entity.name} (${entity.id})`);
-        }
       },
     );
 
@@ -82,18 +78,11 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
-      const result = await invokeServiceActionAsCli(
+      await invokeServiceActionAsCli(
         getEntityAction,
         { project: resolvedProject.name, entityId },
         context,
       );
-
-      if (result.entity === null) {
-        console.info(`Entity not found: ${entityId}`);
-        return;
-      }
-
-      console.info(stringifyPrettyStable(result.entity));
     });
 
   definitionCommand
@@ -103,12 +92,144 @@ export function addDefinitionCommand(program: Command): void {
       const resolvedProject = await resolveProject(project);
       const context = await createServiceActionContext(resolvedProject);
 
-      const result = await invokeServiceActionAsCli(
+      await invokeServiceActionAsCli(
         getEntitySchemaAction,
         { project: resolvedProject.name, entityTypeName: entityType },
         context,
       );
+    });
 
-      console.info(stringifyPrettyStable(result.schema));
+  // --- Write commands ---
+
+  definitionCommand
+    .command('stage-create <entityType> <entityDataJson> [project]')
+    .description('Stage a new entity creation in the draft session')
+    .option(
+      '--parent <parentEntityId>',
+      'Parent entity ID (required for nested types)',
+    )
+    .action(
+      async (
+        entityType: string,
+        entityDataJson: string,
+        project: string | undefined,
+        options: { parent?: string },
+      ) => {
+        const resolvedProject = await resolveProject(project);
+        const context = await createServiceActionContext(resolvedProject);
+        const entityData = JSON.parse(entityDataJson) as Record<
+          string,
+          unknown
+        >;
+
+        await invokeServiceActionAsCli(
+          stageCreateEntityAction,
+          {
+            project: resolvedProject.name,
+            entityTypeName: entityType,
+            entityData,
+            parentEntityId: options.parent,
+          },
+          context,
+        );
+      },
+    );
+
+  definitionCommand
+    .command('stage-update <entityType> <entityId> <entityDataJson> [project]')
+    .description('Stage an entity update in the draft session')
+    .action(
+      async (
+        entityType: string,
+        entityId: string,
+        entityDataJson: string,
+        project: string | undefined,
+      ) => {
+        const resolvedProject = await resolveProject(project);
+        const context = await createServiceActionContext(resolvedProject);
+        const entityData = JSON.parse(entityDataJson) as Record<
+          string,
+          unknown
+        >;
+
+        await invokeServiceActionAsCli(
+          stageUpdateEntityAction,
+          {
+            project: resolvedProject.name,
+            entityTypeName: entityType,
+            entityId,
+            entityData,
+          },
+          context,
+        );
+      },
+    );
+
+  definitionCommand
+    .command('stage-delete <entityType> <entityId> [project]')
+    .description('Stage an entity deletion in the draft session')
+    .action(
+      async (
+        entityType: string,
+        entityId: string,
+        project: string | undefined,
+      ) => {
+        const resolvedProject = await resolveProject(project);
+        const context = await createServiceActionContext(resolvedProject);
+
+        await invokeServiceActionAsCli(
+          stageDeleteEntityAction,
+          {
+            project: resolvedProject.name,
+            entityTypeName: entityType,
+            entityId,
+          },
+          context,
+        );
+      },
+    );
+
+  // --- Draft management commands ---
+
+  definitionCommand
+    .command('commit [project]')
+    .description('Commit the draft session to project-definition.json')
+    .action(async (project: string | undefined) => {
+      const resolvedProject = await resolveProject(project);
+      const context = await createServiceActionContext(resolvedProject);
+
+      await invokeServiceActionAsCli(
+        commitDraftAction,
+        { project: resolvedProject.name },
+        context,
+      );
+    });
+
+  definitionCommand
+    .command('discard [project]')
+    .description('Discard the current draft session')
+    .action(async (project: string | undefined) => {
+      const resolvedProject = await resolveProject(project);
+      const context = await createServiceActionContext(resolvedProject);
+
+      await invokeServiceActionAsCli(
+        discardDraftAction,
+        { project: resolvedProject.name },
+        context,
+      );
+    });
+
+  definitionCommand
+    .command('show-draft [project]')
+    .description('Show the current draft session status')
+    .action(async (project: string | undefined) => {
+      const resolvedProject = await resolveProject(project);
+      const context = await createServiceActionContext(resolvedProject);
+
+      await invokeServiceActionAsCli(
+        showDraftAction,
+        { project: resolvedProject.name },
+        context,
+      );
     });
 }

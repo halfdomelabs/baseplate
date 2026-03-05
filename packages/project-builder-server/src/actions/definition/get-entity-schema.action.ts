@@ -1,3 +1,4 @@
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -31,6 +32,9 @@ export const getEntitySchemaAction = createServiceAction({
     'Get the JSON Schema for a given entity type. Useful for understanding valid field shapes before creating or updating entities.',
   inputSchema: getEntitySchemaInputSchema,
   outputSchema: getEntitySchemaOutputSchema,
+  writeCliOutput: (output) => {
+    console.info(stringifyPrettyStable(output.schema));
+  },
   handler: async (input, context) => {
     const { entityContext } = await loadEntityServiceContext(
       input.project,

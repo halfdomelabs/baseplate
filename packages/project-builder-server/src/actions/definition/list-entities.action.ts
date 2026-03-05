@@ -37,6 +37,11 @@ export const listEntitiesAction = createServiceAction({
     'List entities of a given type in the project definition. Use list-entity-types to discover available entity type names.',
   inputSchema: listEntitiesInputSchema,
   outputSchema: listEntitiesOutputSchema,
+  writeCliOutput: (output) => {
+    for (const entity of output.entities) {
+      console.info(`  ${entity.name} (${entity.id})`);
+    }
+  },
   handler: async (input, context) => {
     const { entityContext } = await loadEntityServiceContext(
       input.project,

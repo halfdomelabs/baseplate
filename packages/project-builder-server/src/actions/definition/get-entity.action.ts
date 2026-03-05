@@ -1,4 +1,5 @@
 import { getEntity } from '@baseplate-dev/project-builder-lib';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -28,6 +29,13 @@ export const getEntityAction = createServiceAction({
     'Get the full serialized data for a specific entity by ID. Returns name-resolved JSON.',
   inputSchema: getEntityInputSchema,
   outputSchema: getEntityOutputSchema,
+  writeCliOutput: (output) => {
+    if (output.entity === null) {
+      console.info('Entity not found.');
+      return;
+    }
+    console.info(stringifyPrettyStable(output.entity));
+  },
   handler: async (input, context) => {
     const { entityContext } = await loadEntityServiceContext(
       input.project,

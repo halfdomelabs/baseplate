@@ -15,10 +15,7 @@ import type {
 } from '#src/schema/index.js';
 import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
 
-import {
-  createPluginSpecStore,
-  parseProjectDefinitionWithReferences,
-} from '#src/parser/parser.js';
+import { createPluginSpecStore } from '#src/parser/parser.js';
 import {
   deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
@@ -144,30 +141,6 @@ export class ProjectDefinitionContainer {
   toSerializedContents(): string {
     const serializedContents = serializeSchema(this.schema, this.definition);
     return stringifyPrettyStable(serializedContents);
-  }
-
-  /**
-   * Creates a new ProjectDefinitionContainer from a raw project definition.
-   *
-   * @param definition The raw project definition
-   * @param context The parser context to use
-   * @returns A new ProjectDefinitionContainer
-   */
-  static fromDefinition(
-    definition: ProjectDefinition,
-    context: SchemaParserContext,
-  ): ProjectDefinitionContainer {
-    const { definition: parsedDefinition, pluginStore } =
-      parseProjectDefinitionWithReferences(definition, context);
-    const schema = createProjectDefinitionSchema(
-      createDefinitionSchemaParserContext({ plugins: pluginStore }),
-    );
-    return new ProjectDefinitionContainer(
-      parsedDefinition,
-      context,
-      pluginStore,
-      schema,
-    );
   }
 
   /**
