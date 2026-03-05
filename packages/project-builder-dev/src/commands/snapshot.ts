@@ -9,7 +9,6 @@ import {
 } from '@baseplate-dev/project-builder-server/actions';
 import { confirm } from '@inquirer/prompts';
 
-import { writeGenerationManifest } from '#src/e2e-runner/generation-manifest.js';
 import { logger } from '#src/services/logger.js';
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
@@ -97,7 +96,7 @@ export function addSnapshotCommand(program: Command): void {
         if (!options.force) {
           // Confirm with user before overwriting existing snapshot
           const target = app ?? 'all apps';
-          logger.warn(
+          console.warn(
             `This will overwrite any existing snapshot for ${target}.`,
           );
           console.info(
@@ -116,7 +115,7 @@ export function addSnapshotCommand(program: Command): void {
 
         const context = await createServiceActionContext();
 
-        const result = await invokeServiceActionAsCli(
+        await invokeServiceActionAsCli(
           snapshotSaveAction,
           {
             project,
@@ -125,16 +124,6 @@ export function addSnapshotCommand(program: Command): void {
           },
           context,
         );
-
-        // Write generation manifest for test projects so staleness can be detected
-        if (result.success) {
-          const projectInfo = context.projects.find(
-            (p) => p.name === project || p.id === project,
-          );
-          if (projectInfo?.type === 'test') {
-            await writeGenerationManifest(projectInfo.directory);
-          }
-        }
       },
     );
 

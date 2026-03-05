@@ -486,9 +486,6 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.0.1
-      p-limit:
-        specifier: 6.1.0
-        version: 6.1.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -692,6 +689,9 @@ importers:
       open:
         specifier: 10.1.0
         version: 10.1.0
+      p-limit:
+        specifier: 6.1.0
+        version: 6.1.0
       pino:
         specifier: 9.5.0
         version: 9.5.0

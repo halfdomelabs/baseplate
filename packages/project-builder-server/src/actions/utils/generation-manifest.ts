@@ -51,7 +51,7 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
 
 /**
  * Creates and writes a generation manifest for the given directory.
- * Call this after `generateTestProject` completes.
+ * Call this after generating a test project to enable staleness detection.
  */
 export async function writeGenerationManifest(
   outputDir: string,
@@ -150,7 +150,7 @@ async function checkStaleness(outputDir: string): Promise<StalenessResult> {
 
 /**
  * Checks staleness and throws an error if the directory has been modified.
- * Used by `test-project generate --overwrite` to warn before overwriting.
+ * Used to warn before overwriting a test project that has unsaved changes.
  */
 export async function assertNotStale(outputDir: string): Promise<void> {
   const result = await checkStaleness(outputDir);

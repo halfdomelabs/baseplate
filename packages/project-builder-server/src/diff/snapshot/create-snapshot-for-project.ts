@@ -16,6 +16,7 @@ import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { compilePackages } from '#src/compiler/index.js';
+import { writeGenerationManifest } from '#src/index.js';
 import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 
@@ -143,9 +144,8 @@ export async function createSnapshotForProject(
   try {
     logger.info('Loading project definition...');
     const { definition: projectJson } = await loadProjectDefinition(
-      directory,
+      baseplateDirectory ?? path.join(directory, 'baseplate'),
       context,
-      baseplateDirectory,
     );
 
     logger.info('Compiling applications...');
@@ -178,6 +178,11 @@ export async function createSnapshotForProject(
         includeAddedFileContents,
       });
       savedApps.push(app.name);
+    }
+
+    // Write generation manifest for test projects so staleness can be detected
+    if (context.project.type === 'test') {
+      await writeGenerationManifest(directory);
     }
 
     logger.info('✓ Snapshots created successfully');

@@ -122,9 +122,8 @@ export async function syncProject({
 
   try {
     const { definition: projectJson } = await loadProjectDefinition(
-      directory,
+      baseplateDirectory ?? path.join(directory, 'baseplate'),
       context,
-      baseplateDirectory,
     );
     const apps = compilePackages(projectJson, context);
 

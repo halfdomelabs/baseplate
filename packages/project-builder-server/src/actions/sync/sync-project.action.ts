@@ -6,6 +6,7 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
 import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
+import { writeGenerationManifest } from '../utils/generation-manifest.js';
 import { getProjectByNameOrId } from '../utils/projects.js';
 
 const syncProjectInputSchema = z.object({
@@ -118,6 +119,15 @@ export const syncProjectAction = createServiceAction({
           : result.status === 'cancelled'
             ? 'cancelled'
             : 'error';
+
+      // Write generation manifest for test projects after overwrite sync
+      if (
+        result.status === 'success' &&
+        effectiveOverwrite &&
+        project.type === 'test'
+      ) {
+        await writeGenerationManifest(project.directory);
+      }
 
       return {
         status: actionStatus,

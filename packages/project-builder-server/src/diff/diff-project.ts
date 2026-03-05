@@ -100,7 +100,7 @@ export async function diffProject(
   );
 
   const { definition: projectJson } = await loadProjectDefinition(
-    project.directory,
+    project.baseplateDirectory,
     parserContext,
   );
 

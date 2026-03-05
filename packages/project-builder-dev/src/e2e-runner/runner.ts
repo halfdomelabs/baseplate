@@ -2,6 +2,10 @@ import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
 
 import { syncProject } from '@baseplate-dev/project-builder-server';
 import {
+  assertNotStale,
+  writeGenerationManifest,
+} from '@baseplate-dev/project-builder-server/actions';
+import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@baseplate-dev/project-builder-server/plugins';
@@ -11,10 +15,6 @@ import type { ProjectBuilderTest, TestRunnerHelpers } from './types.js';
 
 import { discoverTests } from './discover-tests.js';
 import { createEnvironmentHelpers } from './environment.js';
-import {
-  assertNotStale,
-  writeGenerationManifest,
-} from './generation-manifest.js';
 
 export interface RunTestsOptions {
   /** Directory where **.gen.ts files live */
