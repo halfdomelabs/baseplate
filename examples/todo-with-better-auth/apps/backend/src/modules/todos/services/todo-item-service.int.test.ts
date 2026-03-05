@@ -1,25 +1,40 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
+import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
 import { createTodoItem, updateTodoItem } from './todo-item.data-service.js';
 
-const context = createTestServiceContext();
+let context = createTestServiceContext();
+let ownerId = '';
+
+beforeEach(async () => {
+  await prisma.user.deleteMany({});
+
+  const owner = await prisma.user.create({
+    data: {
+      name: 'Test User',
+      email: 'owner@example.com',
+    },
+  });
+
+  ownerId = owner.id;
+  context = createTestServiceContext({
+    auth: createAuthContextFromSessionInfo({
+      type: 'user',
+      id: 'test-session',
+      userId: owner.id,
+      roles: ['public', 'user'],
+    }),
+  });
+});
 
 describe('create', () => {
   it('should create nested todo item', async () => {
-    await prisma.user.deleteMany({});
-
-    const owner = await prisma.user.create({
-      data: {
-        name: 'Test User',
-        email: 'foo@example.com',
-      },
-    });
     const todoList = await prisma.todoList.create({
       data: {
-        ownerId: owner.id,
+        ownerId,
         position: 1,
         name: 'My Todo List',
       },
@@ -120,13 +135,8 @@ describe('create', () => {
   });
 
   it('should return nested attachments directly from createTodoItem when query is provided', async () => {
-    await prisma.user.deleteMany({});
-
-    const owner = await prisma.user.create({
-      data: { name: 'Test User', email: 'test@example.com' },
-    });
     const todoList = await prisma.todoList.create({
-      data: { ownerId: owner.id, position: 1, name: 'Test List' },
+      data: { ownerId, position: 1, name: 'Test List' },
     });
 
     // Call createTodoItem WITH a query that includes attachments
@@ -158,13 +168,8 @@ describe('create', () => {
   });
 
   it('should return nested attachments directly from updateTodoItem when query is provided', async () => {
-    await prisma.user.deleteMany({});
-
-    const owner = await prisma.user.create({
-      data: { name: 'Test User', email: 'test@example.com' },
-    });
     const todoList = await prisma.todoList.create({
-      data: { ownerId: owner.id, position: 1, name: 'Test List' },
+      data: { ownerId, position: 1, name: 'Test List' },
     });
     const todoItem = await prisma.todoItem.create({
       data: {
@@ -203,13 +208,8 @@ describe('create', () => {
   });
 
   it('should not allow updating an attachment that belongs to a different todo item', async () => {
-    await prisma.user.deleteMany({});
-
-    const owner = await prisma.user.create({
-      data: { name: 'Test User', email: 'test@example.com' },
-    });
     const todoList = await prisma.todoList.create({
-      data: { ownerId: owner.id, position: 1, name: 'Test List' },
+      data: { ownerId, position: 1, name: 'Test List' },
     });
 
     // Create two separate todo items, each with their own attachment

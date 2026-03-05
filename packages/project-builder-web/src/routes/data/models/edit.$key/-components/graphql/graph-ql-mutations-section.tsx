@@ -8,7 +8,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  MultiSwitchField,
+  Badge,
   SectionListSection,
   SectionListSectionContent,
   SectionListSectionDescription,
@@ -27,19 +27,65 @@ interface GraphQLMutationsSectionProps {
   modelKey: string;
 }
 
+function DerivedAuthBadges({
+  globalRoles,
+  instanceRoles,
+  roleMap,
+}: {
+  globalRoles: string[];
+  instanceRoles?: string[];
+  roleMap: Map<string, string>;
+}): React.JSX.Element {
+  const hasInstanceRoles = instanceRoles && instanceRoles.length > 0;
+  const hasGlobalRoles = globalRoles.length > 0;
+
+  if (!hasGlobalRoles && !hasInstanceRoles) {
+    return (
+      <div className="ml-10 flex items-center gap-2">
+        <Badge variant="outline">Public</Badge>
+      </div>
+    );
+  }
+
+  if (hasInstanceRoles) {
+    return (
+      <div className="ml-10 flex items-center gap-2">
+        <Badge variant="secondary">Authenticated</Badge>
+        <span className="text-xs text-muted-foreground">
+          Service-level authorization applies
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ml-10 flex items-center gap-2">
+      {globalRoles.map((roleId) => (
+        <Badge key={roleId} variant="secondary">
+          {roleMap.get(roleId) ?? roleId}
+        </Badge>
+      ))}
+    </div>
+  );
+}
+
 export function GraphQLMutationsSection({
   control,
   modelKey,
 }: GraphQLMutationsSectionProps): React.JSX.Element {
   const { definition, pluginContainer } = useProjectDefinition();
 
-  const roleOptions = pluginContainer
+  const authConfig = pluginContainer
     .use(authConfigSpec)
-    .getAuthConfig(definition)
-    ?.roles.map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
+    .getAuthConfig(definition);
+
+  const roleMap = new Map<string, string>(
+    authConfig?.roles
+      .filter((role) => role.name !== 'system')
+      .map((role) => [role.id, role.name]),
+  );
+
+  const isAuthEnabled = !!authConfig;
 
   const isObjectTypeEnabled = useWatch({
     control,
@@ -63,6 +109,10 @@ export function GraphQLMutationsSection({
   });
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
+  const serviceCreate = useEditedModelConfig((m) => m.service?.create);
+  const serviceUpdate = useEditedModelConfig((m) => m.service?.update);
+  const serviceDelete = useEditedModelConfig((m) => m.service?.delete);
+
   return (
     <SectionListSection>
       <div>
@@ -70,95 +120,98 @@ export function GraphQLMutationsSection({
           <SectionListSectionTitle>Mutations</SectionListSectionTitle>
           <SectionListSectionDescription>
             Configure the GraphQL mutations that can be performed on this model.
+            {isAuthEnabled && (
+              <>
+                {' '}
+                Authorization is configured on the{' '}
+                <Link
+                  to="/data/models/edit/$key/service"
+                  params={{ key: modelKey }}
+                  className="font-semibold underline"
+                >
+                  Service tab
+                </Link>
+                .
+              </>
+            )}
           </SectionListSectionDescription>
         </SectionListSectionHeader>
       </div>
       <SectionListSectionContent className="space-y-8">
-        {(!isCreateControllerEnabled ||
-          !isUpdateControllerEnabled ||
-          !isDeleteControllerEnabled) && (
-          <Alert className="max-w-md">
-            <MdInfo />
-            <AlertTitle>
-              Service methods disabled (
-              {[
-                !isCreateControllerEnabled && 'Create',
-                !isUpdateControllerEnabled && 'Update',
-                !isDeleteControllerEnabled && 'Delete',
-              ]
-                .filter(Boolean)
-                .join(', ')}
-              )
-            </AlertTitle>
-            <AlertDescription>
-              <div>
-                Enable the appropriate methods on the{' '}
-                <Link
-                  to="/data/models/edit/$key/service"
-                  params={{ key: modelKey }}
-                  className="font-semibold"
-                >
-                  the service tab
-                </Link>{' '}
-                to expose mutations
-              </div>
-            </AlertDescription>
-          </Alert>
+        {!isCreateControllerEnabled &&
+          !isUpdateControllerEnabled &&
+          !isDeleteControllerEnabled && (
+            <Alert className="max-w-md">
+              <MdInfo />
+              <AlertTitle>No service methods enabled</AlertTitle>
+              <AlertDescription>
+                <div>
+                  Enable methods on the{' '}
+                  <Link
+                    to="/data/models/edit/$key/service"
+                    params={{ key: modelKey }}
+                    className="font-semibold"
+                  >
+                    Service tab
+                  </Link>{' '}
+                  to expose mutations
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+        {isCreateControllerEnabled && (
+          <div className="space-y-4">
+            <SwitchFieldController
+              control={control}
+              name="graphql.mutations.create.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="Create Mutation"
+              description="Expose the create method in the GraphQL schema, e.g. createUser(input: $input)."
+            />
+            {isCreateEnabled && isAuthEnabled && (
+              <DerivedAuthBadges
+                globalRoles={serviceCreate?.globalRoles ?? []}
+                roleMap={roleMap}
+              />
+            )}
+          </div>
         )}
-        <div className="space-y-4">
-          <SwitchFieldController
-            control={control}
-            name="graphql.mutations.create.enabled"
-            disabled={!isObjectTypeEnabled || !isCreateControllerEnabled}
-            label="Create Mutation"
-            description="Expose the create method in the GraphQL schema, e.g. createUser(input: $input)."
-          />
-          {isCreateEnabled && roleOptions && (
-            <MultiSwitchField.Controller
+        {isUpdateControllerEnabled && (
+          <div className="space-y-4">
+            <SwitchFieldController
               control={control}
-              name="graphql.mutations.create.roles"
-              label="Allowed Roles"
-              options={roleOptions}
-              className="ml-[52px]"
+              name="graphql.mutations.update.enabled"
+              label="Update Mutation"
+              disabled={!isObjectTypeEnabled}
+              description="Expose the update method in the GraphQL schema, e.g. updateUser(id: $id, input: $input)."
             />
-          )}
-        </div>
-        <div className="space-y-4">
-          <SwitchFieldController
-            control={control}
-            name="graphql.mutations.update.enabled"
-            label="Update Mutation"
-            disabled={!isObjectTypeEnabled || !isUpdateControllerEnabled}
-            description="Expose the update method in the GraphQL schema, e.g. updateUser(id: $id, input: $input)."
-          />
-          {isUpdateEnabled && roleOptions && (
-            <MultiSwitchField.Controller
+            {isUpdateEnabled && isAuthEnabled && (
+              <DerivedAuthBadges
+                globalRoles={serviceUpdate?.globalRoles ?? []}
+                instanceRoles={serviceUpdate?.instanceRoles ?? []}
+                roleMap={roleMap}
+              />
+            )}
+          </div>
+        )}
+        {isDeleteControllerEnabled && (
+          <div className="space-y-2">
+            <SwitchFieldController
               control={control}
-              name="graphql.mutations.update.roles"
-              label="Allowed Roles"
-              options={roleOptions}
-              className="ml-[52px]"
+              name="graphql.mutations.delete.enabled"
+              label="Delete Mutation"
+              disabled={!isObjectTypeEnabled}
+              description="Expose the delete method in the GraphQL schema, e.g. deleteUser(id: $id)."
             />
-          )}
-        </div>
-        <div className="space-y-2">
-          <SwitchFieldController
-            control={control}
-            name="graphql.mutations.delete.enabled"
-            label="Delete Mutation"
-            disabled={!isObjectTypeEnabled || !isDeleteControllerEnabled}
-            description="Expose the delete method in the GraphQL schema, e.g. deleteUser(id: $id)."
-          />
-          {isDeleteEnabled && roleOptions && (
-            <MultiSwitchField.Controller
-              control={control}
-              name="graphql.mutations.delete.roles"
-              label="Allowed Roles"
-              options={roleOptions}
-              className="ml-[52px]"
-            />
-          )}
-        </div>
+            {isDeleteEnabled && isAuthEnabled && (
+              <DerivedAuthBadges
+                globalRoles={serviceDelete?.globalRoles ?? []}
+                instanceRoles={serviceDelete?.instanceRoles ?? []}
+                roleMap={roleMap}
+              />
+            )}
+          </div>
+        )}
       </SectionListSectionContent>
     </SectionListSection>
   );

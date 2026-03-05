@@ -1,11 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
+import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
 import { createUser, updateUser } from './user.data-service.js';
 
-const context = createTestServiceContext();
+const context = createTestServiceContext({
+  auth: createAuthContextFromSessionInfo({
+    type: 'user',
+    id: 'test-session',
+    userId: '00000000-0000-0000-0000-000000000001',
+    roles: ['public', 'user', 'admin'],
+  }),
+});
 
 describe('create', () => {
   it('should create nested todo item', async () => {

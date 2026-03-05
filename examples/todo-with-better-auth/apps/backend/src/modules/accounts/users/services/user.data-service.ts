@@ -116,6 +116,7 @@ export async function createUser<
     fields: userInputFields,
     input,
     context,
+    authorize: ['admin'],
   });
 
   return commitCreate(plan, {
@@ -148,6 +149,7 @@ export async function updateUser<
     input,
     context,
     loadExisting: () => prisma.user.findUniqueOrThrow({ where }),
+    authorize: ['admin'],
   });
 
   return commitUpdate(plan, {
@@ -183,5 +185,6 @@ export async function deleteUser<
       });
       return item;
     },
+    authorize: ['admin'],
   });
 }

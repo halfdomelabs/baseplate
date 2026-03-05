@@ -78,6 +78,7 @@ export async function createTodoItem<
     fields: todoItemInputFields,
     input,
     context,
+    authorize: ['user'],
   });
 
   return commitCreate(plan, {
@@ -120,6 +121,7 @@ export async function updateTodoItem<
     input,
     context,
     loadExisting: () => prisma.todoItem.findUniqueOrThrow({ where }),
+    authorize: ['user'],
   });
 
   return commitUpdate(plan, {
@@ -163,5 +165,6 @@ export async function deleteTodoItem<
       });
       return item;
     },
+    authorize: ['user'],
   });
 }

@@ -15,6 +15,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
+import { ServiceMethodAuthSection } from './-components/service/service-method-auth-section.js';
 import { ServiceMethodFieldsSection } from './-components/service/service-method-fields-section.js';
 import { ServiceTransformersSection } from './-components/service/service-transformers-section.js';
 
@@ -68,6 +69,7 @@ function ModelEditServicePage(): React.JSX.Element {
               />
             </SectionListSectionContent>
           </SectionListSection>
+          <ServiceMethodAuthSection control={control} setValue={setValue} />
           <ServiceMethodFieldsSection control={control} setValue={setValue} />
           <ServiceTransformersSection formProps={form} />
         </SectionList>

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
@@ -32,7 +33,14 @@ vi.mock('@src/modules/storage/config/adapters.config.js', () => ({
 // Create a test user ID for file uploads
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 
-const context = createTestServiceContext();
+const context = createTestServiceContext({
+  auth: createAuthContextFromSessionInfo({
+    type: 'user',
+    id: 'test-session',
+    userId: TEST_USER_ID,
+    roles: ['public', 'user', 'admin'],
+  }),
+});
 
 describe('createUser', () => {
   beforeEach(async () => {

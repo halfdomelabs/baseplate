@@ -684,9 +684,9 @@
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -796,9 +796,10 @@
         "create": {
           "enabled": true,
           "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "globalRoles": ["user"],
           "transformerNames": ["attachments"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [
           {
             "embeddedFieldNames": ["position", "url", "id"],
@@ -812,6 +813,7 @@
         "update": {
           "enabled": true,
           "fields": ["position", "text", "done", "assigneeId", "todoListId"],
+          "globalRoles": ["user"],
           "transformerNames": ["attachments"]
         }
       }
@@ -964,9 +966,9 @@
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -1084,9 +1086,10 @@
         "create": {
           "enabled": true,
           "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": ["coverPhoto"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [
           {
             "category": {
@@ -1103,6 +1106,7 @@
         "update": {
           "enabled": true,
           "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": ["coverPhoto"]
         }
       }
@@ -1111,9 +1115,9 @@
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -1191,13 +1195,15 @@
         "create": {
           "enabled": true,
           "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": []
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [],
         "update": {
           "enabled": true,
           "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": []
         }
       }
@@ -1215,9 +1221,9 @@
       "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["admin"] },
-          "delete": { "enabled": true, "roles": ["admin"] },
-          "update": { "enabled": true, "roles": ["admin"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -1306,9 +1312,10 @@
         "create": {
           "enabled": true,
           "fields": ["name", "email"],
+          "globalRoles": ["admin"],
           "transformerNames": ["roles", "customer", "userProfile", "images"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
         "transformers": [
           {
             "embeddedFieldNames": ["role"],
@@ -1349,6 +1356,7 @@
         "update": {
           "enabled": true,
           "fields": ["name", "email"],
+          "globalRoles": ["admin"],
           "transformerNames": ["roles", "customer", "userProfile", "images"]
         }
       }
@@ -1775,7 +1783,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 24,
+  "schemaVersion": 25,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

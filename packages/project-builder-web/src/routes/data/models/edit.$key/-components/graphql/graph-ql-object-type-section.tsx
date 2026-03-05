@@ -363,7 +363,8 @@ export function GraphQLObjectTypeSection({
     pluginContainer
       .use(authConfigSpec)
       .getAuthConfig(definition)
-      ?.roles.map((role) => ({
+      ?.roles.filter((role) => role.name !== 'system')
+      .map((role) => ({
         label: role.name,
         value: role.id,
       })) ?? [];
