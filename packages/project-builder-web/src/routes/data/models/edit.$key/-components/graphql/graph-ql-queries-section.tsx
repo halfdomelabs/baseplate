@@ -111,6 +111,7 @@ export function GraphQLQueriesSection({
         {isListEnabled && (
           <SwitchFieldController
             control={control}
+            disabled={!isObjectTypeEnabled}
             name="graphql.queries.list.count.enabled"
             label="Count Query"
             description="Generate a count query (e.g. usersCount) for total record count, useful for paginated UIs."
