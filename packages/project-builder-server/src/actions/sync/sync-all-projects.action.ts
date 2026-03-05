@@ -46,7 +46,7 @@ const syncAllProjectsOutputSchema = z.object({
 export const syncAllProjectsAction = createServiceAction({
   name: 'sync-all-projects',
   title: 'Sync All Projects',
-  description: 'Sync all available projects using the baseplate sync engine',
+  description: 'Sync all non-test projects using the baseplate sync engine',
   inputSchema: syncAllProjectsInputSchema,
   outputSchema: syncAllProjectsOutputSchema,
   handler: async (input, context) => {
@@ -68,8 +68,12 @@ export const syncAllProjectsAction = createServiceAction({
     let errorCount = 0;
     let cancelledCount = 0;
 
+    const nonTestProjects = projects.filter(
+      (project) => project.type !== 'test',
+    );
+
     // Sync each project
-    for (const project of projects) {
+    for (const project of nonTestProjects) {
       logger.info(`Syncing project: ${project.name}`);
 
       try {

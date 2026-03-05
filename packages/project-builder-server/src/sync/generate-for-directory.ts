@@ -122,29 +122,29 @@ export async function generateForDirectory({
             output,
             snapshot,
             resolvedSnapshotDirectory.diffsPath,
+            { skipModified: true },
           );
         })()
       : output;
 
   const overwriteOptions: OverwriteOptions = {
     enabled: !!overwrite,
-    applyDiff:
-      !overwrite && snapshot
-        ? async (relativePath, generatedContents) => {
-            const result = await applySnapshotToFileContents(
-              relativePath,
-              generatedContents,
-              snapshot,
-              resolvedSnapshotDirectory.diffsPath,
+    applyDiff: snapshot
+      ? async (relativePath, generatedContents) => {
+          const result = await applySnapshotToFileContents(
+            relativePath,
+            generatedContents,
+            snapshot,
+            resolvedSnapshotDirectory.diffsPath,
+          );
+          if (result === false) {
+            logger.warn(
+              `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
             );
-            if (result === false) {
-              logger.warn(
-                `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
-              );
-            }
-            return result;
           }
-        : undefined,
+          return result;
+        }
+      : undefined,
     skipFile: (relativePath) => {
       if (!ignorePatterns) {
         return false;
