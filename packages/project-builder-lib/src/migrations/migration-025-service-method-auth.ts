@@ -66,23 +66,30 @@ export const migration025ServiceMethodAuth = createSchemaMigration<
       const updateRoles = mutations.update?.roles ?? [];
       const deleteRoles = mutations.delete?.roles ?? [];
 
+      // Only add globalRoles to service methods that have roles to migrate
+      const serviceUpdate: Record<string, unknown> = { ...model.service };
+      if (createRoles.length > 0) {
+        serviceUpdate.create = {
+          ...model.service?.create,
+          globalRoles: createRoles,
+        };
+      }
+      if (updateRoles.length > 0) {
+        serviceUpdate.update = {
+          ...model.service?.update,
+          globalRoles: updateRoles,
+        };
+      }
+      if (deleteRoles.length > 0) {
+        serviceUpdate.delete = {
+          ...model.service?.delete,
+          globalRoles: deleteRoles,
+        };
+      }
+
       return {
         ...model,
-        service: {
-          ...model.service,
-          create: {
-            ...model.service?.create,
-            globalRoles: createRoles,
-          },
-          update: {
-            ...model.service?.update,
-            globalRoles: updateRoles,
-          },
-          delete: {
-            ...model.service?.delete,
-            globalRoles: deleteRoles,
-          },
-        },
+        service: serviceUpdate,
         graphql: {
           ...model.graphql,
           mutations: {

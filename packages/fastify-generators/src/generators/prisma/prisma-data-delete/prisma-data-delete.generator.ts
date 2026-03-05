@@ -82,7 +82,8 @@ export const prismaDataDeleteGenerator = createGenerator({
             const hasInstanceRoles =
               instanceRoles != null && instanceRoles.length > 0;
             const loadExistingFragment = hasInstanceRoles
-              ? `\n                  loadExisting: () => ${prismaImports.prisma.fragment().contents}.${modelVar}.findUniqueOrThrow({ where }),`
+              ? tsTemplate`
+                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),`
               : '';
 
             // Generate the delete function

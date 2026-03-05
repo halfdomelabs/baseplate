@@ -23,10 +23,17 @@ interface ServiceMethodAuthSectionProps {
 }
 
 type ServiceMethodName = 'create' | 'delete' | 'update';
+type InstanceRoleMethodName = 'delete' | 'update';
 
 interface EnabledMethod {
   name: ServiceMethodName;
   label: string;
+}
+
+function isInstanceRoleMethod(
+  name: ServiceMethodName,
+): name is InstanceRoleMethodName {
+  return name !== 'create';
 }
 
 interface RoleOption {
@@ -196,26 +203,34 @@ export function ServiceMethodAuthSection({
                         {role.label}
                       </div>
                     </td>
-                    {enabledMethods.map((method) => (
-                      <td key={method.name} className="pl-8">
-                        {method.name === 'create' ? (
-                          <span className="text-muted-foreground">&mdash;</span>
-                        ) : (
+                    {enabledMethods.map((method) => {
+                      const methodName = method.name;
+                      if (!isInstanceRoleMethod(methodName)) {
+                        return (
+                          <td key={methodName} className="pl-8">
+                            <span className="text-muted-foreground">
+                              &mdash;
+                            </span>
+                          </td>
+                        );
+                      }
+                      return (
+                        <td key={methodName} className="pl-8">
                           <SwitchField
-                            value={instanceRolesMap[method.name].includes(
+                            value={instanceRolesMap[methodName].includes(
                               role.value,
                             )}
                             onChange={(checked) => {
                               toggleInstanceRole(
-                                method.name as 'delete' | 'update',
+                                methodName,
                                 role.value,
                                 checked,
                               );
                             }}
                           />
-                        )}
-                      </td>
-                    ))}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </>

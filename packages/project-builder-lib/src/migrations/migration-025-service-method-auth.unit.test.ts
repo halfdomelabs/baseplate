@@ -63,7 +63,7 @@ describe('migration025ServiceMethodAuth', () => {
     });
   });
 
-  it('handles empty roles arrays', () => {
+  it('does not add globalRoles for empty roles arrays', () => {
     const config = {
       models: [
         {
@@ -81,9 +81,9 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toEqual([]);
-    expect(result.models?.[0].service?.update?.globalRoles).toEqual([]);
-    expect(result.models?.[0].service?.delete?.globalRoles).toEqual([]);
+    expect(result.models?.[0].service?.create?.globalRoles).toBeUndefined();
+    expect(result.models?.[0].service?.update?.globalRoles).toBeUndefined();
+    expect(result.models?.[0].service?.delete?.globalRoles).toBeUndefined();
   });
 
   it('handles models without graphql config', () => {
@@ -156,6 +156,14 @@ describe('migration025ServiceMethodAuth', () => {
       enabled: true,
       fields: ['f1', 'f2'],
       globalRoles: ['role-admin'],
+    });
+    // update and delete had empty roles, so globalRoles should not be added
+    expect(result.models?.[0].service?.update).toEqual({
+      enabled: true,
+      fields: ['f1'],
+    });
+    expect(result.models?.[0].service?.delete).toEqual({
+      enabled: false,
     });
     expect(result.models?.[0].service?.transformers).toEqual([
       { type: 'test' },
@@ -230,7 +238,7 @@ describe('migration025ServiceMethodAuth', () => {
     ]);
   });
 
-  it('handles mutations without roles field', () => {
+  it('does not add globalRoles for mutations without roles field', () => {
     const config = {
       models: [
         {
@@ -248,8 +256,8 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toEqual([]);
-    expect(result.models?.[0].service?.update?.globalRoles).toEqual([]);
-    expect(result.models?.[0].service?.delete?.globalRoles).toEqual([]);
+    expect(result.models?.[0].service?.create?.globalRoles).toBeUndefined();
+    expect(result.models?.[0].service?.update?.globalRoles).toBeUndefined();
+    expect(result.models?.[0].service?.delete?.globalRoles).toBeUndefined();
   });
 });
