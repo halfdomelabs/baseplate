@@ -36,7 +36,8 @@ export function GraphQLQueriesSection({
   const roleOptions = pluginContainer
     .use(authConfigSpec)
     .getAuthConfig(definition)
-    ?.roles.map((role) => ({
+    ?.roles.filter((role) => role.name !== 'system')
+    .map((role) => ({
       label: role.name,
       value: role.id,
     }));
@@ -85,7 +86,7 @@ export function GraphQLQueriesSection({
               name="graphql.queries.get.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="ml-[52px]" // hardcoded to align with the above switch label
+              className="ml-10"
             />
           )}
         </div>
@@ -103,19 +104,19 @@ export function GraphQLQueriesSection({
               name="graphql.queries.list.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="ml-[52px]" // hardcoded to align with the above switch label
-            />
-          )}
-          {isListEnabled && (
-            <SwitchFieldController
-              control={control}
-              name="graphql.queries.list.count.enabled"
-              label="Count Query"
-              description="Generate a count query (e.g. usersCount) for total record count, useful for paginated UIs."
-              className="ml-[52px]"
+              className="ml-10"
             />
           )}
         </div>
+        {isListEnabled && (
+          <SwitchFieldController
+            control={control}
+            disabled={!isObjectTypeEnabled}
+            name="graphql.queries.list.count.enabled"
+            label="Count Query"
+            description="Generate a count query (e.g. usersCount) for total record count, useful for paginated UIs."
+          />
+        )}
       </SectionListSectionContent>
     </SectionListSection>
   );

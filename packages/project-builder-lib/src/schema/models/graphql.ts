@@ -141,21 +141,18 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
           create: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
-              roles: createRoleArray(ctx),
             }),
             {},
           ),
           update: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
-              roles: createRoleArray(ctx),
             }),
             {},
           ),
           delete: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
-              roles: createRoleArray(ctx),
             }),
             {},
           ),

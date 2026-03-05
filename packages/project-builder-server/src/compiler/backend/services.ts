@@ -12,6 +12,7 @@ import {
   serviceFileGenerator,
 } from '@baseplate-dev/fastify-generators';
 import {
+  authConfigSpec,
   modelTransformerCompilerSpec,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -42,6 +43,16 @@ function buildVirtualInputField(
   });
 }
 
+function mapRoleIds(
+  appBuilder: BackendAppEntryBuilder,
+  roles: string[],
+): string[] | undefined {
+  if (roles.length === 0) {
+    return undefined;
+  }
+  return roles.map((r) => appBuilder.nameFromId(r));
+}
+
 function buildDataServiceForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
@@ -49,6 +60,12 @@ function buildDataServiceForModel(
   if (!ModelUtils.hasService(model)) {
     return undefined;
   }
+
+  const authConfig =
+    appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
+  const isAuthEnabled = !!authConfig.getAuthConfig(
+    appBuilder.projectDefinition,
+  );
 
   const createFields = model.service.create.enabled
     ? (model.service.create.fields?.map((f) => appBuilder.nameFromId(f)) ?? [])
@@ -83,6 +100,9 @@ function buildDataServiceForModel(
                       appBuilder.nameFromId(t),
                     ) ?? []),
                   ],
+                  globalRoles: isAuthEnabled
+                    ? mapRoleIds(appBuilder, model.service.create.globalRoles)
+                    : undefined,
                 })
               : undefined,
           $update:
@@ -96,12 +116,24 @@ function buildDataServiceForModel(
                       appBuilder.nameFromId(t),
                     ) ?? []),
                   ],
+                  globalRoles: isAuthEnabled
+                    ? mapRoleIds(appBuilder, model.service.update.globalRoles)
+                    : undefined,
+                  instanceRoles: isAuthEnabled
+                    ? mapRoleIds(appBuilder, model.service.update.instanceRoles)
+                    : undefined,
                 })
               : undefined,
           $delete: model.service.delete.enabled
             ? prismaDataDeleteGenerator({
                 name: `delete${uppercaseFirstChar(model.name)}`,
                 modelName: model.name,
+                globalRoles: isAuthEnabled
+                  ? mapRoleIds(appBuilder, model.service.delete.globalRoles)
+                  : undefined,
+                instanceRoles: isAuthEnabled
+                  ? mapRoleIds(appBuilder, model.service.delete.instanceRoles)
+                  : undefined,
               })
             : undefined,
         },

@@ -13,9 +13,11 @@ import {
   definitionSchemaWithSlots,
 } from '#src/schema/creator/schema-creator.js';
 
+import { authRoleEntityType } from '../auth/index.js';
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
 import { createModelAuthorizerSchema } from './authorizer/authorizer.js';
+import { modelAuthorizerRoleEntityType } from './authorizer/types.js';
 import { createModelGraphqlSchema } from './graphql.js';
 import { createTransformerSchema } from './transformers/transformers.js';
 import {
@@ -319,8 +321,16 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
                 }),
               )
               .optional(),
+            globalRoles: z
+              .array(
+                ctx.withRef({
+                  type: authRoleEntityType,
+                  onDelete: 'DELETE',
+                }),
+              )
+              .apply(withDefault([])),
           })
-          .default({ enabled: false }),
+          .apply(withDefault({ enabled: false })),
         update: z
           .object({
             enabled: z.boolean().default(false),
@@ -342,15 +352,47 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
                 }),
               )
               .optional(),
+            globalRoles: z
+              .array(
+                ctx.withRef({
+                  type: authRoleEntityType,
+                  onDelete: 'DELETE',
+                }),
+              )
+              .apply(withDefault([])),
+            instanceRoles: z
+              .array(
+                ctx.withRef({
+                  type: modelAuthorizerRoleEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .apply(withDefault([])),
           })
-          .default({ enabled: false }),
+          .apply(withDefault({ enabled: false })),
         delete: z
           .object({
             enabled: z.boolean().default(false),
+            globalRoles: z
+              .array(
+                ctx.withRef({
+                  type: authRoleEntityType,
+                  onDelete: 'DELETE',
+                }),
+              )
+              .apply(withDefault([])),
+            instanceRoles: z
+              .array(
+                ctx.withRef({
+                  type: modelAuthorizerRoleEntityType,
+                  onDelete: 'DELETE',
+                  parentSlot: modelSlot,
+                }),
+              )
+              .apply(withDefault([])),
           })
-          .default({
-            enabled: false,
-          }),
+          .apply(withDefault({ enabled: false })),
         transformers: z
           .array(createTransformerSchema(ctx, { modelSlot }))
           .default([]),
@@ -360,13 +402,21 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
           const fixed = { ...value };
 
           if (!fixed.create.enabled) {
-            fixed.create = { enabled: false };
+            fixed.create = { enabled: false, globalRoles: [] };
           }
           if (!fixed.update.enabled) {
-            fixed.update = { enabled: false };
+            fixed.update = {
+              enabled: false,
+              globalRoles: [],
+              instanceRoles: [],
+            };
           }
           if (!fixed.delete.enabled) {
-            fixed.delete = { enabled: false };
+            fixed.delete = {
+              enabled: false,
+              globalRoles: [],
+              instanceRoles: [],
+            };
           }
 
           // If nothing is enabled and there are no transformers, reset entirely
@@ -377,9 +427,17 @@ export const createModelServiceSchema = definitionSchemaWithSlots(
             fixed.transformers.length === 0
           ) {
             return {
-              create: { enabled: false },
-              update: { enabled: false },
-              delete: { enabled: false },
+              create: { enabled: false, globalRoles: [] },
+              update: {
+                enabled: false,
+                globalRoles: [],
+                instanceRoles: [],
+              },
+              delete: {
+                enabled: false,
+                globalRoles: [],
+                instanceRoles: [],
+              },
               transformers: [],
             };
           }
@@ -454,17 +512,26 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
             .array(createModelUniqueConstraintSchema(ctx, slots))
             .apply(withDefault([])),
         }),
-        service: createModelServiceSchema(ctx, slots).default({
-          create: { enabled: false },
-          update: { enabled: false },
-          delete: { enabled: false },
-          transformers: [],
-        }),
+        service: createModelServiceSchema(ctx, slots).apply(withDefault({})),
         graphql: ctx.withDefault(createModelGraphqlSchema(ctx, slots), {}),
         authorizer: ctx.withDefault(createModelAuthorizerSchema(ctx, slots), {
           roles: [],
         }),
       })
+      .apply(
+        withFix((value) => {
+          if (!value.service.create.enabled) {
+            value.graphql.mutations.create = { enabled: false };
+          }
+          if (!value.service.update.enabled) {
+            value.graphql.mutations.update = { enabled: false };
+          }
+          if (!value.service.delete.enabled) {
+            value.graphql.mutations.delete = { enabled: false };
+          }
+          return value;
+        }),
+      )
       .apply(withIssueChecker(checkModelConstraints)),
 );
 

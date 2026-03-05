@@ -19,7 +19,10 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateCreateExecuteCallback } from '../_shared/build-data-helpers/index.js';
+import {
+  generateAuthorizeFragment,
+  generateCreateExecuteCallback,
+} from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -28,6 +31,7 @@ const descriptorSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
   fields: z.array(z.string().min(1)),
+  globalRoles: z.array(z.string().min(1)).optional(),
 });
 
 /**
@@ -37,7 +41,7 @@ export const prismaDataCreateGenerator = createGenerator({
   name: 'prisma/prisma-data-create',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ name, modelName, fields }) => ({
+  buildTasks: ({ name, modelName, fields, globalRoles }) => ({
     main: createGeneratorTask({
       dependencies: {
         serviceFile: serviceFileProvider,
@@ -78,6 +82,13 @@ export const prismaDataCreateGenerator = createGenerator({
             // Generate the schema export and create function together
             const schemaName = `${modelVar}CreateSchema`;
 
+            const authorizeFragment = generateAuthorizeFragment({
+              modelName,
+              methodType: 'Create',
+              globalRoles,
+              modelAuthorizer: undefined,
+            });
+
             const createFunction = tsTemplate`
               export const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsFragment});
 
@@ -96,7 +107,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   model: ${quot(modelVar)},
                   fields: ${fieldsFragment},
                   input,
-                  context,
+                  context,${authorizeFragment}
                 });
 
                 return ${dataUtilsImports.commitCreate.fragment()}(plan, {

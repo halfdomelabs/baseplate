@@ -111,12 +111,12 @@ type Mutation {
 
 type Query {
   blog(id: Uuid!): Blog!
-  blogs: [Blog!]!
+  blogs(skip: Int, take: Int): [Blog!]!
 
   """Get the current user session"""
   currentUserSession: UserSessionPayload
   user(id: Uuid!): User!
-  users: [User!]!
+  users(skip: Int, take: Int): [User!]!
 
   """The currently authenticated user"""
   viewer: User
