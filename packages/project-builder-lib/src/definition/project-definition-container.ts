@@ -13,6 +13,7 @@ import type {
   ProjectDefinition,
   ProjectDefinitionSchema,
 } from '#src/schema/index.js';
+import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
 
 import {
   createPluginSpecStore,
@@ -22,11 +23,13 @@ import {
   deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
   serializeSchema,
+  serializeSchemaFromRefPayload,
 } from '#src/references/index.js';
 import {
   createDefinitionSchemaParserContext,
   createProjectDefinitionSchema,
 } from '#src/schema/index.js';
+import { collectEntityMetadata } from '#src/tools/entity-service/entity-type-map.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -112,6 +115,25 @@ export class ProjectDefinitionContainer {
   ): FixRefDeletionResult<ProjectDefinition> {
     const newDefinition = produce(setter)(this.definition);
     return fixRefDeletions(this.schema, newDefinition);
+  }
+
+  /**
+   * Creates an EntityServiceContext for use with entity read/write operations.
+   *
+   * Builds the entity type map from the schema and serializes the definition
+   * with references resolved to names.
+   */
+  toEntityServiceContext(): EntityServiceContext {
+    const entityTypeMap = collectEntityMetadata(this.schema);
+    const serializedDefinition = serializeSchemaFromRefPayload(
+      this.refPayload,
+    ) as Record<string, unknown>;
+
+    return {
+      serializedDefinition,
+      entityTypeMap,
+      lookupEntity: (id) => this.entityFromId(id),
+    };
   }
 
   /**
