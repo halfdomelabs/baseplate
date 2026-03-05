@@ -1,3 +1,9 @@
+import {
+  getEntityAction,
+  getEntitySchemaAction,
+  listEntitiesAction,
+  listEntityTypesAction,
+} from './definition/index.js';
 import { diffProjectAction } from './diff/diff-project.action.js';
 import { createGeneratorAction } from './generators/index.js';
 import {
@@ -35,6 +41,10 @@ export const USER_SERVICE_ACTIONS = [
   syncProjectAction,
   syncAllProjectsAction,
   syncFileAction,
+  listEntitiesAction,
+  listEntityTypesAction,
+  getEntityAction,
+  getEntitySchemaAction,
 ];
 
 export const ALL_SERVICE_ACTIONS = [

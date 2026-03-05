@@ -4,13 +4,12 @@ import type {
   ProjectDefinitionInput,
 } from '#src/schema/project-definition.js';
 
+import { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
 import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
-
-import { ProjectDefinitionContainer } from './project-definition-container.js';
 
 export function createTestProjectDefinition(
   input: Partial<ProjectDefinition> = {},

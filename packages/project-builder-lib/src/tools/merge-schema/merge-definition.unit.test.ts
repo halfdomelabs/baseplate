@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import { serializeSchema } from '#src/references/serialize-schema.js';
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
 } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
 
 import { mergeDefinitionContainer } from './merge-definition.js';
 

@@ -3,16 +3,16 @@ import { describe, expect, test } from 'vitest';
 import type { PluginConfigMigration } from '#src/plugins/spec/config-spec.js';
 import type { BasePluginDefinition } from '#src/schema/plugins/definition.js';
 
-import {
-  createTestProjectDefinition,
-  createTestProjectDefinitionContainer,
-} from '#src/definition/project-definition-container.test-utils.js';
 import { createPluginModule } from '#src/plugins/index.js';
 import {
   createTestMigration,
   createTestPluginMetadata,
 } from '#src/plugins/plugins.test-utils.js';
 import { pluginConfigSpec } from '#src/plugins/spec/config-spec.js';
+import {
+  createTestProjectDefinition,
+  createTestProjectDefinitionContainer,
+} from '#src/testing/project-definition-container.test-helper.js';
 
 import { PluginUtils } from './plugin-utils.js';
 

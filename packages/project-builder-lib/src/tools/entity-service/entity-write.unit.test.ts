@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import type { createTestProjectDefinitionInput } from '#src/definition/project-definition-container.test-utils.js';
+import type { createTestProjectDefinitionInput } from '#src/testing/project-definition-container.test-helper.js';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import {
   createTestFeature,
   createTestModel,
 } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
 
 import type { EntityServiceContext } from './types.js';
 

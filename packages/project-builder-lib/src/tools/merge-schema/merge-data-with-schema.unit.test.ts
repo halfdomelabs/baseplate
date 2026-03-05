@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
 } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
 
 import { mergeDataWithSchema } from './merge-data-with-schema.js';
 import { mergeDefinitionContainer } from './merge-definition.js';

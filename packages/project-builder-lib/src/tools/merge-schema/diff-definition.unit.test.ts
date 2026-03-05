@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
 } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
 
 import { diffDefinition } from './diff-definition.js';
 
