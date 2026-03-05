@@ -37,7 +37,7 @@ export async function loadEntityServiceContext(
     parserContext,
   );
 
-  const container = ProjectDefinitionContainer.fromDefinition(
+  const container = ProjectDefinitionContainer.fromSerializedConfig(
     definition,
     parserContext,
   );
