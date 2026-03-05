@@ -58,12 +58,11 @@ export const snapshotSaveAction = createServiceAction({
         logger,
         plugins,
         cliVersion,
+        project.baseplateDirectory,
       );
 
       if (!force) {
-        logger.warn(
-          '⚠️  This will overwrite any existing snapshot for this app.',
-        );
+        logger.warn('This will overwrite any existing snapshot for this app.');
         logger.info(
           'Use granular commands (snapshot-add/snapshot-remove) for safer updates.',
         );
@@ -81,6 +80,8 @@ export const snapshotSaveAction = createServiceAction({
         logger,
         context: schemaContext,
         userConfig,
+        baseplateDirectory: project.baseplateDirectory,
+        includeAddedFileContents: project.type === 'test',
       });
 
       return {

@@ -8,16 +8,13 @@ import type {
 import { CancelledSyncError, loadIgnorePatterns } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
 import chalk from 'chalk';
-import { mkdir, rename, rm } from 'node:fs/promises';
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { PackageEntry } from '#src/compiler/package-entry.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import {
-  applySnapshotToFileContents,
-  applySnapshotToGeneratorOutput,
-} from '#src/diff/index.js';
+import { applySnapshotToFileContents } from '#src/diff/index.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
 import type { GeneratorOperations } from './types.js';
@@ -109,42 +106,28 @@ export async function generateForDirectory({
     },
   );
 
-  // Snapshot application has two modes with intentionally different error strategies:
-  // - Overwrite mode (below): applies patches to generator output before writing.
-  //   Throws on failure because the output would be corrupt.
-  // - Incremental mode (applyDiff callback): applies patches per-file during 3-way merge.
-  //   Returns false on failure and warns, because the user can manually reconcile.
-  const snapshotAppliedOutput =
-    overwrite && snapshot
-      ? await (async () => {
-          logger.info(`Applying snapshot to generator output for ${name}...`);
-          return applySnapshotToGeneratorOutput(
-            output,
-            snapshot,
-            resolvedSnapshotDirectory.diffsPath,
-          );
-        })()
-      : output;
+  if (snapshot) {
+    logger.info(`Snapshot detected for ${name}.`);
+  }
 
   const overwriteOptions: OverwriteOptions = {
     enabled: !!overwrite,
-    applyDiff:
-      !overwrite && snapshot
-        ? async (relativePath, generatedContents) => {
-            const result = await applySnapshotToFileContents(
-              relativePath,
-              generatedContents,
-              snapshot,
-              resolvedSnapshotDirectory.diffsPath,
+    applyDiff: snapshot
+      ? async (relativePath, generatedContents) => {
+          const result = await applySnapshotToFileContents(
+            relativePath,
+            generatedContents,
+            snapshot,
+            resolvedSnapshotDirectory.diffsPath,
+          );
+          if (result === false) {
+            logger.warn(
+              `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
             );
-            if (result === false) {
-              logger.warn(
-                `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
-              );
-            }
-            return result;
           }
-        : undefined,
+          return result;
+        }
+      : undefined,
     skipFile: (relativePath) => {
       if (!ignorePatterns) {
         return false;
@@ -155,27 +138,23 @@ export async function generateForDirectory({
 
   try {
     const { failedCommands, filesWithConflicts, fileIdToRelativePathMap } =
-      await operations.writeGeneratorOutput(
-        snapshotAppliedOutput,
-        projectDirectory,
-        {
-          previousGeneratedPayload,
-          generatedContentsDirectory: generatedTemporaryDirectory,
-          rerunCommands: previousPackageSyncResult?.failedCommands?.map(
-            (c) => c.command,
-          ),
-          logger,
-          mergeDriver: userConfig.sync?.customMergeDriver
-            ? {
-                name: 'baseplate-custom-merge-driver',
-                driver: userConfig.sync.customMergeDriver,
-              }
-            : undefined,
-          abortSignal,
-          skipCommands,
-          overwriteOptions,
-        },
-      );
+      await operations.writeGeneratorOutput(output, projectDirectory, {
+        previousGeneratedPayload,
+        generatedContentsDirectory: generatedTemporaryDirectory,
+        rerunCommands: previousPackageSyncResult?.failedCommands?.map(
+          (c) => c.command,
+        ),
+        logger,
+        mergeDriver: userConfig.sync?.customMergeDriver
+          ? {
+              name: 'baseplate-custom-merge-driver',
+              driver: userConfig.sync.customMergeDriver,
+            }
+          : undefined,
+        abortSignal,
+        skipCommands,
+        overwriteOptions,
+      });
 
     // write metadata to the generated directory
     if (writeTemplateMetadataOptions?.includeTemplateMetadata) {
@@ -188,6 +167,23 @@ export async function generateForDirectory({
       await rm(generatedDirectory, { recursive: true });
     }
     await rename(generatedTemporaryDirectory, generatedDirectory);
+
+    // Write snapshot added files (user-created files not produced by generator)
+    if (overwrite && snapshot) {
+      for (const addedEntry of snapshot.files.added) {
+        if (!addedEntry.contentFile) {
+          continue;
+        }
+        const contentFilePath = path.join(
+          resolvedSnapshotDirectory.diffsPath,
+          addedEntry.contentFile,
+        );
+        const contents = await readFile(contentFilePath, 'utf-8');
+        const targetPath = path.join(projectDirectory, addedEntry.path);
+        await mkdir(path.dirname(targetPath), { recursive: true });
+        await writeFile(targetPath, contents);
+      }
+    }
 
     // Write file ID map
     await writeGeneratedFileIdMap(projectDirectory, fileIdToRelativePathMap);

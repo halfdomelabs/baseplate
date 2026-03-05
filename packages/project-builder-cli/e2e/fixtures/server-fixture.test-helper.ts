@@ -247,7 +247,8 @@ export const test = base.extend<
             id: 'test-project',
             directory: tempDir,
             name: 'test-project',
-            isInternalExample: false,
+            type: 'user',
+            baseplateDirectory: path.join(tempDir, 'baseplate'),
           });
 
           return {

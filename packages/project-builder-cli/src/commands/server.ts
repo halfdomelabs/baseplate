@@ -110,7 +110,7 @@ export function addServeCommand(program: Command): void {
               : [process.cwd()];
 
           const discoveredProjects = await discoverProjects(
-            resolvedDirectories,
+            { projectDirectories: resolvedDirectories },
             logger,
           );
           const projectDirectories = discoveredProjects.map((p) => p.directory);

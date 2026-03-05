@@ -67,7 +67,7 @@ export const syncFileAction = createServiceAction({
 
       // Load project definition and compile packages
       const { definition: projectJson } = await loadProjectDefinition(
-        project.directory,
+        project.baseplateDirectory,
         schemaContext,
       );
       const apps = compilePackages(projectJson, schemaContext);

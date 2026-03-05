@@ -6,6 +6,7 @@ import {
 } from '@baseplate-dev/project-builder-server';
 import { loadProjectFromDirectory } from '@baseplate-dev/project-builder-server/actions';
 import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
+import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
 
@@ -20,7 +21,11 @@ export async function generateProject(
   projectDirectory: string,
 ): Promise<SyncProjectResult> {
   const plugins = await discoverPlugins(projectDirectory, logger);
-  const projectInfo = await loadProjectFromDirectory(projectDirectory);
+  const projectInfo = await loadProjectFromDirectory(
+    projectDirectory,
+    path.join(projectDirectory, 'baseplate'),
+    'user',
+  );
   const nodeSchemaParserContext = await createNodeSchemaParserContext(
     projectInfo,
     logger,

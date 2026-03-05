@@ -1,14 +1,18 @@
 import type { PluginStore } from '#src/plugins/imports/types.js';
 
+export type ProjectType = 'user' | 'example' | 'test';
+
 export interface ProjectInfo {
   /** A deterministic ID for the project based off the directory. */
   id: string;
   /** The name of the project. */
   name: string;
-  /** The directory of the project. */
+  /** The directory of the project output. */
   directory: string;
-  /** Whether the project is an internal example project. */
-  isInternalExample: boolean;
+  /** The type of the project. */
+  type: ProjectType;
+  /** The baseplate directory containing project-definition.json and snapshots. */
+  baseplateDirectory: string;
 }
 
 /**

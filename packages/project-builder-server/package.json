@@ -78,6 +78,7 @@
     "micromatch": "^4.0.8",
     "mime": "^4.0.3",
     "open": "10.1.0",
+    "p-limit": "6.1.0",
     "pino": "9.5.0",
     "ts-morph": "27.0.2",
     "zod": "catalog:"

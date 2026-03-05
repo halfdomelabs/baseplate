@@ -15,7 +15,8 @@ export async function getProjects(): Promise<ProjectInfo[]> {
         id: 'preview-project',
         name: 'Preview Project',
         directory: '~/preview-project',
-        isInternalExample: false,
+        type: 'user',
+        baseplateDirectory: '~/preview-project/baseplate',
       },
     ];
   }

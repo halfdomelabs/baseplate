@@ -32,9 +32,7 @@ export async function applySnapshotToGeneratorOutput(
       throw new Error(`Diff file not found: ${diffFilePath}`);
     }
 
-    const newContents = applyPatch(fileData.contents.toString(), diffFile, {
-      fuzzFactor: 1,
-    });
+    const newContents = applyPatch(fileData.contents.toString(), diffFile);
     if (!newContents) {
       throw new Error(
         `Failed to apply patch to file ${fileEntry.path}. The patch may be invalid. Please fix the diffs and save the snapshot again to fix the diffs.`,

@@ -100,7 +100,7 @@ export async function diffProject(
   );
 
   const { definition: projectJson } = await loadProjectDefinition(
-    project.directory,
+    project.baseplateDirectory,
     parserContext,
   );
 
@@ -146,9 +146,8 @@ export async function diffProject(
       );
 
       // Apply snapshot to generator output
-      const baseplateDirectory = path.join(project.directory, 'baseplate');
       const snapshotDirectory = resolveSnapshotDirectory(
-        baseplateDirectory,
+        project.baseplateDirectory,
         app.name,
       );
       const snapshot = await loadSnapshotManifest(snapshotDirectory);
@@ -165,7 +164,7 @@ export async function diffProject(
       const ignorePatterns = await loadIgnorePatterns(appDirectory);
 
       // Add added files to ignore pattern
-      if (snapshot) {
+      if (snapshot && project.type !== 'test') {
         ignorePatterns.add(snapshot.files.added.map((entry) => entry.path));
       }
 

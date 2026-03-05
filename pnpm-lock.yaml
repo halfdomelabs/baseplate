@@ -404,9 +404,6 @@ importers:
       fastify:
         specifier: 5.7.4
         version: 5.7.4
-      memfs:
-        specifier: 4.15.1
-        version: 4.15.1
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -486,9 +483,6 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.0.1
-      p-limit:
-        specifier: 6.1.0
-        version: 6.1.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -692,6 +686,9 @@ importers:
       open:
         specifier: 10.1.0
         version: 10.1.0
+      p-limit:
+        specifier: 6.1.0
+        version: 6.1.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
