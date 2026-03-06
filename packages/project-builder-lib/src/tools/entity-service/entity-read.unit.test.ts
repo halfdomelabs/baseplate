@@ -1,28 +1,18 @@
 import { assert, describe, expect, it } from 'vitest';
 
-import type { createTestProjectDefinitionInput } from '#src/testing/project-definition-container.test-helper.js';
-
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
 } from '#src/testing/definition-helpers.test-helper.js';
-import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
-
-import type { EntityServiceContext } from './types.js';
+import { createTestEntityServiceContext } from '#src/testing/project-definition-container.test-helper.js';
 
 import { getEntity, listEntities } from './entity-read.js';
-
-function createTestContext(
-  input: Parameters<typeof createTestProjectDefinitionInput>[0] = {},
-): EntityServiceContext {
-  return createTestProjectDefinitionContainer(input).toEntityServiceContext();
-}
 
 describe('listEntities', () => {
   it('should list top-level entities', () => {
     const feature = createTestFeature({ name: 'billing' });
-    const context = createTestContext({ features: [feature] });
+    const context = createTestEntityServiceContext({ features: [feature] });
 
     const result = listEntities({ entityTypeName: 'feature' }, context);
 
@@ -34,7 +24,7 @@ describe('listEntities', () => {
   it('should list multiple entities', () => {
     const feature1 = createTestFeature({ name: 'billing' });
     const feature2 = createTestFeature({ name: 'auth' });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature1, feature2],
     });
 
@@ -46,7 +36,7 @@ describe('listEntities', () => {
   });
 
   it('should return empty array when no entities exist', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     const result = listEntities({ entityTypeName: 'feature' }, context);
 
@@ -71,7 +61,7 @@ describe('listEntities', () => {
         primaryKeyFieldRefs: ['id'],
       },
     });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature],
       models: [model],
     });
@@ -92,7 +82,7 @@ describe('listEntities', () => {
   });
 
   it('should throw for unknown entity type', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       listEntities({ entityTypeName: 'nonexistent' }, context),
@@ -105,7 +95,7 @@ describe('listEntities', () => {
       name: 'Invoice',
       featureRef: feature.name,
     });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature],
       models: [model],
     });
@@ -119,7 +109,7 @@ describe('listEntities', () => {
 describe('getEntity', () => {
   it('should get an entity by ID', () => {
     const feature = createTestFeature({ name: 'billing' });
-    const context = createTestContext({ features: [feature] });
+    const context = createTestEntityServiceContext({ features: [feature] });
 
     const result = getEntity(feature.id, context);
 
@@ -128,7 +118,7 @@ describe('getEntity', () => {
   });
 
   it('should return undefined for nonexistent entity ID', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     const result = getEntity('feature:nonexistent', context);
 
@@ -153,7 +143,7 @@ describe('getEntity', () => {
         primaryKeyFieldRefs: ['id'],
       },
     });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature],
       models: [model],
     });

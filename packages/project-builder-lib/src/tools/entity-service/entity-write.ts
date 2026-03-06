@@ -92,7 +92,12 @@ export function updateEntity(
 
     // Find the parent array and the entity's index within it
     const parentPath = entity.path.slice(0, -1);
-    const entityIndex = entity.path.at(-1) as number;
+    const entityIndex = entity.path.at(-1);
+    if (typeof entityIndex !== 'number') {
+      throw new TypeError(
+        `Expected numeric index at end of entity path "${entity.path.join('.')}"`,
+      );
+    }
     const parentArray = get(draft, parentPath) as unknown;
     if (!Array.isArray(parentArray)) {
       throw new TypeError(
@@ -133,7 +138,12 @@ export function deleteEntity(
 
   // Find the parent array and remove the entity by index
   const parentPath = entity.path.slice(0, -1);
-  const entityIndex = entity.path.at(-1) as number;
+  const entityIndex = entity.path.at(-1);
+  if (typeof entityIndex !== 'number') {
+    throw new TypeError(
+      `Expected numeric index at end of entity path "${entity.path.join('.')}"`,
+    );
+  }
 
   return produce(context.serializedDefinition, (draft) => {
     const parentArray = get(draft, parentPath) as unknown;

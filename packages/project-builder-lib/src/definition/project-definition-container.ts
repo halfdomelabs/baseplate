@@ -13,7 +13,10 @@ import type {
   ProjectDefinition,
   ProjectDefinitionSchema,
 } from '#src/schema/index.js';
-import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
+import type {
+  EntityServiceContext,
+  EntityTypeMap,
+} from '#src/tools/entity-service/types.js';
 
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import {
@@ -42,6 +45,8 @@ export class ProjectDefinitionContainer {
   parserContext: SchemaParserContext;
   pluginStore: PluginSpecStore;
   schema: ProjectDefinitionSchema;
+
+  private _entityTypeMap: EntityTypeMap | undefined;
 
   constructor(
     config: ResolvedZodRefPayload<ProjectDefinition>,
@@ -120,8 +125,13 @@ export class ProjectDefinitionContainer {
    * Builds the entity type map from the schema and serializes the definition
    * with references resolved to names.
    */
+  private getEntityTypeMap(): EntityTypeMap {
+    this._entityTypeMap ??= collectEntityMetadata(this.schema);
+    return this._entityTypeMap;
+  }
+
   toEntityServiceContext(): EntityServiceContext {
-    const entityTypeMap = collectEntityMetadata(this.schema);
+    const entityTypeMap = this.getEntityTypeMap();
     const serializedDefinition = serializeSchemaFromRefPayload(
       this.refPayload,
     ) as Record<string, unknown>;

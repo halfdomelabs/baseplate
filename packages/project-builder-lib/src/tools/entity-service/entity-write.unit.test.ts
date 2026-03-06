@@ -1,27 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import type { createTestProjectDefinitionInput } from '#src/testing/project-definition-container.test-helper.js';
-
 import {
   createTestFeature,
   createTestModel,
 } from '#src/testing/definition-helpers.test-helper.js';
-import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
+import { createTestEntityServiceContext } from '#src/testing/project-definition-container.test-helper.js';
 
 import type { EntityServiceContext } from './types.js';
 
 import { listEntities } from './entity-read.js';
 import { createEntity, deleteEntity, updateEntity } from './entity-write.js';
 
-function createTestContext(
-  input: Parameters<typeof createTestProjectDefinitionInput>[0] = {},
-): EntityServiceContext {
-  return createTestProjectDefinitionContainer(input).toEntityServiceContext();
-}
-
 describe('createEntity', () => {
   it('should create a top-level entity and return a new definition', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     const newDef = createEntity(
       {
@@ -49,7 +41,7 @@ describe('createEntity', () => {
       name: 'Invoice',
       featureRef: feature.name,
     });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature],
       models: [model],
     });
@@ -85,7 +77,7 @@ describe('createEntity', () => {
   });
 
   it('should throw for unknown entity type', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       createEntity(
@@ -99,7 +91,7 @@ describe('createEntity', () => {
 describe('updateEntity', () => {
   it('should update an existing entity', () => {
     const feature = createTestFeature({ name: 'billing' });
-    const context = createTestContext({ features: [feature] });
+    const context = createTestEntityServiceContext({ features: [feature] });
 
     const newDef = updateEntity(
       {
@@ -125,7 +117,7 @@ describe('updateEntity', () => {
   });
 
   it('should throw for nonexistent entity ID', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       updateEntity(
@@ -140,7 +132,7 @@ describe('updateEntity', () => {
   });
 
   it('should throw for unknown entity type', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       updateEntity(
@@ -159,7 +151,7 @@ describe('deleteEntity', () => {
   it('should delete an existing entity', () => {
     const feature1 = createTestFeature({ name: 'billing' });
     const feature2 = createTestFeature({ name: 'auth' });
-    const context = createTestContext({
+    const context = createTestEntityServiceContext({
       features: [feature1, feature2],
     });
 
@@ -183,7 +175,7 @@ describe('deleteEntity', () => {
 
   it('should delete the only entity in an array', () => {
     const feature = createTestFeature({ name: 'billing' });
-    const context = createTestContext({ features: [feature] });
+    const context = createTestEntityServiceContext({ features: [feature] });
 
     const newDef = deleteEntity(
       { entityTypeName: 'feature', entityId: feature.id },
@@ -195,7 +187,7 @@ describe('deleteEntity', () => {
   });
 
   it('should throw for nonexistent entity ID', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       deleteEntity(
@@ -206,7 +198,7 @@ describe('deleteEntity', () => {
   });
 
   it('should throw for unknown entity type', () => {
-    const context = createTestContext();
+    const context = createTestEntityServiceContext();
 
     expect(() =>
       deleteEntity(
