@@ -15,8 +15,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
-
 interface ServiceMethodAuthSectionProps {
   control: Control<ModelConfigInput>;
   setValue: UseFormSetValue<ModelConfigInput>;
@@ -56,8 +54,7 @@ export function ServiceMethodAuthSection({
       value: role.id,
     }));
 
-  const authorizerRoles =
-    useEditedModelConfig((model) => model.authorizer?.roles) ?? [];
+  const authorizerRoles = useWatch({ control, name: 'authorizer.roles' }) ?? [];
   const instanceRoleOptions: RoleOption[] = authorizerRoles.map((role) => ({
     label: role.name,
     value: role.id,

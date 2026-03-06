@@ -4,7 +4,11 @@ import type {
   ModelScalarFieldConfigInput,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
-import type { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
+import type {
+  Control,
+  UseFieldArrayAppend,
+  UseFormSetValue,
+} from 'react-hook-form';
 
 import { modelScalarFieldEntityType } from '@baseplate-dev/project-builder-lib';
 import {
@@ -16,12 +20,12 @@ import {
   DropdownMenuTrigger,
 } from '@baseplate-dev/ui-components';
 import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
-
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 
 interface ModelAddFieldButtonProps {
   className?: string;
+  control: Control<ModelConfigInput>;
   appendField: UseFieldArrayAppend<ModelConfigInput, 'model.fields'>;
   setValue: UseFormSetValue<ModelConfigInput>;
 }
@@ -35,15 +39,20 @@ interface AutoAddField {
 
 export function ModelAddFieldButton({
   className,
+  control,
   appendField,
   setValue,
 }: ModelAddFieldButtonProps): React.JSX.Element {
-  const fieldNames = useEditedModelConfig((model) =>
-    model.model.fields.map((f) => f.name),
-  );
-  const primaryKeyFieldLength = useEditedModelConfig(
-    (model) => model.model.primaryKeyFieldRefs.length,
-  );
+  const fieldNames = useWatch({
+    control,
+    name: 'model.fields',
+    compute: (fields) => fields.map((f) => f.name),
+  });
+  const primaryKeyFieldLength = useWatch({
+    control,
+    name: 'model.primaryKeyFieldRefs',
+    compute: (refs) => refs.length,
+  });
   const availableAutoFields = useMemo(() => {
     const autoFields: AutoAddField[] = [];
     if (!primaryKeyFieldLength) {

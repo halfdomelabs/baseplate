@@ -15,10 +15,9 @@ import {
   SectionListSectionTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
-import { useController } from 'react-hook-form';
+import { useController, useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../-hooks/use-edited-model-config.js';
 import { ModelUniqueConstraintDialog } from './fields/unique-constraints/model-unique-constraint-dialog.js';
 
 interface Props {
@@ -35,9 +34,12 @@ export function ModelUniqueConstraintsSection({
     name: 'model.uniqueConstraints',
     control,
   });
-  const fieldIdsToNames = useEditedModelConfig(({ model }) =>
-    Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
-  );
+  const fieldIdsToNames = useWatch({
+    control,
+    name: 'model.fields',
+    compute: (fields) =>
+      Object.fromEntries(fields.map((field) => [field.id, field.name])),
+  });
 
   function handleDeleteConstraint(constraintId: string): void {
     requestConfirm({

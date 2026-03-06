@@ -23,8 +23,6 @@ import {
 import { useController, useWatch } from 'react-hook-form';
 import { HiMiniLockClosed } from 'react-icons/hi2';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
-
 interface GraphQLObjectTypeSectionProps {
   control: Control<ModelConfigInput>;
 }
@@ -351,7 +349,7 @@ export function GraphQLObjectTypeSection({
   control,
 }: GraphQLObjectTypeSectionProps): React.JSX.Element {
   const { definition, pluginContainer } = useProjectDefinition();
-  const modelId = useEditedModelConfig((model) => model.id);
+  const modelId = useWatch({ control, name: 'id' });
 
   const isObjectTypeEnabled = useWatch({
     control,
@@ -369,8 +367,7 @@ export function GraphQLObjectTypeSection({
         value: role.id,
       })) ?? [];
 
-  const authorizerRoles =
-    useEditedModelConfig((model) => model.authorizer?.roles) ?? [];
+  const authorizerRoles = useWatch({ control, name: 'authorizer.roles' }) ?? [];
   const instanceRoleOptions = authorizerRoles.map((role) => ({
     label: role.name,
     value: role.id,
@@ -380,7 +377,7 @@ export function GraphQLObjectTypeSection({
     roleOptions.length > 0 || instanceRoleOptions.length > 0;
 
   // Fields
-  const fields = useEditedModelConfig((model) => model.model.fields);
+  const fields = useWatch({ control, name: 'model.fields' });
   const {
     field: { value: fieldsValue = [], onChange: fieldsOnChange },
   } = useController({
@@ -389,8 +386,7 @@ export function GraphQLObjectTypeSection({
   });
 
   // Local Relations
-  const localRelations =
-    useEditedModelConfig((model) => model.model.relations) ?? [];
+  const localRelations = useWatch({ control, name: 'model.relations' }) ?? [];
   const {
     field: {
       value: localRelationsValue = [],

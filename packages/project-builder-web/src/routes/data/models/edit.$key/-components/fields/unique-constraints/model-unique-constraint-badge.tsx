@@ -5,9 +5,9 @@ import type { Control } from 'react-hook-form';
 import { BadgeWithIcon } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
+import { useWatch } from 'react-hook-form';
 import { MdStar } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../../-hooks/use-edited-model-config.js';
 import { ModelUniqueConstraintDialog } from './model-unique-constraint-dialog.js';
 
 interface ModelFieldUniqueBadgeProps {
@@ -25,11 +25,12 @@ export function ModelFieldUniqueBadge({
 }: ModelFieldUniqueBadgeProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
-  const fieldsLength = useEditedModelConfig(
-    (model) =>
-      model.model.uniqueConstraints?.find((uc) => uc.id === constraintId)
-        ?.fields.length ?? 0,
-  );
+  const fieldsLength = useWatch({
+    control,
+    name: 'model.uniqueConstraints',
+    compute: (constraints) =>
+      constraints?.find((uc) => uc.id === constraintId)?.fields.length ?? 0,
+  });
   return (
     <ModelUniqueConstraintDialog control={control} constraintId={constraintId}>
       <BadgeWithIcon

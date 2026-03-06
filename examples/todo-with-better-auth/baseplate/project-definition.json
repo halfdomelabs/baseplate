@@ -599,28 +599,28 @@
             "id": "model-scalar-field:qhE9G5V2fssW",
             "isOptional": false,
             "name": "token",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7hhRQXDJ8vpF",
             "isOptional": true,
             "name": "ipAddress",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:AGSVYq4wCVDa",
             "isOptional": true,
             "name": "userAgent",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:6CP7Q_xg5aA7",
             "isOptional": false,
             "name": "userId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {

@@ -18,7 +18,7 @@ import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
+import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 
 interface ServiceTransformerFormProps {
   className?: string;
@@ -35,7 +35,7 @@ export function ServiceTransformerForm({
   onUpdate,
   isCreate,
 }: ServiceTransformerFormProps): React.JSX.Element | null {
-  const originalModel = useEditedModelConfig((model) => model);
+  const originalModel = useOriginalModel();
   const transformerSchema = useDefinitionSchema(createTransformerSchema);
   const schema = useMemo(
     () =>

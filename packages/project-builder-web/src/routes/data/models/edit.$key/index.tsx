@@ -6,8 +6,8 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '#src/components/index.js';
 
-import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
+import { OriginalModelProvider } from '../-hooks/use-original-model.js';
 import { ModelFieldsForm } from './-components/fields/model-fields-form.js';
 import { ModelRelationsSection } from './-components/model-relations-section.js';
 import { ModelUniqueConstraintsSection } from './-components/model-unique-constraints-section.js';
@@ -22,7 +22,7 @@ function ModelEditModelPage(): React.JSX.Element {
     omit: ['name', 'featureRef'],
     modelKey: key,
   });
-  const { control, watch, getValues, setValue, reset } = form;
+  const { control, setValue, reset } = form;
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
@@ -32,11 +32,7 @@ function ModelEditModelPage(): React.JSX.Element {
 
   return (
     <ErrorBoundary>
-      <EditedModelContextProvider
-        originalModel={originalModel}
-        getValues={getValues}
-        watch={watch}
-      >
+      <OriginalModelProvider model={originalModel}>
         <form
           onSubmit={onSubmit}
           className="max-w-7xl min-w-[700px] flex-1 space-y-4 px-4 pb-4"
@@ -48,7 +44,7 @@ function ModelEditModelPage(): React.JSX.Element {
           </SectionList>
           <FormActionBar form={form} />
         </form>
-      </EditedModelContextProvider>
+      </OriginalModelProvider>
     </ErrorBoundary>
   );
 }

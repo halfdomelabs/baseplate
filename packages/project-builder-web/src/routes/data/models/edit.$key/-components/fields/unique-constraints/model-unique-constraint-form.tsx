@@ -12,10 +12,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId } from 'react';
-import { useController, useForm } from 'react-hook-form';
+import { useController, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-
-import { useEditedModelConfig } from '../../../../-hooks/use-edited-model-config.js';
 
 interface ModelUniqueConstraintFormProps {
   className?: string;
@@ -37,7 +35,7 @@ export function ModelUniqueConstraintForm({
   onSubmitSuccess,
   constraintId,
 }: ModelUniqueConstraintFormProps): React.JSX.Element {
-  const fields = useEditedModelConfig((model) => model.model.fields);
+  const fields = useWatch({ control: modelControl, name: 'model.fields' });
   const {
     field: { value: modelValue = [], onChange: onModelChange },
   } = useController({

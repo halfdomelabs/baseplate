@@ -76,7 +76,11 @@ export function ModelFieldsForm({
           <SortableList listItems={fieldListItems} sortItems={sortFields} />
         </div>
       )}
-      <ModelAddFieldButton appendField={appendField} setValue={setValue} />
+      <ModelAddFieldButton
+        control={control}
+        appendField={appendField}
+        setValue={setValue}
+      />
     </div>
   );
 }
