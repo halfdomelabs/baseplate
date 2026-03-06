@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.6.0
+
+### Patch Changes
+
+- [#788](https://github.com/halfdomelabs/baseplate/pull/788) [`3b3be2b`](https://github.com/halfdomelabs/baseplate/commit/3b3be2b8d45b08552dca3d4e2b5ce391a958341b) Thanks [@kingston](https://github.com/kingston)! - Replace model-specific merger with generic schema-driven definition patcher
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes

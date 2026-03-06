@@ -1,5 +1,13 @@
 # @baseplate-dev/core-generators
 
+## 0.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+  - @baseplate-dev/sync@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes

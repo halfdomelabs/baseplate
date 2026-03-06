@@ -1,5 +1,49 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.0
+
+### Patch Changes
+
+- [#783](https://github.com/halfdomelabs/baseplate/pull/783) [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40) Thanks [@kingston](https://github.com/kingston)! - Add offset pagination (skip/take) to list queries and optional count query generation
+
+- [#786](https://github.com/halfdomelabs/baseplate/pull/786) [`3029d42`](https://github.com/halfdomelabs/baseplate/commit/3029d42f5d5967721f2b0d5892ea07a80c5f3a1f) Thanks [@kingston](https://github.com/kingston)! - Refactor entity type URL registration to use a plugin spec with a typed discriminated union navigation target system. Builders now register via `entityTypeUrlWebSpec.register(entityType, builder)` with params typed based on whether the entity has a parent — `parentId` and `parentKey` are required strings for child entity types and `undefined` for root entity types.
+
+- [#776](https://github.com/halfdomelabs/baseplate/pull/776) [`a616ae7`](https://github.com/halfdomelabs/baseplate/commit/a616ae7609285e9aa446997fd342cdb5b303a45d) Thanks [@kingston](https://github.com/kingston)! - Fix model form not marking as dirty when deleting relations or unique constraints
+  - Replace `setValue` with `useController` in `ModelRelationsSection` and `ModelUniqueConstraintsSection` so that deletions properly dirty the form
+
+- [#779](https://github.com/halfdomelabs/baseplate/pull/779) [`eadad84`](https://github.com/halfdomelabs/baseplate/commit/eadad8494128ded2cbc76dfbe3b97f93769ea41f) Thanks [@kingston](https://github.com/kingston)! - Add global definition validation system with fixes, issue checkers, and bottom-up schema transformation
+  - Introduce `withFix()` and `withIssueChecker()` schema decorators for registering fixes and issue checkers on Zod schema nodes
+  - Add `transformDataWithSchema()` for bottom-up schema-guided data transformation with structural sharing
+  - Refactor `applyDefinitionFixes` and `cleanDefaultValues` to use `transformDataWithSchema`
+  - Add severity levels (`error`/`warning`) to definition issues; errors block save in the global save pipeline
+  - Rename `walkSchemaWithData` to `walkDataWithSchema`
+
+- [#777](https://github.com/halfdomelabs/baseplate/pull/777) [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be) Thanks [@kingston](https://github.com/kingston)! - Add per-field authorization support for GraphQL object type fields
+
+- [#796](https://github.com/halfdomelabs/baseplate/pull/796) [`8258b27`](https://github.com/halfdomelabs/baseplate/commit/8258b278e9a25a6e4bd5039a134238d071a63ecd) Thanks [@kingston](https://github.com/kingston)! - Add query filter code generation for instance-level authorization on GraphQL queries
+
+- [#799](https://github.com/halfdomelabs/baseplate/pull/799) [`7743348`](https://github.com/halfdomelabs/baseplate/commit/7743348b56feb1e03987b6f7d70711b435d17ffe) Thanks [@kingston](https://github.com/kingston)! - Replace `useEditedModelConfig` Zustand store with direct `useWatch` calls and lightweight `useOriginalModel` context hook for more reliable form state synchronization
+
+- [#793](https://github.com/halfdomelabs/baseplate/pull/793) [`6e2675d`](https://github.com/halfdomelabs/baseplate/commit/6e2675d2166ac9bf470486efdc6a0e48df9bcc6d) Thanks [@kingston](https://github.com/kingston)! - Move mutation authorization from GraphQL-level to service-level, add compact grid-based role picker UI, filter system role from auth pickers, and hide disabled service methods from GraphQL mutations section
+
+- [#775](https://github.com/halfdomelabs/baseplate/pull/775) [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to v10, react-hook-form, and es-toolkit
+  - @sentry/react: 9.17.0 → 10.39.0
+  - @sentry/core: 9.17.0 → 10.39.0
+  - @sentry/node: 9.17.0 → 10.39.0
+  - @sentry/profiling-node: 9.17.0 → 10.39.0
+  - @pothos/tracing-sentry: 1.1.1 → 1.1.4
+  - react-hook-form: 7.60.0 → 7.71.1
+  - es-toolkit: 1.31.0 → 1.44.0
+
+- [#785](https://github.com/halfdomelabs/baseplate/pull/785) [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704) Thanks [@kingston](https://github.com/kingston)! - Remove redundant `.optional()` wrapper from `withDefault`
+
+  `withDefault` previously wrapped the schema in both `.prefault()` and `.optional()`. Since `.prefault()` already makes fields accept absent/undefined input, the `.optional()` was redundant and caused the output type to incorrectly include `| undefined` for defaulted fields.
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40), [`3029d42`](https://github.com/halfdomelabs/baseplate/commit/3029d42f5d5967721f2b0d5892ea07a80c5f3a1f), [`dfa9638`](https://github.com/halfdomelabs/baseplate/commit/dfa963825c4ba847f9d21f4f014c4dd1722403d6), [`3b3be2b`](https://github.com/halfdomelabs/baseplate/commit/3b3be2b8d45b08552dca3d4e2b5ce391a958341b), [`eadad84`](https://github.com/halfdomelabs/baseplate/commit/eadad8494128ded2cbc76dfbe3b97f93769ea41f), [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`8258b27`](https://github.com/halfdomelabs/baseplate/commit/8258b278e9a25a6e4bd5039a134238d071a63ecd), [`6e2675d`](https://github.com/halfdomelabs/baseplate/commit/6e2675d2166ac9bf470486efdc6a0e48df9bcc6d), [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f), [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+  - @baseplate-dev/project-builder-lib@0.6.0
+  - @baseplate-dev/ui-components@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes
