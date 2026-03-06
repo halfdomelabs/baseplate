@@ -10,7 +10,7 @@ import {
 } from '#src/schema/creator/schema-creator.js';
 import { stubParser } from '#src/testing/expression-stub-parser.test-helper.js';
 import {
-  ThrowingParser,
+  FailingParser,
   WarningParser,
 } from '#src/testing/expression-warning-parser.test-helper.js';
 
@@ -103,14 +103,19 @@ describe('collectExpressionIssues', () => {
     expect(issues[1]?.path).toEqual(['rules', 1, 'condition']);
   });
 
-  it('throws when parser.parse throws', () => {
-    const throwingParser = new ThrowingParser();
-    const schema = createSchemaWithExpression(throwingParser);
+  it('returns parse error as warning when parse fails', () => {
+    const failingParser = new FailingParser();
+    const schema = createSchemaWithExpression(failingParser);
     const data = { name: 'test', condition: 'bad expression' };
 
-    expect(() => collectExpressionIssues(schema, data, pluginStore)).toThrow(
-      'Parse failed',
-    );
+    const issues = collectExpressionIssues(schema, data, pluginStore);
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toEqual({
+      message: 'Parse failed',
+      path: ['condition'],
+      severity: 'warning',
+    });
   });
 
   it('returns empty array when schema has no expression annotations', () => {

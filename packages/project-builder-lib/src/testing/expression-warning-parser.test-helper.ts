@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type {
   ExpressionValidationContext,
+  RefExpressionParseResult,
   RefExpressionWarning,
 } from '#src/references/expression-types.js';
 
@@ -32,12 +33,11 @@ export class WarningParser extends RefExpressionParser<string, string> {
     return z.string();
   }
 
-  parse(value: string): string {
-    return value;
+  parse(value: string): RefExpressionParseResult<string> {
+    return { success: true, value };
   }
 
   getWarnings(
-    _value: string,
     _parseResult: string,
     _context: ExpressionValidationContext,
   ): RefExpressionWarning[] {
@@ -54,22 +54,23 @@ export class WarningParser extends RefExpressionParser<string, string> {
 }
 
 /**
- * A test parser whose parse() always throws an error.
+ * A test parser whose parse() returns a failure result.
  *
  * Used to test that expression validation gracefully handles parse failures.
  */
-export class ThrowingParser extends RefExpressionParser<string, never> {
-  readonly name = 'throwing-parser';
+export class FailingParser extends RefExpressionParser<string, never> {
+  readonly name = 'failing-parser';
 
   createSchema(): z.ZodType<string> {
     return z.string();
   }
 
-  parse(): never {
-    throw new Error('Parse failed');
+  parse(): RefExpressionParseResult<never> {
+    return { success: false, error: 'Parse failed' };
   }
 
-  getWarnings(): [] {
+  getWarnings(): RefExpressionWarning[] {
+    // Never called — parse() always returns failure, handled by validate()
     return [];
   }
 

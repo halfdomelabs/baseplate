@@ -10,8 +10,8 @@ import { extractDefinitionRefs } from '#src/references/extract-definition-refs.j
  * Collects validation issues from expression parsers registered on the schema.
  *
  * Walks the schema+data to find expression annotations, resolves their slots,
- * then calls each parser's `parse()` and `getWarnings()` methods. Warnings are
- * mapped to `DefinitionIssue` objects with warning severity.
+ * then calls each parser's `validate()` method. Warnings are mapped to
+ * `DefinitionIssue` objects with warning severity.
  *
  * @param schema - The Zod schema to walk
  * @param data - The parsed definition data
@@ -33,13 +33,9 @@ export function collectExpressionIssues(
   const issues: DefinitionIssue[] = [];
 
   for (const expression of refPayload.expressions) {
-    const parseResult = expression.parser.parse(
+    const warnings = expression.parser.validate(
       expression.value,
       data,
-    ) as unknown;
-    const warnings = expression.parser.getWarnings(
-      expression.value,
-      parseResult,
       context,
       expression.resolvedSlots,
     );

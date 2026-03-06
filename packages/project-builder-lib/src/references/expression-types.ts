@@ -18,6 +18,14 @@ export interface ExpressionValidationContext {
 }
 
 /**
+ * Result of parsing a ref expression.
+ * Success carries the parsed value; failure carries the error message.
+ */
+export type RefExpressionParseResult<T> =
+  | { success: true; value: T }
+  | { success: false; error: string };
+
+/**
  * A warning from validating a ref expression.
  * Warnings are non-blocking - they don't prevent loading the project definition.
  */
@@ -128,22 +136,23 @@ export abstract class RefExpressionParser<
    *
    * @param value - The raw expression value
    * @param projectDef - The project definition for context (typed as unknown to avoid circular reference)
-   * @returns The parsed result (type determined by parser)
+   * @returns Success with parsed value, or failure with error message
    */
-  abstract parse(value: TValue, projectDef: unknown): TParseResult;
+  abstract parse(
+    value: TValue,
+    projectDef: unknown,
+  ): RefExpressionParseResult<TParseResult>;
 
   /**
-   * Get validation warnings for the expression.
-   * Warnings are non-blocking - they don't prevent loading.
+   * Get validation warnings for a successfully parsed expression.
+   * Only called when parse() succeeds. Parse failures are handled by validate().
    *
-   * @param value - The raw expression value
-   * @param parseResult - The cached parse result
+   * @param parseResult - The successfully parsed result
    * @param context - Validation context with project definition and plugin store
    * @param resolvedSlots - The resolved slot paths for this expression
    * @returns Array of warnings (empty if valid)
    */
   abstract getWarnings(
-    value: TValue,
     parseResult: TParseResult,
     context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
@@ -159,7 +168,7 @@ export abstract class RefExpressionParser<
    */
   abstract getDependencies(
     value: TValue,
-    parseResult: TParseResult,
+    parseResult: RefExpressionParseResult<TParseResult>,
   ): RefExpressionDependency[];
 
   /**
@@ -172,9 +181,32 @@ export abstract class RefExpressionParser<
    */
   abstract updateForRename(
     value: TValue,
-    parseResult: TParseResult,
+    parseResult: RefExpressionParseResult<TParseResult>,
     renames: Map<string, string>,
   ): TValue;
+
+  /**
+   * Convenience method that combines parse() and getWarnings() into a single call.
+   * Parses the expression and returns all validation warnings (including parse errors).
+   *
+   * @param value - The raw expression value
+   * @param projectDef - The project definition for context
+   * @param context - Validation context with project definition and plugin store
+   * @param resolvedSlots - The resolved slot paths for this expression
+   * @returns Array of warnings (empty if valid)
+   */
+  validate(
+    value: TValue,
+    projectDef: unknown,
+    context: ExpressionValidationContext,
+    resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
+  ): RefExpressionWarning[] {
+    const parseResult = this.parse(value, projectDef);
+    if (!parseResult.success) {
+      return [{ message: parseResult.error }];
+    }
+    return this.getWarnings(parseResult.value, context, resolvedSlots);
+  }
 
   /**
    * Phantom property for TRequiredSlots type inference.

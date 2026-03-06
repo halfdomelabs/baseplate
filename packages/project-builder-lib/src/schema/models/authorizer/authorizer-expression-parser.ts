@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type {
   ExpressionValidationContext,
   RefExpressionDependency,
+  RefExpressionParseResult,
   RefExpressionWarning,
   ResolvedExpressionSlots,
 } from '#src/references/expression-types.js';
@@ -36,7 +37,7 @@ import { validateAuthorizerExpression } from './authorizer-expression-validator.
  */
 export class AuthorizerExpressionParser extends RefExpressionParser<
   string,
-  AuthorizerExpressionInfo | undefined,
+  AuthorizerExpressionInfo,
   { model: typeof modelEntityType }
 > {
   readonly name = 'authorizer-expression';
@@ -53,16 +54,14 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * Parse the expression string into an AST.
    *
    * @param value - The expression string
-   * @param _projectDef - The project definition (unused during parsing)
-   * @returns The parsed expression info, or undefined if parsing fails
+   * @returns Success with parsed expression info, or failure with error message
    */
-  parse(value: string): AuthorizerExpressionInfo | undefined {
+  parse(value: string): RefExpressionParseResult<AuthorizerExpressionInfo> {
     try {
-      return parseAuthorizerExpression(value);
+      return { success: true, value: parseAuthorizerExpression(value) };
     } catch (error) {
       if (error instanceof AuthorizerExpressionParseError) {
-        // Return undefined for parse errors - they'll be reported as warnings
-        return undefined;
+        return { success: false, error: error.message };
       }
       throw error;
     }
@@ -78,27 +77,10 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * - Role names exist in project config (warning only)
    */
   getWarnings(
-    value: string,
-    parseResult: AuthorizerExpressionInfo | undefined,
+    parseResult: AuthorizerExpressionInfo,
     context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): RefExpressionWarning[] {
-    const warnings: RefExpressionWarning[] = [];
-
-    // If parsing failed, report the error as a warning
-    if (!parseResult) {
-      try {
-        parseAuthorizerExpression(value);
-      } catch (error) {
-        if (error instanceof AuthorizerExpressionParseError) {
-          warnings.push({
-            message: error.message,
-          });
-        }
-      }
-      return warnings;
-    }
-
     // Get model context from resolved slots
     const modelContext = this.getModelContext(
       context.definition,
@@ -106,20 +88,16 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     );
     if (!modelContext) {
       // Can't validate without model context
-      return warnings;
+      return [];
     }
 
     // Validate the expression against model fields and roles
-    const validationWarnings = validateAuthorizerExpression(
+    return validateAuthorizerExpression(
       parseResult.ast,
       modelContext,
       context.pluginStore,
       context.definition,
     );
-
-    warnings.push(...validationWarnings);
-
-    return warnings;
   }
 
   /**
