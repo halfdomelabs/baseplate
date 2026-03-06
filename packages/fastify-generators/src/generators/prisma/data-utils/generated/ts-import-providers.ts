@@ -47,6 +47,7 @@ export const dataUtilsImportsSchema = createTsImportMapSchema({
   relationHelpers: {},
   scalarField: {},
   TransactionalOperationContext: { isTypeOnly: true },
+  WhereInput: { isTypeOnly: true },
   WhereUniqueInput: { isTypeOnly: true },
 });
 
@@ -100,6 +101,7 @@ const prismaDataUtilsImportsTask = createGeneratorTask({
           relationHelpers: paths.relationHelpers,
           scalarField: paths.fieldDefinitions,
           TransactionalOperationContext: paths.types,
+          WhereInput: paths.prismaTypes,
           WhereUniqueInput: paths.prismaTypes,
         }),
       },

@@ -79,6 +79,8 @@
   "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils:utils-authorizers": "src/utils/authorizers.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-model-authorizer:prisma-model-authorizer:Blog": "src/modules/blogs/authorizers/blog.authorizer.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-model-authorizer:prisma-model-authorizer:User": "src/modules/accounts/authorizers/user.authorizer.ts",
+  "@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils:utils-query-filters": "src/utils/query-filters.ts",
+  "@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils:utils-query-helpers": "src/utils/query-helpers.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:client": "src/generated/prisma/client.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-schema": "prisma/schema.prisma",
