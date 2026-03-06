@@ -113,17 +113,26 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
       ),
       queries: ctx.withDefault(
         z.object({
+          globalRoles: createRoleArray(ctx),
+          instanceRoles: ctx.withDefault(
+            z.array(
+              ctx.withRef({
+                type: modelAuthorizerRoleEntityType,
+                onDelete: 'DELETE',
+                parentSlot: modelSlot,
+              }),
+            ),
+            [],
+          ),
           get: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
-              roles: createRoleArray(ctx),
             }),
             {},
           ),
           list: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
-              roles: createRoleArray(ctx),
               count: ctx.withDefault(
                 z.object({
                   enabled: ctx.withDefault(z.boolean(), false),

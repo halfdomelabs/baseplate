@@ -22,6 +22,7 @@ import { migration022RenamePackagesToLibraries } from './migration-022-rename-pa
 import { migration023AssignAppPorts } from './migration-023-assign-app-ports.js';
 import { migration024GraphqlObjectTypeFieldAuth } from './migration-024-graphql-object-type-field-auth.js';
 import { migration025ServiceMethodAuth } from './migration-025-service-method-auth.js';
+import { migration026QuerySharedRoles } from './migration-026-query-shared-roles.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -45,6 +46,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration023AssignAppPorts,
   migration024GraphqlObjectTypeFieldAuth,
   migration025ServiceMethodAuth,
+  migration026QuerySharedRoles,
 ];
 
 export function isMigrateableProjectDefinition(

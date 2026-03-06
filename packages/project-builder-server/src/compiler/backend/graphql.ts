@@ -78,6 +78,26 @@ function buildObjectTypeFile(
   });
 }
 
+function deriveQueryAuthorize(
+  appBuilder: BackendAppEntryBuilder,
+  queries: ModelConfig['graphql']['queries'],
+  isAuthEnabled: boolean,
+): GeneratorBundle | undefined {
+  if (!isAuthEnabled) {
+    return undefined;
+  }
+
+  const { globalRoles } = queries;
+
+  if (globalRoles.length === 0) {
+    return undefined;
+  }
+
+  return pothosAuthorizeFieldGenerator({
+    roles: globalRoles.map((r) => appBuilder.nameFromId(r)),
+  });
+}
+
 function buildQueriesFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
@@ -98,6 +118,24 @@ function buildQueriesFileForModel(
     appBuilder.projectDefinition,
   );
 
+  const authorize = deriveQueryAuthorize(appBuilder, queries, isAuthEnabled);
+
+  // Query filter config: pass model name reference + role names when instance roles are present
+  const hasQueryFilter = queries.instanceRoles.length > 0;
+  const queryFilterRoles = hasQueryFilter
+    ? queries.instanceRoles.map((roleRef) => {
+        const authRole = model.authorizer.roles.find(
+          (r) => r.id === roleRef || r.name === roleRef,
+        );
+        if (!authRole) {
+          throw new Error(
+            `Instance role '${roleRef}' not found in model '${model.name}' authorizer roles.`,
+          );
+        }
+        return authRole.name;
+      })
+    : [];
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -108,13 +146,10 @@ function buildQueriesFileForModel(
             modelName: model.name,
             hasPrimaryKeyInputType:
               ModelUtils.getModelIdFields(model).length > 1,
+            queryFilterRef: hasQueryFilter ? model.name : undefined,
+            queryFilterRoles,
             children: {
-              authorize:
-                !isAuthEnabled || get.roles.length === 0
-                  ? undefined
-                  : pothosAuthorizeFieldGenerator({
-                      roles: get.roles.map((r) => appBuilder.nameFromId(r)),
-                    }),
+              authorize,
             },
           })
         : undefined,
@@ -122,13 +157,10 @@ function buildQueriesFileForModel(
         ? pothosPrismaListQueryGenerator({
             order: 1,
             modelName: model.name,
+            queryFilterRef: hasQueryFilter ? model.name : undefined,
+            queryFilterRoles,
             children: {
-              authorize:
-                !isAuthEnabled || list.roles.length === 0
-                  ? undefined
-                  : pothosAuthorizeFieldGenerator({
-                      roles: list.roles.map((r) => appBuilder.nameFromId(r)),
-                    }),
+              authorize,
             },
           })
         : undefined,
@@ -137,13 +169,10 @@ function buildQueriesFileForModel(
           ? pothosPrismaCountQueryGenerator({
               order: 2,
               modelName: model.name,
+              queryFilterRef: hasQueryFilter ? model.name : undefined,
+              queryFilterRoles,
               children: {
-                authorize:
-                  !isAuthEnabled || list.roles.length === 0
-                    ? undefined
-                    : pothosAuthorizeFieldGenerator({
-                        roles: list.roles.map((r) => appBuilder.nameFromId(r)),
-                      }),
+                authorize,
               },
             })
           : undefined,

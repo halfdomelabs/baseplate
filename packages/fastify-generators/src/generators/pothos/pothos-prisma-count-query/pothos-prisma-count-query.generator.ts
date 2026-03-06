@@ -11,6 +11,7 @@ import { pluralize } from 'inflection';
 import { z } from 'zod';
 
 import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-field.js';
+import { prismaModelQueryFilterProvider } from '#src/generators/prisma/prisma-model-query-filter/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 
@@ -26,6 +27,14 @@ const descriptorSchema = z.object({
    * The order of the type in the types file.
    */
   order: z.number(),
+  /**
+   * Model name key to look up the query filter provider.
+   */
+  queryFilterRef: z.string().optional(),
+  /**
+   * Role names to pass to `queryFilter.buildWhere()`.
+   */
+  queryFilterRoles: z.array(z.string()).optional(),
 });
 
 export const pothosPrismaCountQueryGenerator = createGenerator({
@@ -33,16 +42,19 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order }) => ({
+  buildTasks: ({ modelName, order, queryFilterRef, queryFilterRoles }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypesFile: pothosTypesFileProvider,
+        queryFilter: prismaModelQueryFilterProvider
+          .dependency()
+          .optionalReference(queryFilterRef),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile }) {
+      run({ prismaOutput, pothosTypesFile, queryFilter }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -69,7 +81,22 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
-            const resolveFunction = tsTemplate`async () => ${prismaModelFragment}.count()`;
+            let resolveFunction: TsCodeFragment;
+
+            if (
+              queryFilter &&
+              queryFilterRoles &&
+              queryFilterRoles.length > 0
+            ) {
+              const rolesArray = queryFilterRoles
+                .map((r) => `'${r}'`)
+                .join(', ');
+              const queryFilterFragment = queryFilter.getQueryFilterFragment();
+
+              resolveFunction = tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: { ...${queryFilterFragment}.buildWhere(ctx, [${rolesArray}]) } })`;
+            } else {
+              resolveFunction = tsTemplate`async () => ${prismaModelFragment}.count()`;
+            }
 
             const options = {
               ...sortObjectKeys(customFields.value()),
