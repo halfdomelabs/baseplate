@@ -78,6 +78,9 @@ export function generateAuthorizerExpressionCode(
       );
       return checks.length === 1 ? checks[0] : `(${checks.join(' || ')})`;
     }
+    case 'isAuthenticated': {
+      return 'ctx.auth.isAuthenticated';
+    }
     case 'binaryLogical': {
       const left = generateAuthorizerExpressionCode(node.left, codeContext);
       const right = generateAuthorizerExpressionCode(node.right, codeContext);
@@ -276,6 +279,9 @@ function generateQueryFilterExpressionCode(
     case 'hasSomeRole': {
       const roles = node.roles.map((r: string) => `'${r}'`).join(', ');
       return `ctx.auth.hasSomeRole([${roles}])`;
+    }
+    case 'isAuthenticated': {
+      return 'ctx.auth.isAuthenticated';
     }
     case 'nestedHasRole':
     case 'nestedHasSomeRole': {

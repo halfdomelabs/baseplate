@@ -396,6 +396,58 @@ describe('parseAuthorizerExpression', () => {
     });
   });
 
+  describe('isAuthenticated expressions', () => {
+    it('should parse standalone isAuthenticated', () => {
+      const result = parseAuthorizerExpression('isAuthenticated');
+
+      expect(result.ast).toEqual({
+        type: 'isAuthenticated',
+      });
+      expect(result.modelFieldRefs).toEqual([]);
+      expect(result.authFieldRefs).toEqual([]);
+      expect(result.roleRefs).toEqual([]);
+      expect(result.requiresModel).toBe(false);
+    });
+
+    it('should parse isAuthenticated && model.isPublished', () => {
+      const result = parseAuthorizerExpression(
+        'isAuthenticated && model.isPublished === userId',
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'binaryLogical' }
+      >;
+      expect(ast.operator).toBe('&&');
+      expect(ast.left).toEqual({ type: 'isAuthenticated' });
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse model.ownerId === userId || isAuthenticated', () => {
+      const result = parseAuthorizerExpression(
+        'model.ownerId === userId || isAuthenticated',
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'binaryLogical' }
+      >;
+      expect(ast.operator).toBe('||');
+      expect(ast.right).toEqual({ type: 'isAuthenticated' });
+      expect(result.modelFieldRefs).toEqual(['ownerId']);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should reject unknown standalone identifiers at top level', () => {
+      expect(() => parseAuthorizerExpression('unknownVar')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+  });
+
   describe('syntax errors', () => {
     it('should reject invalid JavaScript syntax', () => {
       expect(() => parseAuthorizerExpression('model.id ===')).toThrow(

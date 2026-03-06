@@ -10,6 +10,7 @@ import type {
   FieldComparisonNode,
   HasRoleNode,
   HasSomeRoleNode,
+  IsAuthenticatedNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
@@ -329,6 +330,47 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[0].message).toContain("'superuser'");
       expect(warnings[0].start).toBe(21);
       expect(warnings[0].end).toBe(32);
+    });
+  });
+
+  describe('isAuthenticated validation', () => {
+    it('should produce no warnings for isAuthenticated', () => {
+      const ast: IsAuthenticatedNode = {
+        type: 'isAuthenticated',
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it("should warn for hasRole('user') suggesting isAuthenticated", () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'user', comment: 'User role', builtIn: true },
+      ]);
+      const ast: HasRoleNode = {
+        type: 'hasRole',
+        role: 'user',
+        roleStart: 8,
+        roleEnd: 14,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'user'");
+      expect(warnings[0].message).toContain('isAuthenticated');
     });
   });
 

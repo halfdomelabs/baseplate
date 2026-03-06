@@ -117,11 +117,11 @@ export function validateAuthorizerExpression(
 
   function warnIfBuiltInRole(role: string, start: number, end: number): void {
     if (builtInRoleNames.has(role)) {
-      warnings.push({
-        message: `Role '${role}' is a built-in role and should not be used in authorizer expressions. Use non-built-in roles: ${nonBuiltInRoleNames.join(', ')}.`,
-        start,
-        end,
-      });
+      const message =
+        role === 'user'
+          ? `Role 'user' is a built-in role. Use 'isAuthenticated' instead to check if the user is authenticated.`
+          : `Role '${role}' is a built-in role and should not be used in authorizer expressions. Use non-built-in roles: ${nonBuiltInRoleNames.join(', ')}.`;
+      warnings.push({ message, start, end });
     }
   }
 
@@ -186,6 +186,11 @@ export function validateAuthorizerExpression(
           node.rolesStart,
           node.rolesEnd,
         );
+        break;
+      }
+
+      case 'isAuthenticated': {
+        // No validation needed
         break;
       }
 

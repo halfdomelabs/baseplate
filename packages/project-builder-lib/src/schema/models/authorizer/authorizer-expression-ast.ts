@@ -19,6 +19,7 @@ export type AuthorizerExpressionNode =
   | HasSomeRoleNode
   | NestedHasRoleNode
   | NestedHasSomeRoleNode
+  | IsAuthenticatedNode
   | BinaryLogicalNode;
 
 /**
@@ -152,6 +153,23 @@ export interface NestedHasSomeRoleNode {
   rolesStart: number[];
   /** End positions of each role string literal in the source (for rename tracking) */
   rolesEnd: number[];
+}
+
+/**
+ * A boolean indicating whether the user is authenticated.
+ *
+ * Can be used standalone or in logical expressions:
+ * - `isAuthenticated`
+ * - `isAuthenticated && model.isPublished`
+ *
+ * @example
+ * ```typescript
+ * // isAuthenticated
+ * { type: 'isAuthenticated' }
+ * ```
+ */
+export interface IsAuthenticatedNode {
+  type: 'isAuthenticated';
 }
 
 /**

@@ -233,13 +233,18 @@ export function ModelAuthorizerRoleForm({
         description={
           <>
             TypeScript boolean expression. Available: <code>model</code> (the
-            model instance), <code>userId</code>, <code>hasRole()</code>,{' '}
-            <code>hasSomeRole()</code>, and nested role checks on relations
+            model instance), <code>userId</code>, <code>isAuthenticated</code>,{' '}
+            <code>hasRole()</code>, <code>hasSomeRole()</code>, and nested role
+            checks on relations
             <span className="mt-1 block text-xs text-muted-foreground">
               Examples:
             </span>
             <span className="block text-xs text-muted-foreground">
               <code>model.id === userId</code>
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              <code>isAuthenticated</code>
+              {' — '}check if user is authenticated
             </span>
             <span className="block text-xs text-muted-foreground">
               <code>hasRole(&apos;admin&apos;)</code>

@@ -186,6 +186,12 @@ export function createAuthorizerCompletions(
       info: 'The model instance being authorized',
     },
     {
+      label: 'isAuthenticated',
+      type: 'property',
+      detail: 'boolean',
+      info: 'Whether the user is authenticated',
+    },
+    {
       label: 'userId',
       type: 'property',
       detail: 'string | undefined',

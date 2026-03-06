@@ -29,6 +29,7 @@ import type {
   FieldRefNode,
   HasRoleNode,
   HasSomeRoleNode,
+  IsAuthenticatedNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
@@ -114,6 +115,16 @@ function convertNode(node: Expression): AuthorizerExpressionNode {
 
     case 'CallExpression': {
       return convertCallExpression(node);
+    }
+
+    case 'Identifier': {
+      if (node.name === 'isAuthenticated') {
+        return { type: 'isAuthenticated' } satisfies IsAuthenticatedNode;
+      }
+      throw new AuthorizerExpressionParseError(
+        `Unknown identifier '${node.name}'. Use hasRole(), hasSomeRole(), isAuthenticated, or a comparison like model.id === userId.`,
+        node,
+      );
     }
 
     case 'MemberExpression': {
@@ -532,6 +543,11 @@ function extractInfo(
           roles: node.roles,
         });
         requiresModel = true;
+        break;
+      }
+
+      case 'isAuthenticated': {
+        // No dependencies to track
         break;
       }
 
