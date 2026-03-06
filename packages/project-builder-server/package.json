@@ -80,7 +80,8 @@
     "open": "10.1.0",
     "pino": "9.5.0",
     "ts-morph": "27.0.2",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "zod-to-ts": "^2.0.0"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",

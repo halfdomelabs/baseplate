@@ -187,7 +187,7 @@ describe('get-entity', () => {
 });
 
 describe('get-entity-schema', () => {
-  it('should return JSON schema for a known entity type', async () => {
+  it('should return TypeScript type for a known entity type', async () => {
     const result = await invokeServiceActionAsCli(
       getEntitySchemaAction,
       { project: 'test-project', entityTypeName: 'model' },
@@ -195,8 +195,8 @@ describe('get-entity-schema', () => {
     );
 
     expect(result.entityTypeName).toBe('model');
-    expect(result.schema).toBeDefined();
-    expect(typeof result.schema).toBe('object');
+    expect(typeof result.schema).toBe('string');
+    expect(result.schema).toContain('name');
   });
 
   it('should throw for an unknown entity type', async () => {

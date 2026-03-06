@@ -701,6 +701,9 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.3.6
+      zod-to-ts:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.9.3)(zod@4.3.6)
     devDependencies:
       '@baseplate-dev/tools':
         specifier: workspace:*
@@ -8627,6 +8630,12 @@ packages:
     peerDependencies:
       zod: ^3.25 || ^4
 
+  zod-to-ts@2.0.0:
+    resolution: {integrity: sha512-aHsUgIl+CQutKAxtRNeZslLCLXoeuSq+j5HU7q3kvi/c2KIAo6q4YjT7/lwFfACxLB923ELHYMkHmlxiqFy4lw==}
+    peerDependencies:
+      typescript: ^5.0.0
+      zod: ^3.25.0 || ^4.0.0
+
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
     engines: {node: '>=18.0.0'}
@@ -11608,6 +11617,30 @@ snapshots:
       '@vitest/utils': 4.0.16
       chai: 6.2.2
       tinyrainbow: 3.0.3
+
+  '@vitest/mocker@4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1))':
+    dependencies:
+      '@vitest/spy': 4.0.16
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1)
+
+  '@vitest/mocker@4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.2))':
+    dependencies:
+      '@vitest/spy': 4.0.16
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.2)
+
+  '@vitest/mocker@4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))':
+    dependencies:
+      '@vitest/spy': 4.0.16
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
 
   '@vitest/mocker@4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
@@ -15789,7 +15822,7 @@ snapshots:
   vitest@4.0.16(@types/node@22.17.2)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1))
       '@vitest/pretty-format': 4.0.16
       '@vitest/runner': 4.0.16
       '@vitest/snapshot': 4.0.16
@@ -15827,7 +15860,7 @@ snapshots:
   vitest@4.0.16(@types/node@22.17.2)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.16
       '@vitest/runner': 4.0.16
       '@vitest/snapshot': 4.0.16
@@ -15865,7 +15898,7 @@ snapshots:
   vitest@4.0.16(@types/node@22.17.2)(jiti@2.6.1)(jsdom@26.0.0)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.16(vite@7.1.12(@types/node@22.17.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))
       '@vitest/pretty-format': 4.0.16
       '@vitest/runner': 4.0.16
       '@vitest/snapshot': 4.0.16
@@ -16116,6 +16149,11 @@ snapshots:
 
   zod-to-json-schema@3.25.1(zod@4.3.6):
     dependencies:
+      zod: 4.3.6
+
+  zod-to-ts@2.0.0(typescript@5.9.3)(zod@4.3.6):
+    dependencies:
+      typescript: 5.9.3
       zod: 4.3.6
 
   zod-validation-error@4.0.2(zod@4.3.6):

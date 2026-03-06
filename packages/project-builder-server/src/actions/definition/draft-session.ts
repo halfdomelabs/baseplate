@@ -5,7 +5,7 @@ import type {
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { hashWithSHA256, stringifyPrettyStable } from '@baseplate-dev/utils';
-import { fileExists } from '@baseplate-dev/utils/node';
+import { fileExists, handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
@@ -104,10 +104,8 @@ export async function deleteDraftSession(
   const sessionPath = getDraftSessionPath(projectDirectory);
   const definitionPath = getDraftDefinitionPath(projectDirectory);
   await Promise.all([
-    fileExists(sessionPath).then((exists) => (exists ? rm(sessionPath) : null)),
-    fileExists(definitionPath).then((exists) =>
-      exists ? rm(definitionPath) : null,
-    ),
+    rm(sessionPath).catch(handleFileNotFoundError),
+    rm(definitionPath).catch(handleFileNotFoundError),
   ]);
 }
 

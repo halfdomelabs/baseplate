@@ -1,5 +1,5 @@
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { z } from 'zod';
+import { createAuxiliaryTypeStore, printNode, zodToTs } from 'zod-to-ts';
 
 import { createServiceAction } from '#src/actions/types.js';
 
@@ -21,19 +21,19 @@ const getEntitySchemaOutputSchema = z.object({
     .nullable()
     .describe('The parent entity type name, or null for top-level entities.'),
   schema: z
-    .record(z.string(), z.unknown())
-    .describe('The JSON Schema for this entity type.'),
+    .string()
+    .describe('The TypeScript type representation of this entity type.'),
 });
 
 export const getEntitySchemaAction = createServiceAction({
   name: 'get-entity-schema',
   title: 'Get Entity Schema',
   description:
-    'Get the JSON Schema for a given entity type. Useful for understanding valid field shapes before creating or updating entities.',
+    'Get the TypeScript type for a given entity type. Useful for understanding valid field shapes before creating or updating entities.',
   inputSchema: getEntitySchemaInputSchema,
   outputSchema: getEntitySchemaOutputSchema,
   writeCliOutput: (output) => {
-    console.info(stringifyPrettyStable(output.schema));
+    console.info(output.schema);
   },
   handler: async (input, context) => {
     const { entityContext } = await loadEntityServiceContext(
@@ -48,14 +48,16 @@ export const getEntitySchemaAction = createServiceAction({
       );
     }
 
-    const jsonSchema = z.toJSONSchema(metadata.elementSchema, {
+    const { node } = zodToTs(metadata.elementSchema, {
+      auxiliaryTypeStore: createAuxiliaryTypeStore(),
       unrepresentable: 'any',
     });
+    const schemaText = printNode(node);
 
     return {
       entityTypeName: input.entityTypeName,
       parentEntityTypeName: metadata.parentEntityTypeName ?? null,
-      schema: jsonSchema as Record<string, unknown>,
+      schema: schemaText,
     };
   },
 });
