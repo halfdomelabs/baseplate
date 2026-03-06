@@ -1,6 +1,4 @@
-import type {
-  AuthorizerRoleConfig,
-} from '@baseplate-dev/project-builder-lib';
+import type { AuthorizerRoleConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -138,9 +136,7 @@ export function ModelAuthorizerRoleForm({
   const extensions = useMemo(() => {
     const exts = [
       autocompletion({
-        override: [
-          createAuthorizerCompletions(modelConfig, projectRoles),
-        ],
+        override: [createAuthorizerCompletions(modelConfig, projectRoles)],
       }),
       linter(
         createAuthorizerExpressionLinter(modelContext, definitionContainer),
