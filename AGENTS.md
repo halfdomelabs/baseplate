@@ -72,48 +72,6 @@ Baseplate consists of two main tiers:
    - Uses Provider Scopes for communication between tasks
    - Merges generated code with existing codebase using Git Diff3
 
-## Key Concepts
-
-### Generators
-
-- Created with `createGenerator`
-- Define configuration via descriptor schema (Zod)
-- Consist of one or more tasks
-
-### Tasks
-
-- Created with `createGeneratorTask`
-- Have `run` (initialization) and `build` (code generation) phases
-- Export and consume providers
-- May be organized into phases for ordered execution
-
-### Providers
-
-- Enable communication between tasks
-- Standard providers (mutable state) vs. Output providers (read-only)
-- Use scopes to control visibility and prevent collisions
-
-### TypeScript Code Generation
-
-- `TsCodeFragment` for composable code pieces
-- `TsCodeUtils` for manipulating fragments
-- Import builder for managing dependencies
-- Template system for code generation
-
-## Plugin System
-
-- Extends Baseplate with custom features, generators, and UI components
-- Uses spec-implementation pattern for loose coupling
-- Supports multi-platform modules (node, web, common)
-
-## Code Structure Patterns
-
-- Follow task-based architecture for generators
-- Use provider scopes for explicit wiring
-- Leverage TypeScript rendering system for code generation
-- Organize complex generation with Task Phases
-- Use Dynamic Tasks for data-driven generation
-
 ## Key Reminders
 
 - Run `pnpm check` after finishing a new feature or bug fix to validate everything works correctly
@@ -133,10 +91,3 @@ Baseplate consists of two main tiers:
 ## Baseplate Development Server MCP
 
 See .agents/mcp-actions.md for detailed MCP action documentation.
-
-The MCP server provides programmatic access to:
-
-- Project syncing and diffing
-- Template extraction and generation
-- Generator scaffolding
-- Snapshot management

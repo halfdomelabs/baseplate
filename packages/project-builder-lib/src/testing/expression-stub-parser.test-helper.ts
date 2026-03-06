@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { RefExpressionParseResult } from '#src/references/expression-types.js';
 import type { DefinitionEntityType } from '#src/references/types.js';
 
 import { RefExpressionParser } from '#src/references/expression-types.js';
@@ -26,9 +27,8 @@ class StubParser extends RefExpressionParser<string, undefined> {
     return z.string();
   }
 
-  parse(): undefined {
-    // No-op - returns undefined as the parse result
-    return undefined;
+  parse(): RefExpressionParseResult<undefined> {
+    return { success: true, value: undefined };
   }
 
   getWarnings(): [] {
@@ -78,8 +78,8 @@ export class StubParserWithSlots<
     return z.string();
   }
 
-  parse(): undefined {
-    return undefined;
+  parse(): RefExpressionParseResult<undefined> {
+    return { success: true, value: undefined };
   }
 
   getWarnings(): [] {

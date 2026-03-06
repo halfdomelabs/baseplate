@@ -7,8 +7,9 @@
  * - Role names exist in project config (warning only)
  */
 
-import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 import type { RefExpressionWarning } from '#src/references/expression-types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
@@ -33,15 +34,21 @@ export interface ModelValidationContext {
 const VALID_AUTH_FIELDS = new Set(['userId']);
 
 /**
- * Get role names from the project definition container using the auth config spec.
+ * Get role names from the project definition using the auth config spec.
  *
- * @param container - The project definition container
+ * @param pluginStore - The plugin spec store
+ * @param definition - The raw project definition data
  * @returns Set of defined role names
  */
-function getRoleNames(container: ProjectDefinitionContainer): Set<string> {
-  const authConfig = container.pluginStore.use(authConfigSpec);
+function getRoleNames(
+  pluginStore: PluginSpecStore,
+  definition: unknown,
+): Set<string> {
+  const authConfig = pluginStore.use(authConfigSpec);
 
-  const roles = authConfig.getAuthConfig(container.definition)?.roles;
+  const roles = authConfig.getAuthConfig(
+    definition as ProjectDefinition,
+  )?.roles;
   return new Set(roles?.map((role) => role.name));
 }
 
@@ -50,7 +57,8 @@ function getRoleNames(container: ProjectDefinitionContainer): Set<string> {
  *
  * @param ast - The parsed expression AST
  * @param modelContext - Information about the parent model
- * @param container - The project definition container for accessing roles
+ * @param pluginStore - The plugin spec store for accessing auth config
+ * @param definition - The raw project definition data
  * @returns Array of warnings (errors are thrown, warnings are returned)
  *
  * @example
@@ -58,17 +66,19 @@ function getRoleNames(container: ProjectDefinitionContainer): Set<string> {
  * const warnings = validateAuthorizerExpression(
  *   ast,
  *   { modelName: 'User', scalarFieldNames: new Set(['id', 'email']) },
- *   container,
+ *   pluginStore,
+ *   definition,
  * );
  * ```
  */
 export function validateAuthorizerExpression(
   ast: AuthorizerExpressionNode,
   modelContext: ModelValidationContext,
-  container: ProjectDefinitionContainer,
+  pluginStore: PluginSpecStore,
+  definition: unknown,
 ): RefExpressionWarning[] {
   const warnings: RefExpressionWarning[] = [];
-  const roleNames = getRoleNames(container);
+  const roleNames = getRoleNames(pluginStore, definition);
 
   function walk(node: AuthorizerExpressionNode): void {
     switch (node.type) {

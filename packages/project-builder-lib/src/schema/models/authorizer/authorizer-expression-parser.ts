@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
+  ExpressionValidationContext,
   RefExpressionDependency,
+  RefExpressionParseResult,
   RefExpressionWarning,
   ResolvedExpressionSlots,
 } from '#src/references/expression-types.js';
@@ -36,7 +37,7 @@ import { validateAuthorizerExpression } from './authorizer-expression-validator.
  */
 export class AuthorizerExpressionParser extends RefExpressionParser<
   string,
-  AuthorizerExpressionInfo | undefined,
+  AuthorizerExpressionInfo,
   { model: typeof modelEntityType }
 > {
   readonly name = 'authorizer-expression';
@@ -53,16 +54,14 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * Parse the expression string into an AST.
    *
    * @param value - The expression string
-   * @param _projectDef - The project definition (unused during parsing)
-   * @returns The parsed expression info, or undefined if parsing fails
+   * @returns Success with parsed expression info, or failure with error message
    */
-  parse(value: string): AuthorizerExpressionInfo | undefined {
+  parse(value: string): RefExpressionParseResult<AuthorizerExpressionInfo> {
     try {
-      return parseAuthorizerExpression(value);
+      return { success: true, value: parseAuthorizerExpression(value) };
     } catch (error) {
       if (error instanceof AuthorizerExpressionParseError) {
-        // Return undefined for parse errors - they'll be reported as warnings
-        return undefined;
+        return { success: false, error: error.message };
       }
       throw error;
     }
@@ -78,47 +77,27 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * - Role names exist in project config (warning only)
    */
   getWarnings(
-    value: string,
-    parseResult: AuthorizerExpressionInfo | undefined,
-    projectDef: unknown,
+    parseResult: AuthorizerExpressionInfo,
+    context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): RefExpressionWarning[] {
-    const warnings: RefExpressionWarning[] = [];
-
-    // If parsing failed, report the error as a warning
-    if (!parseResult) {
-      try {
-        parseAuthorizerExpression(value);
-      } catch (error) {
-        if (error instanceof AuthorizerExpressionParseError) {
-          warnings.push({
-            message: error.message,
-          });
-        }
-      }
-      return warnings;
-    }
-
-    // Cast to ProjectDefinitionContainer - the parser receives the container
-    const container = projectDef as ProjectDefinitionContainer;
-
     // Get model context from resolved slots
-    const modelContext = this.getModelContext(container, resolvedSlots);
+    const modelContext = this.getModelContext(
+      context.definition,
+      resolvedSlots,
+    );
     if (!modelContext) {
       // Can't validate without model context
-      return warnings;
+      return [];
     }
 
-    // Validate the expression (container provides role access via authConfigSpec)
-    const validationWarnings = validateAuthorizerExpression(
+    // Validate the expression against model fields and roles
+    return validateAuthorizerExpression(
       parseResult.ast,
       modelContext,
-      container,
+      context.pluginStore,
+      context.definition,
     );
-
-    warnings.push(...validationWarnings);
-
-    return warnings;
   }
 
   /**
@@ -145,10 +124,10 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   }
 
   /**
-   * Extract model context from the project definition container using resolved slots.
+   * Extract model context from the project definition using resolved slots.
    */
   private getModelContext(
-    container: ProjectDefinitionContainer,
+    definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): { modelName: string; scalarFieldNames: Set<string> } | undefined {
     const modelPath = resolvedSlots.model;
@@ -158,7 +137,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     // Navigate to the model in the project definition
     // The path is like ['models', 0] for models[0]
-    let current: unknown = container.definition;
+    let current: unknown = definition;
     for (const segment of modelPath) {
       if (current === null || current === undefined) {
         return undefined;

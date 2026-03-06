@@ -1,4 +1,4 @@
-import type { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
+import type { PluginSpecStore } from '@baseplate-dev/project-builder-lib';
 import type { Diagnostic } from '@codemirror/lint';
 import type { EditorView } from '@codemirror/view';
 
@@ -19,7 +19,8 @@ import {
  * - Warn about unknown role names
  *
  * @param modelContext - Model name and field names for validation
- * @param projectDef - Project definition container for role validation
+ * @param pluginStore - Plugin spec store for role validation
+ * @param definition - Project definition data
  * @returns Linter function for CodeMirror
  */
 export function createAuthorizerExpressionLinter(
@@ -27,7 +28,8 @@ export function createAuthorizerExpressionLinter(
     modelName: string;
     scalarFieldNames: Set<string>;
   } | null,
-  projectDef: ProjectDefinitionContainer | null,
+  pluginStore: PluginSpecStore | null,
+  definition: unknown,
 ): (view: EditorView) => Diagnostic[] {
   return (view: EditorView): Diagnostic[] => {
     const code = view.state.doc.toString();
@@ -40,11 +42,12 @@ export function createAuthorizerExpressionLinter(
       const parseResult = parseAuthorizerExpression(code);
 
       // Validate if we have context
-      if (modelContext && projectDef) {
+      if (modelContext && pluginStore) {
         const warnings = validateAuthorizerExpression(
           parseResult.ast,
           modelContext,
-          projectDef,
+          pluginStore,
+          definition,
         );
 
         // Convert warnings to diagnostics
