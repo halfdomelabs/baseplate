@@ -6,31 +6,23 @@ import type { ServiceActionContext } from '@baseplate-dev/project-builder-server
 
 import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 import { getUserConfig } from '@baseplate-dev/project-builder-server/user-config';
-import {
-  expandPathWithTilde,
-  getPackageVersion,
-} from '@baseplate-dev/utils/node';
+import { getPackageVersion } from '@baseplate-dev/utils/node';
 
 import { logger } from '#src/services/logger.js';
 
-import { getEnvConfig } from './config.js';
+import { loadDevConfig } from './dev-config.js';
 import { listProjects } from './list-projects.js';
 
 export async function createServiceActionContext(
   project?: ProjectInfo,
 ): Promise<ServiceActionContext> {
-  const config = getEnvConfig();
+  const devConfig = await loadDevConfig();
   const projects = project ? [project] : await listProjects({});
 
-  const extraPluginDirs =
-    config.PLUGIN_ROOT_DIRECTORIES?.split(',')
-      .map((d) => expandPathWithTilde(d.trim()))
-      .filter(Boolean) ?? [];
-
-  // Discover plugins from cwd, then each extra root directory
+  // Discover plugins from cwd, then each configured plugin root directory
   const allPluginArrays = await Promise.all([
     discoverPlugins(process.cwd(), logger),
-    ...extraPluginDirs.map(async (dir) => {
+    ...devConfig.pluginRootDirectories.map(async (dir) => {
       try {
         return await discoverPlugins(dir, logger);
       } catch {

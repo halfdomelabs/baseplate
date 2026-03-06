@@ -23,6 +23,37 @@ export default {
         'src/*/*/common.ts',
       ],
       project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'plugins/plugin-rate-limit': {
+      entry: [
+        'src/index.{ts,tsx}',
+        'src/web-export.{ts,tsx}',
+        'src/*/*/node.ts',
+        'src/*/*/web.ts',
+        'src/*/*/common.ts',
+      ],
+      project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // react-dom and @types/react-dom are required for the vite/react build
+        'react-dom',
+        '@types/react-dom',
+      ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'plugins/plugin-storage': {
+      entry: [
+        'src/index.{ts,tsx}',
+        'src/web-export.{ts,tsx}',
+        'src/*/*/node.ts',
+        'src/*/*/web.ts',
+        'src/*/*/common.ts',
+      ],
+      project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
         // react-dom and @types/react-dom are required for the vite/react build
         'react-dom',

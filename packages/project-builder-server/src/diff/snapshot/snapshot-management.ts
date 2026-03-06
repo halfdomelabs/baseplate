@@ -59,9 +59,8 @@ export async function addFilesToSnapshot(
       baseplateDirectory,
     );
     const { definition } = await loadProjectDefinition(
-      projectDirectory,
-      context,
       resolvedBaseplateDir,
+      context,
     );
     const compiledApps = compilePackages(definition, context);
     const compiledApp = compiledApps.find((a) => a.name === appName);

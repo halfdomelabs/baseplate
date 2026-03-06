@@ -1,3 +1,4 @@
+import { dirExists } from '@baseplate-dev/utils/node';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -5,6 +6,7 @@ import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
 import { packageSyncResultSchema } from '#src/sync/sync-metadata.js';
 
+import { writeGenerationManifest } from '../utils/generation-manifest.js';
 import { getProjectByNameOrId } from '../utils/projects.js';
 
 const syncProjectInputSchema = z.object({
@@ -64,13 +66,23 @@ export const syncProjectAction = createServiceAction({
 
     logger.info(`Starting sync for project: ${project.name}`);
 
+    // Resolve baseplate directory: explicit input overrides project default
+    const resolvedBaseplateDir =
+      baseplateDirectory ?? project.baseplateDirectory;
+
+    // Auto-overwrite if output directory doesn't exist yet
+    const outputDirExists = await dirExists(project.directory);
+    const effectiveOverwrite = !!overwrite || !outputDirExists;
+
     try {
       // Create schema parser context
+      // Use baseplateDirectory for plugin discovery when the output dir may not exist
       const schemaParserContext = await createNodeSchemaParserContext(
         project,
         logger,
         plugins,
         cliVersion,
+        resolvedBaseplateDir,
       );
 
       // Create sync metadata controller
@@ -87,9 +99,9 @@ export const syncProjectAction = createServiceAction({
         context: schemaParserContext,
         userConfig,
         syncMetadataController,
-        overwrite,
+        overwrite: effectiveOverwrite,
         skipCommands,
-        baseplateDirectory,
+        baseplateDirectory: resolvedBaseplateDir,
         packageFilter: packages,
       });
 
@@ -107,6 +119,15 @@ export const syncProjectAction = createServiceAction({
           : result.status === 'cancelled'
             ? 'cancelled'
             : 'error';
+
+      // Write generation manifest for test projects after overwrite sync
+      if (
+        result.status === 'success' &&
+        effectiveOverwrite &&
+        project.type === 'test'
+      ) {
+        await writeGenerationManifest(project.directory);
+      }
 
       return {
         status: actionStatus,

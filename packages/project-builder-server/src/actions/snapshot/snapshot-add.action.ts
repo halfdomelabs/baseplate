@@ -52,6 +52,7 @@ export const snapshotAddAction = createServiceAction({
         logger,
         plugins,
         cliVersion,
+        project.baseplateDirectory,
       );
 
       const { addFilesToSnapshot } =
@@ -59,6 +60,7 @@ export const snapshotAddAction = createServiceAction({
 
       await addFilesToSnapshot(files, deleted, {
         projectDirectory: project.directory,
+        baseplateDirectory: project.baseplateDirectory,
         appName: app,
         context: schemaContext,
         logger,

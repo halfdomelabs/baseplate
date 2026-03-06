@@ -4,13 +4,14 @@ import { program } from 'commander';
 import { addDefinitionCommand } from './commands/definition.js';
 import { addDevServerCommand } from './commands/dev-server.js';
 import { addDiffCommand } from './commands/diff.js';
+import { addInitCommand } from './commands/init.js';
 import { addMcpCommand } from './commands/mcp.js';
+import { addRunEnvCommand } from './commands/run-env.js';
 import { addServeCommand } from './commands/serve.js';
 import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncExamplesCommand } from './commands/sync-examples.js';
 import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
-import { addTestProjectCommand } from './commands/test-project.js';
 import { addTestCommand } from './commands/test.js';
 
 /**
@@ -31,7 +32,8 @@ export async function runDevCli(): Promise<void> {
   addServeCommand(program);
   addDevServerCommand(program);
   addMcpCommand(program);
-  addTestProjectCommand(program);
+  addInitCommand(program);
+  addRunEnvCommand(program);
   addTestCommand(program);
 
   await program.parseAsync(process.argv);

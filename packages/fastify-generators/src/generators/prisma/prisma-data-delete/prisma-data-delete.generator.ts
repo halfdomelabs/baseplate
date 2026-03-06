@@ -14,14 +14,23 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateDeleteExecuteCallback } from '../_shared/build-data-helpers/index.js';
+import {
+  generateAuthorizeFragment,
+  generateDeleteExecuteCallback,
+} from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaOutputProvider } from '../prisma/prisma.generator.js';
+import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
+import {
+  prismaImportsProvider,
+  prismaOutputProvider,
+} from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
+  globalRoles: z.array(z.string().min(1)).optional(),
+  instanceRoles: z.array(z.string().min(1)).optional(),
 });
 
 /**
@@ -31,15 +40,26 @@ export const prismaDataDeleteGenerator = createGenerator({
   name: 'prisma/prisma-data-delete',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ name, modelName }) => ({
+  buildTasks: ({ name, modelName, globalRoles, instanceRoles }) => ({
     main: createGeneratorTask({
       dependencies: {
         serviceFile: serviceFileProvider,
         prismaDataService: prismaDataServiceProvider,
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
+        prismaImports: prismaImportsProvider,
+        modelAuthorizer: prismaModelAuthorizerProvider
+          .dependency()
+          .optionalReference(modelName),
       },
-      run({ serviceFile, prismaDataService, dataUtilsImports, prismaOutput }) {
+      run({
+        serviceFile,
+        prismaDataService,
+        dataUtilsImports,
+        prismaOutput,
+        prismaImports,
+        modelAuthorizer,
+      }) {
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);
@@ -48,6 +68,23 @@ export const prismaDataDeleteGenerator = createGenerator({
             const { executeCallbackFragment } = generateDeleteExecuteCallback({
               modelVariableName: modelVar,
             });
+
+            // Build authorize array from global + instance roles
+            const authorizeFragment = generateAuthorizeFragment({
+              modelName,
+              methodType: 'Delete',
+              globalRoles,
+              instanceRoles,
+              modelAuthorizer,
+            });
+
+            // Instance roles require loadExisting to fetch the model instance
+            const hasInstanceRoles =
+              instanceRoles != null && instanceRoles.length > 0;
+            const loadExistingFragment = hasInstanceRoles
+              ? tsTemplate`
+                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),`
+              : '';
 
             // Generate the delete function
             const deleteFunction = tsTemplate`
@@ -64,7 +101,7 @@ export const prismaDataDeleteGenerator = createGenerator({
                   model: ${quot(modelVar)},
                   query,
                   context,
-                  execute: ${executeCallbackFragment},
+                  execute: ${executeCallbackFragment},${authorizeFragment}${loadExistingFragment}
                 });
               }
             `;

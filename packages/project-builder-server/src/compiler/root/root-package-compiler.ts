@@ -145,12 +145,12 @@ export class RootPackageCompiler extends PackageCompiler {
       },
       additionalPackages: {
         dev: {
-          // only include the project-builder-cli package if the project is not an internal example
-          ...(this.definitionContainer.parserContext.project.isInternalExample
-            ? {}
-            : {
+          // only include the project-builder-cli package for user projects (not examples or tests)
+          ...(this.definitionContainer.parserContext.project.type === 'user'
+            ? {
                 '@baseplate-dev/project-builder-cli': cliVersion,
-              }),
+              }
+            : {}),
           // Include Typescript to allow tsconfig plugins like gql.tada to be used
           typescript: CORE_PACKAGES.typescript,
         },

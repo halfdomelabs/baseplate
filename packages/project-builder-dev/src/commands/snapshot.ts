@@ -96,7 +96,7 @@ export function addSnapshotCommand(program: Command): void {
         if (!options.force) {
           // Confirm with user before overwriting existing snapshot
           const target = app ?? 'all apps';
-          logger.warn(
+          console.warn(
             `This will overwrite any existing snapshot for ${target}.`,
           );
           console.info(

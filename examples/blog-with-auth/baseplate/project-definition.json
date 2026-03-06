@@ -194,23 +194,33 @@
         ]
       },
       "name": "AuthVerification",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.userId === userId",
+            "id": "model-authorizer-role:mYNNLjaYYMAp",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "blogs",
       "graphql": {
+        "mutations": {
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
+        },
         "objectType": {
           "enabled": true,
           "fields": [{ "ref": "name" }, { "ref": "userId" }, { "ref": "id" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["public"] },
-          "list": { "enabled": true, "roles": ["public"] }
+          "get": { "enabled": true },
+          "globalRoles": ["public"],
+          "instanceRoles": [],
+          "list": { "count": {}, "enabled": true }
         }
       },
       "id": "model:h7nbXcuLcUmy",
@@ -268,10 +278,18 @@
       },
       "name": "Blog",
       "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
+        "delete": {
+          "enabled": true,
+          "globalRoles": ["admin"],
+          "instanceRoles": ["owner"]
+        },
         "transformers": [],
-        "update": { "enabled": false }
+        "update": {
+          "enabled": true,
+          "fields": ["userId", "name"],
+          "globalRoles": ["admin"],
+          "instanceRoles": ["owner"]
+        }
       }
     },
     {
@@ -354,12 +372,7 @@
         ]
       },
       "name": "BlogPost",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "blogs",
@@ -420,12 +433,7 @@
         ]
       },
       "name": "BlogUser",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "utilities",
@@ -457,12 +465,7 @@
         "primaryKeyFieldRefs": ["key"]
       },
       "name": "RateLimiterFlexible",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "authorizer": {
@@ -477,9 +480,9 @@
       "featureRef": "accounts",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["admin"] },
-          "delete": { "enabled": true, "roles": ["admin"] },
-          "update": { "enabled": true, "roles": ["admin"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -496,8 +499,10 @@
           "foreignRelations": [{ "ref": "roles" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["admin"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user", "admin"],
+          "instanceRoles": [],
+          "list": { "count": {}, "enabled": true }
         }
       },
       "id": "model:jZxZ8T0aLW5C",
@@ -565,13 +570,15 @@
       "service": {
         "create": {
           "enabled": true,
-          "fields": ["name", "emailVerified", "email"]
+          "fields": ["name", "emailVerified", "email"],
+          "globalRoles": ["admin"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
         "transformers": [],
         "update": {
           "enabled": true,
-          "fields": ["name", "emailVerified", "email"]
+          "fields": ["name", "emailVerified", "email"],
+          "globalRoles": ["admin"]
         }
       }
     },
@@ -654,12 +661,7 @@
         ]
       },
       "name": "UserAccount",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts",
@@ -716,12 +718,7 @@
         ]
       },
       "name": "UserRole",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts",
@@ -799,12 +796,7 @@
         ]
       },
       "name": "UserSession",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     }
   ],
   "plugins": [
@@ -891,7 +883,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 24,
+  "schemaVersion": 26,
   "settings": {
     "general": {
       "name": "blog-with-auth",

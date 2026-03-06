@@ -46,7 +46,7 @@ export const pluginMetadataSchema = z.object({
   description: z.string(),
   /**
    * The fully qualified name of the plugin that manages this plugin,
-   * e.g. "@baseplate-dev/plugin-auth:auth0" would be managed by the "@baseplate-dev/plugin-auth:auth" plugin.
+   * e.g. "@baseplate-dev/plugin-auth:better-auth" would be managed by the "@baseplate-dev/plugin-auth:auth" plugin.
    *
    * Managed plugins do not appear in the plugin list but are managed by the base plugin. If the base
    * plugin is disabled, the managed plugins will also be disabled.
@@ -91,7 +91,7 @@ export interface PluginMetadataWithPaths extends PluginMetadata {
    */
   packageName: string;
   /**
-   * The fully qualified name of the plugin, e.g. "@baseplate-dev/plugin-auth:auth0"
+   * The fully qualified name of the plugin, e.g. "@baseplate-dev/plugin-auth:better-auth"
    */
   fullyQualifiedName: string;
   /**

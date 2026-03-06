@@ -54,17 +54,6 @@ function getSearchDirectories({
  * @param options - Configuration options for project discovery
  * @param options.additionalDirectories - Optional array of additional directory paths to search for projects
  * @returns Promise that resolves to an array of discovered projects
- *
- * @example
- * ```typescript
- * // List all projects from default directories
- * const projects = await listProjects({});
- *
- * // List projects including additional custom directories
- * const projects = await listProjects({
- *   additionalDirectories: ['/path/to/custom/projects', '~/my-projects']
- * });
- * ```
  */
 export async function listProjects({
   additionalDirectories,
@@ -75,37 +64,15 @@ export async function listProjects({
     additionalDirectories,
     defaultToCwd: true,
   });
-  return discoverProjects(searchDirectories, logger);
+  return discoverProjects({ projectDirectories: searchDirectories }, logger);
 }
 
 /**
  * Resolves a project by name or directory path.
  *
- * This function can resolve projects in two ways:
- * 1. **Path-based resolution**: If the input starts with '.', '/', or '~', it treats the input as a directory path
- * 2. **Name-based resolution**: Otherwise, it searches through all available projects by name or ID
- *
  * @param projectNameOrDirectory - Project name, ID, or directory path to resolve
  * @returns Promise that resolves to the found project
  * @throws {Error} When the project cannot be found
- *
- * @example
- * ```typescript
- * // Resolve by project name
- * const project = await resolveProject('my-project');
- *
- * // Resolve by project ID
- * const project = await resolveProject('proj_123');
- *
- * // Resolve by relative path
- * const project = await resolveProject('./my-project');
- *
- * // Resolve by absolute path
- * const project = await resolveProject('/path/to/project');
- *
- * // Resolve by home directory path
- * const project = await resolveProject('~/projects/my-project');
- * ```
  */
 export async function resolveProject(
   projectNameOrDirectory: string | undefined = process.cwd(),
@@ -116,9 +83,11 @@ export async function resolveProject(
     projectNameOrDirectory.startsWith('~')
   ) {
     const resolvedPath = expandPathWithTilde(projectNameOrDirectory);
-    const projectInfo = await loadProjectFromDirectory(resolvedPath);
-
-    return projectInfo;
+    return loadProjectFromDirectory(
+      resolvedPath,
+      path.join(resolvedPath, 'baseplate'),
+      'user',
+    );
   }
 
   const projects = await listProjects({});

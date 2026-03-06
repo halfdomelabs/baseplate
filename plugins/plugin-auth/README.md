@@ -1,12 +1,12 @@
 # @baseplate-dev/plugin-auth
 
-This plugin provides authentication capabilities for Baseplate projects, including both local authentication and Auth0 integration.
+This plugin provides authentication capabilities for Baseplate projects, including both local authentication and Better Auth integration.
 
 ## Purpose
 
 The plugin-auth package provides:
 
-- Multiple authentication strategies (local auth and Auth0)
+- Multiple authentication strategies (local auth and Better Auth)
 - User session management via cookies
 - Role-based access control (RBAC)
 - Authentication UI components
@@ -16,7 +16,7 @@ The plugin-auth package provides:
 ## Features
 
 - **Local Authentication**: Email/password authentication with session management
-- **Auth0 Integration**: Full Auth0 authentication flow with callback handling
+- **Better Auth Integration**: Full Better Auth authentication flow with callback handling
 - **Role Management**: Define and manage user roles and permissions
 - **Session Handling**: Secure cookie-based sessions with CSRF protection
 - **React Components**: Pre-built authentication UI components

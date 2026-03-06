@@ -78,6 +78,26 @@ function buildObjectTypeFile(
   });
 }
 
+function deriveQueryAuthorize(
+  appBuilder: BackendAppEntryBuilder,
+  queries: ModelConfig['graphql']['queries'],
+  isAuthEnabled: boolean,
+): GeneratorBundle | undefined {
+  if (!isAuthEnabled) {
+    return undefined;
+  }
+
+  const { globalRoles } = queries;
+
+  if (globalRoles.length === 0) {
+    return undefined;
+  }
+
+  return pothosAuthorizeFieldGenerator({
+    roles: globalRoles.map((r) => appBuilder.nameFromId(r)),
+  });
+}
+
 function buildQueriesFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
@@ -98,6 +118,24 @@ function buildQueriesFileForModel(
     appBuilder.projectDefinition,
   );
 
+  const authorize = deriveQueryAuthorize(appBuilder, queries, isAuthEnabled);
+
+  // Query filter config: pass model name reference + role names when instance roles are present
+  const hasQueryFilter = queries.instanceRoles.length > 0;
+  const queryFilterRoles = hasQueryFilter
+    ? queries.instanceRoles.map((roleRef) => {
+        const authRole = model.authorizer.roles.find(
+          (r) => r.id === roleRef || r.name === roleRef,
+        );
+        if (!authRole) {
+          throw new Error(
+            `Instance role '${roleRef}' not found in model '${model.name}' authorizer roles.`,
+          );
+        }
+        return authRole.name;
+      })
+    : [];
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -108,13 +146,10 @@ function buildQueriesFileForModel(
             modelName: model.name,
             hasPrimaryKeyInputType:
               ModelUtils.getModelIdFields(model).length > 1,
+            queryFilterRef: hasQueryFilter ? model.name : undefined,
+            queryFilterRoles,
             children: {
-              authorize:
-                !isAuthEnabled || get.roles.length === 0
-                  ? undefined
-                  : pothosAuthorizeFieldGenerator({
-                      roles: get.roles.map((r) => appBuilder.nameFromId(r)),
-                    }),
+              authorize,
             },
           })
         : undefined,
@@ -122,13 +157,10 @@ function buildQueriesFileForModel(
         ? pothosPrismaListQueryGenerator({
             order: 1,
             modelName: model.name,
+            queryFilterRef: hasQueryFilter ? model.name : undefined,
+            queryFilterRoles,
             children: {
-              authorize:
-                !isAuthEnabled || list.roles.length === 0
-                  ? undefined
-                  : pothosAuthorizeFieldGenerator({
-                      roles: list.roles.map((r) => appBuilder.nameFromId(r)),
-                    }),
+              authorize,
             },
           })
         : undefined,
@@ -137,13 +169,10 @@ function buildQueriesFileForModel(
           ? pothosPrismaCountQueryGenerator({
               order: 2,
               modelName: model.name,
+              queryFilterRef: hasQueryFilter ? model.name : undefined,
+              queryFilterRoles,
               children: {
-                authorize:
-                  !isAuthEnabled || list.roles.length === 0
-                    ? undefined
-                    : pothosAuthorizeFieldGenerator({
-                        roles: list.roles.map((r) => appBuilder.nameFromId(r)),
-                      }),
+                authorize,
               },
             })
           : undefined,
@@ -151,11 +180,56 @@ function buildQueriesFileForModel(
   });
 }
 
+/**
+ * Derives the GraphQL mutation authorize config from service-level roles.
+ * - No roles → no auth (public)
+ * - Only global roles → pass those roles directly
+ * - Instance roles present → use all auth roles as coarse gate
+ *   (any authenticated user can call, service handles fine-grained auth)
+ */
+function deriveMutationAuthorize(
+  appBuilder: BackendAppEntryBuilder,
+  serviceMethod: {
+    globalRoles: string[];
+    instanceRoles?: string[];
+  },
+  isAuthEnabled: boolean,
+): GeneratorBundle | undefined {
+  if (!isAuthEnabled) {
+    return undefined;
+  }
+
+  const { globalRoles, instanceRoles = [] } = serviceMethod;
+
+  if (globalRoles.length === 0 && instanceRoles.length === 0) {
+    return undefined;
+  }
+
+  if (instanceRoles.length > 0) {
+    // Instance roles present → coarse gate with all auth roles
+    const authConfig =
+      appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
+    const allRoles =
+      authConfig.getAuthConfig(appBuilder.projectDefinition)?.roles ?? [];
+    if (allRoles.length === 0) {
+      return undefined;
+    }
+    return pothosAuthorizeFieldGenerator({
+      roles: allRoles.map((r) => r.name),
+    });
+  }
+
+  // Only global roles → pass them through
+  return pothosAuthorizeFieldGenerator({
+    roles: globalRoles.map((r) => appBuilder.nameFromId(r)),
+  });
+}
+
 function buildMutationsFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
 ): GeneratorBundle | undefined {
-  const { graphql } = model;
+  const { graphql, service } = model;
   const { mutations } = graphql;
 
   const buildMutations =
@@ -191,12 +265,11 @@ function buildMutationsFileForModel(
             order: 0,
             name: `create${uppercaseFirstChar(model.name)}`,
             children: {
-              authorize:
-                isAuthEnabled && create.roles.length > 0
-                  ? pothosAuthorizeFieldGenerator({
-                      roles: create.roles.map((r) => appBuilder.nameFromId(r)),
-                    })
-                  : undefined,
+              authorize: deriveMutationAuthorize(
+                appBuilder,
+                service.create,
+                isAuthEnabled,
+              ),
             },
           })
         : undefined,
@@ -206,12 +279,11 @@ function buildMutationsFileForModel(
             order: 1,
             name: `update${uppercaseFirstChar(model.name)}`,
             children: {
-              authorize:
-                isAuthEnabled && update.roles.length > 0
-                  ? pothosAuthorizeFieldGenerator({
-                      roles: update.roles.map((r) => appBuilder.nameFromId(r)),
-                    })
-                  : undefined,
+              authorize: deriveMutationAuthorize(
+                appBuilder,
+                service.update,
+                isAuthEnabled,
+              ),
             },
           })
         : undefined,
@@ -221,12 +293,11 @@ function buildMutationsFileForModel(
             order: 2,
             name: `delete${uppercaseFirstChar(model.name)}`,
             children: {
-              authorize:
-                isAuthEnabled && del.roles.length > 0
-                  ? pothosAuthorizeFieldGenerator({
-                      roles: del.roles.map((r) => appBuilder.nameFromId(r)),
-                    })
-                  : undefined,
+              authorize: deriveMutationAuthorize(
+                appBuilder,
+                service.delete,
+                isAuthEnabled,
+              ),
             },
           })
         : undefined,

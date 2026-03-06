@@ -1,8 +1,6 @@
 import type { Command } from 'commander';
 
-import type { DiscoveredProjectInfo } from '../utils/project-resolver.js';
-
-import { resolveProjects } from '../utils/project-resolver.js';
+import { listProjects } from '#src/utils/list-projects.js';
 
 interface ListProjectsOptions {
   json?: boolean;
@@ -29,57 +27,28 @@ export function addProjectsCommand(program: Command): void {
 
 async function handleListProjects(options: ListProjectsOptions): Promise<void> {
   try {
-    const projectMap = await resolveProjects({
-      defaultToCwd: true,
-    });
+    const projects = await listProjects({});
 
-    if (projectMap.size === 0) {
+    if (projects.length === 0) {
       console.info('No projects found.');
       console.info('Try setting the PROJECT_DIRECTORIES environment variable.');
       return;
     }
 
     if (options.json) {
-      const projects = [...projectMap.values()].map((project) => ({
+      const output = projects.map((project) => ({
         name: project.name,
-        path: project.path,
-        isInternalExample: project.isInternalExample,
+        directory: project.directory,
       }));
 
-      console.info(JSON.stringify(projects, null, 2));
+      console.info(JSON.stringify(output, null, 2));
     } else {
-      console.info(`Found ${projectMap.size} project(s):\n`);
+      console.info(`Found ${projects.length} project(s):\n`);
 
-      // Group projects by type
-      const examples: DiscoveredProjectInfo[] = [];
-      const regular: DiscoveredProjectInfo[] = [];
-
-      for (const project of projectMap.values()) {
-        if (project.isInternalExample) {
-          examples.push(project);
-        } else {
-          regular.push(project);
-        }
-      }
-
-      // Display regular projects first
-      if (regular.length > 0) {
-        console.info('📦 Projects:');
-        for (const project of regular) {
-          console.info(`   ${project.name}`);
-          console.info(`     Path: ${project.path}`);
-          console.info();
-        }
-      }
-
-      // Display examples
-      if (examples.length > 0) {
-        console.info('📚 Examples:');
-        for (const project of examples) {
-          console.info(`   ${project.name}`);
-          console.info(`     Path: ${project.path}`);
-          console.info();
-        }
+      for (const project of projects) {
+        console.info(`   ${project.name}`);
+        console.info(`     Path: ${project.directory}`);
+        console.info();
       }
 
       console.info('Usage examples:');

@@ -397,12 +397,7 @@
         ]
       },
       "name": "Account",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts/users",
@@ -446,12 +441,7 @@
         ]
       },
       "name": "Customer",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "storage",
@@ -469,8 +459,9 @@
           "localRelations": [{ "ref": "uploader" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user", "admin"] },
-          "list": { "enabled": true, "roles": ["user", "admin"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user", "admin"],
+          "list": { "enabled": true }
         }
       },
       "id": "model:PHb7KKbHSHva",
@@ -583,12 +574,7 @@
         ]
       },
       "name": "File",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts/auth",
@@ -673,20 +659,15 @@
         ]
       },
       "name": "Session",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -703,8 +684,9 @@
           "localRelations": [{ "ref": "todoList" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["user"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
         }
       },
       "id": "model:TJOmePJ61kzF",
@@ -796,9 +778,10 @@
         "create": {
           "enabled": true,
           "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "globalRoles": ["user"],
           "transformerNames": ["attachments"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [
           {
             "embeddedFieldNames": ["position", "url", "id"],
@@ -812,6 +795,7 @@
         "update": {
           "enabled": true,
           "fields": ["position", "text", "done", "assigneeId", "todoListId"],
+          "globalRoles": ["user"],
           "transformerNames": ["attachments"]
         }
       }
@@ -895,8 +879,6 @@
       },
       "name": "TodoItemAttachment",
       "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
         "transformers": [
           {
             "embeddedFieldNames": ["tag"],
@@ -905,8 +887,7 @@
             "modelRef": "TodoItemAttachmentTag",
             "type": "embeddedRelation"
           }
-        ],
-        "update": { "enabled": false }
+        ]
       }
     },
     {
@@ -953,20 +934,24 @@
         ]
       },
       "name": "TodoItemAttachmentTag",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.ownerId === userId",
+            "id": "model-authorizer-role:todolist-owner",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -982,8 +967,10 @@
           "localRelations": [{ "ref": "owner" }, { "ref": "coverPhoto" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["user"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "instanceRoles": ["owner"],
+          "list": { "enabled": true }
         }
       },
       "id": "model:ONd_Fbo61Tx7",
@@ -1084,9 +1071,10 @@
         "create": {
           "enabled": true,
           "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": ["coverPhoto"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [
           {
             "category": {
@@ -1103,6 +1091,7 @@
         "update": {
           "enabled": true,
           "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": ["coverPhoto"]
         }
       }
@@ -1111,9 +1100,9 @@
       "featureRef": "todos",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["user"] },
-          "delete": { "enabled": true, "roles": ["user"] },
-          "update": { "enabled": true, "roles": ["user"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -1126,8 +1115,9 @@
           "localRelations": [{ "ref": "todoList" }, { "ref": "user" }]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["user"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
         }
       },
       "id": "model:nmsOHh3rZMmE",
@@ -1191,13 +1181,15 @@
         "create": {
           "enabled": true,
           "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": []
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [],
         "update": {
           "enabled": true,
           "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "globalRoles": ["user"],
           "transformerNames": []
         }
       }
@@ -1215,9 +1207,9 @@
       "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
-          "create": { "enabled": true, "roles": ["admin"] },
-          "delete": { "enabled": true, "roles": ["admin"] },
-          "update": { "enabled": true, "roles": ["admin"] }
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
         },
         "objectType": {
           "enabled": true,
@@ -1236,8 +1228,9 @@
           ]
         },
         "queries": {
-          "get": { "enabled": true, "roles": ["user"] },
-          "list": { "enabled": true, "roles": ["user"] }
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
         }
       },
       "id": "model:q_whzReugGol",
@@ -1306,9 +1299,10 @@
         "create": {
           "enabled": true,
           "fields": ["name", "email"],
+          "globalRoles": ["admin"],
           "transformerNames": ["roles", "customer", "userProfile", "images"]
         },
-        "delete": { "enabled": true },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
         "transformers": [
           {
             "embeddedFieldNames": ["role"],
@@ -1349,6 +1343,7 @@
         "update": {
           "enabled": true,
           "fields": ["name", "email"],
+          "globalRoles": ["admin"],
           "transformerNames": ["roles", "customer", "userProfile", "images"]
         }
       }
@@ -1420,7 +1415,6 @@
       },
       "name": "UserImage",
       "service": {
-        "create": { "enabled": false },
         "delete": { "enabled": true },
         "transformers": [
           {
@@ -1434,8 +1428,7 @@
             "id": "model-transformer:GBWoZ4NkxkpJ",
             "type": "file"
           }
-        ],
-        "update": { "enabled": false }
+        ]
       }
     },
     {
@@ -1551,7 +1544,6 @@
       },
       "name": "UserProfile",
       "service": {
-        "create": { "enabled": false },
         "delete": { "enabled": true },
         "transformers": [
           {
@@ -1565,8 +1557,7 @@
             "id": "model-transformer:cbjBj3IacjKA",
             "type": "file"
           }
-        ],
-        "update": { "enabled": false }
+        ]
       }
     },
     {
@@ -1630,12 +1621,7 @@
         ]
       },
       "name": "UserRole",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     },
     {
       "featureRef": "accounts/auth",
@@ -1688,12 +1674,7 @@
         "primaryKeyFieldRefs": ["id"]
       },
       "name": "Verification",
-      "service": {
-        "create": { "enabled": false },
-        "delete": { "enabled": false },
-        "transformers": [],
-        "update": { "enabled": false }
-      }
+      "service": { "transformers": [] }
     }
   ],
   "plugins": [
@@ -1775,7 +1756,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 24,
+  "schemaVersion": 26,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

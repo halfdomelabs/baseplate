@@ -23,9 +23,13 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import { generateUpdateExecuteCallback } from '../_shared/build-data-helpers/index.js';
+import {
+  generateAuthorizeFragment,
+  generateUpdateExecuteCallback,
+} from '../_shared/build-data-helpers/index.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
+import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
 import {
   prismaImportsProvider,
   prismaOutputProvider,
@@ -35,6 +39,8 @@ const descriptorSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
   fields: z.array(z.string().min(1)),
+  globalRoles: z.array(z.string().min(1)).optional(),
+  instanceRoles: z.array(z.string().min(1)).optional(),
 });
 
 /**
@@ -44,7 +50,7 @@ export const prismaDataUpdateGenerator = createGenerator({
   name: 'prisma/prisma-data-update',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ name, modelName, fields }) => ({
+  buildTasks: ({ name, modelName, fields, globalRoles, instanceRoles }) => ({
     main: createGeneratorTask({
       dependencies: {
         serviceFile: serviceFileProvider,
@@ -52,6 +58,9 @@ export const prismaDataUpdateGenerator = createGenerator({
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
+        modelAuthorizer: prismaModelAuthorizerProvider
+          .dependency()
+          .optionalReference(modelName),
       },
       run({
         serviceFile,
@@ -59,6 +68,7 @@ export const prismaDataUpdateGenerator = createGenerator({
         dataUtilsImports,
         prismaOutput,
         prismaImports,
+        modelAuthorizer,
       }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
@@ -91,6 +101,15 @@ export const prismaDataUpdateGenerator = createGenerator({
             // Generate the schema export and update function together
             const schemaName = `${modelVar}UpdateSchema`;
 
+            // Build authorize array from global + instance roles
+            const authorizeFragment = generateAuthorizeFragment({
+              modelName,
+              methodType: 'Update',
+              globalRoles,
+              instanceRoles,
+              modelAuthorizer,
+            });
+
             const updateFunction = tsTemplate`
               export const ${schemaName} = ${dataUtilsImports.generateUpdateSchema.fragment()}(${fieldsFragment});
 
@@ -111,7 +130,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                   fields: ${fieldsFragment},
                   input,
                   context,
-                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),
+                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),${authorizeFragment}
                 });
 
                 return ${dataUtilsImports.commitUpdate.fragment()}(plan, {

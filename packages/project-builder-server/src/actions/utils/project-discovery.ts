@@ -1,6 +1,7 @@
 import type {
   ProjectDefinition,
   ProjectInfo,
+  ProjectType,
 } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
@@ -9,27 +10,18 @@ import { fileExists } from '@baseplate-dev/utils/node';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { resolveBaseplateDir } from '#src/diff/snapshot/snapshot-utils.js';
-
-import { isExampleProject } from './is-example-project.js';
 import { generateProjectId } from './project-id.js';
 
 /**
  * Checks if a directory contains a valid Baseplate project.
- * @param directory - The directory path to check.
- * @param baseplateDirectory - Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
+ * @param baseplateDirectory - The baseplate directory containing project-definition.json.
  * @returns True if the directory contains a valid Baseplate project.
  */
 export async function isBaseplateProject(
-  directory: string,
-  baseplateDirectory?: string,
+  baseplateDirectory: string,
 ): Promise<boolean> {
-  const resolvedBaseplateDir = resolveBaseplateDir(
-    directory,
-    baseplateDirectory,
-  );
   const projectDefPath = path.join(
-    resolvedBaseplateDir,
+    baseplateDirectory,
     'project-definition.json',
   );
   return await fileExists(projectDefPath);
@@ -37,21 +29,19 @@ export async function isBaseplateProject(
 
 /**
  * Loads project information from a directory containing a Baseplate project.
- * @param directory - The absolute path to the project directory.
- * @param baseplateDirectory - Custom baseplate directory. Defaults to `path.join(directory, 'baseplate')`.
+ * @param outputDirectory - The directory where the project output lives.
+ * @param baseplateDirectory - The baseplate directory containing project-definition.json and snapshots.
+ * @param type - The project type (user, example, or test).
  * @returns ProjectInfo for the project.
- * @throws Error if directory doesn't contain a valid Baseplate project or loading fails.
+ * @throws Error if the baseplate directory doesn't contain a valid project definition.
  */
 export async function loadProjectFromDirectory(
-  directory: string,
-  baseplateDirectory?: string,
+  outputDirectory: string,
+  baseplateDirectory: string,
+  type: ProjectType,
 ): Promise<ProjectInfo> {
-  const resolvedBaseplateDir = resolveBaseplateDir(
-    directory,
-    baseplateDirectory,
-  );
   const projectDefPath = path.join(
-    resolvedBaseplateDir,
+    baseplateDirectory,
     'project-definition.json',
   );
 
@@ -70,13 +60,12 @@ export async function loadProjectFromDirectory(
       );
     }
 
-    const isInternalExample = await isExampleProject(directory);
-
     return {
-      id: generateProjectId(directory),
-      name,
-      directory,
-      isInternalExample,
+      id: generateProjectId(outputDirectory),
+      name: type === 'test' ? `test:${name}` : name,
+      directory: outputDirectory,
+      type,
+      baseplateDirectory,
     };
   } catch (error) {
     throw enhanceErrorWithContext(
@@ -87,37 +76,84 @@ export async function loadProjectFromDirectory(
 }
 
 /**
- * Discovers Baseplate projects from a list of directories.
- * @param directories - Array of directory paths to search.
+ * Options for discovering projects across different directory types.
+ */
+export interface DiscoverProjectsOptions {
+  /** User project directories (baseplateDir = dir/baseplate, outputDir = dir) */
+  projectDirectories?: string[];
+  /** Example project directories (baseplateDir = dir/baseplate, outputDir = dir) */
+  exampleDirectories?: string[];
+  /** Test project directories (baseplateDir = dir, outputDir = dir/.output) */
+  testProjectDirectories?: string[];
+}
+
+/**
+ * Discovers Baseplate projects from structured directory inputs.
+ * @param options - Directories grouped by project type.
+ * @param logger - Logger instance for warnings.
  * @returns Array of ProjectInfo for discovered projects.
  */
 export async function discoverProjects(
-  directories: string[],
+  options: DiscoverProjectsOptions,
   logger: Logger,
 ): Promise<ProjectInfo[]> {
   const projects: ProjectInfo[] = [];
   const seenNames = new Set<string>();
   const conflicts: string[] = [];
 
-  for (const directory of directories) {
-    try {
-      const resolvedDir = path.resolve(directory);
+  const directoryGroups: {
+    directories: string[];
+    type: ProjectType;
+    resolveOutputDir: (dir: string) => string;
+    resolveBaseplateDir: (dir: string) => string;
+  }[] = [
+    {
+      directories: options.projectDirectories ?? [],
+      type: 'user',
+      resolveOutputDir: (dir) => dir,
+      resolveBaseplateDir: (dir) => path.join(dir, 'baseplate'),
+    },
+    {
+      directories: options.exampleDirectories ?? [],
+      type: 'example',
+      resolveOutputDir: (dir) => dir,
+      resolveBaseplateDir: (dir) => path.join(dir, 'baseplate'),
+    },
+    {
+      directories: options.testProjectDirectories ?? [],
+      type: 'test',
+      resolveOutputDir: (dir) => path.join(dir, '.output'),
+      resolveBaseplateDir: (dir) => dir,
+    },
+  ];
 
-      if (await isBaseplateProject(resolvedDir)) {
-        const project = await loadProjectFromDirectory(resolvedDir);
+  for (const group of directoryGroups) {
+    for (const directory of group.directories) {
+      try {
+        const resolvedDir = path.resolve(directory);
+        const baseplateDir = group.resolveBaseplateDir(resolvedDir);
 
-        // Check for name conflicts
-        if (seenNames.has(project.name)) {
-          conflicts.push(project.name);
-        } else {
-          seenNames.add(project.name);
-          projects.push(project);
+        if (await isBaseplateProject(baseplateDir)) {
+          const outputDir = group.resolveOutputDir(resolvedDir);
+          const project = await loadProjectFromDirectory(
+            outputDir,
+            baseplateDir,
+            group.type,
+          );
+
+          // Check for name conflicts
+          if (seenNames.has(project.name)) {
+            conflicts.push(project.name);
+          } else {
+            seenNames.add(project.name);
+            projects.push(project);
+          }
         }
+      } catch (error) {
+        logger.warn(
+          `Warning: Could not load project from ${directory}: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
-    } catch (error) {
-      logger.warn(
-        `Warning: Could not load project from ${directory}: ${error instanceof Error ? error.message : String(error)}`,
-      );
     }
   }
 

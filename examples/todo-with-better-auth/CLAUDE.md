@@ -1,4 +1,4 @@
-# Todo with Auth0 - Project Context
+# Todo with Better Auth - Project Context
 
 This is a Baseplate-generated project that follows specific coding standards and conventions. This document provides essential context for development.
 

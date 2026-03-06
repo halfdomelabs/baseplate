@@ -1,0 +1,58 @@
+{
+  "name": "prisma/prisma-query-filter-utils",
+  "templates": {
+    "utils-query-filters": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main-group",
+      "importMapProviders": {
+        "dataUtilsImportsProvider": {
+          "importName": "dataUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/query-filters.ts",
+      "projectExports": {
+        "createModelQueryFilter": {
+          "isTypeOnly": false,
+          "name": "createModelQueryFilter"
+        },
+        "ModelQueryFilter": { "isTypeOnly": true, "name": "ModelQueryFilter" },
+        "ModelQueryFilterConfig": {
+          "isTypeOnly": true,
+          "name": "ModelQueryFilterConfig"
+        },
+        "QueryFilterRole": { "isTypeOnly": true, "name": "QueryFilterRole" }
+      },
+      "referencedGeneratorTemplates": ["utils-query-helpers"],
+      "sourceFile": "src/utils/query-filters.ts",
+      "variables": {}
+    },
+    "utils-query-helpers": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main-group",
+      "importMapProviders": {
+        "dataUtilsImportsProvider": {
+          "importName": "dataUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/query-helpers.ts",
+      "projectExports": {
+        "queryHelpers": { "isTypeOnly": false, "name": "queryHelpers" },
+        "WhereResult": { "isTypeOnly": true, "name": "WhereResult" }
+      },
+      "sourceFile": "src/utils/query-helpers.ts",
+      "variables": {}
+    }
+  }
+}

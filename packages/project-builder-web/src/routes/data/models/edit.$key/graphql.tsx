@@ -6,9 +6,9 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
-import { GraphQLMutationsSection } from './-components/graphql/graph-ql-mutations-section.js';
+import { GraphQLAuthSection } from './-components/graphql/graph-ql-auth-section.js';
 import { GraphQLObjectTypeSection } from './-components/graphql/graph-ql-object-type-section.js';
-import { GraphQLQueriesSection } from './-components/graphql/graph-ql-queries-section.js';
+import { GraphQLRootFieldsSection } from './-components/graphql/graph-ql-root-fields-section.js';
 
 export const Route = createFileRoute('/data/models/edit/$key/graphql')({
   component: ModelEditGraphQLPage,
@@ -24,7 +24,7 @@ function ModelEditGraphQLPage(): React.JSX.Element {
     modelKey: key,
   });
 
-  const { control, watch, getValues, reset } = form;
+  const { control, watch, getValues, reset, setValue } = form;
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
@@ -37,8 +37,12 @@ function ModelEditGraphQLPage(): React.JSX.Element {
       <form onSubmit={onSubmit} className="space-y-4 p-4">
         <SectionList>
           <GraphQLObjectTypeSection control={control} />
-          <GraphQLQueriesSection control={control} />
-          <GraphQLMutationsSection control={control} modelKey={key} />
+          <GraphQLRootFieldsSection control={control} />
+          <GraphQLAuthSection
+            control={control}
+            setValue={setValue}
+            modelKey={key}
+          />
           <FormActionBar form={form} />
         </SectionList>
       </form>
