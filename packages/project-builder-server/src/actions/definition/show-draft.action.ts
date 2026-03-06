@@ -1,4 +1,8 @@
+import type { DefinitionDiffEntry } from '@baseplate-dev/project-builder-lib';
+
 import { diffSerializedDefinitions } from '@baseplate-dev/project-builder-lib';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import jsonPatch from 'fast-json-patch';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
@@ -11,11 +15,19 @@ const showDraftInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
 });
 
+const MAX_DETAILS_LENGTH = 2000;
+
 const draftChangeSchema = z.object({
   label: z
     .string()
     .describe('Human-readable label (e.g., "Feature: payments").'),
   type: z.enum(['added', 'updated', 'removed']).describe('The type of change.'),
+  details: z
+    .string()
+    .nullable()
+    .describe(
+      'For added: the entity JSON. For updated: a JSON Patch (RFC 6902) array. Null for removed.',
+    ),
 });
 
 const showDraftOutputSchema = z.object({
@@ -35,6 +47,33 @@ const showDraftOutputSchema = z.object({
     .nullable()
     .describe('Entity-level changes in the draft, or null if no draft.'),
 });
+
+function truncateDetails(text: string): string {
+  if (text.length <= MAX_DETAILS_LENGTH) {
+    return text;
+  }
+  return `${text.slice(0, MAX_DETAILS_LENGTH)}\n... (truncated)`;
+}
+
+function formatChangeDetails(entry: DefinitionDiffEntry): string | null {
+  switch (entry.type) {
+    case 'added': {
+      const json = stringifyPrettyStable(entry.merged as object);
+      return truncateDetails(json);
+    }
+    case 'updated': {
+      const operations = jsonPatch.compare(
+        entry.current as object,
+        entry.merged as object,
+      );
+      const json = stringifyPrettyStable(operations);
+      return truncateDetails(json);
+    }
+    case 'removed': {
+      return null;
+    }
+  }
+}
 
 export const showDraftAction = createServiceAction({
   name: 'show-draft',
@@ -76,6 +115,7 @@ export const showDraftAction = createServiceAction({
       changes: diff.entries.map((entry) => ({
         label: entry.label,
         type: entry.type,
+        details: formatChangeDetails(entry),
       })),
     };
   },
@@ -97,6 +137,13 @@ export const showDraftAction = createServiceAction({
       const prefix =
         change.type === 'added' ? '+' : change.type === 'removed' ? '-' : '~';
       console.info(`  ${prefix} ${change.label} (${change.type})`);
+      if (change.details) {
+        const indented = change.details
+          .split('\n')
+          .map((line) => `    ${line}`)
+          .join('\n');
+        console.info(indented);
+      }
     }
   },
 });
