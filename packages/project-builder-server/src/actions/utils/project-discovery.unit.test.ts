@@ -1,4 +1,4 @@
-import { createTestProjectDefinition } from '@baseplate-dev/project-builder-lib';
+import { createTestProjectDefinition } from '@baseplate-dev/project-builder-lib/testing';
 import { createTestLogger } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
 import path from 'node:path';

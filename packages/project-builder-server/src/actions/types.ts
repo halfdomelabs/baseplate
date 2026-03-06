@@ -23,6 +23,8 @@ export interface ServiceActionContext {
   logger: Logger;
   /** The version of @baseplate-dev/project-builder-cli. */
   cliVersion: string;
+  /** Session ID for draft management. */
+  sessionId: string;
 }
 
 /**

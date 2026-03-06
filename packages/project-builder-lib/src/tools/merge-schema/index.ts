@@ -1,5 +1,13 @@
-export { diffDefinition } from './diff-definition.js';
-export type { DefinitionDiff, DefinitionDiffEntry } from './diff-definition.js';
+export {
+  diffDefinition,
+  diffSerializedDefinitions,
+} from './diff-definition.js';
+export type {
+  DefinitionDiff,
+  DefinitionDiffEntry,
+  DiffSerializedDefinitionsOptions,
+} from './diff-definition.js';
+export { getEntityName } from './entity-utils.js';
 export { mergeDataWithSchema } from './merge-data-with-schema.js';
 export {
   applyMergedDefinition,

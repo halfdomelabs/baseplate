@@ -1,13 +1,13 @@
 import type { PartialDeep } from 'type-fest';
 import type { z } from 'zod';
 
-import { cloneDeep, toMerged } from 'es-toolkit';
-import { set } from 'es-toolkit/compat';
+import { toMerged } from 'es-toolkit';
 
 import type { EntitySchemaMeta } from '#src/references/definition-ref-registry.js';
 
 import { getSchemaChildren } from '#src/parser/schema-structure.js';
 
+import { assignEntityIds } from '../assign-entity-ids.js';
 import { getEntityMeta, getEntityName } from './entity-utils.js';
 import { getMergeRule } from './merge-rule-registry.js';
 
@@ -187,11 +187,7 @@ function mergeEntityArray(
   for (const desiredItem of desired) {
     const name = getEntityName(entityMeta, desiredItem);
     if (!seen.has(name)) {
-      const baseItem = set(
-        cloneDeep(desiredItem),
-        entityMeta.idPath,
-        entityMeta.type.generateNewId(),
-      );
+      const baseItem = assignEntityIds(elementSchema, desiredItem);
       result.push(
         mergeDataWithSchemaInternal(elementSchema, {}, baseItem) as PlainObject,
       );

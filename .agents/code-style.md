@@ -20,6 +20,7 @@
 
 ## Exports
 - If a particular interface or type is not exported but needs to be, change the file so it is exported.
+- **No re-exports from other packages:** Do not re-export types or values from other libraries/packages. Consumers should import directly from the canonical source. This applies especially when refactoring or moving files — fix the references at each call site to point to the original package instead of creating proxy re-exports.
 
 ## String Comparison
 

@@ -28,6 +28,7 @@ describe('MCP Server', () => {
       userConfig: {},
       logger: createConsoleLogger('warn'),
       cliVersion: '1.0.0',
+      sessionId: 'default',
     };
 
     // 2. Create server

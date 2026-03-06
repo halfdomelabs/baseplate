@@ -34,7 +34,7 @@ This file outlines the testing strategy, patterns, and constraints for the Basep
 - **Integration Tests:** Use the `.int.test.ts` suffix.
 - **Test Helpers:** Place shared setup code or utilities in `src/tests/` or create `*.test-helper.ts` files.
   - Before creating mock data or test objects, check for an existing `*.test-helper.ts` or `*.test-utils.ts` file in the same package (see [Test Helper Reference](#test-helper-reference) below).
-  - Example: to mock a `ProjectDefinition`, use `createTestProjectDefinition()` from `packages/project-builder-lib/src/definition/project-definition-container.test-utils.ts`.
+  - Example: to mock a `ProjectDefinition`, use `createTestProjectDefinition()` from `packages/project-builder-lib/src/testing/project-definition-container.test-helper.ts`.
   - If no helper exists and the mock would be useful across multiple test files, create a new `*.test-helper.ts` file following the factory function pattern (e.g., `createTest<ObjectName>()`) and add an entry to the reference table below.
 - **Manual Mocks:** Place manual mocks in `src/__mocks__/`.
 
@@ -103,10 +103,10 @@ const files = await globby(['**/*.ts'], { fs: fsAdapter });
 | sync | `src/tests/logger.test-utils.ts` | `createTestLogger`, `createConsoleLogger` |
 | sync | `src/templates/extractor/test-utils/plugin-test-utils.ts` | `createMockPluginApi`, `createPluginInstance` |
 | ui-components | `src/tests/render.test-helper.tsx` | `renderWithProviders` |
-| project-builder-lib | `src/definition/project-definition-container.test-utils.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer` |
-| project-builder-lib | `src/schema/definition.test-helper.ts` | `createTestFeature`, `createTestModel`, `createTestScalarField` |
+| project-builder-lib | `src/testing/project-definition-container.test-helper.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer`, `createTestEntityServiceContext` |
+| project-builder-lib | `src/testing/definition-helpers.test-helper.ts` | `createTestFeature`, `createTestModel`, `createTestScalarField` |
 | project-builder-lib | `src/plugins/plugins.test-utils.ts` | `createTestPluginMetadata`, `createTestMigration` |
-| project-builder-lib | `src/references/expression-stub-parser.test-helper.ts` | `stubParser`, `StubParserWithSlots` |
+| project-builder-lib | `src/testing/expression-stub-parser.test-helper.ts` | `stubParser`, `StubParserWithSlots` |
 | code-morph | `src/morphers/tests/morpher.test-helper.ts` | `runMorpherTests` |
 | project-builder-server | `src/tests/chokidar.test-helper.ts` | `MockFSWatcher`, `emitMockFsWatcherEvent` |
 | project-builder-cli | `e2e/fixtures/server-fixture.test-helper.ts` | Playwright test fixtures (`test`, `addProject`) |

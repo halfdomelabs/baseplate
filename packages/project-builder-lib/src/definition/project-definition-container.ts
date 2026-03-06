@@ -13,20 +13,23 @@ import type {
   ProjectDefinition,
   ProjectDefinitionSchema,
 } from '#src/schema/index.js';
+import type {
+  EntityServiceContext,
+  EntityTypeMap,
+} from '#src/tools/entity-service/types.js';
 
-import {
-  createPluginSpecStore,
-  parseProjectDefinitionWithReferences,
-} from '#src/parser/parser.js';
+import { createPluginSpecStore } from '#src/parser/parser.js';
 import {
   deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
   serializeSchema,
+  serializeSchemaFromRefPayload,
 } from '#src/references/index.js';
 import {
   createDefinitionSchemaParserContext,
   createProjectDefinitionSchema,
 } from '#src/schema/index.js';
+import { collectEntityMetadata } from '#src/tools/entity-service/entity-type-map.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -42,6 +45,8 @@ export class ProjectDefinitionContainer {
   parserContext: SchemaParserContext;
   pluginStore: PluginSpecStore;
   schema: ProjectDefinitionSchema;
+
+  private _entityTypeMap: EntityTypeMap | undefined;
 
   constructor(
     config: ResolvedZodRefPayload<ProjectDefinition>,
@@ -115,6 +120,30 @@ export class ProjectDefinitionContainer {
   }
 
   /**
+   * Creates an EntityServiceContext for use with entity read/write operations.
+   *
+   * Builds the entity type map from the schema and serializes the definition
+   * with references resolved to names.
+   */
+  private getEntityTypeMap(): EntityTypeMap {
+    this._entityTypeMap ??= collectEntityMetadata(this.schema);
+    return this._entityTypeMap;
+  }
+
+  toEntityServiceContext(): EntityServiceContext {
+    const entityTypeMap = this.getEntityTypeMap();
+    const serializedDefinition = serializeSchemaFromRefPayload(
+      this.refPayload,
+    ) as Record<string, unknown>;
+
+    return {
+      serializedDefinition,
+      entityTypeMap,
+      lookupEntity: (id) => this.entityFromId(id),
+    };
+  }
+
+  /**
    * Serializes the project definition resolving references to their names for easier reading.
    *
    * @returns The serialized contents of the project definition
@@ -122,30 +151,6 @@ export class ProjectDefinitionContainer {
   toSerializedContents(): string {
     const serializedContents = serializeSchema(this.schema, this.definition);
     return stringifyPrettyStable(serializedContents);
-  }
-
-  /**
-   * Creates a new ProjectDefinitionContainer from a raw project definition.
-   *
-   * @param definition The raw project definition
-   * @param context The parser context to use
-   * @returns A new ProjectDefinitionContainer
-   */
-  static fromDefinition(
-    definition: ProjectDefinition,
-    context: SchemaParserContext,
-  ): ProjectDefinitionContainer {
-    const { definition: parsedDefinition, pluginStore } =
-      parseProjectDefinitionWithReferences(definition, context);
-    const schema = createProjectDefinitionSchema(
-      createDefinitionSchemaParserContext({ plugins: pluginStore }),
-    );
-    return new ProjectDefinitionContainer(
-      parsedDefinition,
-      context,
-      pluginStore,
-      schema,
-    );
   }
 
   /**
