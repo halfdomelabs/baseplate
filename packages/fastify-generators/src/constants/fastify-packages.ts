@@ -1,14 +1,14 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.7.4',
-  '@fastify/helmet': '13.0.0',
+  fastify: '5.8.1',
+  '@fastify/helmet': '13.0.2',
   'fastify-plugin': '5.1.0',
   nanoid: '5.1.6',
 
   pino: '9.5.0',
   'pino-pretty': '13.0.0',
 
-  'altair-fastify-plugin': '8.0.4',
+  'altair-fastify-plugin': '8.5.1',
   graphql: '16.11.0',
   '@envelop/core': '5.3.0',
   '@envelop/disable-introspection': '8.0.0',
@@ -17,10 +17,10 @@ export const FASTIFY_PACKAGES = {
   '@envelop/types': '5.2.1',
   '@types/ws': '8.5.13',
 
-  '@fastify/websocket': '11.0.1',
-  '@fastify/request-context': '6.0.1',
-  '@fastify/formbody': '8.0.1',
-  '@fastify/cookie': '11.0.1',
+  '@fastify/websocket': '11.2.0',
+  '@fastify/request-context': '6.2.1',
+  '@fastify/formbody': '8.0.2',
+  '@fastify/cookie': '11.0.2',
   'fastify-raw-body': '5.0.0',
 
   // Pothos
