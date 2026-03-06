@@ -192,6 +192,30 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings).toEqual([]);
     });
 
+    it('should warn for built-in role in hasRole', () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'system', comment: 'System role', builtIn: true },
+      ]);
+      const ast: HasRoleNode = {
+        type: 'hasRole',
+        role: 'system',
+        roleStart: 13,
+        roleEnd: 21,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'system'");
+      expect(warnings[0].message).toContain('built-in');
+    });
+
     it('should warn for role that does not exist in project', () => {
       const ast: HasRoleNode = {
         type: 'hasRole',
@@ -257,6 +281,33 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[1].message).toContain('not defined');
       expect(warnings[1].start).toBe(25);
       expect(warnings[1].end).toBe(36);
+    });
+
+    it('should warn for built-in role in hasSomeRole', () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'public', comment: 'Public role', builtIn: true },
+        { id: '3', name: 'system', comment: 'System role', builtIn: true },
+      ]);
+      const ast: HasSomeRoleNode = {
+        type: 'hasSomeRole',
+        roles: ['admin', 'system'],
+        rolesStart: [12, 21],
+        rolesEnd: [19, 29],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'system'");
+      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].start).toBe(21);
+      expect(warnings[0].end).toBe(29);
     });
 
     it('should warn only for invalid roles in mixed list', () => {

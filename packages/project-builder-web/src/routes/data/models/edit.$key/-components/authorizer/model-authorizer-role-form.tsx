@@ -163,13 +163,16 @@ export function ModelAuthorizerRoleForm({
     };
   }, [modelConfig, definition]);
 
-  // Get project roles from auth config
+  // Get project roles from auth config, excluding built-in roles like 'system'
+  // which are not meaningful in authorizer expressions
   const projectRoles = useMemo(() => {
     const authConfig = definitionContainer.pluginStore.use(authConfigSpec);
     const roles = authConfig.getAuthConfig(
       definitionContainer.definition,
     )?.roles;
-    return roles?.map((role) => role.name) ?? [];
+    return (
+      roles?.filter((role) => !role.builtIn).map((role) => role.name) ?? []
+    );
   }, [definitionContainer]);
 
   // Create CodeMirror extensions

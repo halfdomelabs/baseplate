@@ -48,22 +48,37 @@ export interface ModelValidationContext {
 const VALID_AUTH_FIELDS = new Set(['userId']);
 
 /**
- * Get role names from the project definition using the auth config spec.
+ * Information about auth roles from the project configuration.
+ */
+interface AuthRoleInfo {
+  /** All defined role names */
+  allRoleNames: Set<string>;
+  /** Role names that are built-in (e.g., 'system', 'public', 'user') */
+  builtInRoleNames: Set<string>;
+}
+
+/**
+ * Get role info from the project definition using the auth config spec.
  *
  * @param pluginStore - The plugin spec store
  * @param definition - The raw project definition data
- * @returns Set of defined role names
+ * @returns Role information including built-in status
  */
-function getRoleNames(
+function getAuthRoleInfo(
   pluginStore: PluginSpecStore,
   definition: unknown,
-): Set<string> {
+): AuthRoleInfo {
   const authConfig = pluginStore.use(authConfigSpec);
 
   const roles = authConfig.getAuthConfig(
     definition as ProjectDefinition,
   )?.roles;
-  return new Set(roles?.map((role) => role.name));
+  return {
+    allRoleNames: new Set(roles?.map((role) => role.name)),
+    builtInRoleNames: new Set(
+      roles?.filter((role) => role.builtIn).map((role) => role.name),
+    ),
+  };
 }
 
 /**
@@ -92,7 +107,23 @@ export function validateAuthorizerExpression(
   definition: unknown,
 ): RefExpressionWarning[] {
   const warnings: RefExpressionWarning[] = [];
-  const roleNames = getRoleNames(pluginStore, definition);
+  const { allRoleNames, builtInRoleNames } = getAuthRoleInfo(
+    pluginStore,
+    definition,
+  );
+  const nonBuiltInRoleNames = [...allRoleNames].filter(
+    (name) => !builtInRoleNames.has(name),
+  );
+
+  function warnIfBuiltInRole(role: string, start: number, end: number): void {
+    if (builtInRoleNames.has(role)) {
+      warnings.push({
+        message: `Role '${role}' is a built-in role and should not be used in authorizer expressions. Use non-built-in roles: ${nonBuiltInRoleNames.join(', ')}.`,
+        start,
+        end,
+      });
+    }
+  }
 
   function walk(node: AuthorizerExpressionNode): void {
     switch (node.type) {
@@ -104,9 +135,11 @@ export function validateAuthorizerExpression(
 
       case 'hasRole': {
         // Warn if role doesn't exist (but allow - plugins may define roles)
-        if (!roleNames.has(node.role)) {
+        if (allRoleNames.has(node.role)) {
+          warnIfBuiltInRole(node.role, node.roleStart, node.roleEnd);
+        } else {
           warnings.push({
-            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
+            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
             start: node.roleStart,
             end: node.roleEnd,
           });
@@ -115,14 +148,15 @@ export function validateAuthorizerExpression(
       }
 
       case 'hasSomeRole': {
-        // Warn if any role doesn't exist (but allow - plugins may define roles)
         for (let i = 0; i < node.roles.length; i++) {
           const role = node.roles[i];
-          if (!roleNames.has(role)) {
-            const start = node.rolesStart[i];
-            const end = node.rolesEnd[i];
+          const start = node.rolesStart[i];
+          const end = node.rolesEnd[i];
+          if (allRoleNames.has(role)) {
+            warnIfBuiltInRole(role, start, end);
+          } else {
             warnings.push({
-              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
+              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
               start,
               end,
             });
