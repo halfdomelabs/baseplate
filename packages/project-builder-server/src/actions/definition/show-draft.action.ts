@@ -1,9 +1,9 @@
+import { diffSerializedDefinitions } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
-import { diffDraftDefinition } from './diff-draft-definition.js';
 import { loadDraftSession } from './draft-session.js';
 import { loadEntityServiceContext } from './load-entity-service-context.js';
 
@@ -63,7 +63,7 @@ export const showDraftAction = createServiceAction({
     );
     const currentEntityContext = container.toEntityServiceContext();
 
-    const diff = diffDraftDefinition(
+    const diff = diffSerializedDefinitions(
       container.schema,
       currentEntityContext.serializedDefinition,
       session.draftDefinition,
@@ -73,7 +73,10 @@ export const showDraftAction = createServiceAction({
       hasDraft: true,
       sessionId: session.sessionId,
       definitionHash: session.definitionHash,
-      changes: diff.entries,
+      changes: diff.entries.map((entry) => ({
+        label: entry.label,
+        type: entry.type,
+      })),
     };
   },
   writeCliOutput: (output) => {
