@@ -68,7 +68,7 @@
     "@playwright/test": "1.56.1",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "fastify": "5.7.4",
+    "fastify": "5.8.1",
     "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
