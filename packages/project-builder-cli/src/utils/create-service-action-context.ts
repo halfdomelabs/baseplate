@@ -23,5 +23,6 @@ export async function createServiceActionContext(
     userConfig,
     plugins,
     cliVersion,
+    sessionId: 'default',
   };
 }
