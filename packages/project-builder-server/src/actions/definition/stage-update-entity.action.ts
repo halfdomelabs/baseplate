@@ -4,6 +4,10 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getOrCreateDraftSession, saveDraftSession } from './draft-session.js';
+import {
+  definitionIssueSchema,
+  validateDraftDefinition,
+} from './validate-draft.js';
 
 const stageUpdateEntityInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
@@ -20,6 +24,10 @@ const stageUpdateEntityInputSchema = z.object({
 
 const stageUpdateEntityOutputSchema = z.object({
   message: z.string().describe('A summary of the staged change.'),
+  issues: z
+    .array(definitionIssueSchema)
+    .optional()
+    .describe('Definition issues found after staging.'),
 });
 
 export const stageUpdateEntityAction = createServiceAction({
@@ -30,7 +38,7 @@ export const stageUpdateEntityAction = createServiceAction({
   inputSchema: stageUpdateEntityInputSchema,
   outputSchema: stageUpdateEntityOutputSchema,
   handler: async (input, context) => {
-    const { session, entityContext, projectDirectory } =
+    const { session, entityContext, parserContext, projectDirectory } =
       await getOrCreateDraftSession(input.project, context);
 
     const newDefinition = updateEntity(
@@ -43,13 +51,30 @@ export const stageUpdateEntityAction = createServiceAction({
     );
 
     session.draftDefinition = newDefinition;
+
+    const { errors, warnings } = validateDraftDefinition(
+      newDefinition,
+      parserContext,
+    );
+
+    if (errors.length > 0) {
+      const messages = errors.map((e) => e.message).join('; ');
+      throw new Error(`Staging blocked by definition errors: ${messages}`);
+    }
+
     await saveDraftSession(projectDirectory, session);
 
     return {
       message: `Staged update of ${input.entityTypeName} entity "${input.entityId}". Use commit-draft to persist.`,
+      issues: warnings.length > 0 ? warnings : undefined,
     };
   },
   writeCliOutput: (output) => {
     console.info(`✓ ${output.message}`);
+    if (output.issues) {
+      for (const issue of output.issues) {
+        console.warn(`  ⚠ ${issue.message}`);
+      }
+    }
   },
 });

@@ -137,7 +137,7 @@ export async function getOrCreateDraftSession(
   );
 
   const { definition, hash } = await loadProjectDefinition(
-    project.directory,
+    project.baseplateDirectory,
     parserContext,
   );
 

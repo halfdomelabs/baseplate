@@ -1,4 +1,7 @@
-import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
+import {
+  collectDefinitionIssues,
+  ProjectDefinitionContainer,
+} from '@baseplate-dev/project-builder-lib';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
@@ -13,6 +16,7 @@ import {
   loadDefinitionHash,
   loadDraftSession,
 } from './draft-session.js';
+import { definitionIssueSchema } from './validate-draft.js';
 
 const commitDraftInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
@@ -20,6 +24,10 @@ const commitDraftInputSchema = z.object({
 
 const commitDraftOutputSchema = z.object({
   message: z.string().describe('A summary of the commit result.'),
+  issues: z
+    .array(definitionIssueSchema)
+    .optional()
+    .describe('Definition issues that blocked the commit.'),
 });
 
 export const commitDraftAction = createServiceAction({
@@ -60,6 +68,20 @@ export const commitDraftAction = createServiceAction({
       session.draftDefinition,
       parserContext,
     );
+
+    // Validate the draft definition before committing
+    const issues = collectDefinitionIssues(
+      container.schema,
+      container.definition,
+      container.pluginStore,
+    );
+
+    if (issues.length > 0) {
+      const messages = issues
+        .map((i) => `[${i.severity}] ${i.message}`)
+        .join('; ');
+      throw new Error(`Commit blocked by definition issues: ${messages}`);
+    }
 
     const serializedContents = container.toSerializedContents();
 

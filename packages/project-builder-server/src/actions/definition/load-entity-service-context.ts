@@ -33,7 +33,7 @@ export async function loadEntityServiceContext(
   );
 
   const { definition } = await loadProjectDefinition(
-    project.directory,
+    project.baseplateDirectory,
     parserContext,
   );
 
