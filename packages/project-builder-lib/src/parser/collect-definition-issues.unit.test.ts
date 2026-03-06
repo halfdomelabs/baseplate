@@ -13,10 +13,10 @@ import {
 import { WarningParser } from '#src/testing/expression-warning-parser.test-helper.js';
 
 import {
-  collectDefinitionIssues,
   collectFieldIssues,
   partitionIssuesBySeverity,
 } from './collect-definition-issues.js';
+import { collectExpressionIssues } from './collect-expression-issues.js';
 
 describe('collectFieldIssues', () => {
   it('returns empty array when no checkers are registered', () => {
@@ -254,7 +254,7 @@ describe('partitionIssuesBySeverity', () => {
   });
 });
 
-describe('collectDefinitionIssues', () => {
+describe('collectExpressionIssues', () => {
   it('includes expression validation warnings in collected issues', () => {
     const pluginStore = new PluginSpecStore();
     const warningParser = new WarningParser([
@@ -272,7 +272,7 @@ describe('collectDefinitionIssues', () => {
     );
     const data = { name: 'test', condition: 'model.badField === auth.userId' };
 
-    const issues = collectDefinitionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(schema, data, pluginStore);
 
     const expressionIssues = issues.filter(
       (i) => i.message === 'Invalid field reference',

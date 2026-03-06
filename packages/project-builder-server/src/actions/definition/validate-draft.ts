@@ -35,11 +35,7 @@ export function validateDraftDefinition(
     parserContext,
   );
 
-  const issues = collectDefinitionIssues(
-    container.schema,
-    container.definition,
-    container.pluginStore,
-  );
+  const issues = collectDefinitionIssues(container);
 
   return partitionIssuesBySeverity(issues);
 }

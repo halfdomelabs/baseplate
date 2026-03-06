@@ -3,6 +3,7 @@ import React from 'react';
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { SchemaParserContext } from '#src/parser/types.js';
 import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
 import type { DefinitionSchemaParserContext } from '#src/schema/index.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
@@ -72,6 +73,10 @@ export interface UseProjectDefinitionResult {
    * The definition schema parser context.
    */
   definitionSchemaParserContext: DefinitionSchemaParserContext;
+  /**
+   * Warning-severity definition issues that allow saving but should be shown before syncing.
+   */
+  definitionWarnings: DefinitionIssue[];
 }
 
 export const ProjectDefinitionContext =

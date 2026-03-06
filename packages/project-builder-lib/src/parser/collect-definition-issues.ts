@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
 
 import { definitionIssueCheckerSpec } from '#src/schema/creator/definition-issue-checker-spec.js';
@@ -79,22 +79,27 @@ export function collectFieldIssues(
  * Error-severity issues block saving; warning-severity issues allow saving but block syncing.
  */
 export function collectDefinitionIssues(
-  schema: z.ZodType,
-  data: unknown,
-  pluginStore: PluginSpecStore,
+  container: ProjectDefinitionContainer,
 ): DefinitionIssue[] {
+  const { schema, definition, pluginStore } = container;
+
   // Collect field-level issues from schema walk
-  const issues = collectFieldIssues(schema, data);
+  const issues = collectFieldIssues(schema, definition);
 
   // Collect definition-level issues from plugin spec checkers
   const checkerSpec = pluginStore.use(definitionIssueCheckerSpec);
+  const checkerContext = { pluginStore };
   for (const checker of checkerSpec.getAllCheckers().values()) {
-    const result = checker(data);
+    const result = checker(definition, checkerContext);
     issues.push(...result);
   }
 
   // Collect expression validation issues
-  const expressionIssues = collectExpressionIssues(schema, data, pluginStore);
+  const expressionIssues = collectExpressionIssues(
+    schema,
+    definition,
+    pluginStore,
+  );
   issues.push(...expressionIssues);
 
   return issues;

@@ -121,19 +121,6 @@ export function ProjectDefinitionProvider({
           parsedProjectDefinition,
         );
 
-        // Collect and check definition issues
-        const issues = collectDefinitionIssues(
-          defSchema,
-          newProjectDefinition,
-          pluginStore,
-        );
-        const { errors } = partitionIssuesBySeverity(issues);
-
-        // Block save on errors
-        if (errors.length > 0) {
-          throw new DefinitionIssueError(errors);
-        }
-
         const result = fixRefDeletions(defSchema, newProjectDefinition);
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
@@ -149,6 +136,16 @@ export function ProjectDefinitionProvider({
           pluginStore,
           defSchema,
         );
+
+        // Collect and check definition issues
+        const issues = collectDefinitionIssues(definitionContainer);
+        const { errors } = partitionIssuesBySeverity(issues);
+
+        // Block save on errors
+        if (errors.length > 0) {
+          throw new DefinitionIssueError(errors);
+        }
+
         const serializedContents = definitionContainer.toSerializedContents();
 
         cacheProjectDefinitionContainer(
@@ -195,6 +192,11 @@ export function ProjectDefinitionProvider({
           return { success: false };
         });
     }
+    // Compute definition warnings reactively
+    const allIssues = collectDefinitionIssues(projectDefinitionContainer);
+    const { warnings: definitionWarnings } =
+      partitionIssuesBySeverity(allIssues);
+
     return {
       definition,
       definitionContainer: projectDefinitionContainer,
@@ -210,6 +212,7 @@ export function ProjectDefinitionProvider({
       definitionSchemaParserContext: createDefinitionSchemaParserContext({
         plugins: projectDefinitionContainer.pluginStore,
       }),
+      definitionWarnings,
     };
   }, [
     cliVersion,
