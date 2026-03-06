@@ -1,5 +1,30 @@
 # @baseplate-dev/plugin-storage
 
+## 5.0.0
+
+### Patch Changes
+
+- [#778](https://github.com/halfdomelabs/baseplate/pull/778) [`d6be7a9`](https://github.com/halfdomelabs/baseplate/commit/d6be7a97b5e6970be674bf9b49eddf1499b51f04) Thanks [@kingston](https://github.com/kingston)! - Upgrade packages to fix security vulnerabilities
+  - @aws-sdk/client-s3, @aws-sdk/lib-storage, @aws-sdk/s3-presigned-post, @aws-sdk/s3-request-presigner: 3.990.0 → 3.995.0 (fixes fast-xml-parser CVE-2025-69873 critical, CVE DoS high)
+  - postmark: 4.0.5 → 4.0.7 (fixes axios DoS vulnerability)
+  - fastify-auth0-verify: 3.0.0 → 4.1.0 (updates @fastify/jwt to v10)
+
+- [#788](https://github.com/halfdomelabs/baseplate/pull/788) [`3b3be2b`](https://github.com/halfdomelabs/baseplate/commit/3b3be2b8d45b08552dca3d4e2b5ce391a958341b) Thanks [@kingston](https://github.com/kingston)! - Replace model-specific merger with generic schema-driven definition patcher
+
+- [#785](https://github.com/halfdomelabs/baseplate/pull/785) [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704) Thanks [@kingston](https://github.com/kingston)! - Remove redundant `.optional()` wrapper from `withDefault`
+
+  `withDefault` previously wrapped the schema in both `.prefault()` and `.optional()`. Since `.prefault()` already makes fields accept absent/undefined input, the `.optional()` was redundant and caused the output type to incorrectly include `| undefined` for defaulted fields.
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40), [`1225fda`](https://github.com/halfdomelabs/baseplate/commit/1225fdace3e8da20152e0e78c4decf0c063faa56), [`3029d42`](https://github.com/halfdomelabs/baseplate/commit/3029d42f5d5967721f2b0d5892ea07a80c5f3a1f), [`dfa9638`](https://github.com/halfdomelabs/baseplate/commit/dfa963825c4ba847f9d21f4f014c4dd1722403d6), [`d6be7a9`](https://github.com/halfdomelabs/baseplate/commit/d6be7a97b5e6970be674bf9b49eddf1499b51f04), [`3b3be2b`](https://github.com/halfdomelabs/baseplate/commit/3b3be2b8d45b08552dca3d4e2b5ce391a958341b), [`eadad84`](https://github.com/halfdomelabs/baseplate/commit/eadad8494128ded2cbc76dfbe3b97f93769ea41f), [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`8258b27`](https://github.com/halfdomelabs/baseplate/commit/8258b278e9a25a6e4bd5039a134238d071a63ecd), [`6e2675d`](https://github.com/halfdomelabs/baseplate/commit/6e2675d2166ac9bf470486efdc6a0e48df9bcc6d), [`634f6c5`](https://github.com/halfdomelabs/baseplate/commit/634f6c5aaffab982a985be9f85062de9d1e8a99b), [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c), [`83c713b`](https://github.com/halfdomelabs/baseplate/commit/83c713b075eca2abc946e74bf3f03e515e601eba), [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3), [`2104145`](https://github.com/halfdomelabs/baseplate/commit/210414588d8b1f6816c45054be3b7eea5763b5ce), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+  - @baseplate-dev/project-builder-lib@0.6.0
+  - @baseplate-dev/fastify-generators@0.6.0
+  - @baseplate-dev/ui-components@0.6.0
+  - @baseplate-dev/react-generators@0.6.0
+  - @baseplate-dev/sync@0.6.0
+  - @baseplate-dev/core-generators@0.6.0
+  - @baseplate-dev/plugin-queue@3.0.0
+
 ## 4.0.3
 
 ### Patch Changes

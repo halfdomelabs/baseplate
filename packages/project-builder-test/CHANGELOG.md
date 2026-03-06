@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-test
 
+## 0.6.0
+
+### Patch Changes
+
+- [#789](https://github.com/halfdomelabs/baseplate/pull/789) [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f) Thanks [@kingston](https://github.com/kingston)! - Unify test and example project discovery under a single system:
+  - Add `type: 'user' | 'example' | 'test'` and `baseplateDirectory` to `ProjectInfo`, replacing `isInternalExample`.
+  - Add `baseplate.config.json` for deterministic project discovery — replaces `isExampleProject` heuristic and `EXCLUDE_EXAMPLES`/`PLUGIN_ROOT_DIRECTORIES` env vars.
+  - Unify `discoverProjects` to accept structured options by project type — removes `discoverTestProjects` and duplicate `project-resolver.ts`.
+  - Test projects live in `tests/<name>/` with output to `.output/` (gitignored).
+  - Replace `test-project` subcommands with `baseplate-dev init <name> --type example|test` and `baseplate-dev run-env <test-name>`.
+
+- Updated dependencies [[`a136dc9`](https://github.com/halfdomelabs/baseplate/commit/a136dc90ba12783e059fd3c8a067d1b5496ed3ce), [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f)]:
+  - @baseplate-dev/project-builder-dev@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes
