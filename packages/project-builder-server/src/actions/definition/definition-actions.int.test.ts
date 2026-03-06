@@ -1,5 +1,3 @@
-import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
-
 import {
   createTestFeature,
   createTestModel,
@@ -81,7 +79,7 @@ function createMockDraftSessionContext(): DraftSessionContext {
         testEntityServiceContext.entityContext.serializedDefinition,
     },
     entityContext: testEntityServiceContext.entityContext,
-    parserContext: {} as SchemaParserContext,
+    parserContext: testEntityServiceContext.parserContext,
     projectDirectory: PROJECT_DIR,
   };
 }
@@ -256,9 +254,24 @@ describe('stage-update-entity', () => {
       stageUpdateEntityAction,
       {
         project: 'test-project',
-        entityTypeName: 'feature',
-        entityId: blogFeature.id,
-        entityData: { id: blogFeature.id, name: 'blog-updated' },
+        entityTypeName: 'model',
+        entityId: blogPostModel.id,
+        entityData: {
+          id: blogPostModel.id,
+          name: 'BlogPostUpdated',
+          featureRef: 'blog',
+          model: {
+            fields: [
+              {
+                name: 'id',
+                type: 'uuid',
+                isOptional: false,
+                options: { genUuid: true },
+              },
+            ],
+            primaryKeyFieldRefs: ['id'],
+          },
+        },
       },
       context,
     );
@@ -270,9 +283,9 @@ describe('stage-update-entity', () => {
       'utf-8',
     );
     const definition = JSON.parse(defContents) as {
-      features: { name: string }[];
+      models: { name: string }[];
     };
-    expect(definition.features.some((f) => f.name === 'blog-updated')).toBe(
+    expect(definition.models.some((m) => m.name === 'BlogPostUpdated')).toBe(
       true,
     );
   });

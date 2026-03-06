@@ -1,4 +1,7 @@
-import type { ProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
+import type {
+  ProjectDefinitionInput,
+  SchemaParserContext,
+} from '@baseplate-dev/project-builder-lib';
 
 import { createTestProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib/testing';
 import { createConsoleLogger } from '@baseplate-dev/sync';
@@ -43,10 +46,14 @@ export function createTestActionContext(
  * @param input - Partial ProjectDefinitionInput to customise the test definition.
  * @returns An EntityServiceContextResult matching the shape returned by `loadEntityServiceContext`.
  */
+export interface TestEntityServiceContextResult extends EntityServiceContextResult {
+  parserContext: SchemaParserContext;
+}
+
 export function createTestEntityServiceContext(
   input: Partial<ProjectDefinitionInput> = {},
-): EntityServiceContextResult {
+): TestEntityServiceContextResult {
   const container = createTestProjectDefinitionContainer(input);
   const entityContext = container.toEntityServiceContext();
-  return { entityContext, container };
+  return { entityContext, container, parserContext: container.parserContext };
 }
