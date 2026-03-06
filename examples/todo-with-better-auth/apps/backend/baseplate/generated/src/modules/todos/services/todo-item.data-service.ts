@@ -32,6 +32,7 @@ import {
 } from '@src/utils/data-operations/field-utils.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
+import { todoItemAuthorizer } from '../authorizers/todo-item.authorizer.js';
 import { todoItemAttachmentInputFields } from './todo-item-attachment.data-service.js';
 
 const parentModel = createParentModelConfig('todoItem', (value) => ({
@@ -121,7 +122,7 @@ export async function updateTodoItem<
     input,
     context,
     loadExisting: () => prisma.todoItem.findUniqueOrThrow({ where }),
-    authorize: ['user'],
+    authorize: ['admin', todoItemAuthorizer.roles.owner],
   });
 
   return commitUpdate(plan, {
@@ -165,6 +166,7 @@ export async function deleteTodoItem<
       });
       return item;
     },
-    authorize: ['user'],
+    authorize: ['admin', todoItemAuthorizer.roles.owner],
+    loadExisting: () => prisma.todoItem.findUniqueOrThrow({ where }),
   });
 }

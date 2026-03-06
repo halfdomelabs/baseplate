@@ -10,6 +10,8 @@ import type {
   FieldComparisonNode,
   HasRoleNode,
   HasSomeRoleNode,
+  NestedHasRoleNode,
+  NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
 
 import {
@@ -276,6 +278,186 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[0].message).toContain("'superuser'");
       expect(warnings[0].start).toBe(21);
       expect(warnings[0].end).toBe(32);
+    });
+  });
+
+  describe('nested hasRole validation', () => {
+    const modelContextWithRelations = {
+      modelName: 'Todo',
+      scalarFieldNames: new Set(['id', 'todoListId']),
+      relationInfo: new Map([
+        [
+          'todoList',
+          {
+            referenceCount: 1,
+            foreignModelName: 'TodoList',
+            foreignAuthorizerRoleNames: new Set(['owner', 'editor']),
+          },
+        ],
+        [
+          'compositeRelation',
+          {
+            referenceCount: 2,
+            foreignModelName: 'Other',
+            foreignAuthorizerRoleNames: new Set(['admin']),
+          },
+        ],
+      ]),
+    };
+
+    it('should validate valid nested hasRole', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for nonexistent relation', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'nonexistent',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'nonexistent'");
+      expect(warnings[0].message).toContain("'Todo'");
+    });
+
+    it('should warn for composite FK relation', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'compositeRelation',
+        relationStart: 8,
+        relationEnd: 30,
+        role: 'admin',
+        roleStart: 32,
+        roleEnd: 39,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('2 foreign key references');
+      expect(warnings[0].message).toContain('single-key');
+    });
+
+    it('should warn for nonexistent role on foreign model', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'superuser',
+        roleStart: 24,
+        roleEnd: 35,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'superuser'");
+      expect(warnings[0].message).toContain("'TodoList'");
+    });
+
+    it('should validate valid nested hasSomeRole', () => {
+      const ast: NestedHasSomeRoleNode = {
+        type: 'nestedHasSomeRole',
+        relationName: 'todoList',
+        relationStart: 12,
+        relationEnd: 26,
+        roles: ['owner', 'editor'],
+        rolesStart: [28, 37],
+        rolesEnd: [35, 45],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for invalid roles in nested hasSomeRole', () => {
+      const ast: NestedHasSomeRoleNode = {
+        type: 'nestedHasSomeRole',
+        relationName: 'todoList',
+        relationStart: 12,
+        relationEnd: 26,
+        roles: ['owner', 'badRole'],
+        rolesStart: [28, 37],
+        rolesEnd: [35, 46],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'badRole'");
+      expect(warnings[0].message).toContain("'TodoList'");
+    });
+
+    it('should skip validation when no relationInfo provided', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
     });
   });
 

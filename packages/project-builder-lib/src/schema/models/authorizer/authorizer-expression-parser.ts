@@ -12,10 +12,30 @@ import { RefExpressionParser } from '#src/references/expression-types.js';
 
 import type { modelEntityType } from '../types.js';
 import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
+import type { RelationValidationInfo } from './authorizer-expression-validator.js';
 
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
 import { validateAuthorizerExpression } from './authorizer-expression-validator.js';
+
+/**
+ * Shape of a raw model in the project definition JSON.
+ * Used for navigating the untyped definition to extract relation and authorizer info.
+ */
+interface RawModelDefinition {
+  name?: string;
+  model?: {
+    fields?: { name: string }[];
+    relations?: {
+      name: string;
+      modelRef: string;
+      references?: { localRef: string; foreignRef: string }[];
+    }[];
+  };
+  authorizer?: {
+    roles?: { name: string }[];
+  };
+}
 
 /**
  * Expression parser for model authorizer role expressions.
@@ -129,7 +149,13 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   private getModelContext(
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
-  ): { modelName: string; scalarFieldNames: Set<string> } | undefined {
+  ):
+    | {
+        modelName: string;
+        scalarFieldNames: Set<string>;
+        relationInfo: Map<string, RelationValidationInfo>;
+      }
+    | undefined {
     const modelPath = resolvedSlots.model;
     if (modelPath.length === 0) {
       return undefined;
@@ -145,10 +171,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       current = (current as Record<string | number, unknown>)[segment];
     }
 
-    const model = current as {
-      name?: string;
-      model?: { fields?: { name: string }[] };
-    } | null;
+    const model = current as RawModelDefinition | null;
 
     if (!model || typeof model.name !== 'string') {
       return undefined;
@@ -162,10 +185,69 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       }
     }
 
+    // Build relation info for nested authorizer validation
+    const relationInfo = this.buildRelationInfo(definition, model);
+
     return {
       modelName: model.name,
       scalarFieldNames,
+      relationInfo,
     };
+  }
+
+  /**
+   * Build relation validation info by resolving foreign models and their authorizer roles.
+   */
+  private buildRelationInfo(
+    definition: unknown,
+    model: RawModelDefinition,
+  ): Map<string, RelationValidationInfo> {
+    const relationInfo = new Map<string, RelationValidationInfo>();
+    const relations = model.model?.relations ?? [];
+
+    // Build a lookup of all models by name from the definition
+    const allModels = (definition as { models?: RawModelDefinition[] }).models;
+    if (!allModels) {
+      return relationInfo;
+    }
+
+    const modelsByName = new Map<string, RawModelDefinition>();
+    for (const m of allModels) {
+      if (typeof m.name === 'string') {
+        modelsByName.set(m.name, m);
+      }
+    }
+
+    for (const relation of relations) {
+      if (typeof relation.name !== 'string') {
+        continue;
+      }
+
+      const foreignModelName =
+        typeof relation.modelRef === 'string' ? relation.modelRef : undefined;
+      const foreignModel = foreignModelName
+        ? modelsByName.get(foreignModelName)
+        : undefined;
+
+      const foreignAuthorizerRoleNames = new Set<string>();
+      if (foreignModel?.authorizer?.roles) {
+        for (const role of foreignModel.authorizer.roles) {
+          if (typeof role.name === 'string') {
+            foreignAuthorizerRoleNames.add(role.name);
+          }
+        }
+      }
+
+      relationInfo.set(relation.name, {
+        referenceCount: Array.isArray(relation.references)
+          ? relation.references.length
+          : 0,
+        foreignModelName: foreignModelName ?? 'unknown',
+        foreignAuthorizerRoleNames,
+      });
+    }
+
+    return relationInfo;
   }
 }
 

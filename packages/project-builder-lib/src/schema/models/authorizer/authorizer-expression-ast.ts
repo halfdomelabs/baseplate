@@ -17,6 +17,8 @@ export type AuthorizerExpressionNode =
   | FieldComparisonNode
   | HasRoleNode
   | HasSomeRoleNode
+  | NestedHasRoleNode
+  | NestedHasSomeRoleNode
   | BinaryLogicalNode;
 
 /**
@@ -91,6 +93,68 @@ export interface HasSomeRoleNode {
 }
 
 /**
+ * A nested role check expression: `hasRole(model.relation, 'roleName')`
+ *
+ * Checks if the current user has the specified role on a related model's authorizer.
+ *
+ * @example
+ * ```typescript
+ * // hasRole(model.todoList, 'owner')
+ * {
+ *   type: 'nestedHasRole',
+ *   relationName: 'todoList',
+ *   role: 'owner',
+ * }
+ * ```
+ */
+export interface NestedHasRoleNode {
+  type: 'nestedHasRole';
+  /** The relation name on the current model (e.g., 'todoList') */
+  relationName: string;
+  /** Start position of model.relation in the source */
+  relationStart: number;
+  /** End position of model.relation in the source */
+  relationEnd: number;
+  /** The role name on the foreign model's authorizer */
+  role: string;
+  /** Start position of the role string literal in the source (for rename tracking) */
+  roleStart: number;
+  /** End position of the role string literal in the source (for rename tracking) */
+  roleEnd: number;
+}
+
+/**
+ * A nested role check expression for multiple roles: `hasSomeRole(model.relation, ['role1', 'role2'])`
+ *
+ * Checks if the current user has any of the specified roles on a related model's authorizer.
+ *
+ * @example
+ * ```typescript
+ * // hasSomeRole(model.todoList, ['owner', 'editor'])
+ * {
+ *   type: 'nestedHasSomeRole',
+ *   relationName: 'todoList',
+ *   roles: ['owner', 'editor'],
+ * }
+ * ```
+ */
+export interface NestedHasSomeRoleNode {
+  type: 'nestedHasSomeRole';
+  /** The relation name on the current model (e.g., 'todoList') */
+  relationName: string;
+  /** Start position of model.relation in the source */
+  relationStart: number;
+  /** End position of model.relation in the source */
+  relationEnd: number;
+  /** The role names on the foreign model's authorizer */
+  roles: string[];
+  /** Start positions of each role string literal in the source (for rename tracking) */
+  rolesStart: number[];
+  /** End positions of each role string literal in the source (for rename tracking) */
+  rolesEnd: number[];
+}
+
+/**
  * A binary logical expression: `left || right` or `left && right`
  *
  * @example
@@ -147,6 +211,8 @@ export interface AuthorizerExpressionInfo {
   authFieldRefs: string[];
   /** Role names referenced (e.g., ['admin', 'user']) */
   roleRefs: string[];
+  /** Nested role references via model relations (e.g., hasRole(model.todoList, 'owner')) */
+  nestedRoleRefs: { relationName: string; roles: string[] }[];
   /** Whether the expression requires the model instance */
   requiresModel: boolean;
 }

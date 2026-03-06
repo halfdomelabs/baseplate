@@ -19,6 +19,18 @@ import type {
 } from './authorizer-expression-ast.js';
 
 /**
+ * Information about a model relation for nested authorizer validation.
+ */
+export interface RelationValidationInfo {
+  /** Number of foreign key references (must be 1 for nested authorizer support) */
+  referenceCount: number;
+  /** Foreign model name (for error messages) */
+  foreignModelName: string;
+  /** Set of role names defined on the foreign model's authorizer */
+  foreignAuthorizerRoleNames: Set<string>;
+}
+
+/**
  * Model information needed for validation.
  */
 export interface ModelValidationContext {
@@ -26,6 +38,8 @@ export interface ModelValidationContext {
   modelName: string;
   /** Set of valid scalar field names on the model */
   scalarFieldNames: Set<string>;
+  /** Map of relation name → relation validation info (for nested authorizer checks) */
+  relationInfo?: Map<string, RelationValidationInfo>;
 }
 
 /**
@@ -117,10 +131,83 @@ export function validateAuthorizerExpression(
         break;
       }
 
+      case 'nestedHasRole': {
+        validateNestedRelation(
+          node.relationName,
+          node.relationStart,
+          node.relationEnd,
+          [node.role],
+          [node.roleStart],
+          [node.roleEnd],
+        );
+        break;
+      }
+
+      case 'nestedHasSomeRole': {
+        validateNestedRelation(
+          node.relationName,
+          node.relationStart,
+          node.relationEnd,
+          node.roles,
+          node.rolesStart,
+          node.rolesEnd,
+        );
+        break;
+      }
+
       case 'binaryLogical': {
         walk(node.left);
         walk(node.right);
         break;
+      }
+    }
+  }
+
+  function validateNestedRelation(
+    relationName: string,
+    relationStart: number,
+    relationEnd: number,
+    roles: string[],
+    rolesStart: number[],
+    rolesEnd: number[],
+  ): void {
+    const { relationInfo } = modelContext;
+    if (!relationInfo) {
+      // Can't validate without relation info
+      return;
+    }
+
+    const relation = relationInfo.get(relationName);
+    if (!relation) {
+      const availableRelations = [...relationInfo.keys()].join(', ');
+      warnings.push({
+        message: `Relation '${relationName}' does not exist on model '${modelContext.modelName}'.${availableRelations ? ` Available relations: ${availableRelations}.` : ''}`,
+        start: relationStart,
+        end: relationEnd,
+      });
+      return;
+    }
+
+    if (relation.referenceCount !== 1) {
+      warnings.push({
+        message: `Relation '${relationName}' has ${relation.referenceCount} foreign key references. Nested authorizer checks only support single-key relations.`,
+        start: relationStart,
+        end: relationEnd,
+      });
+      return;
+    }
+
+    // Validate each role exists on the foreign model's authorizer
+    for (const [i, role] of roles.entries()) {
+      if (!relation.foreignAuthorizerRoleNames.has(role)) {
+        const availableRoles = [...relation.foreignAuthorizerRoleNames].join(
+          ', ',
+        );
+        warnings.push({
+          message: `Role '${role}' is not defined on model '${relation.foreignModelName}' authorizer.${availableRoles ? ` Available roles: ${availableRoles}.` : ''}`,
+          start: rolesStart[i],
+          end: rolesEnd[i],
+        });
       }
     }
   }

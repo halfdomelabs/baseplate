@@ -32,6 +32,8 @@ const descriptorSchema = z.object({
   modelName: z.string().min(1),
   idFieldName: z.string().min(1),
   roles: z.array(roleSchema).min(1),
+  /** Model names of foreign authorizers referenced by nested role expressions */
+  foreignAuthorizerModelNames: z.array(z.string().min(1)).default([]),
 });
 
 /**
@@ -60,6 +62,23 @@ export const prismaModelAuthorizerProvider =
     'prisma-model-authorizer',
   );
 
+/**
+ * Find which foreign authorizer providers are referenced by a role code string.
+ * Checks if the roleCode contains the foreign authorizer variable name.
+ */
+function findReferencedForeignAuthorizers(
+  roleCode: string,
+  providers: Map<string, PrismaModelAuthorizerProvider>,
+): PrismaModelAuthorizerProvider[] {
+  const referenced: PrismaModelAuthorizerProvider[] = [];
+  for (const [, provider] of providers) {
+    if (roleCode.includes(provider.getAuthorizerName())) {
+      referenced.push(provider);
+    }
+  }
+  return referenced;
+}
+
 // ----- Generator -----
 
 /**
@@ -73,58 +92,103 @@ export const prismaModelAuthorizerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => `${descriptor.modelName}Authorizer`,
-  buildTasks: (descriptor) => ({
-    main: createGeneratorTask({
-      dependencies: {
-        appModule: appModuleProvider,
-        typescriptFile: typescriptFileProvider,
-        prismaOutput: prismaOutputProvider,
-        prismaAuthorizerUtilsImports: prismaAuthorizerUtilsImportsProvider,
-      },
-      outputs: {
-        prismaModelAuthorizer: prismaModelAuthorizerProvider.export(
-          packageScope,
-          descriptor.modelName,
-        ),
-      },
-      run({
-        appModule,
-        typescriptFile,
-        prismaOutput,
-        prismaAuthorizerUtilsImports,
-      }) {
-        const { modelName, idFieldName, roles } = descriptor;
-        const modelVarName = lowercaseFirstChar(modelName);
-        const authorizerName = `${modelVarName}Authorizer`;
+  buildTasks: (descriptor) => {
+    const { foreignAuthorizerModelNames } = descriptor;
 
-        const authorizerFolder = posixJoin(
-          appModule.getModuleFolder(),
-          'authorizers',
-        );
-        const authorizerPath = posixJoin(
-          authorizerFolder,
-          `${kebabCase(modelName)}.authorizer.ts`,
-        );
+    // Build dynamic dependencies for foreign authorizers referenced by nested expressions
+    const foreignAuthorizerDeps = Object.fromEntries(
+      foreignAuthorizerModelNames.map((name) => [
+        `foreignAuthorizer_${name}`,
+        prismaModelAuthorizerProvider.dependency().reference(name),
+      ]),
+    );
 
-        return {
-          build: async (builder) => {
-            const rolesObject: Record<string, string> = {};
+    return {
+      main: createGeneratorTask({
+        dependencies: {
+          appModule: appModuleProvider,
+          typescriptFile: typescriptFileProvider,
+          prismaOutput: prismaOutputProvider,
+          prismaAuthorizerUtilsImports: prismaAuthorizerUtilsImportsProvider,
+          ...(foreignAuthorizerDeps as Record<string, never>),
+        },
+        outputs: {
+          prismaModelAuthorizer: prismaModelAuthorizerProvider.export(
+            packageScope,
+            descriptor.modelName,
+          ),
+        },
+        run({
+          appModule,
+          typescriptFile,
+          prismaOutput,
+          prismaAuthorizerUtilsImports,
+          ...dynamicDeps
+        }) {
+          const { modelName, idFieldName, roles } = descriptor;
+          const modelVarName = lowercaseFirstChar(modelName);
+          const authorizerName = `${modelVarName}Authorizer`;
 
-            for (const role of roles) {
-              rolesObject[role.name] = role.roleCode;
-            }
+          // Build a map of foreign model name → authorizer provider
+          const foreignAuthorizerProviders = new Map<
+            string,
+            PrismaModelAuthorizerProvider
+          >();
+          for (const name of foreignAuthorizerModelNames) {
+            const provider = (dynamicDeps as Record<string, unknown>)[
+              `foreignAuthorizer_${name}`
+            ] as PrismaModelAuthorizerProvider;
+            foreignAuthorizerProviders.set(name, provider);
+          }
 
-            const rolesFragment = TsCodeUtils.mergeFragmentsAsObject(
-              rolesObject,
-              { disableSort: true },
-            );
+          const authorizerFolder = posixJoin(
+            appModule.getModuleFolder(),
+            'authorizers',
+          );
+          const authorizerPath = posixJoin(
+            authorizerFolder,
+            `${kebabCase(modelName)}.authorizer.ts`,
+          );
 
-            const prismaModelFragment =
-              prismaOutput.getPrismaModelFragment(modelName);
+          return {
+            build: async (builder) => {
+              const rolesObject: Record<string, string | TsCodeFragment> = {};
 
-            const idWhere = idFieldName === 'id' ? 'id' : `${idFieldName}: id`;
+              for (const role of roles) {
+                // Check if the role code references any foreign authorizer variables
+                // If so, wrap it in a TsCodeFragment with the necessary imports
+                const referencedProviders = findReferencedForeignAuthorizers(
+                  role.roleCode,
+                  foreignAuthorizerProviders,
+                );
 
-            const fileFragment = tsTemplate`
+                if (referencedProviders.length > 0) {
+                  // Collect all imports from referenced foreign authorizers
+                  const allImports = referencedProviders.flatMap(
+                    (provider) =>
+                      provider.getAuthorizerFragment().imports ?? [],
+                  );
+                  rolesObject[role.name] = {
+                    contents: role.roleCode,
+                    imports: allImports,
+                  };
+                } else {
+                  rolesObject[role.name] = role.roleCode;
+                }
+              }
+
+              const rolesFragment = TsCodeUtils.mergeFragmentsAsObject(
+                rolesObject,
+                { disableSort: true },
+              );
+
+              const prismaModelFragment =
+                prismaOutput.getPrismaModelFragment(modelName);
+
+              const idWhere =
+                idFieldName === 'id' ? 'id' : `${idFieldName}: id`;
+
+              const fileFragment = tsTemplate`
               export const ${authorizerName} = ${prismaAuthorizerUtilsImports.createModelAuthorizer.fragment()}({
                 model: '${modelVarName}',
                 idField: '${idFieldName}',
@@ -133,39 +197,40 @@ export const prismaModelAuthorizerGenerator = createGenerator({
               });
             `;
 
-            await builder.apply(
-              typescriptFile.renderTemplateFragment({
-                id: `prisma-model-authorizer:${modelName}`,
-                destination: authorizerPath,
-                fragment: fileFragment,
-              }),
-            );
+              await builder.apply(
+                typescriptFile.renderTemplateFragment({
+                  id: `prisma-model-authorizer:${modelName}`,
+                  destination: authorizerPath,
+                  fragment: fileFragment,
+                }),
+              );
 
-            return {
-              prismaModelAuthorizer: {
-                getAuthorizerName() {
-                  return authorizerName;
-                },
-                getAuthorizerFragment() {
-                  return TsCodeUtils.importFragment(
-                    authorizerName,
-                    authorizerPath,
-                  );
-                },
-                getRoleFragment(roleName: string) {
-                  const validRoles = roles.map((r) => r.name);
-                  if (!validRoles.includes(roleName)) {
-                    throw new Error(
-                      `Role '${roleName}' not found on ${modelName} authorizer. Available: ${validRoles.join(', ')}`,
+              return {
+                prismaModelAuthorizer: {
+                  getAuthorizerName() {
+                    return authorizerName;
+                  },
+                  getAuthorizerFragment() {
+                    return TsCodeUtils.importFragment(
+                      authorizerName,
+                      authorizerPath,
                     );
-                  }
-                  return tsTemplate`${TsCodeUtils.importFragment(authorizerName, authorizerPath)}.roles.${roleName}`;
+                  },
+                  getRoleFragment(roleName: string) {
+                    const validRoles = roles.map((r) => r.name);
+                    if (!validRoles.includes(roleName)) {
+                      throw new Error(
+                        `Role '${roleName}' not found on ${modelName} authorizer. Available: ${validRoles.join(', ')}`,
+                      );
+                    }
+                    return tsTemplate`${TsCodeUtils.importFragment(authorizerName, authorizerPath)}.roles.${roleName}`;
+                  },
                 },
-              },
-            };
-          },
-        };
-      },
-    }),
-  }),
+              };
+            },
+          };
+        },
+      }),
+    };
+  },
 });

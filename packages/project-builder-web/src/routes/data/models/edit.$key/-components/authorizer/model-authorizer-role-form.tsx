@@ -1,4 +1,7 @@
-import type { AuthorizerRoleConfig } from '@baseplate-dev/project-builder-lib';
+import type {
+  AuthorizerRoleConfig,
+  RelationValidationInfo,
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -27,6 +30,8 @@ import { clsx } from 'clsx';
 import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import type { RelationAutocompleteInfo } from './authorizer-expression-autocomplete.js';
 
 import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { createAuthorizerCompletions } from './authorizer-expression-autocomplete.js';
@@ -111,17 +116,52 @@ export function ModelAuthorizerRoleForm({
 
   // Get current model config for autocomplete
   const modelConfig = useOriginalModel();
+  const { definition } = useProjectDefinition();
 
-  // Get model context for linter
-  const modelContext = useMemo(
-    () => ({
-      modelName: modelConfig.name,
-      scalarFieldNames: new Set<string>(
-        modelConfig.model.fields.map((field: { name: string }) => field.name),
-      ),
-    }),
-    [modelConfig],
-  );
+  // Build relation info for nested authorizer validation and autocomplete
+  const { modelContext, relationInfoList } = useMemo(() => {
+    const scalarFieldNames = new Set<string>(
+      modelConfig.model.fields.map((field: { name: string }) => field.name),
+    );
+
+    // Build a lookup of all models by ID and name
+    const modelsById = new Map(definition.models.map((m) => [m.id, m]));
+    const modelsByName = new Map(definition.models.map((m) => [m.name, m]));
+
+    // Build relation validation info and autocomplete info
+    const relationValidationInfo = new Map<string, RelationValidationInfo>();
+    const relInfoList: RelationAutocompleteInfo[] = [];
+
+    for (const relation of modelConfig.model.relations) {
+      const foreignModel =
+        modelsById.get(relation.modelRef) ??
+        modelsByName.get(relation.modelRef);
+      const foreignAuthorizerRoleNames = new Set<string>(
+        (foreignModel?.authorizer.roles ?? []).map((r) => r.name),
+      );
+
+      relationValidationInfo.set(relation.name, {
+        referenceCount: relation.references.length,
+        foreignModelName: foreignModel?.name ?? relation.modelRef,
+        foreignAuthorizerRoleNames,
+      });
+
+      relInfoList.push({
+        relationName: relation.name,
+        foreignModelName: foreignModel?.name ?? relation.modelRef,
+        foreignAuthorizerRoleNames: [...foreignAuthorizerRoleNames],
+      });
+    }
+
+    return {
+      modelContext: {
+        modelName: modelConfig.name,
+        scalarFieldNames,
+        relationInfo: relationValidationInfo,
+      },
+      relationInfoList: relInfoList,
+    };
+  }, [modelConfig, definition]);
 
   // Get project roles from auth config
   const projectRoles = useMemo(() => {
@@ -136,7 +176,13 @@ export function ModelAuthorizerRoleForm({
   const extensions = useMemo(() => {
     const exts = [
       autocompletion({
-        override: [createAuthorizerCompletions(modelConfig, projectRoles)],
+        override: [
+          createAuthorizerCompletions(
+            modelConfig,
+            projectRoles,
+            relationInfoList,
+          ),
+        ],
       }),
       linter(
         createAuthorizerExpressionLinter(
@@ -149,7 +195,13 @@ export function ModelAuthorizerRoleForm({
     ];
 
     return exts;
-  }, [modelConfig, projectRoles, modelContext, definitionContainer]);
+  }, [
+    modelConfig,
+    projectRoles,
+    modelContext,
+    relationInfoList,
+    definitionContainer,
+  ]);
 
   return (
     <form
@@ -178,8 +230,8 @@ export function ModelAuthorizerRoleForm({
         description={
           <>
             TypeScript boolean expression. Available: <code>model</code> (the
-            model instance), <code>userId</code>, <code>hasRole()</code>, and{' '}
-            <code>hasSomeRole()</code>
+            model instance), <code>userId</code>, <code>hasRole()</code>,{' '}
+            <code>hasSomeRole()</code>, and nested role checks on relations
             <span className="mt-1 block text-xs text-muted-foreground">
               Examples:
             </span>
@@ -193,6 +245,10 @@ export function ModelAuthorizerRoleForm({
               <code>
                 model.authorId === userId || hasRole(&apos;admin&apos;)
               </code>
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              <code>hasRole(model.todoList, &apos;owner&apos;)</code>
+              {' — '}check role on related model
             </span>
           </>
         }
