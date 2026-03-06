@@ -117,10 +117,14 @@ export function addDefinitionCommand(program: Command): void {
       ) => {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
-        const entityData = JSON.parse(entityDataJson) as Record<
-          string,
-          unknown
-        >;
+        let entityData: Record<string, unknown>;
+        try {
+          entityData = JSON.parse(entityDataJson) as Record<string, unknown>;
+        } catch {
+          throw new Error(
+            'Invalid JSON for entity data. Please provide valid JSON.',
+          );
+        }
 
         await invokeServiceActionAsCli(
           stageCreateEntityAction,
@@ -147,10 +151,14 @@ export function addDefinitionCommand(program: Command): void {
       ) => {
         const resolvedProject = await resolveProject(project);
         const context = await createServiceActionContext(resolvedProject);
-        const entityData = JSON.parse(entityDataJson) as Record<
-          string,
-          unknown
-        >;
+        let entityData: Record<string, unknown>;
+        try {
+          entityData = JSON.parse(entityDataJson) as Record<string, unknown>;
+        } catch {
+          throw new Error(
+            'Invalid JSON for entity data. Please provide valid JSON.',
+          );
+        }
 
         await invokeServiceActionAsCli(
           stageUpdateEntityAction,

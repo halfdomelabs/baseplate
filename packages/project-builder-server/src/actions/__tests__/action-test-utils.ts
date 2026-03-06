@@ -33,6 +33,7 @@ export function createTestActionContext(
     userConfig: {},
     logger: createConsoleLogger('warn'),
     cliVersion: '0.0.0-test',
+    sessionId: 'default',
     ...overrides,
   };
 }

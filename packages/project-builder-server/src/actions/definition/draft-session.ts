@@ -127,7 +127,7 @@ export async function getOrCreateDraftSession(
   context: ServiceActionContext,
 ): Promise<DraftSessionContext> {
   const project = getProjectByNameOrId(context.projects, projectNameOrId);
-  const sessionId = context.sessionId ?? 'default';
+  const { sessionId } = context;
 
   const parserContext = await createNodeSchemaParserContext(
     project,

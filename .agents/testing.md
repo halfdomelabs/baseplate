@@ -103,7 +103,7 @@ const files = await globby(['**/*.ts'], { fs: fsAdapter });
 | sync | `src/tests/logger.test-utils.ts` | `createTestLogger`, `createConsoleLogger` |
 | sync | `src/templates/extractor/test-utils/plugin-test-utils.ts` | `createMockPluginApi`, `createPluginInstance` |
 | ui-components | `src/tests/render.test-helper.tsx` | `renderWithProviders` |
-| project-builder-lib | `src/testing/project-definition-container.test-helper.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer` |
+| project-builder-lib | `src/testing/project-definition-container.test-helper.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer`, `createTestEntityServiceContext` |
 | project-builder-lib | `src/testing/definition-helpers.test-helper.ts` | `createTestFeature`, `createTestModel`, `createTestScalarField` |
 | project-builder-lib | `src/plugins/plugins.test-utils.ts` | `createTestPluginMetadata`, `createTestMigration` |
 | project-builder-lib | `src/testing/expression-stub-parser.test-helper.ts` | `stubParser`, `StubParserWithSlots` |
