@@ -13,8 +13,8 @@ import {
 } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
+import { OriginalModelProvider } from '../-hooks/use-original-model.js';
 import { ServiceMethodAuthSection } from './-components/service/service-method-auth-section.js';
 import { ServiceMethodFieldsSection } from './-components/service/service-method-fields-section.js';
 import { ServiceTransformersSection } from './-components/service/service-transformers-section.js';
@@ -32,16 +32,12 @@ function ModelEditServicePage(): React.JSX.Element {
     omit: ['name', 'featureRef'],
     modelKey: key,
   });
-  const { control, watch, getValues, setValue, reset } = form;
+  const { control, setValue, reset } = form;
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <EditedModelContextProvider
-      originalModel={originalModel}
-      getValues={getValues}
-      watch={watch}
-    >
+    <OriginalModelProvider model={originalModel}>
       <form onSubmit={onSubmit} className="w-full max-w-7xl space-y-4 p-4">
         <SectionList>
           <SectionListSection>
@@ -75,6 +71,6 @@ function ModelEditServicePage(): React.JSX.Element {
         </SectionList>
         <FormActionBar form={form} />
       </form>
-    </EditedModelContextProvider>
+    </OriginalModelProvider>
   );
 }

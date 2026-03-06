@@ -21,7 +21,7 @@ import { useWatch } from 'react-hook-form';
 
 import { usePrevious } from '#src/hooks/use-previous.js';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
+import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 
 function ServiceEmbeddedRelationForm({
   formProps,
@@ -42,22 +42,24 @@ function ServiceEmbeddedRelationForm({
     name: prefix,
   });
 
-  const availableRelations = useEditedModelConfig((model) => {
+  const originalModel = useOriginalModel();
+
+  const availableRelations = (() => {
     const relationsToModel = ModelUtils.getRelationsToModel(
       definition,
-      model.id,
+      originalModel.id,
     );
-    const otherEmbeddedRelations = model.service?.transformers?.filter(
+    const otherEmbeddedRelations = originalModel.service.transformers.filter(
       (t): t is EmbeddedRelationTransformerConfig =>
         t.type === 'embeddedRelation' && t.id !== transformer.id,
     );
     return relationsToModel.filter(
       ({ relation }) =>
-        !otherEmbeddedRelations?.some(
+        !otherEmbeddedRelations.some(
           (o) => o.foreignRelationRef === relation.foreignId,
         ),
     );
-  });
+  })();
 
   const relationOptions = availableRelations.map((relation) => ({
     label: `${relation.relation.foreignRelationName} (${relation.model.name})`,

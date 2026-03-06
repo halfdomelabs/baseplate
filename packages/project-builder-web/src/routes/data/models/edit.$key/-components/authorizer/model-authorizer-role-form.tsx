@@ -1,7 +1,4 @@
-import type {
-  AuthorizerRoleConfig,
-  ModelConfig,
-} from '@baseplate-dev/project-builder-lib';
+import type { AuthorizerRoleConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -31,7 +28,7 @@ import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
+import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { createAuthorizerCompletions } from './authorizer-expression-autocomplete.js';
 import { createAuthorizerExpressionLinter } from './authorizer-expression-linter.js';
 
@@ -113,7 +110,7 @@ export function ModelAuthorizerRoleForm({
   const formId = useId();
 
   // Get current model config for autocomplete
-  const modelConfig = useEditedModelConfig((model) => model);
+  const modelConfig = useOriginalModel();
 
   // Get model context for linter
   const modelContext = useMemo(
@@ -139,9 +136,7 @@ export function ModelAuthorizerRoleForm({
   const extensions = useMemo(() => {
     const exts = [
       autocompletion({
-        override: [
-          createAuthorizerCompletions(modelConfig as ModelConfig, projectRoles),
-        ],
+        override: [createAuthorizerCompletions(modelConfig, projectRoles)],
       }),
       linter(
         createAuthorizerExpressionLinter(

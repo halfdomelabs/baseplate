@@ -20,8 +20,6 @@ import { Link } from '@tanstack/react-router';
 import { useWatch } from 'react-hook-form';
 import { MdCheck } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
-
 interface GraphQLAuthSectionProps {
   control: Control<ModelConfigInput>;
   setValue: UseFormSetValue<ModelConfigInput>;
@@ -51,8 +49,7 @@ export function GraphQLAuthSection({
     .use(authConfigSpec)
     .getAuthConfig(definition);
 
-  const authorizerRoles =
-    useEditedModelConfig((model) => model.authorizer?.roles) ?? [];
+  const authorizerRoles = useWatch({ control, name: 'authorizer.roles' }) ?? [];
 
   const isGetEnabled = useWatch({
     control,
@@ -67,7 +64,7 @@ export function GraphQLAuthSection({
     name: 'graphql.queries.list.count.enabled',
   });
 
-  const controllerConfig = useEditedModelConfig((m) => m.service ?? {});
+  const controllerConfig = useWatch({ control, name: 'service' }) ?? {};
   const isCreateEnabled = useWatch({
     control,
     name: 'graphql.mutations.create.enabled',
@@ -86,9 +83,9 @@ export function GraphQLAuthSection({
   const queryInstanceRoles =
     useWatch({ control, name: 'graphql.queries.instanceRoles' }) ?? [];
 
-  const serviceCreate = useEditedModelConfig((m) => m.service?.create);
-  const serviceUpdate = useEditedModelConfig((m) => m.service?.update);
-  const serviceDelete = useEditedModelConfig((m) => m.service?.delete);
+  const serviceCreate = useWatch({ control, name: 'service.create' });
+  const serviceUpdate = useWatch({ control, name: 'service.update' });
+  const serviceDelete = useWatch({ control, name: 'service.delete' });
 
   if (!authConfig) {
     return null;

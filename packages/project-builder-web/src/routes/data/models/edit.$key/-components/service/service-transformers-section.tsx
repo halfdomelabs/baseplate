@@ -31,7 +31,7 @@ import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
+import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { ServiceTransformerDialog } from './service-transformer-dialog.js';
 
 interface Props {
@@ -118,7 +118,9 @@ export function ServiceTransformersSection({
 
   const transformerWeb = pluginContainer.use(modelTransformerWebSpec);
 
-  const modelConfig = useEditedModelConfig((model) => model);
+  const originalModel = useOriginalModel();
+  const formValues = useWatch({ control }) as ModelConfigInput;
+  const modelConfig: ModelConfigInput = { ...originalModel, ...formValues };
 
   const addableTransformers = transformerWeb
     .getWebConfigs()

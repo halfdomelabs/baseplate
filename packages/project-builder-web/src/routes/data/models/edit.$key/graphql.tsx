@@ -4,8 +4,8 @@ import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-l
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { EditedModelContextProvider } from '../-hooks/use-edited-model-config.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
+import { OriginalModelProvider } from '../-hooks/use-original-model.js';
 import { GraphQLAuthSection } from './-components/graphql/graph-ql-auth-section.js';
 import { GraphQLObjectTypeSection } from './-components/graphql/graph-ql-object-type-section.js';
 import { GraphQLRootFieldsSection } from './-components/graphql/graph-ql-root-fields-section.js';
@@ -24,16 +24,12 @@ function ModelEditGraphQLPage(): React.JSX.Element {
     modelKey: key,
   });
 
-  const { control, watch, getValues, reset, setValue } = form;
+  const { control, reset, setValue } = form;
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <EditedModelContextProvider
-      originalModel={originalModel}
-      getValues={getValues}
-      watch={watch}
-    >
+    <OriginalModelProvider model={originalModel}>
       <form onSubmit={onSubmit} className="space-y-4 p-4">
         <SectionList>
           <GraphQLObjectTypeSection control={control} />
@@ -46,6 +42,6 @@ function ModelEditGraphQLPage(): React.JSX.Element {
           <FormActionBar form={form} />
         </SectionList>
       </form>
-    </EditedModelContextProvider>
+    </OriginalModelProvider>
   );
 }

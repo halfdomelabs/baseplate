@@ -16,10 +16,10 @@ import {
 } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
+import { useWatch } from 'react-hook-form';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { ModelFieldBadges } from './badges/model-field-badges.js';
 import { ModelFieldDefaultValueInput } from './model-field-default-value-input.js';
 import { ModelFieldTypeInput } from './model-field-type-input.js';
@@ -42,17 +42,16 @@ function ModelFieldForm({
   setValue,
   onRemove,
 }: Props): React.JSX.Element {
-  const watchedField = useEditedModelConfig((model) => model.model.fields[idx]);
+  const watchedField = useWatch({ control, name: `model.fields.${idx}` });
 
-  const watchedRelations = useEditedModelConfig(
-    (model) => model.model.relations,
-  );
+  const watchedRelations = useWatch({ control, name: 'model.relations' });
 
-  const primaryKeyFieldRefs = useEditedModelConfig(
-    (model) => model.model.primaryKeyFieldRefs,
-  );
+  const primaryKeyFieldRefs = useWatch({
+    control,
+    name: 'model.primaryKeyFieldRefs',
+  });
   const uniqueConstraints =
-    useEditedModelConfig((model) => model.model.uniqueConstraints) ?? [];
+    useWatch({ control, name: 'model.uniqueConstraints' }) ?? [];
   const isPartOfPrimaryKey = primaryKeyFieldRefs.includes(watchedField.id);
   const hasCompositePrimaryKey = primaryKeyFieldRefs.length > 1;
 

@@ -19,7 +19,6 @@ import {
 import { useWatch } from 'react-hook-form';
 
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../-constants.js';
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { BadgeWithTypeLabel } from '../badge-with-type-label.js';
 
 interface ServiceMethodFieldsSectionProps {
@@ -33,7 +32,7 @@ export function ServiceMethodFieldsSection({
   control,
   setValue,
 }: ServiceMethodFieldsSectionProps): React.JSX.Element | null {
-  const fields = useEditedModelConfig((model) => model.model.fields);
+  const fields = useWatch({ control, name: 'model.fields' });
   const create = useWatch({ control, name: 'service.create' });
   const update = useWatch({ control, name: 'service.update' });
   const isCreateEnabled = create?.enabled;

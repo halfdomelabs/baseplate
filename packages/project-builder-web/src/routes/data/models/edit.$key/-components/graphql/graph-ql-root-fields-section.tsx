@@ -17,8 +17,6 @@ import {
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
-
 interface GraphQLRootFieldsSectionProps {
   control: Control<ModelConfigInput>;
 }
@@ -31,7 +29,7 @@ export function GraphQLRootFieldsSection({
     name: 'graphql.objectType.enabled',
   });
 
-  const controllerConfig = useEditedModelConfig((m) => m.service ?? {});
+  const controllerConfig = useWatch({ control, name: 'service' }) ?? {};
   const isCreateControllerEnabled = controllerConfig.create?.enabled;
   const isUpdateControllerEnabled = controllerConfig.update?.enabled;
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;

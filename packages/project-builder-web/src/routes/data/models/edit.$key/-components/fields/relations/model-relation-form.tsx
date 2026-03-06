@@ -33,9 +33,9 @@ import { clsx } from 'clsx';
 import { camelCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import React, { useId, useMemo } from 'react';
-import { useController, useForm } from 'react-hook-form';
+import { useController, useForm, useWatch } from 'react-hook-form';
 
-import { useEditedModelConfig } from '../../../../-hooks/use-edited-model-config.js';
+import { useOriginalModel } from '../../../../-hooks/use-original-model.js';
 
 interface ModelRelationFormProps {
   className?: string;
@@ -162,9 +162,16 @@ export function ModelRelationForm({
   defaultFieldName,
 }: ModelRelationFormProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
-  const editedModel = useEditedModelConfig((model) => model);
-  const modelName = editedModel.name;
-  const { fields } = editedModel.model;
+  const originalModel = useOriginalModel();
+  const modelName = originalModel.name;
+  const fields = useWatch({ control: modelControl, name: 'model.fields' });
+  const editedModel = useMemo(
+    (): ModelConfigInput => ({
+      ...originalModel,
+      model: { ...originalModel.model, fields },
+    }),
+    [originalModel, fields],
+  );
   const {
     field: { value: modelRelations = [], onChange: onModelRelationsChange },
   } = useController({

@@ -16,10 +16,9 @@ import {
   SectionListSectionTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
-import { useController } from 'react-hook-form';
+import { useController, useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../-hooks/use-edited-model-config.js';
 import { ModelRelationDialog } from './fields/relations/model-relation-dialog.js';
 
 interface Props {
@@ -35,9 +34,12 @@ export function ModelRelationsSection({ control }: Props): React.JSX.Element {
     name: 'model.relations',
     control,
   });
-  const fieldIdsToNames = useEditedModelConfig(({ model }) =>
-    Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
-  );
+  const fieldIdsToNames = useWatch({
+    control,
+    name: 'model.fields',
+    compute: (fields) =>
+      Object.fromEntries(fields.map((field) => [field.id, field.name])),
+  });
 
   function handleDeleteRelation(relationId: string): void {
     const relation = relations.find((relation) => relation.id === relationId);
