@@ -144,7 +144,11 @@ export function ModelAuthorizerRoleForm({
         ],
       }),
       linter(
-        createAuthorizerExpressionLinter(modelContext, definitionContainer),
+        createAuthorizerExpressionLinter(
+          modelContext,
+          definitionContainer.pluginStore,
+          definitionContainer.definition,
+        ),
       ),
       EditorView.lineWrapping,
     ];

@@ -1,12 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
+import { PluginSpecStore } from '#src/plugins/index.js';
 import {
   definitionFieldIssueRegistry,
   withIssueChecker,
 } from '#src/schema/creator/definition-issue-registry.js';
+import {
+  createDefinitionSchemaParserContext,
+  definitionSchema,
+} from '#src/schema/creator/schema-creator.js';
+import { WarningParser } from '#src/testing/expression-warning-parser.test-helper.js';
 
 import {
+  collectDefinitionIssues,
   collectFieldIssues,
   partitionIssuesBySeverity,
 } from './collect-definition-issues.js';
@@ -244,5 +251,37 @@ describe('partitionIssuesBySeverity', () => {
     const result = partitionIssuesBySeverity(issues);
     expect(result.errors).toHaveLength(0);
     expect(result.warnings).toHaveLength(2);
+  });
+});
+
+describe('collectDefinitionIssues', () => {
+  it('includes expression validation warnings in collected issues', () => {
+    const pluginStore = new PluginSpecStore();
+    const warningParser = new WarningParser([
+      { message: 'Invalid field reference' },
+    ]);
+
+    const schemaCreator = definitionSchema((ctx) =>
+      z.object({
+        name: z.string(),
+        condition: ctx.withExpression(warningParser),
+      }),
+    );
+    const schema = schemaCreator(
+      createDefinitionSchemaParserContext({ plugins: pluginStore }),
+    );
+    const data = { name: 'test', condition: 'model.badField === auth.userId' };
+
+    const issues = collectDefinitionIssues(schema, data, pluginStore);
+
+    const expressionIssues = issues.filter(
+      (i) => i.message === 'Invalid field reference',
+    );
+    expect(expressionIssues).toHaveLength(1);
+    expect(expressionIssues[0]).toEqual({
+      message: 'Invalid field reference',
+      path: ['condition'],
+      severity: 'warning',
+    });
   });
 });

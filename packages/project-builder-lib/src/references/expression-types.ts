@@ -1,7 +1,21 @@
 import type { z } from 'zod';
 
+import type { PluginSpecStore } from '#src/plugins/index.js';
+
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { DefinitionEntityType, ReferencePath } from './types.js';
+
+/**
+ * Context provided to expression parsers during validation.
+ * Contains the project definition data and plugin store needed for
+ * validating expressions against model fields, roles, etc.
+ */
+export interface ExpressionValidationContext {
+  /** The raw project definition data */
+  readonly definition: unknown;
+  /** The plugin spec store for accessing plugin-registered configuration */
+  readonly pluginStore: PluginSpecStore;
+}
 
 /**
  * A warning from validating a ref expression.
@@ -124,14 +138,14 @@ export abstract class RefExpressionParser<
    *
    * @param value - The raw expression value
    * @param parseResult - The cached parse result
-   * @param projectDef - The project definition for validation context (typed as unknown to avoid circular reference)
+   * @param context - Validation context with project definition and plugin store
    * @param resolvedSlots - The resolved slot paths for this expression
    * @returns Array of warnings (empty if valid)
    */
   abstract getWarnings(
     value: TValue,
     parseResult: TParseResult,
-    projectDef: unknown,
+    context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionWarning[];
 

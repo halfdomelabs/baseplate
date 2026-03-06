@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { AuthRole } from '#src/plugins/spec/auth-config-spec.js';
 import type { PluginSpecStore } from '#src/plugins/store/index.js';
 
@@ -19,10 +18,10 @@ import {
 } from './authorizer-expression-validator.js';
 
 /**
- * Create a mock ProjectDefinitionContainer with the specified roles.
+ * Create a mock PluginSpecStore with the specified roles.
  */
-function createMockContainer(roles: AuthRole[]): ProjectDefinitionContainer {
-  const pluginStore = {
+function createMockPluginStore(roles: AuthRole[]): PluginSpecStore {
+  return {
     use: (spec: typeof authConfigSpec) => {
       if (spec.name === authConfigSpec.name) {
         return {
@@ -32,11 +31,6 @@ function createMockContainer(roles: AuthRole[]): ProjectDefinitionContainer {
       throw new Error(`No implementation for ${spec.name}`);
     },
   } as unknown as PluginSpecStore;
-
-  return {
-    pluginStore,
-    definition: {},
-  } as unknown as ProjectDefinitionContainer;
 }
 
 describe('validateAuthorizerExpression', () => {
@@ -45,10 +39,11 @@ describe('validateAuthorizerExpression', () => {
     fields: [{ name: 'id' }, { name: 'authorId' }, { name: 'title' }],
   });
 
-  const defaultContainer = createMockContainer([
+  const defaultPluginStore = createMockPluginStore([
     { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
     { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
   ]);
+  const defaultDefinition = {};
 
   describe('field comparison validation', () => {
     it('should validate valid model field reference', () => {
@@ -74,7 +69,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toEqual([]);
@@ -103,7 +99,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(1);
@@ -134,7 +131,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toEqual([]);
@@ -163,7 +161,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(1);
@@ -184,7 +183,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toEqual([]);
@@ -201,7 +201,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(1);
@@ -222,7 +223,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toEqual([]);
@@ -239,7 +241,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(2);
@@ -265,7 +268,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(1);
@@ -309,7 +313,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toEqual([]);
@@ -348,7 +353,8 @@ describe('validateAuthorizerExpression', () => {
       const warnings = validateAuthorizerExpression(
         ast,
         defaultModelContext,
-        defaultContainer,
+        defaultPluginStore,
+        defaultDefinition,
       );
 
       expect(warnings).toHaveLength(3);

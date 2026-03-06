@@ -6,6 +6,7 @@ import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types
 import { definitionIssueCheckerSpec } from '#src/schema/creator/definition-issue-checker-spec.js';
 import { definitionFieldIssueRegistry } from '#src/schema/creator/definition-issue-registry.js';
 
+import { collectExpressionIssues } from './collect-expression-issues.js';
 import { walkDataWithSchema } from './walk-data-with-schema.js';
 
 /**
@@ -91,6 +92,10 @@ export function collectDefinitionIssues(
     const result = checker(data);
     issues.push(...result);
   }
+
+  // Collect expression validation issues
+  const expressionIssues = collectExpressionIssues(schema, data, pluginStore);
+  issues.push(...expressionIssues);
 
   return issues;
 }

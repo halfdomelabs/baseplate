@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
+  ExpressionValidationContext,
   RefExpressionDependency,
   RefExpressionWarning,
   ResolvedExpressionSlots,
@@ -80,7 +80,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   getWarnings(
     value: string,
     parseResult: AuthorizerExpressionInfo | undefined,
-    projectDef: unknown,
+    context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): RefExpressionWarning[] {
     const warnings: RefExpressionWarning[] = [];
@@ -99,21 +99,22 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       return warnings;
     }
 
-    // Cast to ProjectDefinitionContainer - the parser receives the container
-    const container = projectDef as ProjectDefinitionContainer;
-
     // Get model context from resolved slots
-    const modelContext = this.getModelContext(container, resolvedSlots);
+    const modelContext = this.getModelContext(
+      context.definition,
+      resolvedSlots,
+    );
     if (!modelContext) {
       // Can't validate without model context
       return warnings;
     }
 
-    // Validate the expression (container provides role access via authConfigSpec)
+    // Validate the expression against model fields and roles
     const validationWarnings = validateAuthorizerExpression(
       parseResult.ast,
       modelContext,
-      container,
+      context.pluginStore,
+      context.definition,
     );
 
     warnings.push(...validationWarnings);
@@ -145,10 +146,10 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   }
 
   /**
-   * Extract model context from the project definition container using resolved slots.
+   * Extract model context from the project definition using resolved slots.
    */
   private getModelContext(
-    container: ProjectDefinitionContainer,
+    definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): { modelName: string; scalarFieldNames: Set<string> } | undefined {
     const modelPath = resolvedSlots.model;
@@ -158,7 +159,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     // Navigate to the model in the project definition
     // The path is like ['models', 0] for models[0]
-    let current: unknown = container.definition;
+    let current: unknown = definition;
     for (const segment of modelPath) {
       if (current === null || current === undefined) {
         return undefined;

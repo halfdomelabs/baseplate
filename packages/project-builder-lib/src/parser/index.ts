@@ -6,6 +6,7 @@ export {
   partitionIssuesBySeverity,
 } from './collect-definition-issues.js';
 export type { PartitionedIssues } from './collect-definition-issues.js';
+export { collectExpressionIssues } from './collect-expression-issues.js';
 export * from './parser.js';
 export { findDiscriminatedUnionMatch } from './schema-structure.js';
 export { transformDataWithSchema } from './transform-data-with-schema.js';
