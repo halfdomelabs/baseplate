@@ -1,4 +1,7 @@
-import type { PluginSpecStore } from '@baseplate-dev/project-builder-lib';
+import type {
+  DefinitionIssue,
+  PluginSpecStore,
+} from '@baseplate-dev/project-builder-lib';
 import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
@@ -28,6 +31,7 @@ import { useMemo, useRef, useState } from 'react';
 import semver from 'semver';
 
 import { useClientVersion } from '#src/hooks/use-client-version.js';
+import { useDefinitionWarningDialogState } from '#src/hooks/use-definition-warning-dialog.js';
 import { useDeleteReferenceDialog } from '#src/hooks/use-delete-reference-dialog.js';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { useSyncMetadataListener } from '#src/hooks/use-sync-metadata.js';
@@ -89,7 +93,7 @@ export function ProjectDefinitionProvider({
 
     async function saveDefinition(
       newConfig: ProjectDefinitionSetter,
-    ): Promise<void> {
+    ): Promise<{ warnings: DefinitionIssue[] }> {
       setIsSavingDefinition(true);
       try {
         const rawProjectDefinition = produce(definition, newConfig);
@@ -139,7 +143,7 @@ export function ProjectDefinitionProvider({
 
         // Collect and check definition issues
         const issues = collectDefinitionIssues(definitionContainer);
-        const { errors } = partitionIssuesBySeverity(issues);
+        const { errors, warnings } = partitionIssuesBySeverity(issues);
 
         // Block save on errors
         if (errors.length > 0) {
@@ -154,6 +158,8 @@ export function ProjectDefinitionProvider({
         );
 
         await uploadProjectDefinitionContents(serializedContents);
+
+        return { warnings };
       } finally {
         setIsSavingDefinition(false);
       }
@@ -164,13 +170,29 @@ export function ProjectDefinitionProvider({
       options: SaveDefinitionWithFeedbackOptions = {},
     ): Promise<{ success: boolean }> {
       return saveDefinition(definition)
-        .then(async () => {
+        .then(async ({ warnings }) => {
           await router
             .invalidate()
             .catch((err: unknown) =>
               logAndFormatError(err, 'Failed to refresh page data'),
             );
-          toast.success(options.successMessage ?? 'Successfully saved!');
+          if (warnings.length > 0) {
+            toast.warning(
+              `Saved with ${warnings.length} ${warnings.length === 1 ? 'warning' : 'warnings'}`,
+              {
+                action: {
+                  label: 'View',
+                  onClick: () => {
+                    useDefinitionWarningDialogState
+                      .getState()
+                      .setDialogOptions({ warnings });
+                  },
+                },
+              },
+            );
+          } else {
+            toast.success(options.successMessage ?? 'Successfully saved!');
+          }
           options.onSuccess?.();
           return { success: true };
         })

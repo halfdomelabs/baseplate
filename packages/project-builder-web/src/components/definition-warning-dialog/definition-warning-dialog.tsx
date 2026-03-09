@@ -124,21 +124,23 @@ export function DefinitionWarningDialog(): React.JSX.Element {
         </Table>
         <DialogFooter>
           <Button
-            variant="outline"
+            variant={options?.onProceed ? 'outline' : 'default'}
             onClick={() => {
               setDialogOptions(undefined);
             }}
           >
-            Fix Issues
+            {options?.onProceed ? 'Fix Issues' : 'Close'}
           </Button>
-          <Button
-            onClick={() => {
-              options?.onProceed();
-              setDialogOptions(undefined);
-            }}
-          >
-            Sync Anyway
-          </Button>
+          {options?.onProceed && (
+            <Button
+              onClick={() => {
+                options.onProceed?.();
+                setDialogOptions(undefined);
+              }}
+            >
+              Sync Anyway
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

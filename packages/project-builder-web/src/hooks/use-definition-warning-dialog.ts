@@ -5,7 +5,7 @@ import { create } from 'zustand';
 
 interface DefinitionWarningDialogOptions {
   warnings: DefinitionIssue[];
-  onProceed: () => void;
+  onProceed?: () => void;
 }
 
 interface DefinitionWarningDialogState {

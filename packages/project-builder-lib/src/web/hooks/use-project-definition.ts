@@ -21,6 +21,10 @@ export interface SaveDefinitionWithFeedbackOptions {
   onSuccess?: () => void;
 }
 
+export interface SaveDefinitionResult {
+  warnings: DefinitionIssue[];
+}
+
 /**
  * The result of the `useProjectDefinition` hook.
  */
@@ -38,9 +42,11 @@ export interface UseProjectDefinitionResult {
    */
   updatedExternally: boolean;
   /**
-   * Save the project definition.
+   * Save the project definition. Returns the number of warnings encountered.
    */
-  saveDefinition: (definition: ProjectDefinitionSetter) => Promise<void>;
+  saveDefinition: (
+    definition: ProjectDefinitionSetter,
+  ) => Promise<SaveDefinitionResult>;
   /**
    * Save the project definition with feedback showing a toast
    * when there are errors or a success message when the definition is saved.
