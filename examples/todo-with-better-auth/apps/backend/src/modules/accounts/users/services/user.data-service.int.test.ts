@@ -96,7 +96,7 @@ describe('createUser', () => {
       },
     });
 
-    // Create a file for the avatar
+    // Create a file for the avatar (pendingUpload: true simulates a presigned upload)
     const file = await prisma.file.create({
       data: {
         filename: 'avatar.png',
@@ -105,7 +105,7 @@ describe('createUser', () => {
         adapter: 'uploads',
         uploaderId: testUser.id,
         mimeType: 'image/png',
-        size: 1024,
+        pendingUpload: true,
       },
     });
 
@@ -138,7 +138,7 @@ describe('createUser', () => {
         avatar: {
           id: file.id,
           filename: 'avatar.png',
-          referencedAt: expect.any(Date) as Date,
+          pendingUpload: false,
           size: 1024,
         },
       },
@@ -155,7 +155,7 @@ describe('createUser', () => {
       },
     });
 
-    // Create files for the images
+    // Create files for the images (pendingUpload: true simulates presigned uploads)
     const file1 = await prisma.file.create({
       data: {
         filename: 'image1.png',
@@ -164,7 +164,7 @@ describe('createUser', () => {
         adapter: 'uploads',
         uploaderId: testUser.id,
         mimeType: 'image/png',
-        size: 2048,
+        pendingUpload: true,
       },
     });
 
@@ -176,7 +176,7 @@ describe('createUser', () => {
         adapter: 'uploads',
         uploaderId: testUser.id,
         mimeType: 'image/png',
-        size: 3072,
+        pendingUpload: true,
       },
     });
 
@@ -221,7 +221,7 @@ describe('createUser', () => {
           file: {
             id: file1.id,
             filename: 'image1.png',
-            referencedAt: expect.any(Date) as Date,
+            pendingUpload: false,
             size: 2048,
           },
         },
@@ -231,7 +231,7 @@ describe('createUser', () => {
           file: {
             id: file2.id,
             filename: 'image2.png',
-            referencedAt: expect.any(Date) as Date,
+            pendingUpload: false,
             size: 3072,
           },
         },
