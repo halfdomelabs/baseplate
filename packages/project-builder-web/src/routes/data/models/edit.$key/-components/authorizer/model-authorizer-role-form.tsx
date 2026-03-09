@@ -18,6 +18,9 @@ import {
 import {
   Button,
   CodeEditorFieldController,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   DialogClose,
   DialogFooter,
   InputFieldController,
@@ -28,6 +31,7 @@ import { EditorView } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId, useMemo } from 'react';
+import { MdChevronRight } from 'react-icons/md';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -231,34 +235,36 @@ export function ModelAuthorizerRoleForm({
         extensions={extensions}
         height="120px"
         description={
-          <>
-            TypeScript boolean expression. Available: <code>model</code> (the
-            model instance), <code>userId</code>, <code>isAuthenticated</code>,{' '}
-            <code>hasRole()</code>, <code>hasSomeRole()</code>, and nested role
-            checks on relations
-            <span className="mt-1 block text-xs text-muted-foreground">
-              Examples:
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>model.id === userId</code>
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>isAuthenticated</code>
-              {' — '}check if user is authenticated
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>hasRole(&apos;admin&apos;)</code>
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>
-                model.authorId === userId || hasRole(&apos;admin&apos;)
-              </code>
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>hasRole(model.todoList, &apos;owner&apos;)</code>
-              {' — '}check role on related model
-            </span>
-          </>
+          <Collapsible>
+            TypeScript boolean expression. Available: <code>model</code>,{' '}
+            <code>userId</code>, <code>isAuthenticated</code>,{' '}
+            <code>hasRole()</code>, <code>hasSomeRole()</code>
+            <CollapsibleTrigger className="mt-1 flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
+              <MdChevronRight className="size-3.5 transition-transform" />
+              Show examples
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+              <div>
+                <code>model.id === userId</code>
+              </div>
+              <div>
+                <code>isAuthenticated</code>
+                {' — '}check if user is authenticated
+              </div>
+              <div>
+                <code>hasRole(&apos;admin&apos;)</code>
+              </div>
+              <div>
+                <code>
+                  model.authorId === userId || hasRole(&apos;admin&apos;)
+                </code>
+              </div>
+              <div>
+                <code>hasRole(model.todoList, &apos;owner&apos;)</code>
+                {' — '}check role on related model
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         }
       />
       <DialogFooter>
