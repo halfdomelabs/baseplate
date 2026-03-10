@@ -12,11 +12,13 @@ import { RefExpressionParser } from '#src/references/expression-types.js';
 
 import type { modelEntityType } from '../types.js';
 import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
-import type { RelationValidationInfo } from './authorizer-expression-validator.js';
 
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
-import { validateAuthorizerExpression } from './authorizer-expression-validator.js';
+import {
+  buildRelationValidationInfo,
+  validateAuthorizerExpression,
+} from './authorizer-expression-validator.js';
 
 /**
  * Shape of a raw model in the project definition JSON.
@@ -153,7 +155,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     | {
         modelName: string;
         scalarFieldNames: Set<string>;
-        relationInfo: Map<string, RelationValidationInfo>;
+        relationInfo: ReturnType<typeof buildRelationValidationInfo>;
       }
     | undefined {
     const modelPath = resolvedSlots.model;
@@ -186,68 +188,40 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     }
 
     // Build relation info for nested authorizer validation
-    const relationInfo = this.buildRelationInfo(definition, model);
+    const relations = (model.model?.relations ?? []).filter(
+      (
+        r,
+      ): r is {
+        name: string;
+        modelRef: string;
+        references?: { localRef: string; foreignRef: string }[];
+      } => typeof r.name === 'string' && typeof r.modelRef === 'string',
+    );
+
+    const allModels = (
+      (definition as { models?: RawModelDefinition[] }).models ?? []
+    ).filter(
+      (m): m is RawModelDefinition & { name: string } =>
+        typeof m.name === 'string',
+    );
+
+    const relationInfo = buildRelationValidationInfo(
+      relations.map((r) => ({
+        name: r.name,
+        modelRef: r.modelRef,
+        references: r.references ?? [],
+      })),
+      allModels.map((m) => ({
+        name: m.name,
+        authorizer: m.authorizer,
+      })),
+    );
 
     return {
       modelName: model.name,
       scalarFieldNames,
       relationInfo,
     };
-  }
-
-  /**
-   * Build relation validation info by resolving foreign models and their authorizer roles.
-   */
-  private buildRelationInfo(
-    definition: unknown,
-    model: RawModelDefinition,
-  ): Map<string, RelationValidationInfo> {
-    const relationInfo = new Map<string, RelationValidationInfo>();
-    const relations = model.model?.relations ?? [];
-
-    // Build a lookup of all models by name from the definition
-    const allModels = (definition as { models?: RawModelDefinition[] }).models;
-    if (!allModels) {
-      return relationInfo;
-    }
-
-    const modelsByName = new Map<string, RawModelDefinition>();
-    for (const m of allModels) {
-      if (typeof m.name === 'string') {
-        modelsByName.set(m.name, m);
-      }
-    }
-
-    for (const relation of relations) {
-      if (typeof relation.name !== 'string') {
-        continue;
-      }
-
-      const foreignModelName =
-        typeof relation.modelRef === 'string' ? relation.modelRef : undefined;
-      const foreignModel = foreignModelName
-        ? modelsByName.get(foreignModelName)
-        : undefined;
-
-      const foreignAuthorizerRoleNames = new Set<string>();
-      if (foreignModel?.authorizer?.roles) {
-        for (const role of foreignModel.authorizer.roles) {
-          if (typeof role.name === 'string') {
-            foreignAuthorizerRoleNames.add(role.name);
-          }
-        }
-      }
-
-      relationInfo.set(relation.name, {
-        referenceCount: Array.isArray(relation.references)
-          ? relation.references.length
-          : 0,
-        foreignModelName: foreignModelName ?? 'unknown',
-        foreignAuthorizerRoleNames,
-      });
-    }
-
-    return relationInfo;
   }
 }
 

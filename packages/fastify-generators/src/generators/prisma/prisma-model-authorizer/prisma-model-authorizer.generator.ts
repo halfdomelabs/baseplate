@@ -26,6 +26,8 @@ const roleSchema = z.object({
   name: z.string().min(1),
   /** Pre-generated role function code (e.g., '(ctx, model) => model.id === ctx.auth.userId') */
   roleCode: z.string().min(1),
+  /** Foreign model names referenced by nested role expressions (e.g., ['TodoList']) */
+  foreignAuthorizerRefs: z.array(z.string()).default([]),
 });
 
 const descriptorSchema = z.object({
@@ -61,23 +63,6 @@ export const prismaModelAuthorizerProvider =
   createReadOnlyProviderType<PrismaModelAuthorizerProvider>(
     'prisma-model-authorizer',
   );
-
-/**
- * Find which foreign authorizer providers are referenced by a role code string.
- * Checks if the roleCode contains the foreign authorizer variable name.
- */
-function findReferencedForeignAuthorizers(
-  roleCode: string,
-  providers: Map<string, PrismaModelAuthorizerProvider>,
-): PrismaModelAuthorizerProvider[] {
-  const referenced: PrismaModelAuthorizerProvider[] = [];
-  for (const [, provider] of providers) {
-    if (roleCode.includes(provider.getAuthorizerName())) {
-      referenced.push(provider);
-    }
-  }
-  return referenced;
-}
 
 // ----- Generator -----
 
@@ -155,12 +140,10 @@ export const prismaModelAuthorizerGenerator = createGenerator({
               const rolesObject: Record<string, string | TsCodeFragment> = {};
 
               for (const role of roles) {
-                // Check if the role code references any foreign authorizer variables
-                // If so, wrap it in a TsCodeFragment with the necessary imports
-                const referencedProviders = findReferencedForeignAuthorizers(
-                  role.roleCode,
-                  foreignAuthorizerProviders,
-                );
+                // Look up foreign authorizer providers by the metadata refs
+                const referencedProviders = role.foreignAuthorizerRefs
+                  .map((name) => foreignAuthorizerProviders.get(name))
+                  .filter((p): p is PrismaModelAuthorizerProvider => p != null);
 
                 if (referencedProviders.length > 0) {
                   // Collect all imports from referenced foreign authorizers

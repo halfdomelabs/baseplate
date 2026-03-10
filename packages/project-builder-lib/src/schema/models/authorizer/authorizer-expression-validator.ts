@@ -277,6 +277,59 @@ export function validateAuthorizerExpression(
 }
 
 /**
+ * Build relation validation info from model relations and the full list of models.
+ *
+ * Uses structural typing so both raw JSON shapes and typed `ModelConfig` objects
+ * can be passed directly.
+ *
+ * @param modelRelations - The relations on the current model
+ * @param allModels - All models in the project (for foreign model lookup)
+ * @returns Map of relation name → validation info
+ */
+export function buildRelationValidationInfo(
+  modelRelations: readonly {
+    name: string;
+    modelRef: string;
+    references: readonly unknown[];
+  }[],
+  allModels: readonly {
+    id?: string;
+    name: string;
+    authorizer?: { roles?: readonly { name: string }[] };
+  }[],
+): Map<string, RelationValidationInfo> {
+  const relationInfo = new Map<string, RelationValidationInfo>();
+
+  // Build lookups by both id and name for flexible matching
+  const modelsById = new Map(
+    allModels
+      .filter((m): m is typeof m & { id: string } => m.id != null)
+      .map((m) => [m.id, m]),
+  );
+  const modelsByName = new Map(allModels.map((m) => [m.name, m]));
+
+  for (const relation of modelRelations) {
+    const foreignModel =
+      modelsById.get(relation.modelRef) ?? modelsByName.get(relation.modelRef);
+
+    const foreignAuthorizerRoleNames = new Set<string>();
+    if (foreignModel?.authorizer?.roles) {
+      for (const role of foreignModel.authorizer.roles) {
+        foreignAuthorizerRoleNames.add(role.name);
+      }
+    }
+
+    relationInfo.set(relation.name, {
+      referenceCount: relation.references.length,
+      foreignModelName: foreignModel?.name ?? relation.modelRef,
+      foreignAuthorizerRoleNames,
+    });
+  }
+
+  return relationInfo;
+}
+
+/**
  * Extract model validation context from a model configuration.
  *
  * @param modelConfig - The parsed model configuration

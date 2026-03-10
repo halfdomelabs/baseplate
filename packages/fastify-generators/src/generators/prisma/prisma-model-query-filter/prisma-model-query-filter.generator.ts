@@ -25,6 +25,10 @@ const roleSchema = z.object({
   name: z.string().min(1),
   /** Pre-generated role function code (e.g., '(ctx) => ({ ownerId: ctx.auth.userId })') */
   roleCode: z.string().min(1),
+  /** Foreign model names referenced by nested role expressions (e.g., ['TodoList']) */
+  foreignQueryFilterRefs: z.array(z.string()).default([]),
+  /** Whether the role code uses queryHelpers (logical operators) */
+  needsQueryHelpers: z.boolean().default(false),
 });
 
 const descriptorSchema = z.object({
@@ -54,23 +58,6 @@ export const prismaModelQueryFilterProvider =
   createReadOnlyProviderType<PrismaModelQueryFilterProvider>(
     'prisma-model-query-filter',
   );
-
-/**
- * Find which foreign query filter providers are referenced by a role code string.
- * Checks if the roleCode contains the foreign query filter variable name.
- */
-function findReferencedForeignQueryFilters(
-  roleCode: string,
-  providers: Map<string, PrismaModelQueryFilterProvider>,
-): PrismaModelQueryFilterProvider[] {
-  const referenced: PrismaModelQueryFilterProvider[] = [];
-  for (const [, provider] of providers) {
-    if (roleCode.includes(provider.getQueryFilterName())) {
-      referenced.push(provider);
-    }
-  }
-  return referenced;
-}
 
 // ----- Generator -----
 
@@ -146,15 +133,14 @@ export const prismaModelQueryFilterGenerator = createGenerator({
               const rolesObject: Record<string, string | TsCodeFragment> = {};
 
               for (const role of roles) {
-                // Check if the role code references any foreign query filter variables
-                // or queryHelpers. If so, wrap it in a TsCodeFragment with the necessary imports
-                const referencedProviders = findReferencedForeignQueryFilters(
-                  role.roleCode,
-                  foreignQueryFilterProviders,
-                );
+                // Look up foreign query filter providers by the metadata refs
+                const referencedProviders = role.foreignQueryFilterRefs
+                  .map((name) => foreignQueryFilterProviders.get(name))
+                  .filter(
+                    (p): p is PrismaModelQueryFilterProvider => p != null,
+                  );
 
-                const needsQueryHelpers =
-                  role.roleCode.includes('queryHelpers.');
+                const { needsQueryHelpers } = role;
 
                 if (referencedProviders.length > 0 || needsQueryHelpers) {
                   // Collect all imports from referenced foreign query filters

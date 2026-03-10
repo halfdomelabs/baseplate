@@ -1,12 +1,10 @@
-import type {
-  AuthorizerRoleConfig,
-  RelationValidationInfo,
-} from '@baseplate-dev/project-builder-lib';
+import type { AuthorizerRoleConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   authConfigSpec,
   AuthorizerExpressionParseError,
+  buildRelationValidationInfo,
   createAuthorizerRoleSchema,
   modelAuthorizerRoleEntityType,
   parseAuthorizerExpression,
@@ -31,8 +29,8 @@ import { EditorView } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId, useMemo } from 'react';
-import { MdChevronRight } from 'react-icons/md';
 import { useForm } from 'react-hook-form';
+import { MdChevronRight } from 'react-icons/md';
 import { z } from 'zod';
 
 import type { RelationAutocompleteInfo } from './authorizer-expression-autocomplete.js';
@@ -128,34 +126,19 @@ export function ModelAuthorizerRoleForm({
       modelConfig.model.fields.map((field: { name: string }) => field.name),
     );
 
-    // Build a lookup of all models by ID and name
-    const modelsById = new Map(definition.models.map((m) => [m.id, m]));
-    const modelsByName = new Map(definition.models.map((m) => [m.name, m]));
+    const relationValidationInfo = buildRelationValidationInfo(
+      modelConfig.model.relations,
+      definition.models,
+    );
 
-    // Build relation validation info and autocomplete info
-    const relationValidationInfo = new Map<string, RelationValidationInfo>();
-    const relInfoList: RelationAutocompleteInfo[] = [];
-
-    for (const relation of modelConfig.model.relations) {
-      const foreignModel =
-        modelsById.get(relation.modelRef) ??
-        modelsByName.get(relation.modelRef);
-      const foreignAuthorizerRoleNames = new Set<string>(
-        (foreignModel?.authorizer.roles ?? []).map((r) => r.name),
-      );
-
-      relationValidationInfo.set(relation.name, {
-        referenceCount: relation.references.length,
-        foreignModelName: foreignModel?.name ?? relation.modelRef,
-        foreignAuthorizerRoleNames,
-      });
-
-      relInfoList.push({
-        relationName: relation.name,
-        foreignModelName: foreignModel?.name ?? relation.modelRef,
-        foreignAuthorizerRoleNames: [...foreignAuthorizerRoleNames],
-      });
-    }
+    // Derive autocomplete info from validation info
+    const relInfoList: RelationAutocompleteInfo[] = [
+      ...relationValidationInfo.entries(),
+    ].map(([relationName, info]) => ({
+      relationName,
+      foreignModelName: info.foreignModelName,
+      foreignAuthorizerRoleNames: [...info.foreignAuthorizerRoleNames],
+    }));
 
     return {
       modelContext: {
