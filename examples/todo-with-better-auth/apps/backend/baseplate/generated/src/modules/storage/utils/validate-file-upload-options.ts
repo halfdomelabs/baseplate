@@ -9,8 +9,8 @@ import { BadRequestError, ForbiddenError } from '@src/utils/http-errors.js';
 import type { StorageAdapter } from '../types/adapter.js';
 import type { FileCategory } from '../types/file-category.js';
 
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { getCategoryByNameOrThrow } from '../config/categories.config.js';
+import { getAdapterOrThrow } from './get-adapter.js';
 import {
   getEncodingFromContentType,
   getMimeTypeFromContentType,
@@ -174,7 +174,7 @@ export async function validateFileUploadOptions(
   const storagePath = `${pathPrefix}/${nanoid(14)}/${cleanedFilename}`;
 
   // Get storage adapter
-  const adapter = STORAGE_ADAPTERS[fileCategory.adapter];
+  const adapter = getAdapterOrThrow(fileCategory.adapter);
 
   // Prepare file record data (size and pendingUpload set by caller)
   const fileCreateInput = {

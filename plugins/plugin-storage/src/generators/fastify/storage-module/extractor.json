@@ -400,10 +400,10 @@
         "validateFileUploadOptions": {}
       },
       "referencedGeneratorTemplates": [
-        "config-adapters",
         "config-categories",
         "types-adapter",
         "types-file-category",
+        "utils-get-adapter",
         "utils-mime"
       ],
       "sourceFile": "module/utils/validate-file-upload-options.ts",

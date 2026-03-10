@@ -4,7 +4,7 @@ import type { StorageAdapter } from '$typesAdapter';
 import type { FileCategory } from '$typesFileCategory';
 import type { ServiceContext } from '%serviceContextImports';
 
-import { STORAGE_ADAPTERS } from '$configAdapters';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { getCategoryByNameOrThrow } from '$configCategories';
 import {
   getEncodingFromContentType,
@@ -172,7 +172,7 @@ export async function validateFileUploadOptions(
   const storagePath = `${pathPrefix}/${nanoid(14)}/${cleanedFilename}`;
 
   // Get storage adapter
-  const adapter = STORAGE_ADAPTERS[fileCategory.adapter];
+  const adapter = getAdapterOrThrow(fileCategory.adapter);
 
   // Prepare file record data (size and pendingUpload set by caller)
   const fileCreateInput = {
