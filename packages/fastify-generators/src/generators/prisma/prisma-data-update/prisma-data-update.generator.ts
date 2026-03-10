@@ -81,14 +81,18 @@ export const prismaDataUpdateGenerator = createGenerator({
         }
         return {
           build: () => {
-            const fieldsFragment =
-              fields.length === serviceFields.length
-                ? prismaDataService.getFieldsVariableName()
-                : tsTemplateWithImports([
-                    tsImportBuilder(['pick']).from('es-toolkit'),
-                  ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
-
             const modelVar = lowercaseFirstChar(modelName);
+
+            const useAllFields = fields.length === serviceFields.length;
+            const fieldsVariableName = useAllFields
+              ? prismaDataService.getFieldsVariableName()
+              : `${modelVar}UpdateFields`;
+
+            const fieldsDeclarationFragment = useAllFields
+              ? ''
+              : tsTemplateWithImports([
+                  tsImportBuilder(['pick']).from('es-toolkit'),
+                ])`const ${fieldsVariableName} = pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const);\n\n`;
 
             // Generate execute callback that transforms FK fields into relations
             const { executeCallbackFragment } = generateUpdateExecuteCallback({
@@ -111,7 +115,7 @@ export const prismaDataUpdateGenerator = createGenerator({
             });
 
             const updateFunction = tsTemplate`
-              export const ${schemaName} = ${dataUtilsImports.generateUpdateSchema.fragment()}(${fieldsFragment});
+              ${fieldsDeclarationFragment}\nexport const ${schemaName} = ${dataUtilsImports.generateUpdateSchema.fragment()}(${fieldsVariableName});
 
               export async function ${name}<
                 TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
@@ -122,12 +126,12 @@ export const prismaDataUpdateGenerator = createGenerator({
                 context,
               }: ${dataUtilsImports.DataUpdateInput.typeFragment()}<
                 ${quot(modelVar)},
-                typeof ${fieldsFragment},
+                typeof ${fieldsVariableName},
                 TQueryArgs
               >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>> {
                 const plan = await ${dataUtilsImports.composeUpdate.fragment()}({
                   model: ${quot(modelVar)},
-                  fields: ${fieldsFragment},
+                  fields: ${fieldsVariableName},
                   input,
                   context,
                   loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),${authorizeFragment}

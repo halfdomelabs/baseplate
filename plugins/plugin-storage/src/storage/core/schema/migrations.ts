@@ -251,11 +251,8 @@ export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
               ) ?? [];
             for (const t of transformers) {
               if (t.category) {
-                const cat = categoryMap.get(t.category.name);
-                if (cat) {
-                  t.categoryRef = cat.id;
-                  t.category = undefined;
-                }
+                t.categoryRef = t.category.name;
+                t.category = undefined;
               }
             }
           }
