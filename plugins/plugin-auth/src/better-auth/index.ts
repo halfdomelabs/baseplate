@@ -1,2 +1,2 @@
 export type * from './core/index.js';
-export * from './generators/index.js';
+export type * from './generators/index.js';

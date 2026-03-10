@@ -29,13 +29,14 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
         );
       }
 
-      const category = transformer?.category;
-
-      if (!category) {
+      if (!transformer?.categoryRef) {
         throw new Error(
           `Could not find category for relation ${relation.foreignRelationName}`,
         );
       }
+      const categoryName = definitionContainer.nameFromId(
+        transformer.categoryRef,
+      );
       const isOptional = ModelFieldUtils.isRelationOptional(model, relation);
       const relationName = definitionContainer.nameFromId(
         definition.modelRelationRef,
@@ -45,7 +46,7 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
         order,
         label: definition.label,
         isOptional,
-        category: category.name,
+        category: categoryName,
         modelRelation: relationName,
       });
     },

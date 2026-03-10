@@ -3,14 +3,14 @@
 import type { FileCategory } from '$typesFileCategory';
 import type { Prisma } from '%prismaGeneratedImports';
 
-// Helper for common file size constraints
+/** Helper constants for common file size constraints */
 export const FileSize = {
   KB: (n: number) => n * 1024,
   MB: (n: number) => n * 1024 * 1024,
   GB: (n: number) => n * 1024 * 1024 * 1024,
 } as const;
 
-// Helper for common MIME types
+/** Helper constants for common MIME types */
 export const MimeTypes = {
   images: ['image/jpeg', 'image/png', 'image/webp'],
   documents: [
@@ -20,6 +20,12 @@ export const MimeTypes = {
   ],
 } as const;
 
+/**
+ * Creates and validates a file category configuration.
+ *
+ * @param config - The file category configuration
+ * @returns The validated file category configuration
+ */
 export function createFileCategory<
   TName extends string,
   TReferencedByRelation extends keyof Prisma.FileCountOutputType =
@@ -35,6 +41,16 @@ export function createFileCategory<
 
   if (config.maxFileSize <= 0) {
     throw new Error('Max file size must be positive');
+  }
+
+  if (
+    (!config.referencedByRelations ||
+      config.referencedByRelations.length === 0) &&
+    !config.disableAutoCleanup
+  ) {
+    throw new Error(
+      `File category "${config.name}" has no referenced relations and must set disableAutoCleanup: true`,
+    );
   }
 
   return config;

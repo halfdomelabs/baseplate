@@ -13,7 +13,6 @@ import {
   createModelTransformerWebConfig,
   modelTransformerWebSpec,
 } from '@baseplate-dev/project-builder-lib/web';
-import { constantCase } from 'es-toolkit';
 
 import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
@@ -74,13 +73,6 @@ export default createPluginModule({
             projectContainer,
             modelConfig,
           );
-          const fileRelationId = fileRelationIds[0];
-          const relation = modelConfig.model.relations?.find(
-            (r) => r.id === fileRelationId,
-          );
-          if (!relation) {
-            throw new Error(`Could not find relation ${fileRelationId}`);
-          }
           const storageDefinition = PluginUtils.configByKeyOrThrow(
             definition,
             pluginKey,
@@ -89,14 +81,7 @@ export default createPluginModule({
             id: modelTransformerEntityType.generateNewId(),
             type: 'file' as const,
             fileRelationRef: fileRelationIds[0],
-            category: {
-              name: constantCase(relation.foreignRelationName),
-              maxFileSizeMb: 20,
-              authorize: {
-                uploadRoles: ['user'],
-              },
-              adapterRef: storageDefinition.s3Adapters[0]?.id ?? '',
-            },
+            categoryRef: storageDefinition.fileCategories[0]?.id ?? '',
           };
         },
         getSummary: (definition, definitionContainer) => [
@@ -105,6 +90,10 @@ export default createPluginModule({
             description: definitionContainer.nameFromId(
               definition.fileRelationRef,
             ),
+          },
+          {
+            label: 'Category',
+            description: definitionContainer.nameFromId(definition.categoryRef),
           },
         ],
       }),

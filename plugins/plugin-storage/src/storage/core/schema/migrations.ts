@@ -3,6 +3,8 @@ import type { PluginConfigMigration } from '@baseplate-dev/project-builder-lib';
 import { modelTransformerEntityType } from '@baseplate-dev/project-builder-lib';
 import { constantCase } from 'es-toolkit';
 
+import { fileCategoryEntityType } from './plugin-definition.js';
+
 export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
   {
     name: 'move-file-model',
@@ -146,6 +148,98 @@ export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
                   },
                 ],
               };
+            }
+          }
+        },
+      };
+    },
+  },
+  {
+    name: 'extract-categories-to-plugin-level',
+    version: 3,
+    migrate: (config) => {
+      interface TransformerWithCategory {
+        type: string;
+        category?: {
+          name: string;
+          maxFileSizeMb: number;
+          authorize: { uploadRoles: string[] };
+          adapterRef: string;
+        };
+        categoryRef?: string;
+      }
+
+      interface ProjectDefinitionConfig {
+        models: {
+          service?: {
+            transformers?: TransformerWithCategory[];
+          };
+        }[];
+      }
+
+      const typedConfig = config as {
+        storageFeatureRef: string;
+        s3Adapters: {
+          id: string;
+          name: string;
+          bucketConfigVar: string;
+          hostedUrlConfigVar?: string;
+        }[];
+        fileCategories?: unknown[];
+      };
+
+      return {
+        updatedConfig: typedConfig,
+        updateProjectDefinition: (draft: unknown) => {
+          const def = draft as ProjectDefinitionConfig;
+
+          // Collect all inline categories from file transformers, dedupe by name
+          const categoryMap = new Map<
+            string,
+            {
+              id: string;
+              name: string;
+              maxFileSizeMb: number;
+              authorize: { uploadRoles: string[] };
+              adapterRef: string;
+            }
+          >();
+
+          for (const model of def.models) {
+            const transformers =
+              model.service?.transformers?.filter(
+                (t) => t.type === 'file' && t.category,
+              ) ?? [];
+            for (const t of transformers) {
+              if (t.category && !categoryMap.has(t.category.name)) {
+                categoryMap.set(t.category.name, {
+                  id: fileCategoryEntityType.generateNewId(),
+                  name: t.category.name,
+                  maxFileSizeMb: t.category.maxFileSizeMb,
+                  authorize: t.category.authorize,
+                  adapterRef: t.category.adapterRef,
+                });
+              }
+            }
+          }
+
+          // Set fileCategories on plugin config
+          typedConfig.fileCategories = [...categoryMap.values()];
+
+          // Replace inline category with categoryRef on each transformer
+          for (const model of def.models) {
+            const transformers =
+              model.service?.transformers?.filter(
+                (t) => t.type === 'file' && t.category,
+              ) ?? [];
+            for (const t of transformers) {
+              if (t.category) {
+                const cat = categoryMap.get(t.category.name);
+                if (cat) {
+                  t.categoryRef = cat.id;
+                  t.category = undefined;
+                }
+              }
             }
           }
         },

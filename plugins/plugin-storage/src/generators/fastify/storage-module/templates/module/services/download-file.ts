@@ -4,15 +4,16 @@ import type { File } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 import type { Readable } from 'node:stream';
 
-import { STORAGE_ADAPTERS } from '$configAdapters';
 import { getCategoryByNameOrThrow } from '$configCategories';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { ForbiddenError } from '%errorHandlerServiceImports';
 
 /**
- * Downloads a file from storage
+ * Downloads a file from storage.
+ *
  * @param fileIdOrFile - The file ID or file object
- * @param context - The service context
- * @returns The file contents as a stream
+ * @param context - The service context with auth information
+ * @returns The file contents as a readable stream
  */
 export async function downloadFile(
   fileIdOrFile: string | File,
@@ -36,11 +37,7 @@ export async function downloadFile(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  if (!(file.adapter in STORAGE_ADAPTERS)) {
-    throw new Error(`Unknown storage adapter: ${file.adapter}`);
-  }
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
+  const adapter = getAdapterOrThrow(file.adapter);
 
   return adapter.downloadFile(file.storagePath);
 }

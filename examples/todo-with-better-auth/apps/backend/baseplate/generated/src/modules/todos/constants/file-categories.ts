@@ -10,5 +10,5 @@ export const todoListCoverPhotoFileCategory = createFileCategory({
   },
   maxFileSize: FileSize.MB(10),
   name: 'TODO_LIST_COVER_PHOTO',
-  referencedByRelation: 'todoListCoverPhoto',
+  referencedByRelations: ['todoListCoverPhoto'],
 });

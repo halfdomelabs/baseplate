@@ -2,10 +2,11 @@
 
 import type { File } from '%prismaGeneratedImports';
 
-import { STORAGE_ADAPTERS } from '$configAdapters';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
 
 /**
- * Gets a permanent public URL for a file
+ * Gets a permanent public URL for a file.
+ *
  * @param fileIdOrFile - The file ID or file object
  * @returns The public URL or undefined if not publicly accessible
  * @throws {Error} If the storage adapter is unknown or doesn't support public URLs
@@ -20,11 +21,7 @@ export async function getPublicUrl(
         })
       : fileIdOrFile;
 
-  if (!(file.adapter in STORAGE_ADAPTERS)) {
-    throw new Error(`Unknown storage adapter: ${file.adapter}`);
-  }
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
+  const adapter = getAdapterOrThrow(file.adapter);
 
   if (!adapter.getPublicUrl) {
     throw new Error(

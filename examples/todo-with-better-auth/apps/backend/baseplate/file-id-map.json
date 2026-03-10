@@ -149,8 +149,10 @@
   "@baseplate-dev/plugin-storage#fastify/storage-module:types-adapter": "src/modules/storage/types/adapter.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:types-file-category": "src/modules/storage/types/file-category.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:utils-create-file-category": "src/modules/storage/utils/create-file-category.ts",
+  "@baseplate-dev/plugin-storage#fastify/storage-module:utils-get-adapter": "src/modules/storage/utils/get-adapter.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:utils-mime": "src/modules/storage/utils/mime.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:utils-validate-file-upload-options": "src/modules/storage/utils/validate-file-upload-options.ts",
+  "@baseplate-dev/plugin-storage#fastify/storage-module:utils-validate-pending-upload": "src/modules/storage/utils/validate-pending-upload.ts",
   "@baseplate-dev/plugin-storage#storage/core/file-categories:file-categories-feature:5yQn3gjSzKEB": "src/modules/todos/constants/file-categories.ts",
   "@baseplate-dev/plugin-storage#storage/core/file-categories:file-categories-feature:uLSMKuAlLWix": "src/modules/accounts/users/constants/file-categories.ts"
 }

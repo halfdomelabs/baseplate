@@ -3,8 +3,8 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { ForbiddenError } from '@src/utils/http-errors.js';
 
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { getCategoryByNameOrThrow } from '../config/categories.config.js';
+import { getAdapterOrThrow } from '../utils/get-adapter.js';
 
 interface CreatePresignedDownloadUrlInput {
   fileId: string;
@@ -14,6 +14,13 @@ interface CreatePresignedDownloadUrlPayload {
   url: string;
 }
 
+/**
+ * Creates a presigned download URL for a file.
+ *
+ * @param input - The input containing the file ID
+ * @param context - The service context with auth information
+ * @returns The presigned download URL payload
+ */
 export async function createPresignedDownloadUrl(
   { fileId }: CreatePresignedDownloadUrlInput,
   context: ServiceContext,
@@ -27,6 +34,7 @@ export async function createPresignedDownloadUrl(
   const category = getCategoryByNameOrThrow(file.category);
 
   const isAuthorizedToRead =
+    context.auth.roles.includes('system') ||
     !category.authorize?.presignedRead ||
     (await category.authorize.presignedRead(file, context));
 
@@ -34,11 +42,7 @@ export async function createPresignedDownloadUrl(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  if (!(file.adapter in STORAGE_ADAPTERS)) {
-    throw new Error(`Unknown storage adapter: ${file.adapter}`);
-  }
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
+  const adapter = getAdapterOrThrow(file.adapter);
 
   if (!adapter.createPresignedDownloadUrl) {
     throw new Error(

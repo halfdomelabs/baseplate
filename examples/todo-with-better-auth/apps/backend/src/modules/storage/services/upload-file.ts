@@ -8,11 +8,12 @@ import type { FileUploadOptions } from '../utils/validate-file-upload-options.js
 import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
 
 /**
- * Uploads a file to storage
- * @param contents - The file contents
- * @param options - The file upload options
- * @param context - The service context
- * @returns The uploaded file
+ * Uploads a file to storage directly from the server.
+ *
+ * @param contents - The file contents as a Buffer
+ * @param options - The file upload options (filename, size, contentType, category)
+ * @param context - The service context with auth information
+ * @returns The uploaded file record
  */
 export async function uploadFile(
   contents: Buffer,
@@ -26,7 +27,13 @@ export async function uploadFile(
 
   const file =
     await /* TPL_FILE_MODEL:START */ prisma.file /* TPL_FILE_MODEL:END */
-      .create({ data: fileCreateInput });
+      .create({
+        data: {
+          ...fileCreateInput,
+          pendingUpload: false,
+          size: contents.length,
+        },
+      });
 
   await adapter.uploadFile(file.storagePath, contents, {
     contentType: options.contentType,

@@ -497,7 +497,7 @@
           },
           {
             "id": "model-scalar-field:FrVBptcXqSjZ",
-            "isOptional": false,
+            "isOptional": true,
             "name": "size",
             "options": { "default": "" },
             "type": "int"
@@ -524,20 +524,6 @@
             "type": "string"
           },
           {
-            "id": "model-scalar-field:0zurWIYRT21d",
-            "isOptional": true,
-            "name": "referencedAt",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:GV9yHW82wdmp",
-            "isOptional": true,
-            "name": "expiredAt",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
             "id": "model-scalar-field:3ma5keqv7qYQ",
             "isOptional": true,
             "name": "uploaderId",
@@ -557,6 +543,13 @@
             "name": "createdAt",
             "options": { "defaultToNow": true },
             "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:LakRttT_3b2U",
+            "isOptional": false,
+            "name": "pendingUpload",
+            "options": { "default": "false" },
+            "type": "boolean"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
@@ -1091,12 +1084,7 @@
         "delete": { "enabled": true, "globalRoles": ["user"] },
         "transformers": [
           {
-            "category": {
-              "adapterRef": "uploads",
-              "authorize": { "uploadRoles": ["user"] },
-              "maxFileSizeMb": 10,
-              "name": "TODO_LIST_COVER_PHOTO"
-            },
+            "categoryRef": "TODO_LIST_COVER_PHOTO",
             "fileRelationRef": "coverPhoto",
             "id": "model-transformer:Kv0etvmd0wuR",
             "type": "file"
@@ -1432,12 +1420,7 @@
         "delete": { "enabled": true },
         "transformers": [
           {
-            "category": {
-              "adapterRef": "uploads",
-              "authorize": { "uploadRoles": ["user"] },
-              "maxFileSizeMb": 10,
-              "name": "USER_IMAGE_FILE"
-            },
+            "categoryRef": "USER_IMAGE_FILE",
             "fileRelationRef": "file",
             "id": "model-transformer:GBWoZ4NkxkpJ",
             "type": "file"
@@ -1561,12 +1544,7 @@
         "delete": { "enabled": true },
         "transformers": [
           {
-            "category": {
-              "adapterRef": "uploads",
-              "authorize": { "uploadRoles": ["user"] },
-              "maxFileSizeMb": 10,
-              "name": "USER_PROFILE_AVATAR"
-            },
+            "categoryRef": "USER_PROFILE_AVATAR",
             "fileRelationRef": "avatar",
             "id": "model-transformer:cbjBj3IacjKA",
             "type": "file"
@@ -1694,6 +1672,29 @@
   "plugins": [
     {
       "config": {
+        "fileCategories": [
+          {
+            "adapterRef": "uploads",
+            "authorize": { "uploadRoles": ["user"] },
+            "id": "file-category:v1kFZCasEzf3",
+            "maxFileSizeMb": 10,
+            "name": "TODO_LIST_COVER_PHOTO"
+          },
+          {
+            "adapterRef": "uploads",
+            "authorize": { "uploadRoles": ["user"] },
+            "id": "file-category:n07NDlZNz8u3",
+            "maxFileSizeMb": 10,
+            "name": "USER_IMAGE_FILE"
+          },
+          {
+            "adapterRef": "uploads",
+            "authorize": { "uploadRoles": ["user"] },
+            "id": "file-category:QRE6e-sl7CV-",
+            "maxFileSizeMb": 10,
+            "name": "USER_PROFILE_AVATAR"
+          }
+        ],
         "s3Adapters": [
           {
             "bucketConfigVar": "AWS_UPLOADS_BUCKET",
@@ -1704,7 +1705,7 @@
         ],
         "storageFeatureRef": "storage"
       },
-      "configSchemaVersion": 2,
+      "configSchemaVersion": 3,
       "id": "plugin:baseplate-dev_plugin-storage_storage",
       "name": "storage",
       "packageName": "@baseplate-dev/plugin-storage",

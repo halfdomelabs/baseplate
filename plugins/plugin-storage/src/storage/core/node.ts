@@ -44,10 +44,10 @@ export default createPluginModule({
             }),
           });
 
-          // Add file categories
+          // Collect file transformers with resolved categories
           const transformers = projectDefinition.models.flatMap((m) =>
             m.service.transformers
-              .filter((m): m is FileTransformerDefinition => m.type === 'file')
+              .filter((t): t is FileTransformerDefinition => t.type === 'file')
               .map((t) => {
                 const relation = m.model.relations.find(
                   (r) => r.id === t.fileRelationRef,
@@ -55,38 +55,87 @@ export default createPluginModule({
                 if (!relation) {
                   throw new Error(`File transformer ${t.id} has no relation`);
                 }
-                return {
-                  model: m,
-                  transformer: t,
-                  relation,
-                };
+                const category = storage.fileCategories.find(
+                  (c) => c.id === t.categoryRef,
+                );
+                if (!category) {
+                  throw new Error(
+                    `File category ${t.categoryRef} not found for transformer ${t.id}`,
+                  );
+                }
+                return { model: m, transformer: t, relation, category };
               }),
           );
 
+          // Build referencedByRelations per category (across all features)
+          const relationsByCategory = new Map<string, string[]>();
+          for (const t of transformers) {
+            const existing = relationsByCategory.get(t.category.name) ?? [];
+            existing.push(t.relation.foreignRelationName);
+            relationsByCategory.set(t.category.name, existing);
+          }
+
+          // Group by feature for generator registration
           const transformersByFeature = groupBy(
             transformers,
             (t) => t.model.featureRef,
           );
 
-          for (const [featureId, transformers] of Object.entries(
+          for (const [featureId, featureTransformers] of Object.entries(
             transformersByFeature,
           )) {
+            // Dedupe categories within this feature
+            const seenCategories = new Set<string>();
+            const featureCategories = featureTransformers
+              .filter((t) => {
+                if (seenCategories.has(t.category.name)) return false;
+                seenCategories.add(t.category.name);
+                return true;
+              })
+              .map((t) => ({
+                name: t.category.name,
+                maxFileSizeMb: t.category.maxFileSizeMb,
+                adapter: definitionContainer.nameFromId(t.category.adapterRef),
+                authorize: {
+                  uploadRoles: t.category.authorize.uploadRoles.map((r) =>
+                    definitionContainer.nameFromId(r),
+                  ),
+                },
+                referencedByRelations:
+                  relationsByCategory.get(t.category.name) ?? [],
+                disableAutoCleanup: t.category.disableAutoCleanup,
+              }));
+
             appCompiler.addChildrenToFeature(featureId, {
               fileCategories: fileCategoriesGenerator({
                 featureId,
-                fileCategories: transformers.map((t) => ({
-                  name: t.transformer.category.name,
-                  maxFileSizeMb: t.transformer.category.maxFileSizeMb,
-                  adapter: definitionContainer.nameFromId(
-                    t.transformer.category.adapterRef,
-                  ),
+                fileCategories: featureCategories,
+              }),
+            });
+          }
+
+          // Register standalone categories (disableAutoCleanup with no transformers)
+          const standaloneCategories = storage.fileCategories.filter(
+            (c) =>
+              c.disableAutoCleanup &&
+              !transformers.some((t) => t.category.id === c.id),
+          );
+
+          if (standaloneCategories.length > 0) {
+            appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
+              standaloneFileCategories: fileCategoriesGenerator({
+                featureId: storage.storageFeatureRef,
+                fileCategories: standaloneCategories.map((c) => ({
+                  name: c.name,
+                  maxFileSizeMb: c.maxFileSizeMb,
+                  adapter: definitionContainer.nameFromId(c.adapterRef),
                   authorize: {
-                    uploadRoles:
-                      t.transformer.category.authorize.uploadRoles.map((r) =>
-                        definitionContainer.nameFromId(r),
-                      ),
+                    uploadRoles: c.authorize.uploadRoles.map((r) =>
+                      definitionContainer.nameFromId(r),
+                    ),
                   },
-                  referencedByRelation: t.relation.foreignRelationName,
+                  referencedByRelations: [],
+                  disableAutoCleanup: true,
                 })),
               }),
             });
