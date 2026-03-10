@@ -61,14 +61,18 @@ export const prismaDataCreateGenerator = createGenerator({
         }
         return {
           build: () => {
-            const fieldsFragment =
-              fields.length === serviceFields.length
-                ? prismaDataService.getFieldsVariableName()
-                : tsTemplateWithImports([
-                    tsImportBuilder(['pick']).from('es-toolkit'),
-                  ])`pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const)`;
-
             const modelVar = lowercaseFirstChar(modelName);
+
+            const useAllFields = fields.length === serviceFields.length;
+            const fieldsVariableName = useAllFields
+              ? prismaDataService.getFieldsVariableName()
+              : `${modelVar}CreateFields`;
+
+            const fieldsDeclarationFragment = useAllFields
+              ? ''
+              : tsTemplateWithImports([
+                  tsImportBuilder(['pick']).from('es-toolkit'),
+                ])`const ${fieldsVariableName} = pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const);\n`;
 
             // Generate execute callback that transforms FK fields into relations
             const prismaModel = prismaOutput.getPrismaModel(modelName);
@@ -90,7 +94,7 @@ export const prismaDataCreateGenerator = createGenerator({
             });
 
             const createFunction = tsTemplate`
-              export const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsFragment});
+              ${fieldsDeclarationFragment}\nexport const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsVariableName});
 
               export async function ${name}<
                 TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
@@ -100,12 +104,12 @@ export const prismaDataCreateGenerator = createGenerator({
                 context,
               }: ${dataUtilsImports.DataCreateInput.typeFragment()}<
                 ${quot(modelVar)},
-                typeof ${fieldsFragment},
+                typeof ${fieldsVariableName},
                 TQueryArgs
               >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>> {
                 const plan = await ${dataUtilsImports.composeCreate.fragment()}({
                   model: ${quot(modelVar)},
-                  fields: ${fieldsFragment},
+                  fields: ${fieldsVariableName},
                   input,
                   context,${authorizeFragment}
                 });

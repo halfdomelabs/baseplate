@@ -157,7 +157,7 @@ export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
   {
     name: 'extract-categories-to-plugin-level',
     version: 3,
-    migrate: (config) => {
+    migrate: (config, projectDefinition) => {
       interface TransformerWithCategory {
         type: string;
         category?: {
@@ -188,57 +188,71 @@ export const STORAGE_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
         fileCategories?: unknown[];
       };
 
-      return {
-        updatedConfig: typedConfig,
-        updateProjectDefinition: (draft: unknown) => {
-          const def = draft as ProjectDefinitionConfig;
+      const def = projectDefinition as ProjectDefinitionConfig;
 
-          // Collect all inline categories from file transformers, dedupe by name
-          const categoryMap = new Map<
-            string,
-            {
-              id: string;
-              name: string;
-              maxFileSizeMb: number;
-              authorize: { uploadRoles: string[] };
-              adapterRef: string;
-            }
-          >();
+      // Collect all inline categories from file transformers, dedupe by name
+      const categoryMap = new Map<
+        string,
+        {
+          id: string;
+          name: string;
+          maxFileSizeMb: number;
+          authorize: { uploadRoles: string[] };
+          adapterRef: string;
+        }
+      >();
 
-          for (const model of def.models) {
-            const transformers =
-              model.service?.transformers?.filter(
-                (t) => t.type === 'file' && t.category,
-              ) ?? [];
-            for (const t of transformers) {
-              if (t.category && !categoryMap.has(t.category.name)) {
-                categoryMap.set(t.category.name, {
-                  id: fileCategoryEntityType.generateNewId(),
-                  name: t.category.name,
-                  maxFileSizeMb: t.category.maxFileSizeMb,
-                  authorize: t.category.authorize,
-                  adapterRef: t.category.adapterRef,
-                });
-              }
-            }
+      for (const model of def.models) {
+        const transformers =
+          model.service?.transformers?.filter(
+            (t) => t.type === 'file' && t.category,
+          ) ?? [];
+        for (const t of transformers) {
+          if (!t.category) {
+            continue;
           }
+          const existing = categoryMap.get(t.category.name);
+          if (existing) {
+            if (
+              existing.maxFileSizeMb !== t.category.maxFileSizeMb ||
+              existing.adapterRef !== t.category.adapterRef ||
+              JSON.stringify(existing.authorize) !==
+                JSON.stringify(t.category.authorize)
+            ) {
+              throw new Error(
+                `Duplicate file category name "${t.category.name}" found with conflicting settings across models`,
+              );
+            }
+          } else {
+            categoryMap.set(t.category.name, {
+              id: fileCategoryEntityType.generateNewId(),
+              name: t.category.name,
+              maxFileSizeMb: t.category.maxFileSizeMb,
+              authorize: t.category.authorize,
+              adapterRef: t.category.adapterRef,
+            });
+          }
+        }
+      }
 
-          // Set fileCategories on plugin config
-          typedConfig.fileCategories = [...categoryMap.values()];
+      return {
+        updatedConfig: {
+          ...typedConfig,
+          fileCategories: [...categoryMap.values()],
+        },
+        updateProjectDefinition: (draft: unknown) => {
+          const draftDef = draft as ProjectDefinitionConfig;
 
           // Replace inline category with categoryRef on each transformer
-          for (const model of def.models) {
+          for (const model of draftDef.models) {
             const transformers =
               model.service?.transformers?.filter(
                 (t) => t.type === 'file' && t.category,
               ) ?? [];
             for (const t of transformers) {
               if (t.category) {
-                const cat = categoryMap.get(t.category.name);
-                if (cat) {
-                  t.categoryRef = cat.id;
-                  t.category = undefined;
-                }
+                t.categoryRef = t.category.name;
+                t.category = undefined;
               }
             }
           }
