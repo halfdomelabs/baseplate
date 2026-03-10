@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import type { StorageAdapter } from '$typesAdapter';
 import type { FileCategory } from '$typesFileCategory';
 import type { PrismaTransaction } from '%dataUtilsImports';
 import type { File } from '%prismaGeneratedImports';
@@ -17,10 +16,6 @@ import { prisma } from '%prismaImports';
 export interface ValidatedPendingUpload {
   /** The validated file record */
   file: File;
-  /** The resolved storage adapter */
-  adapter: StorageAdapter;
-  /** The file's actual size from storage metadata */
-  size: number;
   /**
    * Call this inside a transaction to confirm the upload.
    * Sets `pendingUpload: false` and updates `size` from storage metadata.
@@ -36,7 +31,6 @@ export interface ValidatedPendingUpload {
  * - File is still pending upload (not already confirmed and connected)
  * - File category matches the expected category
  * - File was actually uploaded to storage
- * - File size is within the category's allowed range
  *
  * Returns a `confirmUpload` callback that should be called inside your
  * transaction after creating/updating the parent entity.
@@ -107,25 +101,7 @@ export async function validatePendingUpload({
 
   return {
     file,
-    adapter,
-    size: fileMetadata.size,
     confirmUpload: async (tx: PrismaTransaction): Promise<void> => {
-      // Defense-in-depth: verify actual file size against category limits.
-      // S3 POST presigned URLs enforce content-length-range, but this
-      // protects against future PUT-based adapters or misconfigured policies.
-      if (fileMetadata.size > category.maxFileSize) {
-        await adapter.deleteFile?.(file.storagePath);
-        throw new BadRequestError(
-          `File "${fileId}" exceeds maximum allowed size of ${category.maxFileSize} bytes (actual: ${fileMetadata.size} bytes).`,
-        );
-      }
-      if (category.minFileSize && fileMetadata.size < category.minFileSize) {
-        await adapter.deleteFile?.(file.storagePath);
-        throw new BadRequestError(
-          `File "${fileId}" is below minimum required size of ${category.minFileSize} bytes (actual: ${fileMetadata.size} bytes).`,
-        );
-      }
-
       await tx.file.update({
         where: { id: fileId, pendingUpload: true },
         data: { pendingUpload: false, size: fileMetadata.size },

@@ -16,8 +16,10 @@ import {
 import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
-import type { FileCategoryFormData } from './file-category-dialog.js';
+import type {
+  FileCategoryInput,
+  StoragePluginDefinitionInput,
+} from '../schema/plugin-definition.js';
 
 import { fileCategoryEntityType } from '../schema/plugin-definition.js';
 import { FileCategoryDialog } from './file-category-dialog.js';
@@ -37,13 +39,13 @@ function FileCategoryEditorForm({
     name: 'fileCategories',
   });
   const [categoryToEdit, setCategoryToEdit] = useState<
-    FileCategoryFormData | undefined
+    FileCategoryInput | undefined
   >();
   const [isEditing, setIsEditing] = useState(false);
 
   const categories = useWatch({ control, name: 'fileCategories' }) ?? [];
 
-  function handleSaveCategory(newCategory: FileCategoryFormData): void {
+  function handleSaveCategory(newCategory: FileCategoryInput): void {
     const existingIndex = categories.findIndex(
       (cat) => cat.id === newCategory.id,
     );

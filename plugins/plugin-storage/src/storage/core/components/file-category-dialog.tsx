@@ -2,7 +2,10 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import {
+  useDefinitionSchema,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -17,33 +20,23 @@ import {
   SelectFieldController,
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
-import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import z from 'zod';
 
-import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
+import type {
+  FileCategoryInput,
+  StoragePluginDefinitionInput,
+} from '../schema/plugin-definition.js';
 
-const fileCategorySchema = z.object({
-  id: z.string(),
-  name: CASE_VALIDATORS.CONSTANT_CASE,
-  maxFileSizeMb: z.int().positive(),
-  authorize: z.object({
-    uploadRoles: z.array(z.string()),
-  }),
-  adapterRef: z.string().min(1, 'Storage adapter is required'),
-  disableAutoCleanup: z.boolean().optional(),
-});
-
-export type FileCategoryFormData = z.infer<typeof fileCategorySchema>;
+import { createFileCategorySchema } from '../schema/plugin-definition.js';
 
 interface FileCategoryDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  category?: FileCategoryFormData;
+  category?: FileCategoryInput;
   isNew?: boolean;
-  onSave: (category: FileCategoryFormData) => void;
+  onSave: (category: FileCategoryInput) => void;
   parentControl: Control<StoragePluginDefinitionInput>;
   asChild?: boolean;
   children?: React.ReactNode;
@@ -61,7 +54,8 @@ export function FileCategoryDialog({
 }: FileCategoryDialogProps): React.JSX.Element {
   const { definition, pluginContainer } = useProjectDefinition();
 
-  const form = useForm<FileCategoryFormData>({
+  const fileCategorySchema = useDefinitionSchema(createFileCategorySchema);
+  const form = useForm<FileCategoryInput>({
     resolver: zodResolver(fileCategorySchema),
     values: category,
   });

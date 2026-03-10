@@ -35,8 +35,8 @@ export async function cleanUnusedFiles(): Promise<number> {
 
   // Collect ALL known file relations across all categories for safety.
   const allFileRelations = [
-    ...new Set(FILE_CATEGORIES.flatMap((c) => c.referencedByRelations)),
-  ] as string[];
+    ...new Set(FILE_CATEGORIES.flatMap((c) => c.referencedByRelations ?? [])),
+  ];
 
   const unusedFiles = await prisma.file.findMany({
     where: {

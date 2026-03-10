@@ -18,6 +18,32 @@ export const fileCategoryEntityType = createEntityType(
   'plugin-storage/file-category',
 );
 
+export const createFileCategorySchema = definitionSchema((ctx) =>
+  ctx.withEnt(
+    z.object({
+      id: z.string(),
+      name: CASE_VALIDATORS.CONSTANT_CASE,
+      maxFileSizeMb: z.int().positive(),
+      authorize: z.object({
+        uploadRoles: z.array(
+          ctx.withRef({
+            type: authRoleEntityType,
+            onDelete: 'RESTRICT',
+          }),
+        ),
+      }),
+      adapterRef: ctx.withRef({
+        type: storageAdapterEntityType,
+        onDelete: 'RESTRICT',
+      }),
+      disableAutoCleanup: z.boolean().optional(),
+    }),
+    { type: fileCategoryEntityType },
+  ),
+);
+
+export type FileCategoryInput = def.InferInput<typeof createFileCategorySchema>;
+
 export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     storageFeatureRef: ctx.withRef({
@@ -35,31 +61,7 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
         { type: storageAdapterEntityType },
       ),
     ),
-    fileCategories: z
-      .array(
-        ctx.withEnt(
-          z.object({
-            id: z.string(),
-            name: CASE_VALIDATORS.CONSTANT_CASE,
-            maxFileSizeMb: z.int().positive(),
-            authorize: z.object({
-              uploadRoles: z.array(
-                ctx.withRef({
-                  type: authRoleEntityType,
-                  onDelete: 'RESTRICT',
-                }),
-              ),
-            }),
-            adapterRef: ctx.withRef({
-              type: storageAdapterEntityType,
-              onDelete: 'RESTRICT',
-            }),
-            disableAutoCleanup: z.boolean().optional(),
-          }),
-          { type: fileCategoryEntityType },
-        ),
-      )
-      .default([]),
+    fileCategories: z.array(createFileCategorySchema(ctx)).default([]),
   }),
 );
 
