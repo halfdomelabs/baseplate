@@ -152,12 +152,14 @@ describe('todoItemQueryFilter integration', () => {
   });
 
   describe('unauthenticated user', () => {
-    it('should return a restrictive where clause when user has no userId', () => {
+    it('should throw ForbiddenError when user has no userId', () => {
       const ctx = createTestServiceContext();
       // When unauthenticated, the null guard returns false for the owner role,
-      // which buildNestedWhere wraps — the filter won't match any rows
-      const where = todoItemQueryFilter.buildWhere(ctx, ['owner']);
-      expect(where).toBeDefined();
+      // buildNestedWhere returns false, queryHelpers.or resolves to false,
+      // and buildWhere throws ForbiddenError since all roles deny access
+      expect(() => todoItemQueryFilter.buildWhere(ctx, ['owner'])).toThrow(
+        'Forbidden',
+      );
     });
   });
 });
