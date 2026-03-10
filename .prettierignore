@@ -1,6 +1,4 @@
 pnpm-lock.yaml
 **/route-tree.gen.ts
-/examples
-/packages
-/plugins
-/tests
+dist
+.turbo/**

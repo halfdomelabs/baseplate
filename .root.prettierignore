@@ -1,0 +1,10 @@
+# We use a separate prettierignore file for the root project because
+# the VSCode extension will only use the root .prettierignore file
+# https://github.com/prettier/prettier-vscode/issues/3465
+
+pnpm-lock.yaml
+**/route-tree.gen.ts
+/examples
+/packages
+/plugins
+/tests
