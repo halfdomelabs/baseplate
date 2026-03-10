@@ -83,6 +83,7 @@ export function ModelAuthorizerRolesSection({
   const { fields, remove, append, update } = useFieldArray({
     control,
     name: 'authorizer.roles',
+    keyName: '_rhfId',
   });
 
   const { requestConfirm } = useConfirmDialog();
@@ -99,7 +100,7 @@ export function ModelAuthorizerRolesSection({
       <SectionListSectionContent className="max-w-xl space-y-4">
         {fields.map((field, idx) => (
           <AuthorizerRoleRecord
-            key={field.id}
+            key={field._rhfId}
             role={field}
             idx={idx}
             onUpdate={(role, idx) => {

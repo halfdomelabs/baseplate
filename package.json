@@ -24,10 +24,11 @@
     "metadata:sync": "workspace-meta sync",
     "migrate:extractor-templates": "node migrate-extractor-templates.js",
     "prepare": "husky",
-    "prettier:check": "turbo run prettier:check --continue",
-    "prettier:check:affected": "turbo run prettier:check --affected --continue",
-    "prettier:root:check": "prettier --check .",
-    "prettier:write": "turbo run prettier:write",
+    "prettier:check": "turbo run prettier:check prettier:root:check --continue",
+    "prettier:check:affected": "turbo run prettier:check prettier:root:check --affected --continue",
+    "prettier:root:check": "prettier --ignore-path .root.prettierignore --check .",
+    "prettier:root:write": "prettier --ignore-path .root.prettierignore --write --list-different .",
+    "prettier:write": "turbo run prettier:write prettier:root:write",
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && pnpm changeset publish",
     "run:all": "bash scripts/run-all.sh",
@@ -54,7 +55,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "cross-env SKIP_ESLINT=1 node scripts/format-and-lint.ts",
-    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write"
+    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
   },
   "dependencies": {
     "@changesets/cli": "2.29.6"

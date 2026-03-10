@@ -108,9 +108,15 @@ describe('parseAuthorizerExpression', () => {
       );
     });
 
-    it('should reject hasRole with multiple arguments', () => {
+    it('should reject hasRole with two string arguments', () => {
       expect(() =>
         parseAuthorizerExpression("hasRole('admin', 'user')"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject hasRole with three arguments', () => {
+      expect(() =>
+        parseAuthorizerExpression("hasRole(model.todoList, 'owner', 'extra')"),
       ).toThrow(AuthorizerExpressionParseError);
     });
 
@@ -178,6 +184,83 @@ describe('parseAuthorizerExpression', () => {
     it('should reject hasSomeRole with empty array elements', () => {
       expect(() =>
         parseAuthorizerExpression("hasSomeRole(['admin', , 'editor'])"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+  });
+
+  describe('nested hasRole expressions', () => {
+    it("should parse hasRole(model.todoList, 'owner')", () => {
+      const result = parseAuthorizerExpression(
+        "hasRole(model.todoList, 'owner')",
+      );
+
+      expect(result.ast).toEqual({
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      });
+      expect(result.modelFieldRefs).toEqual([]);
+      expect(result.authFieldRefs).toEqual([]);
+      expect(result.roleRefs).toEqual([]);
+      expect(result.nestedRoleRefs).toEqual([
+        { relationName: 'todoList', roles: ['owner'] },
+      ]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should reject hasRole with non-model relation', () => {
+      expect(() =>
+        parseAuthorizerExpression("hasRole(foo.todoList, 'owner')"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject hasRole with computed relation access', () => {
+      expect(() =>
+        parseAuthorizerExpression("hasRole(model['todoList'], 'owner')"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject hasRole with non-string role for nested form', () => {
+      expect(() =>
+        parseAuthorizerExpression('hasRole(model.todoList, 123)'),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+  });
+
+  describe('nested hasSomeRole expressions', () => {
+    it("should parse hasSomeRole(model.todoList, ['owner', 'editor'])", () => {
+      const result = parseAuthorizerExpression(
+        "hasSomeRole(model.todoList, ['owner', 'editor'])",
+      );
+
+      expect(result.ast.type).toBe('nestedHasSomeRole');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'nestedHasSomeRole' }
+      >;
+      expect(ast.relationName).toBe('todoList');
+      expect(ast.roles).toEqual(['owner', 'editor']);
+      expect(result.nestedRoleRefs).toEqual([
+        { relationName: 'todoList', roles: ['owner', 'editor'] },
+      ]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should reject hasSomeRole with non-model relation', () => {
+      expect(() =>
+        parseAuthorizerExpression("hasSomeRole(foo.todoList, ['owner'])"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject hasSomeRole with three arguments', () => {
+      expect(() =>
+        parseAuthorizerExpression(
+          "hasSomeRole(model.todoList, ['owner'], 'extra')",
+        ),
       ).toThrow(AuthorizerExpressionParseError);
     });
   });
@@ -264,6 +347,20 @@ describe('parseAuthorizerExpression', () => {
       expect(result.roleRefs).toContain('c');
     });
 
+    it('should parse nested hasRole combined with field comparison', () => {
+      const result = parseAuthorizerExpression(
+        "model.ownerId === userId || hasRole(model.todoList, 'owner')",
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      expect(result.modelFieldRefs).toEqual(['ownerId']);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.nestedRoleRefs).toEqual([
+        { relationName: 'todoList', roles: ['owner'] },
+      ]);
+      expect(result.requiresModel).toBe(true);
+    });
+
     it('should reject nullish coalescing operator', () => {
       expect(() =>
         parseAuthorizerExpression("hasRole('a') ?? hasRole('b')"),
@@ -296,6 +393,58 @@ describe('parseAuthorizerExpression', () => {
       expect(result.modelFieldRefs).toEqual(['authorId', 'editorId']);
       expect(result.authFieldRefs).toEqual(['userId']);
       expect(result.roleRefs).toEqual(['admin']);
+    });
+  });
+
+  describe('isAuthenticated expressions', () => {
+    it('should parse standalone isAuthenticated', () => {
+      const result = parseAuthorizerExpression('isAuthenticated');
+
+      expect(result.ast).toEqual({
+        type: 'isAuthenticated',
+      });
+      expect(result.modelFieldRefs).toEqual([]);
+      expect(result.authFieldRefs).toEqual([]);
+      expect(result.roleRefs).toEqual([]);
+      expect(result.requiresModel).toBe(false);
+    });
+
+    it('should parse isAuthenticated && model.isPublished', () => {
+      const result = parseAuthorizerExpression(
+        'isAuthenticated && model.isPublished === userId',
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'binaryLogical' }
+      >;
+      expect(ast.operator).toBe('&&');
+      expect(ast.left).toEqual({ type: 'isAuthenticated' });
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse model.ownerId === userId || isAuthenticated', () => {
+      const result = parseAuthorizerExpression(
+        'model.ownerId === userId || isAuthenticated',
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'binaryLogical' }
+      >;
+      expect(ast.operator).toBe('||');
+      expect(ast.right).toEqual({ type: 'isAuthenticated' });
+      expect(result.modelFieldRefs).toEqual(['ownerId']);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should reject unknown standalone identifiers at top level', () => {
+      expect(() => parseAuthorizerExpression('unknownVar')).toThrow(
+        AuthorizerExpressionParseError,
+      );
     });
   });
 

@@ -655,6 +655,15 @@
       "service": { "transformers": [] }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "hasRole(model.todoList, \"owner\") || hasRole('admin')\n",
+            "id": "model-authorizer-role:nue1yz7lANN9",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "todos",
       "graphql": {
         "mutations": {
@@ -774,7 +783,11 @@
           "globalRoles": ["user"],
           "transformerNames": ["attachments"]
         },
-        "delete": { "enabled": true, "globalRoles": ["user"] },
+        "delete": {
+          "enabled": true,
+          "globalRoles": ["admin"],
+          "instanceRoles": ["owner"]
+        },
         "transformers": [
           {
             "embeddedFieldNames": ["position", "url", "id"],
@@ -788,7 +801,8 @@
         "update": {
           "enabled": true,
           "fields": ["position", "text", "done", "assigneeId", "todoListId"],
-          "globalRoles": ["user"],
+          "globalRoles": ["admin"],
+          "instanceRoles": ["owner"],
           "transformerNames": ["attachments"]
         }
       }

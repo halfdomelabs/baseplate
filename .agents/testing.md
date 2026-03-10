@@ -4,7 +4,7 @@ This file outlines the testing strategy, patterns, and constraints for the Basep
 
 ## General Principles
 
-- **Clear Test Names:** Use descriptive names that explain the *intent* of the test (e.g., `should throw 'InvalidConfigError' when configuration is missing` instead of `throws error`).
+- **Clear Test Names:** Use descriptive names that explain the _intent_ of the test (e.g., `should throw 'InvalidConfigError' when configuration is missing` instead of `throws error`).
 - **Arrange-Act-Assert (AAA):** Structure every test clearly:
   - **Arrange:** Set up the data, mocks, and environment.
   - **Act:** Execute the function or component under test.
@@ -26,7 +26,7 @@ This file outlines the testing strategy, patterns, and constraints for the Basep
 
 - **Safe Refactoring (Permitted):** You may export previously private types or helper functions if it makes testing significantly easier without changing logic.
 - **Architectural Refactoring (Restricted):** If a component requires significant structural changes to be testable (e.g., rewriting class inheritance to dependency injection), you **MUST** ask the user for confirmation before proceeding.
-  - *Example prompt:* "This function is hard to test because it is tightly coupled to X. Shall I refactor it to use dependency injection first?"
+  - _Example prompt:_ "This function is hard to test because it is tightly coupled to X. Shall I refactor it to use dependency injection first?"
 
 ## Test Organization
 
@@ -41,9 +41,11 @@ This file outlines the testing strategy, patterns, and constraints for the Basep
 ## Mocking Patterns
 
 ### External Services
+
 - **Always Mock:** External API calls, databases, and system-level operations (e.g., `child_process`) must be mocked in Unit Tests.
 
 ### File System (memfs)
+
 When testing code that interacts with the file system, use `memfs` to create a virtual in-memory drive. This prevents disk pollution and ensures speed.
 
 **Standard Pattern:**
@@ -64,13 +66,13 @@ beforeEach(() => {
 test('should write configuration file', async () => {
   // Arrange
   const config = { version: 1 };
-  
+
   // Act (calls fs.writeFile internally)
   await writeConfig(config);
 
   // Assert
   expect(vol.toJSON()).toEqual({
-    '/cwd/config.json': JSON.stringify(config)
+    '/cwd/config.json': JSON.stringify(config),
   });
 });
 ```
@@ -91,22 +93,22 @@ const files = await globby(['**/*.ts'], { fs: fsAdapter });
 
 > **When adding a new test helper file, add an entry to this table.**
 
-| Package | File | Key Exports |
-|---------|------|-------------|
-| core-generators | `src/test-helpers/` (barrel) | `extendFragmentMatchers`, `createTestTsImportMap`, `tsFragmentSerializer` |
-| fastify-generators | `src/test-helpers/setup.test-helper.ts` | Re-exports core-generators matchers |
-| react-generators | `src/test-helpers/setup.test-helper.ts` | Re-exports core-generators matchers |
-| sync | `src/runner/tests/factories.test-helper.ts` | `buildTestGeneratorBundle`, `buildTestGeneratorTaskEntry`, `buildTestGeneratorEntry` |
-| sync | `src/runner/tests/dependency-entry.test-helper.ts` | `createDependencyEntry`, `createReadOnlyDependencyEntry`, `createOutputDependencyEntry` |
-| sync | `src/output/string-merge-algorithms/tests/merge.test-helper.ts` | `runMergeTests` |
-| sync | `src/output/builder-action-test-helpers.ts` | `createTestTaskOutputBuilder`, `testAction` |
-| sync | `src/tests/logger.test-utils.ts` | `createTestLogger`, `createConsoleLogger` |
-| sync | `src/templates/extractor/test-utils/plugin-test-utils.ts` | `createMockPluginApi`, `createPluginInstance` |
-| ui-components | `src/tests/render.test-helper.tsx` | `renderWithProviders` |
+| Package                | File                                                            | Key Exports                                                                             |
+| ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| core-generators        | `src/test-helpers/` (barrel)                                    | `extendFragmentMatchers`, `createTestTsImportMap`, `tsFragmentSerializer`               |
+| fastify-generators     | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                     |
+| react-generators       | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                     |
+| sync                   | `src/runner/tests/factories.test-helper.ts`                     | `buildTestGeneratorBundle`, `buildTestGeneratorTaskEntry`, `buildTestGeneratorEntry`    |
+| sync                   | `src/runner/tests/dependency-entry.test-helper.ts`              | `createDependencyEntry`, `createReadOnlyDependencyEntry`, `createOutputDependencyEntry` |
+| sync                   | `src/output/string-merge-algorithms/tests/merge.test-helper.ts` | `runMergeTests`                                                                         |
+| sync                   | `src/output/builder-action-test-helpers.ts`                     | `createTestTaskOutputBuilder`, `testAction`                                             |
+| sync                   | `src/tests/logger.test-utils.ts`                                | `createTestLogger`, `createConsoleLogger`                                               |
+| sync                   | `src/templates/extractor/test-utils/plugin-test-utils.ts`       | `createMockPluginApi`, `createPluginInstance`                                           |
+| ui-components          | `src/tests/render.test-helper.tsx`                              | `renderWithProviders`                                                                   |
 | project-builder-lib | `src/testing/project-definition-container.test-helper.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer`, `createTestEntityServiceContext` |
-| project-builder-lib | `src/testing/definition-helpers.test-helper.ts` | `createTestFeature`, `createTestModel`, `createTestScalarField` |
-| project-builder-lib | `src/plugins/plugins.test-utils.ts` | `createTestPluginMetadata`, `createTestMigration` |
-| project-builder-lib | `src/testing/expression-stub-parser.test-helper.ts` | `stubParser`, `StubParserWithSlots` |
-| code-morph | `src/morphers/tests/morpher.test-helper.ts` | `runMorpherTests` |
-| project-builder-server | `src/tests/chokidar.test-helper.ts` | `MockFSWatcher`, `emitMockFsWatcherEvent` |
-| project-builder-cli | `e2e/fixtures/server-fixture.test-helper.ts` | Playwright test fixtures (`test`, `addProject`) |
+| project-builder-lib    | `src/schema/definition.test-helper.ts`                          | `createTestFeature`, `createTestModel`, `createTestScalarField`                         |
+| project-builder-lib    | `src/plugins/plugins.test-utils.ts`                             | `createTestPluginMetadata`, `createTestMigration`                                       |
+| project-builder-lib    | `src/references/expression-stub-parser.test-helper.ts`          | `stubParser`, `StubParserWithSlots`                                                     |
+| code-morph             | `src/morphers/tests/morpher.test-helper.ts`                     | `runMorpherTests`                                                                       |
+| project-builder-server | `src/tests/chokidar.test-helper.ts`                             | `MockFSWatcher`, `emitMockFsWatcherEvent`                                               |
+| project-builder-cli    | `e2e/fixtures/server-fixture.test-helper.ts`                    | Playwright test fixtures (`test`, `addProject`)                                         |

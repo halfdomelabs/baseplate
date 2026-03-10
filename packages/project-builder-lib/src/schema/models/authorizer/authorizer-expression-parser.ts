@@ -15,7 +15,29 @@ import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
 
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
-import { validateAuthorizerExpression } from './authorizer-expression-validator.js';
+import {
+  buildRelationValidationInfo,
+  validateAuthorizerExpression,
+} from './authorizer-expression-validator.js';
+
+/**
+ * Shape of a raw model in the project definition JSON.
+ * Used for navigating the untyped definition to extract relation and authorizer info.
+ */
+interface RawModelDefinition {
+  name?: string;
+  model?: {
+    fields?: { name: string }[];
+    relations?: {
+      name: string;
+      modelRef: string;
+      references?: { localRef: string; foreignRef: string }[];
+    }[];
+  };
+  authorizer?: {
+    roles?: { name: string }[];
+  };
+}
 
 /**
  * Expression parser for model authorizer role expressions.
@@ -129,7 +151,13 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   private getModelContext(
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
-  ): { modelName: string; scalarFieldNames: Set<string> } | undefined {
+  ):
+    | {
+        modelName: string;
+        scalarFieldNames: Set<string>;
+        relationInfo: ReturnType<typeof buildRelationValidationInfo>;
+      }
+    | undefined {
     const modelPath = resolvedSlots.model;
     if (modelPath.length === 0) {
       return undefined;
@@ -145,10 +173,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       current = (current as Record<string | number, unknown>)[segment];
     }
 
-    const model = current as {
-      name?: string;
-      model?: { fields?: { name: string }[] };
-    } | null;
+    const model = current as RawModelDefinition | null;
 
     if (!model || typeof model.name !== 'string') {
       return undefined;
@@ -162,9 +187,40 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       }
     }
 
+    // Build relation info for nested authorizer validation
+    const relations = (model.model?.relations ?? []).filter(
+      (
+        r,
+      ): r is {
+        name: string;
+        modelRef: string;
+        references?: { localRef: string; foreignRef: string }[];
+      } => typeof r.name === 'string' && typeof r.modelRef === 'string',
+    );
+
+    const allModels = (
+      (definition as { models?: RawModelDefinition[] }).models ?? []
+    ).filter(
+      (m): m is RawModelDefinition & { name: string } =>
+        typeof m.name === 'string',
+    );
+
+    const relationInfo = buildRelationValidationInfo(
+      relations.map((r) => ({
+        name: r.name,
+        modelRef: r.modelRef,
+        references: r.references ?? [],
+      })),
+      allModels.map((m) => ({
+        name: m.name,
+        authorizer: m.authorizer,
+      })),
+    );
+
     return {
       modelName: model.name,
       scalarFieldNames,
+      relationInfo,
     };
   }
 }

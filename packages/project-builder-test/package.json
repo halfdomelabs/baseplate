@@ -21,7 +21,7 @@
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "test:gen": "baseplate-dev test gen",
     "test-project:generate": "baseplate-dev test-project generate",
     "test-project:run-env": "baseplate-dev test-project run-env",

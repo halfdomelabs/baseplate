@@ -50,6 +50,12 @@
     "//#watch:tsc:root": {
       "persistent": true,
       "cache": false
+    },
+    "prettier:root:check": {
+      "outputLogs": "errors-only"
+    },
+    "prettier:root:write": {
+      "outputLogs": "errors-only"
     }
   }
 }

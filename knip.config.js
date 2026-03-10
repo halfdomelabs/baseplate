@@ -183,9 +183,6 @@ export default {
   ignoreDependencies: [
     // we're not using vitest coverage
     '@vitest/coverage-v8',
-    // we can't import the plugin directly into the config because VSCode won't work otherwise
-    // https://github.com/prettier/prettier/discussions/15167
-    'prettier-plugin-packagejson',
     'prettier-plugin-tailwindcss',
     // Tailwind v4 is not recognized as a dependency by Knip
     'tailwindcss',

@@ -57,7 +57,7 @@
     "dev:serve": "pnpm dev serve",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "project:generate": "pnpm start sync",
     "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env -C development ./src/cli.ts",
     "templates:extract": "pnpm start templates extract",

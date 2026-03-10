@@ -4,6 +4,7 @@ import type React from 'react';
 import {
   authConfigSpec,
   AuthorizerExpressionParseError,
+  buildRelationValidationInfo,
   createAuthorizerRoleSchema,
   modelAuthorizerRoleEntityType,
   parseAuthorizerExpression,
@@ -15,6 +16,9 @@ import {
 import {
   Button,
   CodeEditorFieldController,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   DialogClose,
   DialogFooter,
   InputFieldController,
@@ -26,7 +30,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { MdChevronRight } from 'react-icons/md';
 import { z } from 'zod';
+
+import type { RelationAutocompleteInfo } from './authorizer-expression-autocomplete.js';
 
 import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { createAuthorizerCompletions } from './authorizer-expression-autocomplete.js';
@@ -111,32 +118,61 @@ export function ModelAuthorizerRoleForm({
 
   // Get current model config for autocomplete
   const modelConfig = useOriginalModel();
+  const { definition } = useProjectDefinition();
 
-  // Get model context for linter
-  const modelContext = useMemo(
-    () => ({
-      modelName: modelConfig.name,
-      scalarFieldNames: new Set<string>(
-        modelConfig.model.fields.map((field: { name: string }) => field.name),
-      ),
-    }),
-    [modelConfig],
-  );
+  // Build relation info for nested authorizer validation and autocomplete
+  const { modelContext, relationInfoList } = useMemo(() => {
+    const scalarFieldNames = new Set<string>(
+      modelConfig.model.fields.map((field: { name: string }) => field.name),
+    );
 
-  // Get project roles from auth config
+    const relationValidationInfo = buildRelationValidationInfo(
+      modelConfig.model.relations,
+      definition.models,
+    );
+
+    // Derive autocomplete info from validation info
+    const relInfoList: RelationAutocompleteInfo[] = [
+      ...relationValidationInfo.entries(),
+    ].map(([relationName, info]) => ({
+      relationName,
+      foreignModelName: info.foreignModelName,
+      foreignAuthorizerRoleNames: [...info.foreignAuthorizerRoleNames],
+    }));
+
+    return {
+      modelContext: {
+        modelName: modelConfig.name,
+        scalarFieldNames,
+        relationInfo: relationValidationInfo,
+      },
+      relationInfoList: relInfoList,
+    };
+  }, [modelConfig, definition]);
+
+  // Get project roles from auth config, excluding built-in roles like 'system'
+  // which are not meaningful in authorizer expressions
   const projectRoles = useMemo(() => {
     const authConfig = definitionContainer.pluginStore.use(authConfigSpec);
     const roles = authConfig.getAuthConfig(
       definitionContainer.definition,
     )?.roles;
-    return roles?.map((role) => role.name) ?? [];
+    return (
+      roles?.filter((role) => !role.builtIn).map((role) => role.name) ?? []
+    );
   }, [definitionContainer]);
 
   // Create CodeMirror extensions
   const extensions = useMemo(() => {
     const exts = [
       autocompletion({
-        override: [createAuthorizerCompletions(modelConfig, projectRoles)],
+        override: [
+          createAuthorizerCompletions(
+            modelConfig,
+            projectRoles,
+            relationInfoList,
+          ),
+        ],
       }),
       linter(
         createAuthorizerExpressionLinter(
@@ -149,7 +185,13 @@ export function ModelAuthorizerRoleForm({
     ];
 
     return exts;
-  }, [modelConfig, projectRoles, modelContext, definitionContainer]);
+  }, [
+    modelConfig,
+    projectRoles,
+    modelContext,
+    relationInfoList,
+    definitionContainer,
+  ]);
 
   return (
     <form
@@ -176,25 +218,36 @@ export function ModelAuthorizerRoleForm({
         extensions={extensions}
         height="120px"
         description={
-          <>
-            TypeScript boolean expression. Available: <code>model</code> (the
-            model instance), <code>userId</code>, <code>hasRole()</code>, and{' '}
-            <code>hasSomeRole()</code>
-            <span className="mt-1 block text-xs text-muted-foreground">
-              Examples:
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>model.id === userId</code>
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>hasRole(&apos;admin&apos;)</code>
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              <code>
-                model.authorId === userId || hasRole(&apos;admin&apos;)
-              </code>
-            </span>
-          </>
+          <Collapsible>
+            TypeScript boolean expression. Available: <code>model</code>,{' '}
+            <code>userId</code>, <code>isAuthenticated</code>,{' '}
+            <code>hasRole()</code>, <code>hasSomeRole()</code>
+            <CollapsibleTrigger className="mt-1 flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
+              <MdChevronRight className="size-3.5 transition-transform" />
+              Show examples
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+              <div>
+                <code>model.id === userId</code>
+              </div>
+              <div>
+                <code>isAuthenticated</code>
+                {' — '}check if user is authenticated
+              </div>
+              <div>
+                <code>hasRole(&apos;admin&apos;)</code>
+              </div>
+              <div>
+                <code>
+                  model.authorId === userId || hasRole(&apos;admin&apos;)
+                </code>
+              </div>
+              <div>
+                <code>hasRole(model.todoList, &apos;owner&apos;)</code>
+                {' — '}check role on related model
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         }
       />
       <DialogFooter>

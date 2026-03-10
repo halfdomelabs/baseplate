@@ -1,7 +1,7 @@
 import { parseAuthorizerExpression } from '@baseplate-dev/project-builder-lib';
 import { describe, expect, it } from 'vitest';
 
-import { generateAuthorizerExpressionCode } from './authorizers.js';
+import { generateAuthorizerExpressionCode } from './authorizer-compiler.js';
 
 function generate(expression: string): string {
   const parsed = parseAuthorizerExpression(expression);

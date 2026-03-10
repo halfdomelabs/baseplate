@@ -281,7 +281,7 @@ export const prettierGenerator = createGenerator({
             if (!descriptor.disableDefaultScripts) {
               node.scripts.mergeObj({
                 'prettier:check': 'prettier --check .',
-                'prettier:write': 'prettier -w .',
+                'prettier:write': 'prettier -w -l .',
               });
             }
 

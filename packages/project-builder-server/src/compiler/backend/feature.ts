@@ -6,13 +6,11 @@ import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
-import {
-  buildAuthorizersForFeature,
-  buildQueryFiltersForFeature,
-} from './authorizers.js';
+import { buildAuthorizersForFeature } from './authorizer-compiler.js';
 import { buildEnumsForFeature } from './enums.js';
 import { buildGraphqlForFeature } from './graphql.js';
 import { buildModelsForFeature } from './models.js';
+import { buildQueryFiltersForFeature } from './query-filter-compiler.js';
 import { buildServicesForFeature } from './services.js';
 
 export function buildFeature(

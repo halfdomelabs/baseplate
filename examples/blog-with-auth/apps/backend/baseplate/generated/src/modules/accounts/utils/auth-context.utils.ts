@@ -14,6 +14,7 @@ export function createAuthContextFromSessionInfo(
   session: AuthSessionInfo | undefined,
 ): AuthContext {
   const roles = session?.roles ?? DEFAULT_PUBLIC_ROLES;
+  const userId = session?.type === 'user' ? session.userId : undefined;
 
   return {
     session,
@@ -23,7 +24,8 @@ export function createAuthContextFromSessionInfo(
       }
       return session;
     },
-    userId: session?.type === 'user' ? session.userId : undefined,
+    isAuthenticated: userId !== undefined,
+    userId,
     userIdOrThrow: () => {
       if (session?.type !== 'user') {
         throw new UnauthorizedError('User session is required');

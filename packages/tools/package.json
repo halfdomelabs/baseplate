@@ -51,7 +51,7 @@
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -19,6 +19,18 @@ import type {
 } from './authorizer-expression-ast.js';
 
 /**
+ * Information about a model relation for nested authorizer validation.
+ */
+export interface RelationValidationInfo {
+  /** Number of foreign key references (must be 1 for nested authorizer support) */
+  referenceCount: number;
+  /** Foreign model name (for error messages) */
+  foreignModelName: string;
+  /** Set of role names defined on the foreign model's authorizer */
+  foreignAuthorizerRoleNames: Set<string>;
+}
+
+/**
  * Model information needed for validation.
  */
 export interface ModelValidationContext {
@@ -26,6 +38,8 @@ export interface ModelValidationContext {
   modelName: string;
   /** Set of valid scalar field names on the model */
   scalarFieldNames: Set<string>;
+  /** Map of relation name → relation validation info (for nested authorizer checks) */
+  relationInfo?: Map<string, RelationValidationInfo>;
 }
 
 /**
@@ -34,22 +48,37 @@ export interface ModelValidationContext {
 const VALID_AUTH_FIELDS = new Set(['userId']);
 
 /**
- * Get role names from the project definition using the auth config spec.
+ * Information about auth roles from the project configuration.
+ */
+interface AuthRoleInfo {
+  /** All defined role names */
+  allRoleNames: Set<string>;
+  /** Role names that are built-in (e.g., 'system', 'public', 'user') */
+  builtInRoleNames: Set<string>;
+}
+
+/**
+ * Get role info from the project definition using the auth config spec.
  *
  * @param pluginStore - The plugin spec store
  * @param definition - The raw project definition data
- * @returns Set of defined role names
+ * @returns Role information including built-in status
  */
-function getRoleNames(
+function getAuthRoleInfo(
   pluginStore: PluginSpecStore,
   definition: unknown,
-): Set<string> {
+): AuthRoleInfo {
   const authConfig = pluginStore.use(authConfigSpec);
 
   const roles = authConfig.getAuthConfig(
     definition as ProjectDefinition,
   )?.roles;
-  return new Set(roles?.map((role) => role.name));
+  return {
+    allRoleNames: new Set(roles?.map((role) => role.name)),
+    builtInRoleNames: new Set(
+      roles?.filter((role) => role.builtIn).map((role) => role.name),
+    ),
+  };
 }
 
 /**
@@ -78,7 +107,23 @@ export function validateAuthorizerExpression(
   definition: unknown,
 ): RefExpressionWarning[] {
   const warnings: RefExpressionWarning[] = [];
-  const roleNames = getRoleNames(pluginStore, definition);
+  const { allRoleNames, builtInRoleNames } = getAuthRoleInfo(
+    pluginStore,
+    definition,
+  );
+  const nonBuiltInRoleNames = [...allRoleNames].filter(
+    (name) => !builtInRoleNames.has(name),
+  );
+
+  function warnIfBuiltInRole(role: string, start: number, end: number): void {
+    if (builtInRoleNames.has(role)) {
+      const message =
+        role === 'user'
+          ? `Role 'user' is a built-in role. Use 'isAuthenticated' instead to check if the user is authenticated.`
+          : `Role '${role}' is a built-in role and should not be used in authorizer expressions. Use non-built-in roles: ${nonBuiltInRoleNames.join(', ')}.`;
+      warnings.push({ message, start, end });
+    }
+  }
 
   function walk(node: AuthorizerExpressionNode): void {
     switch (node.type) {
@@ -90,9 +135,11 @@ export function validateAuthorizerExpression(
 
       case 'hasRole': {
         // Warn if role doesn't exist (but allow - plugins may define roles)
-        if (!roleNames.has(node.role)) {
+        if (allRoleNames.has(node.role)) {
+          warnIfBuiltInRole(node.role, node.roleStart, node.roleEnd);
+        } else {
           warnings.push({
-            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
+            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
             start: node.roleStart,
             end: node.roleEnd,
           });
@@ -101,14 +148,15 @@ export function validateAuthorizerExpression(
       }
 
       case 'hasSomeRole': {
-        // Warn if any role doesn't exist (but allow - plugins may define roles)
         for (let i = 0; i < node.roles.length; i++) {
           const role = node.roles[i];
-          if (!roleNames.has(role)) {
-            const start = node.rolesStart[i];
-            const end = node.rolesEnd[i];
+          const start = node.rolesStart[i];
+          const end = node.rolesEnd[i];
+          if (allRoleNames.has(role)) {
+            warnIfBuiltInRole(role, start, end);
+          } else {
             warnings.push({
-              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...roleNames].join(', ')}.`,
+              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
               start,
               end,
             });
@@ -117,10 +165,88 @@ export function validateAuthorizerExpression(
         break;
       }
 
+      case 'nestedHasRole': {
+        validateNestedRelation(
+          node.relationName,
+          node.relationStart,
+          node.relationEnd,
+          [node.role],
+          [node.roleStart],
+          [node.roleEnd],
+        );
+        break;
+      }
+
+      case 'nestedHasSomeRole': {
+        validateNestedRelation(
+          node.relationName,
+          node.relationStart,
+          node.relationEnd,
+          node.roles,
+          node.rolesStart,
+          node.rolesEnd,
+        );
+        break;
+      }
+
+      case 'isAuthenticated': {
+        // No validation needed
+        break;
+      }
+
       case 'binaryLogical': {
         walk(node.left);
         walk(node.right);
         break;
+      }
+    }
+  }
+
+  function validateNestedRelation(
+    relationName: string,
+    relationStart: number,
+    relationEnd: number,
+    roles: string[],
+    rolesStart: number[],
+    rolesEnd: number[],
+  ): void {
+    const { relationInfo } = modelContext;
+    if (!relationInfo) {
+      // Can't validate without relation info
+      return;
+    }
+
+    const relation = relationInfo.get(relationName);
+    if (!relation) {
+      const availableRelations = [...relationInfo.keys()].join(', ');
+      warnings.push({
+        message: `Relation '${relationName}' does not exist on model '${modelContext.modelName}'.${availableRelations ? ` Available relations: ${availableRelations}.` : ''}`,
+        start: relationStart,
+        end: relationEnd,
+      });
+      return;
+    }
+
+    if (relation.referenceCount !== 1) {
+      warnings.push({
+        message: `Relation '${relationName}' has ${relation.referenceCount} foreign key references. Nested authorizer checks only support single-key relations.`,
+        start: relationStart,
+        end: relationEnd,
+      });
+      return;
+    }
+
+    // Validate each role exists on the foreign model's authorizer
+    for (const [i, role] of roles.entries()) {
+      if (!relation.foreignAuthorizerRoleNames.has(role)) {
+        const availableRoles = [...relation.foreignAuthorizerRoleNames].join(
+          ', ',
+        );
+        warnings.push({
+          message: `Role '${role}' is not defined on model '${relation.foreignModelName}' authorizer.${availableRoles ? ` Available roles: ${availableRoles}.` : ''}`,
+          start: rolesStart[i],
+          end: rolesEnd[i],
+        });
       }
     }
   }
@@ -148,6 +274,59 @@ export function validateAuthorizerExpression(
   walk(ast);
 
   return warnings;
+}
+
+/**
+ * Build relation validation info from model relations and the full list of models.
+ *
+ * Uses structural typing so both raw JSON shapes and typed `ModelConfig` objects
+ * can be passed directly.
+ *
+ * @param modelRelations - The relations on the current model
+ * @param allModels - All models in the project (for foreign model lookup)
+ * @returns Map of relation name → validation info
+ */
+export function buildRelationValidationInfo(
+  modelRelations: readonly {
+    name: string;
+    modelRef: string;
+    references: readonly unknown[];
+  }[],
+  allModels: readonly {
+    id?: string;
+    name: string;
+    authorizer?: { roles?: readonly { name: string }[] };
+  }[],
+): Map<string, RelationValidationInfo> {
+  const relationInfo = new Map<string, RelationValidationInfo>();
+
+  // Build lookups by both id and name for flexible matching
+  const modelsById = new Map(
+    allModels
+      .filter((m): m is typeof m & { id: string } => m.id != null)
+      .map((m) => [m.id, m]),
+  );
+  const modelsByName = new Map(allModels.map((m) => [m.name, m]));
+
+  for (const relation of modelRelations) {
+    const foreignModel =
+      modelsById.get(relation.modelRef) ?? modelsByName.get(relation.modelRef);
+
+    const foreignAuthorizerRoleNames = new Set<string>();
+    if (foreignModel?.authorizer?.roles) {
+      for (const role of foreignModel.authorizer.roles) {
+        foreignAuthorizerRoleNames.add(role.name);
+      }
+    }
+
+    relationInfo.set(relation.name, {
+      referenceCount: relation.references.length,
+      foreignModelName: foreignModel?.name ?? relation.modelRef,
+      foreignAuthorizerRoleNames,
+    });
+  }
+
+  return relationInfo;
 }
 
 /**

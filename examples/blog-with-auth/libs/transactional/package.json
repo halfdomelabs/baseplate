@@ -23,7 +23,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "test": "vitest run",
     "typecheck": "tsc -b --noEmit",
     "watch": "tsc -p tsconfig.build.json --watch"

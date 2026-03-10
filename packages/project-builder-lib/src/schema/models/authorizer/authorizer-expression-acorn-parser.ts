@@ -29,6 +29,9 @@ import type {
   FieldRefNode,
   HasRoleNode,
   HasSomeRoleNode,
+  IsAuthenticatedNode,
+  NestedHasRoleNode,
+  NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
 
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
@@ -114,6 +117,16 @@ function convertNode(node: Expression): AuthorizerExpressionNode {
       return convertCallExpression(node);
     }
 
+    case 'Identifier': {
+      if (node.name === 'isAuthenticated') {
+        return { type: 'isAuthenticated' } satisfies IsAuthenticatedNode;
+      }
+      throw new AuthorizerExpressionParseError(
+        `Unknown identifier '${node.name}'. Use hasRole(), hasSomeRole(), isAuthenticated, or a comparison like model.id === userId.`,
+        node,
+      );
+    }
+
     case 'MemberExpression': {
       // A bare member expression like `model.id` without comparison
       throw new AuthorizerExpressionParseError(
@@ -182,7 +195,7 @@ function convertBinaryExpression(node: BinaryExpression): FieldComparisonNode {
  */
 function convertCallExpression(
   node: CallExpression,
-): HasRoleNode | HasSomeRoleNode {
+): HasRoleNode | HasSomeRoleNode | NestedHasRoleNode | NestedHasSomeRoleNode {
   // Only support direct calls (e.g., hasRole(...))
   if (node.callee.type !== 'Identifier') {
     throw new AuthorizerExpressionParseError(
@@ -208,51 +221,112 @@ function convertCallExpression(
 }
 
 /**
- * Parse hasRole('role') arguments.
+ * Parse a `model.X` MemberExpression argument for nested role checks.
+ * Returns the relation name and position info.
  */
-function parseHasRoleArgs(node: CallExpression, funcName: string): HasRoleNode {
-  // Must have exactly one string argument
-  if (node.arguments.length !== 1) {
+function parseModelRelationArg(
+  arg: Expression,
+  funcName: string,
+): { relationName: string; relationStart: number; relationEnd: number } {
+  if (arg.type !== 'MemberExpression') {
     throw new AuthorizerExpressionParseError(
-      `${funcName} requires exactly one argument, got ${node.arguments.length}`,
-      node,
-    );
-  }
-
-  const arg = node.arguments[0];
-  if (arg.type !== 'Literal' || typeof arg.value !== 'string') {
-    throw new AuthorizerExpressionParseError(
-      `${funcName} argument must be a string literal`,
+      `${funcName} first argument must be a model relation (e.g., model.todoList)`,
       arg,
     );
   }
 
-  const role = arg.value;
+  if (arg.object.type !== 'Identifier' || arg.object.name !== 'model') {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} first argument must start with 'model' (e.g., model.todoList)`,
+      arg.object,
+    );
+  }
+
+  if (arg.computed) {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} computed property access (e.g., model["relation"]) is not supported`,
+      arg.property,
+    );
+  }
+
+  if (arg.property.type !== 'Identifier') {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} expected relation name identifier`,
+      arg.property,
+    );
+  }
 
   return {
-    type: 'hasRole',
-    role,
-    roleStart: arg.start,
-    roleEnd: arg.end,
+    relationName: arg.property.name,
+    relationStart: arg.start,
+    relationEnd: arg.end,
   };
 }
 
 /**
- * Parse hasSomeRole(['role1', 'role2']) arguments.
+ * Parse hasRole('role') or hasRole(model.relation, 'role') arguments.
  */
-function parseHasSomeRoleArgs(
+function parseHasRoleArgs(
   node: CallExpression,
   funcName: string,
-): HasSomeRoleNode {
-  // Must have exactly one array argument
-  if (node.arguments.length !== 1) {
-    throw new AuthorizerExpressionParseError(
-      `${funcName} requires exactly one argument, got ${node.arguments.length}`,
-      node,
-    );
+): HasRoleNode | NestedHasRoleNode {
+  if (node.arguments.length === 1) {
+    // Global role check: hasRole('admin')
+    const arg = node.arguments[0];
+    if (arg.type !== 'Literal' || typeof arg.value !== 'string') {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} argument must be a string literal`,
+        arg,
+      );
+    }
+
+    return {
+      type: 'hasRole',
+      role: arg.value,
+      roleStart: arg.start,
+      roleEnd: arg.end,
+    };
   }
 
-  const arg = node.arguments[0];
+  if (node.arguments.length === 2) {
+    // Nested role check: hasRole(model.relation, 'role')
+    const relationArg = node.arguments[0];
+    const roleArg = node.arguments[1];
+
+    const relation = parseModelRelationArg(relationArg as Expression, funcName);
+
+    if (roleArg.type !== 'Literal' || typeof roleArg.value !== 'string') {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} second argument must be a string literal (role name)`,
+        roleArg,
+      );
+    }
+
+    return {
+      type: 'nestedHasRole',
+      relationName: relation.relationName,
+      relationStart: relation.relationStart,
+      relationEnd: relation.relationEnd,
+      role: roleArg.value,
+      roleStart: roleArg.start,
+      roleEnd: roleArg.end,
+    };
+  }
+
+  throw new AuthorizerExpressionParseError(
+    `${funcName} requires 1 argument (hasRole('role')) or 2 arguments (hasRole(model.relation, 'role')), got ${node.arguments.length}`,
+    node,
+  );
+}
+
+/**
+ * Parse a roles array argument from an ArrayExpression.
+ * Returns the extracted role names and their positions.
+ */
+function parseRolesArrayArg(
+  arg: Expression,
+  funcName: string,
+): { roles: string[]; rolesStart: number[]; rolesEnd: number[] } {
   if (arg.type !== 'ArrayExpression') {
     throw new AuthorizerExpressionParseError(
       `${funcName} argument must be an array literal (e.g., ['admin', 'moderator'])`,
@@ -291,12 +365,57 @@ function parseHasSomeRoleArgs(
     );
   }
 
-  return {
-    type: 'hasSomeRole',
-    roles,
-    rolesStart,
-    rolesEnd,
-  };
+  return { roles, rolesStart, rolesEnd };
+}
+
+/**
+ * Parse hasSomeRole(['role1', 'role2']) or hasSomeRole(model.relation, ['role1', 'role2']) arguments.
+ */
+function parseHasSomeRoleArgs(
+  node: CallExpression,
+  funcName: string,
+): HasSomeRoleNode | NestedHasSomeRoleNode {
+  if (node.arguments.length === 1) {
+    // Global role check: hasSomeRole(['admin', 'moderator'])
+    const { roles, rolesStart, rolesEnd } = parseRolesArrayArg(
+      node.arguments[0] as Expression,
+      funcName,
+    );
+
+    return {
+      type: 'hasSomeRole',
+      roles,
+      rolesStart,
+      rolesEnd,
+    };
+  }
+
+  if (node.arguments.length === 2) {
+    // Nested role check: hasSomeRole(model.relation, ['role1', 'role2'])
+    const relationArg = node.arguments[0];
+    const rolesArg = node.arguments[1];
+
+    const relation = parseModelRelationArg(relationArg as Expression, funcName);
+    const { roles, rolesStart, rolesEnd } = parseRolesArrayArg(
+      rolesArg as Expression,
+      funcName,
+    );
+
+    return {
+      type: 'nestedHasSomeRole',
+      relationName: relation.relationName,
+      relationStart: relation.relationStart,
+      relationEnd: relation.relationEnd,
+      roles,
+      rolesStart,
+      rolesEnd,
+    };
+  }
+
+  throw new AuthorizerExpressionParseError(
+    `${funcName} requires 1 argument (hasSomeRole(['role1'])) or 2 arguments (hasSomeRole(model.relation, ['role1'])), got ${node.arguments.length}`,
+    node,
+  );
 }
 
 /**
@@ -388,6 +507,7 @@ function extractInfo(
   const modelFieldRefs: string[] = [];
   const authFieldRefs: string[] = [];
   const roleRefs: string[] = [];
+  const nestedRoleRefs: { relationName: string; roles: string[] }[] = [];
   let requiresModel = false;
 
   function walk(node: AuthorizerExpressionNode): void {
@@ -405,6 +525,29 @@ function extractInfo(
 
       case 'hasSomeRole': {
         roleRefs.push(...node.roles);
+        break;
+      }
+
+      case 'nestedHasRole': {
+        nestedRoleRefs.push({
+          relationName: node.relationName,
+          roles: [node.role],
+        });
+        requiresModel = true;
+        break;
+      }
+
+      case 'nestedHasSomeRole': {
+        nestedRoleRefs.push({
+          relationName: node.relationName,
+          roles: node.roles,
+        });
+        requiresModel = true;
+        break;
+      }
+
+      case 'isAuthenticated': {
+        // No dependencies to track
         break;
       }
 
@@ -431,6 +574,7 @@ function extractInfo(
     modelFieldRefs: [...new Set(modelFieldRefs)],
     authFieldRefs: [...new Set(authFieldRefs)],
     roleRefs: [...new Set(roleRefs)],
+    nestedRoleRefs,
     requiresModel,
   };
 }

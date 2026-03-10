@@ -9,6 +9,9 @@ import type {
   FieldComparisonNode,
   HasRoleNode,
   HasSomeRoleNode,
+  IsAuthenticatedNode,
+  NestedHasRoleNode,
+  NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
 
 import {
@@ -16,30 +19,32 @@ import {
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
+/**
+ * Create a plugin spec store with custom auth roles for testing.
+ */
+function createMockPluginStore(
+  roles: { id: string; name: string; comment: string; builtIn: boolean }[],
+): ReturnType<typeof createTestPluginSpecStore> {
+  return createTestPluginSpecStore([
+    createPluginModule({
+      name: 'test-auth-config',
+      dependencies: { authConfig: authConfigSpec },
+      initialize: ({ authConfig }) => {
+        authConfig.getAuthConfig.set(() => ({ roles }));
+      },
+    }),
+  ]);
+}
+
 describe('validateAuthorizerExpression', () => {
   const defaultModelContext = createModelValidationContext({
     name: 'Post',
     fields: [{ name: 'id' }, { name: 'authorId' }, { name: 'title' }],
   });
 
-  const defaultPluginStore = createTestPluginSpecStore([
-    createPluginModule({
-      name: 'test-auth-config',
-      dependencies: { authConfig: authConfigSpec },
-      initialize: ({ authConfig }) => {
-        authConfig.getAuthConfig.set(() => ({
-          roles: [
-            { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-            {
-              id: '2',
-              name: 'editor',
-              comment: 'Editor role',
-              builtIn: false,
-            },
-          ],
-        }));
-      },
-    }),
+  const defaultPluginStore = createMockPluginStore([
+    { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+    { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
   ]);
   const defaultDefinition = {};
 
@@ -188,6 +193,30 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings).toEqual([]);
     });
 
+    it('should warn for built-in role in hasRole', () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'system', comment: 'System role', builtIn: true },
+      ]);
+      const ast: HasRoleNode = {
+        type: 'hasRole',
+        role: 'system',
+        roleStart: 13,
+        roleEnd: 21,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'system'");
+      expect(warnings[0].message).toContain('built-in');
+    });
+
     it('should warn for role that does not exist in project', () => {
       const ast: HasRoleNode = {
         type: 'hasRole',
@@ -255,6 +284,33 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[1].end).toBe(36);
     });
 
+    it('should warn for built-in role in hasSomeRole', () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'public', comment: 'Public role', builtIn: true },
+        { id: '3', name: 'system', comment: 'System role', builtIn: true },
+      ]);
+      const ast: HasSomeRoleNode = {
+        type: 'hasSomeRole',
+        roles: ['admin', 'system'],
+        rolesStart: [12, 21],
+        rolesEnd: [19, 29],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'system'");
+      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].start).toBe(21);
+      expect(warnings[0].end).toBe(29);
+    });
+
     it('should warn only for invalid roles in mixed list', () => {
       const ast: HasSomeRoleNode = {
         type: 'hasSomeRole',
@@ -274,6 +330,227 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[0].message).toContain("'superuser'");
       expect(warnings[0].start).toBe(21);
       expect(warnings[0].end).toBe(32);
+    });
+  });
+
+  describe('isAuthenticated validation', () => {
+    it('should produce no warnings for isAuthenticated', () => {
+      const ast: IsAuthenticatedNode = {
+        type: 'isAuthenticated',
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it("should warn for hasRole('user') suggesting isAuthenticated", () => {
+      const pluginStore = createMockPluginStore([
+        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+        { id: '2', name: 'user', comment: 'User role', builtIn: true },
+      ]);
+      const ast: HasRoleNode = {
+        type: 'hasRole',
+        role: 'user',
+        roleStart: 8,
+        roleEnd: 14,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        pluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'user'");
+      expect(warnings[0].message).toContain('isAuthenticated');
+    });
+  });
+
+  describe('nested hasRole validation', () => {
+    const modelContextWithRelations = {
+      modelName: 'Todo',
+      scalarFieldNames: new Set(['id', 'todoListId']),
+      relationInfo: new Map([
+        [
+          'todoList',
+          {
+            referenceCount: 1,
+            foreignModelName: 'TodoList',
+            foreignAuthorizerRoleNames: new Set(['owner', 'editor']),
+          },
+        ],
+        [
+          'compositeRelation',
+          {
+            referenceCount: 2,
+            foreignModelName: 'Other',
+            foreignAuthorizerRoleNames: new Set(['admin']),
+          },
+        ],
+      ]),
+    };
+
+    it('should validate valid nested hasRole', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for nonexistent relation', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'nonexistent',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'nonexistent'");
+      expect(warnings[0].message).toContain("'Todo'");
+    });
+
+    it('should warn for composite FK relation', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'compositeRelation',
+        relationStart: 8,
+        relationEnd: 30,
+        role: 'admin',
+        roleStart: 32,
+        roleEnd: 39,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('2 foreign key references');
+      expect(warnings[0].message).toContain('single-key');
+    });
+
+    it('should warn for nonexistent role on foreign model', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'superuser',
+        roleStart: 24,
+        roleEnd: 35,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'superuser'");
+      expect(warnings[0].message).toContain("'TodoList'");
+    });
+
+    it('should validate valid nested hasSomeRole', () => {
+      const ast: NestedHasSomeRoleNode = {
+        type: 'nestedHasSomeRole',
+        relationName: 'todoList',
+        relationStart: 12,
+        relationEnd: 26,
+        roles: ['owner', 'editor'],
+        rolesStart: [28, 37],
+        rolesEnd: [35, 45],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for invalid roles in nested hasSomeRole', () => {
+      const ast: NestedHasSomeRoleNode = {
+        type: 'nestedHasSomeRole',
+        relationName: 'todoList',
+        relationStart: 12,
+        relationEnd: 26,
+        roles: ['owner', 'badRole'],
+        rolesStart: [28, 37],
+        rolesEnd: [35, 46],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'badRole'");
+      expect(warnings[0].message).toContain("'TodoList'");
+    });
+
+    it('should skip validation when no relationInfo provided', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'todoList',
+        relationStart: 8,
+        relationEnd: 22,
+        role: 'owner',
+        roleStart: 24,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
     });
   });
 

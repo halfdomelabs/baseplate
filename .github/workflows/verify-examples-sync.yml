@@ -8,15 +8,15 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "examples/**"
-      - "packages/**"
-      - "plugins/**"
+      - 'examples/**'
+      - 'packages/**'
+      - 'plugins/**'
   push:
     branches: [main]
     paths:
-      - "examples/**"
-      - "packages/**"
-      - "plugins/**"
+      - 'examples/**'
+      - 'packages/**'
+      - 'plugins/**'
 
 jobs:
   discover:

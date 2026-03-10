@@ -1,5 +1,5 @@
 import { camelCase, constantCase } from 'change-case';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -226,10 +226,14 @@ export function createGenerator(
 
   // Format the generated files with Prettier
   try {
-    execSync(`pnpm prettier --write "${generatorDir}/**/*"`, {
-      stdio: 'pipe',
-      cwd: process.cwd(),
-    });
+    execFileSync(
+      'pnpm',
+      ['prettier', '--write', '--list-different', `${generatorDir}/**/*`],
+      {
+        stdio: 'pipe',
+        cwd: process.cwd(),
+      },
+    );
   } catch {
     // Prettier formatting is best-effort, don't fail if it doesn't work
   }
