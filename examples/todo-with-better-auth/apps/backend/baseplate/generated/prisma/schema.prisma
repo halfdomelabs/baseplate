@@ -46,15 +46,14 @@ model File {
   filename           String
   mimeType           String        @map("mime_type")
   encoding           String?
-  size               Int
+  size               Int?
   category           String
   adapter            String
   storagePath        String        @map("storage_path")
-  referencedAt       DateTime?     @map("referenced_at") @db.Timestamptz(3)
-  expiredAt          DateTime?     @map("expired_at") @db.Timestamptz(3)
   uploaderId         String?       @map("uploader_id") @db.Uuid
   updatedAt          DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  pendingUpload      Boolean       @default(false) @map("pending_upload")
   todoListCoverPhoto TodoList[]
   uploader           User?         @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   userImages         UserImage[]

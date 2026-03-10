@@ -1,16 +1,9 @@
 import type { ModelTransformerWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type { Control } from 'react-hook-form';
 
-import {
-  authConfigSpec,
-  PluginUtils,
-} from '@baseplate-dev/project-builder-lib';
+import { PluginUtils } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import {
-  InputFieldController,
-  MultiComboboxFieldController,
-  SelectFieldController,
-} from '@baseplate-dev/ui-components';
+import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 import type { StoragePluginDefinition } from '#src/storage/core/schema/plugin-definition.js';
 
@@ -30,8 +23,7 @@ export function FileTransformerForm({
   const controlTyped = control as Control<{
     prefix: FileTransformerDefinition;
   }>;
-  const { definition, pluginContainer, definitionContainer } =
-    useProjectDefinition();
+  const { definition, definitionContainer } = useProjectDefinition();
 
   const storageConfig = PluginUtils.configByKeyOrThrow(
     definition,
@@ -50,19 +42,10 @@ export function FileTransformerForm({
     value: relation.id,
   }));
 
-  // Get available auth roles
-  const roleOptions = pluginContainer
-    .use(authConfigSpec)
-    .getAuthConfigOrThrow(definition)
-    .roles.map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
-
-  // Get available storage adapters
-  const adapterOptions = storageConfig.s3Adapters.map((adapter) => ({
-    label: adapter.name,
-    value: adapter.id,
+  // Get available file categories from plugin config
+  const categoryOptions = storageConfig.fileCategories.map((category) => ({
+    label: category.name,
+    value: category.id,
   }));
 
   return (
@@ -76,57 +59,15 @@ export function FileTransformerForm({
         placeholder="Select a file relation..."
       />
 
-      <div className="storage:space-y-4 storage:rounded-lg storage:border storage:p-4">
-        <h3 className="storage:text-lg storage:font-medium storage:text-foreground">
-          File Category Configuration
-        </h3>
-
-        <div className="storage:grid storage:grid-cols-1 storage:gap-4 storage:sm:grid-cols-2">
-          <InputFieldController
-            className="storage:w-full"
-            control={controlTyped}
-            label="Category Name"
-            name={`${prefix}.category.name`}
-            placeholder="e.g., USER_PROFILE_AVATAR"
-            description="Must be CONSTANT_CASE format"
-          />
-
-          <InputFieldController
-            className="storage:w-full"
-            control={controlTyped}
-            label="Max File Size (MB)"
-            name={`${prefix}.category.maxFileSizeMb`}
-            type="number"
-            placeholder="e.g., 10"
-            description="Maximum file size in megabytes"
-            registerOptions={{
-              valueAsNumber: true,
-            }}
-          />
-        </div>
-
-        <div className="storage:grid storage:grid-cols-1 storage:gap-4 storage:sm:grid-cols-2">
-          <MultiComboboxFieldController
-            className="storage:w-full"
-            control={controlTyped}
-            label="Upload Roles"
-            name={`${prefix}.category.authorize.uploadRoles`}
-            options={roleOptions}
-            placeholder="Select roles that can upload..."
-            description="User roles authorized to upload files"
-          />
-
-          <SelectFieldController
-            className="storage:w-full"
-            control={controlTyped}
-            label="Storage Adapter"
-            name={`${prefix}.category.adapterRef`}
-            options={adapterOptions}
-            placeholder="Select storage adapter..."
-            description="Where files will be stored"
-          />
-        </div>
-      </div>
+      <SelectFieldController
+        className="storage:w-full"
+        control={controlTyped}
+        label="File Category"
+        name={`${prefix}.categoryRef`}
+        options={categoryOptions}
+        placeholder="Select a file category..."
+        description="The file category that defines upload constraints and authorization for this relation"
+      />
     </div>
   );
 }

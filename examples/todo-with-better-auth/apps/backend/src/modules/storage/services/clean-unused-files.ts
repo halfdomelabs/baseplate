@@ -4,41 +4,65 @@ import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 import { prisma } from '@src/services/prisma.js';
 
-import type { StorageAdapterKey } from '../config/adapters.config.js';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { FILE_CATEGORIES } from '../config/categories.config.js';
+import { getAdapterOrThrow } from '../utils/get-adapter.js';
 
-// How long to keep files that were uploaded but never referenced
+/** How long to keep files that were uploaded but never referenced */
 const UNREFERENCED_UPLOAD_EXPIRY_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
-// Maximum number of files to delete in a single operation
+/** Maximum number of files to delete in a single operation */
 const CLEAN_JOB_LIMIT = 100;
 
+/**
+ * Finds and deletes unused files from storage and the database.
+ *
+ * Files are considered unused if:
+ * 1. They belong to a cleanup-enabled category and have no references in ANY
+ *    of the known file relations (orphaned files).
+ * 2. They are pending uploads older than the expiry threshold (abandoned uploads).
+ *
+ * Deletion is performed in two phases per adapter: storage objects are deleted
+ * first, then DB records. If storage deletion fails, the error is logged and
+ * DB records are preserved so they can be retried on the next run.
+ *
+ * @returns The number of DB file records successfully cleaned up
+ */
 export async function cleanUnusedFiles(): Promise<number> {
   const cutoffDate = new Date(Date.now() - UNREFERENCED_UPLOAD_EXPIRY_TIME_MS);
+
+  const categoriesForCleanup = FILE_CATEGORIES.filter(
+    (c) => !c.disableAutoCleanup,
+  );
+
+  // Collect ALL known file relations across all categories for safety.
+  const allFileRelations = [
+    ...new Set(FILE_CATEGORIES.flatMap((c) => c.referencedByRelations ?? [])),
+  ];
 
   const unusedFiles = await prisma.file.findMany({
     where: {
       OR: [
-        // Files that were referenced but are no longer used by any relations
+        // Confirmed files no longer used by any relation (orphaned)
+        ...(categoriesForCleanup.length > 0 && allFileRelations.length > 0
+          ? [
+              {
+                AND: [
+                  {
+                    category: {
+                      in: categoriesForCleanup.map((c) => c.name),
+                    },
+                  },
+                  { pendingUpload: false },
+                  // ALL known relations must be empty
+                  ...allFileRelations.map((rel) => ({
+                    [rel]: { none: {} },
+                  })),
+                ],
+              },
+            ]
+          : []),
+        // Pending uploads that are old enough to clean
         {
-          AND: [
-            {
-              OR: FILE_CATEGORIES.map((category) => ({
-                category: category.name,
-                [category.referencedByRelation]: {
-                  none: {},
-                },
-              })),
-            },
-            {
-              referencedAt: { not: null },
-            },
-          ],
-        },
-        // Files that were uploaded but never referenced and are old enough to clean
-        {
-          referencedAt: null,
+          pendingUpload: true,
           createdAt: { lt: cutoffDate },
         },
       ],
@@ -46,68 +70,42 @@ export async function cleanUnusedFiles(): Promise<number> {
     take: CLEAN_JOB_LIMIT,
   });
 
-  const unusedFilesByAdapter = groupBy(unusedFiles, (file) => file.adapter);
-
-  const deletedFiles = await Promise.all(
-    Object.keys(unusedFilesByAdapter).map(async (adapterName) => {
-      if (!(adapterName in STORAGE_ADAPTERS)) {
-        logError(
-          new Error(
-            `Invalid adapter name: ${adapterName}. Available adapters: ${Object.keys(STORAGE_ADAPTERS).join(', ')}`,
-          ),
-        );
-        return [];
-      }
-
-      const adapter = STORAGE_ADAPTERS[adapterName as StorageAdapterKey];
-      const unusedFilesForAdapter = unusedFilesByAdapter[adapterName];
-      const paths = unusedFilesForAdapter.map((file) => file.storagePath);
-
-      logger.info(
-        `Found ${unusedFilesForAdapter.length} unused files in adapter "${adapterName}"`,
-      );
-
-      // if no deleteFiles method, assume it can be cleaned just by deleting File object
-      if (!adapter.deleteFiles) {
-        logger.info(
-          `Adapter "${adapterName}" does not support bulk file deletion, will only clean database records`,
-        );
-        return unusedFilesForAdapter;
-      }
-
-      try {
-        await adapter.deleteFiles(paths);
-        logger.info(
-          `Successfully deleted ${paths.length} files from adapter "${adapterName}"`,
-        );
-        return unusedFilesForAdapter;
-      } catch (err) {
-        logError(
-          new Error(
-            `Failed to delete files from adapter "${adapterName}": ${err instanceof Error ? err.message : String(err)}`,
-          ),
-        );
-        return [];
-      }
-    }),
-  );
-
-  const deletedFileIds = deletedFiles.flat().map((file) => file.id);
-
-  if (deletedFileIds.length > 0) {
-    await prisma.file.deleteMany({
-      where: { id: { in: deletedFileIds } },
-    });
-    logger.info(
-      `Cleaned up ${deletedFileIds.length} file records from database`,
-    );
-  } else if (unusedFiles.length > 0) {
-    logger.warn(
-      `Found ${unusedFiles.length} unused files but failed to delete any — check adapter errors above`,
-    );
-  } else {
+  if (unusedFiles.length === 0) {
     logger.info('No unused files found to clean up');
+    return 0;
   }
 
-  return deletedFileIds.length;
+  const unusedFilesByAdapter = groupBy(unusedFiles, (file) => file.adapter);
+  let totalDeleted = 0;
+
+  for (const [adapterName, files] of Object.entries(unusedFilesByAdapter)) {
+    logger.info(
+      `Found ${files.length} unused files in adapter "${adapterName}"`,
+    );
+
+    try {
+      const adapter = getAdapterOrThrow(adapterName);
+      // Phase 1: Delete from storage
+      if (adapter.deleteFiles) {
+        await adapter.deleteFiles(files.map((f) => f.storagePath));
+      } else {
+        logger.info(
+          `Adapter "${adapterName}" does not support bulk file deletion, only cleaning database records`,
+        );
+      }
+
+      // Phase 2: Delete DB records (only reached if storage deletion succeeded)
+      const ids = files.map((f) => f.id);
+      await prisma.file.deleteMany({ where: { id: { in: ids } } });
+      totalDeleted += ids.length;
+      logger.info(
+        `Successfully cleaned ${ids.length} files from adapter "${adapterName}"`,
+      );
+    } catch (err) {
+      logError(err, { adapterName, fileCount: files.length });
+    }
+  }
+
+  logger.info(`Cleaned up ${totalDeleted} file records total`);
+  return totalDeleted;
 }

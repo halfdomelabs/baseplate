@@ -6,11 +6,12 @@ import type { ServiceContext } from '%serviceContextImports';
 import { validateFileUploadOptions } from '$utilsValidateFileUploadOptions';
 
 /**
- * Uploads a file to storage
- * @param contents - The file contents
- * @param options - The file upload options
- * @param context - The service context
- * @returns The uploaded file
+ * Uploads a file to storage directly from the server.
+ *
+ * @param contents - The file contents as a Buffer
+ * @param options - The file upload options (filename, size, contentType, category)
+ * @param context - The service context with auth information
+ * @returns The uploaded file record
  */
 export async function uploadFile(
   contents: Buffer,
@@ -22,7 +23,13 @@ export async function uploadFile(
     context,
   );
 
-  const file = await TPL_FILE_MODEL.create({ data: fileCreateInput });
+  const file = await TPL_FILE_MODEL.create({
+    data: {
+      ...fileCreateInput,
+      pendingUpload: false,
+      size: contents.length,
+    },
+  });
 
   await adapter.uploadFile(file.storagePath, contents, {
     contentType: options.contentType,

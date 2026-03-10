@@ -4,8 +4,11 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import type { StorageAdapterKey } from '../config/adapters.config.js';
 
 /**
- * Configuration for a file category that specifies how files for a
- * particular model relation to File model should be handled.
+ * Configuration for a file category that specifies how files of a
+ * particular type should be handled, including storage, authorization,
+ * and cleanup behavior.
+ *
+ * A single category can be referenced by multiple model relations.
  */
 export interface FileCategory<
   TName extends string = string,
@@ -50,7 +53,19 @@ export interface FileCategory<
   };
 
   /**
-   * The relation that references this file category.
+   * The relations that reference this file category.
+   * A file is considered orphaned only when ALL relations are empty.
+   *
+   * Optional — categories without relations (e.g., temporary exports, email
+   * attachments) must set `disableAutoCleanup: true`.
    */
-  readonly referencedByRelation: TReferencedByRelation;
+  readonly referencedByRelations?: readonly TReferencedByRelation[];
+
+  /**
+   * If true, files in this category will not be automatically cleaned up
+   * when they become orphaned. Required when `referencedByRelations` is
+   * empty or omitted. Useful for categories where files are managed
+   * manually or should persist indefinitely.
+   */
+  readonly disableAutoCleanup?: boolean;
 }

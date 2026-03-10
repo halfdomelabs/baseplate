@@ -10,7 +10,7 @@ export const userImageFileFileCategory = createFileCategory({
   },
   maxFileSize: FileSize.MB(10),
   name: 'USER_IMAGE_FILE',
-  referencedByRelation: 'userImages',
+  referencedByRelations: ['userImages'],
 });
 export const userProfileAvatarFileCategory = createFileCategory({
   adapter: 'uploads',
@@ -19,5 +19,5 @@ export const userProfileAvatarFileCategory = createFileCategory({
   },
   maxFileSize: FileSize.MB(10),
   name: 'USER_PROFILE_AVATAR',
-  referencedByRelation: 'userProfileAvatar',
+  referencedByRelations: ['userProfileAvatar'],
 });

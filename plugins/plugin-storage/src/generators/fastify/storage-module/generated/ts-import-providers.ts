@@ -31,6 +31,7 @@ export const storageModuleImportsSchema = createTsImportMapSchema({
   FileMetadata: { isTypeOnly: true },
   FileSize: {},
   FileUploadOptions: { isTypeOnly: true },
+  getAdapterOrThrow: {},
   getCategoryByName: {},
   getCategoryByNameOrThrow: {},
   getEncodingFromContentType: {},
@@ -41,8 +42,10 @@ export const storageModuleImportsSchema = createTsImportMapSchema({
   STORAGE_ADAPTERS: {},
   StorageAdapter: { isTypeOnly: true },
   StorageAdapterKey: { isTypeOnly: true },
+  ValidatedPendingUpload: { isTypeOnly: true },
   validateFileExtensionWithMimeType: {},
   validateFileUploadOptions: {},
+  validatePendingUpload: {},
 });
 
 export type StorageModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -83,6 +86,7 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           FileMetadata: paths.typesAdapter,
           FileSize: paths.utilsCreateFileCategory,
           FileUploadOptions: paths.utilsValidateFileUploadOptions,
+          getAdapterOrThrow: paths.utilsGetAdapter,
           getCategoryByName: paths.configCategories,
           getCategoryByNameOrThrow: paths.configCategories,
           getEncodingFromContentType: paths.utilsMime,
@@ -93,8 +97,10 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
           STORAGE_ADAPTERS: paths.configAdapters,
           StorageAdapter: paths.typesAdapter,
           StorageAdapterKey: paths.configAdapters,
+          ValidatedPendingUpload: paths.utilsValidatePendingUpload,
           validateFileExtensionWithMimeType: paths.utilsMime,
           validateFileUploadOptions: paths.utilsValidateFileUploadOptions,
+          validatePendingUpload: paths.utilsValidatePendingUpload,
         }),
       },
     };

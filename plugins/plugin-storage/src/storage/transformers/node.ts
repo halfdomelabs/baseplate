@@ -12,8 +12,8 @@ import type { FileTransformerDefinition } from './schema/file-transformer.schema
 function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransformerDefinition> {
   return {
     name: 'file',
-    compileField(definition, { model }) {
-      const { fileRelationRef, category } = definition;
+    compileField(definition, { model, definitionContainer }) {
+      const { fileRelationRef, categoryRef } = definition;
 
       const foreignRelation = model.model.relations.find(
         (relation) => relation.id === fileRelationRef,
@@ -28,7 +28,7 @@ function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransforme
       return fileDataFieldGenerator({
         modelName: model.name,
         relationName: foreignRelation.name,
-        category: category.name,
+        category: definitionContainer.nameFromId(categoryRef),
         featureId: model.featureRef,
       });
     },

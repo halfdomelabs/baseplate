@@ -3,12 +3,60 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { prisma } from '@src/services/prisma.js';
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
 
+import type { FileCategory } from '../types/file-category.js';
+
 import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { cleanUnusedFiles } from './clean-unused-files.js';
 
 // Mock logger to suppress output during tests
 vi.mock('@src/services/logger.js', () => ({
   logger: createMockLogger(),
+}));
+
+// Default categories matching the real config — tests can override via fileCategoriesOverride
+const defaultFileCategories: FileCategory[] = [
+  {
+    name: 'TODO_LIST_COVER_PHOTO',
+    adapter: 'uploads',
+    maxFileSize: 10 * 1024 * 1024,
+    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    referencedByRelations: ['todoListCoverPhoto'],
+  },
+  {
+    name: 'USER_IMAGE_FILE',
+    adapter: 'uploads',
+    maxFileSize: 10 * 1024 * 1024,
+    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    referencedByRelations: ['userImages'],
+  },
+  {
+    name: 'USER_PROFILE_AVATAR',
+    adapter: 'uploads',
+    maxFileSize: 10 * 1024 * 1024,
+    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    referencedByRelations: ['userProfileAvatar'],
+  },
+];
+
+// Mock categories config to allow overriding FILE_CATEGORIES in specific tests
+let fileCategoriesOverride: FileCategory[] | undefined;
+vi.mock('../config/categories.config.js', () => ({
+  get FILE_CATEGORIES() {
+    return fileCategoriesOverride ?? defaultFileCategories;
+  },
+  getCategoryByName: (name: string) =>
+    (fileCategoriesOverride ?? defaultFileCategories).find(
+      (c) => c.name === name,
+    ),
+  getCategoryByNameOrThrow: (name: string) => {
+    const category = (fileCategoriesOverride ?? defaultFileCategories).find(
+      (c) => c.name === name,
+    );
+    if (!category) {
+      throw new Error(`File category ${name} not found.`);
+    }
+    return category;
+  },
 }));
 
 // Mock storage adapters to prevent actual S3 calls
@@ -30,13 +78,27 @@ vi.mock('../config/adapters.config.js', () => ({
   },
 }));
 
-// Helper to create file with specific age
-async function createFileWithAge(
-  daysOld: number,
-  referencedAt: Date | null,
+/**
+ * Helper to create a file record with a specific age and upload state.
+ *
+ * @param options - File creation options
+ * @param options.daysOld - How many days old the file should be
+ * @param options.pendingUpload - Whether the file is still pending upload
+ * @param options.adapter - The storage adapter name (defaults to 'uploads')
+ * @param options.category - The file category name (defaults to 'TODO_LIST_COVER_PHOTO')
+ * @returns The created file's ID
+ */
+async function createFileWithAge({
+  daysOld,
+  pendingUpload,
   adapter = 'uploads',
   category = 'TODO_LIST_COVER_PHOTO',
-): Promise<string> {
+}: {
+  daysOld: number;
+  pendingUpload: boolean;
+  adapter?: string;
+  category?: string;
+}): Promise<string> {
   const file = await prisma.file.create({
     data: {
       filename: `test-${Date.now()}.jpg`,
@@ -46,19 +108,27 @@ async function createFileWithAge(
       category,
       adapter,
       storagePath: `/test/path-${Date.now()}.jpg`,
-      referencedAt,
+      pendingUpload,
       createdAt: new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000),
     },
   });
   return file.id;
 }
 
-// Helper to count files in database
+/**
+ * Helper to count files in database.
+ *
+ * @returns The total number of file records
+ */
 async function countFiles(): Promise<number> {
   return prisma.file.count();
 }
 
-// Helper to create test user
+/**
+ * Helper to create a test user with a profile.
+ *
+ * @returns The created user's ID
+ */
 async function createTestUser(): Promise<string> {
   const user = await prisma.user.create({
     data: {
@@ -78,6 +148,7 @@ describe('cleanUnusedFiles integration tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    fileCategoriesOverride = undefined;
   });
 
   afterEach(async () => {
@@ -89,22 +160,21 @@ describe('cleanUnusedFiles integration tests', () => {
     await prisma.user.deleteMany();
   });
 
-  describe('unreferenced file expiry', () => {
-    it('should delete unreferenced files older than 1 day', async () => {
-      await createFileWithAge(2, null);
+  describe('pending upload expiry', () => {
+    it('should delete pending uploads older than 1 day', async () => {
+      await createFileWithAge({ daysOld: 2, pendingUpload: true });
 
       const deletedCount = await cleanUnusedFiles();
 
       expect(deletedCount).toBe(1);
       expect(await countFiles()).toBe(0);
-      // Verify adapter deleteFiles was called
       expect(deleteFilesMock).toHaveBeenCalledWith(
         expect.arrayContaining([expect.stringContaining('/test/path')]),
       );
     });
 
-    it('should NOT delete unreferenced files younger than 1 day', async () => {
-      await createFileWithAge(0.5, null);
+    it('should NOT delete pending uploads younger than 1 day', async () => {
+      await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
 
       const deletedCount = await cleanUnusedFiles();
 
@@ -112,17 +182,16 @@ describe('cleanUnusedFiles integration tests', () => {
       expect(await countFiles()).toBe(1);
     });
 
-    it('should handle multiple unreferenced files with mixed ages', async () => {
-      await createFileWithAge(2, null);
-      await createFileWithAge(3, null);
-      await createFileWithAge(0.5, null);
-      await createFileWithAge(0.2, null);
+    it('should handle multiple pending uploads with mixed ages', async () => {
+      await createFileWithAge({ daysOld: 2, pendingUpload: true });
+      await createFileWithAge({ daysOld: 3, pendingUpload: true });
+      await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
+      await createFileWithAge({ daysOld: 0.2, pendingUpload: true });
 
       const deletedCount = await cleanUnusedFiles();
 
       expect(deletedCount).toBe(2); // Only the 2 old files
       expect(await countFiles()).toBe(2); // 2 new files remain
-      // Verify adapter deleteFiles was called with 2 paths
       expect(deleteFilesMock).toHaveBeenCalledTimes(1);
       expect(deleteFilesMock).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -133,10 +202,13 @@ describe('cleanUnusedFiles integration tests', () => {
     });
   });
 
-  describe('referenced files with no relations', () => {
+  describe('confirmed files with no relations (orphaned)', () => {
     it('should delete file after owning entity is deleted', async () => {
       const userId = await createTestUser();
-      const fileId = await createFileWithAge(0, new Date());
+      const fileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
 
       // Create TodoList with cover photo
       const todoList = await prisma.todoList.create({
@@ -154,16 +226,19 @@ describe('cleanUnusedFiles integration tests', () => {
       // Delete TodoList
       await prisma.todoList.delete({ where: { id: todoList.id } });
 
-      // Now file should be deleted
+      // Now file should be deleted (orphaned)
       expect(await cleanUnusedFiles()).toBe(1);
       expect(await countFiles()).toBe(0);
     });
   });
 
-  describe('referenced files with active relations', () => {
+  describe('confirmed files with active relations', () => {
     it('should NOT delete file when entity with reference exists', async () => {
       const userId = await createTestUser();
-      const fileId = await createFileWithAge(0, new Date());
+      const fileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
 
       await prisma.todoList.create({
         data: {
@@ -183,10 +258,12 @@ describe('cleanUnusedFiles integration tests', () => {
 
   describe('batch limit', () => {
     it('should delete only 100 files in one run', async () => {
-      // Create 150 unreferenced old files
+      // Create 150 pending old files
       const filePromises = [];
       for (let i = 0; i < 150; i++) {
-        filePromises.push(createFileWithAge(2, null));
+        filePromises.push(
+          createFileWithAge({ daysOld: 2, pendingUpload: true }),
+        );
       }
       await Promise.all(filePromises);
 
@@ -206,12 +283,15 @@ describe('cleanUnusedFiles integration tests', () => {
     it('should correctly identify and delete unused files in complex scenario', async () => {
       const userId = await createTestUser();
 
-      // 1. Unreferenced old file (should be deleted)
-      await createFileWithAge(2, null);
-      // 2. Unreferenced new file (should NOT be deleted)
-      await createFileWithAge(0.5, null);
-      // 3. Referenced file with active relation (should NOT be deleted)
-      const activeFileId = await createFileWithAge(0, new Date());
+      // 1. Pending old file (should be deleted)
+      await createFileWithAge({ daysOld: 2, pendingUpload: true });
+      // 2. Pending new file (should NOT be deleted)
+      await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
+      // 3. Confirmed file with active relation (should NOT be deleted)
+      const activeFileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
       await prisma.todoList.create({
         data: {
           name: 'Active List',
@@ -220,8 +300,8 @@ describe('cleanUnusedFiles integration tests', () => {
           coverPhotoId: activeFileId,
         },
       });
-      // 4. Referenced file without relation (should be deleted)
-      await createFileWithAge(0, new Date());
+      // 4. Confirmed file without relation (orphaned, should be deleted)
+      await createFileWithAge({ daysOld: 0, pendingUpload: false });
 
       expect(await countFiles()).toBe(4);
 
@@ -231,10 +311,90 @@ describe('cleanUnusedFiles integration tests', () => {
       expect(await countFiles()).toBe(2); // Files 2 and 3 remain
     });
 
+    it('should NOT delete orphaned files in categories with disableAutoCleanup', async () => {
+      fileCategoriesOverride = [
+        {
+          name: 'NO_CLEANUP_CATEGORY',
+          adapter: 'uploads',
+          maxFileSize: 1024 * 1024,
+          allowedMimeTypes: ['image/jpeg'],
+          referencedByRelations: ['todoListCoverPhoto'],
+          disableAutoCleanup: true,
+        },
+      ];
+
+      // Create an orphaned confirmed file in the no-cleanup category
+      await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+        category: 'NO_CLEANUP_CATEGORY',
+      });
+
+      const deletedCount = await cleanUnusedFiles();
+
+      // File should NOT be deleted because the category has disableAutoCleanup
+      expect(deletedCount).toBe(0);
+      expect(await countFiles()).toBe(1);
+    });
+
+    it('should only delete file when ALL relations are empty (multi-relation)', async () => {
+      const userId = await createTestUser();
+
+      // Override categories with a multi-relation category
+      fileCategoriesOverride = [
+        {
+          name: 'MULTI_RELATION',
+          adapter: 'uploads',
+          maxFileSize: 1024 * 1024,
+          allowedMimeTypes: ['image/jpeg'],
+          referencedByRelations: ['todoListCoverPhoto', 'userProfileAvatar'],
+        },
+      ];
+
+      const fileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+        category: 'MULTI_RELATION',
+      });
+
+      // Attach file to a TodoList (one relation populated)
+      const todoList = await prisma.todoList.create({
+        data: {
+          name: 'Test List',
+          position: 0,
+          ownerId: userId,
+          coverPhotoId: fileId,
+        },
+      });
+
+      // File should NOT be deleted — todoListCoverPhoto relation is populated
+      expect(await cleanUnusedFiles()).toBe(0);
+      expect(await countFiles()).toBe(1);
+
+      // Remove the TodoList relation
+      await prisma.todoList.delete({ where: { id: todoList.id } });
+
+      // Now all relations are empty — file should be deleted
+      expect(await cleanUnusedFiles()).toBe(1);
+      expect(await countFiles()).toBe(0);
+    });
+
     it('should handle files from different adapters', async () => {
-      await createFileWithAge(2, null, 'uploads');
-      await createFileWithAge(2, null, 'url');
-      await createFileWithAge(0.5, null, 'uploads');
+      await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+        adapter: 'uploads',
+      });
+      await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+        adapter: 'url',
+      });
+      await createFileWithAge({
+        daysOld: 0.5,
+        pendingUpload: true,
+        adapter: 'uploads',
+      });
 
       const deletedCount = await cleanUnusedFiles();
 

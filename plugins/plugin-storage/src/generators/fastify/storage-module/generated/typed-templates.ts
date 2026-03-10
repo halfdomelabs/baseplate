@@ -83,7 +83,7 @@ const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
   },
   name: 'services-create-presigned-download-url',
   projectExports: { createPresignedDownloadUrl: {} },
-  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
+  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -122,7 +122,7 @@ const servicesDownloadFile = createTsTemplateFile({
   },
   name: 'services-download-file',
   projectExports: { downloadFile: {} },
-  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
+  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -139,14 +139,16 @@ const servicesFileField = createTsTemplateFile({
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
-    prismaImports: prismaImportsProvider,
   },
   name: 'services-file-field',
   projectExports: {
     fileField: { isTypeOnly: false },
     FileInput: { isTypeOnly: true },
   },
-  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
+  referencedGeneratorTemplates: {
+    typesFileCategory: {},
+    utilsValidatePendingUpload: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -387,7 +389,7 @@ const servicesCleanUnusedFiles = createTsTemplateFile({
   },
   name: 'services-clean-unused-files',
   projectExports: { cleanUnusedFiles: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
+  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -403,7 +405,7 @@ const servicesGetPublicUrl = createTsTemplateFile({
     prismaGeneratedImports: prismaGeneratedImportsProvider,
   },
   name: 'services-get-public-url',
-  referencedGeneratorTemplates: { configAdapters: {} },
+  referencedGeneratorTemplates: { utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -411,6 +413,49 @@ const servicesGetPublicUrl = createTsTemplateFile({
     ),
   },
   variables: { TPL_FILE_MODEL: {} },
+});
+
+const utilsGetAdapter = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'utils-get-adapter',
+  projectExports: { getAdapterOrThrow: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { configAdapters: {}, typesAdapter: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/utils/get-adapter.ts',
+    ),
+  },
+  variables: {},
+});
+
+const utilsValidatePendingUpload = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    dataUtilsImports: dataUtilsImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'utils-validate-pending-upload',
+  projectExports: {
+    ValidatedPendingUpload: { isTypeOnly: true },
+    validatePendingUpload: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    typesAdapter: {},
+    typesFileCategory: {},
+    utilsGetAdapter: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/utils/validate-pending-upload.ts',
+    ),
+  },
+  variables: {},
 });
 
 export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
@@ -421,4 +466,6 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   schemaGroup,
   servicesCleanUnusedFiles,
   servicesGetPublicUrl,
+  utilsGetAdapter,
+  utilsValidatePendingUpload,
 };

@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "utils-create-file-category"
   },
+  "get-adapter.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "utils-get-adapter"
+  },
   "mime.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
@@ -13,5 +18,10 @@
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
     "template": "utils-validate-file-upload-options"
+  },
+  "validate-pending-upload.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "utils-validate-pending-upload"
   }
 }

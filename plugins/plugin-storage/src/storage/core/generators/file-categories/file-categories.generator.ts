@@ -32,7 +32,8 @@ const descriptorSchema = z.object({
       authorize: z.object({
         uploadRoles: z.array(z.string()),
       }),
-      referencedByRelation: z.string(),
+      referencedByRelations: z.array(z.string()),
+      disableAutoCleanup: z.boolean().optional(),
     }),
   ),
 });
@@ -115,7 +116,15 @@ export const fileCategoriesGenerator = createGenerator({
                       }`
                       : undefined,
                   adapter: quot(category.adapter),
-                  referencedByRelation: quot(category.referencedByRelation),
+                  referencedByRelations:
+                    category.referencedByRelations.length > 0
+                      ? TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                          category.referencedByRelations.map(quot).toSorted(),
+                        )
+                      : undefined,
+                  disableAutoCleanup: category.disableAutoCleanup
+                    ? 'true'
+                    : undefined,
                 },
               )})`,
               );
