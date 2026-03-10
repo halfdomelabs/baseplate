@@ -42,7 +42,7 @@
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "storybook:build": "storybook build",
     "storybook:dev": "storybook dev -p 6006",
     "test": "vitest",

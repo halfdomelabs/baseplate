@@ -226,7 +226,7 @@ export function createGenerator(
 
   // Format the generated files with Prettier
   try {
-    execSync(`pnpm prettier --write "${generatorDir}/**/*"`, {
+    execSync(`pnpm prettier --write --list-different "${generatorDir}/**/*"`, {
       stdio: 'pipe',
       cwd: process.cwd(),
     });

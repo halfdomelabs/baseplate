@@ -38,7 +38,8 @@ function createCtx(
 const todoListQueryFilter = createModelQueryFilter({
   model: 'todoList',
   roles: {
-    owner: (ctx) => (ctx.auth.hasRole('admin') ? true : { ownerId: ctx.auth.userId }),
+    owner: (ctx) =>
+      ctx.auth.hasRole('admin') ? true : { ownerId: ctx.auth.userId },
   },
 });
 
@@ -153,7 +154,9 @@ describe('createModelQueryFilter', () => {
         'viewer',
       ]);
       expect(result).toEqual({
-        todoList: { OR: [{ ownerId: 'user-1' }, { name: { contains: 'shared' } }] },
+        todoList: {
+          OR: [{ ownerId: 'user-1' }, { name: { contains: 'shared' } }],
+        },
       });
     });
   });

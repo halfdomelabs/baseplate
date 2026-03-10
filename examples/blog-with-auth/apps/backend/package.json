@@ -22,7 +22,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "script:dev": "tsx watch --respawn --env-file-if-exists=.env --import ./src/instrument.ts",
     "script:run": "tsx --env-file-if-exists=.env --import ./src/instrument.ts",
     "start": "node --import ./dist/instrument.js dist/index.js",

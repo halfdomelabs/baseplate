@@ -29,7 +29,7 @@
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w -l ."
   },
   "dependencies": {
     "@baseplate-dev/plugin-auth": "workspace:*",

@@ -34,7 +34,7 @@
     "dev:serve": "vite --clearScreen false",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
+    "prettier:write": "prettier -w -l .",
     "serve": "vite preview",
     "test": "vitest",
     "typecheck": "tsc -b --noEmit"

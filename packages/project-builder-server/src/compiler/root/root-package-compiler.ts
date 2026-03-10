@@ -141,7 +141,7 @@ export class RootPackageCompiler extends PackageCompiler {
         'baseplate:serve': 'baseplate serve',
         'baseplate:generate': 'baseplate generate',
         'prettier:check:root': `prettier --check . "!${appsFolder}/**" "!${librariesFolder}/**"`,
-        'prettier:write:root': `prettier --write . "!${appsFolder}/**" "!${librariesFolder}/**"`,
+        'prettier:write:root': `prettier --write --list-different . "!${appsFolder}/**" "!${librariesFolder}/**"`,
       },
       additionalPackages: {
         dev: {

@@ -54,7 +54,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "cross-env SKIP_ESLINT=1 node scripts/format-and-lint.ts",
-    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write"
+    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
   },
   "dependencies": {
     "@changesets/cli": "2.29.6"

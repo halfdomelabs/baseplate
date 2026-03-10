@@ -60,7 +60,9 @@ beforeEach(async () => {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function createCtx(userId: string): ReturnType<typeof createTestServiceContext> {
+function createCtx(
+  userId: string,
+): ReturnType<typeof createTestServiceContext> {
   return createTestServiceContext({
     auth: createAuthContextFromSessionInfo({
       id: 'sess-1',
@@ -71,7 +73,9 @@ function createCtx(userId: string): ReturnType<typeof createTestServiceContext> 
   });
 }
 
-function createAdminCtx(userId: string): ReturnType<typeof createTestServiceContext> {
+function createAdminCtx(
+  userId: string,
+): ReturnType<typeof createTestServiceContext> {
   return createTestServiceContext({
     auth: createAuthContextFromSessionInfo({
       id: 'sess-1',
@@ -132,7 +136,7 @@ describe('todoItemQueryFilter integration', () => {
       expect(item.id).toBe(ownerTodoItemId);
     });
 
-    it('should reject access to another user\'s item', async () => {
+    it("should reject access to another user's item", async () => {
       const ctx = createCtx(ownerUserId);
       const where = todoItemQueryFilter.buildWhere(ctx, ['owner']);
 
