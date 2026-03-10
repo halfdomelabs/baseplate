@@ -30,6 +30,8 @@ const roleSchema = z.object({
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
   roles: z.array(roleSchema).min(1),
+  /** Model names of foreign query filters referenced by nested role expressions */
+  foreignQueryFilterModelNames: z.array(z.string().min(1)).default([]),
 });
 
 /**
@@ -53,6 +55,23 @@ export const prismaModelQueryFilterProvider =
     'prisma-model-query-filter',
   );
 
+/**
+ * Find which foreign query filter providers are referenced by a role code string.
+ * Checks if the roleCode contains the foreign query filter variable name.
+ */
+function findReferencedForeignQueryFilters(
+  roleCode: string,
+  providers: Map<string, PrismaModelQueryFilterProvider>,
+): PrismaModelQueryFilterProvider[] {
+  const referenced: PrismaModelQueryFilterProvider[] = [];
+  for (const [, provider] of providers) {
+    if (roleCode.includes(provider.getQueryFilterName())) {
+      referenced.push(provider);
+    }
+  }
+  return referenced;
+}
+
 // ----- Generator -----
 
 /**
@@ -66,77 +85,138 @@ export const prismaModelQueryFilterGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => `${descriptor.modelName}QueryFilter`,
-  buildTasks: (descriptor) => ({
-    main: createGeneratorTask({
-      dependencies: {
-        appModule: appModuleProvider,
-        typescriptFile: typescriptFileProvider,
-        prismaQueryFilterUtilsImports: prismaQueryFilterUtilsImportsProvider,
-      },
-      outputs: {
-        prismaModelQueryFilter: prismaModelQueryFilterProvider.export(
-          packageScope,
-          descriptor.modelName,
-        ),
-      },
-      run({ appModule, typescriptFile, prismaQueryFilterUtilsImports }) {
-        const { modelName, roles } = descriptor;
-        const modelVarName = lowercaseFirstChar(modelName);
-        const queryFilterName = `${modelVarName}QueryFilter`;
+  buildTasks: (descriptor) => {
+    const { foreignQueryFilterModelNames } = descriptor;
 
-        const authorizerFolder = posixJoin(
-          appModule.getModuleFolder(),
-          'authorizers',
-        );
-        const queryFilterPath = posixJoin(
-          authorizerFolder,
-          `${kebabCase(modelName)}.query-filter.ts`,
-        );
+    // Build dynamic dependencies for foreign query filters referenced by nested expressions
+    const foreignQueryFilterDeps = Object.fromEntries(
+      foreignQueryFilterModelNames.map((name) => [
+        `foreignQueryFilter_${name}`,
+        prismaModelQueryFilterProvider.dependency().reference(name),
+      ]),
+    );
 
-        return {
-          build: async (builder) => {
-            const rolesObject: Record<string, string> = {};
+    return {
+      main: createGeneratorTask({
+        dependencies: {
+          appModule: appModuleProvider,
+          typescriptFile: typescriptFileProvider,
+          prismaQueryFilterUtilsImports: prismaQueryFilterUtilsImportsProvider,
+          ...(foreignQueryFilterDeps as Record<string, never>),
+        },
+        outputs: {
+          prismaModelQueryFilter: prismaModelQueryFilterProvider.export(
+            packageScope,
+            descriptor.modelName,
+          ),
+        },
+        run({
+          appModule,
+          typescriptFile,
+          prismaQueryFilterUtilsImports,
+          ...dynamicDeps
+        }) {
+          const { modelName, roles } = descriptor;
+          const modelVarName = lowercaseFirstChar(modelName);
+          const queryFilterName = `${modelVarName}QueryFilter`;
 
-            for (const role of roles) {
-              rolesObject[role.name] = role.roleCode;
-            }
+          // Build a map of foreign model name → query filter provider
+          const foreignQueryFilterProviders = new Map<
+            string,
+            PrismaModelQueryFilterProvider
+          >();
+          for (const name of foreignQueryFilterModelNames) {
+            const provider = (dynamicDeps as Record<string, unknown>)[
+              `foreignQueryFilter_${name}`
+            ] as PrismaModelQueryFilterProvider;
+            foreignQueryFilterProviders.set(name, provider);
+          }
 
-            const rolesFragment = TsCodeUtils.mergeFragmentsAsObject(
-              rolesObject,
-              { disableSort: true },
-            );
+          const authorizerFolder = posixJoin(
+            appModule.getModuleFolder(),
+            'authorizers',
+          );
+          const queryFilterPath = posixJoin(
+            authorizerFolder,
+            `${kebabCase(modelName)}.query-filter.ts`,
+          );
 
-            const fileFragment = tsTemplate`
-              export const ${queryFilterName} = ${prismaQueryFilterUtilsImports.createModelQueryFilter.fragment()}({
-                model: '${modelVarName}',
-                roles: ${rolesFragment},
-              });
-            `;
+          return {
+            build: async (builder) => {
+              const rolesObject: Record<string, string | TsCodeFragment> = {};
 
-            await builder.apply(
-              typescriptFile.renderTemplateFragment({
-                id: `prisma-model-query-filter:${modelName}`,
-                destination: queryFilterPath,
-                fragment: fileFragment,
-              }),
-            );
+              for (const role of roles) {
+                // Check if the role code references any foreign query filter variables
+                // or queryHelpers. If so, wrap it in a TsCodeFragment with the necessary imports
+                const referencedProviders = findReferencedForeignQueryFilters(
+                  role.roleCode,
+                  foreignQueryFilterProviders,
+                );
 
-            return {
-              prismaModelQueryFilter: {
-                getQueryFilterName() {
-                  return queryFilterName;
-                },
-                getQueryFilterFragment() {
-                  return TsCodeUtils.importFragment(
-                    queryFilterName,
-                    queryFilterPath,
+                const needsQueryHelpers =
+                  role.roleCode.includes('queryHelpers.');
+
+                if (referencedProviders.length > 0 || needsQueryHelpers) {
+                  // Collect all imports from referenced foreign query filters
+                  const allImports = referencedProviders.flatMap(
+                    (provider) =>
+                      provider.getQueryFilterFragment().imports ?? [],
                   );
+
+                  // Add queryHelpers import if needed
+                  if (needsQueryHelpers) {
+                    const queryHelpersImports =
+                      prismaQueryFilterUtilsImports.queryHelpers.fragment()
+                        .imports ?? [];
+                    allImports.push(...queryHelpersImports);
+                  }
+
+                  rolesObject[role.name] = {
+                    contents: role.roleCode,
+                    imports: allImports,
+                  };
+                } else {
+                  rolesObject[role.name] = role.roleCode;
+                }
+              }
+
+              const rolesFragment = TsCodeUtils.mergeFragmentsAsObject(
+                rolesObject,
+                { disableSort: true },
+              );
+
+              const fileFragment = tsTemplate`
+                export const ${queryFilterName} = ${prismaQueryFilterUtilsImports.createModelQueryFilter.fragment()}({
+                  model: '${modelVarName}',
+                  roles: ${rolesFragment},
+                });
+              `;
+
+              await builder.apply(
+                typescriptFile.renderTemplateFragment({
+                  id: `prisma-model-query-filter:${modelName}`,
+                  destination: queryFilterPath,
+                  fragment: fileFragment,
+                }),
+              );
+
+              return {
+                prismaModelQueryFilter: {
+                  getQueryFilterName() {
+                    return queryFilterName;
+                  },
+                  getQueryFilterFragment() {
+                    return TsCodeUtils.importFragment(
+                      queryFilterName,
+                      queryFilterPath,
+                    );
+                  },
                 },
-              },
-            };
-          },
-        };
-      },
-    }),
-  }),
+              };
+            },
+          };
+        },
+      }),
+    };
+  },
 });

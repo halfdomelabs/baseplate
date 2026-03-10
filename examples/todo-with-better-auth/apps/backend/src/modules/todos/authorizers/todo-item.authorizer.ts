@@ -9,6 +9,7 @@ export const todoItemAuthorizer = createModelAuthorizer({
   getModelById: (id) => prisma.todoItem.findUnique({ where: { id } }),
   roles: {
     owner: async (ctx, model) =>
-      await todoListAuthorizer.hasRoleById(ctx, model.todoListId, 'owner'),
+      (await todoListAuthorizer.hasRoleById(ctx, model.todoListId, 'owner')) ||
+      ctx.auth.hasRole('admin'),
   },
 });

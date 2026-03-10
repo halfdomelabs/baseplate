@@ -80,6 +80,23 @@ export interface ModelQueryFilter<
     ctx: ServiceContext,
     roleNames: (keyof TRoles)[],
   ): OrWhereClause<TModelName> | undefined;
+
+  /**
+   * Build a nested where clause for use as a relation filter on a parent model.
+   *
+   * Evaluates the given roles and wraps the result in `{ [relationField]: where }`.
+   * Returns a boolean if all roles grant or deny access outright.
+   *
+   * @param ctx - Service context with auth info
+   * @param relationField - The Prisma relation field name on the parent model
+   * @param roleNames - Which roles to evaluate
+   * @returns A `WhereResult` for use in a parent query filter
+   */
+  buildNestedWhere<TRelationField extends string>(
+    ctx: ServiceContext,
+    relationField: TRelationField,
+    roleNames: (keyof TRoles)[],
+  ): Record<TRelationField, WhereInput<TModelName>> | boolean;
 }
 
 /**
@@ -134,6 +151,36 @@ export function createModelQueryFilter<
       }
 
       return { OR: whereClauses };
+    },
+
+    buildNestedWhere<TRelationField extends string>(
+      ctx: ServiceContext,
+      relationField: TRelationField,
+      roleNames: (keyof TRoles)[],
+    ): Record<TRelationField, WhereInput<TModelName>> | boolean {
+      const results = roleNames.map((name) => config.roles[name](ctx));
+
+      // If any role grants unrestricted access, no filter needed
+      if (results.includes(true)) return true;
+
+      // Filter out false entries
+      const whereClauses = results.filter(
+        (r): r is NonNullable<WhereInput<TModelName>> =>
+          r !== false && r != null,
+      );
+
+      // No clauses passed → no access
+      if (whereClauses.length === 0) return false;
+
+      const combined =
+        whereClauses.length === 1
+          ? whereClauses[0]
+          : ({ OR: whereClauses } as WhereInput<TModelName>);
+
+      return { [relationField]: combined } as Record<
+        TRelationField,
+        WhereInput<TModelName>
+      >;
     },
   };
 }

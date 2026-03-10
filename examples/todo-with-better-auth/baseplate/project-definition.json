@@ -665,7 +665,7 @@
       "authorizer": {
         "roles": [
           {
-            "expression": "hasRole(model.todoList, \"owner\")",
+            "expression": "hasRole(model.todoList, \"owner\") || hasRole('admin')",
             "id": "model-authorizer-role:nue1yz7lANN9",
             "name": "owner"
           }

@@ -4,6 +4,7 @@ import type { AuthSessionInfo } from './auth-session.types.js';
 export interface AuthContext {
   session: AuthSessionInfo | undefined;
   sessionOrThrow: () => AuthSessionInfo;
+  isAuthenticated: boolean;
   userId: string | undefined;
   userIdOrThrow: () => string;
   roles: readonly AuthRole[];
