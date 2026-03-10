@@ -1,14 +1,14 @@
-import type { File } from '@src/generated/prisma/client.js';
-import type { PrismaTransaction } from '@src/utils/data-operations/types.js';
-import type { ServiceContext } from '@src/utils/service-context.js';
+// @ts-nocheck
 
-import { prisma } from '@src/services/prisma.js';
-import { BadRequestError } from '@src/utils/http-errors.js';
+import type { StorageAdapter } from '$typesAdapter';
+import type { FileCategory } from '$typesFileCategory';
+import type { PrismaTransaction } from '%dataUtilsImports';
+import type { File } from '%prismaGeneratedImports';
+import type { ServiceContext } from '%serviceContextImports';
 
-import type { StorageAdapter } from '../types/adapter.js';
-import type { FileCategory } from '../types/file-category.js';
-
-import { getAdapterOrThrow } from './get-adapter.js';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
+import { BadRequestError } from '%errorHandlerServiceImports';
+import { prisma } from '%prismaImports';
 
 /**
  * Result of validating a pending upload, containing everything needed

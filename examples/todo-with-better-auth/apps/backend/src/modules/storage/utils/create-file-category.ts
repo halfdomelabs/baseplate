@@ -43,7 +43,8 @@ export function createFileCategory<
   }
 
   if (
-    (!config.referencedByRelations || config.referencedByRelations.length === 0) &&
+    (!config.referencedByRelations ||
+      config.referencedByRelations.length === 0) &&
     !config.disableAutoCleanup
   ) {
     throw new Error(

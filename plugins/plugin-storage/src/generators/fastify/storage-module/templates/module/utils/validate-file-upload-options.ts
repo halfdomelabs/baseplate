@@ -16,14 +16,15 @@ import { BadRequestError, ForbiddenError } from '%errorHandlerServiceImports';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
-// Constants
+/** Maximum allowed filename length */
 const MAX_FILENAME_LENGTH = 128;
 
 /**
- * There are a set of unsafe characters that should be replaced
+ * Replaces unsafe characters in filenames for S3-compatible storage paths.
  *
- * https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
- *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+ * @param filename - The original filename
+ * @returns The sanitized filename
  */
 function makeFilenameSafe(filename: string): string {
   return filename.replaceAll(/[^a-zA-Z0-9!\-_.*'()]/g, '_');
@@ -36,7 +37,7 @@ const fileUploadOptionsSchema = z.object({
     .max(MAX_FILENAME_LENGTH, {
       message: `File name is too long (max ${MAX_FILENAME_LENGTH} characters)`,
     }),
-  /** The file size in bytes */
+  /** The file size in bytes (used for validation only, not stored for presigned uploads) */
   size: z
     .number('File size is required and must be a positive number')
     .positive('File size is required and must be a positive number'),
@@ -49,7 +50,10 @@ const fileUploadOptionsSchema = z.object({
 export type FileUploadOptions = z.infer<typeof fileUploadOptionsSchema>;
 
 /**
- * Validates file size constraints for the category
+ * Validates file size constraints for the category.
+ *
+ * @param fileCategory - The file category with size constraints
+ * @param fileSize - The file size in bytes to validate
  */
 function validateFileSize(fileCategory: FileCategory, fileSize: number): void {
   if (fileCategory.minFileSize && fileSize < fileCategory.minFileSize) {
@@ -74,7 +78,12 @@ function validateFileSize(fileCategory: FileCategory, fileSize: number): void {
 }
 
 /**
- * Validates mime type and file extension
+ * Validates mime type and file extension match.
+ *
+ * @param fileCategory - The file category with allowed MIME types
+ * @param contentType - The content type header value
+ * @param filename - The filename to validate extension for
+ * @returns The extracted MIME type
  */
 function validateMimeType(
   fileCategory: FileCategory,
@@ -111,10 +120,15 @@ function validateMimeType(
 }
 
 /**
- * Validates file upload options and returns the validated data for file creation
- * @param input - The file upload options
- * @param context - The service context
- * @returns The validated data
+ * Validates file upload options and returns the validated data for file creation.
+ *
+ * The returned `fileCreateInput` does NOT include `size` or `pendingUpload` —
+ * these are set by the caller (`uploadFile` or `createPresignedUploadUrl`)
+ * based on the upload method.
+ *
+ * @param options - The file upload options (filename, size, contentType, category)
+ * @param context - The service context with auth information
+ * @returns The validated file create input, file category, and storage adapter
  */
 export async function validateFileUploadOptions(
   options: FileUploadOptions,
@@ -141,7 +155,7 @@ export async function validateFileUploadOptions(
     );
   }
 
-  // Validate file size constraints
+  // Validate file size constraints (validates client-claimed size for presigned URL generation)
   validateFileSize(fileCategory, size);
 
   // Validate mime type and file extension
@@ -160,7 +174,7 @@ export async function validateFileUploadOptions(
   // Get storage adapter
   const adapter = STORAGE_ADAPTERS[fileCategory.adapter];
 
-  // Prepare file record data
+  // Prepare file record data (size and pendingUpload set by caller)
   const fileCreateInput = {
     filename: cleanedFilename,
     storagePath,
@@ -168,7 +182,6 @@ export async function validateFileUploadOptions(
     adapter: fileCategory.adapter,
     mimeType,
     encoding,
-    size,
     uploader: context.auth.userId
       ? { connect: { id: context.auth.userId } }
       : undefined,

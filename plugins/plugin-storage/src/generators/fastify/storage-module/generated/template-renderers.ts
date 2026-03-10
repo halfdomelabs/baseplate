@@ -91,6 +91,26 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  utilsGetAdapter: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGetAdapter
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  utilsValidatePendingUpload: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.utilsValidatePendingUpload
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const fastifyStorageModuleRenderers =
@@ -155,7 +175,6 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   dataUtilsImports,
                   errorHandlerServiceImports,
                   prismaGeneratedImports,
-                  prismaImports,
                   serviceContextImports,
                 },
                 generatorPaths: paths,
@@ -209,6 +228,32 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 destination: paths.servicesGetPublicUrl,
                 importMapProviders: {
                   prismaGeneratedImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          utilsGetAdapter: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGetAdapter,
+                destination: paths.utilsGetAdapter,
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          utilsValidatePendingUpload: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  FASTIFY_STORAGE_MODULE_TEMPLATES.utilsValidatePendingUpload,
+                destination: paths.utilsValidatePendingUpload,
+                importMapProviders: {
+                  dataUtilsImports,
+                  errorHandlerServiceImports,
+                  prismaGeneratedImports,
+                  prismaImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,

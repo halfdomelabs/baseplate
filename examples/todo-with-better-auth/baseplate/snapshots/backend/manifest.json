@@ -14,7 +14,20 @@
       { "path": "src/services/sentry.test-collector.test-helper.ts" }
     ],
     "deleted": [],
-    "modified": []
+    "modified": [
+      {
+        "diffFile": "prisma_schema.prisma.diff",
+        "path": "prisma/schema.prisma"
+      },
+      {
+        "diffFile": "src_modules_accounts_users_constants_file-categories.ts.diff",
+        "path": "src/modules/accounts/users/constants/file-categories.ts"
+      },
+      {
+        "diffFile": "src_modules_todos_constants_file-categories.ts.diff",
+        "path": "src/modules/todos/constants/file-categories.ts"
+      }
+    ]
   },
   "version": "1"
 }

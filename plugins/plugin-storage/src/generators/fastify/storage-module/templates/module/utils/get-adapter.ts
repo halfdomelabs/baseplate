@@ -1,7 +1,9 @@
-import type { StorageAdapterKey } from '../config/adapters.config.js';
-import type { StorageAdapter } from '../types/adapter.js';
+// @ts-nocheck
 
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
+import type { StorageAdapterKey } from '$configAdapters';
+import type { StorageAdapter } from '$typesAdapter';
+
+import { STORAGE_ADAPTERS } from '$configAdapters';
 
 /**
  * Retrieves a storage adapter by name, throwing an error if not found.

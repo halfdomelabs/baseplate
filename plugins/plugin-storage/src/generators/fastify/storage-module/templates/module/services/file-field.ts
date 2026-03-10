@@ -4,9 +4,8 @@ import type { FileCategory } from '$typesFileCategory';
 import type { FieldDefinition } from '%dataUtilsImports';
 import type { Prisma } from '%prismaGeneratedImports';
 
-import { STORAGE_ADAPTERS } from '$configAdapters';
+import { validatePendingUpload } from '$utilsValidatePendingUpload';
 import { BadRequestError } from '%errorHandlerServiceImports';
-import { prisma } from '%prismaImports';
 import { z } from 'zod';
 
 const fileInputSchema = z.object({
@@ -32,7 +31,9 @@ interface FileFieldConfig<
   /**
    * The field name of the file ID in the existing model
    */
-  fileIdFieldName: keyof Prisma.$FilePayload['objects'][TFileCategory['referencedByRelation']][number]['scalars'] &
+  fileIdFieldName: keyof Prisma.$FilePayload['objects'][NonNullable<
+    TFileCategory['referencedByRelations']
+  >[number]][number]['scalars'] &
     string;
 
   /**
@@ -48,11 +49,11 @@ interface FileFieldConfig<
  * It validates that:
  * - The file exists
  * - The user is authorized to use the file (must be uploader or system role)
- * - The file hasn't been referenced by another entity
+ * - The file is still pending upload (not already confirmed and connected)
  * - The file category matches what's expected
  * - The file was successfully uploaded
  *
- * After validation, it marks the file as referenced and returns a Prisma connect object.
+ * After validation, it confirms the upload and returns a Prisma connect object.
  *
  * For create operations:
  * - Returns connect object if file ID is provided and valid
@@ -144,65 +145,22 @@ export function fileField<
         };
       }
 
-      // Validate the file input
-      const { id } = value;
-      const isSystemUser = serviceContext.auth.roles.includes('system');
-      const uploaderId = isSystemUser ? undefined : serviceContext.auth.userId;
-      const file = await prisma.file.findUnique({
-        where: { id, uploaderId },
+      // Validate the file input and get a transaction callback to confirm the upload
+      const { confirmUpload } = await validatePendingUpload({
+        fileId: value.id,
+        category: config.category,
+        context: serviceContext,
       });
-
-      // Check if file exists
-      if (!file) {
-        throw new BadRequestError(
-          `File with ID "${id}" not found. Please make sure the file exists and you were the original uploader.`,
-        );
-      }
-
-      // Check if file is already referenced
-      if (file.referencedAt) {
-        throw new BadRequestError(
-          `File "${id}" is already in use and cannot be referenced again. Please upload a new file.`,
-        );
-      }
-
-      // Check category match
-      if (file.category !== config.category.name) {
-        throw new BadRequestError(
-          `File category mismatch: File "${id}" belongs to category "${file.category}" but expected "${config.category.name}". Please upload a file of the correct type.`,
-        );
-      }
-
-      // Validate file was uploaded
-      if (!(file.adapter in STORAGE_ADAPTERS)) {
-        throw new BadRequestError(
-          `Unknown file adapter "${file.adapter}" configured for file "${id}".`,
-        );
-      }
-
-      const adapter =
-        STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
-
-      const fileMetadata = await adapter.getFileMetadata(file.storagePath);
-      if (!fileMetadata) {
-        throw new BadRequestError(`File "${id}" was not uploaded correctly.`);
-      }
 
       return {
         data: {
-          create: { connect: { id } },
-          update: { connect: { id } },
+          create: { connect: { id: value.id } },
+          update: { connect: { id: value.id } },
         },
         hooks: {
           afterExecute: [
             async ({ tx }) => {
-              await tx.file.update({
-                where: { id, referencedAt: null },
-                data: {
-                  referencedAt: new Date(),
-                  size: fileMetadata.size,
-                },
-              });
+              await confirmUpload(tx);
             },
           ],
         },

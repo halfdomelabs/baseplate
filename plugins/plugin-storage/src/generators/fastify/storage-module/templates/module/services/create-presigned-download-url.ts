@@ -2,8 +2,8 @@
 
 import type { ServiceContext } from '%serviceContextImports';
 
-import { STORAGE_ADAPTERS } from '$configAdapters';
 import { getCategoryByNameOrThrow } from '$configCategories';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { ForbiddenError } from '%errorHandlerServiceImports';
 
 interface CreatePresignedDownloadUrlInput {
@@ -14,6 +14,13 @@ interface CreatePresignedDownloadUrlPayload {
   url: string;
 }
 
+/**
+ * Creates a presigned download URL for a file.
+ *
+ * @param input - The input containing the file ID
+ * @param context - The service context with auth information
+ * @returns The presigned download URL payload
+ */
 export async function createPresignedDownloadUrl(
   { fileId }: CreatePresignedDownloadUrlInput,
   context: ServiceContext,
@@ -25,6 +32,7 @@ export async function createPresignedDownloadUrl(
   const category = getCategoryByNameOrThrow(file.category);
 
   const isAuthorizedToRead =
+    context.auth.roles.includes('system') ||
     !category.authorize?.presignedRead ||
     (await category.authorize.presignedRead(file, context));
 
@@ -32,11 +40,7 @@ export async function createPresignedDownloadUrl(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  if (!(file.adapter in STORAGE_ADAPTERS)) {
-    throw new Error(`Unknown storage adapter: ${file.adapter}`);
-  }
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
+  const adapter = getAdapterOrThrow(file.adapter);
 
   if (!adapter.createPresignedDownloadUrl) {
     throw new Error(

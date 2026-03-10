@@ -32,7 +32,9 @@ interface FileFieldConfig<
   /**
    * The field name of the file ID in the existing model
    */
-  fileIdFieldName: keyof Prisma.$FilePayload['objects'][NonNullable<TFileCategory['referencedByRelations']>[number]][number]['scalars'] &
+  fileIdFieldName: keyof Prisma.$FilePayload['objects'][NonNullable<
+    TFileCategory['referencedByRelations']
+  >[number]][number]['scalars'] &
     string;
 
   /**

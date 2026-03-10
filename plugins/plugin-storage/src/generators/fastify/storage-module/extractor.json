@@ -158,7 +158,10 @@
       "projectExports": {
         "cleanUnusedFiles": { "isTypeOnly": false, "name": "cleanUnusedFiles" }
       },
-      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
+      "referencedGeneratorTemplates": [
+        "config-categories",
+        "utils-get-adapter"
+      ],
       "sourceFile": "module/services/clean-unused-files.ts",
       "variables": {}
     },
@@ -178,7 +181,10 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
       "projectExports": { "createPresignedDownloadUrl": {} },
-      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
+      "referencedGeneratorTemplates": [
+        "config-categories",
+        "utils-get-adapter"
+      ],
       "sourceFile": "module/services/create-presigned-download-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -222,7 +228,10 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
-      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
+      "referencedGeneratorTemplates": [
+        "config-categories",
+        "utils-get-adapter"
+      ],
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -242,10 +251,6 @@
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
-        },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/file-field.ts",
@@ -254,8 +259,8 @@
         "FileInput": { "isTypeOnly": true, "name": "FileInput" }
       },
       "referencedGeneratorTemplates": [
-        "config-adapters",
-        "types-file-category"
+        "types-file-category",
+        "utils-validate-pending-upload"
       ],
       "sourceFile": "module/services/file-field.ts",
       "variables": {}
@@ -270,7 +275,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/get-public-url.ts",
-      "referencedGeneratorTemplates": ["config-adapters"],
+      "referencedGeneratorTemplates": ["utils-get-adapter"],
       "sourceFile": "module/services/get-public-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -345,6 +350,21 @@
       "sourceFile": "module/utils/create-file-category.ts",
       "variables": {}
     },
+    "utils-get-adapter": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/get-adapter.ts",
+      "projectExports": {
+        "getAdapterOrThrow": {
+          "isTypeOnly": false,
+          "name": "getAdapterOrThrow"
+        }
+      },
+      "referencedGeneratorTemplates": ["config-adapters", "types-adapter"],
+      "sourceFile": "module/utils/get-adapter.ts",
+      "variables": {}
+    },
     "utils-mime": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -388,6 +408,50 @@
       ],
       "sourceFile": "module/utils/validate-file-upload-options.ts",
       "variables": { "TPL_FILE_CREATE_INPUT": {} }
+    },
+    "utils-validate-pending-upload": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "dataUtilsImportsProvider": {
+          "importName": "dataUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/utils/validate-pending-upload.ts",
+      "projectExports": {
+        "ValidatedPendingUpload": {
+          "isTypeOnly": true,
+          "name": "ValidatedPendingUpload"
+        },
+        "validatePendingUpload": {
+          "isTypeOnly": false,
+          "name": "validatePendingUpload"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "types-adapter",
+        "types-file-category",
+        "utils-get-adapter"
+      ],
+      "sourceFile": "module/utils/validate-pending-upload.ts",
+      "variables": {}
     }
   }
 }

@@ -21,8 +21,10 @@ export interface FastifyStorageModulePaths {
   typesAdapter: string;
   typesFileCategory: string;
   utilsCreateFileCategory: string;
+  utilsGetAdapter: string;
   utilsMime: string;
   utilsValidateFileUploadOptions: string;
+  utilsValidatePendingUpload: string;
 }
 
 const fastifyStorageModulePaths = createProviderType<FastifyStorageModulePaths>(
@@ -57,8 +59,10 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           typesAdapter: `${moduleRoot}/types/adapter.ts`,
           typesFileCategory: `${moduleRoot}/types/file-category.ts`,
           utilsCreateFileCategory: `${moduleRoot}/utils/create-file-category.ts`,
+          utilsGetAdapter: `${moduleRoot}/utils/get-adapter.ts`,
           utilsMime: `${moduleRoot}/utils/mime.ts`,
           utilsValidateFileUploadOptions: `${moduleRoot}/utils/validate-file-upload-options.ts`,
+          utilsValidatePendingUpload: `${moduleRoot}/utils/validate-pending-upload.ts`,
         },
       },
     };

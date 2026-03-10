@@ -298,6 +298,12 @@ export const storageModuleGenerator = createGenerator({
               }),
             );
 
+            // Render standalone utility templates
+            await builder.apply(renderers.utilsGetAdapter.render({}));
+            await builder.apply(
+              renderers.utilsValidatePendingUpload.render({}),
+            );
+
             // Render clean-unused-files service
             await builder.apply(renderers.servicesCleanUnusedFiles.render({}));
 
