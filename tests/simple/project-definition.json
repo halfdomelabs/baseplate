@@ -39,8 +39,10 @@
           "localRelations": []
         },
         "queries": {
-          "get": { "enabled": true, "roles": [] },
-          "list": { "enabled": true, "roles": [] }
+          "get": { "enabled": true },
+          "globalRoles": [],
+          "instanceRoles": [],
+          "list": { "count": {}, "enabled": true }
         }
       },
       "id": "model:f114nGvsZGt9",
@@ -84,7 +86,7 @@
     }
   ],
   "plugins": [],
-  "schemaVersion": 24,
+  "schemaVersion": 26,
   "settings": {
     "general": { "name": "simple", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }
