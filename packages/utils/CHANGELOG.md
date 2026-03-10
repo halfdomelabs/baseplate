@@ -1,5 +1,15 @@
 # @baseplate-dev/utils
 
+## 0.6.0
+
+### Patch Changes
+
+- [#798](https://github.com/halfdomelabs/baseplate/pull/798) [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a) Thanks [@kingston](https://github.com/kingston)! - Add `immutableSet` utility for immutable deep updates to objects and arrays.
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Update prettier to ignore unchanged files in output
+
+- [#791](https://github.com/halfdomelabs/baseplate/pull/791) [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c) Thanks [@kingston](https://github.com/kingston)! - Fix getDynamicSource for field containers to use defaults
+
 ## 0.5.3
 
 ## 0.5.2

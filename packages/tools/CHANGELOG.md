@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.0
+
+### Patch Changes
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Update prettier to ignore unchanged files in output
+
 ## 0.5.3
 
 ### Patch Changes
