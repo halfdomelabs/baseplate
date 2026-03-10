@@ -67,12 +67,12 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                 );
               } else {
                 for (const entity of entities) {
-                  const entityPath = entity.path.join('.');
-                  const absolutePath = warning.path.join('.');
+                  const ep = entity.path;
+                  const wp = warning.path;
                   if (
-                    absolutePath.startsWith(entityPath) &&
-                    (!closestEntity ||
-                      closestEntity.path.length < entity.path.length)
+                    ep.length <= wp.length &&
+                    ep.every((seg, i) => String(seg) === String(wp[i])) &&
+                    (!closestEntity || closestEntity.path.length < ep.length)
                   ) {
                     closestEntity = entity;
                   }

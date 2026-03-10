@@ -41,6 +41,10 @@ export interface SchemaNodeVisitor {
 /**
  * Mutable entity context tracked during the walk.
  * Updated when entity boundaries are crossed, restored via cleanup closures.
+ *
+ * Uses mutation + save/restore instead of immutable context threading for
+ * performance — avoids allocating a new context object at every node.
+ * Assumes single-threaded, synchronous execution.
  */
 interface EntityContext {
   entityId: string | undefined;

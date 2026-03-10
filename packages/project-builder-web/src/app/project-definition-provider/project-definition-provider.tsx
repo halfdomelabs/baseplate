@@ -85,6 +85,12 @@ export function ProjectDefinitionProvider({
 
   const updatedExternally = !!projectDefinitionFilePayload?.updatedExternally;
 
+  const definitionWarnings = useMemo(() => {
+    if (!projectDefinitionContainer) return [];
+    const allIssues = collectDefinitionIssues(projectDefinitionContainer);
+    return partitionIssuesBySeverity(allIssues).warnings;
+  }, [projectDefinitionContainer]);
+
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
     if (!projectDefinitionContainer || !schemaParserContext) return;
 
@@ -214,11 +220,6 @@ export function ProjectDefinitionProvider({
           return { success: false };
         });
     }
-    // Compute definition warnings reactively
-    const allIssues = collectDefinitionIssues(projectDefinitionContainer);
-    const { warnings: definitionWarnings } =
-      partitionIssuesBySeverity(allIssues);
-
     return {
       definition,
       definitionContainer: projectDefinitionContainer,
@@ -238,6 +239,7 @@ export function ProjectDefinitionProvider({
     };
   }, [
     cliVersion,
+    definitionWarnings,
     projectDefinitionContainer,
     isSavingDefinition,
     schemaParserContext,

@@ -16,10 +16,10 @@ import { walkDataWithSchema } from './walk-data-with-schema.js';
  * Built-in definition-level checkers registered at runtime to avoid
  * circular dependencies between schema/creator/ and parser/.
  */
-const BUILT_IN_CHECKERS = new Map<string, DefinitionIssueChecker>([
-  ['core/relation-type-mismatch', checkRelationTypeMismatch],
-  ['core/mutation-roles', checkMutationRoles],
-]);
+const BUILT_IN_CHECKERS: DefinitionIssueChecker[] = [
+  checkRelationTypeMismatch,
+  checkMutationRoles,
+];
 
 /**
  * Issues partitioned by severity level.
@@ -106,7 +106,7 @@ export function collectDefinitionIssues(
   const issues = collectFieldIssues(schema, definition);
 
   // Collect definition-level issues from built-in checkers
-  for (const checker of BUILT_IN_CHECKERS.values()) {
+  for (const checker of BUILT_IN_CHECKERS) {
     const result = checker(container);
     issues.push(...result);
   }
