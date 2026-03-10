@@ -35,6 +35,7 @@ export function createStoragePartialDefinition(
             {
               name: 'size',
               type: 'int',
+              isOptional: true,
             },
             // Storage info
             {
@@ -49,16 +50,11 @@ export function createStoragePartialDefinition(
               name: 'storagePath',
               type: 'string',
             },
-            // Status tracking via timestamps
+            // Upload lifecycle
             {
-              name: 'referencedAt',
-              type: 'dateTime',
-              isOptional: true,
-            },
-            {
-              name: 'expiredAt',
-              type: 'dateTime',
-              isOptional: true,
+              name: 'pendingUpload',
+              type: 'boolean',
+              options: { default: 'false' },
             },
             // Relations
             {

@@ -34,6 +34,7 @@ import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.j
 import { createStoragePartialDefinition } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
+import FileCategoryEditorForm from './file-category-editor-form.js';
 
 function resolveFeatureName(
   definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
@@ -171,6 +172,8 @@ export function StorageDefinitionEditor({
           </SectionListSection>
 
           <AdapterEditorForm control={control} />
+
+          <FileCategoryEditorForm control={control} />
         </SectionList>
       </div>
 

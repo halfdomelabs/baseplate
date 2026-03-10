@@ -1,15 +1,21 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
+  authRoleEntityType,
   createEntityType,
   definitionSchema,
   featureEntityType,
   VALIDATORS,
 } from '@baseplate-dev/project-builder-lib';
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import z from 'zod';
 
 export const storageAdapterEntityType = createEntityType(
   'plugin-storage/storage-adapter',
+);
+
+export const fileCategoryEntityType = createEntityType(
+  'plugin-storage/file-category',
 );
 
 export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
@@ -29,6 +35,31 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
         { type: storageAdapterEntityType },
       ),
     ),
+    fileCategories: z
+      .array(
+        ctx.withEnt(
+          z.object({
+            id: z.string(),
+            name: CASE_VALIDATORS.CONSTANT_CASE,
+            maxFileSizeMb: z.int().positive(),
+            authorize: z.object({
+              uploadRoles: z.array(
+                ctx.withRef({
+                  type: authRoleEntityType,
+                  onDelete: 'RESTRICT',
+                }),
+              ),
+            }),
+            adapterRef: ctx.withRef({
+              type: storageAdapterEntityType,
+              onDelete: 'RESTRICT',
+            }),
+            disableAutoCleanup: z.boolean().optional(),
+          }),
+          { type: fileCategoryEntityType },
+        ),
+      )
+      .default([]),
   }),
 );
 
