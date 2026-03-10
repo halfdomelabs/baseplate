@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 
 import { createPluginModule } from '#src/plugins/imports/types.js';
 import { createTestPluginSpecStore } from '#src/plugins/plugins.test-utils.js';
@@ -28,9 +29,10 @@ const feature = createTestFeature({ name: 'core' });
 const authDisabledStore = createTestPluginSpecStore();
 const authEnabledStore = createTestPluginSpecStore([authEnabledModule]);
 
-function createDefinitionWithModels(
+function createContainerWithModels(
+  pluginStore: PluginSpecStore,
   ...modelOverrides: Parameters<typeof createTestModel>[0][]
-): ProjectDefinition {
+): ProjectDefinitionContainer {
   const models = modelOverrides.map((overrides) =>
     createTestModel({
       featureRef: feature.name,
@@ -41,74 +43,69 @@ function createDefinitionWithModels(
       ...overrides,
     }),
   );
-  return createTestProjectDefinitionContainer({
+  const container = createTestProjectDefinitionContainer({
     features: [feature],
     models,
-  }).definition;
+  });
+  container.pluginStore = pluginStore;
+  return container;
 }
 
 describe('checkMutationRoles', () => {
   it('returns no issues when auth is disabled', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authDisabledStore, {
       service: {
         create: { enabled: true, globalRoles: [] },
       },
       graphql: { mutations: { create: { enabled: true } } },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authDisabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toEqual([]);
   });
 
   it('returns no issues when mutation has roles assigned', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authEnabledStore, {
       service: {
         create: { enabled: true, globalRoles: ['admin'] },
       },
       graphql: { mutations: { create: { enabled: true } } },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toEqual([]);
   });
 
   it('returns warning when mutation exposed to GraphQL has no roles', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authEnabledStore, {
       name: 'Post',
       service: { create: { enabled: true, globalRoles: [] } },
       graphql: { mutations: { create: { enabled: true } } },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toHaveLength(1);
     expect(issues[0]).toEqual({
       message:
         "Model 'Post' create mutation is exposed to GraphQL but has no roles assigned",
-      path: ['models', 0, 'service', 'create', 'globalRoles'],
+      entityId: container.definition.models[0].id,
+      path: ['service', 'create', 'globalRoles'],
       severity: 'warning',
     });
   });
 
   it('returns no issues when mutation is enabled but not exposed to GraphQL', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authEnabledStore, {
       service: { create: { enabled: true, globalRoles: [] } },
       graphql: { mutations: { create: { enabled: false } } },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toEqual([]);
   });
 
   it('returns no issues when update has instance roles', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authEnabledStore, {
       service: {
         update: {
           enabled: true,
@@ -119,14 +116,12 @@ describe('checkMutationRoles', () => {
       graphql: { mutations: { update: { enabled: true } } },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toEqual([]);
   });
 
   it('warns for multiple mutations missing roles', () => {
-    const definition = createDefinitionWithModels({
+    const container = createContainerWithModels(authEnabledStore, {
       name: 'Post',
       service: {
         create: { enabled: true, globalRoles: [] },
@@ -150,18 +145,15 @@ describe('checkMutationRoles', () => {
       },
     });
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toHaveLength(3);
   });
 
   it('handles empty models array', () => {
-    const { definition } = createTestProjectDefinitionContainer();
+    const container = createTestProjectDefinitionContainer();
+    container.pluginStore = authEnabledStore;
 
-    const issues = checkMutationRoles(definition, {
-      pluginStore: authEnabledStore,
-    });
+    const issues = checkMutationRoles(container);
     expect(issues).toEqual([]);
   });
 });

@@ -1,50 +1,35 @@
-import type { PluginSpecStore } from '#src/plugins/index.js';
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 
-import { checkMutationRoles } from '#src/parser/definition-issue-checkers/mutation-roles-checker.js';
-import { checkRelationTypeMismatch } from '#src/parser/definition-issue-checkers/relation-type-mismatch-checker.js';
 import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js';
 
 import type { DefinitionIssue } from './definition-issue-types.js';
-
-/**
- * Context provided to definition-level issue checkers.
- */
-export interface DefinitionIssueCheckerContext {
-  /** The plugin spec store for accessing plugin configurations */
-  readonly pluginStore: PluginSpecStore;
-}
 
 /**
  * A definition-level issue checker that operates on the full project definition.
  * Can propose definition-wide auto-fixes.
  *
  * Unlike field-level checkers (registered via `withIssueChecker` on schema nodes),
- * definition-level checkers receive the entire project definition and can perform
+ * definition-level checkers receive the definition container and can perform
  * cross-cutting validations like port conflicts, FK type mismatches, or missing
  * models required by plugins.
  */
 export type DefinitionIssueChecker = (
-  definition: ProjectDefinition,
-  context: DefinitionIssueCheckerContext,
+  container: ProjectDefinitionContainer,
 ) => DefinitionIssue[];
-
-const BUILT_IN_CHECKERS = new Map<string, DefinitionIssueChecker>([
-  ['core/relation-type-mismatch', checkRelationTypeMismatch],
-  ['core/mutation-roles', checkMutationRoles],
-]);
 
 /**
  * Plugin spec for registering definition-level issue checkers.
  *
- * Built-in checkers (relation type mismatch, mutation roles) are included
- * by default. Plugins can register additional checkers during initialization:
+ * Built-in checkers (relation type mismatch, mutation roles) are registered
+ * by `collectDefinitionIssues` at runtime to avoid circular imports between
+ * schema/creator/ and parser/. Plugins can register additional checkers during
+ * initialization:
  * ```typescript
  * createPluginModule({
  *   dependencies: { issueCheckers: definitionIssueCheckerSpec },
  *   initialize: ({ issueCheckers }, { pluginKey }) => {
- *     issueCheckers.checkers.set(pluginKey, (definition, context) => {
- *       // validate definition and return issues
+ *     issueCheckers.checkers.set(pluginKey, (container) => {
+ *       // validate container.definition and return issues
  *       return [];
  *     });
  *   },
@@ -54,7 +39,7 @@ const BUILT_IN_CHECKERS = new Map<string, DefinitionIssueChecker>([
 export const definitionIssueCheckerSpec = createFieldMapSpec(
   'core/definition-issue-checkers',
   (t) => ({
-    checkers: t.map<string, DefinitionIssueChecker>(BUILT_IN_CHECKERS),
+    checkers: t.map<string, DefinitionIssueChecker>(),
   }),
   {
     use: (values) => ({

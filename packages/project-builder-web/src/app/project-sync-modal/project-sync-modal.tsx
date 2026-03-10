@@ -76,10 +76,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
 
   const startSyncProject = (): void => {
     if (hasWarnings) {
-      showWarnings({
-        warnings: definitionWarnings,
-        onProceed: doStartSync,
-      });
+      showWarnings({ warnings: definitionWarnings });
       return;
     }
     doStartSync();

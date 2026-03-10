@@ -1,7 +1,7 @@
-import type { DefinitionIssueCheckerContext } from '#src/schema/creator/definition-issue-checker-spec.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
+import { createEntityIssue } from '#src/parser/definition-issue-utils.js';
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
 type MutationMethod = 'create' | 'delete' | 'update';
@@ -16,10 +16,9 @@ const MUTATION_METHODS: MutationMethod[] = ['create', 'update', 'delete'];
  * warns if no global roles (or instance roles for update/delete) are assigned.
  */
 export function checkMutationRoles(
-  definition: ProjectDefinition,
-  context: DefinitionIssueCheckerContext,
+  container: ProjectDefinitionContainer,
 ): DefinitionIssue[] {
-  const { pluginStore } = context;
+  const { definition, pluginStore } = container;
   const authConfig = pluginStore.use(authConfigSpec);
 
   // If auth is not configured, skip validation
@@ -30,7 +29,7 @@ export function checkMutationRoles(
   const { models } = definition;
   const issues: DefinitionIssue[] = [];
 
-  for (const [modelIndex, model] of models.entries()) {
+  for (const model of models) {
     for (const method of MUTATION_METHODS) {
       const serviceMethod = model.service[method];
       const graphqlMutation = model.graphql.mutations[method];
@@ -46,11 +45,17 @@ export function checkMutationRoles(
         serviceMethod.instanceRoles.length > 0;
 
       if (!hasGlobalRoles && !hasInstanceRoles) {
-        issues.push({
-          message: `Model '${model.name}' ${method} mutation is exposed to GraphQL but has no roles assigned`,
-          path: ['models', modelIndex, 'service', method, 'globalRoles'],
-          severity: 'warning',
-        });
+        issues.push(
+          createEntityIssue(
+            container,
+            model.id,
+            ['service', method, 'globalRoles'],
+            {
+              message: `Model '${model.name}' ${method} mutation is exposed to GraphQL but has no roles assigned`,
+              severity: 'warning',
+            },
+          ),
+        );
       }
     }
   }

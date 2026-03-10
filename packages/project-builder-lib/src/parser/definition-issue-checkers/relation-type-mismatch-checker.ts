@@ -1,8 +1,8 @@
-import type { DefinitionIssueCheckerContext } from '#src/schema/creator/definition-issue-checker-spec.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
-type ModelDefinition = ProjectDefinition['models'][number];
+import { ModelUtils } from '#src/definition/index.js';
+import { createEntityIssue } from '#src/parser/definition-issue-utils.js';
 
 /**
  * Checks that relation reference pairs have matching scalar field types.
@@ -11,28 +11,24 @@ type ModelDefinition = ProjectDefinition['models'][number];
  * type of the foreign scalar field. Emits a warning when types differ.
  */
 export function checkRelationTypeMismatch(
-  definition: ProjectDefinition,
-  _context: DefinitionIssueCheckerContext,
+  container: ProjectDefinitionContainer,
 ): DefinitionIssue[] {
-  const { models } = definition;
+  const { models } = container.definition;
   const issues: DefinitionIssue[] = [];
 
-  // After deserialization, refs (modelRef, localRef, foreignRef) are entity IDs
-  const modelById = new Map<string, ModelDefinition>();
   for (const model of models) {
-    modelById.set(model.id, model);
-  }
-
-  for (const [modelIndex, model] of models.entries()) {
-    const relations = model.model.relations ?? [];
+    const { relations } = model.model;
 
     for (const [relationIndex, relation] of relations.entries()) {
-      const foreignModel = modelById.get(relation.modelRef);
+      const foreignModel = ModelUtils.byId(
+        container.definition,
+        relation.modelRef,
+      );
       if (!foreignModel) {
         continue;
       }
 
-      for (const [refIndex, ref] of relation.references.entries()) {
+      for (const ref of relation.references) {
         const localField = model.model.fields.find(
           (f) => f.id === ref.localRef,
         );
@@ -45,19 +41,17 @@ export function checkRelationTypeMismatch(
         }
 
         if (localField.type !== foreignField.type) {
-          issues.push({
-            message: `Relation '${relation.name}' type mismatch: '${localField.name}' is '${localField.type}' but '${foreignField.name}' on '${foreignModel.name}' is '${foreignField.type}'`,
-            path: [
-              'models',
-              modelIndex,
-              'model',
-              'relations',
-              relationIndex,
-              'references',
-              refIndex,
-            ],
-            severity: 'warning',
-          });
+          issues.push(
+            createEntityIssue(
+              container,
+              model.id,
+              ['model', 'relations', relationIndex],
+              {
+                message: `Relation '${relation.name}' type mismatch: '${localField.name}' is '${localField.type}' but '${foreignField.name}' on '${foreignModel.name}' is '${foreignField.type}'`,
+                severity: 'warning',
+              },
+            ),
+          );
         }
       }
     }

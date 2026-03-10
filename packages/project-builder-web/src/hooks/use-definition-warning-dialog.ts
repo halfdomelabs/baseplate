@@ -5,7 +5,6 @@ import { create } from 'zustand';
 
 interface DefinitionWarningDialogOptions {
   warnings: DefinitionIssue[];
-  onProceed?: () => void;
 }
 
 interface DefinitionWarningDialogState {
@@ -25,7 +24,6 @@ export const useDefinitionWarningDialogState =
 
 interface UseDefinitionWarningDialogResult {
   showWarnings: (options: DefinitionWarningDialogOptions) => void;
-  clearWarnings: () => void;
 }
 
 export function useDefinitionWarningDialog(): UseDefinitionWarningDialogResult {
@@ -37,9 +35,6 @@ export function useDefinitionWarningDialog(): UseDefinitionWarningDialogResult {
     () => ({
       showWarnings: (options) => {
         setDialogOptions(options);
-      },
-      clearWarnings: () => {
-        setDialogOptions(undefined);
       },
     }),
     [setDialogOptions],

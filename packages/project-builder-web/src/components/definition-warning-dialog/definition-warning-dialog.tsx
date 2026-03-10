@@ -46,8 +46,8 @@ export function DefinitionWarningDialog(): React.JSX.Element {
           <DialogTitle>Definition warnings</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          The following warnings were found in your project definition. You can
-          fix them now or proceed with syncing.
+          The following warnings were found in your project definition. Please
+          fix them before syncing.
         </DialogDescription>
         <Table>
           <TableHeader>
@@ -59,26 +59,27 @@ export function DefinitionWarningDialog(): React.JSX.Element {
           </TableHeader>
           <TableBody>
             {warnings?.map((warning, index) => {
-              const issuePath = warning.path.join('.');
-
-              // Find the closest entity for this path
+              // Use entityId directly when available, fall back to prefix matching
               let closestEntity: DefinitionEntity | undefined;
-              for (const entity of entities) {
-                const entityPath = entity.path.join('.');
-                if (
-                  issuePath.startsWith(entityPath) &&
-                  (!closestEntity ||
-                    closestEntity.path.length < entity.path.length)
-                ) {
-                  closestEntity = entity;
+              if (warning.entityId) {
+                closestEntity = definitionContainer.entityFromId(
+                  warning.entityId,
+                );
+              } else {
+                for (const entity of entities) {
+                  const entityPath = entity.path.join('.');
+                  const absolutePath = warning.path.join('.');
+                  if (
+                    absolutePath.startsWith(entityPath) &&
+                    (!closestEntity ||
+                      closestEntity.path.length < entity.path.length)
+                  ) {
+                    closestEntity = entity;
+                  }
                 }
               }
 
-              const pathInEntity = closestEntity
-                ? issuePath.slice(
-                    Math.max(0, closestEntity.path.join('.').length + 1),
-                  )
-                : issuePath;
+              const pathInEntity = warning.path.join('.');
 
               const navOptions = closestEntity
                 ? getEntityNavOptions(
@@ -89,7 +90,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                 : undefined;
 
               return (
-                <TableRow key={`${issuePath}-${index}`}>
+                <TableRow key={`${pathInEntity}-${index}`}>
                   <TableCell>
                     {closestEntity ? (
                       <div className="text-style-prose">
@@ -124,23 +125,12 @@ export function DefinitionWarningDialog(): React.JSX.Element {
         </Table>
         <DialogFooter>
           <Button
-            variant={options?.onProceed ? 'outline' : 'default'}
             onClick={() => {
               setDialogOptions(undefined);
             }}
           >
-            {options?.onProceed ? 'Fix Issues' : 'Close'}
+            Close
           </Button>
-          {options?.onProceed && (
-            <Button
-              onClick={() => {
-                options.onProceed?.();
-                setDialogOptions(undefined);
-              }}
-            >
-              Sync Anyway
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

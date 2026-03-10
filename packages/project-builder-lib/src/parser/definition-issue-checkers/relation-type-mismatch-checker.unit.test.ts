@@ -46,9 +46,7 @@ describe('checkRelationTypeMismatch', () => {
       ],
     });
 
-    const issues = checkRelationTypeMismatch(container.definition, {
-      pluginStore: container.pluginStore,
-    });
+    const issues = checkRelationTypeMismatch(container);
     expect(issues).toEqual([]);
   });
 
@@ -85,14 +83,13 @@ describe('checkRelationTypeMismatch', () => {
       ],
     });
 
-    const issues = checkRelationTypeMismatch(container.definition, {
-      pluginStore: container.pluginStore,
-    });
+    const issues = checkRelationTypeMismatch(container);
     expect(issues).toHaveLength(1);
     expect(issues[0]).toEqual({
       message:
         "Relation 'user' type mismatch: 'userId' is 'int' but 'id' on 'User' is 'uuid'",
-      path: ['models', 1, 'model', 'relations', 0, 'references', 0],
+      entityId: container.definition.models[1].id,
+      path: ['model', 'relations', 0],
       severity: 'warning',
     });
   });
@@ -112,18 +109,14 @@ describe('checkRelationTypeMismatch', () => {
       ],
     });
 
-    const issues = checkRelationTypeMismatch(container.definition, {
-      pluginStore: container.pluginStore,
-    });
+    const issues = checkRelationTypeMismatch(container);
     expect(issues).toEqual([]);
   });
 
   it('handles empty models array', () => {
     const container = createTestProjectDefinitionContainer();
 
-    const issues = checkRelationTypeMismatch(container.definition, {
-      pluginStore: container.pluginStore,
-    });
+    const issues = checkRelationTypeMismatch(container);
     expect(issues).toEqual([]);
   });
 });

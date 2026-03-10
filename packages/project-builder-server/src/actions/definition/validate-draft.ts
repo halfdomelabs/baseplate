@@ -12,9 +12,15 @@ import { z } from 'zod';
 
 export const definitionIssueSchema = z.object({
   message: z.string().describe('Human-readable description of the issue.'),
+  entityId: z
+    .string()
+    .optional()
+    .describe('Entity ID this issue is scoped to, if any.'),
   path: z
     .array(z.union([z.string(), z.number()]))
-    .describe('Path in the definition where the issue originated.'),
+    .describe(
+      'Path relative to the entity (or absolute from root if no entityId).',
+    ),
   severity: z
     .enum(['error', 'warning'])
     .describe(
