@@ -6,6 +6,16 @@ import pLimit from 'p-limit';
 const MANIFEST_FILENAME = 'generation-manifest.json';
 const FILE_HASH_CONCURRENCY = 20;
 
+/** Directory and file names to skip when collecting files for the manifest. */
+const IGNORED_ENTRIES = new Set([
+  'node_modules',
+  'dist',
+  '.turbo',
+  'baseplate',
+  'build',
+  MANIFEST_FILENAME,
+]);
+
 interface GenerationManifest {
   generatedAt: string;
   files: Record<string, string>;
@@ -28,7 +38,7 @@ async function hashFile(filePath: string): Promise<string> {
 
 /**
  * Recursively collects all files in a directory, returning paths relative to the root.
- * Skips the manifest file itself and node_modules.
+ * Skips entries listed in IGNORED_ENTRIES (e.g. node_modules, dist, .turbo).
  */
 async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
   const files: string[] = [];
@@ -38,11 +48,7 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
     const fullPath = path.join(dir, entry.name);
     const relativePath = path.relative(rootDir, fullPath);
 
-    if (
-      entry.name === 'node_modules' ||
-      entry.name === MANIFEST_FILENAME ||
-      entry.name === 'baseplate'
-    ) {
+    if (IGNORED_ENTRIES.has(entry.name)) {
       continue;
     }
 

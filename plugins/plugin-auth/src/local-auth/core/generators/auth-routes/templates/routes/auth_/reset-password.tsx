@@ -21,7 +21,7 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -61,7 +61,7 @@ const validateTokenMutation = graphql(`
     $input: ValidatePasswordResetTokenInput!
   ) {
     validatePasswordResetToken(input: $input) {
-      valid
+      success
     }
   }
 `);
@@ -78,6 +78,7 @@ function ResetPasswordPage(): React.JSX.Element {
   const { token } = Route.useSearch();
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [resetComplete, setResetComplete] = useState(false);
 
   const [validateToken] = useMutation(validateTokenMutation);
@@ -88,20 +89,41 @@ function ResetPasswordPage(): React.JSX.Element {
     reValidateMode: 'onBlur',
   });
 
+  const runTokenValidation = useCallback(() => {
+    if (!token) return;
+
+    setTokenValid(null);
+    setValidationError(null);
+
+    validateToken({
+      variables: { input: { token } },
+    })
+      .then(() => {
+        setTokenValid(true);
+      })
+      .catch((err: unknown) => {
+        const errorCode = getApolloErrorCode(err, ['invalid-token'] as const);
+        switch (errorCode) {
+          case 'invalid-token': {
+            setTokenValid(false);
+            break;
+          }
+          default: {
+            setValidationError(
+              logAndFormatError(
+                err,
+                'Sorry, we could not validate your reset link.',
+              ),
+            );
+          }
+        }
+      });
+  }, [token, validateToken]);
+
   // Validate token on mount
   useEffect(() => {
-    if (token) {
-      validateToken({
-        variables: { input: { token } },
-      })
-        .then(({ data }) => {
-          setTokenValid(data?.validatePasswordResetToken.valid ?? false);
-        })
-        .catch(() => {
-          setTokenValid(false);
-        });
-    }
-  }, [token, validateToken]);
+    runTokenValidation();
+  }, [runTokenValidation]);
 
   const onSubmit = (data: FormData): void => {
     if (!token) return;
@@ -142,7 +164,7 @@ function ResetPasswordPage(): React.JSX.Element {
   };
 
   // Loading state
-  if (tokenValid === null) {
+  if (tokenValid === null && !validationError) {
     return (
       <Card>
         <CardHeader>
@@ -151,6 +173,27 @@ function ResetPasswordPage(): React.JSX.Element {
             Please wait while we verify your reset link.
           </CardDescription>
         </CardHeader>
+      </Card>
+    );
+  }
+
+  // Validation error state (transient failures, not invalid token)
+  if (validationError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Something Went Wrong</CardTitle>
+          <CardDescription>{validationError}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={runTokenValidation}
+          >
+            Try Again
+          </Button>
+        </CardContent>
       </Card>
     );
   }
