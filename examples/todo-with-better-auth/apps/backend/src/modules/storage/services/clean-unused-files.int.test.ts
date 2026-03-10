@@ -49,9 +49,9 @@ vi.mock('../config/categories.config.js', () => ({
       (c) => c.name === name,
     ),
   getCategoryByNameOrThrow: (name: string) => {
-    const category = (
-      fileCategoriesOverride ?? defaultFileCategories
-    ).find((c) => c.name === name);
+    const category = (fileCategoriesOverride ?? defaultFileCategories).find(
+      (c) => c.name === name,
+    );
     if (!category) {
       throw new Error(`File category ${name} not found.`);
     }
@@ -205,7 +205,10 @@ describe('cleanUnusedFiles integration tests', () => {
   describe('confirmed files with no relations (orphaned)', () => {
     it('should delete file after owning entity is deleted', async () => {
       const userId = await createTestUser();
-      const fileId = await createFileWithAge({ daysOld: 0, pendingUpload: false });
+      const fileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
 
       // Create TodoList with cover photo
       const todoList = await prisma.todoList.create({
@@ -232,7 +235,10 @@ describe('cleanUnusedFiles integration tests', () => {
   describe('confirmed files with active relations', () => {
     it('should NOT delete file when entity with reference exists', async () => {
       const userId = await createTestUser();
-      const fileId = await createFileWithAge({ daysOld: 0, pendingUpload: false });
+      const fileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
 
       await prisma.todoList.create({
         data: {
@@ -255,7 +261,9 @@ describe('cleanUnusedFiles integration tests', () => {
       // Create 150 pending old files
       const filePromises = [];
       for (let i = 0; i < 150; i++) {
-        filePromises.push(createFileWithAge({ daysOld: 2, pendingUpload: true }));
+        filePromises.push(
+          createFileWithAge({ daysOld: 2, pendingUpload: true }),
+        );
       }
       await Promise.all(filePromises);
 
@@ -280,7 +288,10 @@ describe('cleanUnusedFiles integration tests', () => {
       // 2. Pending new file (should NOT be deleted)
       await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
       // 3. Confirmed file with active relation (should NOT be deleted)
-      const activeFileId = await createFileWithAge({ daysOld: 0, pendingUpload: false });
+      const activeFileId = await createFileWithAge({
+        daysOld: 0,
+        pendingUpload: false,
+      });
       await prisma.todoList.create({
         data: {
           name: 'Active List',
@@ -369,9 +380,21 @@ describe('cleanUnusedFiles integration tests', () => {
     });
 
     it('should handle files from different adapters', async () => {
-      await createFileWithAge({ daysOld: 2, pendingUpload: true, adapter: 'uploads' });
-      await createFileWithAge({ daysOld: 2, pendingUpload: true, adapter: 'url' });
-      await createFileWithAge({ daysOld: 0.5, pendingUpload: true, adapter: 'uploads' });
+      await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+        adapter: 'uploads',
+      });
+      await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+        adapter: 'url',
+      });
+      await createFileWithAge({
+        daysOld: 0.5,
+        pendingUpload: true,
+        adapter: 'uploads',
+      });
 
       const deletedCount = await cleanUnusedFiles();
 
