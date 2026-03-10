@@ -1,5 +1,60 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.0
+
+### Patch Changes
+
+- [#783](https://github.com/halfdomelabs/baseplate/pull/783) [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40) Thanks [@kingston](https://github.com/kingston)! - Add offset pagination (skip/take) to list queries and optional count query generation
+
+- [#782](https://github.com/halfdomelabs/baseplate/pull/782) [`a136dc9`](https://github.com/halfdomelabs/baseplate/commit/a136dc90ba12783e059fd3c8a067d1b5496ed3ce) Thanks [@kingston](https://github.com/kingston)! - Extract developer tooling into new `@baseplate-dev/project-builder-dev` package with `baseplate-dev` binary.
+  - `project-builder-dev` includes: `templates`, `snapshot`, `dev-server`, `sync-examples` commands, plus full MCP server (all actions)
+  - `project-builder-cli` retains end-user commands only: `sync`, `diff`, `serve`, `config`, `projects`, and a user-scoped MCP server (sync/diff actions only)
+  - `project-builder-server` exports new `USER_SERVICE_ACTIONS` for the subset of actions exposed to end-users via MCP
+  - Plugins auto-discovered from CWD's `package.json` — no `project-builder-common` dependency in `project-builder-dev`
+  - `generateProject(dir)` exported from `project-builder-dev` for programmatic project generation in tests
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Update prettier to ignore unchanged files in output
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Add `isAuthenticated` boolean to authorizer expression DSL and AuthContext. Warn when `hasRole('user')` is used, suggesting `isAuthenticated` instead.
+
+- [#798](https://github.com/halfdomelabs/baseplate/pull/798) [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a) Thanks [@kingston](https://github.com/kingston)! - Add MCP actions for reading and writing project definition entities, including draft session support for staging changes before committing.
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Add nested authorizer expressions: `hasRole(model.relation, 'role')` and `hasSomeRole(model.relation, ['role1', 'role2'])` for checking roles on related model authorizers, with autocomplete and linter support.
+
+- [#777](https://github.com/halfdomelabs/baseplate/pull/777) [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be) Thanks [@kingston](https://github.com/kingston)! - Add per-field authorization support for GraphQL object type fields
+
+- [#796](https://github.com/halfdomelabs/baseplate/pull/796) [`8258b27`](https://github.com/halfdomelabs/baseplate/commit/8258b278e9a25a6e4bd5039a134238d071a63ecd) Thanks [@kingston](https://github.com/kingston)! - Add query filter code generation for instance-level authorization on GraphQL queries
+
+- [#793](https://github.com/halfdomelabs/baseplate/pull/793) [`6e2675d`](https://github.com/halfdomelabs/baseplate/commit/6e2675d2166ac9bf470486efdc6a0e48df9bcc6d) Thanks [@kingston](https://github.com/kingston)! - Move mutation authorization from GraphQL-level to service-level, add compact grid-based role picker UI, filter system role from auth pickers, and hide disabled service methods from GraphQL mutations section
+
+- [#789](https://github.com/halfdomelabs/baseplate/pull/789) [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f) Thanks [@kingston](https://github.com/kingston)! - Unify test and example project discovery under a single system:
+  - Add `type: 'user' | 'example' | 'test'` and `baseplateDirectory` to `ProjectInfo`, replacing `isInternalExample`.
+  - Add `baseplate.config.json` for deterministic project discovery — replaces `isExampleProject` heuristic and `EXCLUDE_EXAMPLES`/`PLUGIN_ROOT_DIRECTORIES` env vars.
+  - Unify `discoverProjects` to accept structured options by project type — removes `discoverTestProjects` and duplicate `project-resolver.ts`.
+  - Test projects live in `tests/<name>/` with output to `.output/` (gitignored).
+  - Replace `test-project` subcommands with `baseplate-dev init <name> --type example|test` and `baseplate-dev run-env <test-name>`.
+
+- [#800](https://github.com/halfdomelabs/baseplate/pull/800) [`83c713b`](https://github.com/halfdomelabs/baseplate/commit/83c713b075eca2abc946e74bf3f03e515e601eba) Thanks [@kingston](https://github.com/kingston)! - Upgrade fastify and related packages
+  - fastify: 5.7.4 → 5.8.1 (includes security fix CVE-2026-3419)
+  - @fastify/helmet: 13.0.0 → 13.0.2
+  - @fastify/websocket: 11.0.1 → 11.2.0
+  - @fastify/request-context: 6.0.1 → 6.2.1
+  - @fastify/formbody: 8.0.1 → 8.0.2
+  - @fastify/cookie: 11.0.1 → 11.0.2
+  - altair-fastify-plugin: 8.0.4 → 8.5.1
+
+- [#785](https://github.com/halfdomelabs/baseplate/pull/785) [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704) Thanks [@kingston](https://github.com/kingston)! - Remove redundant `.optional()` wrapper from `withDefault`
+
+  `withDefault` previously wrapped the schema in both `.prefault()` and `.optional()`. Since `.prefault()` already makes fields accept absent/undefined input, the `.optional()` was redundant and caused the output type to incorrectly include `| undefined` for defaulted fields.
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`bd1095e`](https://github.com/halfdomelabs/baseplate/commit/bd1095e52dc3cecdb40bf84a906490a7c92fec40), [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad), [`1225fda`](https://github.com/halfdomelabs/baseplate/commit/1225fdace3e8da20152e0e78c4decf0c063faa56), [`3029d42`](https://github.com/halfdomelabs/baseplate/commit/3029d42f5d5967721f2b0d5892ea07a80c5f3a1f), [`dfa9638`](https://github.com/halfdomelabs/baseplate/commit/dfa963825c4ba847f9d21f4f014c4dd1722403d6), [`d6be7a9`](https://github.com/halfdomelabs/baseplate/commit/d6be7a97b5e6970be674bf9b49eddf1499b51f04), [`3b3be2b`](https://github.com/halfdomelabs/baseplate/commit/3b3be2b8d45b08552dca3d4e2b5ce391a958341b), [`eadad84`](https://github.com/halfdomelabs/baseplate/commit/eadad8494128ded2cbc76dfbe3b97f93769ea41f), [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad), [`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad), [`dc238be`](https://github.com/halfdomelabs/baseplate/commit/dc238be00158a528a60d9e6ef9cec32b2d8297be), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`8258b27`](https://github.com/halfdomelabs/baseplate/commit/8258b278e9a25a6e4bd5039a134238d071a63ecd), [`6e2675d`](https://github.com/halfdomelabs/baseplate/commit/6e2675d2166ac9bf470486efdc6a0e48df9bcc6d), [`634f6c5`](https://github.com/halfdomelabs/baseplate/commit/634f6c5aaffab982a985be9f85062de9d1e8a99b), [`2f860c5`](https://github.com/halfdomelabs/baseplate/commit/2f860c513a1caf95fdfd0729cf548990166f9a6f), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c), [`83c713b`](https://github.com/halfdomelabs/baseplate/commit/83c713b075eca2abc946e74bf3f03e515e601eba), [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3), [`2104145`](https://github.com/halfdomelabs/baseplate/commit/210414588d8b1f6816c45054be3b7eea5763b5ce), [`bd25ff0`](https://github.com/halfdomelabs/baseplate/commit/bd25ff08e71faeb97b560e7b349dba1967155704), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+  - @baseplate-dev/project-builder-lib@0.6.0
+  - @baseplate-dev/fastify-generators@0.6.0
+  - @baseplate-dev/react-generators@0.6.0
+  - @baseplate-dev/core-generators@0.6.0
+  - @baseplate-dev/sync@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes

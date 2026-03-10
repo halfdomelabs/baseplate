@@ -1,5 +1,30 @@
 # @baseplate-dev/react-generators
 
+## 0.6.0
+
+### Patch Changes
+
+- [#802](https://github.com/halfdomelabs/baseplate/pull/802) [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad) Thanks [@kingston](https://github.com/kingston)! - Update prettier to ignore unchanged files in output
+
+- [#780](https://github.com/halfdomelabs/baseplate/pull/780) [`634f6c5`](https://github.com/halfdomelabs/baseplate/commit/634f6c5aaffab982a985be9f85062de9d1e8a99b) Thanks [@kingston](https://github.com/kingston)! - Fix sheet component to wrap dialog content in overlay for proper scrolling within nested components like combobox
+
+- [#775](https://github.com/halfdomelabs/baseplate/pull/775) [`78315cc`](https://github.com/halfdomelabs/baseplate/commit/78315ccd9b0b0330cd2d08584c6d5ec516d641e3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to v10, react-hook-form, and es-toolkit
+  - @sentry/react: 9.17.0 → 10.39.0
+  - @sentry/core: 9.17.0 → 10.39.0
+  - @sentry/node: 9.17.0 → 10.39.0
+  - @sentry/profiling-node: 9.17.0 → 10.39.0
+  - @pothos/tracing-sentry: 1.1.1 → 1.1.4
+  - react-hook-form: 7.60.0 → 7.71.1
+  - es-toolkit: 1.31.0 → 1.44.0
+
+- [#773](https://github.com/halfdomelabs/baseplate/pull/773) [`2104145`](https://github.com/halfdomelabs/baseplate/commit/210414588d8b1f6816c45054be3b7eea5763b5ce) Thanks [@kingston](https://github.com/kingston)! - Upgrade zod to 4.3.6
+  - zod: 4.1.13 → 4.3.6
+
+- Updated dependencies [[`ee7ee0e`](https://github.com/halfdomelabs/baseplate/commit/ee7ee0e552090612190eb4446a52c30f4eefce6a), [`801c706`](https://github.com/halfdomelabs/baseplate/commit/801c7066f7e943c026f03e71b8d39242036e0cad), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c), [`cad5352`](https://github.com/halfdomelabs/baseplate/commit/cad535239b47080e30f894383cc330e37213a76c)]:
+  - @baseplate-dev/utils@0.6.0
+  - @baseplate-dev/core-generators@0.6.0
+  - @baseplate-dev/sync@0.6.0
+
 ## 0.5.3
 
 ### Patch Changes
