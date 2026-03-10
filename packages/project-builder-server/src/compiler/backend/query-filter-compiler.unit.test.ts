@@ -14,12 +14,14 @@ function generateQF(
 describe('generateQueryFilterExpressionCode', () => {
   describe('field comparisons', () => {
     it('should produce a Prisma where clause', () => {
-      expect(generateQF('model.id === userId')).toBe('{ id: ctx.auth.userId }');
+      expect(generateQF('model.id === userId')).toBe(
+        '(ctx.auth.userId != null ? { id: ctx.auth.userId } : false)',
+      );
     });
 
     it('should handle different field names', () => {
       expect(generateQF('model.authorId === userId')).toBe(
-        '{ authorId: ctx.auth.userId }',
+        '(ctx.auth.userId != null ? { authorId: ctx.auth.userId } : false)',
       );
     });
   });
@@ -45,13 +47,13 @@ describe('generateQueryFilterExpressionCode', () => {
   describe('logical operators', () => {
     it('should use queryHelpers.or for || expressions', () => {
       expect(generateQF("model.id === userId || hasRole('admin')")).toBe(
-        "queryHelpers.or([{ id: ctx.auth.userId }, ctx.auth.hasRole('admin')])",
+        "queryHelpers.or([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin')])",
       );
     });
 
     it('should use queryHelpers.and for && expressions', () => {
       expect(generateQF("model.id === userId && hasRole('admin')")).toBe(
-        "queryHelpers.and([{ id: ctx.auth.userId }, ctx.auth.hasRole('admin')])",
+        "queryHelpers.and([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin')])",
       );
     });
   });
@@ -103,7 +105,7 @@ describe('generateQueryFilterExpressionCode', () => {
         qfContext,
       );
       expect(result).toBe(
-        "queryHelpers.or([{ id: ctx.auth.userId }, todoListQueryFilter.buildNestedWhere(ctx, 'todoList', ['owner'])])",
+        "queryHelpers.or([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), todoListQueryFilter.buildNestedWhere(ctx, 'todoList', ['owner'])])",
       );
     });
 

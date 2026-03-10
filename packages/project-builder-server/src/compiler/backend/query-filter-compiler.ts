@@ -114,7 +114,8 @@ function generateFieldComparisonWhereCode(
 ): string {
   const modelNode = left.source === 'model' ? left : right;
   const authNode = left.source === 'auth' ? left : right;
-  return `{ ${modelNode.field}: ctx.auth.${authNode.field} }`;
+  const authExpr = `ctx.auth.${authNode.field}`;
+  return `(${authExpr} != null ? { ${modelNode.field}: ${authExpr} } : false)`;
 }
 
 /**

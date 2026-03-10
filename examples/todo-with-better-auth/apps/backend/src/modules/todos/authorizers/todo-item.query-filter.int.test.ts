@@ -152,11 +152,10 @@ describe('todoItemQueryFilter integration', () => {
   });
 
   describe('unauthenticated user', () => {
-    it('should throw ForbiddenError when user has no userId', () => {
+    it('should return a restrictive where clause when user has no userId', () => {
       const ctx = createTestServiceContext();
-      // todoListQueryFilter.roles.owner returns { ownerId: undefined }
-      // which is a valid where clause (matches nothing), so buildWhere returns it
-      // but the nested buildNestedWhere wraps it — the filter won't match any rows
+      // When unauthenticated, the null guard returns false for the owner role,
+      // which buildNestedWhere wraps — the filter won't match any rows
       const where = todoItemQueryFilter.buildWhere(ctx, ['owner']);
       expect(where).toBeDefined();
     });
