@@ -19,30 +19,32 @@ import {
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
+/**
+ * Create a plugin spec store with custom auth roles for testing.
+ */
+function createMockPluginStore(
+  roles: { id: string; name: string; comment: string; builtIn: boolean }[],
+): ReturnType<typeof createTestPluginSpecStore> {
+  return createTestPluginSpecStore([
+    createPluginModule({
+      name: 'test-auth-config',
+      dependencies: { authConfig: authConfigSpec },
+      initialize: ({ authConfig }) => {
+        authConfig.getAuthConfig.set(() => ({ roles }));
+      },
+    }),
+  ]);
+}
+
 describe('validateAuthorizerExpression', () => {
   const defaultModelContext = createModelValidationContext({
     name: 'Post',
     fields: [{ name: 'id' }, { name: 'authorId' }, { name: 'title' }],
   });
 
-  const defaultPluginStore = createTestPluginSpecStore([
-    createPluginModule({
-      name: 'test-auth-config',
-      dependencies: { authConfig: authConfigSpec },
-      initialize: ({ authConfig }) => {
-        authConfig.getAuthConfig.set(() => ({
-          roles: [
-            { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-            {
-              id: '2',
-              name: 'editor',
-              comment: 'Editor role',
-              builtIn: false,
-            },
-          ],
-        }));
-      },
-    }),
+  const defaultPluginStore = createMockPluginStore([
+    { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+    { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
   ]);
   const defaultDefinition = {};
 
