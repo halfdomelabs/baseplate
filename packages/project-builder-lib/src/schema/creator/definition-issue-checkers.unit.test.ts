@@ -7,29 +7,29 @@ describe('checkUniqueField', () => {
 
   it('returns no issues when all values are unique', () => {
     const items = [{ name: 'alpha' }, { name: 'beta' }, { name: 'gamma' }];
-    const issues = checker(items, { path: ['items'] });
+    const issues = checker(items);
     expect(issues).toEqual([]);
   });
 
   it('returns an issue for duplicate values', () => {
     const items = [{ name: 'alpha' }, { name: 'beta' }, { name: 'alpha' }];
-    const issues = checker(items, { path: ['items'] });
+    const issues = checker(items);
 
     expect(issues).toHaveLength(1);
     expect(issues[0]).toEqual({
       message: 'Duplicate item name "alpha"',
-      path: ['items', 2, 'name'],
+      path: [2, 'name'],
       severity: 'error',
     });
   });
 
   it('reports all duplicates after the first occurrence', () => {
     const items = [{ name: 'alpha' }, { name: 'alpha' }, { name: 'alpha' }];
-    const issues = checker(items, { path: ['items'] });
+    const issues = checker(items);
 
     expect(issues).toHaveLength(2);
-    expect(issues[0].path).toEqual(['items', 1, 'name']);
-    expect(issues[1].path).toEqual(['items', 2, 'name']);
+    expect(issues[0].path).toEqual([1, 'name']);
+    expect(issues[1].path).toEqual([2, 'name']);
   });
 
   it('skips undefined, null, and empty string values', () => {
@@ -39,7 +39,7 @@ describe('checkUniqueField', () => {
       { name: '' },
       { name: undefined },
     ] as unknown as { name: string }[];
-    const issues = checker(items, { path: [] });
+    const issues = checker(items);
     expect(issues).toEqual([]);
   });
 
@@ -49,7 +49,7 @@ describe('checkUniqueField', () => {
       severity: 'warning',
     });
     const items = [{ name: 'alpha' }, { name: 'alpha' }];
-    const issues = warningChecker(items, { path: [] });
+    const issues = warningChecker(items);
 
     expect(issues).toHaveLength(1);
     expect(issues[0].severity).toBe('warning');
@@ -58,12 +58,12 @@ describe('checkUniqueField', () => {
   it('works with numeric field values', () => {
     const portChecker = checkUniqueField('port', { label: 'port' });
     const items = [{ port: 3000 }, { port: 3001 }, { port: 3000 }];
-    const issues = portChecker(items, { path: ['apps'] });
+    const issues = portChecker(items);
 
     expect(issues).toHaveLength(1);
     expect(issues[0]).toEqual({
       message: 'Duplicate port "3000"',
-      path: ['apps', 2, 'port'],
+      path: [2, 'port'],
       severity: 'error',
     });
   });
@@ -71,13 +71,13 @@ describe('checkUniqueField', () => {
   it('defaults label to field name', () => {
     const defaultChecker = checkUniqueField('name');
     const items = [{ name: 'alpha' }, { name: 'alpha' }];
-    const issues = defaultChecker(items, { path: [] });
+    const issues = defaultChecker(items);
 
     expect(issues[0].message).toBe('Duplicate name "alpha"');
   });
 
   it('returns no issues for empty array', () => {
-    const issues = checker([], { path: [] });
+    const issues = checker([]);
     expect(issues).toEqual([]);
   });
 });

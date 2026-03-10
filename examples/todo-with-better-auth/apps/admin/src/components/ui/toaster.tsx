@@ -32,9 +32,9 @@ const Toaster = ({ ...props }: ToasterProps): React.ReactElement => (
         toast:
           'group toast group-[.toaster]:shadow-lg p-4 rounded-lg flex items-center text-sm gap-1.5 w-(--width)',
         description: 'group-[.toast]:text-muted-foreground',
-        actionButton: buttonVariants({
+        actionButton: `ml-auto ${buttonVariants({
           size: 'sm',
-        }),
+        })}`,
         cancelButton: buttonVariants({
           size: 'sm',
           variant: 'secondary',

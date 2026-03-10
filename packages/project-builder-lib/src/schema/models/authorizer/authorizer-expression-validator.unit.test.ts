@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AuthRole } from '#src/plugins/spec/auth-config-spec.js';
-import type { PluginSpecStore } from '#src/plugins/store/index.js';
-
+import { createPluginModule } from '#src/plugins/imports/types.js';
+import { createTestPluginSpecStore } from '#src/plugins/plugins.test-utils.js';
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
 import type {
@@ -17,31 +16,30 @@ import {
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
-/**
- * Create a mock PluginSpecStore with the specified roles.
- */
-function createMockPluginStore(roles: AuthRole[]): PluginSpecStore {
-  return {
-    use: (spec: typeof authConfigSpec) => {
-      if (spec.name === authConfigSpec.name) {
-        return {
-          getAuthConfig: () => ({ roles }),
-        };
-      }
-      throw new Error(`No implementation for ${spec.name}`);
-    },
-  } as unknown as PluginSpecStore;
-}
-
 describe('validateAuthorizerExpression', () => {
   const defaultModelContext = createModelValidationContext({
     name: 'Post',
     fields: [{ name: 'id' }, { name: 'authorId' }, { name: 'title' }],
   });
 
-  const defaultPluginStore = createMockPluginStore([
-    { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-    { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
+  const defaultPluginStore = createTestPluginSpecStore([
+    createPluginModule({
+      name: 'test-auth-config',
+      dependencies: { authConfig: authConfigSpec },
+      initialize: ({ authConfig }) => {
+        authConfig.getAuthConfig.set(() => ({
+          roles: [
+            { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
+            {
+              id: '2',
+              name: 'editor',
+              comment: 'Editor role',
+              builtIn: false,
+            },
+          ],
+        }));
+      },
+    }),
   ]);
   const defaultDefinition = {};
 
