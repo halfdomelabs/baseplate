@@ -15,6 +15,7 @@ export type introspection_types = {
     'DeleteUserInput': { kind: 'INPUT_OBJECT'; name: 'DeleteUserInput'; isOneOf: false; inputFields: [{ name: 'id'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Uuid'; ofType: null; }; }; defaultValue: null }]; };
     'DeleteUserPayload': { kind: 'OBJECT'; name: 'DeleteUserPayload'; fields: { 'user': { name: 'user'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'User'; ofType: null; }; } }; }; };
     'ID': unknown;
+    'Int': unknown;
     'JSON': unknown;
     'JSONObject': unknown;
     'LogOutPayload': { kind: 'OBJECT'; name: 'LogOutPayload'; fields: { 'success': { name: 'success'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; } }; }; };

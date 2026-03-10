@@ -21,9 +21,10 @@ import {
 } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
-import { MdSync, MdSyncProblem } from 'react-icons/md';
+import { MdSync, MdSyncProblem, MdWarning } from 'react-icons/md';
 
 import { Console } from '#src/components/index.js';
+import { useDefinitionWarningDialog } from '#src/hooks/use-definition-warning-dialog.js';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { useSyncMetadata } from '#src/hooks/use-sync-metadata.js';
 import { cancelSync, startSync } from '#src/services/api/index.js';
@@ -40,12 +41,15 @@ interface Props {
 
 function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const { definitionContainer } = useProjectDefinition();
+  const { definitionContainer, definitionWarnings } = useProjectDefinition();
   const { currentProjectId } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
+  const { showWarnings } = useDefinitionWarningDialog();
 
   const definitionContainerRef = useRef(definitionContainer);
   definitionContainerRef.current = definitionContainer;
+
+  const hasWarnings = definitionWarnings.length > 0;
 
   const isSyncing = useSyncMetadata(
     (metadata) => metadata.status === 'in-progress',
@@ -54,7 +58,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
     Object.values(metadata.packages).some((p) => p.status === 'conflicts'),
   );
 
-  const startSyncProject = (): void => {
+  const doStartSync = (): void => {
     if (!currentProjectId) {
       return;
     }
@@ -68,6 +72,14 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
       toast.error(logAndFormatError(error)),
     );
     setIsOpen(true);
+  };
+
+  const startSyncProject = (): void => {
+    if (hasWarnings) {
+      showWarnings({ warnings: definitionWarnings });
+      return;
+    }
+    doStartSync();
   };
 
   const cancelSyncProject = (): void => {
@@ -101,7 +113,13 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             size="sm"
             data-testid="sync-button"
           >
-            {hasConflicts ? <MdSyncProblem /> : <MdSync />}
+            {hasConflicts ? (
+              <MdSyncProblem />
+            ) : hasWarnings ? (
+              <MdWarning />
+            ) : (
+              <MdSync />
+            )}
             {isSyncing
               ? 'Syncing...'
               : hasConflicts

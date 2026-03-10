@@ -3,6 +3,7 @@ import React from 'react';
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { SchemaParserContext } from '#src/parser/types.js';
 import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
 import type { DefinitionSchemaParserContext } from '#src/schema/index.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
@@ -18,6 +19,10 @@ export interface SaveDefinitionWithFeedbackOptions {
   disableDeleteRefDialog?: boolean;
   successMessage?: string;
   onSuccess?: () => void;
+}
+
+export interface SaveDefinitionResult {
+  warnings: DefinitionIssue[];
 }
 
 /**
@@ -37,9 +42,11 @@ export interface UseProjectDefinitionResult {
    */
   updatedExternally: boolean;
   /**
-   * Save the project definition.
+   * Save the project definition. Returns the number of warnings encountered.
    */
-  saveDefinition: (definition: ProjectDefinitionSetter) => Promise<void>;
+  saveDefinition: (
+    definition: ProjectDefinitionSetter,
+  ) => Promise<SaveDefinitionResult>;
   /**
    * Save the project definition with feedback showing a toast
    * when there are errors or a success message when the definition is saved.
@@ -72,6 +79,10 @@ export interface UseProjectDefinitionResult {
    * The definition schema parser context.
    */
   definitionSchemaParserContext: DefinitionSchemaParserContext;
+  /**
+   * Warning-severity definition issues that allow saving but should be shown before syncing.
+   */
+  definitionWarnings: DefinitionIssue[];
 }
 
 export const ProjectDefinitionContext =

@@ -219,8 +219,7 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["public"],
-          "instanceRoles": [],
-          "list": { "count": {}, "enabled": true }
+          "list": { "enabled": true }
         }
       },
       "id": "model:h7nbXcuLcUmy",
@@ -501,8 +500,7 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user", "admin"],
-          "instanceRoles": [],
-          "list": { "count": {}, "enabled": true }
+          "list": { "enabled": true }
         }
       },
       "id": "model:jZxZ8T0aLW5C",

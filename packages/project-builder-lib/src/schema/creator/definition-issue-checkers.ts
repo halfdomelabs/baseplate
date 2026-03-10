@@ -1,7 +1,9 @@
 import type { ReferencePath } from '#src/references/types.js';
 
-import type { DefinitionFieldIssueChecker } from './definition-issue-registry.js';
-import type { DefinitionIssue } from './definition-issue-types.js';
+import type {
+  DefinitionFieldIssueChecker,
+  FieldIssueResult,
+} from './definition-issue-registry.js';
 
 /**
  * Creates an issue checker that detects duplicate values for a given field
@@ -22,8 +24,8 @@ export function checkUniqueField<K extends string>(
 ): DefinitionFieldIssueChecker<Record<K, unknown>[]> {
   const { label = field, severity = 'error' } = options;
 
-  return (items, ctx) => {
-    const issues: DefinitionIssue[] = [];
+  return (items) => {
+    const issues: FieldIssueResult[] = [];
     const seen = new Map<unknown, ReferencePath>();
 
     for (const [i, item] of items.entries()) {
@@ -34,11 +36,11 @@ export function checkUniqueField<K extends string>(
       if (existingPath) {
         issues.push({
           message: `Duplicate ${label} "${String(value)}"`,
-          path: [...ctx.path, i, field],
+          path: [i, field],
           severity,
         });
       } else {
-        seen.set(value, [...ctx.path, i, field]);
+        seen.set(value, [i, field]);
       }
     }
 

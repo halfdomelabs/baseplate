@@ -6,6 +6,7 @@ import type {
   AdminCrudInputCompiler,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
+  ModelConfig,
   ModelScalarFieldConfig,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -61,6 +62,11 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
     },
   };
 
+function isFieldOptionalByName(model: ModelConfig, fieldName: string): boolean {
+  const field = model.model.fields.find((f) => f.name === fieldName);
+  return field?.isOptional ?? false;
+}
+
 const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputConfig> =
   {
     name: 'foreign',
@@ -96,6 +102,17 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         );
       }
 
+      // Only pass defaultLabel if the label field is actually nullable on the
+      // foreign model, so the generated code won't produce an unnecessary `??`.
+      const foreignModel = ModelUtils.byIdOrThrow(
+        definitionContainer.definition,
+        relation.modelRef,
+      );
+      const isLabelFieldOptional = isFieldOptionalByName(
+        foreignModel,
+        definition.labelExpression,
+      );
+
       return adminCrudForeignInputGenerator({
         order,
         label: definition.label,
@@ -106,7 +123,9 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         labelExpression: definition.labelExpression,
         valueExpression: definition.valueExpression,
         valueType: localFieldType,
-        defaultLabel: definition.defaultLabel,
+        defaultLabel: isLabelFieldOptional
+          ? definition.defaultLabel
+          : undefined,
         nullLabel: definition.nullLabel,
       });
     },

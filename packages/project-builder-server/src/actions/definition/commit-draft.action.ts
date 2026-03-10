@@ -70,11 +70,7 @@ export const commitDraftAction = createServiceAction({
     );
 
     // Validate the draft definition before committing
-    const issues = collectDefinitionIssues(
-      container.schema,
-      container.definition,
-      container.pluginStore,
-    );
+    const issues = collectDefinitionIssues(container);
 
     if (issues.length > 0) {
       const messages = issues
