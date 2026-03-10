@@ -67,12 +67,13 @@
     "diff": "^8.0.3",
     "es-toolkit": "1.44.0",
     "execa": "9.3.0",
-    "fastify": "5.7.4",
+    "fast-json-patch": "^3.1.1",
+    "fastify": "5.8.1",
     "fastify-plugin": "5.1.0",
     "fastify-type-provider-zod": "^6.0.0",
     "globby": "^14.0.2",
     "ignore": "^7.0.5",
-    "immer": "10.1.1",
+    "immer": "~11.1.4",
     "inflection": "3.0.0",
     "isbinaryfile": "^5.0.4",
     "micromatch": "^4.0.8",
@@ -81,7 +82,8 @@
     "p-limit": "6.1.0",
     "pino": "9.5.0",
     "ts-morph": "27.0.2",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "zod-to-ts": "^2.0.0"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",

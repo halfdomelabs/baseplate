@@ -1,26 +1,29 @@
 import type { z } from 'zod';
 
-import type { ReferencePath } from '#src/references/types.js';
-
 import type { DefinitionIssue } from './definition-issue-types.js';
 
 /**
- * Context passed to field-level issue checker functions during schema+data walk.
- * Contains only the path — field-level checkers operate on local values without rootData.
+ * A field-level issue checker result.
+ *
+ * The `path` is relative to the schema node the checker is registered on.
+ * The infrastructure (`collectFieldIssues`) handles scoping to the correct
+ * entity and prepending the entity-relative path.
  */
-export interface FieldIssueCheckerContext {
-  /** The absolute path to the current node in the data */
-  readonly path: ReferencePath;
-}
+export type FieldIssueResult = Pick<
+  DefinitionIssue,
+  'message' | 'path' | 'severity' | 'fix'
+>;
 
 /**
  * A field-level issue checker registered on a schema node.
  * Invoked during `collectFieldIssues()` to find problems in the local value.
+ *
+ * Returns issues with paths relative to the current schema node.
+ * The infrastructure handles entity scoping automatically.
  */
 export type DefinitionFieldIssueChecker<T = unknown> = (
   value: T,
-  ctx: FieldIssueCheckerContext,
-) => DefinitionIssue[];
+) => FieldIssueResult[];
 
 /**
  * Metadata stored on a schema node annotated by `withIssueChecker`.
@@ -63,10 +66,10 @@ export const definitionFieldIssueRegistry = (() => {
  *
  * Used with `.apply()`:
  * ```typescript
- * z.object({ ... }).apply(withIssueChecker<MyType>((value, ctx) => {
- *   const issues: DefinitionIssue[] = [];
+ * z.object({ ... }).apply(withIssueChecker<MyType>((value) => {
+ *   const issues: FieldIssueResult[] = [];
  *   if (someCondition) {
- *     issues.push({ message: '...', path: ctx.path, severity: 'error' });
+ *     issues.push({ message: '...', path: ['fieldName'], severity: 'error' });
  *   }
  *   return issues;
  * }))

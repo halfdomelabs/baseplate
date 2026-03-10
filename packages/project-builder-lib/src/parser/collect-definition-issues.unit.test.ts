@@ -13,10 +13,10 @@ import {
 import { WarningParser } from '#src/testing/expression-warning-parser.test-helper.js';
 
 import {
-  collectDefinitionIssues,
   collectFieldIssues,
   partitionIssuesBySeverity,
 } from './collect-definition-issues.js';
+import { collectExpressionIssues } from './collect-expression-issues.js';
 
 describe('collectFieldIssues', () => {
   it('returns empty array when no checkers are registered', () => {
@@ -27,13 +27,13 @@ describe('collectFieldIssues', () => {
 
   it('collects issues from a registered checker', () => {
     const innerSchema = z.array(z.string()).apply(
-      withIssueChecker((value, ctx) => {
+      withIssueChecker((value) => {
         const arr = value;
         if (arr.length === 0) {
           return [
             {
               message: 'Array must not be empty.',
-              path: ctx.path,
+              path: [],
               severity: 'error',
             },
           ];
@@ -82,13 +82,13 @@ describe('collectFieldIssues', () => {
       label: z.string(),
     });
 
-    definitionFieldIssueRegistry.add(innerSchema, (value, ctx) => {
+    definitionFieldIssueRegistry.add(innerSchema, (value) => {
       const obj = value as { count: number };
       if (obj.count < 0) {
         return [
           {
             message: 'Count must be non-negative.',
-            path: [...ctx.path, 'count'],
+            path: ['count'],
             severity: 'error',
           },
         ];
@@ -96,13 +96,13 @@ describe('collectFieldIssues', () => {
       return [];
     });
 
-    definitionFieldIssueRegistry.add(innerSchema, (value, ctx) => {
+    definitionFieldIssueRegistry.add(innerSchema, (value) => {
       const obj = value as { label: string };
       if (obj.label === '') {
         return [
           {
             message: 'Label must not be empty.',
-            path: [...ctx.path, 'label'],
+            path: ['label'],
             severity: 'warning',
           },
         ];
@@ -122,12 +122,12 @@ describe('collectFieldIssues', () => {
 
   it('collects issues from nested schemas', () => {
     const leafSchema = z.number().apply(
-      withIssueChecker((value, ctx) => {
+      withIssueChecker((value) => {
         if (value > 100) {
           return [
             {
               message: 'Value too large.',
-              path: ctx.path,
+              path: [],
               severity: 'warning',
             },
           ];
@@ -153,13 +153,13 @@ describe('collectFieldIssues', () => {
 
   it('collects issues from array elements', () => {
     const itemSchema = z.object({ name: z.string() }).apply(
-      withIssueChecker((value, ctx) => {
+      withIssueChecker((value) => {
         const item = value as { name: string };
         if (item.name === '') {
           return [
             {
               message: 'Name must not be empty.',
-              path: ctx.path,
+              path: [],
               severity: 'error',
             },
           ];
@@ -179,13 +179,13 @@ describe('collectFieldIssues', () => {
 
   it('supports issues with auto-fix proposals', () => {
     const innerSchema = z.string().apply(
-      withIssueChecker((value, ctx) => {
+      withIssueChecker((value) => {
         const str = value;
         if (str.includes(' ')) {
           return [
             {
               message: 'Value must not contain spaces.',
-              path: ctx.path,
+              path: [],
               severity: 'error',
               fix: {
                 label: 'Remove spaces',
@@ -254,7 +254,7 @@ describe('partitionIssuesBySeverity', () => {
   });
 });
 
-describe('collectDefinitionIssues', () => {
+describe('collectExpressionIssues', () => {
   it('includes expression validation warnings in collected issues', () => {
     const pluginStore = new PluginSpecStore();
     const warningParser = new WarningParser([
@@ -272,7 +272,7 @@ describe('collectDefinitionIssues', () => {
     );
     const data = { name: 'test', condition: 'model.badField === auth.userId' };
 
-    const issues = collectDefinitionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(schema, data, pluginStore);
 
     const expressionIssues = issues.filter(
       (i) => i.message === 'Invalid field reference',

@@ -1,13 +1,25 @@
 import type { z } from 'zod';
 
-import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { DefinitionIssueChecker } from '#src/schema/creator/definition-issue-checker-spec.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
 
 import { definitionIssueCheckerSpec } from '#src/schema/creator/definition-issue-checker-spec.js';
 import { definitionFieldIssueRegistry } from '#src/schema/creator/definition-issue-registry.js';
 
 import { collectExpressionIssues } from './collect-expression-issues.js';
+import { checkMutationRoles } from './definition-issue-checkers/mutation-roles-checker.js';
+import { checkRelationTypeMismatch } from './definition-issue-checkers/relation-type-mismatch-checker.js';
 import { walkDataWithSchema } from './walk-data-with-schema.js';
+
+/**
+ * Built-in definition-level checkers registered at runtime to avoid
+ * circular dependencies between schema/creator/ and parser/.
+ */
+const BUILT_IN_CHECKERS: DefinitionIssueChecker[] = [
+  checkRelationTypeMismatch,
+  checkMutationRoles,
+];
 
 /**
  * Issues partitioned by severity level.
@@ -56,8 +68,15 @@ export function collectFieldIssues(
         const meta = definitionFieldIssueRegistry.get(schemaNode);
         if (meta) {
           for (const checker of meta.checkers) {
-            const result = checker(value, { path: ctx.path });
-            issues.push(...result);
+            const results = checker(value);
+            for (const result of results) {
+              const path = [...ctx.entityRelativePath, ...result.path];
+              if (ctx.entityId) {
+                issues.push({ ...result, entityId: ctx.entityId, path });
+              } else {
+                issues.push({ ...result, path });
+              }
+            }
           }
         }
         return undefined;
@@ -79,22 +98,32 @@ export function collectFieldIssues(
  * Error-severity issues block saving; warning-severity issues allow saving but block syncing.
  */
 export function collectDefinitionIssues(
-  schema: z.ZodType,
-  data: unknown,
-  pluginStore: PluginSpecStore,
+  container: ProjectDefinitionContainer,
 ): DefinitionIssue[] {
+  const { schema, definition, pluginStore } = container;
+
   // Collect field-level issues from schema walk
-  const issues = collectFieldIssues(schema, data);
+  const issues = collectFieldIssues(schema, definition);
+
+  // Collect definition-level issues from built-in checkers
+  for (const checker of BUILT_IN_CHECKERS) {
+    const result = checker(container);
+    issues.push(...result);
+  }
 
   // Collect definition-level issues from plugin spec checkers
   const checkerSpec = pluginStore.use(definitionIssueCheckerSpec);
   for (const checker of checkerSpec.getAllCheckers().values()) {
-    const result = checker(data);
+    const result = checker(container);
     issues.push(...result);
   }
 
   // Collect expression validation issues
-  const expressionIssues = collectExpressionIssues(schema, data, pluginStore);
+  const expressionIssues = collectExpressionIssues(
+    schema,
+    definition,
+    pluginStore,
+  );
   issues.push(...expressionIssues);
 
   return issues;

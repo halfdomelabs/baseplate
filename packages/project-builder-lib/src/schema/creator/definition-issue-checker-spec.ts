@@ -1,3 +1,5 @@
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+
 import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js';
 
 import type { DefinitionIssue } from './definition-issue-types.js';
@@ -7,22 +9,27 @@ import type { DefinitionIssue } from './definition-issue-types.js';
  * Can propose definition-wide auto-fixes.
  *
  * Unlike field-level checkers (registered via `withIssueChecker` on schema nodes),
- * definition-level checkers receive the entire project definition and can perform
+ * definition-level checkers receive the definition container and can perform
  * cross-cutting validations like port conflicts, FK type mismatches, or missing
  * models required by plugins.
  */
-export type DefinitionIssueChecker = (definition: unknown) => DefinitionIssue[];
+export type DefinitionIssueChecker = (
+  container: ProjectDefinitionContainer,
+) => DefinitionIssue[];
 
 /**
  * Plugin spec for registering definition-level issue checkers.
  *
- * Plugins register checkers during initialization:
+ * Built-in checkers (relation type mismatch, mutation roles) are registered
+ * by `collectDefinitionIssues` at runtime to avoid circular imports between
+ * schema/creator/ and parser/. Plugins can register additional checkers during
+ * initialization:
  * ```typescript
  * createPluginModule({
  *   dependencies: { issueCheckers: definitionIssueCheckerSpec },
  *   initialize: ({ issueCheckers }, { pluginKey }) => {
- *     issueCheckers.checkers.set(pluginKey, (definition) => {
- *       // validate definition and return issues
+ *     issueCheckers.checkers.set(pluginKey, (container) => {
+ *       // validate container.definition and return issues
  *       return [];
  *     });
  *   },

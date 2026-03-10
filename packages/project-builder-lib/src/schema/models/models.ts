@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-import type { FieldIssueCheckerContext } from '#src/schema/creator/definition-issue-registry.js';
-import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
+import type { FieldIssueResult } from '#src/schema/creator/definition-issue-registry.js';
 import type { def } from '#src/schema/creator/index.js';
 
 import { createDefinitionEntityNameResolver } from '#src/references/index.js';
@@ -261,12 +260,9 @@ export type ModelUniqueConstraintConfigInput = def.InferInput<
 /**
  * Checks that enabled service methods have at least one field or transformer.
  */
-function checkServiceMethods(
-  value: unknown,
-  ctx: FieldIssueCheckerContext,
-): DefinitionIssue[] {
+function checkServiceMethods(value: unknown): FieldIssueResult[] {
   const service = value as ModelServiceConfig;
-  const issues: DefinitionIssue[] = [];
+  const issues: FieldIssueResult[] = [];
 
   if (
     service.create.enabled &&
@@ -275,7 +271,7 @@ function checkServiceMethods(
   ) {
     issues.push({
       message: 'Create method must have at least one field or transformer.',
-      path: [...ctx.path, 'create'],
+      path: ['create'],
       severity: 'error',
     });
   }
@@ -287,7 +283,7 @@ function checkServiceMethods(
   ) {
     issues.push({
       message: 'Update method must have at least one field or transformer.',
-      path: [...ctx.path, 'update'],
+      path: ['update'],
       severity: 'error',
     });
   }
@@ -455,19 +451,16 @@ export type ModelServiceConfig = def.InferOutput<
 /**
  * Checks model-level constraints: must have fields and primary keys.
  */
-function checkModelConstraints(
-  value: unknown,
-  ctx: FieldIssueCheckerContext,
-): DefinitionIssue[] {
+function checkModelConstraints(value: unknown): FieldIssueResult[] {
   const model = value as {
     model: { fields: unknown[]; primaryKeyFieldRefs: string[] };
   };
-  const issues: DefinitionIssue[] = [];
+  const issues: FieldIssueResult[] = [];
 
   if (model.model.fields.length === 0) {
     issues.push({
       message: 'Model must have at least one field.',
-      path: [...ctx.path, 'model', 'fields'],
+      path: ['model', 'fields'],
       severity: 'error',
     });
   }
@@ -475,7 +468,7 @@ function checkModelConstraints(
   if (model.model.primaryKeyFieldRefs.length === 0) {
     issues.push({
       message: 'Model must have at least one primary key field.',
-      path: [...ctx.path, 'model', 'primaryKeyFieldRefs'],
+      path: ['model', 'primaryKeyFieldRefs'],
       severity: 'error',
     });
   }

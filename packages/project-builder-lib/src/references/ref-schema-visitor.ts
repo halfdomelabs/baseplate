@@ -80,6 +80,8 @@ export function createRefSchemaVisitor(
 
         const refCtx: RefWalkContext = {
           path: ctx.path,
+          entityId: ctx.entityId,
+          entityRelativePath: ctx.entityRelativePath,
           activeSlotPaths,
         };
 

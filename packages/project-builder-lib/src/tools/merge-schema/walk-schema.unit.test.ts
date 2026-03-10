@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import { createTestFeature } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
 
 import { collectEntityArrays } from './walk-schema.js';
 

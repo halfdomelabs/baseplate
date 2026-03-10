@@ -53,18 +53,18 @@ export interface DefinitionDiff {
 // ---------------------------------------------------------------------------
 
 /**
- * Diffs an entity array by the `name` field, scoped to only the entities
- * named in the partial definition.
+ * Diffs an entity array by the `name` field.
  *
- * Entities not mentioned in the partial are ignored — this prevents showing
- * "removed" entries for entities that the partial doesn't care about.
+ * When `scopeToNames` is provided, only those entities are compared — this prevents
+ * showing "removed" entries for entities that the partial doesn't care about.
+ * When omitted, all entities in both arrays are compared.
  */
 function diffEntityArray(
   path: string,
   entityMeta: EntitySchemaMeta,
   currentArray: PlainObject[],
-  mergedArray: PlainObject[],
-  partialNames: Set<string>,
+  otherArray: PlainObject[],
+  scopeToNames?: Set<string>,
 ): DefinitionDiffEntry[] {
   const entries: DefinitionDiffEntry[] = [];
   const label = capitalize(entityMeta.type.name);
@@ -72,24 +72,26 @@ function diffEntityArray(
   const currentByName = new Map(
     currentArray.map((item) => [getEntityName(entityMeta, item), item]),
   );
-  const mergedByName = new Map(
-    mergedArray.map((item) => [getEntityName(entityMeta, item), item]),
+  const otherByName = new Map(
+    otherArray.map((item) => [getEntityName(entityMeta, item), item]),
   );
 
-  // Only diff entities named in the partial definition
-  for (const name of partialNames) {
-    const currentItem = currentByName.get(name);
-    const mergedItem = mergedByName.get(name);
+  const namesToDiff =
+    scopeToNames ?? new Set([...currentByName.keys(), ...otherByName.keys()]);
 
-    if (!currentItem && mergedItem) {
+  for (const name of namesToDiff) {
+    const currentItem = currentByName.get(name);
+    const otherItem = otherByName.get(name);
+
+    if (!currentItem && otherItem) {
       entries.push({
         path,
         label: `${label}: ${name}`,
         type: 'added',
         current: undefined,
-        merged: mergedItem,
+        merged: otherItem,
       });
-    } else if (currentItem && !mergedItem) {
+    } else if (currentItem && !otherItem) {
       entries.push({
         path,
         label: `${label}: ${name}`,
@@ -97,13 +99,13 @@ function diffEntityArray(
         current: currentItem,
         merged: undefined,
       });
-    } else if (currentItem && mergedItem && !isEqual(currentItem, mergedItem)) {
+    } else if (currentItem && otherItem && !isEqual(currentItem, otherItem)) {
       entries.push({
         path,
         label: `${label}: ${name}`,
         type: 'updated',
         current: currentItem,
-        merged: mergedItem,
+        merged: otherItem,
       });
     }
   }
@@ -112,7 +114,119 @@ function diffEntityArray(
 }
 
 // ---------------------------------------------------------------------------
-// Main diff function
+// Core diffing of two serialized definitions
+// ---------------------------------------------------------------------------
+
+export interface DiffSerializedDefinitionsOptions {
+  /**
+   * When provided, only these top-level keys are compared.
+   * When omitted, all keys from both definitions are compared.
+   */
+  scopeToKeys?: Set<string>;
+
+  /**
+   * When provided, entity array diffs are scoped to only these entity names
+   * per top-level key. When omitted, all entities in both arrays are compared.
+   */
+  entityNamesByKey?: Map<string, Set<string>>;
+}
+
+/**
+ * Compares two serialized project definitions at the entity level, producing
+ * diff entries for added, updated, and removed entities/fields.
+ *
+ * Both definitions should be in serialized form (with entity names, not IDs).
+ *
+ * @param schema - The project definition Zod schema
+ * @param currentDef - The current serialized definition
+ * @param otherDef - The other serialized definition to compare against
+ * @param options - Optional scoping options
+ * @returns Entity-level diff entries
+ */
+export function diffSerializedDefinitions(
+  schema: z.ZodType,
+  currentDef: PlainObject,
+  otherDef: PlainObject,
+  options?: DiffSerializedDefinitionsOptions,
+): DefinitionDiff {
+  const entityArrayInfoByKey = new Map(
+    collectEntityArrays(schema)
+      .filter((info) => !info.path.includes('.'))
+      .map((info) => [info.path, info]),
+  );
+
+  const entries: DefinitionDiffEntry[] = [];
+
+  const keysToCompare =
+    options?.scopeToKeys ??
+    new Set([...Object.keys(currentDef), ...Object.keys(otherDef)]);
+
+  for (const key of keysToCompare) {
+    const currentValue = currentDef[key];
+    const otherValue = otherDef[key];
+
+    if (isEqual(currentValue, otherValue)) {
+      continue;
+    }
+
+    const entityInfo = entityArrayInfoByKey.get(key);
+    if (entityInfo) {
+      const currentArray = (
+        Array.isArray(currentValue) ? currentValue : []
+      ) as PlainObject[];
+      const otherArray = (
+        Array.isArray(otherValue) ? otherValue : []
+      ) as PlainObject[];
+
+      const scopeToNames = options?.entityNamesByKey?.get(key);
+
+      entries.push(
+        ...diffEntityArray(
+          key,
+          entityInfo.entityMeta,
+          currentArray,
+          otherArray,
+          scopeToNames,
+        ),
+      );
+    } else {
+      const label = capitalize(key);
+      if (currentValue === undefined) {
+        entries.push({
+          path: key,
+          label,
+          type: 'added',
+          current: undefined,
+          merged: otherValue,
+        });
+      } else if (otherValue === undefined) {
+        entries.push({
+          path: key,
+          label,
+          type: 'removed',
+          current: currentValue,
+          merged: undefined,
+        });
+      } else {
+        entries.push({
+          path: key,
+          label,
+          type: 'updated',
+          current: currentValue,
+          merged: otherValue,
+        });
+      }
+    }
+  }
+
+  return {
+    hasChanges: entries.length > 0,
+    entries,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// High-level diff with merge
 // ---------------------------------------------------------------------------
 
 /**
@@ -141,84 +255,36 @@ export function diffDefinition(
     partialDef,
   ) as PlainObject;
 
-  // Collect top-level entity arrays (path has no dots — single key like "models")
+  const partialObj = partialDef as PlainObject;
+  const scopeToKeys = new Set(Object.keys(partialObj));
+
+  // Build entity name scopes from the partial definition
   const entityArrayInfoByKey = new Map(
     collectEntityArrays(schema)
       .filter((info) => !info.path.includes('.'))
       .map((info) => [info.path, info]),
   );
 
-  const entries: DefinitionDiffEntry[] = [];
-  const partialObj = partialDef as PlainObject;
-
-  // Only diff keys present in the partial definition
-  for (const key of Object.keys(partialObj)) {
-    const currentValue = serializedDef[key];
-    const mergedValue = mergedDef[key];
-
-    if (isEqual(currentValue, mergedValue)) {
-      continue;
-    }
-
+  const entityNamesByKey = new Map<string, Set<string>>();
+  for (const key of scopeToKeys) {
     const entityInfo = entityArrayInfoByKey.get(key);
     if (entityInfo) {
-      const currentArray = (
-        Array.isArray(currentValue) ? currentValue : []
-      ) as PlainObject[];
-      const mergedArray = (
-        Array.isArray(mergedValue) ? mergedValue : []
-      ) as PlainObject[];
-
-      // Collect entity names from the partial definition to scope the diff
       const partialArray = (
         Array.isArray(partialObj[key]) ? partialObj[key] : []
       ) as PlainObject[];
-      const partialNames = new Set(
-        partialArray.map((item) => getEntityName(entityInfo.entityMeta, item)),
-      );
-
-      entries.push(
-        ...diffEntityArray(
-          key,
-          entityInfo.entityMeta,
-          currentArray,
-          mergedArray,
-          partialNames,
+      entityNamesByKey.set(
+        key,
+        new Set(
+          partialArray.map((item) =>
+            getEntityName(entityInfo.entityMeta, item),
+          ),
         ),
       );
-    } else {
-      // Non-entity field: single entry
-      const label = capitalize(key);
-      if (currentValue === undefined) {
-        entries.push({
-          path: key,
-          label,
-          type: 'added',
-          current: undefined,
-          merged: mergedValue,
-        });
-      } else if (mergedValue === undefined) {
-        entries.push({
-          path: key,
-          label,
-          type: 'removed',
-          current: currentValue,
-          merged: undefined,
-        });
-      } else {
-        entries.push({
-          path: key,
-          label,
-          type: 'updated',
-          current: currentValue,
-          merged: mergedValue,
-        });
-      }
     }
   }
 
-  return {
-    hasChanges: entries.length > 0,
-    entries,
-  };
+  return diffSerializedDefinitions(schema, serializedDef, mergedDef, {
+    scopeToKeys,
+    entityNamesByKey,
+  });
 }

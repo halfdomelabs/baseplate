@@ -12,18 +12,45 @@ export interface DefinitionIssueFix {
 }
 
 /**
- * A single issue found in the definition. May optionally propose an auto-fix.
+ * Common fields shared by all definition issues.
  *
  * - `'error'` severity blocks saving and shows toast errors
  * - `'warning'` severity allows saving but blocks syncing, shown as toast warnings
  */
-export interface DefinitionIssue {
+interface DefinitionIssueBase {
   /** Human-readable description of the issue */
   readonly message: string;
-  /** Path in the definition where the issue originated */
-  readonly path: ReferencePath;
   /** Severity: 'error' blocks save, 'warning' blocks sync only */
   readonly severity: 'error' | 'warning';
   /** Optional auto-fix proposal */
   readonly fix?: DefinitionIssueFix;
 }
+
+/**
+ * An issue scoped to a specific entity. The path is relative to the entity root.
+ */
+export interface EntityDefinitionIssue extends DefinitionIssueBase {
+  /** The entity this issue belongs to */
+  readonly entityId: string;
+  /** Path relative to the entity root */
+  readonly path: ReferencePath;
+}
+
+/**
+ * A root-level issue with an absolute path from the definition root.
+ * Used for cross-cutting validations (e.g., duplicate names in arrays)
+ * and settings that aren't scoped to a specific entity.
+ */
+export interface RootDefinitionIssue extends DefinitionIssueBase {
+  readonly entityId?: undefined;
+  /** Absolute path from the definition root */
+  readonly path: ReferencePath;
+}
+
+/**
+ * A definition issue is either entity-scoped or root-scoped.
+ *
+ * - Entity-scoped: has `entityId` (string) + path relative to entity root
+ * - Root-scoped: no `entityId` + absolute path from definition root
+ */
+export type DefinitionIssue = EntityDefinitionIssue | RootDefinitionIssue;

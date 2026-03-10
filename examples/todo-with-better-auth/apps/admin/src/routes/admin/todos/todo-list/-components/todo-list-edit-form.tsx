@@ -109,7 +109,7 @@ export function TodoListEditForm(
     todoListEditFormOwnerOptionsFragment,
     ownerOptions,
   ).map((option) => ({
-    label: option.name ?? option.id,
+    label: option.name,
     value: option.id,
   }));
   /* TPL_HEADER:END */

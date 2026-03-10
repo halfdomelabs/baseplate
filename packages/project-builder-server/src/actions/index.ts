@@ -1,3 +1,4 @@
+export * from './definition/index.js';
 export * from './diff/index.js';
 export * from './generators/index.js';
 export * from './registry.js';

@@ -3,14 +3,14 @@ import type {
   ProjectDefinition,
   ProjectDefinitionInput,
 } from '#src/schema/project-definition.js';
+import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
 
+import { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
 import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
-
-import { ProjectDefinitionContainer } from './project-definition-container.js';
 
 export function createTestProjectDefinition(
   input: Partial<ProjectDefinition> = {},
@@ -76,4 +76,10 @@ export function createTestProjectDefinitionContainer(
     pluginSpecStore,
     schema,
   );
+}
+
+export function createTestEntityServiceContext(
+  input: Partial<ProjectDefinitionInput> = {},
+): EntityServiceContext {
+  return createTestProjectDefinitionContainer(input).toEntityServiceContext();
 }
