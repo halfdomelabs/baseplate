@@ -35,6 +35,10 @@ const descriptorSchema = z.object({
    * Role names to pass to `queryFilter.buildWhere()`.
    */
   queryFilterRoles: z.array(z.string()).optional(),
+  /**
+   * Global role names that bypass the query filter entirely.
+   */
+  queryFilterBypassRoles: z.array(z.string()).optional(),
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -42,7 +46,13 @@ export const pothosPrismaListQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, queryFilterRef, queryFilterRoles }) => ({
+  buildTasks: ({
+    modelName,
+    order,
+    queryFilterRef,
+    queryFilterRoles,
+    queryFilterBypassRoles,
+  }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -95,7 +105,12 @@ export const pothosPrismaListQueryGenerator = createGenerator({
                 .join(', ');
               const queryFilterFragment = queryFilter.getQueryFilterFragment();
 
-              resolveFunction = tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: { ...${queryFilterFragment}.buildWhere(ctx, [${rolesArray}]) }, skip: skip ?? undefined, take: take ?? undefined })`;
+              const bypassRolesArg =
+                queryFilterBypassRoles && queryFilterBypassRoles.length > 0
+                  ? `, { bypassRoles: [${queryFilterBypassRoles.map((r) => quot(r)).join(', ')}] }`
+                  : '';
+
+              resolveFunction = tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: { ...${queryFilterFragment}.buildWhere(ctx, [${rolesArray}]${bypassRolesArg}) }, skip: skip ?? undefined, take: take ?? undefined })`;
             } else {
               resolveFunction = tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
             }

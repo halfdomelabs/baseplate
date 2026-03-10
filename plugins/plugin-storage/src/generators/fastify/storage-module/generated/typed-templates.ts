@@ -261,10 +261,10 @@ const utilsValidateFileUploadOptions = createTsTemplateFile({
     validateFileUploadOptions: {},
   },
   referencedGeneratorTemplates: {
-    configAdapters: {},
     configCategories: {},
     typesAdapter: {},
     typesFileCategory: {},
+    utilsGetAdapter: {},
     utilsMime: {},
   },
   source: {

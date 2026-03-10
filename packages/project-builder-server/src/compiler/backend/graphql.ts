@@ -136,6 +136,12 @@ function buildQueriesFileForModel(
       })
     : [];
 
+  // Global roles that bypass the query filter entirely (e.g., admin sees all records)
+  const queryFilterBypassRoles =
+    isAuthEnabled && hasQueryFilter
+      ? queries.globalRoles.map((r) => appBuilder.nameFromId(r))
+      : [];
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -148,6 +154,7 @@ function buildQueriesFileForModel(
               ModelUtils.getModelIdFields(model).length > 1,
             queryFilterRef: hasQueryFilter ? model.name : undefined,
             queryFilterRoles,
+            queryFilterBypassRoles,
             children: {
               authorize,
             },
@@ -159,6 +166,7 @@ function buildQueriesFileForModel(
             modelName: model.name,
             queryFilterRef: hasQueryFilter ? model.name : undefined,
             queryFilterRoles,
+            queryFilterBypassRoles,
             children: {
               authorize,
             },
@@ -171,6 +179,7 @@ function buildQueriesFileForModel(
               modelName: model.name,
               queryFilterRef: hasQueryFilter ? model.name : undefined,
               queryFilterRoles,
+              queryFilterBypassRoles,
               children: {
                 authorize,
               },

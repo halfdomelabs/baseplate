@@ -8,12 +8,17 @@ import { todoListQueryFilter } from '../authorizers/todo-list.query-filter.js';
 builder.queryField('todoList', (t) =>
   t.prismaField({
     type: 'TodoList',
-    authorize: ['user'],
+    authorize: ['admin'],
     args: { id: t.arg({ required: true, type: 'Uuid' }) },
     resolve: async (query, _root, { id }, ctx) =>
       prisma.todoList.findUniqueOrThrow({
         ...query,
-        where: { id, ...todoListQueryFilter.buildWhere(ctx, ['owner']) },
+        where: {
+          id,
+          ...todoListQueryFilter.buildWhere(ctx, ['owner'], {
+            bypassRoles: ['admin'],
+          }),
+        },
       }),
   }),
 );
@@ -25,11 +30,15 @@ builder.queryField('todoLists', (t) =>
       skip: t.arg.int({ validate: z.int().min(0) }),
       take: t.arg.int({ validate: z.int().min(0) }),
     },
-    authorize: ['user'],
+    authorize: ['admin'],
     resolve: async (query, _root, { skip, take }, ctx) =>
       prisma.todoList.findMany({
         ...query,
-        where: { ...todoListQueryFilter.buildWhere(ctx, ['owner']) },
+        where: {
+          ...todoListQueryFilter.buildWhere(ctx, ['owner'], {
+            bypassRoles: ['admin'],
+          }),
+        },
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),

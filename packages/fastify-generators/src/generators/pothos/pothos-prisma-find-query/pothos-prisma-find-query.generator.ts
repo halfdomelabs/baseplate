@@ -51,6 +51,10 @@ const descriptorSchema = z.object({
    * Role names to pass to `queryFilter.buildWhere()`.
    */
   queryFilterRoles: z.array(z.string()).optional(),
+  /**
+   * Global role names that bypass the query filter entirely.
+   */
+  queryFilterBypassRoles: z.array(z.string()).optional(),
 });
 
 export const pothosPrismaFindQueryGenerator = createGenerator({
@@ -64,6 +68,7 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
     hasPrimaryKeyInputType,
     queryFilterRef,
     queryFilterRoles,
+    queryFilterBypassRoles,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -149,14 +154,20 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
                   ? primaryKeyFieldName
                   : `${primaryKeyFieldName}: ${primaryKeyDefinition.name}`;
 
+              const bypassRolesArg =
+                queryFilterBypassRoles && queryFilterBypassRoles.length > 0
+                  ? `, { bypassRoles: [${queryFilterBypassRoles.map((r) => quot(r)).join(', ')}] }`
+                  : '';
+
               resolveFunction = TsCodeUtils.formatFragment(
-                `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: { ID_PART, ...QUERY_FILTER.buildWhere(ctx, [ROLES]) }})`,
+                `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: { ID_PART, ...QUERY_FILTER.buildWhere(ctx, [ROLES]BYPASS_ROLES) }})`,
                 {
                   ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
                   MODEL: prismaOutput.getPrismaModelFragment(modelName),
                   ID_PART: idPart,
                   QUERY_FILTER: queryFilterFragment,
                   ROLES: rolesArray,
+                  BYPASS_ROLES: bypassRolesArg,
                 },
               );
             } else {
