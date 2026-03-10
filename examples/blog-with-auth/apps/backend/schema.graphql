@@ -55,6 +55,16 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+"""Input type for deleteBlog mutation"""
+input DeleteBlogInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteBlog mutation"""
+type DeleteBlogPayload {
+  blog: Blog!
+}
+
 """Input type for deleteUser mutation"""
 input DeleteUserInput {
   id: Uuid!
@@ -95,6 +105,7 @@ type LoginWithEmailPasswordPayload {
 type Mutation {
   changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
   createUser(input: CreateUserInput!): CreateUserPayload!
+  deleteBlog(input: DeleteBlogInput!): DeleteBlogPayload!
   deleteUser(input: DeleteUserInput!): DeleteUserPayload!
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
@@ -103,6 +114,7 @@ type Mutation {
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
   resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
+  updateBlog(input: UpdateBlogInput!): UpdateBlogPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
   validatePasswordResetToken(input: ValidatePasswordResetTokenInput!): ValidatePasswordResetTokenPayload!
@@ -170,6 +182,22 @@ type ResetUserPasswordPayload {
   user: User!
 }
 
+input UpdateBlogData {
+  name: String
+  userId: Uuid
+}
+
+"""Input type for updateBlog mutation"""
+input UpdateBlogInput {
+  data: UpdateBlogData!
+  id: Uuid!
+}
+
+"""Payload type for updateBlog mutation"""
+type UpdateBlogPayload {
+  blog: Blog!
+}
+
 input UpdateUserData {
   email: String
   emailVerified: Boolean
@@ -230,7 +258,7 @@ input ValidatePasswordResetTokenInput {
 
 """Payload type for validatePasswordResetToken mutation"""
 type ValidatePasswordResetTokenPayload {
-  valid: Boolean!
+  success: Boolean!
 }
 
 """Input type for verifyEmail mutation"""
