@@ -62,7 +62,7 @@ const validateTokenMutation = graphql(`
     $input: ValidatePasswordResetTokenInput!
   ) {
     validatePasswordResetToken(input: $input) {
-      valid
+      success
     }
   }
 `);
@@ -95,11 +95,26 @@ function ResetPasswordPage(): React.JSX.Element {
       validateToken({
         variables: { input: { token } },
       })
-        .then(({ data }) => {
-          setTokenValid(data?.validatePasswordResetToken.valid ?? false);
+        .then(() => {
+          setTokenValid(true);
         })
-        .catch(() => {
-          setTokenValid(false);
+        .catch((err: unknown) => {
+          const errorCode = getApolloErrorCode(err, ['invalid-token'] as const);
+          switch (errorCode) {
+            case 'invalid-token': {
+              setTokenValid(false);
+              break;
+            }
+            default: {
+              toast.error(
+                logAndFormatError(
+                  err,
+                  'Sorry, we could not validate your reset link.',
+                ),
+              );
+              setTokenValid(false);
+            }
+          }
         });
     }
   }, [token, validateToken]);

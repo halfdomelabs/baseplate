@@ -24,7 +24,7 @@ builder.mutationField('validatePasswordResetToken', (t) =>
   t.fieldWithInputPayload({
     authorize: ['public'],
     payload: {
-      valid: t.payload.field({ type: 'Boolean' }),
+      success: t.payload.field({ type: 'Boolean' }),
     },
     input: {
       token: t.input.field({ required: true, type: 'String' }),

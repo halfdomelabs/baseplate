@@ -126,12 +126,14 @@ const validateTokenSchema = z.object({
 /**
  * Validates a password reset token without consuming it.
  * Used by the frontend to verify the token is valid before showing the reset form.
+ *
+ * @throws BadRequestError with code 'invalid-token' if the token is invalid or expired
  */
 export async function validatePasswordResetToken({
   token: rawToken,
 }: {
   token: string;
-}): Promise<{ valid: boolean }> {
+}): Promise<{ success: true }> {
   const { token } = await validateTokenSchema
     .parseAsync({ token: rawToken })
     .catch(handleZodRequestValidationError);
@@ -141,7 +143,11 @@ export async function validatePasswordResetToken({
     token,
   });
 
-  return { valid: record !== null };
+  if (!record) {
+    throw new BadRequestError('Invalid or expired token', 'invalid-token');
+  }
+
+  return { success: true };
 }
 
 const completePasswordResetSchema = z.object({
