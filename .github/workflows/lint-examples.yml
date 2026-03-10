@@ -8,11 +8,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "examples/**"
+      - 'examples/**'
   push:
     branches: [main]
     paths:
-      - "examples/**"
+      - 'examples/**'
 
 jobs:
   discover:

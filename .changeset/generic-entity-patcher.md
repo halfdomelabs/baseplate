@@ -7,4 +7,3 @@
 ---
 
 Replace model-specific merger with generic schema-driven definition patcher
-

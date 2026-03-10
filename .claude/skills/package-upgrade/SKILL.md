@@ -23,11 +23,13 @@ Both locations must be kept in sync to ensure generated projects use the intende
 Before upgrading, identify where the package is defined:
 
 **Common generator constants locations:**
+
 - `packages/react-generators/src/constants/react-packages.ts` - React, Vite, Tailwind, UI libraries
 - `packages/fastify-generators/src/constants/fastify-packages.ts` - Fastify, server-side packages
 - `packages/core-generators/src/constants/core-packages.ts` - Core Node.js utilities
 
 Search commands:
+
 ```bash
 # Search for package in catalog
 grep "package-name" pnpm-workspace.yaml
@@ -49,6 +51,7 @@ npm view package-name versions --json
 ### 3. Research Breaking Changes
 
 Before upgrading, especially for major versions:
+
 - Check the package's CHANGELOG.md or release notes
 - Look for migration guides
 - Check compatibility with other packages (peer dependencies)
@@ -58,6 +61,7 @@ Before upgrading, especially for major versions:
 #### 4.1 Update Monorepo Catalog
 
 Edit `pnpm-workspace.yaml`:
+
 ```yaml
 catalog:
   package-name: NEW_VERSION
@@ -66,6 +70,7 @@ catalog:
 #### 4.2 Update Generator Constants
 
 Find and update the appropriate constants file:
+
 ```typescript
 export const PACKAGES = {
   'package-name': 'NEW_VERSION',
@@ -95,6 +100,7 @@ mcp__baseplate_dev_server__sync_all_projects({
 ```
 
 This command:
+
 - Regenerates all projects in `examples/` directory
 - Updates `package.json` files with new versions
 - Ensures generated code reflects any API changes
@@ -149,6 +155,7 @@ Upgrade package-name to X.Y.Z
 ```
 
 **Changeset guidelines:**
+
 - Use patch level for most package upgrades unless they introduce breaking changes
 - Include affected package names in the frontmatter
 - List all upgraded packages with version changes
@@ -156,16 +163,19 @@ Upgrade package-name to X.Y.Z
 ## Package Categories
 
 ### Frontend Packages (React Generators)
+
 **Location:** `packages/react-generators/src/constants/react-packages.ts`
 
 Common packages: `react`, `react-dom`, `vite`, `@vitejs/plugin-react`, `tailwindcss`, `@tailwindcss/vite`, `@tanstack/react-router`, `@apollo/client`, `graphql`
 
 ### Backend Packages (Fastify Generators)
+
 **Location:** `packages/fastify-generators/src/constants/fastify-packages.ts`
 
 Common packages: `fastify`, `@pothos/core`, `prisma`, `zod`
 
 ### Core Packages (Core Generators)
+
 **Location:** `packages/core-generators/src/constants/core-packages.ts`
 
 Common packages: `typescript`, `eslint`, `prettier`, `vitest`
@@ -173,16 +183,19 @@ Common packages: `typescript`, `eslint`, `prettier`, `vitest`
 ## Troubleshooting
 
 ### Peer Dependency Warnings
+
 1. Check if newer versions of the package are available
 2. Look for compatibility matrices in package documentation
 3. Use `pnpm dedupe` to resolve conflicts
 
 ### Type Errors After Upgrade
+
 1. Check the package's TypeScript definitions
 2. Update imports and usage to match new API
 3. Install updated `@types/*` packages if needed
 
 ### Build Failures
+
 1. Check package changelog for breaking configuration changes
 2. Update relevant config files (vite.config.ts, etc.)
 3. Look for migration guides in package documentation
