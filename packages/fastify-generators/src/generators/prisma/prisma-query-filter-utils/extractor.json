@@ -6,6 +6,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "main-group",
       "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
         "dataUtilsImportsProvider": {
           "importName": "dataUtilsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
@@ -29,6 +33,10 @@
         "ModelQueryFilterConfig": {
           "isTypeOnly": true,
           "name": "ModelQueryFilterConfig"
+        },
+        "QueryFilterBuildWhereOptions": {
+          "isTypeOnly": true,
+          "name": "QueryFilterBuildWhereOptions"
         },
         "QueryFilterRole": { "isTypeOnly": true, "name": "QueryFilterRole" }
       },

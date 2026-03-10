@@ -1,3 +1,4 @@
+import type { AuthRole } from '../modules/accounts/constants/auth-roles.constants.js';
 import type {
   ModelPropName,
   WhereInput,
@@ -13,6 +14,14 @@ import { ForbiddenError } from './http-errors.js';
  */
 interface OrWhereClause<TModelName extends ModelPropName> {
   OR: NonNullable<WhereInput<TModelName>>[];
+}
+
+/**
+ * Options for `buildWhere` to configure bypass behavior.
+ */
+export interface QueryFilterBuildWhereOptions {
+  /** Global roles that bypass the query filter entirely. If the user has any of these roles, no filter is applied. */
+  bypassRoles?: AuthRole[];
 }
 
 /**
@@ -69,16 +78,18 @@ export interface ModelQueryFilter<
    *
    * Evaluates each role and combines with OR logic (user needs to
    * satisfy at least one role). Returns `undefined` if any role
-   * grants unrestricted access.
+   * grants unrestricted access or if the user has a bypass role.
    *
    * @param ctx - Service context with auth info
    * @param roleNames - Which roles to evaluate
+   * @param options - Optional configuration for bypass behavior
    * @returns A `{ OR: [...] }` where clause, or `undefined` if no filtering needed
    * @throws {ForbiddenError} If all roles deny access
    */
   buildWhere(
     ctx: ServiceContext,
     roleNames: (keyof TRoles)[],
+    options?: QueryFilterBuildWhereOptions,
   ): OrWhereClause<TModelName> | undefined;
 
   /**
@@ -133,7 +144,20 @@ export function createModelQueryFilter<
     model: config.model,
     roles: config.roles,
 
-    buildWhere(ctx, roleNames): OrWhereClause<TModelName> | undefined {
+    buildWhere(
+      ctx,
+      roleNames,
+      options?,
+    ): OrWhereClause<TModelName> | undefined {
+      // If the user has any bypass role, skip filtering entirely
+      if (
+        options?.bypassRoles != null &&
+        options.bypassRoles.length > 0 &&
+        ctx.auth.hasSomeRole(options.bypassRoles)
+      ) {
+        return undefined;
+      }
+
       const results = roleNames.map((name) => config.roles[name](ctx));
 
       // If any role grants unrestricted access, no filter needed

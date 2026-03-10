@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
@@ -31,6 +32,7 @@ const prismaPrismaQueryFilterUtilsRenderers =
 
 const prismaPrismaQueryFilterUtilsRenderersTask = createGeneratorTask({
   dependencies: {
+    authRolesImports: authRolesImportsProvider,
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: PRISMA_PRISMA_QUERY_FILTER_UTILS_PATHS.provider,
@@ -42,6 +44,7 @@ const prismaPrismaQueryFilterUtilsRenderersTask = createGeneratorTask({
       prismaPrismaQueryFilterUtilsRenderers.export(),
   },
   run({
+    authRolesImports,
     dataUtilsImports,
     errorHandlerServiceImports,
     paths,
@@ -58,6 +61,7 @@ const prismaPrismaQueryFilterUtilsRenderersTask = createGeneratorTask({
                   PRISMA_PRISMA_QUERY_FILTER_UTILS_TEMPLATES.mainGroupGroup,
                 paths,
                 importMapProviders: {
+                  authRolesImports,
                   dataUtilsImports,
                   errorHandlerServiceImports,
                   serviceContextImports,
