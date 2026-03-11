@@ -179,6 +179,8 @@ for (const packageName of PACKAGE_ORDER) {
       console.info('already gone, skipping');
       totalSkipped++;
       continue;
+    } else {
+      console.info('');
     }
 
     const { success } = unpublishVersion(packageName, version);
