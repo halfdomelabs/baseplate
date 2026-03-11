@@ -25,8 +25,8 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version-file: package.json
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@baseplate-dev'
+          registry-url: "https://registry.npmjs.org"
+          scope: "@baseplate-dev"
 
       - name: Upgrade npm to v11 # Necessary for trusted publishing
         run: npm install -g npm@11
@@ -38,7 +38,8 @@ jobs:
         uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1.5.3
         with:
           publish: pnpm release
-          title: 'chore: Version Packages'
+          version: pnpm run version
+          title: "chore: Version Packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

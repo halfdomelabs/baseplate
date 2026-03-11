@@ -48,6 +48,7 @@
     "test-project:run-env": "pnpm --filter @baseplate-dev/project-builder-test test-project:run-env",
     "test-project:save": "pnpm --filter @baseplate-dev/project-builder-test test-project:save",
     "typecheck": "turbo run typecheck --affected --continue",
+    "version": "pnpm changeset version && node ./scripts/fix-versions.js",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
