@@ -1,5 +1,11 @@
 # @baseplate-dev/plugin-queue
 
+## 0.6.2
+
+### Patch Changes
+
+- Reset version to 0.6.2 to fix accidental major version bumps caused by missing changeset fixed-group configuration.
+
 ## 3.0.1
 
 ### Patch Changes
