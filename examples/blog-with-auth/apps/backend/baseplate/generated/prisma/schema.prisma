@@ -14,6 +14,16 @@ datasource db {
   provider = "postgresql"
 }
 
+model Article {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  content   String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("article")
+}
+
 model AuthVerification {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type       String

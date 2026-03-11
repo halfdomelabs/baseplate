@@ -20,11 +20,15 @@
     "pathRootName": "module-root"
   },
   {
+    "canonicalPath": "@/src/modules/blogs",
+    "pathRootName": "module-root"
+  },
+  {
     "canonicalPath": "@/src/modules/auth",
     "pathRootName": "module-root"
   },
   {
-    "canonicalPath": "@/src/modules/blogs",
+    "canonicalPath": "@/src/modules/articles",
     "pathRootName": "module-root"
   },
   {
