@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const ROOT_DIR = __dirname;
+const ROOT_DIR = path.join(__dirname, '..');
 const SKIP_LIST_PATH = path.join(
   ROOT_DIR,
   'scripts',
@@ -35,6 +35,10 @@ if (!existsSync(SKIP_LIST_PATH)) {
 
 /** @type {Record<string, string[]>} */
 const skipList = JSON.parse(readFileSync(SKIP_LIST_PATH, 'utf8'));
+
+// Since all @baseplate-dev/* packages are in a unified fixed versioning group,
+// a version is skippable if it appears in ANY package's skip list.
+const allSkippedVersions = new Set(Object.values(skipList).flat());
 
 /**
  * Increment the patch segment of a semver string.
@@ -58,6 +62,27 @@ for await (const p of glob(
   packageJsonPaths.push(p);
 }
 
+// Sanity check: all workspace packages must be on the same version before we proceed.
+// If they're not, the fixed versioning group isn't in effect yet — bail safely.
+/** @type {Map<string, string>} */
+const packageVersions = new Map();
+for (const relPath of packageJsonPaths) {
+  const absPath = path.join(ROOT_DIR, relPath);
+  const pkg = JSON.parse(readFileSync(absPath, 'utf8'));
+  if (pkg.name && pkg.version) {
+    packageVersions.set(pkg.name, pkg.version);
+  }
+}
+
+const uniqueVersions = new Set(packageVersions.values());
+if (uniqueVersions.size > 1) {
+  console.warn(
+    'fix-versions: workspace packages are not all on the same version — skipping (unified fixed versioning not yet in effect)',
+  );
+  console.warn(`  Versions found: ${[...uniqueVersions].join(', ')}`);
+  process.exit(0);
+}
+
 let bumped = 0;
 
 for (const relPath of packageJsonPaths) {
@@ -67,11 +92,10 @@ for (const relPath of packageJsonPaths) {
 
   if (!name || !version) continue;
 
-  const skipVersions = skipList[name];
-  if (!skipVersions || !skipVersions.includes(version)) continue;
+  if (!allSkippedVersions.has(version)) continue;
 
   let newVersion = incrementPatch(version);
-  while (skipVersions.includes(newVersion)) {
+  while (allSkippedVersions.has(newVersion)) {
     newVersion = incrementPatch(newVersion);
   }
   console.info(

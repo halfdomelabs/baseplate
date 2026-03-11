@@ -55,9 +55,7 @@
     "4.0.3",
     "5.0.0"
   ],
-  "@baseplate-dev/plugin-email": [
-    "1.0.0"
-  ],
+  "@baseplate-dev/plugin-email": ["1.0.0"],
   "@baseplate-dev/plugin-queue": [
     "1.0.0",
     "1.0.1",
@@ -70,9 +68,7 @@
     "2.0.3",
     "3.0.0"
   ],
-  "@baseplate-dev/plugin-rate-limit": [
-    "1.0.0"
-  ],
+  "@baseplate-dev/plugin-rate-limit": ["1.0.0"],
   "@baseplate-dev/project-builder-common": [
     "0.2.0",
     "0.2.1",
