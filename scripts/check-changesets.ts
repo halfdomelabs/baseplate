@@ -156,8 +156,12 @@ async function extractAndValidatePackage(
     const mismatchedFiles = fileMatches.filter(({ isMatch }) => !isMatch);
 
     // Check if there are files in the package that aren't in the expected files
+    // Ignore files that match exclude patterns (e.g. old published packages may include .map files
+    // that are now excluded via !dist/**/*.map)
     const extraFiles = [...filesInPackage].filter(
-      (file) => !expectedFiles.has(file),
+      (file) =>
+        !expectedFiles.has(file) &&
+        !excludePatterns.some((pattern) => path.matchesGlob(file, pattern)),
     );
 
     if (
@@ -225,7 +229,7 @@ async function getLastPackageTag(): Promise<string | null> {
  * Uses the last git tag as a comparison point if available
  * @returns Array of package names to be published
  */
-async function getPackagesToPublish(): Promise<string[]> {
+async function getPackagesToPublish(lastTag: string | null): Promise<string[]> {
   // Check if any changeset files exist
   const changesetFiles = globSync('.changeset/*.md').filter(
     (file) => file !== '.changeset/README.md',
@@ -238,9 +242,6 @@ async function getPackagesToPublish(): Promise<string[]> {
   }
 
   try {
-    // Get the last tag for the specified package
-    const lastTag = await getLastPackageTag();
-
     // Run changeset status command with --since flag if a tag was found
     const changesetCommand = lastTag
       ? `pnpm changeset status --since ${lastTag} --output=${CHANGESET_OUTPUT_FILE}`
@@ -281,26 +282,50 @@ async function checkChangesets(): Promise<void> {
     // Step 1: Create a temporary directory
     console.info(`Created temporary directory: ${tempDir}`);
 
-    // Step 2: Get the list of affected packages from turbo
+    // Step 2: Get the last tag (used for both changeset status and git diff filtering)
+    const lastTag = await getLastPackageTag();
+
+    // Step 3: Get the list of affected packages from turbo
     console.info('Getting affected packages from turbo...');
     const { stdout: turboOutput } = await execAsync(
       `pnpm turbo ls --affected --output json`,
     );
     const turboData = JSON.parse(turboOutput) as TurboOutput;
 
-    const affectedPackageNames = turboData.packages.items.map(
-      (item) => item.name,
-    );
-    console.info(
-      `Found ${affectedPackageNames.length} affected packages from turbo:`,
-    );
-    console.info(affectedPackageNames.join(', '));
+    // Filter to packages whose own directory actually changed since the last tag.
+    // Without this, root-level file changes (e.g. package.json, knip.config.js) cause
+    // turbo to mark all packages as affected via cascading, leading to false positives.
+    let changedFilePaths: Set<string> | null = null;
+    if (lastTag) {
+      const { stdout: diffOutput } = await execAsync(
+        `git diff "${lastTag}"..HEAD --name-only`,
+      );
+      changedFilePaths = new Set(diffOutput.trim().split('\n').filter(Boolean));
+    }
 
-    // Step 3: Get packages to be published from changeset
+    const affectedPackageNames = turboData.packages.items
+      .map((item) => item.name)
+      .filter((name) => {
+        if (!changedFilePaths) return true;
+        const packageItem = turboData.packages.items.find(
+          (i) => i.name === name,
+        );
+        if (!packageItem) return true;
+        return [...changedFilePaths].some((f) =>
+          f.startsWith(`${packageItem.path}/`),
+        );
+      });
+
+    console.info(
+      `Found ${affectedPackageNames.length} affected packages from turbo (filtered by git diff):`,
+    );
+    console.info(affectedPackageNames.join(', ') || 'None');
+
+    // Step 4: Get packages to be published from changeset
     console.info('Getting packages from changeset...');
 
     // Extract packages that will be published (from the releases array)
-    const packagesToPublish = await getPackagesToPublish();
+    const packagesToPublish = await getPackagesToPublish(lastTag);
 
     console.info(
       `Packages to be published according to changeset:`,
