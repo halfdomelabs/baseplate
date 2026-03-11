@@ -137,10 +137,12 @@ export const prismaDataUpdateGenerator = createGenerator({
                   loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),${authorizeFragment}
                 });
 
-                return ${dataUtilsImports.commitUpdate.fragment()}(plan, {
+                const item = await ${dataUtilsImports.commitUpdate.fragment()}(plan, {
                   query,
                   execute: ${executeCallbackFragment},
                 });
+
+                return item;
               }
             `;
 

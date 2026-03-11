@@ -50,7 +50,7 @@ export async function createArticle<
     authorize: ['admin'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({ tx, data }) => {
       const item = await tx.article.create({
@@ -59,6 +59,8 @@ export async function createArticle<
       return item;
     },
   });
+
+  return item;
 }
 
 export const articleUpdateSchema = generateUpdateSchema(articleInputFields);
@@ -84,7 +86,7 @@ export async function updateArticle<
     authorize: ['admin'],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data }) => {
       const item = await tx.article.update({
@@ -94,4 +96,6 @@ export async function updateArticle<
       return item;
     },
   });
+
+  return item;
 }

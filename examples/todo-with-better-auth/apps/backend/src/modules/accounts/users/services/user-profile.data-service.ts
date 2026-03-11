@@ -34,7 +34,7 @@ export async function deleteUserProfile<
 }: DataDeleteInput<'userProfile', TIncludeArgs>): Promise<
   GetPayload<'userProfile', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'userProfile',
     query,
     context,
@@ -46,4 +46,6 @@ export async function deleteUserProfile<
       return item;
     },
   });
+
+  return item;
 }

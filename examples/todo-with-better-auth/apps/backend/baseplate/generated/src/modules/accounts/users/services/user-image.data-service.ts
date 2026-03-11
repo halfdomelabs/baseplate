@@ -30,7 +30,7 @@ export async function deleteUserImage<
 }: DataDeleteInput<'userImage', TIncludeArgs>): Promise<
   GetPayload<'userImage', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'userImage',
     query,
     context,
@@ -42,4 +42,6 @@ export async function deleteUserImage<
       return item;
     },
   });
+
+  return item;
 }

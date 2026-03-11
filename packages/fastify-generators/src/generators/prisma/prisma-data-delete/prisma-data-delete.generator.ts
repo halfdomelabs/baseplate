@@ -99,12 +99,14 @@ export const prismaDataDeleteGenerator = createGenerator({
               }: ${dataUtilsImports.DataDeleteInput.typeFragment()}<${quot(modelVar)}, TIncludeArgs>): Promise<
                 ${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>
               > {
-                return ${dataUtilsImports.commitDelete.fragment()}({
+                const item = await ${dataUtilsImports.commitDelete.fragment()}({
                   model: ${quot(modelVar)},
                   query,
                   context,
                   execute: ${executeCallbackFragment},${authorizeFragment}${loadExistingFragment}
                 });
+
+                return item;
               }
             `;
 

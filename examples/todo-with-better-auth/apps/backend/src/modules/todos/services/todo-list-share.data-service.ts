@@ -58,7 +58,7 @@ export async function createTodoListShare<
     authorize: ['user'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
       const item = await tx.todoListShare.create({
@@ -72,6 +72,8 @@ export async function createTodoListShare<
       return item;
     },
   });
+
+  return item;
 }
 
 export const todoListShareUpdateSchema = generateUpdateSchema(
@@ -100,7 +102,7 @@ export async function updateTodoListShare<
     authorize: ['user'],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
       const item = await tx.todoListShare.update({
@@ -115,6 +117,8 @@ export async function updateTodoListShare<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteTodoListShare<
@@ -127,7 +131,7 @@ export async function deleteTodoListShare<
 }: DataDeleteInput<'todoListShare', TIncludeArgs>): Promise<
   GetPayload<'todoListShare', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'todoListShare',
     query,
     context,
@@ -140,4 +144,6 @@ export async function deleteTodoListShare<
     },
     authorize: ['user'],
   });
+
+  return item;
 }

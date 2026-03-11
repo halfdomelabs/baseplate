@@ -51,7 +51,7 @@ export async function createUser<
     authorize: ['admin'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({ tx, data, query }) => {
       const item = await tx.user.create({
@@ -61,6 +61,8 @@ export async function createUser<
       return item;
     },
   });
+
+  return item;
 }
 
 export const userUpdateSchema = generateUpdateSchema(userInputFields);
@@ -84,7 +86,7 @@ export async function updateUser<
     authorize: ['admin'],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data, query }) => {
       const item = await tx.user.update({
@@ -95,6 +97,8 @@ export async function updateUser<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteUser<
@@ -106,7 +110,7 @@ export async function deleteUser<
 }: DataDeleteInput<'user', TIncludeArgs>): Promise<
   GetPayload<'user', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'user',
     query,
     context,
@@ -119,4 +123,6 @@ export async function deleteUser<
     },
     authorize: ['admin'],
   });
+
+  return item;
 }

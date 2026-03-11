@@ -47,7 +47,7 @@ export async function updateBlog<
     authorize: ['admin', blogAuthorizer.roles.owner],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data: { userId, ...rest }, query }) => {
       const item = await tx.blog.update({
@@ -58,6 +58,8 @@ export async function updateBlog<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteBlog<
@@ -69,7 +71,7 @@ export async function deleteBlog<
 }: DataDeleteInput<'blog', TIncludeArgs>): Promise<
   GetPayload<'blog', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'blog',
     query,
     context,
@@ -83,4 +85,6 @@ export async function deleteBlog<
     authorize: ['admin', blogAuthorizer.roles.owner],
     loadExisting: () => prisma.blog.findUniqueOrThrow({ where }),
   });
+
+  return item;
 }

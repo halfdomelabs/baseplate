@@ -82,7 +82,7 @@ export async function createTodoItem<
     authorize: ['user'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({
       tx,
@@ -100,6 +100,8 @@ export async function createTodoItem<
       return item;
     },
   });
+
+  return item;
 }
 
 export const todoItemUpdateSchema = generateUpdateSchema(todoItemInputFields);
@@ -125,7 +127,7 @@ export async function updateTodoItem<
     authorize: ['admin', todoItemAuthorizer.roles.owner],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({
       tx,
@@ -144,6 +146,8 @@ export async function updateTodoItem<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteTodoItem<
@@ -155,7 +159,7 @@ export async function deleteTodoItem<
 }: DataDeleteInput<'todoItem', TIncludeArgs>): Promise<
   GetPayload<'todoItem', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'todoItem',
     query,
     context,
@@ -169,4 +173,6 @@ export async function deleteTodoItem<
     authorize: ['admin', todoItemAuthorizer.roles.owner],
     loadExisting: () => prisma.todoItem.findUniqueOrThrow({ where }),
   });
+
+  return item;
 }

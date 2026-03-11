@@ -114,10 +114,12 @@ export const prismaDataCreateGenerator = createGenerator({
                   context,${authorizeFragment}
                 });
 
-                return ${dataUtilsImports.commitCreate.fragment()}(plan, {
+                const item = await ${dataUtilsImports.commitCreate.fragment()}(plan, {
                   query,
                   execute: ${executeCallbackFragment},
                 });
+
+                return item;
               }
             `;
 
