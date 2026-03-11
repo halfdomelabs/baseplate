@@ -9,8 +9,10 @@
  * packages, also deletes git tags for versions >= 1.0.0.
  *
  * Run:
- *   node scripts/version-fix/unpublish.js --dry-run   # preview only
- *   node scripts/version-fix/unpublish.js              # execute
+ *   node scripts/version-fix/unpublish.js --dry-run            # preview only
+ *   node scripts/version-fix/unpublish.js                      # execute (unpublish)
+ *   node scripts/version-fix/unpublish.js --deprecate          # deprecate instead of unpublish
+ *   node scripts/version-fix/unpublish.js --deprecate --dry-run  # preview deprecations
  *
  * IMPORTANT: Run collect-bad-versions.js first to generate the skip list.
  */
@@ -29,9 +31,16 @@ const SKIP_LIST_PATH = path.join(
 );
 
 const isDryRun = process.argv.includes('--dry-run');
+const isDeprecate = process.argv.includes('--deprecate');
 
 if (isDryRun) {
   console.info('🔍 DRY RUN — no changes will be made\n');
+}
+
+if (isDeprecate) {
+  console.info(
+    '⚠️  DEPRECATE MODE — versions will be deprecated instead of unpublished\n',
+  );
 }
 
 if (!existsSync(SKIP_LIST_PATH)) {
@@ -89,6 +98,14 @@ function run(cmd) {
 }
 
 /**
+ * Run a shell command with full stdio access (for interactive commands like npm unpublish).
+ * @param {string} cmd
+ */
+function runInteractive(cmd) {
+  execSync(cmd, { stdio: 'inherit' });
+}
+
+/**
  * Check whether a specific version is still published on npm.
  * @param {string} packageName
  * @param {string} version
@@ -111,6 +128,38 @@ function isVersionPublished(packageName, version) {
 }
 
 /**
+ * Check whether a specific version is already deprecated on npm.
+ * @param {string} packageName
+ * @param {string} version
+ * @returns {boolean}
+ */
+function isVersionDeprecated(packageName, version) {
+  try {
+    const result = run(`npm view ${packageName}@${version} deprecated`);
+    return result.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Deprecate a specific package version on npm.
+ * @param {string} packageName
+ * @param {string} version
+ */
+function deprecateVersion(packageName, version) {
+  const message =
+    'This version was published incorrectly. Please use the latest version instead.';
+  if (isDryRun) {
+    console.info(
+      `  [dry-run] npm deprecate ${packageName}@${version} "${message}"`,
+    );
+    return;
+  }
+  runInteractive(`npm deprecate ${packageName}@${version} "${message}"`);
+}
+
+/**
  * Unpublish a specific package version from npm.
  * @param {string} packageName
  * @param {string} version
@@ -123,17 +172,12 @@ function unpublishVersion(packageName, version) {
   }
 
   try {
-    run(`npm unpublish ${packageName}@${version}`);
+    runInteractive(`npm unpublish --verbose ${packageName}@${version}`);
+    return { success: true, alreadyGone: false };
   } catch {
     // unpublish exits non-zero if already gone — that's fine
+    return { success: true, alreadyGone: true };
   }
-
-  // Verify the version is actually gone
-  const stillPublished = isVersionPublished(packageName, version);
-  if (stillPublished) {
-    return { success: false, alreadyGone: false };
-  }
-  return { success: true, alreadyGone: false };
 }
 
 /**
@@ -186,7 +230,7 @@ for (const packageName of PACKAGE_ORDER) {
       console.info('already gone, skipping');
       totalSkipped++;
       // Still clean up stale git tags for plugins even if version is already gone
-      if (isPlugin && semverMajor(version) >= 1) {
+      if (!isDeprecate && isPlugin && semverMajor(version) >= 1) {
         deleteGitTag(`${packageName}@${version}`);
       }
       continue;
@@ -194,25 +238,38 @@ for (const packageName of PACKAGE_ORDER) {
       console.info('');
     }
 
-    const { success } = unpublishVersion(packageName, version);
-
-    if (success) {
-      if (!isDryRun) {
-        console.info('✅ unpublished');
-      }
-      totalUnpublished++;
-
-      // Delete git tag for plugin versions >= 1.0.0
-      if (isPlugin && semverMajor(version) >= 1) {
-        const tag = `${packageName}@${version}`;
-        deleteGitTag(tag);
+    if (isDeprecate) {
+      if (!isDryRun && isVersionDeprecated(packageName, version)) {
+        console.info('already deprecated, skipping');
+        totalSkipped++;
+      } else {
+        deprecateVersion(packageName, version);
+        if (!isDryRun) {
+          console.info('✅ deprecated');
+        }
+        totalUnpublished++;
       }
     } else {
-      console.info('❌ FAILED (still published after unpublish attempt)');
-      console.warn(
-        `    The npm 72-hour restriction may be blocking this. Contact support@npmjs.com.`,
-      );
-      totalFailed++;
+      const { success } = unpublishVersion(packageName, version);
+
+      if (success) {
+        if (!isDryRun) {
+          console.info('✅ unpublished');
+        }
+        totalUnpublished++;
+
+        // Delete git tag for plugin versions >= 1.0.0
+        if (isPlugin && semverMajor(version) >= 1) {
+          const tag = `${packageName}@${version}`;
+          deleteGitTag(tag);
+        }
+      } else {
+        console.info('❌ FAILED (still published after unpublish attempt)');
+        console.warn(
+          `    The npm 72-hour restriction may be blocking this. Contact support@npmjs.com.`,
+        );
+        totalFailed++;
+      }
     }
   }
 
@@ -221,12 +278,15 @@ for (const packageName of PACKAGE_ORDER) {
 
 console.info('─'.repeat(50));
 if (isDryRun) {
+  const action = isDeprecate ? 'deprecate' : 'unpublish';
   console.info(
-    `DRY RUN complete. Would unpublish ${totalUnpublished + totalFailed} versions.`,
+    `DRY RUN complete. Would ${action} ${totalUnpublished + totalFailed} versions.`,
   );
 } else {
   console.info(`Done.`);
-  console.info(`  ✅ Unpublished: ${totalUnpublished}`);
+  console.info(
+    `  ✅ ${isDeprecate ? 'Deprecated' : 'Unpublished'}: ${totalUnpublished}`,
+  );
   if (totalSkipped > 0) console.info(`  ⏭️  Already gone: ${totalSkipped}`);
   if (totalFailed > 0) {
     console.info(`  ❌ Failed: ${totalFailed}`);

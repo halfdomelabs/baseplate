@@ -42,7 +42,7 @@
     "test:affected": "turbo run test --affected --continue",
     "test:e2e": "turbo run test:e2e --continue",
     "test:e2e:affected": "turbo run test:e2e --affected --continue",
-    "test:gen": "pnpm --filter @baseplate-dev/project-builder-test test:gen",
+    "test:gen": "turbo run test:gen",
     "test:only": "pnpm run -r test",
     "test-project:generate": "pnpm --filter @baseplate-dev/project-builder-test test-project:generate",
     "test-project:run-env": "pnpm --filter @baseplate-dev/project-builder-test test-project:run-env",
