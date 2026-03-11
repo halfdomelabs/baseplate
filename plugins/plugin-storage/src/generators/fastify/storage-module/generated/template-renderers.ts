@@ -249,7 +249,6 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   FASTIFY_STORAGE_MODULE_TEMPLATES.utilsValidatePendingUpload,
                 destination: paths.utilsValidatePendingUpload,
                 importMapProviders: {
-                  dataUtilsImports,
                   errorHandlerServiceImports,
                   prismaGeneratedImports,
                   prismaImports,

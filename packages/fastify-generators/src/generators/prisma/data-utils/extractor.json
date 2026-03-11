@@ -142,8 +142,8 @@
       "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-types.ts",
       "projectExports": {
         "GetPayload": { "isTypeOnly": true, "name": "GetPayload" },
-        "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
         "ModelInclude": { "isTypeOnly": true, "name": "ModelInclude" },
+        "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
         "WhereInput": { "isTypeOnly": true, "name": "WhereInput" },
         "WhereUniqueInput": { "isTypeOnly": true, "name": "WhereUniqueInput" }
       },
@@ -154,9 +154,18 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "data-operations",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/utils/data-operations/prisma-utils.ts",
-      "referencedGeneratorTemplates": ["prisma-types", "types"],
+      "referencedGeneratorTemplates": ["prisma-types"],
       "sourceFile": "src/utils/data-operations/prisma-utils.ts",
       "variables": {}
     },
@@ -224,10 +233,6 @@
         "InferInput": { "isTypeOnly": true, "name": "InferInput" },
         "OperationContext": { "isTypeOnly": true, "name": "OperationContext" },
         "OperationHooks": { "isTypeOnly": true, "name": "OperationHooks" },
-        "PrismaTransaction": {
-          "isTypeOnly": true,
-          "name": "PrismaTransaction"
-        },
         "TransactionalOperationContext": {
           "isTypeOnly": true,
           "name": "TransactionalOperationContext"

@@ -2,26 +2,17 @@
 
 import type {
   GetPayload,
-  ModelPropName,
   ModelInclude,
+  ModelPropName,
   WhereUniqueInput,
 } from '$prismaTypes';
 import type {
   GlobalRoleCheck,
   InstanceRoleCheck,
 } from '%authorizerUtilsImports';
-import type { PrismaClient } from '%prismaGeneratedImports';
+import type { Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
-import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import type { z } from 'zod';
-
-/**
- * Prisma transaction client type for data operations.
- *
- * This is the Prisma client type available within transaction callbacks,
- * with operations that cannot be used inside transactions excluded.
- */
-export type PrismaTransaction = Omit<PrismaClient, ITXClientDenyList>;
 
 /**
  * Type of data operation being performed.
@@ -80,7 +71,7 @@ export interface TransactionalOperationContext<
   TConfig extends { hasResult: boolean },
 > extends OperationContext<TModel, TConfig> {
   /** Prisma transaction client for performing database operations */
-  tx: PrismaTransaction;
+  tx: Prisma.TransactionClient;
 }
 
 /**
@@ -648,7 +639,7 @@ export interface CommitCreateConfig<
 
   /** Execute the Prisma create operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     data: InferFieldsCreateOutput<TFields>;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
@@ -678,7 +669,7 @@ export interface CommitUpdateConfig<
 
   /** Execute the Prisma update operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     data: InferFieldsUpdateOutput<TFields>;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
@@ -723,7 +714,7 @@ export interface CommitDeleteConfig<
 
   /** Execute the Prisma delete operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;

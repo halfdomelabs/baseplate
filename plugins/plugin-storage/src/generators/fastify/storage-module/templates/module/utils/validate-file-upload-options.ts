@@ -4,8 +4,8 @@ import type { StorageAdapter } from '$typesAdapter';
 import type { FileCategory } from '$typesFileCategory';
 import type { ServiceContext } from '%serviceContextImports';
 
-import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { getCategoryByNameOrThrow } from '$configCategories';
+import { getAdapterOrThrow } from '$utilsGetAdapter';
 import {
   getEncodingFromContentType,
   getMimeTypeFromContentType,

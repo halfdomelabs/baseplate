@@ -3,13 +3,14 @@
 import type {
   CreateInput,
   GetPayload,
-  ModelPropName,
   ModelInclude,
+  ModelPropName,
   UpdateInput,
   WhereInput,
   WhereUniqueInput,
 } from '$prismaTypes';
-import type { PrismaTransaction } from '$types';
+import type { Prisma } from '%prismaGeneratedImports';
+import type { prisma } from '%prismaImports';
 
 /**
  * Generic interface for Prisma model delegates.
@@ -82,7 +83,7 @@ interface GenericPrismaDelegate<TModelName extends ModelPropName> {
  * @internal This function is used internally by nested field handlers
  */
 export function makeGenericPrismaDelegate<TModelName extends ModelPropName>(
-  tx: PrismaTransaction,
+  tx: Prisma.TransactionClient | typeof prisma,
   modelName: TModelName,
 ): GenericPrismaDelegate<TModelName> {
   return tx[modelName] as unknown as GenericPrismaDelegate<TModelName>;

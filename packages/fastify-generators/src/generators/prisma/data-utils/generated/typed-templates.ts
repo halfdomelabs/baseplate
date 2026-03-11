@@ -115,8 +115,8 @@ const prismaTypes = createTsTemplateFile({
   name: 'prisma-types',
   projectExports: {
     GetPayload: { isTypeOnly: true },
-    ModelPropName: { isTypeOnly: true },
     ModelInclude: { isTypeOnly: true },
+    ModelPropName: { isTypeOnly: true },
     WhereInput: { isTypeOnly: true },
     WhereUniqueInput: { isTypeOnly: true },
   },
@@ -132,9 +132,12 @@ const prismaTypes = createTsTemplateFile({
 const prismaUtils = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
   name: 'prisma-utils',
-  referencedGeneratorTemplates: { prismaTypes: {}, types: {} },
+  referencedGeneratorTemplates: { prismaTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -183,7 +186,6 @@ const types = createTsTemplateFile({
     InferInput: { isTypeOnly: true },
     OperationContext: { isTypeOnly: true },
     OperationHooks: { isTypeOnly: true },
-    PrismaTransaction: { isTypeOnly: true },
     TransactionalOperationContext: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: { prismaTypes: {} },

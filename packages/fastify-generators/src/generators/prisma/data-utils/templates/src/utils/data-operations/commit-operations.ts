@@ -2,8 +2,8 @@
 
 import type {
   GetPayload,
-  ModelPropName,
   ModelInclude,
+  ModelPropName,
   WhereUniqueInput,
 } from '$prismaTypes';
 import type {

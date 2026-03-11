@@ -1,7 +1,6 @@
-import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import type { z } from 'zod';
 
-import type { PrismaClient } from '@src/generated/prisma/client.js';
+import type { Prisma } from '@src/generated/prisma/client.js';
 
 import type { GlobalRoleCheck, InstanceRoleCheck } from '../authorizers.js';
 import type { ServiceContext } from '../service-context.js';
@@ -11,14 +10,6 @@ import type {
   ModelPropName,
   WhereUniqueInput,
 } from './prisma-types.js';
-
-/**
- * Prisma transaction client type for data operations.
- *
- * This is the Prisma client type available within transaction callbacks,
- * with operations that cannot be used inside transactions excluded.
- */
-export type PrismaTransaction = Omit<PrismaClient, ITXClientDenyList>;
 
 /**
  * Type of data operation being performed.
@@ -77,7 +68,7 @@ export interface TransactionalOperationContext<
   TConfig extends { hasResult: boolean },
 > extends OperationContext<TModel, TConfig> {
   /** Prisma transaction client for performing database operations */
-  tx: PrismaTransaction;
+  tx: Prisma.TransactionClient;
 }
 
 /**
@@ -645,7 +636,7 @@ export interface CommitCreateConfig<
 
   /** Execute the Prisma create operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     data: InferFieldsCreateOutput<TFields>;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
@@ -675,7 +666,7 @@ export interface CommitUpdateConfig<
 
   /** Execute the Prisma update operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     data: InferFieldsUpdateOutput<TFields>;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
@@ -720,7 +711,7 @@ export interface CommitDeleteConfig<
 
   /** Execute the Prisma delete operation inside the transaction */
   execute: (args: {
-    tx: PrismaTransaction;
+    tx: Prisma.TransactionClient;
     query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;
