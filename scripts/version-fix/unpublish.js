@@ -98,8 +98,15 @@ function isVersionPublished(packageName, version) {
   try {
     run(`npm view ${packageName}@${version} version`);
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    const stderr =
+      error instanceof Error && 'stderr' in error
+        ? String(error.stderr)
+        : String(error);
+    if (stderr.includes('E404') || stderr.includes('404')) {
+      return false;
+    }
+    throw error;
   }
 }
 
@@ -178,6 +185,10 @@ for (const packageName of PACKAGE_ORDER) {
     if (!isDryRun && !isVersionPublished(packageName, version)) {
       console.info('already gone, skipping');
       totalSkipped++;
+      // Still clean up stale git tags for plugins even if version is already gone
+      if (isPlugin && semverMajor(version) >= 1) {
+        deleteGitTag(`${packageName}@${version}`);
+      }
       continue;
     } else {
       console.info('');
