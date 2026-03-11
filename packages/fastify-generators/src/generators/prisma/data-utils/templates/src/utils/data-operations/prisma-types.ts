@@ -16,12 +16,12 @@ export type ModelPropName = Prisma.TypeMap['meta']['modelProps'];
  * Infers the return type of a Prisma query for a given model and query arguments.
  *
  * This type extracts the shape of data returned from a Prisma query, respecting
- * any `include` arguments provided. Only the `include` key from `TQueryArgs` is
+ * any `include` arguments provided. Only the `include` key from `TIncludeArgs` is
  * forwarded to Prisma's Result type; `select` is stripped to avoid producing
  * an unresolvable union type.
  *
  * @template TModelName - The Prisma model name
- * @template TQueryArgs - Optional query arguments (include only)
+ * @template TIncludeArgs - Optional query arguments (include only)
  *
  * @example
  * ```typescript
