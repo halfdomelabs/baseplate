@@ -45,10 +45,10 @@ interface GenerateCreateExecuteCallbackResult {
  * @returns Result containing the execute callback function fragment
  *
  * @example
- * // No relations
+ * // No relations (query is omitted since the model has no include support)
  * generateCreateExecuteCallback({...})
- * // Returns: async ({ tx, data, query }) => {
- * //   const item = await tx.user.create({ data, ...query });
+ * // Returns: async ({ tx, data }) => {
+ * //   const item = await tx.user.create({ data });
  * //   return item;
  * // }
  *
@@ -149,10 +149,10 @@ interface GenerateUpdateExecuteCallbackResult {
  * @returns Result containing the execute callback function fragment
  *
  * @example
- * // No relations
+ * // No relations (query is omitted since the model has no include support)
  * generateUpdateExecuteCallback({...})
- * // Returns: async ({ tx, data, query }) => {
- * //   const item = await tx.user.update({ where, data, ...query });
+ * // Returns: async ({ tx, data }) => {
+ * //   const item = await tx.user.update({ where, data });
  * //   return item;
  * // }
  *
