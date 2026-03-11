@@ -42,10 +42,7 @@ const globalSetupPrisma = createTsTemplateFile({
 
 const prismaTestHelper = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
+  importMapProviders: { prismaImports: prismaImportsProvider },
   name: 'prisma-test-helper',
   projectExports: { prismaMock: {} },
   source: {

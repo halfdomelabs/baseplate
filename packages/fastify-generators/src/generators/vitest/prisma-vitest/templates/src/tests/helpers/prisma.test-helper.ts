@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import type { PrismaClient } from '%prismaGeneratedImports';
 import type { DeepMockProxy } from 'vitest-mock-extended';
 
 import { prisma } from '%prismaImports';
@@ -9,18 +8,11 @@ import { mockDeep, mockReset } from 'vitest-mock-extended';
 
 vi.mock(TPL_PRISMA_PATH, () => ({
   __esModule: true,
-  prisma: mockDeep<PrismaClient>(),
+  prisma: mockDeep<typeof prisma>(),
 }));
 
-export const prismaMock = prisma as DeepMockProxy<PrismaClient>;
+export const prismaMock = prisma as unknown as DeepMockProxy<typeof prisma>;
 
 beforeEach(() => {
   mockReset(prismaMock);
-
-  // mock $transaction
-  prismaMock.$transaction.mockImplementation((promises) =>
-    typeof promises === 'function'
-      ? promises(prismaMock)
-      : Promise.all(promises),
-  );
 });

@@ -1,16 +1,16 @@
 import type { Command } from 'commander';
 
-import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
-import { enhanceErrorWithContext } from '@baseplate-dev/utils';
+import {
+  createGeneratorAction,
+  deleteTemplateByNameAction,
+  extractTemplatesAction,
+  generateTemplatesAction,
+  invokeServiceActionAsCli,
+  listTemplatesAction,
+} from '@baseplate-dev/project-builder-server/actions';
 import { expandPathWithTilde } from '@baseplate-dev/utils/node';
-import path from 'node:path';
 
-import { logger } from '#src/services/logger.js';
-import { resolveProject } from '#src/utils/list-projects.js';
-
-interface ListTemplatesOptions {
-  json?: boolean;
-}
+import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
 interface DeleteTemplateOptions {
   force?: boolean;
@@ -41,14 +41,11 @@ export function addTemplatesCommand(program: Command): void {
 
   // Templates list subcommand
   templatesCommand
-    .command('list [directory]')
-    .description('Lists all available generators with their templates')
-    .option('--json', 'Output in JSON format', false)
-    .action(
-      async (directory: string | undefined, options: ListTemplatesOptions) => {
-        await handleListTemplates(directory, options);
-      },
-    );
+    .command('list <generator-directory>')
+    .description('Lists all templates in a specific generator directory')
+    .action(async (generatorDirectory: string) => {
+      await handleListTemplates(generatorDirectory);
+    });
 
   // Templates delete subcommand
   templatesCommand
@@ -133,71 +130,15 @@ export function addTemplatesCommand(program: Command): void {
     );
 }
 
-async function handleListTemplates(
-  directory: string | undefined,
-  options: ListTemplatesOptions,
-): Promise<void> {
-  const { discoverGenerators } =
-    await import('@baseplate-dev/project-builder-server/template-extractor');
+async function handleListTemplates(generatorDirectory: string): Promise<void> {
+  const resolvedDirectory = expandPathWithTilde(generatorDirectory);
+  const context = await createServiceActionContext();
 
-  const resolvedDirectory = directory
-    ? expandPathWithTilde(directory)
-    : path.resolve('.');
-  const plugins = await discoverPlugins(process.cwd(), logger);
-
-  try {
-    const generators = await discoverGenerators(
-      resolvedDirectory,
-      plugins,
-      logger,
-    );
-
-    // Use existing basic listing logic
-    if (options.json) {
-      console.info(
-        JSON.stringify(
-          generators.map((g) => ({
-            ...g,
-            templates: Object.fromEntries(
-              Object.entries(g.templates).map(([templatePath, template]) => [
-                templatePath,
-                {
-                  name: template.name,
-                  type: template.type,
-                },
-              ]),
-            ),
-          })),
-          null,
-          2,
-        ),
-      );
-    } else {
-      if (generators.length === 0) {
-        console.info('No generators found with extractor.json files.');
-        return;
-      }
-
-      console.info(`Found ${generators.length} generator(s):\n`);
-
-      for (const generator of generators) {
-        console.info(`📦 ${generator.name}`);
-        console.info(`   Package: ${generator.packageName}`);
-        console.info(`   Path: ${generator.generatorDirectory}`);
-        console.info(
-          `   Templates: ${Object.values(generator.templates)
-            .map((t) => t.name)
-            .join(', ')}`,
-        );
-        console.info();
-      }
-    }
-  } catch (error) {
-    logger.error(
-      `Failed to discover generators: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    throw error;
-  }
+  await invokeServiceActionAsCli(
+    listTemplatesAction,
+    { generatorDirectory: resolvedDirectory },
+    context,
+  );
 }
 
 async function handleDeleteTemplate(
@@ -205,30 +146,21 @@ async function handleDeleteTemplate(
   templateName: string,
   options: DeleteTemplateOptions,
 ): Promise<void> {
-  const { deleteTemplate } =
-    await import('@baseplate-dev/project-builder-server/template-extractor');
   const resolvedDirectory = options.directory
     ? expandPathWithTilde(options.directory)
-    : path.resolve('.');
+    : undefined;
 
-  const plugins = await discoverPlugins(process.cwd(), logger);
+  const context = await createServiceActionContext();
 
-  try {
-    await deleteTemplate(generatorName, templateName, {
-      defaultPlugins: plugins,
-      logger,
+  await invokeServiceActionAsCli(
+    deleteTemplateByNameAction,
+    {
+      generatorName,
+      templateName,
       directory: resolvedDirectory,
-    });
-
-    console.info(
-      `✅ Successfully deleted template '${templateName}' from generator '${generatorName}'`,
-    );
-  } catch (error) {
-    logger.error(
-      `Failed to delete template: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    throw error;
-  }
+    },
+    context,
+  );
 }
 
 async function handleExtractTemplates(
@@ -236,48 +168,34 @@ async function handleExtractTemplates(
   app: string,
   options: ExtractTemplatesOptions,
 ): Promise<void> {
-  try {
-    const { runTemplateExtractorsForProject } =
-      await import('@baseplate-dev/project-builder-server/template-extractor');
+  const context = await createServiceActionContext();
 
-    const projectInfo = await resolveProject(project);
-    const plugins = await discoverPlugins(process.cwd(), logger);
-
-    logger.info(`Extracting templates from project: ${projectInfo.name}`);
-
-    await runTemplateExtractorsForProject(
-      projectInfo.directory,
+  await invokeServiceActionAsCli(
+    extractTemplatesAction,
+    {
+      project,
       app,
-      plugins,
-      logger,
-      {
-        autoGenerateExtractor: options.autoGenerateExtractor,
-        skipClean: options.skipClean,
-      },
-    );
-  } catch (error) {
-    throw enhanceErrorWithContext(
-      error,
-      `Failed to extract templates from project ${project}`,
-    );
-  }
+      autoGenerateExtractor: options.autoGenerateExtractor,
+      skipClean: options.skipClean,
+    },
+    context,
+  );
 }
 
 async function handleGenerateTemplates(
   directory: string | undefined,
   options: GenerateTemplatesOptions,
 ): Promise<void> {
-  const { generateTypedTemplateFiles } =
-    await import('@baseplate-dev/project-builder-server/template-extractor');
+  const context = await createServiceActionContext();
 
-  const resolvedDirectory = directory
-    ? expandPathWithTilde(directory)
-    : undefined;
-  const plugins = await discoverPlugins(process.cwd(), logger);
-
-  await generateTypedTemplateFiles(resolvedDirectory, plugins, logger, {
-    skipClean: options.skipClean,
-  });
+  await invokeServiceActionAsCli(
+    generateTemplatesAction,
+    {
+      project: directory ? expandPathWithTilde(directory) : undefined,
+      skipClean: options.skipClean,
+    },
+    context,
+  );
 }
 
 async function handleCreateGenerator(
@@ -285,30 +203,16 @@ async function handleCreateGenerator(
   directory: string,
   options: CreateGeneratorOptions,
 ): Promise<void> {
-  const { createGenerator } =
-    await import('@baseplate-dev/project-builder-server/actions');
-
   const resolvedDirectory = expandPathWithTilde(directory);
+  const context = await createServiceActionContext();
 
-  try {
-    const result = createGenerator({
+  await invokeServiceActionAsCli(
+    createGeneratorAction,
+    {
       name,
       directory: resolvedDirectory,
       includeTemplates: options.includeTemplates ?? true,
-    });
-
-    console.info(`✅ ${result.message}`);
-    console.info(`📁 Generator path: ${result.generatorPath}`);
-    if (result.filesCreated.length > 0) {
-      console.info(`📄 Files created:`);
-      for (const file of result.filesCreated) {
-        console.info(`   - ${file}`);
-      }
-    }
-  } catch (error) {
-    logger.error(
-      `Failed to create generator: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    throw error;
-  }
+    },
+    context,
+  );
 }

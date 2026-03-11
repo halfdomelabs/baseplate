@@ -37,10 +37,6 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
       "importMapProviders": {
-        "prismaGeneratedImportsProvider": {
-          "importName": "prismaGeneratedImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
-        },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
