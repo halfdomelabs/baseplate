@@ -95,11 +95,12 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.5.3",
+  "cliVersion": "0.6.0",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
-    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
+    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
     { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
@@ -111,6 +112,83 @@
     }
   ],
   "models": [
+    {
+      "featureRef": "articles",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true },
+          "update": { "enabled": true }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "title" },
+            { "ref": "content" },
+            { "ref": "createdAt" }
+          ]
+        },
+        "queries": {
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
+        }
+      },
+      "id": "model:H8WxIUcjt9dy",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:adbpe9Hhybb1",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:jIanyyf_ZfcU",
+            "isOptional": false,
+            "name": "title",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:Dv9F1fcSohQ7",
+            "isOptional": false,
+            "name": "content",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:RT_HtouwECvt",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:MijHKarW5Htf",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"]
+      },
+      "name": "Article",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["title", "content"],
+          "globalRoles": ["admin"]
+        },
+        "transformers": [],
+        "update": {
+          "enabled": true,
+          "fields": ["title", "content"],
+          "globalRoles": ["admin"]
+        }
+      }
+    },
     {
       "featureRef": "accounts",
       "id": "model:wGEO1hZs5XQE",

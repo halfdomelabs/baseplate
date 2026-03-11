@@ -23,6 +23,14 @@ interface GenerateExecuteCallbackConfig {
 }
 
 /**
+ * Check if a Prisma model has any relation fields.
+ * Models without relations don't have `include` in their Prisma args.
+ */
+function modelHasRelations(prismaModel: PrismaOutputModel): boolean {
+  return prismaModel.fields.some((field) => field.type === 'relation');
+}
+
+/**
  * Result of generating create execute callback
  */
 interface GenerateCreateExecuteCallbackResult {
@@ -76,30 +84,50 @@ export function generateCreateExecuteCallback(
     dataName: 'rest',
   });
 
+  const hasRelations = modelHasRelations(prismaModel);
+
   if (passthrough) {
     return {
-      executeCallbackFragment: tsTemplate`
-        async ({ tx, data, query }) => {
-          const item = await tx.${modelVariableName}.create({
-            data,
-            ...query,
-          });
-          return item;
-        }
-      `,
+      executeCallbackFragment: hasRelations
+        ? tsTemplate`
+          async ({ tx, data, query }) => {
+            const item = await tx.${modelVariableName}.create({
+              data,
+              ...query,
+            });
+            return item;
+          }
+        `
+        : tsTemplate`
+          async ({ tx, data }) => {
+            const item = await tx.${modelVariableName}.create({
+              data,
+            });
+            return item;
+          }
+        `,
     };
   }
 
   return {
-    executeCallbackFragment: tsTemplate`
-      async ({ tx, data: ${argumentFragment}, query }) => {
-        const item = await tx.${modelVariableName}.create({
-          data: ${returnFragment},
-          ...query,
-        });
-        return item;
-      }
-    `,
+    executeCallbackFragment: hasRelations
+      ? tsTemplate`
+        async ({ tx, data: ${argumentFragment}, query }) => {
+          const item = await tx.${modelVariableName}.create({
+            data: ${returnFragment},
+            ...query,
+          });
+          return item;
+        }
+      `
+      : tsTemplate`
+        async ({ tx, data: ${argumentFragment} }) => {
+          const item = await tx.${modelVariableName}.create({
+            data: ${returnFragment},
+          });
+          return item;
+        }
+      `,
   };
 }
 
@@ -161,32 +189,54 @@ export function generateUpdateExecuteCallback(
     dataName: 'rest',
   });
 
+  const hasRelations = modelHasRelations(prismaModel);
+
   if (passthrough) {
     return {
-      executeCallbackFragment: tsTemplate`
-        async ({ tx, data, query }) => {
-          const item = await tx.${modelVariableName}.update({
-            where,
-            data,
-            ...query,
-          });
-          return item;
-        }
-      `,
+      executeCallbackFragment: hasRelations
+        ? tsTemplate`
+          async ({ tx, data, query }) => {
+            const item = await tx.${modelVariableName}.update({
+              where,
+              data,
+              ...query,
+            });
+            return item;
+          }
+        `
+        : tsTemplate`
+          async ({ tx, data }) => {
+            const item = await tx.${modelVariableName}.update({
+              where,
+              data,
+            });
+            return item;
+          }
+        `,
     };
   }
 
   return {
-    executeCallbackFragment: tsTemplate`
-      async ({ tx, data: ${argumentFragment}, query }) => {
-        const item = await tx.${modelVariableName}.update({
-          where,
-          data: ${returnFragment},
-          ...query,
-        });
-        return item;
-      }
-    `,
+    executeCallbackFragment: hasRelations
+      ? tsTemplate`
+        async ({ tx, data: ${argumentFragment}, query }) => {
+          const item = await tx.${modelVariableName}.update({
+            where,
+            data: ${returnFragment},
+            ...query,
+          });
+          return item;
+        }
+      `
+      : tsTemplate`
+        async ({ tx, data: ${argumentFragment} }) => {
+          const item = await tx.${modelVariableName}.update({
+            where,
+            data: ${returnFragment},
+          });
+          return item;
+        }
+      `,
   };
 }
 
@@ -194,6 +244,8 @@ export function generateUpdateExecuteCallback(
  * Configuration for generating delete execute callback
  */
 interface GenerateDeleteExecuteCallbackConfig {
+  /** Prisma model to check for relations */
+  prismaModel: PrismaOutputModel;
   /** Prisma model variable name in camelCase (e.g., 'todoItem', 'user') */
   modelVariableName: string;
 }
@@ -226,17 +278,27 @@ interface GenerateDeleteExecuteCallbackResult {
 export function generateDeleteExecuteCallback(
   config: GenerateDeleteExecuteCallbackConfig,
 ): GenerateDeleteExecuteCallbackResult {
-  const { modelVariableName } = config;
+  const { prismaModel, modelVariableName } = config;
+  const hasRelations = modelHasRelations(prismaModel);
 
   return {
-    executeCallbackFragment: tsTemplate`
-      async ({ tx, query }) => {
-        const item = await tx.${modelVariableName}.delete({
-          where,
-          ...query,
-        });
-        return item;
-      }
-    `,
+    executeCallbackFragment: hasRelations
+      ? tsTemplate`
+        async ({ tx, query }) => {
+          const item = await tx.${modelVariableName}.delete({
+            where,
+            ...query,
+          });
+          return item;
+        }
+      `
+      : tsTemplate`
+        async ({ tx }) => {
+          const item = await tx.${modelVariableName}.delete({
+            where,
+          });
+          return item;
+        }
+      `,
   };
 }

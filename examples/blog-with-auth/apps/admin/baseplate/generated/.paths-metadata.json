@@ -10,8 +10,9 @@
     "pathRootName": "routes-root"
   },
   { "canonicalPath": "@/src/routes/utilities", "pathRootName": "routes-root" },
-  { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/blogs", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/articles", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/accounts", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/components", "pathRootName": "components-root" },
   { "canonicalPath": "@", "pathRootName": "package-root" },

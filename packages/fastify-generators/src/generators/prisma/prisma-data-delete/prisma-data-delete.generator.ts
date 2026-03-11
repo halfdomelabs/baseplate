@@ -63,9 +63,11 @@ export const prismaDataDeleteGenerator = createGenerator({
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);
+            const prismaModel = prismaOutput.getPrismaModel(modelName);
 
             // Generate execute callback
             const { executeCallbackFragment } = generateDeleteExecuteCallback({
+              prismaModel,
               modelVariableName: modelVar,
             });
 
@@ -105,8 +107,6 @@ export const prismaDataDeleteGenerator = createGenerator({
                 });
               }
             `;
-
-            const prismaModel = prismaOutput.getPrismaModel(modelName);
 
             prismaDataService.registerMethod({
               name,
