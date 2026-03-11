@@ -641,7 +641,7 @@ export interface CommitCreateConfig<
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
     query: TIncludeArgs,
-  ) => Promise<GetPayload<TModelName>>;
+  ) => Promise<GetPayload<TModelName, TIncludeArgs>>;
 
   /** Execute the Prisma create operation inside the transaction */
   execute: (args: {
@@ -671,7 +671,7 @@ export interface CommitUpdateConfig<
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
     query: TIncludeArgs,
-  ) => Promise<GetPayload<TModelName>>;
+  ) => Promise<GetPayload<TModelName, TIncludeArgs>>;
 
   /** Execute the Prisma update operation inside the transaction */
   execute: (args: {

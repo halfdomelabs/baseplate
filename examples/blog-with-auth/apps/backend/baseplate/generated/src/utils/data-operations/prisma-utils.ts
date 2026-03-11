@@ -21,10 +21,17 @@ import type { PrismaTransaction } from './types.js';
  * @internal This interface is used internally by the data operations system
  */
 interface GenericPrismaDelegate<TModelName extends ModelPropName> {
-  findUnique: <TIncludeArgs extends ModelInclude<TModelName> = object>(args: {
+  findUnique: <
+    TInclude extends
+      | NonNullable<ModelInclude<TModelName>['include']>
+      | undefined = undefined,
+  >(args: {
     where: WhereUniqueInput<TModelName>;
-    include?: NonNullable<ModelInclude<TModelName>['include']>;
-  }) => Promise<GetPayload<TModelName, TIncludeArgs> | null>;
+    include?: TInclude;
+  }) => Promise<GetPayload<
+    TModelName,
+    TInclude extends undefined ? undefined : { include: TInclude }
+  > | null>;
   findMany: (args: {
     where: WhereInput<TModelName>;
   }) => Promise<GetPayload<TModelName>[]>;

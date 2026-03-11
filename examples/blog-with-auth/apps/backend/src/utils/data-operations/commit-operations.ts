@@ -29,10 +29,15 @@ import { makeGenericPrismaDelegate } from './prisma-utils.js';
  * typed return values and re-fetch logic.
  */
 function validateQuery(query: unknown, operation: string): void {
-  if (query && typeof query === 'object' && 'select' in query) {
-    throw new Error(
-      `Query select is not supported for ${operation} operations. Use include instead.`,
-    );
+  if (query && typeof query === 'object') {
+    const unsupportedKeys = Object.entries(query)
+      .filter(([key, value]) => key !== 'include' && value !== undefined)
+      .map(([key]) => key);
+    if (unsupportedKeys.length > 0) {
+      throw new Error(
+        `Unsupported query keys for ${operation} operations: ${unsupportedKeys.join(', ')}. Only 'include' is supported.`,
+      );
+    }
   }
 }
 
@@ -64,12 +69,10 @@ async function refetchResult<
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
     query: TIncludeArgs,
-  ) => Promise<GetPayload<TModelName>>,
+  ) => Promise<GetPayload<TModelName, TIncludeArgs>>,
 ): Promise<GetPayload<TModelName, TIncludeArgs>> {
   if (refetchWithQuery) {
-    return refetchWithQuery(result, query) as unknown as Promise<
-      GetPayload<TModelName, TIncludeArgs>
-    >;
+    return refetchWithQuery(result, query);
   }
 
   const resultRecord = result as Record<string, unknown>;
