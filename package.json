@@ -31,6 +31,7 @@
     "prettier:write": "turbo run prettier:write prettier:root:write",
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && pnpm changeset publish",
+    "version": "pnpm changeset version && node ./scripts/fix-versions.js",
     "run:all": "bash scripts/run-all.sh",
     "run:example": "bash scripts/run-example.sh",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
