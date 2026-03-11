@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.1
+
+### Patch Changes
+
+- [#806](https://github.com/halfdomelabs/baseplate/pull/806) [`0b973f3`](https://github.com/halfdomelabs/baseplate/commit/0b973f3b9cb03fa1c49ceb49839b210466ecbbc7) Thanks [@kingston](https://github.com/kingston)! - Add bypass roles support to query filters for global role handling
+
+- Updated dependencies [[`c371612`](https://github.com/halfdomelabs/baseplate/commit/c37161281c660a799a2a74537cd751fd58f3b05f), [`0b973f3`](https://github.com/halfdomelabs/baseplate/commit/0b973f3b9cb03fa1c49ceb49839b210466ecbbc7)]:
+  - @baseplate-dev/fastify-generators@0.6.1
+  - @baseplate-dev/core-generators@0.6.1
+  - @baseplate-dev/project-builder-lib@0.6.1
+  - @baseplate-dev/react-generators@0.6.1
+  - @baseplate-dev/sync@0.6.1
+  - @baseplate-dev/utils@0.6.1
+
 ## 0.6.0
 
 ### Patch Changes
