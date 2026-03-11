@@ -63,7 +63,9 @@ export type GetPayload<
 export type ModelInclude<TModelName extends ModelPropName> = {
   select?: undefined;
 } & Pick<
-  { include?: unknown } & Args<(typeof prisma)[TModelName], 'findUnique'>,
+  Args<(typeof prisma)[TModelName], 'findUnique'> extends { include?: infer I }
+    ? { include?: I }
+    : { include?: undefined },
   'include'
 >;
 

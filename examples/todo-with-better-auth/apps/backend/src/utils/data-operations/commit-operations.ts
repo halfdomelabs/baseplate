@@ -142,8 +142,8 @@ export async function commitCreate<
     // If re-fetching, don't include relations in initial create
     const createQuery =
       needsRefetch || !config.query
-        ? ({} as { include: NonNullable<TIncludeArgs['include']> })
-        : (config.query as { include: NonNullable<TIncludeArgs['include']> });
+        ? ({} as ModelInclude<TModelName>)
+        : (config.query as ModelInclude<TModelName>);
 
     const result = await execute({
       tx,
@@ -231,8 +231,8 @@ export async function commitUpdate<
     // If re-fetching, don't include relations in initial update
     const updateQuery =
       needsRefetch || !config.query
-        ? ({} as { include: NonNullable<TIncludeArgs['include']> })
-        : (config.query as { include: NonNullable<TIncludeArgs['include']> });
+        ? ({} as ModelInclude<TModelName>)
+        : (config.query as ModelInclude<TModelName>);
 
     const result = await execute({
       tx,
@@ -342,9 +342,7 @@ export async function commitDelete<
 
     const result = await execute({
       tx,
-      query: (config.query ?? {}) as {
-        include: NonNullable<TIncludeArgs['include']>;
-      },
+      query: (config.query ?? {}) as ModelInclude<TModelName>,
       serviceContext: context,
     });
 

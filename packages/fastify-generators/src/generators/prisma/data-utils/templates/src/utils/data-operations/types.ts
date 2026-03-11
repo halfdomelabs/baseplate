@@ -641,9 +641,9 @@ export interface CommitCreateConfig<
   execute: (args: {
     tx: Prisma.TransactionClient;
     data: InferFieldsCreateOutput<TFields>;
-    query: { include: NonNullable<TIncludeArgs['include']> };
+    query: ModelInclude<TModelName>;
     serviceContext: ServiceContext;
-  }) => Promise<GetPayload<TModelName>>;
+  }) => Promise<GetPayload<TModelName, ModelInclude<TModelName>>>;
 }
 
 /**
@@ -671,9 +671,9 @@ export interface CommitUpdateConfig<
   execute: (args: {
     tx: Prisma.TransactionClient;
     data: InferFieldsUpdateOutput<TFields>;
-    query: { include: NonNullable<TIncludeArgs['include']> };
+    query: ModelInclude<TModelName>;
     serviceContext: ServiceContext;
-  }) => Promise<GetPayload<TModelName>>;
+  }) => Promise<GetPayload<TModelName, ModelInclude<TModelName>>>;
 }
 
 /**
@@ -715,7 +715,7 @@ export interface CommitDeleteConfig<
   /** Execute the Prisma delete operation inside the transaction */
   execute: (args: {
     tx: Prisma.TransactionClient;
-    query: { include: NonNullable<TIncludeArgs['include']> };
+    query: ModelInclude<TModelName>;
     serviceContext: ServiceContext;
-  }) => Promise<GetPayload<TModelName>>;
+  }) => Promise<GetPayload<TModelName, ModelInclude<TModelName>>>;
 }
