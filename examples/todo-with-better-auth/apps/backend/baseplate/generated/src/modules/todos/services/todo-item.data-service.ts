@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type {
   DataCreateInput,
@@ -64,7 +64,7 @@ export const todoItemInputFields = {
 export const todoItemCreateSchema = generateCreateSchema(todoItemInputFields);
 
 export async function createTodoItem<
-  TQueryArgs extends ModelQuery<'todoItem'> = ModelQuery<'todoItem'>,
+  TIncludeArgs extends ModelInclude<'todoItem'> = ModelInclude<'todoItem'>,
 >({
   data: input,
   query,
@@ -72,8 +72,8 @@ export async function createTodoItem<
 }: DataCreateInput<
   'todoItem',
   typeof todoItemInputFields,
-  TQueryArgs
->): Promise<GetPayload<'todoItem', TQueryArgs>> {
+  TIncludeArgs
+>): Promise<GetPayload<'todoItem', TIncludeArgs>> {
   const plan = await composeCreate({
     model: 'todoItem',
     fields: todoItemInputFields,
@@ -105,7 +105,7 @@ export async function createTodoItem<
 export const todoItemUpdateSchema = generateUpdateSchema(todoItemInputFields);
 
 export async function updateTodoItem<
-  TQueryArgs extends ModelQuery<'todoItem'> = ModelQuery<'todoItem'>,
+  TIncludeArgs extends ModelInclude<'todoItem'> = ModelInclude<'todoItem'>,
 >({
   where,
   data: input,
@@ -114,8 +114,8 @@ export async function updateTodoItem<
 }: DataUpdateInput<
   'todoItem',
   typeof todoItemInputFields,
-  TQueryArgs
->): Promise<GetPayload<'todoItem', TQueryArgs>> {
+  TIncludeArgs
+>): Promise<GetPayload<'todoItem', TIncludeArgs>> {
   const plan = await composeUpdate({
     model: 'todoItem',
     fields: todoItemInputFields,
@@ -147,13 +147,13 @@ export async function updateTodoItem<
 }
 
 export async function deleteTodoItem<
-  TQueryArgs extends ModelQuery<'todoItem'> = ModelQuery<'todoItem'>,
+  TIncludeArgs extends ModelInclude<'todoItem'> = ModelInclude<'todoItem'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'todoItem', TQueryArgs>): Promise<
-  GetPayload<'todoItem', TQueryArgs>
+}: DataDeleteInput<'todoItem', TIncludeArgs>): Promise<
+  GetPayload<'todoItem', TIncludeArgs>
 > {
   return commitDelete({
     model: 'todoItem',

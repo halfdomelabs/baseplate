@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type { DataDeleteInput } from '@src/utils/data-operations/types.js';
 
@@ -22,13 +22,13 @@ export const userImageInputFields = {
 };
 
 export async function deleteUserImage<
-  TQueryArgs extends ModelQuery<'userImage'> = ModelQuery<'userImage'>,
+  TIncludeArgs extends ModelInclude<'userImage'> = ModelInclude<'userImage'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'userImage', TQueryArgs>): Promise<
-  GetPayload<'userImage', TQueryArgs>
+}: DataDeleteInput<'userImage', TIncludeArgs>): Promise<
+  GetPayload<'userImage', TIncludeArgs>
 > {
   return commitDelete({
     model: 'userImage',

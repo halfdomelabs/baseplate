@@ -16,10 +16,12 @@ export type ModelPropName = Prisma.TypeMap['meta']['modelProps'];
  * Infers the return type of a Prisma query for a given model and query arguments.
  *
  * This type extracts the shape of data returned from a Prisma query, respecting
- * any `select` or `include` arguments provided.
+ * any `include` arguments provided. Only the `include` key from `TQueryArgs` is
+ * forwarded to Prisma's Result type; `select` is stripped to avoid producing
+ * an unresolvable union type.
  *
  * @template TModelName - The Prisma model name
- * @template TQueryArgs - Optional query arguments (select/include)
+ * @template TQueryArgs - Optional query arguments (include only)
  *
  * @example
  * ```typescript
@@ -28,41 +30,41 @@ export type ModelPropName = Prisma.TypeMap['meta']['modelProps'];
  *
  * // User with posts included
  * type UserWithPosts = GetPayload<'user', { include: { posts: true } }>;
- *
- * // User with only specific fields
- * type UserNameEmail = GetPayload<'user', { select: { name: true, email: true } }>;
  * ```
  */
 export type GetPayload<
   TModelName extends ModelPropName,
-  TQueryArgs = undefined,
-> = Result<(typeof prisma)[TModelName], TQueryArgs, 'findUniqueOrThrow'>;
+  TIncludeArgs = undefined,
+> = Result<
+  (typeof prisma)[TModelName],
+  TIncludeArgs extends undefined
+    ? undefined
+    : { include: TIncludeArgs extends { include?: infer I } ? I : undefined },
+  'findUniqueOrThrow'
+>;
 
 /**
- * Type for Prisma query arguments (select/include) for a given model.
+ * Type for Prisma include arguments for a given model.
  *
  * Used to shape the returned data from database operations by specifying
- * which fields to select or which relations to include.
+ * which relations to include. Only `include` is supported; `select` is
+ * accepted as `undefined` for compatibility with `queryFromInfo()` but
+ * will be stripped by `GetPayload`.
  *
  * @template TModelName - The Prisma model name
  *
  * @example
  * ```typescript
- * const query: ModelQuery<'user'> = {
- *   select: { id: true, name: true, email: true },
- * };
- *
- * const queryWithInclude: ModelQuery<'user'> = {
+ * const query: ModelInclude<'user'> = {
  *   include: { posts: true, profile: true },
  * };
  * ```
  */
-export type ModelQuery<TModelName extends ModelPropName> = Pick<
-  { select?: unknown; include?: unknown } & Args<
-    (typeof prisma)[TModelName],
-    'findUnique'
-  >,
-  'select' | 'include'
+export type ModelInclude<TModelName extends ModelPropName> = {
+  select?: undefined;
+} & Pick<
+  { include?: unknown } & Args<(typeof prisma)[TModelName], 'findUnique'>,
+  'include'
 >;
 
 /**

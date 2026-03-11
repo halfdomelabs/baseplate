@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type {
   DataCreateInput,
@@ -32,14 +32,16 @@ export const articleInputFields = {
 export const articleCreateSchema = generateCreateSchema(articleInputFields);
 
 export async function createArticle<
-  TQueryArgs extends ModelQuery<'article'> = ModelQuery<'article'>,
+  TIncludeArgs extends ModelInclude<'article'> = ModelInclude<'article'>,
 >({
   data: input,
   query,
   context,
-}: DataCreateInput<'article', typeof articleInputFields, TQueryArgs>): Promise<
-  GetPayload<'article', TQueryArgs>
-> {
+}: DataCreateInput<
+  'article',
+  typeof articleInputFields,
+  TIncludeArgs
+>): Promise<GetPayload<'article', TIncludeArgs>> {
   const plan = await composeCreate({
     model: 'article',
     fields: articleInputFields,
@@ -62,15 +64,17 @@ export async function createArticle<
 export const articleUpdateSchema = generateUpdateSchema(articleInputFields);
 
 export async function updateArticle<
-  TQueryArgs extends ModelQuery<'article'> = ModelQuery<'article'>,
+  TIncludeArgs extends ModelInclude<'article'> = ModelInclude<'article'>,
 >({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<'article', typeof articleInputFields, TQueryArgs>): Promise<
-  GetPayload<'article', TQueryArgs>
-> {
+}: DataUpdateInput<
+  'article',
+  typeof articleInputFields,
+  TIncludeArgs
+>): Promise<GetPayload<'article', TIncludeArgs>> {
   const plan = await composeUpdate({
     model: 'article',
     fields: articleInputFields,

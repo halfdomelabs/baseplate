@@ -3,7 +3,7 @@
 import type {
   GetPayload,
   ModelPropName,
-  ModelQuery,
+  ModelInclude,
   WhereUniqueInput,
 } from '$prismaTypes';
 import type {
@@ -586,10 +586,10 @@ export interface ComposeUpdateConfig<
 export interface DataCreateInput<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 > {
   data: InferInput<TFields>;
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
   context: ServiceContext;
 }
 
@@ -599,11 +599,11 @@ export interface DataCreateInput<
 export interface DataUpdateInput<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 > {
   where: WhereUniqueInput<TModelName>;
   data: Partial<InferInput<TFields>>;
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
   context: ServiceContext;
 }
 
@@ -612,10 +612,10 @@ export interface DataUpdateInput<
  */
 export interface DataDeleteInput<
   TModelName extends ModelPropName,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 > {
   where: WhereUniqueInput<TModelName>;
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
   context: ServiceContext;
 }
 
@@ -631,10 +631,10 @@ export interface DataDeleteInput<
 export interface CommitCreateConfig<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName>,
 > {
   /** Prisma query arguments (include) to shape returned data */
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
 
   /**
    * Optional override for the default refetch behavior.
@@ -643,14 +643,14 @@ export interface CommitCreateConfig<
    */
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
-    query: TQueryArgs,
+    query: TIncludeArgs,
   ) => Promise<GetPayload<TModelName>>;
 
   /** Execute the Prisma create operation inside the transaction */
   execute: (args: {
     tx: PrismaTransaction;
     data: InferFieldsCreateOutput<TFields>;
-    query: { include: NonNullable<TQueryArgs['include']> };
+    query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;
 }
@@ -661,10 +661,10 @@ export interface CommitCreateConfig<
 export interface CommitUpdateConfig<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName>,
 > {
   /** Prisma query arguments (include) to shape returned data */
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
 
   /**
    * Optional override for the default refetch behavior.
@@ -673,14 +673,14 @@ export interface CommitUpdateConfig<
    */
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
-    query: TQueryArgs,
+    query: TIncludeArgs,
   ) => Promise<GetPayload<TModelName>>;
 
   /** Execute the Prisma update operation inside the transaction */
   execute: (args: {
     tx: PrismaTransaction;
     data: InferFieldsUpdateOutput<TFields>;
-    query: { include: NonNullable<TQueryArgs['include']> };
+    query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;
 }
@@ -693,13 +693,13 @@ export interface CommitUpdateConfig<
  */
 export interface CommitDeleteConfig<
   TModelName extends ModelPropName,
-  TQueryArgs extends ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName>,
 > {
   /** The Prisma model name */
   model: TModelName;
 
   /** Prisma query arguments (include) to shape returned data */
-  query?: TQueryArgs;
+  query?: TIncludeArgs;
 
   /** Service context for the operation */
   context: ServiceContext;
@@ -724,7 +724,7 @@ export interface CommitDeleteConfig<
   /** Execute the Prisma delete operation inside the transaction */
   execute: (args: {
     tx: PrismaTransaction;
-    query: { include: NonNullable<TQueryArgs['include']> };
+    query: { include: NonNullable<TIncludeArgs['include']> };
     serviceContext: ServiceContext;
   }) => Promise<GetPayload<TModelName>>;
 }

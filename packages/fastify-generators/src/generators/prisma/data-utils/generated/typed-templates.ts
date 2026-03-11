@@ -116,7 +116,7 @@ const prismaTypes = createTsTemplateFile({
   projectExports: {
     GetPayload: { isTypeOnly: true },
     ModelPropName: { isTypeOnly: true },
-    ModelQuery: { isTypeOnly: true },
+    ModelInclude: { isTypeOnly: true },
     WhereInput: { isTypeOnly: true },
     WhereUniqueInput: { isTypeOnly: true },
   },

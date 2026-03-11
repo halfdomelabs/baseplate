@@ -97,7 +97,7 @@ export const prismaDataCreateGenerator = createGenerator({
               ${fieldsDeclarationFragment}\nexport const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsVariableName});
 
               export async function ${name}<
-                TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
+                TIncludeArgs extends ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}>,
               >({
                 data: input,
                 query,
@@ -105,8 +105,8 @@ export const prismaDataCreateGenerator = createGenerator({
               }: ${dataUtilsImports.DataCreateInput.typeFragment()}<
                 ${quot(modelVar)},
                 typeof ${fieldsVariableName},
-                TQueryArgs
-              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>> {
+                TIncludeArgs
+              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>> {
                 const plan = await ${dataUtilsImports.composeCreate.fragment()}({
                   model: ${quot(modelVar)},
                   fields: ${fieldsVariableName},

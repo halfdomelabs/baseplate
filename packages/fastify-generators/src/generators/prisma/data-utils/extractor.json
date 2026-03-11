@@ -143,7 +143,7 @@
       "projectExports": {
         "GetPayload": { "isTypeOnly": true, "name": "GetPayload" },
         "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
-        "ModelQuery": { "isTypeOnly": true, "name": "ModelQuery" },
+        "ModelInclude": { "isTypeOnly": true, "name": "ModelInclude" },
         "WhereInput": { "isTypeOnly": true, "name": "WhereInput" },
         "WhereUniqueInput": { "isTypeOnly": true, "name": "WhereUniqueInput" }
       },
