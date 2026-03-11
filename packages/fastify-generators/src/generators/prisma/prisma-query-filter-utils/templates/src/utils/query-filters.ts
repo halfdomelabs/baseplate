@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import type { AuthRole } from '%authRolesImports';
 import type { WhereResult } from '$utilsQueryHelpers';
+import type { AuthRole } from '%authRolesImports';
 import type { ModelPropName, WhereInput } from '%dataUtilsImports';
 import type { ServiceContext } from '%serviceContextImports';
 

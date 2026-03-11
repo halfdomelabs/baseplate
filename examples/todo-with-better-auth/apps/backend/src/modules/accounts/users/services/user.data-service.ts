@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type {
   DataCreateInput,
@@ -103,13 +103,13 @@ export const userInputFields = {
 export const userCreateSchema = generateCreateSchema(userInputFields);
 
 export async function createUser<
-  TQueryArgs extends ModelQuery<'user'> = ModelQuery<'user'>,
+  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
 >({
   data: input,
   query,
   context,
-}: DataCreateInput<'user', typeof userInputFields, TQueryArgs>): Promise<
-  GetPayload<'user', TQueryArgs>
+}: DataCreateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
+  GetPayload<'user', TIncludeArgs>
 > {
   const plan = await composeCreate({
     model: 'user',
@@ -119,7 +119,7 @@ export async function createUser<
     authorize: ['admin'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({ tx, data, query }) => {
       const item = await tx.user.create({
@@ -129,19 +129,21 @@ export async function createUser<
       return item;
     },
   });
+
+  return item;
 }
 
 export const userUpdateSchema = generateUpdateSchema(userInputFields);
 
 export async function updateUser<
-  TQueryArgs extends ModelQuery<'user'> = ModelQuery<'user'>,
+  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
 >({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<'user', typeof userInputFields, TQueryArgs>): Promise<
-  GetPayload<'user', TQueryArgs>
+}: DataUpdateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
+  GetPayload<'user', TIncludeArgs>
 > {
   const plan = await composeUpdate({
     model: 'user',
@@ -152,7 +154,7 @@ export async function updateUser<
     authorize: ['admin'],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data, query }) => {
       const item = await tx.user.update({
@@ -163,18 +165,20 @@ export async function updateUser<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteUser<
-  TQueryArgs extends ModelQuery<'user'> = ModelQuery<'user'>,
+  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'user', TQueryArgs>): Promise<
-  GetPayload<'user', TQueryArgs>
+}: DataDeleteInput<'user', TIncludeArgs>): Promise<
+  GetPayload<'user', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'user',
     query,
     context,
@@ -187,4 +191,6 @@ export async function deleteUser<
     },
     authorize: ['admin'],
   });
+
+  return item;
 }

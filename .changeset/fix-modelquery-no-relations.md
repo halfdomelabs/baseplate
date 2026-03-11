@@ -2,4 +2,4 @@
 '@baseplate-dev/fastify-generators': patch
 ---
 
-Fix type error in generated data services for models without relations by omitting query spread from execute callbacks when the model has no include support
+Improve data operations DX: rename `ModelQuery` to `ModelInclude`, fix `GetPayload` to eliminate `Payload | {}` union, and use intermediate variable for commit results. Fix type error for relation-less models by omitting query spread from execute callbacks.

@@ -433,7 +433,6 @@ const utilsGetAdapter = createTsTemplateFile({
 const utilsValidatePendingUpload = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
-    dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -444,11 +443,7 @@ const utilsValidatePendingUpload = createTsTemplateFile({
     ValidatedPendingUpload: { isTypeOnly: true },
     validatePendingUpload: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: {
-    typesAdapter: {},
-    typesFileCategory: {},
-    utilsGetAdapter: {},
-  },
+  referencedGeneratorTemplates: { typesFileCategory: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,

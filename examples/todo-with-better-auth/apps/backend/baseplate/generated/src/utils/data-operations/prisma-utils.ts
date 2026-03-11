@@ -1,13 +1,15 @@
+import type { Prisma } from '@src/generated/prisma/client.js';
+import type { prisma } from '@src/services/prisma.js';
+
 import type {
   CreateInput,
   GetPayload,
+  ModelInclude,
   ModelPropName,
-  ModelQuery,
   UpdateInput,
   WhereInput,
   WhereUniqueInput,
 } from './prisma-types.js';
-import type { PrismaTransaction } from './types.js';
 
 /**
  * Generic interface for Prisma model delegates.
@@ -21,10 +23,17 @@ import type { PrismaTransaction } from './types.js';
  * @internal This interface is used internally by the data operations system
  */
 interface GenericPrismaDelegate<TModelName extends ModelPropName> {
-  findUnique: <TQueryArgs extends ModelQuery<TModelName> = object>(args: {
+  findUnique: <
+    TInclude extends
+      | NonNullable<ModelInclude<TModelName>['include']>
+      | undefined = undefined,
+  >(args: {
     where: WhereUniqueInput<TModelName>;
-    include?: NonNullable<ModelQuery<TModelName>['include']>;
-  }) => Promise<GetPayload<TModelName, TQueryArgs> | null>;
+    include?: TInclude;
+  }) => Promise<GetPayload<
+    TModelName,
+    TInclude extends undefined ? undefined : { include: TInclude }
+  > | null>;
   findMany: (args: {
     where: WhereInput<TModelName>;
   }) => Promise<GetPayload<TModelName>[]>;
@@ -73,7 +82,7 @@ interface GenericPrismaDelegate<TModelName extends ModelPropName> {
  * @internal This function is used internally by nested field handlers
  */
 export function makeGenericPrismaDelegate<TModelName extends ModelPropName>(
-  tx: PrismaTransaction,
+  tx: Prisma.TransactionClient | typeof prisma,
   modelName: TModelName,
 ): GenericPrismaDelegate<TModelName> {
   return tx[modelName] as unknown as GenericPrismaDelegate<TModelName>;

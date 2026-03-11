@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type {
   DataDeleteInput,
@@ -29,14 +29,14 @@ export const blogInputFields = {
 export const blogUpdateSchema = generateUpdateSchema(blogInputFields);
 
 export async function updateBlog<
-  TQueryArgs extends ModelQuery<'blog'> = ModelQuery<'blog'>,
+  TIncludeArgs extends ModelInclude<'blog'> = ModelInclude<'blog'>,
 >({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<'blog', typeof blogInputFields, TQueryArgs>): Promise<
-  GetPayload<'blog', TQueryArgs>
+}: DataUpdateInput<'blog', typeof blogInputFields, TIncludeArgs>): Promise<
+  GetPayload<'blog', TIncludeArgs>
 > {
   const plan = await composeUpdate({
     model: 'blog',
@@ -47,7 +47,7 @@ export async function updateBlog<
     authorize: ['admin', blogAuthorizer.roles.owner],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data: { userId, ...rest }, query }) => {
       const item = await tx.blog.update({
@@ -58,18 +58,20 @@ export async function updateBlog<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteBlog<
-  TQueryArgs extends ModelQuery<'blog'> = ModelQuery<'blog'>,
+  TIncludeArgs extends ModelInclude<'blog'> = ModelInclude<'blog'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'blog', TQueryArgs>): Promise<
-  GetPayload<'blog', TQueryArgs>
+}: DataDeleteInput<'blog', TIncludeArgs>): Promise<
+  GetPayload<'blog', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'blog',
     query,
     context,
@@ -83,4 +85,6 @@ export async function deleteBlog<
     authorize: ['admin', blogAuthorizer.roles.owner],
     loadExisting: () => prisma.blog.findUniqueOrThrow({ where }),
   });
+
+  return item;
 }

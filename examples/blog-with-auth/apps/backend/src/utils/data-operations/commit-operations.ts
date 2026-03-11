@@ -2,8 +2,8 @@ import { prisma } from '@src/services/prisma.js';
 
 import type {
   GetPayload,
+  ModelInclude,
   ModelPropName,
-  ModelQuery,
   WhereUniqueInput,
 } from './prisma-types.js';
 import type {
@@ -29,10 +29,15 @@ import { makeGenericPrismaDelegate } from './prisma-utils.js';
  * typed return values and re-fetch logic.
  */
 function validateQuery(query: unknown, operation: string): void {
-  if (query && typeof query === 'object' && 'select' in query) {
-    throw new Error(
-      `Query select is not supported for ${operation} operations. Use include instead.`,
-    );
+  if (query && typeof query === 'object') {
+    const unsupportedKeys = Object.entries(query)
+      .filter(([key, value]) => key !== 'include' && value !== undefined)
+      .map(([key]) => key);
+    if (unsupportedKeys.length > 0) {
+      throw new Error(
+        `Unsupported query keys for ${operation} operations: ${unsupportedKeys.join(', ')}. Only 'include' is supported.`,
+      );
+    }
   }
 }
 
@@ -56,20 +61,18 @@ function hasPostExecuteHooks(hooks: AnyOperationHooks): boolean {
  */
 async function refetchResult<
   TModelName extends ModelPropName,
-  TQueryArgs extends ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName>,
 >(
   model: TModelName,
   result: GetPayload<TModelName>,
-  query: TQueryArgs,
+  query: TIncludeArgs,
   refetchWithQuery?: (
     result: GetPayload<TModelName>,
-    query: TQueryArgs,
-  ) => Promise<GetPayload<TModelName>>,
-): Promise<GetPayload<TModelName, TQueryArgs>> {
+    query: TIncludeArgs,
+  ) => Promise<GetPayload<TModelName, TIncludeArgs>>,
+): Promise<GetPayload<TModelName, TIncludeArgs>> {
   if (refetchWithQuery) {
-    return refetchWithQuery(result, query) as unknown as Promise<
-      GetPayload<TModelName, TQueryArgs>
-    >;
+    return refetchWithQuery(result, query);
   }
 
   const resultRecord = result as Record<string, unknown>;
@@ -82,12 +85,12 @@ async function refetchResult<
   const delegate = makeGenericPrismaDelegate(prisma, model);
   const freshResult = await delegate.findUnique({
     where: { id: resultRecord.id } as WhereUniqueInput<TModelName>,
-    include: query.include as NonNullable<ModelQuery<TModelName>['include']>,
+    include: query.include as NonNullable<ModelInclude<TModelName>['include']>,
   });
   if (!freshResult) {
     throw new NotFoundError(`${model} not found after operation`);
   }
-  return freshResult as GetPayload<TModelName, TQueryArgs>;
+  return freshResult as GetPayload<TModelName, TIncludeArgs>;
 }
 
 /**
@@ -104,11 +107,11 @@ async function refetchResult<
 export async function commitCreate<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 >(
   plan: CreatePlan<TModelName, TFields>,
-  config: CommitCreateConfig<TModelName, TFields, TQueryArgs>,
-): Promise<GetPayload<TModelName, TQueryArgs>> {
+  config: CommitCreateConfig<TModelName, TFields, TIncludeArgs>,
+): Promise<GetPayload<TModelName, TIncludeArgs>> {
   validateQuery(config.query, 'create');
 
   const { execute } = config;
@@ -139,8 +142,8 @@ export async function commitCreate<
     // If re-fetching, don't include relations in initial create
     const createQuery =
       needsRefetch || !config.query
-        ? ({} as { include: NonNullable<TQueryArgs['include']> })
-        : (config.query as { include: NonNullable<TQueryArgs['include']> });
+        ? ({} as ModelInclude<TModelName>)
+        : (config.query as ModelInclude<TModelName>);
 
     const result = await execute({
       tx,
@@ -174,7 +177,7 @@ export async function commitCreate<
     );
   }
 
-  return transactionResult as GetPayload<TModelName, TQueryArgs>;
+  return transactionResult as GetPayload<TModelName, TIncludeArgs>;
 }
 
 /**
@@ -191,11 +194,11 @@ export async function commitCreate<
 export async function commitUpdate<
   TModelName extends ModelPropName,
   TFields extends Record<string, AnyFieldDefinition>,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 >(
   plan: UpdatePlan<TModelName, TFields>,
-  config: CommitUpdateConfig<TModelName, TFields, TQueryArgs>,
-): Promise<GetPayload<TModelName, TQueryArgs>> {
+  config: CommitUpdateConfig<TModelName, TFields, TIncludeArgs>,
+): Promise<GetPayload<TModelName, TIncludeArgs>> {
   validateQuery(config.query, 'update');
 
   const { execute } = config;
@@ -228,8 +231,8 @@ export async function commitUpdate<
     // If re-fetching, don't include relations in initial update
     const updateQuery =
       needsRefetch || !config.query
-        ? ({} as { include: NonNullable<TQueryArgs['include']> })
-        : (config.query as { include: NonNullable<TQueryArgs['include']> });
+        ? ({} as ModelInclude<TModelName>)
+        : (config.query as ModelInclude<TModelName>);
 
     const result = await execute({
       tx,
@@ -263,7 +266,7 @@ export async function commitUpdate<
     );
   }
 
-  return transactionResult as GetPayload<TModelName, TQueryArgs>;
+  return transactionResult as GetPayload<TModelName, TIncludeArgs>;
 }
 
 /**
@@ -282,10 +285,10 @@ export async function commitUpdate<
  */
 export async function commitDelete<
   TModelName extends ModelPropName,
-  TQueryArgs extends ModelQuery<TModelName> = ModelQuery<TModelName>,
+  TIncludeArgs extends ModelInclude<TModelName> = ModelInclude<TModelName>,
 >(
-  config: CommitDeleteConfig<TModelName, TQueryArgs>,
-): Promise<GetPayload<TModelName, TQueryArgs>> {
+  config: CommitDeleteConfig<TModelName, TIncludeArgs>,
+): Promise<GetPayload<TModelName, TIncludeArgs>> {
   validateQuery(config.query, 'delete');
 
   const { context, execute, loadExisting: rawLoadExisting } = config;
@@ -339,9 +342,7 @@ export async function commitDelete<
 
     const result = await execute({
       tx,
-      query: (config.query ?? {}) as {
-        include: NonNullable<TQueryArgs['include']>;
-      },
+      query: (config.query ?? {}) as ModelInclude<TModelName>,
       serviceContext: context,
     });
 
@@ -360,5 +361,5 @@ export async function commitDelete<
     result: transactionResult,
   });
 
-  return transactionResult as GetPayload<TModelName, TQueryArgs>;
+  return transactionResult as GetPayload<TModelName, TIncludeArgs>;
 }

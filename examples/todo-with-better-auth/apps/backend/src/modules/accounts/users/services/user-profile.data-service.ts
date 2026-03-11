@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type { DataDeleteInput } from '@src/utils/data-operations/types.js';
 
@@ -25,15 +25,16 @@ export const userProfileInputFields = {
 };
 
 export async function deleteUserProfile<
-  TQueryArgs extends ModelQuery<'userProfile'> = ModelQuery<'userProfile'>,
+  TIncludeArgs extends ModelInclude<'userProfile'> =
+    ModelInclude<'userProfile'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'userProfile', TQueryArgs>): Promise<
-  GetPayload<'userProfile', TQueryArgs>
+}: DataDeleteInput<'userProfile', TIncludeArgs>): Promise<
+  GetPayload<'userProfile', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'userProfile',
     query,
     context,
@@ -45,4 +46,6 @@ export async function deleteUserProfile<
       return item;
     },
   });
+
+  return item;
 }

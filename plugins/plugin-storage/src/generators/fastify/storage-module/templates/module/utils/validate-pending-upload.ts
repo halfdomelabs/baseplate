@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import type { FileCategory } from '$typesFileCategory';
-import type { PrismaTransaction } from '%dataUtilsImports';
-import type { File } from '%prismaGeneratedImports';
+import type { File, Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 
 import { getAdapterOrThrow } from '$utilsGetAdapter';
@@ -20,7 +19,7 @@ export interface ValidatedPendingUpload {
    * Call this inside a transaction to confirm the upload.
    * Sets `pendingUpload: false` and updates `size` from storage metadata.
    */
-  confirmUpload: (tx: PrismaTransaction) => Promise<void>;
+  confirmUpload: (tx: Prisma.TransactionClient) => Promise<void>;
 }
 
 /**
@@ -101,7 +100,7 @@ export async function validatePendingUpload({
 
   return {
     file,
-    confirmUpload: async (tx: PrismaTransaction): Promise<void> => {
+    confirmUpload: async (tx) => {
       await tx.file.update({
         where: { id: fileId, pendingUpload: true },
         data: { pendingUpload: false, size: fileMetadata.size },

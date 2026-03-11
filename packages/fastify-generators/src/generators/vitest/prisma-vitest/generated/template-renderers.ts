@@ -88,7 +88,6 @@ const vitestPrismaVitestRenderersTask = createGeneratorTask({
                 template: VITEST_PRISMA_VITEST_TEMPLATES.prismaTestHelper,
                 destination: paths.prismaTestHelper,
                 importMapProviders: {
-                  prismaGeneratedImports,
                   prismaImports,
                 },
                 ...options,

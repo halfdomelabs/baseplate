@@ -91,20 +91,22 @@ export const prismaDataDeleteGenerator = createGenerator({
             // Generate the delete function
             const deleteFunction = tsTemplate`
               export async function ${name}<
-                TQueryArgs extends ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelQuery.typeFragment()}<${quot(modelVar)}>,
+                TIncludeArgs extends ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}>,
               >({
                 where,
                 query,
                 context,
-              }: ${dataUtilsImports.DataDeleteInput.typeFragment()}<${quot(modelVar)}, TQueryArgs>): Promise<
-                ${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TQueryArgs>
+              }: ${dataUtilsImports.DataDeleteInput.typeFragment()}<${quot(modelVar)}, TIncludeArgs>): Promise<
+                ${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>
               > {
-                return ${dataUtilsImports.commitDelete.fragment()}({
+                const item = await ${dataUtilsImports.commitDelete.fragment()}({
                   model: ${quot(modelVar)},
                   query,
                   context,
                   execute: ${executeCallbackFragment},${authorizeFragment}${loadExistingFragment}
                 });
+
+                return item;
               }
             `;
 

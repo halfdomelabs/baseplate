@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type {
   GetPayload,
-  ModelQuery,
+  ModelInclude,
 } from '@src/utils/data-operations/prisma-types.js';
 import type {
   DataCreateInput,
@@ -39,7 +39,8 @@ export const todoListShareCreateSchema = generateCreateSchema(
 );
 
 export async function createTodoListShare<
-  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+  TIncludeArgs extends ModelInclude<'todoListShare'> =
+    ModelInclude<'todoListShare'>,
 >({
   data: input,
   query,
@@ -47,8 +48,8 @@ export async function createTodoListShare<
 }: DataCreateInput<
   'todoListShare',
   typeof todoListShareInputFields,
-  TQueryArgs
->): Promise<GetPayload<'todoListShare', TQueryArgs>> {
+  TIncludeArgs
+>): Promise<GetPayload<'todoListShare', TIncludeArgs>> {
   const plan = await composeCreate({
     model: 'todoListShare',
     fields: todoListShareInputFields,
@@ -57,7 +58,7 @@ export async function createTodoListShare<
     authorize: ['user'],
   });
 
-  return commitCreate(plan, {
+  const item = await commitCreate(plan, {
     query,
     execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
       const item = await tx.todoListShare.create({
@@ -71,6 +72,8 @@ export async function createTodoListShare<
       return item;
     },
   });
+
+  return item;
 }
 
 export const todoListShareUpdateSchema = generateUpdateSchema(
@@ -78,7 +81,8 @@ export const todoListShareUpdateSchema = generateUpdateSchema(
 );
 
 export async function updateTodoListShare<
-  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+  TIncludeArgs extends ModelInclude<'todoListShare'> =
+    ModelInclude<'todoListShare'>,
 >({
   where,
   data: input,
@@ -87,8 +91,8 @@ export async function updateTodoListShare<
 }: DataUpdateInput<
   'todoListShare',
   typeof todoListShareInputFields,
-  TQueryArgs
->): Promise<GetPayload<'todoListShare', TQueryArgs>> {
+  TIncludeArgs
+>): Promise<GetPayload<'todoListShare', TIncludeArgs>> {
   const plan = await composeUpdate({
     model: 'todoListShare',
     fields: todoListShareInputFields,
@@ -98,7 +102,7 @@ export async function updateTodoListShare<
     authorize: ['user'],
   });
 
-  return commitUpdate(plan, {
+  const item = await commitUpdate(plan, {
     query,
     execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
       const item = await tx.todoListShare.update({
@@ -113,18 +117,21 @@ export async function updateTodoListShare<
       return item;
     },
   });
+
+  return item;
 }
 
 export async function deleteTodoListShare<
-  TQueryArgs extends ModelQuery<'todoListShare'> = ModelQuery<'todoListShare'>,
+  TIncludeArgs extends ModelInclude<'todoListShare'> =
+    ModelInclude<'todoListShare'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'todoListShare', TQueryArgs>): Promise<
-  GetPayload<'todoListShare', TQueryArgs>
+}: DataDeleteInput<'todoListShare', TIncludeArgs>): Promise<
+  GetPayload<'todoListShare', TIncludeArgs>
 > {
-  return commitDelete({
+  const item = await commitDelete({
     model: 'todoListShare',
     query,
     context,
@@ -137,4 +144,6 @@ export async function deleteTodoListShare<
     },
     authorize: ['user'],
   });
+
+  return item;
 }
