@@ -135,6 +135,18 @@
           "fileLocation": ["relative", "${workspaceFolder}"]
         }
       ]
+    },
+    {
+      "label": "Reset to Main",
+      "type": "shell",
+      "command": "git fetch origin main:main && git checkout main && pnpm run:all -- pnpm install",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "close": true
+      },
+      "problemMatcher": []
     }
   ]
 }
