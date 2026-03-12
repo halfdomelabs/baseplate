@@ -93,6 +93,32 @@ describe('tryCreateExtractorJson', () => {
     );
   });
 
+  it('should throw error when extractor.json already exists', async () => {
+    // Arrange
+    const packagePath = '/test-package';
+    const generatorName = 'test-package#auth/login';
+    const packageMap = new Map<string, string>([
+      ['test-package', '/test-package'],
+    ]);
+
+    vol.fromJSON({
+      [`${packagePath}/src/generators/auth/login/login.generator.ts`]:
+        'export const generator = {};',
+      [`${packagePath}/src/generators/auth/login/extractor.json`]:
+        '{"name": "INVALID NAME"}',
+    });
+
+    // Act & Assert
+    await expect(
+      tryCreateExtractorJson({
+        packageMap,
+        generatorName,
+      }),
+    ).rejects.toThrowError(
+      /extractor\.json already exists at .+ but could not be loaded/,
+    );
+  });
+
   it('should create properly formatted JSON with newline', async () => {
     // Arrange
     const packagePath = '/test-package';
