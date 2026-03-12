@@ -1,12 +1,4 @@
-#!/bin/bash
-
-# Source environment variables from ../.env if it exists
-if [ -f ".env" ]; then
-    echo "Sourcing environment variables from .env"
-    source ".env"
-else
-    echo "No .env file found, using default values"
-fi
+#!/usr/bin/env bash
 
 # Create mounts directory if it doesn't exist
 MOUNTS_DIR="${PWD}/.devcontainer/mounts"
@@ -17,30 +9,18 @@ else
     echo "Mounts directory already exists: $MOUNTS_DIR"
 fi
 
-# Handle BASEPLATE_DEV_EXTENSION_PATH
-if [ -n "$BASEPLATE_DEV_EXTENSION_PATH" ] && [ -f "$BASEPLATE_DEV_EXTENSION_PATH" ]; then
-    echo "Linking extension from: $BASEPLATE_DEV_EXTENSION_PATH"
-    if [ -e "$MOUNTS_DIR/extension.vsix" ] || [ -L "$MOUNTS_DIR/extension.vsix" ]; then
-        rm -rf "$MOUNTS_DIR/extension.vsix"
-    fi
-    ln -s "$BASEPLATE_DEV_EXTENSION_PATH" "$MOUNTS_DIR/extension.vsix"
-    echo "Extension linked to: $MOUNTS_DIR/extension.vsix"
-else
-    echo "BASEPLATE_DEV_EXTENSION_PATH not set or file doesn't exist, creating empty extension.vsix"
-    touch "$MOUNTS_DIR/extension.vsix"
-fi
+# Ensure secrets file exists (prevents bind mount failure if missing)
+# User should create ~/.devcontainers/<basename>.env with GH_TOKEN=ghp_xxx
+SECRETS_DIR="$HOME/.devcontainers"
+BASENAME=$(basename "$PWD")
+SECRETS_FILE="$SECRETS_DIR/${BASENAME}.env"
 
-# Handle BASEPLATE_DEV_DOCS_PATH
-if [ -n "$BASEPLATE_DEV_DOCS_PATH" ] && [ -d "$BASEPLATE_DEV_DOCS_PATH" ]; then
-    echo "Linking docs from: $BASEPLATE_DEV_DOCS_PATH"
-    if [ -e "$MOUNTS_DIR/docs" ] || [ -L "$MOUNTS_DIR/docs" ]; then
-        rm -rf "$MOUNTS_DIR/docs"
-    fi
-    ln -s "$BASEPLATE_DEV_DOCS_PATH/docs" "$MOUNTS_DIR/docs"
-    echo "Docs linked to: $MOUNTS_DIR/docs"
-else
-    echo "BASEPLATE_DEV_DOCS_PATH not set or directory doesn't exist, creating empty docs directory"
-    mkdir -p "$MOUNTS_DIR/docs"
+mkdir -p "$SECRETS_DIR"
+if [ ! -f "$SECRETS_FILE" ]; then
+    touch "$SECRETS_FILE"
+    echo "Created empty secrets file: $SECRETS_FILE"
+    echo "Add GH_TOKEN=ghp_xxx to enable GitHub auth"
 fi
+chmod 600 "$SECRETS_FILE"
 
 echo "Mount setup completed successfully"
