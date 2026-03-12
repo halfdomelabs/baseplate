@@ -37,7 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Remove default ubuntu user/group (occupies UID/GID 1000) and create our own
-RUN userdel -r ubuntu \
+RUN (userdel -r ubuntu 2>/dev/null || true) \
+  && (groupdel ubuntu 2>/dev/null || true) \
   && groupadd --gid $USER_GID $USERNAME \
   && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/zsh $USERNAME
 

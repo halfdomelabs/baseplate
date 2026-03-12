@@ -11,7 +11,7 @@ sudo chown vscode:vscode node_modules
 sudo chown vscode:vscode /commandhistory
 
 # Restrict access to root-only secrets folder
-sudo chmod 600 /run/secrets
+sudo chmod 700 /run/secrets
 
 # Set up firewall and Squid proxy
 sudo /usr/local/bin/init-firewall.sh
