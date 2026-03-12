@@ -4,6 +4,7 @@ import type React from 'react';
 import {
   FeatureUtils,
   modelEntityType,
+  ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { Button, useConfirmDialog } from '@baseplate-dev/ui-components';
@@ -26,6 +27,7 @@ export function ModelHeaderBar({
 }: ModelHeaderBarProps): React.JSX.Element {
   const { definition, saveDefinitionWithFeedbackSync, isSavingDefinition } =
     useProjectDefinition();
+  const currentModel = ModelUtils.byId(definition, model.id) ?? model;
   const navigate = useNavigate();
   const { requestConfirm } = useConfirmDialog();
 
@@ -60,13 +62,16 @@ export function ModelHeaderBar({
             type="button"
             title="Edit Model Info"
           >
-            <h1>{model.name}</h1>
+            <h1>{currentModel.name}</h1>
             <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
         </ModelInfoEditDialog>
-        {model.featureRef && (
+        {currentModel.featureRef && (
           <div className="text-xs text-muted-foreground">
-            {FeatureUtils.getFeatureById(definition, model.featureRef)?.name}
+            {
+              FeatureUtils.getFeatureById(definition, currentModel.featureRef)
+                ?.name
+            }
           </div>
         )}
       </div>
