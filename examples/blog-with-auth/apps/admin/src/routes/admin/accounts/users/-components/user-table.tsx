@@ -12,7 +12,7 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentOf, ResultOf } from '@src/graphql';
+import type { FragmentType, ResultOf } from '@src/graphql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
@@ -35,14 +35,11 @@ import { graphql, readFragment } from '@src/graphql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import {
-  PasswordResetDialog,
-  passwordResetDialogUserFragment,
-} from './password-reset-dialog';
-import {
-  RoleManagerDialog,
-  roleManagerDialogUserFragment,
-} from './role-manager-dialog';
+import type { passwordResetDialogUserFragment } from './password-reset-dialog';
+import type { roleManagerDialogUserFragment } from './role-manager-dialog';
+
+import { PasswordResetDialog } from './password-reset-dialog';
+import { RoleManagerDialog } from './role-manager-dialog';
 
 /* HOISTED:delete-action-mutation:START */
 const userListPageDeleteUserMutation = graphql(`
@@ -61,26 +58,23 @@ const userListPageDeleteUserMutation = graphql(`
 /* TPL_ITEMS_FRAGMENT_NAME=userTableItemsFragment */
 
 /* TPL_ITEMS_FRAGMENT:START */
-export const userTableItemsFragment = graphql(
-  `
-    fragment UserTable_items on User {
-      email
-      id
-      name
-      ...PasswordResetDialog_user
-      ...RoleManagerDialog_user
-      roles {
-        role
-      }
+export const userTableItemsFragment = graphql(`
+  fragment UserTable_items on User {
+    email
+    id
+    name
+    ...PasswordResetDialog_user
+    ...RoleManagerDialog_user
+    roles {
+      role
     }
-  `,
-  [passwordResetDialogUserFragment, roleManagerDialogUserFragment],
-);
+  }
+`);
 /* TPL_ITEMS_FRAGMENT:END */
 
 interface Props {
   /* TPL_PROPS:START */
-  items: FragmentOf<typeof userTableItemsFragment>[];
+  items: FragmentType<typeof userTableItemsFragment>[];
   /* TPL_PROPS:END */
 }
 
@@ -90,10 +84,10 @@ export function UserTable(
   } /* TPL_DESTRUCTURED_PROPS:END */ : Props,
 ): ReactElement {
   /* TPL_ACTION_HOOKS:START */
-  const [roleDialogUser, setRoleDialogUser] = useState<FragmentOf<
+  const [roleDialogUser, setRoleDialogUser] = useState<FragmentType<
     typeof roleManagerDialogUserFragment
   > | null>(null);
-  const [passwordResetUser, setPasswordResetUser] = useState<FragmentOf<
+  const [passwordResetUser, setPasswordResetUser] = useState<FragmentType<
     typeof passwordResetDialogUserFragment
   > | null>(null);
   const { requestConfirm } = useConfirmDialog();

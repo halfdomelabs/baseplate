@@ -39,7 +39,7 @@ src/
 │   └── Home/     # Home page
 ├── hooks/        # Custom React hooks
 ├── services/     # Apollo setup, config, logging
-└── generated/    # Auto-generated GraphQL types
+└── gql/          # Auto-generated GraphQL types (via graphql-codegen)
 ```
 
 **Backend Package (`/apps/backend/src/`):**
@@ -176,36 +176,30 @@ export const roleManagerDialogUserFragment = graphql(`
 
 ### Fragment Composition Pattern
 
-Parent components must manually compose child fragments into their queries to avoid under-fetching.
+Fragment composition is handled automatically by `graphql-codegen`. Just spread the fragment in the GraphQL string — no need to pass fragment references as a second argument. Codegen resolves all fragment dependencies at build time.
 
 ```typescript
 // user-table.tsx
-// Table fragment composes the fragments required by the dialogs it renders
-export const userTableUsersFragment = graphql(
-  `
-    fragment UserTable_users on User {
-      id
-      email
-      name
-      ...PasswordResetDialog_user
-      ...RoleManagerDialog_user
-    }
-  `,
-  [roleManagerDialogUserFragment, passwordResetDialogUserFragment],
-);
+// Table fragment spreads the fragments required by the dialogs it renders
+export const userTableUsersFragment = graphql(`
+  fragment UserTable_users on User {
+    id
+    email
+    name
+    ...PasswordResetDialog_user
+    ...RoleManagerDialog_user
+  }
+`);
 
 // user-list-page.tsx (index.tsx)
-// Page query composes the table fragment
-const userListPageQuery = graphql(
-  `
-    query UserListPageQuery {
-      users {
-        ...UserTable_users
-      }
+// Page query spreads the table fragment
+const userListPageQuery = graphql(`
+  query UserListPageQuery {
+    users {
+      ...UserTable_users
     }
-  `,
-  [userTableUsersFragment],
-);
+  }
+`);
 ```
 
 ### Form Component & Schema Pattern
@@ -234,7 +228,7 @@ Shared form components accept `submitData` callback and optional `defaultValues`
 interface UserEditFormProps {
   submitData: (data: UserFormData) => Promise<void>;
   // Prop name 'defaultValues' matches fragment 'UserEditForm_defaultValues'
-  defaultValues?: FragmentOf<typeof userEditFormDefaultValuesFragment>;
+  defaultValues?: FragmentType<typeof userEditFormDefaultValuesFragment>;
 }
 
 export function UserEditForm({
@@ -261,7 +255,7 @@ export function UserEditForm({
 **List Page (`index.tsx`):**
 
 ```typescript
-const userListPageQuery = graphql(`...`, [userTableUsersFragment]);
+const userListPageQuery = graphql(`...`);
 
 export const Route = createFileRoute('/admin/auth/users/')({
   component: UserListPage,
@@ -311,7 +305,7 @@ export const roleManagerDialogUserFragment = graphql(`
 `);
 
 interface RoleManagerDialogProps {
-  user: FragmentOf<typeof roleManagerDialogUserFragment>;
+  user: FragmentType<typeof roleManagerDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

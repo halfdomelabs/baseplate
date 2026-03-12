@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import type { FragmentOf } from '@src/graphql';
+import type { FragmentType } from '@src/graphql';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -49,21 +49,18 @@ export const passwordResetDialogUserFragment = graphql(`
   }
 `);
 
-const resetUserPasswordMutation = graphql(
-  `
-    mutation ResetUserPassword($input: ResetUserPasswordInput!) {
-      resetUserPassword(input: $input) {
-        user {
-          ...PasswordResetDialog_user
-        }
+const resetUserPasswordMutation = graphql(`
+  mutation ResetUserPassword($input: ResetUserPasswordInput!) {
+    resetUserPassword(input: $input) {
+      user {
+        ...PasswordResetDialog_user
       }
     }
-  `,
-  [passwordResetDialogUserFragment],
-);
+  }
+`);
 
 interface PasswordResetDialogProps {
-  user: FragmentOf<typeof passwordResetDialogUserFragment>;
+  user: FragmentType<typeof passwordResetDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

@@ -7,21 +7,18 @@ import { MdAdd } from 'react-icons/md';
 import { Button } from '@src/components/ui/button';
 import { graphql } from '@src/graphql';
 
-import { UserTable, userTableItemsFragment } from './-components/user-table';
+import { UserTable } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const userListPageQuery = graphql(
-  `
-    query UserListPage {
-      users {
-        ...UserTable_items
-      }
+const userListPageQuery = graphql(`
+  query UserListPage {
+    users {
+      ...UserTable_items
     }
-  `,
-  [userTableItemsFragment],
-);
+  }
+`);
 /* TPL_ITEMS_QUERY:END */
 
 export const Route = createFileRoute(

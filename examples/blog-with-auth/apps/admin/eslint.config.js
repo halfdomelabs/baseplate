@@ -34,7 +34,7 @@ const IGNORE_FILES = /* TPL_IGNORE_FILES:START */ [
   'build',
   'dist',
   'node_modules',
-  'src/graphql-env.d.ts',
+  'src/gql',
   'src/route-tree.gen.ts',
 ]; /* TPL_IGNORE_FILES:END */
 

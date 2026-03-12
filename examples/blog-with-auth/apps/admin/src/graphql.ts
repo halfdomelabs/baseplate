@@ -1,15 +1,3 @@
-import { initGraphQLTada } from 'gql.tada';
-
-import type { introspection } from './graphql-env.d';
-
-export const graphql = initGraphQLTada<{
-  introspection: introspection;
-  scalars: {
-    DateTime: string;
-    Date: string;
-    Uuid: string;
-  };
-}>();
-
-export type { FragmentOf, ResultOf, VariablesOf } from 'gql.tada';
-export { readFragment } from 'gql.tada';
+export { type FragmentType, readFragment } from './gql/fragment-masking.js';
+export { graphql } from './gql/gql.js';
+export type { ResultOf, VariablesOf } from '@graphql-typed-document-node/core';

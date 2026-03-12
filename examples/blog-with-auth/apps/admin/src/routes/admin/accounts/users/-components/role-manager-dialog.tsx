@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import type { FragmentOf } from '@src/graphql';
+import type { FragmentType } from '@src/graphql';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -49,21 +49,18 @@ export const roleManagerDialogUserFragment = graphql(`
   }
 `);
 
-const updateUserRolesMutation = graphql(
-  `
-    mutation UpdateUserRoles($input: UpdateUserRolesInput!) {
-      updateUserRoles(input: $input) {
-        user {
-          ...RoleManagerDialog_user
-        }
+const updateUserRolesMutation = graphql(`
+  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {
+    updateUserRoles(input: $input) {
+      user {
+        ...RoleManagerDialog_user
       }
     }
-  `,
-  [roleManagerDialogUserFragment],
-);
+  }
+`);
 
 interface RoleManagerDialogProps {
-  user: FragmentOf<typeof roleManagerDialogUserFragment>;
+  user: FragmentType<typeof roleManagerDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
