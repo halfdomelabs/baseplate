@@ -204,7 +204,7 @@ describe('collectFieldIssues', () => {
     expect(issues).toHaveLength(1);
     expect(issues[0]?.fix).toBeDefined();
     expect(issues[0]?.fix?.label).toBe('Remove spaces');
-    expect(issues[0]?.fix?.apply('hello world')).toBe('helloworld');
+    expect(issues[0]?.fix?.apply?.('hello world')).toBe('helloworld');
   });
 });
 

@@ -1,6 +1,10 @@
-import type { DefinitionEntity } from '@baseplate-dev/project-builder-lib';
+import type {
+  DefinitionEntity,
+  DefinitionIssue,
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
+import { createIssueFixSetter } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -16,23 +20,56 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  toast,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@baseplate-dev/ui-components';
 import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import { MdInfo } from 'react-icons/md';
 
 import { useDefinitionWarningDialogState } from '#src/hooks/use-definition-warning-dialog.js';
 import { usePrevious } from '#src/hooks/use-previous.js';
 import { getEntityNavOptions } from '#src/services/entity-type.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 export function DefinitionWarningDialog(): React.JSX.Element {
   const { dialogOptions, setDialogOptions } = useDefinitionWarningDialogState();
-  const { definitionContainer, pluginContainer } = useProjectDefinition();
+  const { definitionContainer, pluginContainer, saveDefinition } =
+    useProjectDefinition();
   const { entities } = definitionContainer;
+  const [applyingFixIndex, setApplyingFixIndex] = useState<number | null>(null);
 
   // Cache options during close transition
   const dialogOptionsCached = usePrevious(dialogOptions);
 
   const options = dialogOptions ?? dialogOptionsCached;
   const warnings = options?.warnings;
+
+  function handleApplyFix(warning: DefinitionIssue, index: number): void {
+    const setter = createIssueFixSetter(warning, definitionContainer);
+    if (!setter) return;
+
+    const fixLabel = warning.fix?.label ?? 'fix';
+
+    setApplyingFixIndex(index);
+    saveDefinition(setter)
+      .then(({ warnings: newWarnings }) => {
+        if (newWarnings.length > 0) {
+          setDialogOptions({ warnings: newWarnings });
+        } else {
+          setDialogOptions(undefined);
+          toast.success(`Applied fix: ${fixLabel}`);
+        }
+      })
+      .catch((err: unknown) => {
+        toast.error(logAndFormatError(err, `Failed to apply fix: ${fixLabel}`));
+      })
+      .finally(() => {
+        setApplyingFixIndex(null);
+      });
+  }
 
   return (
     <Dialog
@@ -55,6 +92,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
               <TableHead>Entity</TableHead>
               <TableHead>Path</TableHead>
               <TableHead>Message</TableHead>
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -118,6 +156,39 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                   </TableCell>
                   <TableCell>{pathInEntity}</TableCell>
                   <TableCell>{warning.message}</TableCell>
+                  <TableCell>
+                    {warning.fix ? (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          disabled={applyingFixIndex !== null}
+                          onClick={() => {
+                            handleApplyFix(warning, index);
+                          }}
+                        >
+                          {applyingFixIndex === index
+                            ? 'Applying...'
+                            : 'Apply fix'}
+                        </Button>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label="Fix details"
+                              className="size-7 opacity-50"
+                            >
+                              <MdInfo />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-[300px]">
+                            {warning.fix.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    ) : null}
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -95,7 +95,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.2",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
@@ -321,7 +321,7 @@
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": {},
             "type": "uuid"
           },
           {
