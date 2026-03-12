@@ -3,8 +3,10 @@ FROM ubuntu:noble
 ARG TZ="America/Los_Angeles"
 ENV TZ="$TZ"
 
+ARG CLAUDE_CODE_VERSION=latest
+
 ARG USERNAME=vscode
-ARG USER_UID=1001
+ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 # Install system dependencies
@@ -15,15 +17,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   procps \
   sudo \
   zsh \
+  fzf \
   man-db \
   unzip \
   gnupg2 \
   gh \
   iptables \
-  ipset \
   iproute2 \
   dnsutils \
-  aggregate \
+  squid-openssl \
+  dnsmasq \
+  gettext-base \
   jq \
   nano \
   vim \
@@ -32,8 +36,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Add users
-RUN groupadd --gid $USER_GID $USERNAME \
+# Remove default ubuntu user/group (occupies UID/GID 1000) and create our own
+RUN (userdel -r ubuntu 2>/dev/null || true) \
+  && (groupdel ubuntu 2>/dev/null || true) \
+  && groupadd --gid $USER_GID $USERNAME \
   && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/zsh $USERNAME
 
 RUN usermod -aG sudo $USERNAME && \
@@ -54,10 +60,10 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
   && chown $USERNAME /home/$USERNAME/.bashrc
 
 # Set up zshrc and inputrc
-COPY .devcontainer/.zshrc /home/$USERNAME/.zshrc
+COPY .devcontainer/conf/.zshrc /home/$USERNAME/.zshrc
 RUN chown $USERNAME /home/$USERNAME/.zshrc
 
-COPY .devcontainer/.inputrc /home/$USERNAME/.inputrc
+COPY .devcontainer/conf/.inputrc /home/$USERNAME/.inputrc
 RUN chown $USERNAME /home/$USERNAME/.inputrc
 
 USER $USERNAME
@@ -84,7 +90,7 @@ RUN echo 'eval "$(starship init zsh)"' >> "${ZDOTDIR-$HOME}/.zshrc"
 WORKDIR /home/$USERNAME
 
 # Copy starship.toml
-COPY --chown=$USERNAME:$USERNAME .devcontainer/starship.toml .config/starship.toml
+COPY --chown=$USERNAME:$USERNAME .devcontainer/conf/starship.toml .config/starship.toml
 
 # Copy the mise configuration file into the container
 # This file defines which tools and versions mise should install (e.g., node, pnpm)
@@ -100,7 +106,7 @@ ENV EDITOR=vim
 ENV VISUAL=vim
 
 # Install Claude
-RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@latest"
+RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
 
 # Install zplug
 ENV ZPLUG_HOME="$HOME/.zplug"
@@ -112,5 +118,29 @@ COPY .devcontainer/init-firewall.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/init-firewall.sh && \
   echo "Defaults secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/user-firewall && \
   chmod 0440 /etc/sudoers.d/user-firewall
+
+# Initialize Squid directories, certs, and SSL database
+RUN mkdir -p /var/log/squid /var/spool/squid && \
+  chown -R proxy:proxy /var/log/squid /var/spool/squid && \
+  chmod 755 /var/log/squid && \
+  openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 \
+  -subj "/CN=squid-bump" \
+  -keyout /etc/squid/bump.key -out /etc/squid/bump.crt && \
+  chmod 600 /etc/squid/bump.key && chmod 644 /etc/squid/bump.crt && \
+  chown proxy:proxy /etc/squid/bump.key /etc/squid/bump.crt && \
+  /usr/lib/squid/security_file_certgen -c -s /var/spool/squid/ssl_db -M 4MB && \
+  chown -R proxy:proxy /var/spool/squid/ssl_db
+
+# Add Squid CA cert to system trust store (for bumped GitHub connections)
+RUN cp /etc/squid/bump.crt /usr/local/share/ca-certificates/squid-bump.crt && \
+  update-ca-certificates
+
+# Copy Squid config template and allowed domains list
+COPY .devcontainer/conf/squid.conf.template /etc/squid/squid.conf.template
+COPY .devcontainer/allowed-domains.txt /etc/squid/allowed-domains.txt
+
+# Copy dnsmasq config and create conf.d directory
+COPY .devcontainer/conf/dnsmasq.conf /etc/dnsmasq.conf
+RUN mkdir -p /etc/dnsmasq.d
 
 USER $USERNAME

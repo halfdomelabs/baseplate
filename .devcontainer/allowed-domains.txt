@@ -1,0 +1,111 @@
+# GitHub (git operations, API, assets)
+.github.com
+.githubusercontent.com
+
+# npm registry
+registry.npmjs.org
+
+# Anthropic Services
+api.anthropic.com
+statsig.anthropic.com
+platform.claude.com
+code.claude.com
+claude.ai
+
+# Container Registries
+registry-1.docker.io
+auth.docker.io
+index.docker.io
+hub.docker.com
+www.docker.com
+production.cloudflare.docker.com
+download.docker.com
+.gcr.io
+ghcr.io
+mcr.microsoft.com
+.data.mcr.microsoft.com
+public.ecr.aws
+
+# Package Managers - Python
+pypi.org
+www.pypi.org
+files.pythonhosted.org
+pythonhosted.org
+test.pypi.org
+pypi.python.org
+pypa.io
+www.pypa.io
+
+# Package Managers - Rust
+crates.io
+www.crates.io
+index.crates.io
+static.crates.io
+rustup.rs
+static.rust-lang.org
+www.rust-lang.org
+
+# Linux Distributions
+.ubuntu.com
+ppa.launchpad.net
+launchpad.net
+www.launchpad.net
+
+# Development Tools & Platforms
+dl.k8s.io
+pkgs.k8s.io
+k8s.io
+www.k8s.io
+releases.hashicorp.com
+apt.releases.hashicorp.com
+rpm.releases.hashicorp.com
+archive.releases.hashicorp.com
+hashicorp.com
+www.hashicorp.com
+repo.anaconda.com
+conda.anaconda.org
+anaconda.org
+www.anaconda.com
+anaconda.com
+continuum.io
+apache.org
+www.apache.org
+archive.apache.org
+downloads.apache.org
+eclipse.org
+www.eclipse.org
+download.eclipse.org
+nodejs.org
+www.nodejs.org
+
+# Cloud Services & Monitoring
+statsig.com
+www.statsig.com
+api.statsig.com
+.sentry.io
+.datadoghq.com
+.datadoghq.eu
+
+# Schema & Configuration
+json-schema.org
+www.json-schema.org
+json.schemastore.org
+www.schemastore.org
+
+# Model Context Protocol
+.modelcontextprotocol.io
+
+# VS Code extensions and updates
+marketplace.visualstudio.com
+vscode.blob.core.windows.net
+update.code.visualstudio.com
+
+# Prisma
+binaries.prisma.sh
+
+# Analytics
+plausible.io
+
+# Email services
+api.resend.com
+api.postmarkapp.com
