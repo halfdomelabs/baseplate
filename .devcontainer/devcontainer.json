@@ -23,7 +23,7 @@
         "esbenp.prettier-vscode",
         "eamodio.gitlens",
         "Prisma.prisma",
-        "/home/vscode/baseplate-extension/extension.vsix"
+        "hverlin.mise-vscode"
       ],
       "settings": {
         "editor.formatOnSave": true,

@@ -34,6 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   build-essential \
   curl \
+  bubblewrap \
+  socat \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Remove default ubuntu user/group (occupies UID/GID 1000) and create our own
