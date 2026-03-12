@@ -7,6 +7,8 @@ services:
         TZ: ${TZ:-America/Los_Angeles}
         CLAUDE_CODE_VERSION: latest
     command: sleep infinity
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     cap_add:
       - NET_ADMIN
     environment:
