@@ -113,12 +113,6 @@ function BackendAppEditPage(): React.JSX.Element {
               />
               <SwitchFieldController
                 control={control}
-                name="enableSubscriptions"
-                label="GraphQL Subscriptions"
-                description="Enable GraphQL Subscriptions for real-time updates"
-              />
-              <SwitchFieldController
-                control={control}
                 name="enableAxios"
                 label="Axios"
                 description="Enable Axios for HTTP requests"
