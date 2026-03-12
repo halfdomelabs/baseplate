@@ -1,0 +1,39 @@
+services:
+  devcontainer:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        TZ: ${TZ:-America/Los_Angeles}
+        CLAUDE_CODE_VERSION: latest
+    command: sleep infinity
+    cap_add:
+      - NET_ADMIN
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      CLAUDE_CONFIG_DIR: "/home/vscode/.claude"
+    volumes:
+      # Source code
+      - ..:/workspaces/${WORKSPACE_BASENAME}:cached
+
+      # Named volumes (parameterized by workspace basename)
+      - bashhistory:/commandhistory
+      - claude:/home/vscode/.claude
+      - node_modules:/workspaces/${WORKSPACE_BASENAME}/node_modules
+
+      # Read-only bind mounts
+      - ${LOCAL_WORKSPACE_FOLDER}/.devcontainer:/workspaces/${WORKSPACE_BASENAME}/.devcontainer:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.vscode:/workspaces/${WORKSPACE_BASENAME}/.vscode:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.git/config:/workspaces/${WORKSPACE_BASENAME}/.git/config:ro
+      - ${LOCAL_WORKSPACE_FOLDER}/.git/hooks:/workspaces/${WORKSPACE_BASENAME}/.git/hooks:ro
+
+      # Secrets
+      - ${HOME}/.devcontainers/${WORKSPACE_BASENAME}.env:/run/secrets/devcontainer.env:ro
+
+volumes:
+  bashhistory:
+    name: ${WORKSPACE_BASENAME}-bashhistory
+  claude:
+    name: ${WORKSPACE_BASENAME}-claude
+  node_modules:
+    name: ${WORKSPACE_BASENAME}-node_modules

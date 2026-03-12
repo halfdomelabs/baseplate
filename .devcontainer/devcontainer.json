@@ -1,19 +1,10 @@
 {
   "name": "Baseplate",
 
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "..",
-    "args": {
-      "TZ": "${localEnv:TZ:America/Los_Angeles}",
-      "CLAUDE_CODE_VERSION": "latest"
-    }
-  },
-  "runArgs": ["--cap-add=NET_ADMIN"],
-  "containerEnv": {
-    "NODE_OPTIONS": "--max-old-space-size=4096",
-    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "remoteUser": "vscode",
 
   "customizations": {
     "vscode": {
@@ -44,26 +35,6 @@
       }
     }
   },
-
-  "containerUser": "vscode",
-
-  "mounts": [
-    "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume",
-    "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume",
-    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
-    // Protect .devcontainer
-    "source=${localWorkspaceFolder}/.devcontainer,target=${containerWorkspaceFolder}/.devcontainer,type=bind,readonly",
-
-    // Protect .vscode
-    "source=${localWorkspaceFolder}/.vscode,target=${containerWorkspaceFolder}/.vscode,type=bind,readonly",
-
-    // Protect .git config and hooks (but allow git operations on the repo itself)
-    "source=${localWorkspaceFolder}/.git/config,target=${containerWorkspaceFolder}/.git/config,type=bind,readonly",
-    "source=${localWorkspaceFolder}/.git/hooks,target=${containerWorkspaceFolder}/.git/hooks,type=bind,readonly",
-
-    // Secrets (GH_TOKEN for Squid proxy GitHub auth)
-    "source=${localEnv:HOME}/.devcontainers/${localWorkspaceFolderBasename}.env,target=/run/secrets/devcontainer.env,type=bind,readonly"
-  ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "portsAttributes": {
