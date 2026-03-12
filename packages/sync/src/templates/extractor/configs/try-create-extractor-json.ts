@@ -70,6 +70,12 @@ export async function tryCreateExtractorJson(
     EXTRACTOR_CONFIG_FILENAME,
   );
 
+  if (fsAdapter.existsSync(extractorJsonPath)) {
+    throw new Error(
+      `extractor.json already exists at ${extractorJsonPath} but could not be loaded. Please fix the existing file before running extraction.`,
+    );
+  }
+
   // Create the extractor.json content
   const extractorConfig = {
     name: generatorPath,
