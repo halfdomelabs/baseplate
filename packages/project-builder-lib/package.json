@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-"@types/culori": "^2.1.1",
+    "@types/culori": "^2.1.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "eslint": "catalog:",
