@@ -21,7 +21,6 @@
       },
       "pathRootRelativePath": "{components-root}/ui/file-input.tsx",
       "projectExports": {
-        "FileCategory": { "isTypeOnly": true, "name": "FileCategory" },
         "FileInput": { "isTypeOnly": false, "name": "FileInput" },
         "fileInputValueFragment": {
           "isTypeOnly": false,

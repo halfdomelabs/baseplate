@@ -14,8 +14,8 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  fragment FileInput_value on File @_unmask {\n    id\n    filename\n    publicUrl\n  }\n": typeof types.FileInput_ValueFragmentDoc,
-    "\n    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n      createPresignedUploadUrl(input: $input) {\n        url\n        fields {\n          name\n          value\n        }\n        method\n        file {\n          id\n          filename\n          publicUrl\n          ...FileInput_value\n        }\n      }\n    }\n  ": typeof types.FileInputCreateUploadUrlDocument,
+    "\n  fragment FileInput_value on File {\n    id\n    filename\n    publicUrl\n  }\n": typeof types.FileInput_ValueFragmentDoc,
+    "\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n": typeof types.FileInputCreateUploadUrlDocument,
     "\n  query UserEditPage($id: Uuid!) {\n    user(id: $id) {\n      id\n      name\n      ...UserEditForm_defaultValues\n    }\n  }\n": typeof types.UserEditPageDocument,
     "\n  mutation UserEditPageUpdate($input: UpdateUserInput!) {\n    updateUser(input: $input) {\n      user {\n        id\n        name\n        ...UserEditForm_defaultValues\n      }\n    }\n  }\n": typeof types.UserEditPageUpdateDocument,
     "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n": typeof types.UserEditForm_DefaultValuesFragmentDoc,
@@ -34,8 +34,8 @@ type Documents = {
     "\n  mutation TodoListCreatePageCreate($input: CreateTodoListInput!) {\n    createTodoList(input: $input) {\n      todoList {\n        id\n      }\n    }\n  }\n": typeof types.TodoListCreatePageCreateDocument,
 };
 const documents: Documents = {
-    "\n  fragment FileInput_value on File @_unmask {\n    id\n    filename\n    publicUrl\n  }\n": types.FileInput_ValueFragmentDoc,
-    "\n    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n      createPresignedUploadUrl(input: $input) {\n        url\n        fields {\n          name\n          value\n        }\n        method\n        file {\n          id\n          filename\n          publicUrl\n          ...FileInput_value\n        }\n      }\n    }\n  ": types.FileInputCreateUploadUrlDocument,
+    "\n  fragment FileInput_value on File {\n    id\n    filename\n    publicUrl\n  }\n": types.FileInput_ValueFragmentDoc,
+    "\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n": types.FileInputCreateUploadUrlDocument,
     "\n  query UserEditPage($id: Uuid!) {\n    user(id: $id) {\n      id\n      name\n      ...UserEditForm_defaultValues\n    }\n  }\n": types.UserEditPageDocument,
     "\n  mutation UserEditPageUpdate($input: UpdateUserInput!) {\n    updateUser(input: $input) {\n      user {\n        id\n        name\n        ...UserEditForm_defaultValues\n      }\n    }\n  }\n": types.UserEditPageUpdateDocument,
     "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n": types.UserEditForm_DefaultValuesFragmentDoc,
@@ -71,11 +71,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FileInput_value on File @_unmask {\n    id\n    filename\n    publicUrl\n  }\n"): (typeof documents)["\n  fragment FileInput_value on File @_unmask {\n    id\n    filename\n    publicUrl\n  }\n"];
+export function graphql(source: "\n  fragment FileInput_value on File {\n    id\n    filename\n    publicUrl\n  }\n"): (typeof documents)["\n  fragment FileInput_value on File {\n    id\n    filename\n    publicUrl\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n      createPresignedUploadUrl(input: $input) {\n        url\n        fields {\n          name\n          value\n        }\n        method\n        file {\n          id\n          filename\n          publicUrl\n          ...FileInput_value\n        }\n      }\n    }\n  "): (typeof documents)["\n    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n      createPresignedUploadUrl(input: $input) {\n        url\n        fields {\n          name\n          value\n        }\n        method\n        file {\n          id\n          filename\n          publicUrl\n          ...FileInput_value\n        }\n      }\n    }\n  "];
+export function graphql(source: "\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -17,7 +17,7 @@ const login = createTsTemplateFile({
   },
   name: 'login',
   source: {
-    path: path.join(import.meta.dirname, '../templates/routes/auth/login.tsx'),
+    path: path.join(import.meta.dirname, '../templates/routes/login.tsx'),
   },
   variables: {},
 });
@@ -32,10 +32,7 @@ const register = createTsTemplateFile({
   },
   name: 'register',
   source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/routes/auth/register.tsx',
-    ),
+    path: path.join(import.meta.dirname, '../templates/routes/register.tsx'),
   },
   variables: {},
 });

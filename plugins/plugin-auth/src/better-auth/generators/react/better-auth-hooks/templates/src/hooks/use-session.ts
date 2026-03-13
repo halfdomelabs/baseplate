@@ -1,8 +1,7 @@
 // @ts-nocheck
 
-import { useMemo } from 'react';
-
 import { authClient } from '%betterAuthImports';
+import { useMemo } from 'react';
 
 export const AUTH_ROLES = TPL_AUTH_ROLES as const;
 export type AuthRole = (typeof AUTH_ROLES)[number];

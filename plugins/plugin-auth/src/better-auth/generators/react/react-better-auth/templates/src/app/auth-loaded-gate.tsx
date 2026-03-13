@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { useEffect } from 'react';
-
+import { authClient } from '$authClient';
+import { useLogOut } from '%authHooksImports';
 import {
   Alert,
   AlertDescription,
@@ -11,10 +11,7 @@ import {
   Loader,
 } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
-
-import { useLogOut } from '%authHooksImports';
-
-import { authClient } from '$authClient';
+import { useEffect } from 'react';
 
 /**
  * A component that waits for the Better Auth session to be loaded before rendering its children.
