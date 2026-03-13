@@ -1,6 +1,5 @@
 import type {
   DefinitionIssue,
-  PartitionedIssues,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -77,24 +76,6 @@ export function mapIssueToOutput(
     fixLabel: issue.fix?.label,
     fixId: issue.fix ? generateFixId(issue) : undefined,
   };
-}
-
-/**
- * Validates a draft definition by collecting all definition issues
- * (both field-level and definition-level) and partitioning them by severity.
- */
-export function validateDraftDefinition(
-  draftDefinition: Record<string, unknown>,
-  parserContext: SchemaParserContext,
-): PartitionedIssues {
-  const container = ProjectDefinitionContainer.fromSerializedConfig(
-    draftDefinition,
-    parserContext,
-  );
-
-  const issues = collectDefinitionIssues(container);
-
-  return partitionIssuesBySeverity(issues);
 }
 
 export interface FixAndValidateResult {
