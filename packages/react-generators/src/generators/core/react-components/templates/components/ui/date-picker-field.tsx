@@ -8,13 +8,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { Button } from '$button';
 import { Calendar } from '$calendar';
 import { cn } from '$cn';
-import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '$formItem';
+import { Field, FieldDescription, FieldError, FieldLabel } from '$field';
 import { useControllerMerged } from '$hooksUseControllerMerged';
 import { Popover, PopoverContent, PopoverTrigger } from '$popover';
 import { format, parseISO } from 'date-fns';
@@ -73,25 +67,23 @@ function DatePickerField({
 
   const inputComponent = (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          data-empty={!dateValue}
-          disabled={disabled}
-          id={id}
-          ref={ref}
-          className={cn(
-            'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
-            className,
-          )}
-        >
-          <MdCalendarMonth />
-          {dateValue ? (
-            format(dateValue, dateFormat)
-          ) : (
-            <span>{placeholder}</span>
-          )}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            data-empty={!dateValue}
+            disabled={disabled}
+            id={id}
+            ref={ref}
+            className={cn(
+              'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
+              className,
+            )}
+          />
+        }
+      >
+        <MdCalendarMonth />
+        {dateValue ? format(dateValue, dateFormat) : <span>{placeholder}</span>}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
@@ -107,12 +99,12 @@ function DatePickerField({
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>{inputComponent}</FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-      </FormItem>
+      <Field data-invalid={!!error} className={cn('gap-2', wrapperClassName)}>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        {inputComponent}
+        <FieldDescription>{description}</FieldDescription>
+        <FieldError>{error}</FieldError>
+      </Field>
     );
   }
   return inputComponent;

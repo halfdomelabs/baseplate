@@ -15,6 +15,10 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
         version: 'detect',
       },
     },
+    rules: {
+      // Disable for Base UI's render prop pattern where content is injected via useRender
+      'jsx-a11y/anchor-has-content': 'off',
+    },
   },
 
   // Typescript

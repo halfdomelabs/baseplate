@@ -1,31 +1,36 @@
 'use client';
 
-import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
+import * as React from 'react';
 
 import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
-import { cn } from '@src/utils/cn';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form-item';
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 import { Switch } from './switch';
 
+/**
+ * Field with label and error states that wraps a Switch component.
+ */
 export interface SwitchFieldProps
   extends
     Omit<
       React.ComponentPropsWithRef<typeof Switch>,
-      'onChange' | 'value' | 'onCheckedChange' | 'checked'
+      'onChange' | 'value' | 'onCheckedChange' | 'checked' | 'className' | 'id'
     >,
     FormFieldProps {
   onChange?: (value: boolean) => void;
   value?: boolean;
+  className?: string;
+  id?: string;
 }
 
 function SwitchField({
@@ -35,25 +40,31 @@ function SwitchField({
   onChange,
   value,
   className,
+  id,
   ...props
 }: SwitchFieldProps): React.ReactElement {
+  const switchId = React.useId();
+
   return (
-    <FormItem error={error} className={cn('space-y-2', className)}>
-      <div className="flex items-center gap-2">
-        <FormControl>
-          <Switch
-            onCheckedChange={(checked) => onChange?.(checked)}
-            checked={value}
-            {...props}
-          />
-        </FormControl>
-        <div className="space-y-0.5">
-          <FormLabel className="block">{label}</FormLabel>
-          <FormDescription>{description}</FormDescription>
-        </div>
-      </div>
-      <FormMessage />
-    </FormItem>
+    <Field
+      orientation="horizontal"
+      data-invalid={!!error}
+      className={className}
+      id={id}
+    >
+      <Switch
+        {...props}
+        id={switchId}
+        onCheckedChange={(checked) => onChange?.(checked)}
+        checked={value}
+        aria-invalid={!!error}
+      />
+      <FieldContent>
+        <FieldLabel htmlFor={switchId}>{label}</FieldLabel>
+        <FieldDescription>{description}</FieldDescription>
+        <FieldError>{error}</FieldError>
+      </FieldContent>
+    </Field>
   );
 }
 

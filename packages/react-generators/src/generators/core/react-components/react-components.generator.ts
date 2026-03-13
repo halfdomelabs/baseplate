@@ -40,13 +40,12 @@ export const reactComponentsGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@hookform/resolvers',
+        '@base-ui/react',
         'clsx',
         'react-hook-form',
         'react-icons',
         'zustand',
-        'radix-ui',
         'class-variance-authority',
-        'cmdk',
         'sonner',
         'react-day-picker',
         'date-fns',

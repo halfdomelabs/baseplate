@@ -54,19 +54,21 @@ export function EmbeddedObjectInput<T>({
       }}
     >
       <div className={className}>
-        <DialogTrigger asChild>
-          <Button
-            size="sm"
-            onClick={() => {
-              setValueToEdit(
-                (value ?? defaultValue) as DefaultValues<
-                  Exclude<T, null | undefined>
-                >,
-              );
-            }}
-          >
-            {value ? 'Edit' : 'Create'}
-          </Button>
+        <DialogTrigger
+          render={
+            <Button
+              size="sm"
+              onClick={() => {
+                setValueToEdit(
+                  (value ?? defaultValue) as DefaultValues<
+                    Exclude<T, null | undefined>
+                  >,
+                );
+              }}
+            />
+          }
+        >
+          {value ? 'Edit' : 'Create'}
         </DialogTrigger>
         {value && (
           <Button

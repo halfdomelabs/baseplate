@@ -10,32 +10,27 @@ import type {
 } from 'react-hook-form';
 
 import { EmbeddedListInput } from '$embeddedListInput';
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '%reactComponentsImports';
+import { Field, FieldError, FieldLabel } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
 
 export interface EmbeddedListFieldProps<
   InputType,
 > extends EmbeddedListInputProps<InputType> {
   label?: React.ReactNode;
+  error?: string;
 }
 
 export function EmbeddedListField<InputType>({
   label,
+  error,
   ...rest
 }: EmbeddedListFieldProps<InputType>): ReactElement {
   return (
-    <FormItem>
-      {label && <FormLabel>{label}</FormLabel>}
-      <FormControl>
-        <EmbeddedListInput {...rest} />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
+    <Field data-invalid={!!error}>
+      {label && <FieldLabel>{label}</FieldLabel>}
+      <EmbeddedListInput {...rest} />
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 
@@ -74,21 +69,20 @@ export function EmbeddedListFieldController<
   });
 
   return (
-    <FormItem error={error?.message}>
-      <EmbeddedListField
-        {...rest}
-        onChange={(value) => {
-          field.onChange(value as FieldPathValue<TFieldValues, TName>);
-        }}
-        value={
-          field.value as (FieldPathValue<
-            TFieldValues,
-            TName
-          > extends (infer InputType)[]
-            ? InputType
-            : never)[]
-        }
-      />
-    </FormItem>
+    <EmbeddedListField
+      {...rest}
+      error={error?.message}
+      onChange={(value) => {
+        field.onChange(value as FieldPathValue<TFieldValues, TName>);
+      }}
+      value={
+        field.value as (FieldPathValue<
+          TFieldValues,
+          TName
+        > extends (infer InputType)[]
+          ? InputType
+          : never)[]
+      }
+    />
   );
 }

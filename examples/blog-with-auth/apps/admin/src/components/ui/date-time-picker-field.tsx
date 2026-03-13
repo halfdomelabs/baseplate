@@ -13,13 +13,7 @@ import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 import { Calendar } from './calendar';
-import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form-item';
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 import { Input } from './input';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
@@ -133,25 +127,27 @@ function DateTimePickerField({
 
   const inputComponent = (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          data-empty={!dateTimeValue}
-          disabled={disabled}
-          id={id}
-          ref={ref}
-          className={cn(
-            'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
-            className,
-          )}
-        >
-          <MdSchedule />
-          {dateTimeValue ? (
-            format(dateTimeValue, dateTimeFormat)
-          ) : (
-            <span>{placeholder}</span>
-          )}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            data-empty={!dateTimeValue}
+            disabled={disabled}
+            id={id}
+            ref={ref}
+            className={cn(
+              'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
+              className,
+            )}
+          />
+        }
+      >
+        <MdSchedule />
+        {dateTimeValue ? (
+          format(dateTimeValue, dateTimeFormat)
+        ) : (
+          <span>{placeholder}</span>
+        )}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <div className="space-y-3 p-3">
@@ -181,12 +177,12 @@ function DateTimePickerField({
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>{inputComponent}</FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-      </FormItem>
+      <Field data-invalid={!!error} className={cn('gap-2', wrapperClassName)}>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        {inputComponent}
+        <FieldDescription>{description}</FieldDescription>
+        <FieldError>{error}</FieldError>
+      </Field>
     );
   }
   return inputComponent;

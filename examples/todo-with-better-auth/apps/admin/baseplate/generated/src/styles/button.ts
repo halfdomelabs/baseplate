@@ -1,29 +1,37 @@
 import { cva } from 'class-variance-authority';
 
 export const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          'border border-input bg-primary text-sm text-primary-foreground hover:bg-primary-hover',
+          'border border-input bg-primary text-primary-foreground hover:bg-primary-hover',
         destructive:
-          'bg-destructive text-sm text-destructive-foreground hover:bg-destructive-hover',
+          'bg-destructive text-destructive-foreground hover:bg-destructive-hover',
         outline:
-          'border border-input bg-background text-sm hover:bg-accent hover:text-accent-foreground',
+          'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
         secondary:
-          'border border-input bg-secondary text-sm text-secondary-foreground hover:bg-secondary-hover',
-        ghost: 'text-sm hover:bg-accent hover:text-accent-foreground',
-        ghostDestructive: 'text-sm text-destructive hover:bg-accent',
+          'border border-input bg-secondary text-secondary-foreground hover:bg-secondary-hover',
+        ghost:
+          'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
+        ghostDestructive: 'text-destructive hover:bg-accent',
         link: 'text-link underline-offset-4 hover:underline',
         linkDestructive: 'text-destructive underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-10 gap-2 px-4 py-2 has-[>svg]:px-3',
+        default:
+          'h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
         none: '',
-        sm: 'h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 gap-2 rounded-md px-6 has-[>svg]:px-4',
-        icon: 'size-9',
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: 'h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3',
+        icon: 'size-8',
+        'icon-xs':
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        'icon-sm':
+          'size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg',
+        'icon-lg': 'size-9',
       },
       justify: {
         start: 'justify-start',

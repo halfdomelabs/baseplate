@@ -31,27 +31,27 @@ export function AppSidebar(): React.ReactElement {
             <SidebarMenu>
               {/* TPL_SIDEBAR_LINKS:START */}
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/admin" activeOptions={{ exact: true }}>
-                    <MdHome />
-                    <span>Home</span>
-                  </Link>
+                <SidebarMenuButton
+                  render={<Link to="/admin" activeOptions={{ exact: true }} />}
+                >
+                  <MdHome />
+                  <span>Home</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/admin/accounts/users/user">
-                    <FaUserAlt />
-                    <span>User</span>
-                  </Link>
+                <SidebarMenuButton
+                  render={<Link to="/admin/accounts/users/user" />}
+                >
+                  <FaUserAlt />
+                  <span>User</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/admin/todos/todo-list">
-                    <BsCardChecklist />
-                    <span>Todo List</span>
-                  </Link>
+                <SidebarMenuButton
+                  render={<Link to="/admin/todos/todo-list" />}
+                >
+                  <BsCardChecklist />
+                  <span>Todo List</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               {/* TPL_SIDEBAR_LINKS:END */}

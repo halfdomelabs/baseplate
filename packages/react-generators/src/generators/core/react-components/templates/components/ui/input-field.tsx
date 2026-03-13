@@ -13,14 +13,14 @@ import type {
 
 import { cn } from '$cn';
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '$formItem';
+  Field,
+  FieldDescription,
+  FieldError as FieldErrorDisplay,
+  FieldLabel,
+} from '$field';
 import { Input } from '$input';
 import { mergeRefs } from '$mergeRefs';
+import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 export interface InputFieldProps
@@ -42,25 +42,26 @@ function InputField({
   ref,
   ...props
 }: InputFieldProps): React.ReactElement {
+  const id = useId();
   return (
-    <FormItem error={error} className={cn('flex flex-col gap-1.5', className)}>
-      <FormLabel>{label}</FormLabel>
-      <FormControl>
-        <Input
-          onChange={
-            onChange &&
-            ((e) => {
-              onChange(e.target.value);
-            })
-          }
-          ref={mergeRefs(ref, register?.ref)}
-          {...props}
-          {...register}
-        />
-      </FormControl>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+    <Field data-invalid={!!error} className={cn('gap-1.5', className)}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <Input
+        id={id}
+        onChange={
+          onChange &&
+          ((e) => {
+            onChange(e.target.value);
+          })
+        }
+        aria-invalid={!!error}
+        ref={mergeRefs(ref, register?.ref)}
+        {...props}
+        {...register}
+      />
+      <FieldDescription>{description}</FieldDescription>
+      <FieldErrorDisplay>{error}</FieldErrorDisplay>
+    </Field>
   );
 }
 

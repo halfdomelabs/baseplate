@@ -110,10 +110,6 @@ export function generateReactEslintConfig(options) {
                   // Ignore classes used in custom component classes
                   ignore: [
                     'toaster', // Sonner library class
-                    'data-ending-style:data-activation-direction=*', // Base UI NavigationMenu compound selectors
-                    'data-starting-style:data-activation-direction=*', // Base UI NavigationMenu compound selectors
-                    String.raw`data-\[ending-style\]:easing-*`, // Base UI NavigationMenu data attribute
-                    'xs:*', // xs breakpoint not recognized
                   ],
                 },
               ],

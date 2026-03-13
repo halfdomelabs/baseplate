@@ -16,7 +16,6 @@ export interface CoreReactComponentsPaths {
   cn: string;
   combobox: string;
   comboboxField: string;
-  command: string;
   confirmDialog: string;
   datePickerField: string;
   dateTimePickerField: string;
@@ -25,15 +24,15 @@ export interface CoreReactComponentsPaths {
   emptyDisplay: string;
   errorableLoader: string;
   errorDisplay: string;
-  formItem: string;
+  field: string;
   hooksUseControlledState: string;
   hooksUseControllerMerged: string;
   input: string;
   inputField: string;
+  inputGroup: string;
   label: string;
   loader: string;
   mergeRefs: string;
-  multiCombobox: string;
   multiComboboxField: string;
   navigationMenu: string;
   notFoundCard: string;
@@ -47,7 +46,6 @@ export interface CoreReactComponentsPaths {
   skeleton: string;
   stylesButton: string;
   stylesInput: string;
-  stylesSelect: string;
   switchComponent: string;
   switchField: string;
   table: string;
@@ -90,7 +88,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${componentsRoot}/ui/combobox.tsx`,
           comboboxField: `${componentsRoot}/ui/combobox-field.tsx`,
-          command: `${componentsRoot}/ui/command.tsx`,
           confirmDialog: `${componentsRoot}/ui/confirm-dialog.tsx`,
           datePickerField: `${componentsRoot}/ui/date-picker-field.tsx`,
           dateTimePickerField: `${componentsRoot}/ui/date-time-picker-field.tsx`,
@@ -99,15 +96,15 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           emptyDisplay: `${componentsRoot}/ui/empty-display.tsx`,
           errorableLoader: `${componentsRoot}/ui/errorable-loader.tsx`,
           errorDisplay: `${componentsRoot}/ui/error-display.tsx`,
-          formItem: `${componentsRoot}/ui/form-item.tsx`,
+          field: `${componentsRoot}/ui/field.tsx`,
           hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
           hooksUseControllerMerged: `${srcRoot}/hooks/use-controller-merged.ts`,
           input: `${componentsRoot}/ui/input.tsx`,
           inputField: `${componentsRoot}/ui/input-field.tsx`,
+          inputGroup: `${componentsRoot}/ui/input-group.tsx`,
           label: `${componentsRoot}/ui/label.tsx`,
           loader: `${componentsRoot}/ui/loader.tsx`,
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
-          multiCombobox: `${componentsRoot}/ui/multi-combobox.tsx`,
           multiComboboxField: `${componentsRoot}/ui/multi-combobox-field.tsx`,
           navigationMenu: `${componentsRoot}/ui/navigation-menu.tsx`,
           notFoundCard: `${componentsRoot}/ui/not-found-card.tsx`,
@@ -121,7 +118,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           skeleton: `${componentsRoot}/ui/skeleton.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
-          stylesSelect: `${srcRoot}/styles/select.ts`,
           switchComponent: `${componentsRoot}/ui/switch.tsx`,
           switchField: `${componentsRoot}/ui/switch-field.tsx`,
           table: `${componentsRoot}/ui/table.tsx`,

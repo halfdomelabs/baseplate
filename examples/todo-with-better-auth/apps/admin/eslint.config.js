@@ -67,6 +67,8 @@ export default defineConfig(
       'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
       // Disallow renaming imports, exports, or destructured variables to the same name.
       'no-useless-rename': 'error',
+      // Allow empty patterns in function parameters which are used in test fixtures
+      'no-empty-pattern': ['error', { allowObjectPatternsAsParameters: true }],
     },
   },
 
@@ -317,6 +319,10 @@ export default defineConfig(
       react: {
         version: 'detect',
       },
+    },
+    rules: {
+      // Disable for Base UI's render prop pattern where content is injected via useRender
+      'jsx-a11y/anchor-has-content': 'off',
     },
   },
 
