@@ -83,12 +83,12 @@ export function ModelRelationsSection({ control }: Props): React.JSX.Element {
               <ModelRelationDialog
                 relationId={relation.id}
                 control={control}
-                asChild
-              >
-                <Button variant="ghost" size="icon" title="Edit">
-                  <MdEdit />
-                </Button>
-              </ModelRelationDialog>
+                trigger={
+                  <Button variant="ghost" size="icon" title="Edit">
+                    <MdEdit />
+                  </Button>
+                }
+              />
               <Button
                 variant="ghostDestructive"
                 size="icon"
@@ -102,12 +102,15 @@ export function ModelRelationsSection({ control }: Props): React.JSX.Element {
             </RecordViewActions>
           </RecordView>
         ))}
-        <ModelRelationDialog control={control} asChild>
-          <Button variant="secondary" size="sm">
-            <MdAdd />
-            Add Relation
-          </Button>
-        </ModelRelationDialog>
+        <ModelRelationDialog
+          control={control}
+          trigger={
+            <Button variant="secondary" size="sm">
+              <MdAdd />
+              Add Relation
+            </Button>
+          }
+        />
       </SectionListSectionContent>
     </SectionListSection>
   );

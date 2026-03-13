@@ -14,8 +14,7 @@ import {
 import { ModelAuthorizerRoleForm } from './model-authorizer-role-form.js';
 
 interface ModelAuthorizerRoleDialogProps {
-  children?: React.ReactNode;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
   role?: AuthorizerRoleConfig;
@@ -23,9 +22,8 @@ interface ModelAuthorizerRoleDialogProps {
 }
 
 export function ModelAuthorizerRoleDialog({
-  children,
+  trigger,
   role,
-  asChild,
   open,
   onOpenChange,
   onSave,
@@ -35,7 +33,7 @@ export function ModelAuthorizerRoleDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

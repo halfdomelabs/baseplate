@@ -99,7 +99,6 @@ function HierarchyPage(): React.JSX.Element {
               setShowFeatureForm(true);
             }}
             variant="secondary"
-            size="sm"
           >
             Add Feature
           </Button>

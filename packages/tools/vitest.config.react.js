@@ -1,6 +1,6 @@
 // @ts-check
 
-import { defineConfig } from 'vitest/config';
+import { defaultExclude, defineConfig } from 'vitest/config';
 
 import { srcSubpathImportPlugin } from './src-subpath-import-plugin.js';
 
@@ -32,6 +32,11 @@ export function createReactVitestConfig(dirname) {
       mockReset: true,
       environment: 'jsdom',
       setupFiles: ['./src/tests/setup.ts'],
+      exclude: [
+        ...defaultExclude,
+        '**/dist/**',
+        '**/generators/*/*/templates/**',
+      ],
     },
   });
 }

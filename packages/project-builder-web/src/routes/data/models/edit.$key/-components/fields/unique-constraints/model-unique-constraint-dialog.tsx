@@ -16,17 +16,15 @@ import { ModelUniqueConstraintForm } from './model-unique-constraint-form.js';
 
 interface ModelUniqueConstraintDialogProps {
   control: Control<ModelConfigInput>;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
-  children?: React.ReactNode;
   constraintId?: string;
 }
 
 export function ModelUniqueConstraintDialog({
   control,
-  children,
-  asChild,
+  trigger,
   open,
   onOpenChange,
   constraintId,
@@ -34,7 +32,7 @@ export function ModelUniqueConstraintDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Unique Constraint</DialogTitle>

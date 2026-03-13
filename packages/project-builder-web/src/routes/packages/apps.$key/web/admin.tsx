@@ -121,11 +121,14 @@ function WebAdminPage(): React.JSX.Element {
               </SectionListSectionDescription>
             </SectionListSectionHeader>
             <SectionListSectionContent>
-              <Button variant="secondary" asChild>
-                <Link to="/admin-sections/$appKey" params={{ appKey }}>
-                  <MdSettings />
-                  Manage Admin Sections
-                </Link>
+              <Button
+                variant="secondary"
+                render={
+                  <Link to="/admin-sections/$appKey" params={{ appKey }} />
+                }
+              >
+                <MdSettings />
+                Manage Admin Sections
               </Button>
             </SectionListSectionContent>
           </SectionListSection>

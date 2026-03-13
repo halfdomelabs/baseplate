@@ -84,8 +84,8 @@ export function ServiceTransformerForm({
         pluginKey={pluginKey}
       />
       <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="secondary">Cancel</Button>
+        <DialogClose render={<Button variant="secondary" />}>
+          Cancel
         </DialogClose>
         <Button type="submit" disabled={!isCreate && !isDirty} form={formId}>
           Save

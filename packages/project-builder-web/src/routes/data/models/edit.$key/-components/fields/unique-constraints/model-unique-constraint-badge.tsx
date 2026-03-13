@@ -2,7 +2,7 @@ import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { BadgeWithIcon } from '@baseplate-dev/ui-components';
+import { Badge } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
@@ -32,23 +32,27 @@ export function ModelFieldUniqueBadge({
       constraints?.find((uc) => uc.id === constraintId)?.fields.length ?? 0,
   });
   return (
-    <ModelUniqueConstraintDialog control={control} constraintId={constraintId}>
-      <BadgeWithIcon
-        variant="secondary"
-        icon={MdStar}
-        className={clsx('', className)}
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-        aria-label="Unique Constraint"
-        title="Unique Constraint"
-      >
-        {shouldShowText &&
-          `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
-      </BadgeWithIcon>
-    </ModelUniqueConstraintDialog>
+    <ModelUniqueConstraintDialog
+      control={control}
+      constraintId={constraintId}
+      trigger={
+        <Badge
+          variant="secondary"
+          className={clsx('', className)}
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+          aria-label="Unique Constraint"
+          title="Unique Constraint"
+        >
+          <MdStar />
+          {shouldShowText &&
+            `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
+        </Badge>
+      }
+    />
   );
 }

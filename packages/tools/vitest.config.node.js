@@ -22,7 +22,11 @@ export function createNodeVitestConfig(dirname) {
       },
       mockReset: true,
       dir: 'src',
-      exclude: [...defaultExclude, '**/generators/*/*/templates/**'],
+      exclude: [
+        ...defaultExclude,
+        '**/dist/**',
+        '**/generators/*/*/templates/**',
+      ],
     },
   });
 }

@@ -4,10 +4,24 @@ import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
-  ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
+  ComboboxList,
 } from './combobox.js';
+
+const fruits = [
+  'Apple',
+  'Banana',
+  'Cherry',
+  'Grape',
+  'Lemon',
+  'Orange',
+  'Peach',
+  'Pear',
+  'Pineapple',
+  'Plum',
+  'Strawberry',
+] as const;
 
 const meta: Meta<typeof Combobox> = {
   title: 'components/Combobox',
@@ -20,32 +34,61 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <div className="w-80">
-          <ComboboxInput placeholder="Select a fruit" />
-        </div>
+  render: () => (
+    <div className="w-80">
+      <Combobox items={fruits}>
+        <ComboboxInput placeholder="Select a fruit" />
         <ComboboxContent>
-          <ComboboxEmpty>No results found</ComboboxEmpty>
-          <ComboboxGroup>
-            <ComboboxItem value="apple">Apple</ComboboxItem>
-            <ComboboxItem value="banana">Banana</ComboboxItem>
-            <ComboboxItem value="cherry">Cherry</ComboboxItem>
-            <ComboboxItem value="grape">Grape</ComboboxItem>
-            <ComboboxItem value="lemon">Lemon</ComboboxItem>
-            <ComboboxItem value="orange">Orange</ComboboxItem>
-            <ComboboxItem value="peach">Peach</ComboboxItem>
-            <ComboboxItem value="pear">Pear</ComboboxItem>
-            <ComboboxItem value="pineapple">Pineapple</ComboboxItem>
-            <ComboboxItem value="plum">Plum</ComboboxItem>
-            <ComboboxItem value="strawberry">Strawberry</ComboboxItem>
-            <ComboboxItem value="tomato" disabled>
-              Tomato
-            </ComboboxItem>
-          </ComboboxGroup>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item: string) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
         </ComboboxContent>
-      </>
-    ),
-  },
+      </Combobox>
+    </div>
+  ),
+};
+
+export const WithClear: Story = {
+  render: () => (
+    <div className="w-80">
+      <Combobox items={fruits}>
+        <ComboboxInput placeholder="Select a fruit" showClear />
+        <ComboboxContent>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item: string) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </div>
+  ),
+};
+
+export const Disabled: Story = {
+  render: () => (
+    <div className="w-80">
+      <Combobox items={fruits}>
+        <ComboboxInput placeholder="Select a fruit" disabled />
+        <ComboboxContent>
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(item: string) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </div>
+  ),
 };

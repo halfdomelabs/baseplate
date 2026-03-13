@@ -21,11 +21,13 @@ function EnumsListPage(): React.JSX.Element {
       </p>
       <p>
         Choose an enum to edit from the sidebar or{' '}
-        <NewEnumDialog>
-          <Button variant="link" size="none">
-            create a new enum
-          </Button>
-        </NewEnumDialog>
+        <NewEnumDialog
+          trigger={
+            <Button variant="link" size="none">
+              create a new enum
+            </Button>
+          }
+        />
         .
       </p>
     </div>

@@ -79,13 +79,13 @@ function ServiceTransformerRecord({
             onUpdate={(transformer) => {
               onUpdate(transformer, idx);
             }}
-            asChild
+            trigger={
+              <Button variant="ghost" size="icon" title="Edit">
+                <MdEdit />
+              </Button>
+            }
             isCreate={false}
-          >
-            <Button variant="ghost" size="icon" title="Edit">
-              <MdEdit />
-            </Button>
-          </ServiceTransformerDialog>
+          />
         )}
         <Button
           variant="ghost"
@@ -167,11 +167,11 @@ export function ServiceTransformersSection({
         ))}
         {addableTransformers.length > 0 && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="sm">
-                <MdAdd />
-                Add Transformer
-              </Button>
+            <DropdownMenuTrigger
+              render={<Button variant="secondary" size="sm" />}
+            >
+              <MdAdd />
+              Add Transformer
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>

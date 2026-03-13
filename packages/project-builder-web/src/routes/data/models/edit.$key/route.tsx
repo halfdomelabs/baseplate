@@ -46,41 +46,49 @@ function ModelEditLayout(): React.JSX.Element {
       <div className="max-w-7xl space-y-4 px-4 pb-4">
         <ModelHeaderBar model={model} />
         <NavigationTabs>
-          <NavigationTabsItem asChild>
-            <Link
-              to="/data/models/edit/$key"
-              params={{ key }}
-              activeOptions={{ exact: true }}
-            >
-              Fields
-            </Link>
+          <NavigationTabsItem
+            render={
+              <Link
+                to="/data/models/edit/$key"
+                params={{ key }}
+                activeOptions={{ exact: true }}
+              />
+            }
+          >
+            Fields
           </NavigationTabsItem>
-          <NavigationTabsItem asChild>
-            <Link
-              to="/data/models/edit/$key/authorization"
-              params={{ key }}
-              activeOptions={{ exact: true }}
-            >
-              Authorization
-            </Link>
+          <NavigationTabsItem
+            render={
+              <Link
+                to="/data/models/edit/$key/authorization"
+                params={{ key }}
+                activeOptions={{ exact: true }}
+              />
+            }
+          >
+            Authorization
           </NavigationTabsItem>
-          <NavigationTabsItem asChild>
-            <Link
-              to="/data/models/edit/$key/service"
-              params={{ key }}
-              activeOptions={{ exact: true }}
-            >
-              Service
-            </Link>
+          <NavigationTabsItem
+            render={
+              <Link
+                to="/data/models/edit/$key/service"
+                params={{ key }}
+                activeOptions={{ exact: true }}
+              />
+            }
+          >
+            Service
           </NavigationTabsItem>
-          <NavigationTabsItem asChild>
-            <Link
-              to="/data/models/edit/$key/graphql"
-              params={{ key }}
-              activeOptions={{ exact: true }}
-            >
-              GraphQL
-            </Link>
+          <NavigationTabsItem
+            render={
+              <Link
+                to="/data/models/edit/$key/graphql"
+                params={{ key }}
+                activeOptions={{ exact: true }}
+              />
+            }
+          >
+            GraphQL
           </NavigationTabsItem>
         </NavigationTabs>
       </div>

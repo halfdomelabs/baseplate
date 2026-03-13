@@ -159,10 +159,10 @@ function UuidDefaultValueInput({
         className="flex-1"
       />
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button title="Options" variant="ghost" size="icon">
-            <HiDotsVertical />
-          </Button>
+        <DropdownMenuTrigger
+          render={<Button title="Options" variant="ghost" size="icon" />}
+        >
+          <HiDotsVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
@@ -227,10 +227,10 @@ function DateTimeDefaultValueInput({
     <div className="flex items-center space-x-1">
       <InputField placeholder="NULL" disabled className="flex-1" />
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button title="Options" variant="ghost" size="icon">
-            <HiDotsVertical />
-          </Button>
+        <DropdownMenuTrigger
+          render={<Button title="Options" variant="ghost" size="icon" />}
+        >
+          <HiDotsVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>

@@ -8,6 +8,7 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuItemWithLink,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
@@ -74,13 +75,11 @@ function ListItem({
 }: React.ComponentPropsWithoutRef<'li'> & { href: string }): ReactElement {
   return (
     <li {...props}>
-      <NavigationMenuLink asChild>
-        <a href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
+      <NavigationMenuLink render={<a href={href} />}>
+        <div className="text-sm leading-none font-medium">{title}</div>
+        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          {children}
+        </p>
       </NavigationMenuLink>
     </li>
   );
@@ -99,22 +98,24 @@ function NavigationMenuContainer(
             <NavigationMenuContent>
               <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <a
-                      className="flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-6 no-underline outline-hidden select-none focus:shadow-md"
-                      href="/"
-                    >
-                      <div className="mt-4 mb-2 text-lg font-medium">
-                        shadcn/ui
-                      </div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        Beautifully designed components built with Tailwind CSS.
-                      </p>
-                    </a>
+                  <NavigationMenuLink
+                    render={
+                      <a
+                        className="flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-6 no-underline outline-hidden select-none focus:shadow-md"
+                        href="/"
+                      />
+                    }
+                  >
+                    <div className="mt-4 mb-2 text-lg font-medium">
+                      shadcn/ui
+                    </div>
+                    <p className="text-sm leading-tight text-muted-foreground">
+                      Beautifully designed components built with Tailwind CSS.
+                    </p>
                   </NavigationMenuLink>
                 </li>
                 <ListItem href="/docs" title="Introduction">
-                  Re-usable components built using Radix UI and Tailwind CSS.
+                  Re-usable components built using Base UI and Tailwind CSS.
                 </ListItem>
                 <ListItem href="/docs/installation" title="Installation">
                   How to install dependencies and structure your app.
@@ -143,22 +144,22 @@ function NavigationMenuContainer(
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink
-              asChild
+              render={<a href="/docs" />}
               className={navigationMenuTriggerStyle()}
             >
-              <a href="/docs">Documentation</a>
+              Documentation
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <NavigationMenu viewport={false}>
+      <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink
-              asChild
+              render={<a href="/docs" />}
               className={navigationMenuTriggerStyle()}
             >
-              <a href="/docs">Documentation</a>
+              Documentation
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
@@ -166,29 +167,23 @@ function NavigationMenuContainer(
             <NavigationMenuContent>
               <ul className="grid w-[300px] gap-4">
                 <li>
-                  <NavigationMenuLink asChild>
-                    <a href="#components">
-                      <div className="font-medium">Components</div>
-                      <div className="text-muted-foreground">
-                        Browse all components in the library.
-                      </div>
-                    </a>
+                  <NavigationMenuLink render={<a href="#components" />}>
+                    <div className="font-medium">Components</div>
+                    <div className="text-muted-foreground">
+                      Browse all components in the library.
+                    </div>
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#documentation">
-                      <div className="font-medium">Documentation</div>
-                      <div className="text-muted-foreground">
-                        Learn how to use the library.
-                      </div>
-                    </a>
+                  <NavigationMenuLink render={<a href="#documentation" />}>
+                    <div className="font-medium">Documentation</div>
+                    <div className="text-muted-foreground">
+                      Learn how to use the library.
+                    </div>
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#blog">
-                      <div className="font-medium">Blog</div>
-                      <div className="text-muted-foreground">
-                        Read our latest blog posts.
-                      </div>
-                    </a>
+                  <NavigationMenuLink render={<a href="#blog" />}>
+                    <div className="font-medium">Blog</div>
+                    <div className="text-muted-foreground">
+                      Read our latest blog posts.
+                    </div>
                   </NavigationMenuLink>
                 </li>
               </ul>
@@ -199,14 +194,14 @@ function NavigationMenuContainer(
             <NavigationMenuContent>
               <ul className="grid w-[200px] gap-4">
                 <li>
-                  <NavigationMenuLink asChild>
-                    <a href="#components">Components</a>
+                  <NavigationMenuLink render={<a href="#components" />}>
+                    Components
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#documentation">Documentation</a>
+                  <NavigationMenuLink render={<a href="#documentation" />}>
+                    Documentation
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#blocks">Blocks</a>
+                  <NavigationMenuLink render={<a href="#blocks" />}>
+                    Blocks
                   </NavigationMenuLink>
                 </li>
               </ul>
@@ -217,23 +212,32 @@ function NavigationMenuContainer(
             <NavigationMenuContent>
               <ul className="grid w-[200px] gap-4">
                 <li>
-                  <NavigationMenuLink asChild>
-                    <a href="#backlog" className="flex-row items-center gap-2">
-                      <MdHelpOutline />
-                      Backlog
-                    </a>
+                  <NavigationMenuLink
+                    render={
+                      <a
+                        href="#backlog"
+                        className="flex-row items-center gap-2"
+                      />
+                    }
+                  >
+                    <MdHelpOutline />
+                    Backlog
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#todo" className="flex-row items-center gap-2">
-                      <MdCircle />
-                      To Do
-                    </a>
+                  <NavigationMenuLink
+                    render={
+                      <a href="#todo" className="flex-row items-center gap-2" />
+                    }
+                  >
+                    <MdCircle />
+                    To Do
                   </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <a href="#done" className="flex-row items-center gap-2">
-                      <MdCheckCircle />
-                      Done
-                    </a>
+                  <NavigationMenuLink
+                    render={
+                      <a href="#done" className="flex-row items-center gap-2" />
+                    }
+                  >
+                    <MdCheckCircle />
+                    Done
                   </NavigationMenuLink>
                 </li>
               </ul>
@@ -248,4 +252,32 @@ function NavigationMenuContainer(
 export const Default: Story = {
   args: { children: null },
   render: (args) => <NavigationMenuContainer {...args} />,
+};
+
+function VerticalNavigationMenuContainer(): React.JSX.Element {
+  return (
+    <div className="w-[200px]">
+      <NavigationMenu orientation="vertical">
+        <NavigationMenuList>
+          <NavigationMenuItemWithLink render={<a href="#dashboard" />}>
+            Dashboard
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#models" />}>
+            Models
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#enums" />}>
+            Enums
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#settings" />}>
+            Settings
+          </NavigationMenuItemWithLink>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  );
+}
+
+export const Vertical: Story = {
+  args: { children: null },
+  render: () => <VerticalNavigationMenuContainer />,
 };
