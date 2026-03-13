@@ -26,6 +26,13 @@ export type Scalars = {
   Uuid: { input: string; output: string; }
 };
 
+export type Article = {
+  __typename?: 'Article';
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  title: Scalars['String']['output'];
+};
+
 export type AuthRole =
   /** Administrator role */
   | 'admin'
@@ -53,6 +60,22 @@ export type ChangePasswordInput = {
 export type ChangePasswordPayload = {
   __typename?: 'ChangePasswordPayload';
   user: User;
+};
+
+export type CreateArticleData = {
+  content: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
+/** Input type for createArticle mutation */
+export type CreateArticleInput = {
+  data: CreateArticleData;
+};
+
+/** Payload type for createArticle mutation */
+export type CreateArticlePayload = {
+  __typename?: 'CreateArticlePayload';
+  article: Article;
 };
 
 export type CreateUserData = {
@@ -116,6 +139,7 @@ export type LoginWithEmailPasswordPayload = {
 export type Mutation = {
   __typename?: 'Mutation';
   changePassword: ChangePasswordPayload;
+  createArticle: CreateArticlePayload;
   createUser: CreateUserPayload;
   deleteBlog: DeleteBlogPayload;
   deleteUser: DeleteUserPayload;
@@ -126,6 +150,7 @@ export type Mutation = {
   requestPasswordReset: RequestPasswordResetPayload;
   resetPasswordWithToken: ResetPasswordWithTokenPayload;
   resetUserPassword: ResetUserPasswordPayload;
+  updateArticle: UpdateArticlePayload;
   updateBlog: UpdateBlogPayload;
   updateUser: UpdateUserPayload;
   updateUserRoles: UpdateUserRolesPayload;
@@ -136,6 +161,11 @@ export type Mutation = {
 
 export type MutationChangePasswordArgs = {
   input: ChangePasswordInput;
+};
+
+
+export type MutationCreateArticleArgs = {
+  input: CreateArticleInput;
 };
 
 
@@ -179,6 +209,11 @@ export type MutationResetUserPasswordArgs = {
 };
 
 
+export type MutationUpdateArticleArgs = {
+  input: UpdateArticleInput;
+};
+
+
 export type MutationUpdateBlogArgs = {
   input: UpdateBlogInput;
 };
@@ -205,6 +240,8 @@ export type MutationVerifyEmailArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  article: Article;
+  articles: Array<Article>;
   blog: Blog;
   blogs: Array<Blog>;
   /** Get the current user session */
@@ -213,6 +250,17 @@ export type Query = {
   users: Array<User>;
   /** The currently authenticated user */
   viewer?: Maybe<User>;
+};
+
+
+export type QueryArticleArgs = {
+  id: Scalars['Uuid']['input'];
+};
+
+
+export type QueryArticlesArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -288,6 +336,23 @@ export type ResetUserPasswordInput = {
 export type ResetUserPasswordPayload = {
   __typename?: 'ResetUserPasswordPayload';
   user: User;
+};
+
+export type UpdateArticleData = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Input type for updateArticle mutation */
+export type UpdateArticleInput = {
+  data: UpdateArticleData;
+  id: Scalars['Uuid']['input'];
+};
+
+/** Payload type for updateArticle mutation */
+export type UpdateArticlePayload = {
+  __typename?: 'UpdateArticlePayload';
+  article: Article;
 };
 
 export type UpdateBlogData = {

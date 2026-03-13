@@ -166,21 +166,23 @@ export const reactApolloGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@apollo/client',
+        '@graphql-typed-document-node/core',
         'graphql',
-        'gql.tada',
+      ]),
+      dev: extractPackageVersions(REACT_PACKAGES, [
+        '@graphql-codegen/cli',
+        '@graphql-codegen/client-preset',
       ]),
     }),
     nodeScripts: createNodeTask((node) => {
-      node.scripts.set('gql:check', 'gql-tada check -c tsconfig.app.json');
-      node.scripts.set(
-        'gql:generate',
-        'gql-tada generate-output -c tsconfig.app.json',
-      );
+      node.scripts.set('gql:codegen', 'graphql-codegen');
+      node.scripts.set('gql:codegen:watch', 'graphql-codegen --watch');
     }),
     reactTypescript: createProviderTask(
       reactTypescriptProvider,
       (reactTypescript) => {
         reactTypescript.addNodeTsFile('graphql.config.ts');
+        reactTypescript.addNodeTsFile('codegen.ts');
       },
     ),
     websocketPackages: enableSubscriptions
@@ -189,7 +191,7 @@ export const reactApolloGenerator = createGenerator({
         })
       : undefined,
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
-      eslintConfig.eslintIgnore.push('src/graphql-env.d.ts');
+      eslintConfig.eslintIgnore.push('src/gql');
       eslintConfig.extraConfigs.set('graphql', GRAPHQL_ESLINT_RULES);
     }),
     eslintPackages: createNodePackagesTask({
@@ -197,20 +199,8 @@ export const reactApolloGenerator = createGenerator({
         '@graphql-eslint/eslint-plugin',
       ]),
     }),
-    typescriptPlugin: createProviderTask(
-      reactTypescriptProvider,
-      (reactTypescript) => {
-        reactTypescript.addCompilerPlugin({
-          name: 'gql.tada/ts-plugin',
-          schema: schemaLocation,
-          tadaOutputLocation: './src/graphql-env.d.ts',
-          trackFieldUsage: false,
-          shouldCheckForColocatedFragments: false,
-        });
-      },
-    ),
     prettier: createProviderTask(prettierProvider, (prettier) => {
-      prettier.addPrettierIgnore('src/graphql-env.d.ts');
+      prettier.addPrettierIgnore('src/gql');
     }),
     reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
       if (enableSubscriptions) {
@@ -482,6 +472,16 @@ const preloadQuery = useMemo(
                     TPL_MEMO_DEPENDENCIES: createApolloClientArguments
                       .map((arg) => arg.name)
                       .join(', '),
+                  },
+                  codegen: {
+                    TPL_BACKEND_SCHEMA_PATH: quot(schemaLocation),
+                    TPL_SCALARS: `{
+          DateTime: 'string',
+          Date: 'string',
+          JSON: 'unknown',
+          JSONObject: 'Record<string, unknown>',
+          Uuid: 'string',
+        }`,
                   },
                   graphqlConfig: {
                     TPL_BACKEND_SCHEMA_PATH: quot(schemaLocation),

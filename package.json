@@ -69,7 +69,6 @@
     "cross-env": "^10.1.0",
     "es-toolkit": "1.44.0",
     "eslint": "catalog:",
-    "gql.tada": "^1.9.0",
     "husky": "9.1.7",
     "knip": "5.79.0",
     "lint-staged": "16.1.0",

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import type { FragmentType } from '@src/graphql';
+import type { FragmentType } from '@src/gql/fragment-masking';
 
 import { Button } from '@src/components/ui/button';
 import {
@@ -19,7 +19,8 @@ import {
   DialogTitle,
 } from '@src/components/ui/dialog';
 import { MultiComboboxFieldController } from '@src/components/ui/multi-combobox-field';
-import { graphql, readFragment } from '@src/graphql';
+import { readFragment } from '@src/gql/fragment-masking';
+import { graphql } from '@src/gql/gql';
 
 const roleFormSchema = z.object({
   roles: z.array(z.string()),

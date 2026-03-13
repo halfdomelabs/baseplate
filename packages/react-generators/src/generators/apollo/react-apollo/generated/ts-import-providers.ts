@@ -20,8 +20,6 @@ import { APOLLO_REACT_APOLLO_PATHS } from './template-paths.js';
 export const reactApolloImportsSchema = createTsImportMapSchema({
   createApolloCache: {},
   createApolloClient: {},
-  introspection: { isTypeOnly: true },
-  introspection_types: { isTypeOnly: true },
 });
 
 export type ReactApolloImportsProvider = TsImportMapProviderFromSchema<
@@ -45,17 +43,14 @@ const apolloReactApolloImportsTask = createGeneratorTask({
     return {
       providers: {
         graphqlImports: createTsImportMap(graphqlImportsSchema, {
-          FragmentOf: paths.graphql,
-          graphql: paths.graphql,
-          readFragment: paths.graphql,
-          ResultOf: paths.graphql,
-          VariablesOf: paths.graphql,
+          '*': paths.gqlGraphql,
+          FragmentType: paths.gqlFragmentMasking,
+          graphql: paths.gqlGql,
+          readFragment: paths.gqlFragmentMasking,
         }),
         reactApolloImports: createTsImportMap(reactApolloImportsSchema, {
           createApolloCache: paths.cache,
           createApolloClient: paths.service,
-          introspection: paths.graphqlEnvD,
-          introspection_types: paths.graphqlEnvD,
         }),
       },
     };

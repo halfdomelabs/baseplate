@@ -5,11 +5,10 @@
       "providerExport": "graphqlImportsProvider",
       "schemaExport": "graphqlImportsSchema",
       "projectExports": {
+        "*": {},
         "graphql": {},
         "readFragment": {},
-        "FragmentOf": { "isTypeOnly": true },
-        "ResultOf": { "isTypeOnly": true },
-        "VariablesOf": { "isTypeOnly": true }
+        "FragmentType": { "isTypeOnly": true }
       }
     }
   }

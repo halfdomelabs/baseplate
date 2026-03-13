@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import type { AuthRole } from '../gql/graphql.js';
+import type { AuthRole } from '../gql/graphql';
 
 export interface SessionData {
   userId: string | undefined;
@@ -27,4 +27,4 @@ export function useSession(): SessionData {
   return contextValue;
 }
 
-export { type AuthRole } from '../gql/graphql.js';
+export type { AuthRole };

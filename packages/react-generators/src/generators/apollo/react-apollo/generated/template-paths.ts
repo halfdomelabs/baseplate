@@ -4,9 +4,11 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface ApolloReactApolloPaths {
   appApolloProvider: string;
   cache: string;
-  graphql: string;
+  codegen: string;
+  gqlFragmentMasking: string;
+  gqlGql: string;
+  gqlGraphql: string;
   graphqlConfig: string;
-  graphqlEnvD: string;
   service: string;
 }
 
@@ -26,9 +28,11 @@ const apolloReactApolloPathsTask = createGeneratorTask({
         apolloReactApolloPaths: {
           appApolloProvider: `${srcRoot}/app/app-apollo-provider.tsx`,
           cache: `${srcRoot}/services/apollo/cache.ts`,
-          graphql: `${srcRoot}/graphql.ts`,
+          codegen: `${packageRoot}/codegen.ts`,
+          gqlFragmentMasking: `${srcRoot}/gql/fragment-masking.ts`,
+          gqlGql: `${srcRoot}/gql/gql.ts`,
+          gqlGraphql: `${srcRoot}/gql/graphql.ts`,
           graphqlConfig: `${packageRoot}/graphql.config.ts`,
-          graphqlEnvD: `${srcRoot}/graphql-env.d.ts`,
           service: `${srcRoot}/services/apollo/index.ts`,
         },
       },

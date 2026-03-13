@@ -34,22 +34,50 @@
       "sourceFile": "src/services/apollo/cache.ts",
       "variables": {}
     },
-    "graphql": {
+    "codegen": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "group": "main",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/graphql.ts",
+      "pathRootRelativePath": "{package-root}/codegen.ts",
+      "sourceFile": "package/codegen.ts",
+      "variables": { "TPL_BACKEND_SCHEMA_PATH": {}, "TPL_SCALARS": {} }
+    },
+    "gql-fragment-masking": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/gql/fragment-masking.ts",
       "projectExports": {
-        "FragmentOf": { "isTypeOnly": false, "name": "FragmentOf" },
-        "graphql": { "isTypeOnly": false, "name": "graphql" },
-        "readFragment": { "isTypeOnly": false, "name": "readFragment" },
-        "ResultOf": { "isTypeOnly": false, "name": "ResultOf" },
-        "VariablesOf": { "isTypeOnly": false, "name": "VariablesOf" }
+        "FragmentType": { "isTypeOnly": true },
+        "readFragment": {}
       },
-      "referencedGeneratorTemplates": ["graphql-env-d"],
-      "sourceFile": "src/graphql.ts",
+      "projectExportsOnly": true,
+      "sourceFile": "src/gql/fragment-masking.ts",
+      "variables": {}
+    },
+    "gql-gql": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/gql/gql.ts",
+      "projectExports": { "graphql": {} },
+      "projectExportsOnly": true,
+      "sourceFile": "src/gql/gql.ts",
+      "variables": {}
+    },
+    "gql-graphql": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/gql/graphql.ts",
+      "projectExports": { "*": {} },
+      "projectExportsOnly": true,
+      "sourceFile": "src/gql/graphql.ts",
       "variables": {}
     },
     "graphql-config": {
@@ -60,23 +88,6 @@
       "pathRootRelativePath": "{package-root}/graphql.config.ts",
       "sourceFile": "package/graphql.config.ts",
       "variables": { "TPL_BACKEND_SCHEMA_PATH": {} }
-    },
-    "graphql-env-d": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/graphql-env.d.ts",
-      "projectExports": {
-        "introspection": { "isTypeOnly": true, "name": "introspection" },
-        "introspection_types": {
-          "isTypeOnly": true,
-          "name": "introspection_types"
-        }
-      },
-      "projectExportsOnly": true,
-      "sourceFile": "src/graphql-env.d.ts",
-      "variables": {}
     },
     "service": {
       "type": "ts",

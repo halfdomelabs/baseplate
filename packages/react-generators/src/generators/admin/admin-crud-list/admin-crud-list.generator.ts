@@ -25,8 +25,8 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
 import {
   mergeGraphqlFields,
-  renderTadaFragment,
-  renderTadaOperation,
+  renderGraphQLFragment,
+  renderGraphQLOperation,
 } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudAction } from '../_providers/admin-crud-action-container.js';
@@ -113,7 +113,7 @@ export const adminCrudListGenerator = createGenerator({
                   contextFields: ['preloadQuery'],
                 },
               ],
-              propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${tableItemsFragmentVariable}>[]`,
+              propType: tsTemplate`${graphqlImports.FragmentType.typeFragment()}<typeof ${tableItemsFragmentVariable}>[]`,
               pageComponentBody: tsTemplateWithImports([
                 tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
               ])`const { data } = useReadQuery(queryRef);`,
@@ -215,10 +215,14 @@ export const adminCrudListGenerator = createGenerator({
                 variables: {
                   TPL_COMPONENT_NAME: tableComponentName,
                   TPL_ITEMS_FRAGMENT_NAME: tableItemsFragmentVariable,
-                  TPL_ITEMS_FRAGMENT: renderTadaFragment(tableItemsFragment, {
-                    currentPath: tableComponentPath,
-                    exported: true,
-                  }),
+                  TPL_ITEMS_FRAGMENT: renderGraphQLFragment(
+                    tableItemsFragment,
+                    {
+                      currentPath: tableComponentPath,
+                      exported: true,
+                      graphqlImports,
+                    },
+                  ),
                   TPL_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
                     Object.fromEntries(
                       dataLoaders.map((d) => [d.propName, d.propType]),
@@ -274,8 +278,9 @@ export const adminCrudListGenerator = createGenerator({
                 variables: {
                   TPL_COMPONENT_NAME: listPageComponentName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
-                  TPL_ITEMS_QUERY: renderTadaOperation(itemsQuery, {
+                  TPL_ITEMS_QUERY: renderGraphQLOperation(itemsQuery, {
                     currentPath: listPagePath,
+                    graphqlImports,
                   }),
                   TPL_ROUTE_PROPS: routeLoader
                     ? tsTemplate`loader: ${routeLoader}`

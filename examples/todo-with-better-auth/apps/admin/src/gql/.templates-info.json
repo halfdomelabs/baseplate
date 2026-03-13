@@ -1,0 +1,17 @@
+{
+  "fragment-masking.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "gql-fragment-masking"
+  },
+  "gql.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "gql-gql"
+  },
+  "graphql.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "gql-graphql"
+  }
+}

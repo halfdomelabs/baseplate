@@ -16,5 +16,10 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["graphql.config.ts", "vite.config.ts", "vitest.config.ts"]
+  "include": [
+    "codegen.ts",
+    "graphql.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
 }

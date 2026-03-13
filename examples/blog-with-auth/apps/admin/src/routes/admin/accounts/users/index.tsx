@@ -5,7 +5,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql/gql';
 
 import { UserTable } from './-components/user-table';
 

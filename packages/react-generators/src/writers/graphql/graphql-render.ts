@@ -1,9 +1,9 @@
 /**
- * gql.tada rendering functions for generating TypeScript code with graphql() calls.
+ * GraphQL rendering functions for generating TypeScript code with graphql() calls.
  *
  * This module provides functions to render GraphQL fragments and operations
  * as TsCodeFragment objects that include the graphql() template literal call
- * with proper imports and dependency arrays.
+ * with proper imports.
  */
 
 import type {
@@ -11,15 +11,13 @@ import type {
   TsImportDeclaration,
 } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
+
+import type { GraphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/graphql-imports.js';
 
 import type { GraphQLFragment, GraphQLOperation } from './graphql.js';
 
-import {
-  collectFragmentDependencies,
-  renderFragment,
-  renderOperation,
-} from './graphql.js';
+import { renderFragment, renderOperation } from './graphql.js';
 
 // ============================================================================
 // Render Options
@@ -30,6 +28,8 @@ interface RenderOptions {
   exported?: boolean;
   /** The path of the file being rendered (to determine if fragments need imports) */
   currentPath: string;
+  /** The graphql imports provider to resolve the graphql() function import */
+  graphqlImports: GraphqlImportsProvider;
 }
 
 // ============================================================================
@@ -37,17 +37,19 @@ interface RenderOptions {
 // ============================================================================
 
 /**
- * Renders a GraphQL fragment as a TsCodeFragment for gql.tada.
+ * Renders a GraphQL fragment as a TsCodeFragment.
  *
  * This function:
  * 1. Renders the GraphQL fragment string
- * 2. Collects fragment dependencies from spread fields
- * 3. Generates imports for fragments from different files
- * 4. Builds the graphql() call with dependency array
+ * 2. Builds the graphql() template literal call
+ *
+ * @param fragment - The GraphQL fragment definition to render
+ * @param options - Render options including export flag and current file path
+ * @returns A TsCodeFragment with the rendered fragment and imports
  *
  * @example
  * ```typescript
- * const fragment = renderTadaFragment(userRowFragment, {
+ * const fragment = renderGraphQLFragment(userRowFragment, {
  *   currentPath: './user-table.tsx',
  *   exported: true,
  * });
@@ -58,44 +60,27 @@ interface RenderOptions {
  * //     email
  * //     ...RoleManagerDialog_user
  * //   }
- * // `, [roleManagerDialogUserFragment]);
+ * // `);
  * ```
  */
-export function renderTadaFragment(
+export function renderGraphQLFragment(
   fragment: GraphQLFragment,
   options: RenderOptions,
 ): TsCodeFragment {
-  const { exported = true, currentPath } = options;
-
-  // Collect all fragment dependencies from fields
-  const dependencies = collectFragmentDependencies(fragment.fields);
+  const { exported = true, graphqlImports } = options;
 
   // Build the GraphQL string
   const graphqlString = renderFragment(fragment);
 
-  // Build imports for fragments from different files
-  const imports: TsImportDeclaration[] = [
-    tsImportBuilder(['graphql']).from('@src/graphql'),
-  ];
-  const depVariableNames: string[] = [];
-
-  for (const dep of dependencies) {
-    depVariableNames.push(dep.variableName);
-
-    // Only import if from a different file
-    if (dep.path !== currentPath) {
-      imports.push(tsImportBuilder([dep.variableName]).from(dep.path));
-    }
-  }
+  // Build imports
+  const imports: TsImportDeclaration[] = [graphqlImports.graphql.declaration()];
 
   // Build the graphql() call
   const exportKeyword = exported ? 'export ' : '';
-  const depsArray =
-    depVariableNames.length > 0 ? `, [${depVariableNames.join(', ')}]` : '';
 
   const code = `${exportKeyword}const ${fragment.variableName} = graphql(\`
 ${graphqlString}
-\`${depsArray});`;
+\`);`;
 
   return TsCodeUtils.templateWithImports(imports)`${code}`;
 }
@@ -105,17 +90,19 @@ ${graphqlString}
 // ============================================================================
 
 /**
- * Renders a GraphQL operation (query/mutation/subscription) as a TsCodeFragment for gql.tada.
+ * Renders a GraphQL operation (query/mutation/subscription) as a TsCodeFragment.
  *
  * This function:
  * 1. Renders the GraphQL operation string
- * 2. Collects fragment dependencies from spread fields
- * 3. Generates imports for fragments from different files
- * 4. Builds the graphql() call with dependency array
+ * 2. Builds the graphql() template literal call
+ *
+ * @param operation - The GraphQL operation definition to render
+ * @param options - Render options including export flag and current file path
+ * @returns A TsCodeFragment with the rendered operation and imports
  *
  * @example
  * ```typescript
- * const query = renderTadaOperation(usersQuery, {
+ * const query = renderGraphQLOperation(usersQuery, {
  *   currentPath: './queries.ts',
  *   exported: true,
  * });
@@ -126,44 +113,27 @@ ${graphqlString}
  * //       ...UserTable_items
  * //     }
  * //   }
- * // `, [userRowFragment]);
+ * // `);
  * ```
  */
-export function renderTadaOperation(
+export function renderGraphQLOperation(
   operation: GraphQLOperation,
   options: RenderOptions,
 ): TsCodeFragment {
-  const { exported, currentPath } = options;
-
-  // Collect all fragment dependencies from fields
-  const dependencies = collectFragmentDependencies(operation.fields);
+  const { exported, graphqlImports } = options;
 
   // Build the GraphQL string
   const graphqlString = renderOperation(operation);
 
-  // Build imports for fragments from different files
-  const imports: TsImportDeclaration[] = [
-    tsImportBuilder(['graphql']).from('@src/graphql'),
-  ];
-  const depVariableNames: string[] = [];
-
-  for (const dep of dependencies) {
-    depVariableNames.push(dep.variableName);
-
-    // Only import if from a different file
-    if (dep.path !== currentPath) {
-      imports.push(tsImportBuilder([dep.variableName]).from(dep.path));
-    }
-  }
+  // Build imports
+  const imports: TsImportDeclaration[] = [graphqlImports.graphql.declaration()];
 
   // Build the graphql() call
   const exportKeyword = exported ? 'export ' : '';
-  const depsArray =
-    depVariableNames.length > 0 ? `, [${depVariableNames.join(', ')}]` : '';
 
   const code = `${exportKeyword}const ${operation.variableName} = graphql(\`
 ${graphqlString}
-\`${depsArray});`;
+\`);`;
 
   return TsCodeUtils.templateWithImports(imports)`${code}`;
 }

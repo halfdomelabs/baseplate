@@ -4,16 +4,13 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
 import type { UserFormData } from './-schemas/user-schema';
 
-import {
-  UserEditForm,
-  userEditFormDefaultValuesFragment,
-} from './-components/user-edit-form';
+import { UserEditForm } from './-components/user-edit-form';
 
 /* TPL_COMPONENT_NAME=UserEditPage */
 /* TPL_FORM_DATA_NAME=UserFormData */
@@ -21,35 +18,29 @@ import {
 /* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
 
 /* TPL_EDIT_QUERY:START */
-const userEditPageQuery = graphql(
-  `
-    query UserEditPage($id: Uuid!) {
-      user(id: $id) {
+const userEditPageQuery = graphql(`
+  query UserEditPage($id: Uuid!) {
+    user(id: $id) {
+      id
+      name
+      ...UserEditForm_defaultValues
+    }
+  }
+`);
+/* TPL_EDIT_QUERY:END */
+
+/* TPL_UPDATE_MUTATION:START */
+const userEditPageUpdateMutation = graphql(`
+  mutation UserEditPageUpdate($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      user {
         id
         name
         ...UserEditForm_defaultValues
       }
     }
-  `,
-  [userEditFormDefaultValuesFragment],
-);
-/* TPL_EDIT_QUERY:END */
-
-/* TPL_UPDATE_MUTATION:START */
-const userEditPageUpdateMutation = graphql(
-  `
-    mutation UserEditPageUpdate($input: UpdateUserInput!) {
-      updateUser(input: $input) {
-        user {
-          id
-          name
-          ...UserEditForm_defaultValues
-        }
-      }
-    }
-  `,
-  [userEditFormDefaultValuesFragment],
-);
+  }
+`);
 /* TPL_UPDATE_MUTATION:END */
 
 export const Route = createFileRoute(

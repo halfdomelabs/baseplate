@@ -1,3 +1,4 @@
+import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
@@ -12,7 +13,7 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentType, ResultOf } from '@src/graphql';
+import type { FragmentType } from '@src/gql/fragment-masking';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
@@ -31,15 +32,19 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { graphql, readFragment } from '@src/graphql';
+import { readFragment } from '@src/gql/fragment-masking';
+import { graphql } from '@src/gql/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import type { passwordResetDialogUserFragment } from './password-reset-dialog';
-import type { roleManagerDialogUserFragment } from './role-manager-dialog';
-
-import { PasswordResetDialog } from './password-reset-dialog';
-import { RoleManagerDialog } from './role-manager-dialog';
+import {
+  PasswordResetDialog,
+  passwordResetDialogUserFragment,
+} from './password-reset-dialog';
+import {
+  RoleManagerDialog,
+  roleManagerDialogUserFragment,
+} from './role-manager-dialog';
 
 /* HOISTED:delete-action-mutation:START */
 const userListPageDeleteUserMutation = graphql(`

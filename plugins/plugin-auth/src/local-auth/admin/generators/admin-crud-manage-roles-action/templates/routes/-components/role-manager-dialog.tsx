@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { FragmentOf } from '%graphqlImports';
+import type { FragmentType } from '%graphqlImports';
 import type { ReactElement } from 'react';
 
 import { graphql, readFragment } from '%graphqlImports';
@@ -47,21 +47,18 @@ export const roleManagerDialogUserFragment = graphql(`
   }
 `);
 
-const updateUserRolesMutation = graphql(
-  `
-    mutation UpdateUserRoles($input: UpdateUserRolesInput!) {
-      updateUserRoles(input: $input) {
-        user {
-          ...RoleManagerDialog_user
-        }
+const updateUserRolesMutation = graphql(`
+  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {
+    updateUserRoles(input: $input) {
+      user {
+        ...RoleManagerDialog_user
       }
     }
-  `,
-  [roleManagerDialogUserFragment],
-);
+  }
+`);
 
 interface RoleManagerDialogProps {
-  user: FragmentOf<typeof roleManagerDialogUserFragment>;
+  user: FragmentType<typeof roleManagerDialogUserFragment>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@src/components/ui/card';
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 import { getApolloErrorCode } from '@src/utils/apollo-error';

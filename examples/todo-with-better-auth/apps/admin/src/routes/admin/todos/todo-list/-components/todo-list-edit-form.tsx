@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import type { FragmentOf } from '@src/graphql';
+import type { FragmentType } from '@src/gql/fragment-masking';
 
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
@@ -13,7 +13,8 @@ import { DateTimePickerFieldController } from '@src/components/ui/date-time-pick
 import { FileInputFieldController } from '@src/components/ui/file-input-field';
 import { InputFieldController } from '@src/components/ui/input-field';
 import { SelectFieldController } from '@src/components/ui/select-field';
-import { graphql, readFragment } from '@src/graphql';
+import { readFragment } from '@src/gql/fragment-masking';
+import { graphql } from '@src/gql/gql';
 
 import type { TodoListFormData } from '../-schemas/todo-list-schema';
 
@@ -29,16 +30,13 @@ export const todoListEditFormOwnerOptionsFragment = graphql(`
 /* HOISTED:foreign-input-fragment-ownerOptions:END */
 
 /* HOISTED:foreign-input-query-ownerOptions:START */
-export const todoListEditFormOwnerOptionsQuery = graphql(
-  `
-    query TodoListEditFormOwnerOptions {
-      users {
-        ...TodoListEditForm_ownerOptions
-      }
+export const todoListEditFormOwnerOptionsQuery = graphql(`
+  query TodoListEditFormOwnerOptions {
+    users {
+      ...TodoListEditForm_ownerOptions
     }
-  `,
-  [todoListEditFormOwnerOptionsFragment],
-);
+  }
+`);
 /* HOISTED:foreign-input-query-ownerOptions:END */
 
 /* HOISTED:statusOptions:START */
@@ -75,9 +73,9 @@ interface Props {
   submitData: (data: TodoListFormData) => Promise<void>;
   /* TPL_PROPS:START */
   defaultValues:
-    | FragmentOf<typeof todoListEditFormDefaultValuesFragment>
+    | FragmentType<typeof todoListEditFormDefaultValuesFragment>
     | undefined;
-  ownerOptions: FragmentOf<typeof todoListEditFormOwnerOptionsFragment>[];
+  ownerOptions: FragmentType<typeof todoListEditFormOwnerOptionsFragment>[];
   /* TPL_PROPS:END */
 }
 

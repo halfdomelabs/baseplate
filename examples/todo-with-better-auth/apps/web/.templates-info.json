@@ -6,6 +6,11 @@
     },
     "template": "readme"
   },
+  "codegen.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "codegen"
+  },
   "eslint.config.js": {
     "generator": "@baseplate-dev/core-generators#node/eslint",
     "instanceData": {},

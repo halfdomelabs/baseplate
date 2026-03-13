@@ -11,8 +11,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "gql:check": "gql-tada check -c tsconfig.app.json",
-    "gql:generate": "gql-tada generate-output -c tsconfig.app.json",
+    "gql:codegen": "graphql-codegen",
+    "gql:codegen:watch": "graphql-codegen --watch",
     "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@apollo/client": "4.0.11",
+    "@graphql-typed-document-node/core": "3.2.0",
     "@hookform/resolvers": "5.2.2",
     "@sentry/react": "10.39.0",
     "@tanstack/react-router": "1.159.5",
@@ -43,7 +44,6 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
-    "gql.tada": "1.9.0",
     "graphql": "16.11.0",
     "loglevel": "1.9.1",
     "nanoid": "5.1.6",
@@ -61,6 +61,8 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
+    "@graphql-codegen/cli": "6.1.3",
+    "@graphql-codegen/client-preset": "5.2.4",
     "@graphql-eslint/eslint-plugin": "4.4.0",
     "@tailwindcss/vite": "4.1.18",
     "@tanstack/router-plugin": "1.159.5",

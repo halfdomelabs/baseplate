@@ -1,3 +1,9 @@
+type Article {
+  content: String!
+  createdAt: DateTime!
+  title: String!
+}
+
 enum AuthRole {
   """Administrator role"""
   admin
@@ -27,6 +33,21 @@ input ChangePasswordInput {
 """Payload type for changePassword mutation"""
 type ChangePasswordPayload {
   user: User!
+}
+
+input CreateArticleData {
+  content: String!
+  title: String!
+}
+
+"""Input type for createArticle mutation"""
+input CreateArticleInput {
+  data: CreateArticleData!
+}
+
+"""Payload type for createArticle mutation"""
+type CreateArticlePayload {
+  article: Article!
 }
 
 input CreateUserData {
@@ -104,6 +125,7 @@ type LoginWithEmailPasswordPayload {
 
 type Mutation {
   changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
+  createArticle(input: CreateArticleInput!): CreateArticlePayload!
   createUser(input: CreateUserInput!): CreateUserPayload!
   deleteBlog(input: DeleteBlogInput!): DeleteBlogPayload!
   deleteUser(input: DeleteUserInput!): DeleteUserPayload!
@@ -114,6 +136,7 @@ type Mutation {
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
   resetPasswordWithToken(input: ResetPasswordWithTokenInput!): ResetPasswordWithTokenPayload!
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
+  updateArticle(input: UpdateArticleInput!): UpdateArticlePayload!
   updateBlog(input: UpdateBlogInput!): UpdateBlogPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
@@ -122,6 +145,8 @@ type Mutation {
 }
 
 type Query {
+  article(id: Uuid!): Article!
+  articles(skip: Int, take: Int): [Article!]!
   blog(id: Uuid!): Blog!
   blogs(skip: Int, take: Int): [Blog!]!
 
@@ -180,6 +205,22 @@ input ResetUserPasswordInput {
 """Payload type for resetUserPassword mutation"""
 type ResetUserPasswordPayload {
   user: User!
+}
+
+input UpdateArticleData {
+  content: String
+  title: String
+}
+
+"""Input type for updateArticle mutation"""
+input UpdateArticleInput {
+  data: UpdateArticleData!
+  id: Uuid!
+}
+
+"""Payload type for updateArticle mutation"""
+type UpdateArticlePayload {
+  article: Article!
 }
 
 input UpdateBlogData {
