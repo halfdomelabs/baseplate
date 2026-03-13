@@ -51,8 +51,7 @@
       "mcp__baseplate-dev-server__*",
       "Bash(git fetch *)",
       "Bash(git checkout -b *)",
-      "Bash(echo $?)",
-      "Read(//Users/kingstone/projects/hdlabs/baseplate-beta/packages/react-generators/src/generators/apollo/react-apollo/**)"
+      "Bash(echo $?)"
     ],
     "deny": [
       "Edit(**/baseplate/generated/**)",
@@ -61,9 +60,7 @@
     ]
   },
   "enableAllProjectMcpServers": false,
-  "enabledMcpjsonServers": [
-    "baseplate-dev-server"
-  ],
+  "enabledMcpjsonServers": ["baseplate-dev-server"],
   "hooks": {
     "PostToolUse": [
       {

@@ -8,7 +8,6 @@ import { HttpError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createContextFromRequest } from '%requestServiceContextImports';
 import { requestContext } from '@fastify/request-context';
-import { AltairFastify } from 'altair-fastify-plugin';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
@@ -21,7 +20,7 @@ const schema = TPL_SCHEMA;
 
 TPL_POST_SCHEMA_FRAGMENTS;
 
-export const graphqlPlugin = fp(async (fastify) => {
+export const graphqlPlugin = fp((fastify, opts, done) => {
   const graphQLServer = createYoga<{
     req: FastifyRequest;
     reply: FastifyReply;
@@ -109,11 +108,5 @@ export const graphqlPlugin = fp(async (fastify) => {
 
   TPL_GRAPHQL_HANDLER;
 
-  if (IS_DEVELOPMENT) {
-    await fastify.register(AltairFastify, {
-      path: '/altair',
-      baseURL: '/altair/',
-      endpointURL: '/graphql',
-    });
-  }
+  done();
 });
