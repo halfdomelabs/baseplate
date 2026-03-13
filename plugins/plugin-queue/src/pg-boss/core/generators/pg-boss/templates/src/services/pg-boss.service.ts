@@ -314,6 +314,25 @@ export async function getScheduledJobs(): Promise<string[]> {
 }
 
 /**
+ * Start all queue workers from the registry.
+ * Cleans up orphaned schedules before starting workers.
+ * @param registry The list of queues to start workers for.
+ */
+export async function startWorkers(registry: Queue<unknown>[]): Promise<void> {
+  const activeQueueNames = registry.map((queue) => queue.name);
+  await cleanupOrphanedSchedules(activeQueueNames);
+
+  const startPromises = registry.map(async (queue) => {
+    try {
+      await queue.work();
+    } catch (error: unknown) {
+      logError(error, { source: 'run-workers', queueName: queue.name });
+    }
+  });
+  await Promise.all(startPromises);
+}
+
+/**
  * Remove scheduled/cron jobs for queues that are no longer active.
  * @param activeQueueNames List of queue names that should have schedules.
  * @returns Promise that resolves when cleanup is complete.

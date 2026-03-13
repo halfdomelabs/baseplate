@@ -339,6 +339,21 @@ export function createQueue<T>(
 }
 
 /**
+ * Start all queue workers from the registry.
+ * @param registry The list of queues to start workers for.
+ */
+export async function startWorkers(registry: Queue<unknown>[]): Promise<void> {
+  const startPromises = registry.map(async (queue) => {
+    try {
+      await queue.work();
+    } catch (error: unknown) {
+      logError(error, { source: 'run-workers', queueName: queue.name });
+    }
+  });
+  await Promise.all(startPromises);
+}
+
+/**
  * Get all scheduled/cron jobs from BullMQ.
  * @returns Promise that resolves to array of scheduled job names.
  */
