@@ -90,6 +90,11 @@ export const configServiceGenerator = createGenerator({
         useCase: 'dev-env',
         targetEnvironment: 'dev',
       });
+      fastify.nodeFlags.set('env-file-local', {
+        flag: '--env-file-if-exists=.env.local',
+        useCase: 'dev-env',
+        targetEnvironment: 'dev',
+      });
     }),
     // add the node packages
     nodePackages: createNodePackagesTask({
@@ -99,7 +104,11 @@ export const configServiceGenerator = createGenerator({
     nodeGitIgnore: createProviderTask(
       nodeGitIgnoreProvider,
       (nodeGitIgnore) => {
-        nodeGitIgnore.exclusions.set('config', ['/.env', '/.*.env']);
+        nodeGitIgnore.exclusions.set('config', [
+          '/.env',
+          '/.env.local',
+          '/.*.env',
+        ]);
       },
     ),
     setup: setupTask,

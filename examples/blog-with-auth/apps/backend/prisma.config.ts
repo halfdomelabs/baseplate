@@ -12,7 +12,7 @@ export default {
   schema: './prisma/schema.prisma',
   migrations: {
     path: './prisma/migrations',
-    seed: /* TPL_SEED_COMMAND:START */ 'tsx --env-file-if-exists=.env --env-file-if-exists=.seed.env src/prisma/seed.ts' /* TPL_SEED_COMMAND:END */,
+    seed: /* TPL_SEED_COMMAND:START */ 'tsx --env-file-if-exists=.env --env-file-if-exists=.env.local --env-file-if-exists=.seed.env src/prisma/seed.ts' /* TPL_SEED_COMMAND:END */,
   },
   datasource: {
     url: process.env.DATABASE_URL,
