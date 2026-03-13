@@ -32,6 +32,7 @@
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && pnpm changeset publish",
     "run:all": "bash scripts/run-all.sh",
+    "run:examples": "bash scripts/run-examples.sh",
     "run:example": "bash scripts/run-example.sh",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
     "start": "pnpm run --filter @baseplate-dev/project-builder-dev start",

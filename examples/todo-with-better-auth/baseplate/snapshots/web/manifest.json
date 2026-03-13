@@ -1,1 +1,11 @@
-{ "files": { "added": [], "deleted": [], "modified": [] }, "version": "1" }
+{
+  "files": {
+    "added": [
+      { "path": "src/gql/fragment-masking.ts" },
+      { "path": "src/gql/gql.ts" }
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}
