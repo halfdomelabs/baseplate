@@ -30,9 +30,7 @@ function SheetContainer(
 ): React.JSX.Element {
   return (
     <Sheet {...args}>
-      <SheetTrigger asChild>
-        <Button>Open Sheet</Button>
-      </SheetTrigger>
+      <SheetTrigger render={<Button />}>Open Sheet</SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Edit profile</SheetTitle>
@@ -40,14 +38,12 @@ function SheetContainer(
             Make changes to your profile here. Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
-        <p className="py-4">This is the body content</p>
+        <p className="px-4">This is the body content</p>
         <SheetFooter className="flex gap-4">
-          <SheetClose asChild>
-            <Button variant="secondary">Cancel</Button>
+          <SheetClose render={<Button variant="secondary" />}>
+            Cancel
           </SheetClose>
-          <SheetClose asChild>
-            <Button>Save Changes</Button>
-          </SheetClose>
+          <SheetClose render={<Button />}>Save Changes</SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -81,14 +77,14 @@ function ControlledSheetContainer(
         }}
       >
         <SheetContent>
-          <p>This is the body content</p>
+          <div className="px-4">
+            <p>This is the body content</p>
+          </div>
           <SheetFooter>
-            <SheetClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <SheetClose render={<Button variant="secondary" />}>
+              Cancel
             </SheetClose>
-            <SheetClose asChild>
-              <Button>Delete File</Button>
-            </SheetClose>
+            <SheetClose render={<Button />}>Delete File</SheetClose>
           </SheetFooter>
         </SheetContent>
       </Sheet>

@@ -30,9 +30,7 @@ function DialogContainer(
 ): React.JSX.Element {
   return (
     <Dialog {...args}>
-      <DialogTrigger asChild>
-        <Button>Open Dialog</Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Confirm delete</DialogTitle>
@@ -43,12 +41,10 @@ function DialogContainer(
         </DialogHeader>
         <p>This is the body content</p>
         <DialogFooter className="flex gap-4">
-          <DialogClose asChild>
-            <Button variant="secondary">Cancel</Button>
+          <DialogClose render={<Button variant="secondary" />}>
+            Cancel
           </DialogClose>
-          <DialogClose asChild>
-            <Button>Delete File</Button>
-          </DialogClose>
+          <DialogClose render={<Button />}>Delete File</DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -91,12 +87,10 @@ function ControlledDialogContainer(
           </DialogHeader>
           <p>This is the body content</p>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
-            <DialogClose asChild>
-              <Button>Delete File</Button>
-            </DialogClose>
+            <DialogClose render={<Button />}>Delete File</DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
