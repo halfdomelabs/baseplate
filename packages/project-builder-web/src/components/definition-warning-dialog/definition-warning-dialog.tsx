@@ -171,16 +171,18 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                             ? 'Applying...'
                             : 'Apply fix'}
                         </Button>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              aria-label="Fix details"
-                              className="size-7 opacity-50"
-                            >
-                              <MdInfo />
-                            </Button>
+                        <Tooltip delay={300}>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Fix details"
+                                className="size-7 opacity-50"
+                              />
+                            }
+                          >
+                            <MdInfo />
                           </TooltipTrigger>
                           <TooltipContent side="left" className="max-w-[300px]">
                             {warning.fix.label}
