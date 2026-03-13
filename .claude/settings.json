@@ -50,7 +50,8 @@
       "mcp__baseplate-dev-server__*",
       "Bash(git fetch *)",
       "Bash(git checkout -b *)",
-      "Bash(echo $?)"
+      "Bash(echo $?)",
+      "mcp__linear-server__get_issue"
     ],
     "deny": [
       "Edit(**/baseplate/generated/**)",
@@ -59,7 +60,9 @@
     ]
   },
   "enableAllProjectMcpServers": false,
-  "enabledMcpjsonServers": ["baseplate-dev-server"],
+  "enabledMcpjsonServers": [
+    "baseplate-dev-server"
+  ],
   "hooks": {
     "PostToolUse": [
       {
