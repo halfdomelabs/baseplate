@@ -1,4 +1,4 @@
-/* eslint-disable no-empty-pattern -- required by Playwright */
+ 
 import type {
   ProjectDefinition,
   ProjectDefinitionInput,
