@@ -13,12 +13,7 @@ import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 import { Calendar } from './calendar';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from './field';
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export interface DatePickerFieldProps extends FormFieldProps {

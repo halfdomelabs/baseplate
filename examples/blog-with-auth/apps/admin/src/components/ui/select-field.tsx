@@ -13,12 +13,7 @@ import type {
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
 
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from './field';
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 import {
   Select,
   SelectContent,

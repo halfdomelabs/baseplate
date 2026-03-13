@@ -28,9 +28,8 @@ export const REACT_PACKAGES = {
   'react-icons': '5.5.0',
   zustand: '5.0.3',
   'react-error-boundary': '6.0.0',
-  'radix-ui': '1.4.2',
+  '@base-ui/react': '1.2.0',
   'class-variance-authority': '0.7.1',
-  cmdk: '1.1.1',
   sonner: '2.0.3',
 
   // Date Picker

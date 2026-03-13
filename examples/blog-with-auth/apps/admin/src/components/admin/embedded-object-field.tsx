@@ -10,11 +10,7 @@ import { useController } from 'react-hook-form';
 
 import type { EmbeddedObjectInputProps } from './embedded-object-input';
 
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from '../ui/field';
+import { Field, FieldError, FieldLabel } from '../ui/field';
 import { EmbeddedObjectInput } from './embedded-object-input';
 
 export interface EmbeddedObjectFieldProps<

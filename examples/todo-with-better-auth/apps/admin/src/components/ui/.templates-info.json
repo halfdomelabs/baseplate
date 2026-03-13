@@ -59,11 +59,6 @@
     "instanceData": {},
     "template": "combobox"
   },
-  "command.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components",
-    "instanceData": {},
-    "template": "command"
-  },
   "confirm-dialog.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
@@ -109,6 +104,11 @@
     "instanceData": {},
     "template": "errorable-loader"
   },
+  "field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "field"
+  },
   "file-input-field.tsx": {
     "generator": "@baseplate-dev/plugin-storage#react/upload-components",
     "instanceData": {},
@@ -119,15 +119,15 @@
     "instanceData": {},
     "template": "file-input-component"
   },
-  "form-item.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components",
-    "instanceData": {},
-    "template": "form-item"
-  },
   "input-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input-field"
+  },
+  "input-group.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "input-group"
   },
   "input.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -148,11 +148,6 @@
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "multi-combobox-field"
-  },
-  "multi-combobox.tsx": {
-    "generator": "@baseplate-dev/react-generators#core/react-components",
-    "instanceData": {},
-    "template": "multi-combobox"
   },
   "navigation-menu.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",

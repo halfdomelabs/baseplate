@@ -161,11 +161,9 @@ export const adminCrudListGenerator = createGenerator({
                     tsImportBuilder(['MdMoreVert']).from('react-icons/md'),
                   ])`
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MdMoreVert />
-                        <span className="sr-only">More actions</span>
-                      </Button>
+                    <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+                      <MdMoreVert />
+                      <span className="sr-only">More actions</span>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       ${TsCodeUtils.mergeFragmentsPresorted(

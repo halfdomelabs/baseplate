@@ -117,8 +117,7 @@
       "projectExports": { "CheckboxField": {}, "CheckboxFieldController": {} },
       "referencedGeneratorTemplates": [
         "checkbox",
-        "cn",
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "types-form"
       ],
@@ -156,15 +155,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/combobox.tsx",
       "projectExports": { "Combobox": {} },
-      "referencedGeneratorTemplates": [
-        "button",
-        "cn",
-        "hooks-use-controlled-state",
-        "merge-refs",
-        "scroll-area",
-        "styles-input",
-        "styles-select"
-      ],
+      "referencedGeneratorTemplates": ["button", "cn", "input-group"],
       "sourceFile": "components/ui/combobox.tsx",
       "variables": {}
     },
@@ -178,32 +169,11 @@
       "projectExports": { "ComboboxField": {}, "ComboboxFieldController": {} },
       "referencedGeneratorTemplates": [
         "combobox",
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "types-form"
       ],
       "sourceFile": "components/ui/combobox-field.tsx",
-      "variables": {}
-    },
-    "command": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/command.tsx",
-      "projectExports": {
-        "Command": {},
-        "CommandDialog": {},
-        "CommandEmpty": {},
-        "CommandGroup": {},
-        "CommandInput": {},
-        "CommandItem": {},
-        "CommandList": {},
-        "CommandSeparator": {},
-        "CommandShortcut": {}
-      },
-      "referencedGeneratorTemplates": ["cn", "dialog"],
-      "sourceFile": "components/ui/command.tsx",
       "variables": {}
     },
     "confirm-dialog": {
@@ -238,7 +208,7 @@
         "button",
         "calendar",
         "cn",
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "popover",
         "types-form"
@@ -261,7 +231,7 @@
         "button",
         "calendar",
         "cn",
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "input",
         "popover",
@@ -291,7 +261,7 @@
         "DialogWidth": { "isTypeOnly": true },
         "Modal": {}
       },
-      "referencedGeneratorTemplates": ["cn"],
+      "referencedGeneratorTemplates": ["button", "cn"],
       "sourceFile": "components/ui/dialog.tsx",
       "variables": {}
     },
@@ -358,22 +328,27 @@
       "sourceFile": "components/ui/errorable-loader.tsx",
       "variables": {}
     },
-    "form-item": {
+    "field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/form-item.tsx",
+      "pathRootRelativePath": "{components-root}/ui/field.tsx",
       "projectExports": {
-        "FormControl": {},
-        "FormDescription": {},
-        "FormItem": {},
-        "FormLabel": {},
-        "FormMessage": {}
+        "Field": { "isTypeOnly": false, "name": "Field" },
+        "FieldContent": { "isTypeOnly": false, "name": "FieldContent" },
+        "FieldDescription": { "isTypeOnly": false, "name": "FieldDescription" },
+        "FieldError": { "isTypeOnly": false, "name": "FieldError" },
+        "FieldGroup": { "isTypeOnly": false, "name": "FieldGroup" },
+        "FieldLabel": { "isTypeOnly": false, "name": "FieldLabel" },
+        "FieldLegend": { "isTypeOnly": false, "name": "FieldLegend" },
+        "FieldSeparator": { "isTypeOnly": false, "name": "FieldSeparator" },
+        "FieldSet": { "isTypeOnly": false, "name": "FieldSet" },
+        "FieldTitle": { "isTypeOnly": false, "name": "FieldTitle" },
+        "fieldVariants": { "isTypeOnly": false, "name": "fieldVariants" }
       },
-      "referencedGeneratorTemplates": ["cn", "label"],
-      "sourceFile": "components/ui/form-item.tsx",
+      "referencedGeneratorTemplates": ["cn", "label", "separator"],
+      "sourceFile": "components/ui/field.tsx",
       "variables": {}
     },
     "hooks-use-controlled-state": {
@@ -421,12 +396,33 @@
       "projectExports": { "InputField": {}, "InputFieldController": {} },
       "referencedGeneratorTemplates": [
         "cn",
-        "form-item",
+        "field",
         "input",
         "merge-refs",
         "types-form"
       ],
       "sourceFile": "components/ui/input-field.tsx",
+      "variables": {}
+    },
+    "input-group": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/input-group.tsx",
+      "projectExports": {
+        "InputGroup": { "isTypeOnly": false, "name": "InputGroup" },
+        "InputGroupAddon": { "isTypeOnly": false, "name": "InputGroupAddon" },
+        "InputGroupButton": { "isTypeOnly": false, "name": "InputGroupButton" },
+        "InputGroupInput": { "isTypeOnly": false, "name": "InputGroupInput" },
+        "InputGroupText": { "isTypeOnly": false, "name": "InputGroupText" },
+        "InputGroupTextarea": {
+          "isTypeOnly": false,
+          "name": "InputGroupTextarea"
+        }
+      },
+      "referencedGeneratorTemplates": ["button", "cn", "input", "textarea"],
+      "sourceFile": "components/ui/input-group.tsx",
       "variables": {}
     },
     "label": {
@@ -464,33 +460,6 @@
       "sourceFile": "src/utils/merge-refs.ts",
       "variables": {}
     },
-    "multi-combobox": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/multi-combobox.tsx",
-      "projectExports": {
-        "MultiCombobox": {},
-        "MultiComboboxContent": {},
-        "MultiComboboxEmpty": {},
-        "MultiComboboxGroup": {},
-        "MultiComboboxInput": {},
-        "MultiComboboxItem": {},
-        "useMultiComboboxContext": {}
-      },
-      "referencedGeneratorTemplates": [
-        "badge",
-        "cn",
-        "command",
-        "hooks-use-controlled-state",
-        "popover",
-        "styles-input",
-        "styles-select"
-      ],
-      "sourceFile": "components/ui/multi-combobox.tsx",
-      "variables": {}
-    },
     "multi-combobox-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -503,9 +472,9 @@
         "MultiComboboxFieldProps": { "isTypeOnly": true }
       },
       "referencedGeneratorTemplates": [
-        "form-item",
+        "combobox",
+        "field",
         "hooks-use-controller-merged",
-        "multi-combobox",
         "types-form"
       ],
       "sourceFile": "components/ui/multi-combobox-field.tsx",
@@ -587,7 +556,7 @@
         "Select": {},
         "SelectInput": {}
       },
-      "referencedGeneratorTemplates": ["cn", "scroll-area", "styles-select"],
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/select.tsx",
       "variables": {}
     },
@@ -600,7 +569,7 @@
       "pathRootRelativePath": "{components-root}/ui/select-field.tsx",
       "projectExports": { "SelectField": {}, "SelectFieldController": {} },
       "referencedGeneratorTemplates": [
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "select",
         "types-form"
@@ -635,7 +604,7 @@
         "SheetTitle": {},
         "SheetTrigger": {}
       },
-      "referencedGeneratorTemplates": ["cn"],
+      "referencedGeneratorTemplates": ["button", "cn"],
       "sourceFile": "components/ui/sheet.tsx",
       "variables": {}
     },
@@ -718,22 +687,6 @@
       "sourceFile": "src/styles/input.ts",
       "variables": {}
     },
-    "styles-select": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "styles",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/styles/select.ts",
-      "projectExports": {
-        "selectCheckVariants": {},
-        "selectContentVariants": {},
-        "selectItemVariants": {},
-        "selectTriggerVariants": {}
-      },
-      "sourceFile": "src/styles/select.ts",
-      "variables": {}
-    },
     "switch-component": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -755,8 +708,7 @@
       "pathRootRelativePath": "{components-root}/ui/switch-field.tsx",
       "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
       "referencedGeneratorTemplates": [
-        "cn",
-        "form-item",
+        "field",
         "hooks-use-controller-merged",
         "switch-component",
         "types-form"
@@ -805,7 +757,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea-field.tsx",
       "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
-      "referencedGeneratorTemplates": ["form-item", "textarea", "types-form"],
+      "referencedGeneratorTemplates": ["field", "textarea", "types-form"],
       "sourceFile": "components/ui/textarea-field.tsx",
       "variables": {}
     },

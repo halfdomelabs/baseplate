@@ -21,12 +21,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from './combobox';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from './field';
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 
 export interface ComboboxFieldProps<OptionType>
   extends SelectOptionProps<OptionType>, FormFieldProps {

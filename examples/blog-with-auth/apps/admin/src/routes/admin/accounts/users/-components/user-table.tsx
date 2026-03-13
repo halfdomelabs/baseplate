@@ -190,7 +190,9 @@ export function UserTable(
                   <span className="sr-only">Edit</span>
                 </Button>
                 <DropdownMenu>
-                  <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+                  <DropdownMenuTrigger
+                    render={<Button variant="ghost" size="icon" />}
+                  >
                     <MdMoreVert />
                     <span className="sr-only">More actions</span>
                   </DropdownMenuTrigger>

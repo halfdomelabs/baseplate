@@ -25,12 +25,7 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from './combobox';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from './field';
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 
 export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>, FormFieldProps {

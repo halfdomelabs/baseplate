@@ -65,10 +65,8 @@ export function AppBreadcrumbs(): React.JSX.Element {
               </BreadcrumbPage>
             ) : (
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to={crumb.url}>
-                    <BreadcrumbLabel label={crumb.label} />
-                  </Link>
+                <BreadcrumbLink render={<Link to={crumb.url} />}>
+                  <BreadcrumbLabel label={crumb.label} />
                 </BreadcrumbLink>
               </BreadcrumbItem>
             )}

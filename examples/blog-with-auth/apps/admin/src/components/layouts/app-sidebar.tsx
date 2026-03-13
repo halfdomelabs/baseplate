@@ -38,9 +38,7 @@ export function AppSidebar(): React.ReactElement {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  render={<Link to="/admin/accounts/users" />}
-                >
+                <SidebarMenuButton render={<Link to="/admin/accounts/users" />}>
                   <FaUser />
                   <span>Users</span>
                 </SidebarMenuButton>

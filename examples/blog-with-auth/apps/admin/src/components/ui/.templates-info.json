@@ -104,10 +104,20 @@
     "instanceData": {},
     "template": "errorable-loader"
   },
+  "field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "field"
+  },
   "input-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "input-field"
+  },
+  "input-group.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "input-group"
   },
   "input.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
