@@ -2,8 +2,7 @@ import type { Command } from 'commander';
 
 import path from 'node:path';
 
-import { runTests } from '#src/e2e-runner/runner.js';
-import { getTestProjects } from '#src/utils/list-projects.js';
+import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
 const DEFAULT_TEST_DEFS_DIR = path.join('src', 'tests');
 
@@ -29,7 +28,8 @@ export function addTestCommand(program: Command): void {
     .action(
       async (filter: string | undefined, opts: { testDefsDir: string }) => {
         const testDefinitionsDir = path.resolve(opts.testDefsDir);
-        const testProjects = await getTestProjects();
+        const context = await createServiceActionContext();
+        const testProjects = context.projects.filter((p) => p.type === 'test');
 
         if (testProjects.length === 0) {
           throw new Error(
@@ -37,9 +37,12 @@ export function addTestCommand(program: Command): void {
           );
         }
 
+        const { runTests } = await import('#src/e2e-runner/runner.js');
+
         await runTests({
           testDefinitionsDir,
           testProjects,
+          context,
           filter,
         });
       },
