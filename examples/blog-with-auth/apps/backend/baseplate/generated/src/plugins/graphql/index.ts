@@ -3,7 +3,6 @@ import type { GraphQLErrorOptions } from 'graphql';
 
 import { useDisableIntrospection } from '@envelop/disable-introspection';
 import { requestContext } from '@fastify/request-context';
-import { AltairFastify } from 'altair-fastify-plugin';
 import fp from 'fastify-plugin';
 import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
@@ -148,12 +147,4 @@ export const graphqlPlugin = fp(async (fastify) => {
     handler: httpHandler,
   });
   /* TPL_GRAPHQL_HANDLER:END */
-
-  if (IS_DEVELOPMENT) {
-    await fastify.register(AltairFastify, {
-      path: '/altair',
-      baseURL: '/altair/',
-      endpointURL: '/graphql',
-    });
-  }
 });

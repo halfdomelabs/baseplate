@@ -139,7 +139,6 @@ export const yogaPluginGenerator = createGenerator({
     }),
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
-        'altair-fastify-plugin',
         'graphql',
         '@envelop/core',
         '@envelop/disable-introspection',
