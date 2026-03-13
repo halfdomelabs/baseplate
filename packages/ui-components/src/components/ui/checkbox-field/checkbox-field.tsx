@@ -21,7 +21,7 @@ import {
 interface CheckboxFieldProps
   extends
     Omit<
-      ComponentPropsWithRef<'button'>,
+      ComponentPropsWithRef<'span'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
     >,
     FormFieldProps {
@@ -48,7 +48,7 @@ function CheckboxField({
           <Checkbox
             {...props}
             onCheckedChange={(checked) => {
-              onChange?.(checked === true);
+              onChange?.(checked);
             }}
             checked={value}
           />

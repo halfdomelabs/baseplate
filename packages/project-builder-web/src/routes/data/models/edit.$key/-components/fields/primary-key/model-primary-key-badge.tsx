@@ -2,7 +2,7 @@ import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { BadgeWithIcon } from '@baseplate-dev/ui-components';
+import { Badge } from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { MdKey } from 'react-icons/md';
 
@@ -23,8 +23,7 @@ export function ModelPrimaryKeyBadge({
   const shouldShowText = !autoCollapse || isHovered;
   return (
     <ModelPrimaryKeyDialog control={control}>
-      <BadgeWithIcon
-        icon={MdKey}
+      <Badge
         variant="secondary"
         className={className}
         onMouseEnter={() => {
@@ -36,8 +35,9 @@ export function ModelPrimaryKeyBadge({
         aria-label="Primary Key"
         title="Primary Key"
       >
+        <MdKey />
         {shouldShowText && 'Primary'}
-      </BadgeWithIcon>
+      </Badge>
     </ModelPrimaryKeyDialog>
   );
 }

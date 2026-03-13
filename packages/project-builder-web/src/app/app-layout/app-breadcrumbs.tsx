@@ -116,8 +116,8 @@ export function AppBreadcrumbs(): React.JSX.Element {
                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbItem className="hidden sm:block">
-                  <BreadcrumbLink asChild>
-                    <Link to={crumb.url}>{crumb.label}</Link>
+                  <BreadcrumbLink render={<Link to={crumb.url} />}>
+                    {crumb.label}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               )}

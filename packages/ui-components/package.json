@@ -64,6 +64,7 @@
     ]
   },
   "dependencies": {
+    "@base-ui/react": "^1.2.0",
     "@baseplate-dev/utils": "workspace:*",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/view": "^6.39.11",

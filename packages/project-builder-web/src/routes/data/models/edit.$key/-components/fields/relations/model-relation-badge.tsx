@@ -6,7 +6,7 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import { BadgeWithIcon } from '@baseplate-dev/ui-components';
+import { Badge } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { MdLink } from 'react-icons/md';
@@ -31,8 +31,7 @@ export function ModelRelationsBadge({
   const shouldShowText = !autoCollapse || isHovered;
   return (
     <ModelRelationDialog control={control} relationId={relation.id}>
-      <BadgeWithIcon
-        icon={MdLink}
+      <Badge
         variant="secondary"
         className={clsx('max-w-[100px]', className)}
         onMouseEnter={() => {
@@ -44,13 +43,14 @@ export function ModelRelationsBadge({
         aria-label="Relation"
         title="Relation"
       >
+        <MdLink />
         {shouldShowText &&
           `${definitionContainer.nameFromId(relation.modelRef)} ${
             relation.references.length > 1
               ? `(${relation.references.length})`
               : ''
           }`}
-      </BadgeWithIcon>
+      </Badge>
     </ModelRelationDialog>
   );
 }
