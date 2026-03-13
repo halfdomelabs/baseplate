@@ -392,6 +392,7 @@ describe('validateAuthorizerExpression', () => {
     const modelContextWithRelations = {
       modelName: 'Todo',
       scalarFieldNames: new Set(['id', 'todoListId']),
+      fieldTypes: new Map<string, string>(),
       relationInfo: new Map([
         [
           'todoList',

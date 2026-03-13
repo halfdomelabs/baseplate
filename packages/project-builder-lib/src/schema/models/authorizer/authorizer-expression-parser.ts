@@ -12,6 +12,7 @@ import { RefExpressionParser } from '#src/references/expression-types.js';
 
 import type { modelEntityType } from '../types.js';
 import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
+import type { ModelValidationContext } from './authorizer-expression-validator.js';
 
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
@@ -27,7 +28,7 @@ import {
 interface RawModelDefinition {
   name?: string;
   model?: {
-    fields?: { name: string }[];
+    fields?: { name: string; type?: string }[];
     relations?: {
       name: string;
       modelRef: string;
@@ -152,11 +153,9 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ):
-    | {
-        modelName: string;
-        scalarFieldNames: Set<string>;
+    | (ModelValidationContext & {
         relationInfo: ReturnType<typeof buildRelationValidationInfo>;
-      }
+      })
     | undefined {
     const modelPath = resolvedSlots.model;
     if (modelPath.length === 0) {
@@ -181,9 +180,13 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     // Model fields are nested under model.model.fields in the definition
     const scalarFieldNames = new Set<string>();
+    const fieldTypes = new Map<string, string>();
     for (const field of model.model?.fields ?? []) {
       if (typeof field.name === 'string') {
         scalarFieldNames.add(field.name);
+        if (typeof field.type === 'string') {
+          fieldTypes.set(field.name, field.type);
+        }
       }
     }
 
@@ -220,6 +223,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     return {
       modelName: model.name,
       scalarFieldNames,
+      fieldTypes,
       relationInfo,
     };
   }
