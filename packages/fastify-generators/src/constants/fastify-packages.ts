@@ -8,7 +8,6 @@ export const FASTIFY_PACKAGES = {
   pino: '9.5.0',
   'pino-pretty': '13.0.0',
 
-  'altair-fastify-plugin': '8.5.1',
   graphql: '16.11.0',
   '@envelop/core': '5.3.0',
   '@envelop/disable-introspection': '8.0.0',
