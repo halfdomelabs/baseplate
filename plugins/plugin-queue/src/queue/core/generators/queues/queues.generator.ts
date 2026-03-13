@@ -1,10 +1,20 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { packageScope, TsCodeUtils } from '@baseplate-dev/core-generators';
+import {
+  packageScope,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+} from '@baseplate-dev/core-generators';
+import {
+  configServiceProvider,
+  fastifyServerConfigProvider,
+} from '@baseplate-dev/fastify-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -16,6 +26,7 @@ const [configTask, queueConfigProvider, queueConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       queues: t.map<string, TsCodeFragment>(),
+      implementationPluginName: t.string(),
     }),
     {
       prefix: 'queue',
@@ -37,12 +48,40 @@ export const queuesGenerator = createGenerator({
     renderers: GENERATED_TEMPLATES.renderers.task,
     imports: GENERATED_TEMPLATES.imports.task,
     config: configTask,
+    configService: createProviderTask(
+      configServiceProvider,
+      (configService) => {
+        configService.configFields.set('ENABLE_EMBEDDED_WORKERS', {
+          comment:
+            'Enable embedded workers (run queue workers in the API process)',
+          validator: tsCodeFragment('z.stringbool().optional()'),
+          exampleValue: 'false',
+        });
+      },
+    ),
+    fastifyServerConfig: createGeneratorTask({
+      dependencies: {
+        fastifyServerConfig: fastifyServerConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ fastifyServerConfig, paths }) {
+        fastifyServerConfig.plugins.set('embeddedWorkersPlugin', {
+          plugin: tsCodeFragment(
+            'embeddedWorkersPlugin',
+            tsImportBuilder(['embeddedWorkersPlugin']).from(
+              paths.embeddedWorkersPlugin,
+            ),
+          ),
+          orderPriority: 'END',
+        });
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
         configValues: queueConfigValuesProvider,
       },
-      run({ renderers, configValues: { queues } }) {
+      run({ renderers, configValues: { queues, implementationPluginName } }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -55,6 +94,18 @@ export const queuesGenerator = createGenerator({
             await builder.apply(
               renderers.queueTypes.render({
                 variables: {},
+              }),
+            );
+            await builder.apply(
+              renderers.workersService.render({
+                variables: {},
+              }),
+            );
+            await builder.apply(
+              renderers.embeddedWorkersPlugin.render({
+                variables: {
+                  TPL_IMPLEMENTATION_PLUGIN_NAME: `'${implementationPluginName}'`,
+                },
               }),
             );
           },

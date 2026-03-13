@@ -1,11 +1,12 @@
+// @ts-nocheck
+
 import type { FastifyPluginCallback } from 'fastify';
 
+import { startWorkers } from '$workersService';
+import { config } from '%configServiceImports';
+import { logError } from '%errorHandlerServiceImports';
+import { logger } from '%loggerServiceImports';
 import fastifyPlugin from 'fastify-plugin';
-
-import { config } from '../services/config.js';
-import { logError } from '../services/error-logger.js';
-import { logger } from '../services/logger.js';
-import { startWorkers } from '../services/workers.service.js';
 
 /**
  * Fastify plugin for embedded workers.
@@ -49,8 +50,6 @@ export const embeddedWorkersPlugin = fastifyPlugin(
   embeddedWorkersPluginCallback,
   {
     name: 'embedded-workers',
-    dependencies: [
-      /* TPL_IMPLEMENTATION_PLUGIN_NAME:START */ 'bullmq' /* TPL_IMPLEMENTATION_PLUGIN_NAME:END */,
-    ],
+    dependencies: [TPL_IMPLEMENTATION_PLUGIN_NAME],
   },
 );

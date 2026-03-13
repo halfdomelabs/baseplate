@@ -11,6 +11,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import { queueConfigProvider } from '../../../../queue/core/generators/queues/queues.generator.js';
 import { BULLMQ_CORE_BULLMQ_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -40,6 +41,14 @@ export const bullmqGenerator = createGenerator({
             tsImportBuilder(['bullMQPlugin']).from(paths.bullmqPlugin),
           ),
         });
+      },
+    }),
+    queueConfig: createGeneratorTask({
+      dependencies: {
+        queueConfig: queueConfigProvider,
+      },
+      run({ queueConfig }) {
+        queueConfig.implementationPluginName.set('bullmq');
       },
     }),
     fastify: createGeneratorTask({

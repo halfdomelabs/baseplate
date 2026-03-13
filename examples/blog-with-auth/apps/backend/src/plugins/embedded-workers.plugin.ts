@@ -50,7 +50,7 @@ export const embeddedWorkersPlugin = fastifyPlugin(
   {
     name: 'embedded-workers',
     dependencies: [
-      /* TPL_IMPLEMENTATION_PLUGIN_NAME:START */ 'bullmq' /* TPL_IMPLEMENTATION_PLUGIN_NAME:END */,
+      /* TPL_IMPLEMENTATION_PLUGIN_NAME:START */ 'pg-boss' /* TPL_IMPLEMENTATION_PLUGIN_NAME:END */,
     ],
   },
 );

@@ -7,6 +7,7 @@ import {
 } from '../services/bullmq.service.js';
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
+import { startWorkers } from '../services/workers.service.js';
 
 /**
  * Worker script for running BullMQ queue workers.
@@ -15,22 +16,6 @@ import { logger } from '../services/logger.js';
  * 2. Starts all queue workers
  * 3. Handles graceful shutdown
  */
-
-/**
- * Start all queue workers.
- */
-async function startWorkers(): Promise<void> {
-  // Start workers for all registered queues
-  const startPromises = QUEUE_REGISTRY.map(async (queue) => {
-    try {
-      await queue.work();
-    } catch (error: unknown) {
-      logError(error, { source: 'run-workers', queueName: queue.name });
-    }
-  });
-
-  await Promise.all(startPromises);
-}
 
 /**
  * Main entry point for the worker script.

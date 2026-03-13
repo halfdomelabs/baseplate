@@ -13,12 +13,14 @@ import {
 import { QUEUE_CORE_QUEUES_PATHS } from './template-paths.js';
 
 export const queuesImportsSchema = createTsImportMapSchema({
+  embeddedWorkersPlugin: {},
   EnqueueOptions: { isTypeOnly: true },
   Queue: { isTypeOnly: true },
   QUEUE_REGISTRY: {},
   QueueDefinition: { isTypeOnly: true },
   QueueJob: { isTypeOnly: true },
   RepeatableConfig: { isTypeOnly: true },
+  startWorkers: {},
 });
 
 export type QueuesImportsProvider = TsImportMapProviderFromSchema<
@@ -37,12 +39,14 @@ const queueCoreQueuesImportsTask = createGeneratorTask({
     return {
       providers: {
         queuesImports: createTsImportMap(queuesImportsSchema, {
+          embeddedWorkersPlugin: paths.embeddedWorkersPlugin,
           EnqueueOptions: paths.queueTypes,
           Queue: paths.queueTypes,
           QUEUE_REGISTRY: paths.queueRegistry,
           QueueDefinition: paths.queueTypes,
           QueueJob: paths.queueTypes,
           RepeatableConfig: paths.queueTypes,
+          startWorkers: paths.workersService,
         }),
       },
     };

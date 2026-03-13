@@ -11,6 +11,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import { queueConfigProvider } from '../../../../queue/core/generators/queues/queues.generator.js';
 import { PG_BOSS_CORE_PG_BOSS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -40,6 +41,14 @@ export const pgBossGenerator = createGenerator({
             tsImportBuilder(['pgBossPlugin']).from(paths.pgBossPlugin),
           ),
         });
+      },
+    }),
+    queueConfig: createGeneratorTask({
+      dependencies: {
+        queueConfig: queueConfigProvider,
+      },
+      run({ queueConfig }) {
+        queueConfig.implementationPluginName.set('pg-boss');
       },
     }),
     fastify: createGeneratorTask({

@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "bullmq-plugin"
   },
+  "embedded-workers.plugin.ts": {
+    "generator": "@baseplate-dev/plugin-queue#queue/core/queues",
+    "instanceData": {},
+    "template": "embedded-workers-plugin"
+  },
   "error-handler.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
     "instanceData": {},

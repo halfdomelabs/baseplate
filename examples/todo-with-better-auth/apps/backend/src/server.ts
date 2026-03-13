@@ -39,7 +39,6 @@ export async function buildServer(
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
   await fastify.register(bullMQPlugin);
-  await fastify.register(embeddedWorkersPlugin);
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
@@ -47,6 +46,7 @@ export async function buildServer(
   await fastify.register(rawBodyPlugin);
   await fastify.register(requestContextPlugin);
   await fastify.register(stripeWebhookPlugin);
+  await fastify.register(embeddedWorkersPlugin);
   /* TPL_PLUGINS:END */
 
   // register app plugins
