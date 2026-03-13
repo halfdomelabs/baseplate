@@ -14,7 +14,6 @@ import { cn } from '#src/utils/index.js';
  * - Added ability to use `vertical` orientation
  * - Added `NavigationMenuItemWithLink` convenience component
  * - Added `skinny` size variant to `navigationMenuTriggerStyle`
- *
  * https://ui.shadcn.com/docs/components/navigation-menu
  */
 function NavigationMenu({
@@ -29,7 +28,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       className={cn(
         'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
-        'data-[orientation="vertical"]:max-w-none data-[orientation="vertical"]:items-start data-[orientation="vertical"]:justify-start [&[data-orientation="vertical"]>*]:w-full',
+        'aria-[orientation=vertical]:max-w-none aria-[orientation=vertical]:items-start aria-[orientation=vertical]:justify-start [&[aria-orientation="vertical"]>*]:w-full',
         className,
       )}
       {...props}
@@ -51,7 +50,7 @@ function NavigationMenuList({
       data-slot="navigation-menu-list"
       className={cn(
         'group flex flex-1 list-none items-center justify-center gap-1',
-        'data-[orientation="vertical"]:flex-col data-[orientation="vertical"]:items-stretch',
+        'aria-[orientation=vertical]:flex-col aria-[orientation=vertical]:items-stretch',
         className,
       )}
       {...props}

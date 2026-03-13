@@ -8,6 +8,7 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuItemWithLink,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
@@ -251,4 +252,32 @@ function NavigationMenuContainer(
 export const Default: Story = {
   args: { children: null },
   render: (args) => <NavigationMenuContainer {...args} />,
+};
+
+function VerticalNavigationMenuContainer(): React.JSX.Element {
+  return (
+    <div className="w-[200px]">
+      <NavigationMenu orientation="vertical">
+        <NavigationMenuList>
+          <NavigationMenuItemWithLink render={<a href="#dashboard" />}>
+            Dashboard
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#models" />}>
+            Models
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#enums" />}>
+            Enums
+          </NavigationMenuItemWithLink>
+          <NavigationMenuItemWithLink render={<a href="#settings" />}>
+            Settings
+          </NavigationMenuItemWithLink>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  );
+}
+
+export const Vertical: Story = {
+  args: { children: null },
+  render: () => <VerticalNavigationMenuContainer />,
 };

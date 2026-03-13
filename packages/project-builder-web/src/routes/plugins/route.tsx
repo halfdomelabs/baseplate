@@ -53,7 +53,7 @@ function PluginsLayout(): React.JSX.Element {
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
         <Link to="/plugins">
-          <Button variant="secondary" className="w-full" size="sm">
+          <Button variant="secondary" className="w-full">
             <MdAdd />
             Add new plugin
           </Button>

@@ -95,7 +95,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.2",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },

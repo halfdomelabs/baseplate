@@ -111,7 +111,6 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
                   e.preventDefault();
                 }
               }}
-              size="sm"
               data-testid="sync-button"
             />
           }
