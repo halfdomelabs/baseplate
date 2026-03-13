@@ -16,6 +16,7 @@ import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 import type {
   AuthorizerExpressionNode,
   FieldRefNode,
+  LiteralValueNode,
 } from './authorizer-expression-ast.js';
 
 /**
@@ -38,6 +39,8 @@ export interface ModelValidationContext {
   modelName: string;
   /** Set of valid scalar field names on the model */
   scalarFieldNames: Set<string>;
+  /** Map of field name → field type (for literal type-checking) */
+  fieldTypes?: Map<string, string>;
   /** Map of relation name → relation validation info (for nested authorizer checks) */
   relationInfo?: Map<string, RelationValidationInfo>;
 }
@@ -128,8 +131,27 @@ export function validateAuthorizerExpression(
   function walk(node: AuthorizerExpressionNode): void {
     switch (node.type) {
       case 'fieldComparison': {
-        validateFieldRef(node.left);
-        validateFieldRef(node.right);
+        if (node.left.type === 'fieldRef') {
+          validateFieldRef(node.left);
+        }
+        if (node.right.type === 'fieldRef') {
+          validateFieldRef(node.right);
+        }
+        // Type-check: warn if a model field is compared to an incompatible literal
+        const fieldRef = node.left.type === 'fieldRef' ? node.left : node.right;
+        const literalNode =
+          node.left.type === 'literalValue'
+            ? node.left
+            : node.right.type === 'literalValue'
+              ? node.right
+              : null;
+        if (
+          fieldRef.type === 'fieldRef' &&
+          fieldRef.source === 'model' &&
+          literalNode !== null
+        ) {
+          validateLiteralTypeCompatibility(fieldRef, literalNode);
+        }
         break;
       }
 
@@ -251,6 +273,50 @@ export function validateAuthorizerExpression(
     }
   }
 
+  function validateLiteralTypeCompatibility(
+    fieldRefNode: FieldRefNode,
+    literalNode: LiteralValueNode,
+  ): void {
+    const { fieldTypes } = modelContext;
+    if (!fieldTypes) return;
+
+    const fieldType = fieldTypes.get(fieldRefNode.field);
+    if (!fieldType) return;
+
+    const literalJsType = typeof literalNode.value;
+
+    // Determine which JS types are compatible with each field type
+    const isCompatible = (() => {
+      switch (fieldType) {
+        case 'boolean': {
+          return literalJsType === 'boolean';
+        }
+        case 'int':
+        case 'float':
+        case 'decimal': {
+          return literalJsType === 'number';
+        }
+        case 'string':
+        case 'uuid':
+        case 'enum': {
+          return literalJsType === 'string';
+        }
+        default: {
+          // Unknown or unsupported field type — no warning
+          return true;
+        }
+      }
+    })();
+
+    if (!isCompatible) {
+      warnings.push({
+        message: `Literal value type '${literalJsType}' is not compatible with field '${fieldRefNode.field}' of type '${fieldType}'.`,
+        start: literalNode.start,
+        end: literalNode.end,
+      });
+    }
+  }
+
   function validateFieldRef(node: FieldRefNode): void {
     if (node.source === 'model') {
       // Check if field exists on model
@@ -337,16 +403,21 @@ export function buildRelationValidationInfo(
  */
 export function createModelValidationContext(modelConfig: {
   name: string;
-  fields?: { name: string }[];
+  fields?: { name: string; type?: string }[];
 }): ModelValidationContext {
   const scalarFieldNames = new Set<string>();
+  const fieldTypes = new Map<string, string>();
 
   for (const field of modelConfig.fields ?? []) {
     scalarFieldNames.add(field.name);
+    if (field.type) {
+      fieldTypes.set(field.name, field.type);
+    }
   }
 
   return {
     modelName: modelConfig.name,
     scalarFieldNames,
+    fieldTypes,
   };
 }
