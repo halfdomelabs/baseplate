@@ -20,11 +20,7 @@ function ModelsIndexPage(): React.JSX.Element {
         icon={HiDatabase}
         header="No Models"
         subtitle="Create a model to get started"
-        actions={
-          <NewModelDialog>
-            <Button>New Model</Button>
-          </NewModelDialog>
-        }
+        actions={<NewModelDialog trigger={<Button>New Model</Button>} />}
       />
     );
   }
@@ -38,11 +34,13 @@ function ModelsIndexPage(): React.JSX.Element {
       </p>
       <p>
         Choose a model to edit from the sidebar or{' '}
-        <NewModelDialog>
-          <Button variant="link" size="none">
-            create a new model
-          </Button>
-        </NewModelDialog>
+        <NewModelDialog
+          trigger={
+            <Button variant="link" size="none">
+              create a new model
+            </Button>
+          }
+        />
         .
       </p>
     </div>

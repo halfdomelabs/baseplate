@@ -17,17 +17,19 @@ function SidebarNavigationIcon({
   ...props
 }: SidebarNavigationIconProps): React.JSX.Element {
   return (
-    <SheetClose asChild>
-      <a
-        {...props}
-        className={cn(
-          `flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`,
-          props.className,
-        )}
-      >
-        <Icon className="size-5 transition-all group-hover:scale-110" />
-        {label}
-      </a>
+    <SheetClose
+      render={
+        <a
+          {...props}
+          className={cn(
+            `flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`,
+            props.className,
+          )}
+        />
+      }
+    >
+      <Icon className="size-5 transition-all group-hover:scale-110" />
+      {label}
     </SheetClose>
   );
 }

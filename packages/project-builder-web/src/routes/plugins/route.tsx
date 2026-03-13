@@ -61,10 +61,16 @@ function PluginsLayout(): React.JSX.Element {
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (
-              <NavigationMenuLink key={plugin.key} asChild>
-                <Link to={`/plugins/edit/$key`} params={{ key: plugin.key }}>
-                  {plugin.displayName}
-                </Link>
+              <NavigationMenuLink
+                key={plugin.key}
+                render={
+                  <Link
+                    to={`/plugins/edit/$key`}
+                    params={{ key: plugin.key }}
+                  />
+                }
+              >
+                {plugin.displayName}
               </NavigationMenuLink>
             ))}
             {enabledPlugins.length === 0 && (

@@ -53,12 +53,12 @@ function AuthorizerRoleRecord({
           onSave={(updatedRole) => {
             onUpdate(updatedRole, idx);
           }}
-          asChild
-        >
-          <Button variant="ghost" size="icon" title="Edit">
-            <MdEdit />
-          </Button>
-        </ModelAuthorizerRoleDialog>
+          trigger={
+            <Button variant="ghost" size="icon" title="Edit">
+              <MdEdit />
+            </Button>
+          }
+        />
         <Button
           variant="ghost"
           size="icon"
@@ -123,13 +123,13 @@ export function ModelAuthorizerRolesSection({
           onSave={(newRole) => {
             append(newRole);
           }}
-          asChild
-        >
-          <Button variant="secondary" size="sm">
-            <MdAdd />
-            Add Role
-          </Button>
-        </ModelAuthorizerRoleDialog>
+          trigger={
+            <Button variant="secondary" size="sm">
+              <MdAdd />
+              Add Role
+            </Button>
+          }
+        />
       </SectionListSectionContent>
     </SectionListSection>
   );

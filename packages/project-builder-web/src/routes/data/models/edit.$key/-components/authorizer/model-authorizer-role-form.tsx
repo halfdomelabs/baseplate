@@ -251,10 +251,12 @@ export function ModelAuthorizerRoleForm({
         }
       />
       <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="secondary" type="button" onClick={onCancel}>
-            Cancel
-          </Button>
+        <DialogClose
+          render={
+            <Button variant="secondary" type="button" onClick={onCancel} />
+          }
+        >
+          Cancel
         </DialogClose>
         <Button type="submit" disabled={!isCreate && !isDirty} form={formId}>
           Save

@@ -120,10 +120,10 @@ function PluginConfigPage(): React.JSX.Element {
           <h1>{pluginMetadata.displayName} Plugin</h1>
           {pluginDefinition && (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <HiDotsVertical aria-label="More Actions" />
-                </Button>
+              <DropdownMenuTrigger
+                render={<Button variant="ghost" size="icon" />}
+              >
+                <HiDotsVertical aria-label="More Actions" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuGroup>

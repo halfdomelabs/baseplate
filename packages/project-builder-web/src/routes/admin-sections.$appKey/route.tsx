@@ -82,12 +82,16 @@ function AdminSectionsLayout(): React.JSX.Element {
 
         {/* New Section Button */}
         <div className="flex flex-col gap-4">
-          <NewAdminSectionDialog appId={app.id} appKey={appKey}>
-            <Button variant="secondary" className="w-full">
-              <MdAdd />
-              New Section
-            </Button>
-          </NewAdminSectionDialog>
+          <NewAdminSectionDialog
+            appId={app.id}
+            appKey={appKey}
+            trigger={
+              <Button variant="secondary" className="w-full">
+                <MdAdd />
+                New Section
+              </Button>
+            }
+          />
         </div>
 
         {/* Sections Navigation */}
@@ -95,16 +99,21 @@ function AdminSectionsLayout(): React.JSX.Element {
           <NavigationMenu orientation="vertical">
             <NavigationMenuList>
               {sortedSections.map((section) => (
-                <NavigationMenuItemWithLink key={section.id} asChild>
-                  <Link
-                    to="/admin-sections/$appKey/edit/$sectionKey"
-                    params={{
-                      appKey,
-                      sectionKey: adminSectionEntityType.keyFromId(section.id),
-                    }}
-                  >
-                    {section.name}
-                  </Link>
+                <NavigationMenuItemWithLink
+                  key={section.id}
+                  render={
+                    <Link
+                      to="/admin-sections/$appKey/edit/$sectionKey"
+                      params={{
+                        appKey,
+                        sectionKey: adminSectionEntityType.keyFromId(
+                          section.id,
+                        ),
+                      }}
+                    />
+                  }
+                >
+                  {section.name}
                 </NavigationMenuItemWithLink>
               ))}
             </NavigationMenuList>

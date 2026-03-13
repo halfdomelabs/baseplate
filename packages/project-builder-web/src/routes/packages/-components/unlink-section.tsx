@@ -75,10 +75,10 @@ export function UnlinkSection({
               will remain on disk.
             </span>
             <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  Unlink {entityLabel}
-                </Button>
+              <DialogTrigger
+                render={<Button variant="destructive" size="sm" />}
+              >
+                Unlink {entityLabel}
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -95,8 +95,8 @@ export function UnlinkSection({
                   no longer needed.
                 </p>
                 <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="secondary">Cancel</Button>
+                  <DialogClose render={<Button variant="secondary" />}>
+                    Cancel
                   </DialogClose>
                   <Button
                     variant="destructive"

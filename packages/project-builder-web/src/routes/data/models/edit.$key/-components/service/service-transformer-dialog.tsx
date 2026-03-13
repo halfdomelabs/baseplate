@@ -15,8 +15,7 @@ import {
 import { ServiceTransformerForm } from './service-transformer-form.js';
 
 interface ServiceTransformerDialogProps {
-  children?: React.ReactNode;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
   webConfig: ModelTransformerWebConfig | undefined;
@@ -26,9 +25,8 @@ interface ServiceTransformerDialogProps {
 }
 
 export function ServiceTransformerDialog({
-  children,
+  trigger,
   transformer,
-  asChild,
   webConfig,
   open,
   onOpenChange,
@@ -38,7 +36,7 @@ export function ServiceTransformerDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

@@ -30,27 +30,31 @@ export function ModelRelationsBadge({
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
   return (
-    <ModelRelationDialog control={control} relationId={relation.id}>
-      <Badge
-        variant="secondary"
-        className={clsx('max-w-[100px]', className)}
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-        aria-label="Relation"
-        title="Relation"
-      >
-        <MdLink />
-        {shouldShowText &&
-          `${definitionContainer.nameFromId(relation.modelRef)} ${
-            relation.references.length > 1
-              ? `(${relation.references.length})`
-              : ''
-          }`}
-      </Badge>
-    </ModelRelationDialog>
+    <ModelRelationDialog
+      control={control}
+      relationId={relation.id}
+      trigger={
+        <Badge
+          variant="secondary"
+          className={clsx('max-w-[100px]', className)}
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+          aria-label="Relation"
+          title="Relation"
+        >
+          <MdLink />
+          {shouldShowText &&
+            `${definitionContainer.nameFromId(relation.modelRef)} ${
+              relation.references.length > 1
+                ? `(${relation.references.length})`
+                : ''
+            }`}
+        </Badge>
+      }
+    />
   );
 }

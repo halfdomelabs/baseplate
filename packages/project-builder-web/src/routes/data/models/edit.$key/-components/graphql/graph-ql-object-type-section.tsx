@@ -149,7 +149,7 @@ function FieldEntryRow({
         checked={isChecked}
         onCheckedChange={(checked) => {
           onChange(
-            getUpdatedFieldEntries(allItems, entries, !!checked, entryRef),
+            getUpdatedFieldEntries(allItems, entries, checked, entryRef),
           );
         }}
       />
@@ -277,25 +277,28 @@ function FieldAuthPopover({
 
   return (
     <Popover>
-      <PopoverTrigger asChild disabled={disabled}>
-        <button
-          type="button"
-          disabled={disabled}
-          className="flex h-6 cursor-pointer items-center justify-end gap-1.5 rounded px-1.5 text-xs hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-        >
-          <HiMiniLockClosed
-            className={hasRoles ? 'text-primary' : 'text-muted-foreground'}
+      <PopoverTrigger
+        disabled={disabled}
+        render={
+          <button
+            type="button"
+            disabled={disabled}
+            className="flex h-6 cursor-pointer items-center justify-end gap-1.5 rounded px-1.5 text-xs hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
           />
-          {configuredNames.length > 0 && (
-            <Badge
-              variant="outline"
-              className="block max-w-48 truncate text-xs font-normal"
-              title={configuredNames.join(', ')}
-            >
-              {configuredNames.join(', ')}
-            </Badge>
-          )}
-        </button>
+        }
+      >
+        <HiMiniLockClosed
+          className={hasRoles ? 'text-primary' : 'text-muted-foreground'}
+        />
+        {configuredNames.length > 0 && (
+          <Badge
+            variant="outline"
+            className="block max-w-48 truncate text-xs font-normal"
+            title={configuredNames.join(', ')}
+          >
+            {configuredNames.join(', ')}
+          </Badge>
+        )}
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 space-y-4">
         <div className="space-y-1">

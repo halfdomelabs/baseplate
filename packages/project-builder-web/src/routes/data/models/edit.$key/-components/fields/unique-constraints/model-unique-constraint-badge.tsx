@@ -32,23 +32,27 @@ export function ModelFieldUniqueBadge({
       constraints?.find((uc) => uc.id === constraintId)?.fields.length ?? 0,
   });
   return (
-    <ModelUniqueConstraintDialog control={control} constraintId={constraintId}>
-      <Badge
-        variant="secondary"
-        className={clsx('', className)}
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-        aria-label="Unique Constraint"
-        title="Unique Constraint"
-      >
-        <MdStar />
-        {shouldShowText &&
-          `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
-      </Badge>
-    </ModelUniqueConstraintDialog>
+    <ModelUniqueConstraintDialog
+      control={control}
+      constraintId={constraintId}
+      trigger={
+        <Badge
+          variant="secondary"
+          className={clsx('', className)}
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+          aria-label="Unique Constraint"
+          title="Unique Constraint"
+        >
+          <MdStar />
+          {shouldShowText &&
+            `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
+        </Badge>
+      }
+    />
   );
 }

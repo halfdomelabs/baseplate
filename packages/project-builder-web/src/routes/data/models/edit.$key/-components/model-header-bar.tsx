@@ -55,17 +55,17 @@ export function ModelHeaderBar({
       <div>
         <ModelInfoEditDialog
           modelKey={modelEntityType.keyFromId(model.id)}
-          asChild
-        >
-          <button
-            className="group flex items-center space-x-2 hover:cursor-pointer"
-            type="button"
-            title="Edit Model Info"
-          >
-            <h1>{currentModel.name}</h1>
-            <MdEdit className="invisible size-4 group-hover:visible" />
-          </button>
-        </ModelInfoEditDialog>
+          trigger={
+            <button
+              className="group flex items-center space-x-2 hover:cursor-pointer"
+              type="button"
+              title="Edit Model Info"
+            >
+              <h1>{currentModel.name}</h1>
+              <MdEdit className="invisible size-4 group-hover:visible" />
+            </button>
+          }
+        />
         {currentModel.featureRef && (
           <div className="text-xs text-muted-foreground">
             {

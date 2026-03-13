@@ -22,22 +22,25 @@ export function ModelPrimaryKeyBadge({
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
   return (
-    <ModelPrimaryKeyDialog control={control}>
-      <Badge
-        variant="secondary"
-        className={className}
-        onMouseEnter={() => {
-          setIsHovered(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-        }}
-        aria-label="Primary Key"
-        title="Primary Key"
-      >
-        <MdKey />
-        {shouldShowText && 'Primary'}
-      </Badge>
-    </ModelPrimaryKeyDialog>
+    <ModelPrimaryKeyDialog
+      control={control}
+      trigger={
+        <Badge
+          variant="secondary"
+          className={className}
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+          aria-label="Primary Key"
+          title="Primary Key"
+        >
+          <MdKey />
+          {shouldShowText && 'Primary'}
+        </Badge>
+      }
+    />
   );
 }

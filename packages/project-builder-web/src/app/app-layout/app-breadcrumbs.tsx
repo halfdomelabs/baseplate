@@ -62,17 +62,19 @@ export function AppBreadcrumbs(): React.JSX.Element {
     <div className="flex items-center space-x-2">
       {projects.length > 1 && (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="none"
-              className="-ml-2 h-8 px-2 text-muted-foreground"
-            >
-              <div className="flex items-center text-sm">
-                {upperFirst(projectName)} project
-              </div>
-              <MdKeyboardArrowDown />
-            </Button>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="none"
+                className="-ml-2 h-8 px-2 text-muted-foreground"
+              />
+            }
+          >
+            <div className="flex items-center text-sm">
+              {upperFirst(projectName)} project
+            </div>
+            <MdKeyboardArrowDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>

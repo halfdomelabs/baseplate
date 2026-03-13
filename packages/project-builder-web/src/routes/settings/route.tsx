@@ -25,26 +25,30 @@ function SettingsLayout(): React.JSX.Element {
       <SidebarLayoutSidebar className="space-y-4" width="sm">
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
-            <NavigationMenuLink asChild>
-              <Link to={`/settings`}>Project settings</Link>
+            <NavigationMenuLink render={<Link to={`/settings`} />}>
+              Project settings
             </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link to={`/settings/hierarchy`}>Hierarchy</Link>
+            <NavigationMenuLink render={<Link to={`/settings/hierarchy`} />}>
+              Hierarchy
             </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link to={`/settings/infrastructure`}>Infrastructure</Link>
+            <NavigationMenuLink
+              render={<Link to={`/settings/infrastructure`} />}
+            >
+              Infrastructure
             </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link to={`/settings/monorepo`}>Monorepo</Link>
+            <NavigationMenuLink render={<Link to={`/settings/monorepo`} />}>
+              Monorepo
             </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link to={`/settings/theme-builder`}>Theme builder</Link>
+            <NavigationMenuLink
+              render={<Link to={`/settings/theme-builder`} />}
+            >
+              Theme builder
             </NavigationMenuLink>
             {ENABLE_TEMPLATE_EXTRACTOR && (
-              <NavigationMenuLink asChild>
-                <Link to={`/settings/template-extractor`}>
-                  Template extractor
-                </Link>
+              <NavigationMenuLink
+                render={<Link to={`/settings/template-extractor`} />}
+              >
+                Template extractor
               </NavigationMenuLink>
             )}
           </NavigationMenuList>
