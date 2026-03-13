@@ -3,6 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { createPluginModule } from '#src/plugins/imports/types.js';
 import { createTestPluginSpecStore } from '#src/plugins/plugins.test-utils.js';
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
+import {
+  createTestModel,
+  createTestScalarField,
+} from '#src/testing/definition-helpers.test-helper.js';
 
 import type {
   BinaryLogicalNode,
@@ -37,10 +41,20 @@ function createMockPluginStore(
 }
 
 describe('validateAuthorizerExpression', () => {
-  const defaultModelContext = createModelValidationContext({
-    name: 'Post',
-    fields: [{ name: 'id' }, { name: 'authorId' }, { name: 'title' }],
-  });
+  const postFields = [
+    createTestScalarField({ name: 'id', type: 'string' }),
+    createTestScalarField({ name: 'authorId', type: 'string' }),
+    createTestScalarField({ name: 'title', type: 'string' }),
+  ];
+  const defaultModelContext = createModelValidationContext(
+    createTestModel({
+      name: 'Post',
+      model: {
+        fields: postFields,
+        primaryKeyFieldRefs: [postFields[0].id],
+      },
+    }),
+  );
 
   const defaultPluginStore = createMockPluginStore([
     { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
@@ -642,31 +656,41 @@ describe('validateAuthorizerExpression', () => {
 
 describe('createModelValidationContext', () => {
   it('should extract field names from model config', () => {
-    const context = createModelValidationContext({
-      name: 'User',
-      fields: [{ name: 'id' }, { name: 'email' }, { name: 'name' }],
-    });
+    const userFields = [
+      createTestScalarField({ name: 'id', type: 'string' }),
+      createTestScalarField({ name: 'email', type: 'string' }),
+      createTestScalarField({ name: 'name', type: 'string' }),
+    ];
+    const context = createModelValidationContext(
+      createTestModel({
+        name: 'User',
+        model: {
+          fields: userFields,
+          primaryKeyFieldRefs: [userFields[0].id],
+        },
+      }),
+    );
 
     expect(context.modelName).toBe('User');
     expect(context.scalarFieldNames).toEqual(new Set(['id', 'email', 'name']));
   });
 
-  it('should handle model with no fields', () => {
-    const context = createModelValidationContext({
-      name: 'EmptyModel',
-    });
+  it('should populate fieldTypes map from model config', () => {
+    const modelFields = [
+      createTestScalarField({ name: 'status', type: 'string' }),
+      createTestScalarField({ name: 'count', type: 'int' }),
+    ];
+    const context = createModelValidationContext(
+      createTestModel({
+        name: 'Article',
+        model: {
+          fields: modelFields,
+          primaryKeyFieldRefs: [modelFields[0].id],
+        },
+      }),
+    );
 
-    expect(context.modelName).toBe('EmptyModel');
-    expect(context.scalarFieldNames).toEqual(new Set());
-  });
-
-  it('should handle model with empty fields array', () => {
-    const context = createModelValidationContext({
-      name: 'EmptyModel',
-      fields: [],
-    });
-
-    expect(context.modelName).toBe('EmptyModel');
-    expect(context.scalarFieldNames).toEqual(new Set());
+    expect(context.fieldTypes?.get('status')).toBe('string');
+    expect(context.fieldTypes?.get('count')).toBe('int');
   });
 });

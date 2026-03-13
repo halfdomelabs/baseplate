@@ -1,8 +1,9 @@
-import type { PluginSpecStore } from '@baseplate-dev/project-builder-lib';
+import type {
+  ModelValidationContext,
+  PluginSpecStore,
+} from '@baseplate-dev/project-builder-lib';
 import type { Diagnostic } from '@codemirror/lint';
 import type { EditorView } from '@codemirror/view';
-
-import type { ModelValidationContext } from '@baseplate-dev/project-builder-lib';
 
 import {
   AuthorizerExpressionParseError,
