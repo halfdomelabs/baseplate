@@ -13,11 +13,12 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-import { getOrCreateDraftSession, saveDraftSession } from './draft-session.js';
+import { getOrCreateDraftSession } from './draft-session.js';
 import {
   definitionIssueSchema,
-  fixAndValidateDraftDefinition,
   mapIssueToOutput,
+  validateAndSaveDraft,
+  writeIssuesCliOutput,
 } from './validate-draft.js';
 
 const configurePluginInputSchema = z.object({
@@ -87,17 +88,12 @@ export const configurePluginAction = createServiceAction({
       newDefinition,
     ) as Record<string, unknown>;
 
-    // Validate
-    const { fixedSerializedDefinition, errors, warnings } =
-      fixAndValidateDraftDefinition(serializedDef, parserContext);
-
-    if (errors.length > 0) {
-      const messages = errors.map((e) => e.message).join('; ');
-      throw new Error(`Staging blocked by definition errors: ${messages}`);
-    }
-
-    session.draftDefinition = fixedSerializedDefinition;
-    await saveDraftSession(projectDirectory, session);
+    const { warnings } = await validateAndSaveDraft(
+      serializedDef,
+      parserContext,
+      session,
+      projectDirectory,
+    );
 
     const isNew =
       PluginUtils.byKey(container.definition, input.pluginKey) == null;
@@ -108,12 +104,5 @@ export const configurePluginAction = createServiceAction({
       issues: warnings.length > 0 ? warnings.map(mapIssueToOutput) : undefined,
     };
   },
-  writeCliOutput: (output) => {
-    console.info(`✓ ${output.message}`);
-    if (output.issues) {
-      for (const issue of output.issues) {
-        console.warn(`  ⚠ ${issue.message}`);
-      }
-    }
-  },
+  writeCliOutput: writeIssuesCliOutput,
 });

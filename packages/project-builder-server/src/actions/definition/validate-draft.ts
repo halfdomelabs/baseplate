@@ -13,6 +13,10 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
+import type { DraftSession } from './draft-session.js';
+
+import { saveDraftSession } from './draft-session.js';
+
 export const definitionIssueSchema = z.object({
   message: z.string().describe('Human-readable description of the issue.'),
   entityId: z
@@ -41,6 +45,10 @@ export const definitionIssueSchema = z.object({
 
 /**
  * Generates a deterministic fix ID from an issue's identifying properties.
+ *
+ * STABILITY: This algorithm (djb2) must remain stable — fix IDs are returned
+ * to callers and later matched by `apply-fix`. Changing the hash function
+ * will silently invalidate all previously-issued fix IDs.
  */
 export function generateFixId(issue: DefinitionIssue): string {
   const key = [issue.entityId ?? '', issue.path.join('.'), issue.message].join(
@@ -162,4 +170,61 @@ export function fixAndValidateDraftDefinition(
     errors,
     warnings,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Shared CLI output for actions that return { message, issues? }
+// ---------------------------------------------------------------------------
+
+/**
+ * Writes a success message and any warning issues to the console.
+ * Used as the `writeCliOutput` callback for staging actions.
+ */
+export function writeIssuesCliOutput(output: {
+  message: string;
+  issues?: { message: string }[];
+}): void {
+  console.info(`✓ ${output.message}`);
+  if (output.issues) {
+    for (const issue of output.issues) {
+      console.warn(`  ⚠ ${issue.message}`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Convenience: validate + save in one step (used by most staging actions)
+// ---------------------------------------------------------------------------
+
+export interface ValidateAndSaveResult {
+  /** Warnings that did not block the operation. */
+  warnings: DefinitionIssue[];
+}
+
+/**
+ * Validates a mutated definition, saves it to the draft session, and returns
+ * any non-blocking warnings. Throws if validation produces errors.
+ *
+ * This is the shared "tail" of every staging action:
+ *   fixAndValidateDraftDefinition → assert no errors → persist → return warnings
+ */
+export async function validateAndSaveDraft(
+  definition: Record<string, unknown>,
+  parserContext: SchemaParserContext,
+  session: DraftSession,
+  projectDirectory: string,
+  errorPrefix = 'Staging blocked by definition errors',
+): Promise<ValidateAndSaveResult> {
+  const { fixedSerializedDefinition, errors, warnings } =
+    fixAndValidateDraftDefinition(definition, parserContext);
+
+  if (errors.length > 0) {
+    const messages = errors.map((e) => e.message).join('; ');
+    throw new Error(`${errorPrefix}: ${messages}`);
+  }
+
+  session.draftDefinition = fixedSerializedDefinition;
+  await saveDraftSession(projectDirectory, session);
+
+  return { warnings };
 }

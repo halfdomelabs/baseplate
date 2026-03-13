@@ -9,12 +9,13 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
-import { getOrCreateDraftSession, saveDraftSession } from './draft-session.js';
+import { getOrCreateDraftSession } from './draft-session.js';
 import {
   definitionIssueSchema,
-  fixAndValidateDraftDefinition,
   generateFixId,
   mapIssueToOutput,
+  validateAndSaveDraft,
+  writeIssuesCliOutput,
 } from './validate-draft.js';
 
 const applyFixInputSchema = z.object({
@@ -81,31 +82,18 @@ export const applyFixAction = createServiceAction({
       fixedDefinition,
     ) as Record<string, unknown>;
 
-    // Run fixAndValidateDraftDefinition on the result
-    const { fixedSerializedDefinition, errors, warnings } =
-      fixAndValidateDraftDefinition(fixedSerializedDef, parserContext);
-
-    if (errors.length > 0) {
-      const messages = errors.map((e) => e.message).join('; ');
-      throw new Error(
-        `Fix applied but resulted in definition errors: ${messages}`,
-      );
-    }
-
-    session.draftDefinition = fixedSerializedDefinition;
-    await saveDraftSession(projectDirectory, session);
+    const { warnings } = await validateAndSaveDraft(
+      fixedSerializedDef,
+      parserContext,
+      session,
+      projectDirectory,
+      'Fix applied but resulted in definition errors',
+    );
 
     return {
       message: `Applied fix: ${matchingIssue.fix?.label ?? matchingIssue.message}`,
       issues: warnings.length > 0 ? warnings.map(mapIssueToOutput) : undefined,
     };
   },
-  writeCliOutput: (output) => {
-    console.info(`✓ ${output.message}`);
-    if (output.issues) {
-      for (const issue of output.issues) {
-        console.warn(`  ⚠ ${issue.message}`);
-      }
-    }
-  },
+  writeCliOutput: writeIssuesCliOutput,
 });
