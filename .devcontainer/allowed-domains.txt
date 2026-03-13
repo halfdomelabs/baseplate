@@ -109,3 +109,6 @@ plausible.io
 # Email services
 api.resend.com
 api.postmarkapp.com
+
+# Task Management
+mcp.linear.app

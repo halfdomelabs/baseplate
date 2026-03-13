@@ -75,13 +75,5 @@
   },
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true
-  },
-  "sandbox": {
-    "enabled": true,
-    "autoAllowBashIfSandboxed": true,
-    "filesystem": {
-      "denyRead": ["~/**"],
-      "denyWrite": [".git/**", "**/node_modules/**"]
-    }
   }
 }
