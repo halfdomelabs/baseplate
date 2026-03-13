@@ -1,9 +1,14 @@
+export { applyFixAction } from './apply-fix.action.js';
 export { commitDraftAction } from './commit-draft.action.js';
+export { configurePluginAction } from './configure-plugin.action.js';
+export { disablePluginAction } from './disable-plugin.action.js';
 export { discardDraftAction } from './discard-draft.action.js';
 export { getEntitySchemaAction } from './get-entity-schema.action.js';
 export { getEntityAction } from './get-entity.action.js';
 export { listEntitiesAction } from './list-entities.action.js';
 export { listEntityTypesAction } from './list-entity-types.action.js';
+export { listPluginsAction } from './list-plugins.action.js';
+export { searchEntitiesAction } from './search-entities.action.js';
 export { showDraftAction } from './show-draft.action.js';
 export { stageCreateEntityAction } from './stage-create-entity.action.js';
 export { stageDeleteEntityAction } from './stage-delete-entity.action.js';

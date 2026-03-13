@@ -4,9 +4,11 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getOrCreateDraftSession, saveDraftSession } from './draft-session.js';
+import { assertEntityTypeNotBlacklisted } from './entity-type-blacklist.js';
 import {
   definitionIssueSchema,
-  validateDraftDefinition,
+  fixAndValidateDraftDefinition,
+  mapIssueToOutput,
 } from './validate-draft.js';
 
 const stageCreateEntityInputSchema = z.object({
@@ -41,6 +43,8 @@ export const stageCreateEntityAction = createServiceAction({
   inputSchema: stageCreateEntityInputSchema,
   outputSchema: stageCreateEntityOutputSchema,
   handler: async (input, context) => {
+    assertEntityTypeNotBlacklisted(input.entityTypeName);
+
     const { session, entityContext, parserContext, projectDirectory } =
       await getOrCreateDraftSession(input.project, context);
 
@@ -53,23 +57,20 @@ export const stageCreateEntityAction = createServiceAction({
       entityContext,
     );
 
-    session.draftDefinition = newDefinition;
-
-    const { errors, warnings } = validateDraftDefinition(
-      newDefinition,
-      parserContext,
-    );
+    const { fixedSerializedDefinition, errors, warnings } =
+      fixAndValidateDraftDefinition(newDefinition, parserContext);
 
     if (errors.length > 0) {
       const messages = errors.map((e) => e.message).join('; ');
       throw new Error(`Staging blocked by definition errors: ${messages}`);
     }
 
+    session.draftDefinition = fixedSerializedDefinition;
     await saveDraftSession(projectDirectory, session);
 
     return {
       message: `Staged creation of ${input.entityTypeName} entity. Use commit-draft to persist.`,
-      issues: warnings.length > 0 ? warnings : undefined,
+      issues: warnings.length > 0 ? warnings.map(mapIssueToOutput) : undefined,
     };
   },
   writeCliOutput: (output) => {

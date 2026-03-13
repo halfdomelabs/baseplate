@@ -1,10 +1,13 @@
 import type {
+  DefinitionIssue,
   PartitionedIssues,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
+  applyDefinitionFixes,
   collectDefinitionIssues,
+  fixRefDeletions,
   partitionIssuesBySeverity,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
@@ -26,7 +29,47 @@ export const definitionIssueSchema = z.object({
     .describe(
       "Issue severity: 'error' blocks the operation, 'warning' does not.",
     ),
+  fixLabel: z
+    .string()
+    .optional()
+    .describe('Label for an available auto-fix, if one exists.'),
+  fixId: z
+    .string()
+    .optional()
+    .describe('Deterministic ID for this fix, used with the apply-fix action.'),
 });
+
+/**
+ * Generates a deterministic fix ID from an issue's identifying properties.
+ */
+export function generateFixId(issue: DefinitionIssue): string {
+  const key = [issue.entityId ?? '', issue.path.join('.'), issue.message].join(
+    '|',
+  );
+
+  // Simple hash — djb2 algorithm for a short, stable identifier
+  let hash = 5381;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 33) ^ (key.codePointAt(i) ?? 0);
+  }
+  return `fix-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+/**
+ * Maps a DefinitionIssue to the output schema shape, including fix metadata.
+ */
+export function mapIssueToOutput(
+  issue: DefinitionIssue,
+): z.infer<typeof definitionIssueSchema> {
+  return {
+    message: issue.message,
+    entityId: issue.entityId,
+    path: issue.path,
+    severity: issue.severity,
+    fixLabel: issue.fix?.label,
+    fixId: issue.fix ? generateFixId(issue) : undefined,
+  };
+}
 
 /**
  * Validates a draft definition by collecting all definition issues
@@ -44,4 +87,79 @@ export function validateDraftDefinition(
   const issues = collectDefinitionIssues(container);
 
   return partitionIssuesBySeverity(issues);
+}
+
+export interface FixAndValidateResult {
+  /** The fixed serialized (name-based) definition. */
+  fixedSerializedDefinition: Record<string, unknown>;
+  /** The container built from the fixed definition. */
+  container: ProjectDefinitionContainer;
+  /** Errors that block the operation. */
+  errors: DefinitionIssue[];
+  /** Warnings that don't block the operation. */
+  warnings: DefinitionIssue[];
+}
+
+/**
+ * Applies auto-fixes, fixes dangling references, then validates the definition.
+ *
+ * Mirrors the web UI save pipeline:
+ * 1. applyDefinitionFixes — clears disabled services, etc.
+ * 2. fixRefDeletions — cascades reference deletions
+ * 3. collectDefinitionIssues — partitions into errors/warnings
+ */
+export function fixAndValidateDraftDefinition(
+  draftDefinition: Record<string, unknown>,
+  parserContext: SchemaParserContext,
+): FixAndValidateResult {
+  const container = ProjectDefinitionContainer.fromSerializedConfig(
+    draftDefinition,
+    parserContext,
+  );
+
+  // Step 1: Apply auto-fixes from registered validators
+  const fixedDefinition = applyDefinitionFixes(
+    container.schema,
+    container.definition,
+  );
+
+  // Step 2: Fix dangling references
+  const refResult = fixRefDeletions(container.schema, fixedDefinition);
+
+  if (refResult.type === 'failure') {
+    // RESTRICT issues — report as errors
+    const errors: DefinitionIssue[] = refResult.issues.map((issue) => ({
+      message: `Cannot delete: referenced by ${issue.ref.path.join('.')} (onDelete: RESTRICT)`,
+      path: issue.ref.path,
+      severity: 'error' as const,
+    }));
+
+    return {
+      fixedSerializedDefinition: draftDefinition,
+      container,
+      errors,
+      warnings: [],
+    };
+  }
+
+  // Step 3: Build a new container from the fixed refPayload and validate
+  const fixedContainer = new ProjectDefinitionContainer(
+    refResult.refPayload,
+    container.parserContext,
+    container.pluginStore,
+    container.schema,
+  );
+
+  const issues = collectDefinitionIssues(fixedContainer);
+  const { errors, warnings } = partitionIssuesBySeverity(issues);
+
+  const fixedSerializedDefinition =
+    fixedContainer.toEntityServiceContext().serializedDefinition;
+
+  return {
+    fixedSerializedDefinition,
+    container: fixedContainer,
+    errors,
+    warnings,
+  };
 }
