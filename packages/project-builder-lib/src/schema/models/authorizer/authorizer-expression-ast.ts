@@ -23,9 +23,35 @@ export type AuthorizerExpressionNode =
   | BinaryLogicalNode;
 
 /**
- * A field comparison expression: `left === right`
+ * A literal value in a comparison expression.
  *
- * Currently only supports strict equality (`===`).
+ * Supports string, number, and boolean literal values.
+ *
+ * @example
+ * ```typescript
+ * // 'active' in model.status === 'active'
+ * { type: 'literalValue', value: 'active', start: 16, end: 24 }
+ *
+ * // true in model.isPublished === true
+ * { type: 'literalValue', value: true, start: 20, end: 24 }
+ * ```
+ */
+export interface LiteralValueNode {
+  type: 'literalValue';
+  /** The literal value */
+  value: string | number | boolean;
+  /** Start position in the source */
+  start: number;
+  /** End position in the source */
+  end: number;
+}
+
+/**
+ * A field comparison expression: `left === right` or `left !== right`
+ *
+ * Supports strict equality (`===`) and strict inequality (`!==`).
+ * Either side can be a field reference or a literal value, but at least
+ * one side must be a field reference.
  *
  * @example
  * ```typescript
@@ -36,13 +62,21 @@ export type AuthorizerExpressionNode =
  *   left: { type: 'fieldRef', source: 'model', field: 'id', ... },
  *   right: { type: 'fieldRef', source: 'auth', field: 'userId', ... },
  * }
+ *
+ * // model.status === 'active'
+ * {
+ *   type: 'fieldComparison',
+ *   operator: '===',
+ *   left: { type: 'fieldRef', source: 'model', field: 'status', ... },
+ *   right: { type: 'literalValue', value: 'active', ... },
+ * }
  * ```
  */
 export interface FieldComparisonNode {
   type: 'fieldComparison';
-  operator: '===';
-  left: FieldRefNode;
-  right: FieldRefNode;
+  operator: '===' | '!==';
+  left: FieldRefNode | LiteralValueNode;
+  right: FieldRefNode | LiteralValueNode;
 }
 
 /**
