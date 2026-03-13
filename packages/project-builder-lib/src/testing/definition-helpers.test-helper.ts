@@ -1,6 +1,3 @@
-import { faker } from '@faker-js/faker';
-import { capitalize } from 'es-toolkit';
-
 import type { FeatureConfig } from '#src/schema/features/feature.js';
 import type {
   ModelConfig,
@@ -23,6 +20,42 @@ import { createModelSchema } from '#src/schema/models/models.js';
 
 import { createEmptyParserContext } from './parser-context.test-helper.js';
 
+const TEST_WORDS = [
+  'alpha',
+  'bravo',
+  'charlie',
+  'delta',
+  'echo',
+  'foxtrot',
+  'golf',
+  'hotel',
+  'india',
+  'juliet',
+  'kilo',
+  'lima',
+  'mike',
+  'november',
+  'oscar',
+  'papa',
+  'quebec',
+  'romeo',
+  'sierra',
+  'tango',
+];
+
+let testWordCounter = 0;
+
+function getTestWord(): string {
+  const word = TEST_WORDS[testWordCounter % TEST_WORDS.length];
+  testWordCounter++;
+  return word;
+}
+
+function getTestPascalWord(): string {
+  const word = getTestWord();
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 const modelSchema = createModelSchema(createEmptyParserContext());
 
 export function createTestFeature(
@@ -30,7 +63,7 @@ export function createTestFeature(
 ): FeatureConfig {
   return {
     id: featureEntityType.generateNewId(),
-    name: faker.word.noun(),
+    name: getTestWord(),
     ...feature,
   };
 }
@@ -40,7 +73,7 @@ export function createTestModel(
 ): ModelConfig {
   const input: ModelConfigInput = {
     id: modelEntityType.generateNewId(),
-    name: capitalize(faker.word.noun()),
+    name: getTestPascalWord(),
     featureRef: 'mockFeature',
     ...model,
     model: {
@@ -74,7 +107,7 @@ export function createTestScalarField<
 ): ModelScalarFieldConfig & { type: TType } {
   return {
     id: modelScalarFieldEntityType.generateNewId(),
-    name: faker.word.noun(),
+    name: getTestWord(),
     type: 'string',
     isOptional: false,
     ...field,
