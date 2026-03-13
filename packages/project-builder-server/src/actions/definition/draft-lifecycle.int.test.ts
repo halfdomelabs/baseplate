@@ -249,6 +249,36 @@ describe('draft lifecycle', () => {
     ).rejects.toThrow();
   });
 
+  test('stage replaces user-provided IDs with generated IDs', async ({
+    context,
+    projectDir,
+  }) => {
+    // Stage a feature with a user-provided ID (e.g. from MCP client)
+    const stageResult = await invokeServiceActionForTest(
+      stageCreateEntityAction,
+      {
+        project: 'test-project',
+        entityTypeName: 'feature',
+        entityData: { id: 'user-provided-id', name: 'payments' },
+      },
+      context,
+    );
+    expect(stageResult.message).toContain('Staged creation');
+
+    // Read the draft definition and verify the ID was replaced
+    const defContents = await readFile(
+      `${projectDir}/baseplate/.build/draft-definition.json`,
+      'utf-8',
+    );
+    const definition = JSON.parse(defContents) as {
+      features: { id: string; name: string }[];
+    };
+    const payments = definition.features.find((f) => f.name === 'payments');
+    expect(payments).toBeDefined();
+    expect(payments?.id).not.toBe('user-provided-id');
+    expect(payments?.id).toMatch(/^feature:/);
+  });
+
   test('discard with no draft', async ({ context }) => {
     const result = await invokeServiceActionForTest(
       discardDraftAction,
