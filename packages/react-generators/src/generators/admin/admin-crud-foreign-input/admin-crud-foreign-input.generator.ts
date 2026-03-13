@@ -138,7 +138,6 @@ export const adminCrudForeignInputGenerator = createGenerator({
                   `foreign-input-query-${optionsName}`,
                   renderGraphQLOperation(loadOptionsQuery, {
                     exported: true,
-                    currentPath: parentComponentPath,
                     graphqlImports,
                   }),
                 ),
@@ -146,7 +145,6 @@ export const adminCrudForeignInputGenerator = createGenerator({
                   `foreign-input-fragment-${optionsName}`,
                   renderGraphQLFragment(optionFragment, {
                     exported: true,
-                    currentPath: parentComponentPath,
                     graphqlImports,
                   }),
                 ),

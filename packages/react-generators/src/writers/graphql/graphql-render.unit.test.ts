@@ -30,7 +30,6 @@ describe('renderGraphQLFragment', () => {
     };
 
     const result = renderGraphQLFragment(fragment, {
-      currentPath: './user-table.tsx',
       exported: true,
       graphqlImports,
     });
@@ -66,7 +65,6 @@ describe('renderGraphQLFragment', () => {
     };
 
     const result = renderGraphQLFragment(fragment, {
-      currentPath: './user-table.tsx',
       exported: true,
       graphqlImports,
     });
@@ -93,7 +91,6 @@ describe('renderGraphQLFragment', () => {
     };
 
     const result = renderGraphQLFragment(fragment, {
-      currentPath: './user.tsx',
       exported: false,
       graphqlImports,
     });
@@ -119,7 +116,6 @@ describe('renderGraphQLFragment', () => {
     };
 
     const result = renderGraphQLFragment(fragment, {
-      currentPath: './user.tsx',
       graphqlImports,
     });
 
@@ -149,7 +145,6 @@ describe('renderGraphQLOperation', () => {
     };
 
     const result = renderGraphQLOperation(operation, {
-      currentPath: './queries.ts',
       exported: true,
       graphqlImports,
     });
@@ -190,7 +185,6 @@ describe('renderGraphQLOperation', () => {
     };
 
     const result = renderGraphQLOperation(operation, {
-      currentPath: './queries.ts',
       exported: true,
       graphqlImports,
     });
@@ -239,7 +233,6 @@ describe('renderGraphQLOperation', () => {
     };
 
     const result = renderGraphQLOperation(operation, {
-      currentPath: './edit.tsx',
       exported: false,
       graphqlImports,
     });
@@ -283,7 +276,6 @@ describe('renderGraphQLOperation', () => {
     };
 
     const result = renderGraphQLOperation(operation, {
-      currentPath: './edit.tsx',
       exported: true,
       graphqlImports,
     });

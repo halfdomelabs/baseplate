@@ -48,8 +48,6 @@ export const adminCrudDeleteActionGenerator = createGenerator({
       }) {
         const parentComponentName =
           adminCrudActionContainer.getParentComponentName();
-        const parentComponentPath =
-          adminCrudActionContainer.getParentComponentPath();
         const itemsFragmentVariable =
           adminCrudActionContainer.getItemsFragmentVariable();
         const itemsFragment = tsTemplateWithImports([
@@ -116,7 +114,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
 
         const deleteMutationHoistedFragment = renderGraphQLOperation(
           deleteMutation,
-          { currentPath: parentComponentPath, graphqlImports },
+          { graphqlImports },
         );
 
         const hookContent = tsTemplateWithImports(

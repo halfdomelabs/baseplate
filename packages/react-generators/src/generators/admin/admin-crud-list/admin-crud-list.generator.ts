@@ -218,7 +218,6 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_ITEMS_FRAGMENT: renderGraphQLFragment(
                     tableItemsFragment,
                     {
-                      currentPath: tableComponentPath,
                       exported: true,
                       graphqlImports,
                     },
@@ -279,7 +278,6 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_COMPONENT_NAME: listPageComponentName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
                   TPL_ITEMS_QUERY: renderGraphQLOperation(itemsQuery, {
-                    currentPath: listPagePath,
                     graphqlImports,
                   }),
                   TPL_ROUTE_PROPS: routeLoader

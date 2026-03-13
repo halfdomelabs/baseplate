@@ -219,7 +219,6 @@ export const adminCrudEditGenerator = createGenerator({
                     editFormDefaultValuesFragment,
                     {
                       exported: true,
-                      currentPath: editFormComponentPath,
                       graphqlImports,
                     },
                   ),
@@ -345,11 +344,9 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_UPDATE_MUTATION_FIELD_NAME: updateMutationFieldName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_EDIT_QUERY: renderGraphQLOperation(editQuery, {
-                    currentPath: editPagePath,
                     graphqlImports,
                   }),
                   TPL_UPDATE_MUTATION: renderGraphQLOperation(updateMutation, {
-                    currentPath: editPagePath,
                     graphqlImports,
                   }),
                   TPL_ROUTE_PROPS: editPageRenderedLoaders.routeLoader
@@ -434,7 +431,6 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_CREATE_MUTATION: renderGraphQLOperation(
                       createMutation,
                       {
-                        currentPath: createPagePath,
                         graphqlImports,
                       },
                     ),
