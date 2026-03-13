@@ -1,7 +1,3 @@
-import {
-  collectDefinitionIssues,
-  ProjectDefinitionContainer,
-} from '@baseplate-dev/project-builder-lib';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
@@ -16,7 +12,11 @@ import {
   loadDefinitionHash,
   loadDraftSession,
 } from './draft-session.js';
-import { definitionIssueSchema } from './validate-draft.js';
+import {
+  definitionIssueSchema,
+  fixAndValidateDraftDefinition,
+  mapIssueToOutput,
+} from './validate-draft.js';
 
 const commitDraftInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
@@ -56,7 +56,7 @@ export const commitDraftAction = createServiceAction({
       );
     }
 
-    // Convert the serialized draft back to a proper definition and serialize it
+    // Convert the serialized draft back to a proper definition and validate
     const parserContext = await createNodeSchemaParserContext(
       project,
       context.logger,
@@ -64,19 +64,21 @@ export const commitDraftAction = createServiceAction({
       context.cliVersion,
     );
 
-    const container = ProjectDefinitionContainer.fromSerializedConfig(
+    const { container, errors, warnings } = fixAndValidateDraftDefinition(
       session.draftDefinition,
       parserContext,
     );
 
-    // Validate the draft definition before committing
-    const issues = collectDefinitionIssues(container);
+    if (errors.length > 0) {
+      const messages = errors.map((e) => e.message).join('; ');
+      throw new Error(`Commit blocked by definition errors: ${messages}`);
+    }
 
-    if (issues.length > 0) {
-      const messages = issues
-        .map((i) => `[${i.severity}] ${i.message}`)
-        .join('; ');
-      throw new Error(`Commit blocked by definition issues: ${messages}`);
+    if (warnings.length > 0) {
+      return {
+        message: 'Commit blocked by definition warnings.',
+        issues: warnings.map(mapIssueToOutput),
+      };
     }
 
     const serializedContents = container.toSerializedContents();

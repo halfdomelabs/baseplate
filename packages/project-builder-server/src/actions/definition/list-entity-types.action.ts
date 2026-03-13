@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
+import { BLACKLISTED_ENTITY_TYPES } from './entity-type-blacklist.js';
 import { loadEntityServiceContext } from './load-entity-service-context.js';
 
 const listEntityTypesInputSchema = z.object({
@@ -43,12 +44,12 @@ export const listEntityTypesAction = createServiceAction({
       context,
     );
 
-    const entityTypes = [...entityContext.entityTypeMap.entries()].map(
-      ([name, metadata]) => ({
+    const entityTypes = [...entityContext.entityTypeMap.entries()]
+      .filter(([name]) => !BLACKLISTED_ENTITY_TYPES.has(name))
+      .map(([name, metadata]) => ({
         name,
         parentEntityTypeName: metadata.parentEntityTypeName ?? null,
-      }),
-    );
+      }));
 
     return { entityTypes };
   },

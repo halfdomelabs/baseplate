@@ -9,6 +9,7 @@ export type { PartitionedIssues } from './collect-definition-issues.js';
 export { collectExpressionIssues } from './collect-expression-issues.js';
 export {
   createEntityIssue,
+  createIssueFixSetter,
   resolveIssuePath,
 } from './definition-issue-utils.js';
 export * from './parser.js';

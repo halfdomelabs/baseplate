@@ -64,6 +64,16 @@ function navigateToEntityArrayFromSchemaPath(
         path.push(match);
         break;
       }
+      case 'array': {
+        throw new Error(
+          `Cannot navigate through plain array at path "${path.join('.')}": non-deterministic structure`,
+        );
+      }
+      case 'record': {
+        throw new Error(
+          `Cannot navigate through record at path "${path.join('.')}": non-deterministic structure`,
+        );
+      }
     }
   }
 

@@ -321,7 +321,7 @@
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": {},
             "type": "uuid"
           },
           {

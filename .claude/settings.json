@@ -47,9 +47,16 @@
       "Bash(pnpm run:example * -- pnpm --filter * build*)",
       "Bash(pnpm run:example * -- pnpm --filter * test*)",
       "Bash(pnpm run:example * -- pnpm --filter * eslint*)",
-      "mcp__baseplate-dev-server__*"
+      "mcp__baseplate-dev-server__*",
+      "Bash(git fetch *)",
+      "Bash(git checkout -b *)",
+      "Bash(echo $?)"
     ],
-    "deny": ["Edit(**/baseplate/generated/**)"]
+    "deny": [
+      "Edit(**/baseplate/generated/**)",
+      "Read(**/.env)",
+      "Read(**/.env.local)"
+    ]
   },
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": ["baseplate-dev-server"],

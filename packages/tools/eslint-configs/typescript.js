@@ -69,6 +69,11 @@ export function generateTypescriptEslintConfig(options = {}) {
         'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
         // Disallow renaming imports, exports, or destructured variables to the same name.
         'no-useless-rename': 'error',
+        // Allow empty patterns in function parameters which are used in test fixtures
+        'no-empty-pattern': [
+          'error',
+          { allowObjectPatternsAsParameters: true },
+        ],
       },
     },
 
@@ -281,6 +286,11 @@ export function generateTypescriptEslintConfig(options = {}) {
         ...vitest.configs.recommended.rules,
         // Helpful in dev but should flag as errors when linting
         'vitest/no-focused-tests': 'error',
+        // Allow custom test functions created via test.extend()
+        'vitest/no-standalone-expect': [
+          'error',
+          { additionalTestBlockFunctions: ['test'] },
+        ],
       },
       settings: {
         vitest: {

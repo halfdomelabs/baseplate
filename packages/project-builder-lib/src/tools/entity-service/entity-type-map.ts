@@ -66,7 +66,10 @@ export function collectEntityMetadata(schema: z.ZodType): EntityTypeMap {
           }
 
           parentEntityTypeName = parentType.name;
-          relativePath = ctx.path.slice(parentEntry.pathAtEntity.length);
+          // Strip the first element — it is always an array or
+          // discriminated-union-array that describes how to enter the parent's
+          // array, not how to navigate from the parent entity to this child.
+          relativePath = ctx.path.slice(parentEntry.pathAtEntity.length + 1);
         } else {
           // Top-level entity: relative path is the full path
           relativePath = ctx.path;
