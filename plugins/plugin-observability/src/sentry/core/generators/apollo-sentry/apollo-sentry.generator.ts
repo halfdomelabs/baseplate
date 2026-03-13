@@ -5,17 +5,18 @@ import {
   tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
+import {
+  apolloErrorLinkProvider,
+  reactApolloConfigProvider,
+  reactErrorImportsProvider,
+} from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactErrorImportsProvider } from '#src/generators/core/index.js';
 import {
   reactSentryConfigProvider,
   reactSentryImportsProvider,
-} from '#src/generators/core/react-sentry/index.js';
-
-import { apolloErrorLinkProvider } from '../apollo-error-link/index.js';
-import { reactApolloConfigProvider } from '../react-apollo/index.js';
+} from '../react-sentry/index.js';
 import { APOLLO_APOLLO_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});

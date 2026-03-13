@@ -1,8 +1,9 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
+import {
+  configServiceImportsProvider,
+  errorHandlerServiceImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
-
-import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 
 const instrument = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

@@ -1,8 +1,9 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
+import {
+  reactConfigImportsProvider,
+  reactRouterImportsProvider,
+} from '@baseplate-dev/react-generators';
 import path from 'node:path';
-
-import { reactConfigImportsProvider } from '#src/generators/core/react-config/generated/ts-import-providers.js';
-import { reactRouterImportsProvider } from '#src/generators/core/react-router/generated/ts-import-providers.js';
 
 const sentry = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

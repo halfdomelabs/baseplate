@@ -6,13 +6,14 @@ import {
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
+import {
+  FASTIFY_PACKAGES,
+  pothosConfigProvider,
+  yogaPluginConfigProvider,
+} from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
-
-import { pothosConfigProvider } from '../pothos/index.js';
 import { POTHOS_POTHOS_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});

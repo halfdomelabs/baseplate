@@ -2,10 +2,11 @@ import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-genera
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  reactConfigImportsProvider,
+  reactRouterImportsProvider,
+} from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
-
-import { reactConfigImportsProvider } from '#src/generators/core/react-config/generated/ts-import-providers.js';
-import { reactRouterImportsProvider } from '#src/generators/core/react-router/generated/ts-import-providers.js';
 
 import { CORE_REACT_SENTRY_PATHS } from './template-paths.js';
 import { CORE_REACT_SENTRY_TEMPLATES } from './typed-templates.js';

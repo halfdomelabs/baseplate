@@ -1,15 +1,11 @@
 import type { ProjectInfo } from '@baseplate-dev/project-builder-lib';
+import type { ServiceActionContext } from '@baseplate-dev/project-builder-server/actions';
 
-import { syncProject } from '@baseplate-dev/project-builder-server';
 import {
   assertNotStale,
-  writeGenerationManifest,
+  invokeServiceActionAsCli,
+  syncProjectAction,
 } from '@baseplate-dev/project-builder-server/actions';
-import {
-  createNodeSchemaParserContext,
-  discoverPlugins,
-} from '@baseplate-dev/project-builder-server/plugins';
-import { getPackageVersion } from '@baseplate-dev/utils/node';
 
 import type { ProjectBuilderTest, TestRunnerHelpers } from './types.js';
 
@@ -21,6 +17,8 @@ export interface RunTestsOptions {
   testDefinitionsDir: string;
   /** Discovered test projects to run against */
   testProjects: ProjectInfo[];
+  /** Service action context with plugins, config, and logger */
+  context: ServiceActionContext;
   /** Optional filter to match test files by substring */
   filter?: string;
 }
@@ -28,33 +26,21 @@ export interface RunTestsOptions {
 async function runTest(
   test: ProjectBuilderTest,
   projectInfo: ProjectInfo,
+  context: ServiceActionContext,
 ): Promise<void> {
-  const { directory: outputDir, baseplateDirectory } = projectInfo;
+  const { directory: outputDir } = projectInfo;
 
   // Check if the output directory has been modified since last generation
   await assertNotStale(outputDir);
 
-  // Expand test project (generate + apply snapshots)
+  // Generate test project using the sync service action
   console.info(`Generating project for ${test.projectDirectory}...`);
-  const plugins = await discoverPlugins(process.cwd(), console);
-  const cliVersion = (await getPackageVersion(import.meta.dirname)) ?? '0.0.0';
 
-  const context = await createNodeSchemaParserContext(
-    projectInfo,
-    console,
-    plugins,
-    cliVersion,
-    baseplateDirectory,
-  );
-
-  const result = await syncProject({
-    directory: outputDir,
-    logger: console,
+  const result = await invokeServiceActionAsCli(
+    syncProjectAction,
+    { project: projectInfo.name, overwrite: true },
     context,
-    userConfig: {},
-    overwrite: true,
-    baseplateDirectory,
-  });
+  );
 
   if (result.status === 'error') {
     throw new Error(
@@ -62,7 +48,6 @@ async function runTest(
     );
   }
 
-  await writeGenerationManifest(outputDir);
   console.info(`Project generated for ${test.projectDirectory}!`);
 
   const runnerContext = {
@@ -95,7 +80,7 @@ async function runTest(
 }
 
 export async function runTests(options: RunTestsOptions): Promise<void> {
-  const { testDefinitionsDir, testProjects, filter } = options;
+  const { testDefinitionsDir, testProjects, context, filter } = options;
   const tests = await discoverTests(testDefinitionsDir, filter);
 
   console.info(`Found ${tests.length} matching tests!`);
@@ -113,7 +98,7 @@ export async function runTests(options: RunTestsOptions): Promise<void> {
     }
 
     console.info(`Running test: ${test.filename}`);
-    await runTest(test.content, projectInfo);
+    await runTest(test.content, projectInfo, context);
     console.info(`Test ${test.filename} completed!`);
   }
 }

@@ -2,11 +2,10 @@ import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-genera
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import { reactErrorImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
-import { reactSentryImportsProvider } from '#src/generators/core/react-sentry/generated/ts-import-providers.js';
-
+import { reactSentryImportsProvider } from '../../react-sentry/generated/ts-import-providers.js';
 import { APOLLO_APOLLO_SENTRY_PATHS } from './template-paths.js';
 import { APOLLO_APOLLO_SENTRY_TEMPLATES } from './typed-templates.js';
 

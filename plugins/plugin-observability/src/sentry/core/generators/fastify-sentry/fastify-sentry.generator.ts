@@ -11,6 +11,16 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
+  authContextImportsProvider,
+  configServiceImportsProvider,
+  configServiceProvider,
+  errorHandlerServiceConfigProvider,
+  errorHandlerServiceImportsProvider,
+  FASTIFY_PACKAGES,
+  fastifyProvider,
+  fastifyServerConfigProvider,
+} from '@baseplate-dev/fastify-generators';
+import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
@@ -18,19 +28,6 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { authContextImportsProvider } from '#src/generators/auth/index.js';
-
-import {
-  configServiceImportsProvider,
-  configServiceProvider,
-} from '../config-service/index.js';
-import {
-  errorHandlerServiceConfigProvider,
-  errorHandlerServiceImportsProvider,
-} from '../error-handler-service/index.js';
-import { fastifyServerConfigProvider } from '../fastify-server/index.js';
-import { fastifyProvider } from '../fastify/index.js';
 import { CORE_FASTIFY_SENTRY_GENERATED } from './generated/index.js';
 import { fastifySentryImportsProvider } from './generated/ts-import-providers.js';
 

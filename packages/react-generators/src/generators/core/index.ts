@@ -8,7 +8,6 @@ export * from './react-logger/index.js';
 export * from './react-proxy/index.js';
 export * from './react-router/index.js';
 export * from './react-routes/index.js';
-export * from './react-sentry/index.js';
 export * from './react-tailwind/index.js';
 export * from './react-typescript/index.js';
 export * from './react-utils/index.js';

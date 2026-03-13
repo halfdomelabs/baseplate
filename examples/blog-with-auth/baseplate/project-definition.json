@@ -957,9 +957,16 @@
       "name": "rate-limit",
       "packageName": "@baseplate-dev/plugin-rate-limit",
       "version": "0.1.0"
+    },
+    {
+      "config": { "sentryOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-observability_sentry",
+      "name": "sentry",
+      "packageName": "@baseplate-dev/plugin-observability",
+      "version": "0.1.0"
     }
   ],
-  "schemaVersion": 26,
+  "schemaVersion": 27,
   "settings": {
     "general": {
       "name": "blog-with-auth",
