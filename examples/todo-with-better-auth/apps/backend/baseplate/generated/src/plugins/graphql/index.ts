@@ -50,7 +50,7 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
 }
 /* TPL_POST_SCHEMA_FRAGMENTS:END */
 
-export const graphqlPlugin = fp(async (fastify) => {
+export const graphqlPlugin = fp((fastify, opts, done) => {
   const graphQLServer = createYoga<{
     req: FastifyRequest;
     reply: FastifyReply;
@@ -147,4 +147,6 @@ export const graphqlPlugin = fp(async (fastify) => {
     handler: httpHandler,
   });
   /* TPL_GRAPHQL_HANDLER:END */
+
+  done();
 });
