@@ -10,27 +10,31 @@ import { useController } from 'react-hook-form';
 
 import type { EmbeddedObjectInputProps } from './embedded-object-input';
 
-import { FormControl, FormItem, FormLabel, FormMessage } from '../ui/form-item';
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+} from '../ui/field';
 import { EmbeddedObjectInput } from './embedded-object-input';
 
 export interface EmbeddedObjectFieldProps<
   InputType,
 > extends EmbeddedObjectInputProps<InputType> {
   label?: React.ReactNode;
+  error?: string;
 }
 
 export function EmbeddedObjectField<InputType>({
   label,
+  error,
   ...rest
 }: EmbeddedObjectFieldProps<InputType>): ReactElement {
   return (
-    <FormItem>
-      {label && <FormLabel>{label}</FormLabel>}
-      <FormControl>
-        <EmbeddedObjectInput {...rest} />
-      </FormControl>
-      <FormMessage />
-    </FormItem>
+    <Field data-invalid={!!error}>
+      {label && <FieldLabel>{label}</FieldLabel>}
+      <EmbeddedObjectInput {...rest} />
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 
@@ -62,14 +66,13 @@ export function EmbeddedObjectFieldController<
   });
 
   return (
-    <FormItem error={error?.message}>
-      <EmbeddedObjectField
-        {...rest}
-        onChange={(value) => {
-          field.onChange(value as FieldPathValue<TFieldValues, TName>);
-        }}
-        value={field.value as FieldPathValue<TFieldValues, TName>}
-      />
-    </FormItem>
+    <EmbeddedObjectField
+      {...rest}
+      error={error?.message}
+      onChange={(value) => {
+        field.onChange(value as FieldPathValue<TFieldValues, TName>);
+      }}
+      value={field.value as FieldPathValue<TFieldValues, TName>}
+    />
   );
 }

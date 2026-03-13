@@ -1,6 +1,9 @@
 'use client';
 
+import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
+import { useId } from 'react';
 
 import type {
   AddOptionRequiredFields,
@@ -11,12 +14,11 @@ import type {
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form-item';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 import {
   Select,
   SelectContent,
@@ -30,10 +32,6 @@ export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
 }
-
-// we have to use a sentinel value to detect null values since Radix Select doesn't support empty values
-// https://github.com/radix-ui/primitives/issues/2706
-const NULL_SENTINEL = '__NULL_VALUE__';
 
 function SelectField<OptionType>({
   label,
@@ -50,35 +48,25 @@ function SelectField<OptionType>({
   ...props
 }: SelectFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
+  const triggerId = useId();
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
-  const selectedValue = (() => {
-    if (!selectedOption || value === undefined) return '';
-    return value ?? NULL_SENTINEL;
-  })();
-
   return (
-    <FormItem error={error} className={className}>
-      <FormLabel>{label}</FormLabel>
-      <Select
-        value={selectedValue}
-        onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
-        {...props}
-      >
-        <FormControl>
-          <SelectTrigger>
-            <SelectValue placeholder={placeholder}>
-              {selectedOption ? getOptionLabel(selectedOption) : null}
-            </SelectValue>
-          </SelectTrigger>
-        </FormControl>
+    <Field data-invalid={!!error} className={className}>
+      <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
+      <Select value={value} onValueChange={(val) => onChange?.(val)} {...props}>
+        <SelectTrigger id={triggerId} aria-invalid={!!error}>
+          <SelectValue placeholder={placeholder}>
+            {selectedOption ? getOptionLabel(selectedOption) : null}
+          </SelectValue>
+        </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             {options.map((option) => {
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <SelectItem value={val ?? NULL_SENTINEL} key={val}>
+                <SelectItem value={val} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
@@ -88,9 +76,9 @@ function SelectField<OptionType>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 
