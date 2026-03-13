@@ -203,6 +203,19 @@ function convertBinaryExpression(node: BinaryExpression): FieldComparisonNode {
 function convertFieldRefOrLiteral(
   node: Expression,
 ): FieldRefNode | LiteralValueNode {
+  if (
+    node.type === 'UnaryExpression' &&
+    (node.operator === '-' || node.operator === '+') &&
+    node.argument.type === 'Literal' &&
+    typeof node.argument.value === 'number'
+  ) {
+    return {
+      type: 'literalValue',
+      value: node.operator === '-' ? -node.argument.value : node.argument.value,
+      start: node.start,
+      end: node.end,
+    } satisfies LiteralValueNode;
+  }
   if (node.type === 'Literal') {
     const { value } = node;
     if (

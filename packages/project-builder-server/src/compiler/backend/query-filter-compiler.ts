@@ -183,7 +183,12 @@ function generateFieldComparisonWhereCode(
     return `{ ${modelNode.field}: ${serialized} }`;
   }
 
-  // Auth field comparison
+  // Auth field comparison — guard against model-vs-model (not supported)
+  if (otherNode.source !== 'auth') {
+    throw new Error(
+      'Field comparison must compare a model field against an auth field or a literal value for query filter generation.',
+    );
+  }
   const authExpr = `ctx.auth.${otherNode.field}`;
   if (operator === '!==') {
     return `(${authExpr} != null ? { ${modelNode.field}: { not: ${authExpr} } } : false)`;

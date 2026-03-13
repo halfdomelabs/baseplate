@@ -290,7 +290,12 @@ export function validateAuthorizerExpression(
         case 'boolean': {
           return literalJsType === 'boolean';
         }
-        case 'int':
+        case 'int': {
+          return (
+            typeof literalNode.value === 'number' &&
+            Number.isInteger(literalNode.value)
+          );
+        }
         case 'float':
         case 'decimal': {
           return literalJsType === 'number';
