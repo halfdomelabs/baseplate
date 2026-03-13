@@ -19,13 +19,13 @@ import { useEnumForm } from '../-hooks/use-enum-form.js';
 import { EnumInfoForm } from './enum-info-form.js';
 
 interface NewEnumDialogProps {
-  children: React.ReactNode;
+  trigger: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
 export function NewEnumDialog({
-  children,
+  trigger,
   open,
   onOpenChange,
 }: NewEnumDialogProps): React.JSX.Element {
@@ -58,7 +58,7 @@ export function NewEnumDialog({
         }
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New Enum</DialogTitle>
@@ -75,8 +75,8 @@ export function NewEnumDialog({
             description="Whether to expose this enum in the GraphQL schema"
           />
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
             <Button type="submit" disabled={isSavingDefinition}>
               Create Enum

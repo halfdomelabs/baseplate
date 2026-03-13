@@ -19,12 +19,11 @@ import type { FormFieldProps } from '#src/types/form.js';
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 
 export interface CodeEditorFieldProps
   extends
@@ -73,31 +72,29 @@ function CodeEditorField({
   );
 
   return (
-    <FormItem error={error}>
-      {label && <FormLabel>{label}</FormLabel>}
-      <FormControl>
-        <div className={className} {...props}>
-          <CodeMirror
-            value={value}
-            onChange={onChange}
-            extensions={allExtensions}
-            height={height}
-            placeholder={placeholder}
-            readOnly={readOnly}
-            basicSetup={true}
-            indentWithTab={false}
-            style={{
-              fontSize: '14px',
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius)',
-            }}
-          />
-        </div>
-      </FormControl>
-      {description && <FormDescription>{description}</FormDescription>}
-      <FormMessage />
-    </FormItem>
+    <Field data-invalid={!!error}>
+      {label && <FieldLabel>{label}</FieldLabel>}
+      <div className={className} {...props}>
+        <CodeMirror
+          value={value}
+          onChange={onChange}
+          extensions={allExtensions}
+          height={height}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          basicSetup={true}
+          indentWithTab={false}
+          style={{
+            fontSize: '14px',
+            fontFamily: 'var(--font-mono)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)',
+          }}
+        />
+      </div>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

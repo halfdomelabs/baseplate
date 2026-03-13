@@ -10,17 +10,17 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
+import { useId } from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError as FieldErrorDisplay,
+  FieldLabel,
+} from '../field/field.js';
 import { Textarea } from '../textarea/textarea.js';
 
 export interface TextareaFieldProps
@@ -40,24 +40,25 @@ function TextareaField({
   register,
   ...props
 }: TextareaFieldProps): React.ReactElement {
+  const id = useId();
   return (
-    <FormItem error={error}>
-      <FormLabel>{label}</FormLabel>
-      <FormControl>
-        <Textarea
-          onChange={
-            onChange &&
-            ((e) => {
-              onChange(e.target.value);
-            })
-          }
-          {...props}
-          {...register}
-        />
-      </FormControl>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+    <Field data-invalid={!!error || undefined}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <Textarea
+        id={id}
+        onChange={
+          onChange &&
+          ((e) => {
+            onChange(e.target.value);
+          })
+        }
+        aria-invalid={!!error}
+        {...props}
+        {...register}
+      />
+      <FieldDescription>{description}</FieldDescription>
+      <FieldErrorDisplay>{error}</FieldErrorDisplay>
+    </Field>
   );
 }
 

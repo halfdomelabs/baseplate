@@ -12,7 +12,12 @@ import { queuesImportsProvider } from '#src/queue/core/generators/queues/generat
 const bullmqPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {},
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
   name: 'bullmq-plugin',
   referencedGeneratorTemplates: { bullmqService: {} },
   source: {
@@ -40,6 +45,7 @@ const bullmqService = createTsTemplateFile({
     getScheduledJobs: { isTypeOnly: false },
     initializeBullMQ: { isTypeOnly: false },
     shutdownBullMQ: { isTypeOnly: false },
+    startWorkers: { isTypeOnly: false },
   },
   source: {
     path: path.join(

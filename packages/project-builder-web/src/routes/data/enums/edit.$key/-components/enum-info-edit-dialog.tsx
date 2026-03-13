@@ -19,16 +19,14 @@ interface EnumInfoEditDialogProps {
   enumKey: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  children?: React.ReactNode;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
 }
 
 export function EnumInfoEditDialog({
   enumKey,
   open,
   onOpenChange,
-  asChild,
-  children,
+  trigger,
 }: EnumInfoEditDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
 
@@ -54,7 +52,7 @@ export function EnumInfoEditDialog({
         }
       }}
     >
-      <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent aria-describedby={undefined}>
         <form onSubmit={onSubmit} className="space-y-4">
           <DialogHeader>
@@ -62,8 +60,8 @@ export function EnumInfoEditDialog({
           </DialogHeader>
           <EnumInfoForm control={control} />
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
             <Button type="submit" disabled={isSavingDefinition}>
               Save

@@ -10,6 +10,21 @@ import {
   SelectValue,
 } from './select.js';
 
+const fruits = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Cherry', value: 'cherry' },
+  { label: 'Grape', value: 'grape' },
+  { label: 'Lemon', value: 'lemon' },
+  { label: 'Orange', value: 'orange' },
+  { label: 'Peach', value: 'peach' },
+  { label: 'Pear', value: 'pear' },
+  { label: 'Pineapple', value: 'pineapple' },
+  { label: 'Plum', value: 'plum' },
+  { label: 'Strawberry', value: 'strawberry' },
+  { label: 'Tomato', value: 'tomato' },
+];
+
 const meta: Meta<typeof Select> = {
   title: 'components/Select',
   component: Select,
@@ -24,59 +39,123 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <div className="w-80">
-          <SelectTrigger>
-            <SelectValue placeholder="Select something!" />
-          </SelectTrigger>
-        </div>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
-            <SelectItem value="cherry">Cherry</SelectItem>
-            <SelectItem value="grape">Grape</SelectItem>
-            <SelectItem value="lemon">Lemon</SelectItem>
-            <SelectItem value="orange">Orange</SelectItem>
-            <SelectItem value="peach">Peach</SelectItem>
-            <SelectItem value="pear">Pear</SelectItem>
-            <SelectItem value="pineapple">Pineapple</SelectItem>
-            <SelectItem value="plum">Plum</SelectItem>
-            <SelectItem value="strawberry">Strawberry</SelectItem>
-            <SelectItem value="tomato" disabled>
-              Tomato
+  render: () => (
+    <Select items={fruits}>
+      <SelectTrigger className="w-80">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          {fruits.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
             </SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </>
-    ),
-  },
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
 };
 
+const group1 = [
+  { label: 'Option 1', value: 'option-1' },
+  { label: 'Option 2', value: 'option-2' },
+  { label: 'Option 3', value: 'option-3' },
+];
+
+const group2 = [
+  { label: 'Option 4', value: 'option-4' },
+  { label: 'Option 5', value: 'option-5' },
+  { label: 'Option 6', value: 'option-6' },
+];
+
 export const Grouped: Story = {
-  args: {
-    children: (
-      <>
-        <SelectTrigger className="w-96">
-          <SelectValue placeholder="Select a grouped item!" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Group 1</SelectLabel>
-            <SelectItem value="option-1">Option 1</SelectItem>
-            <SelectItem value="option-2">Option 2</SelectItem>
-            <SelectItem value="option-3">Option 3</SelectItem>
-          </SelectGroup>
-          <SelectGroup>
-            <SelectLabel>Group 2</SelectLabel>
-            <SelectItem value="option-4">Option 4</SelectItem>
-            <SelectItem value="option-5">Option 5</SelectItem>
-            <SelectItem value="option-6">Option 6</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </>
-    ),
-  },
+  render: () => (
+    <Select items={[...group1, ...group2]}>
+      <SelectTrigger className="w-96">
+        <SelectValue placeholder="Select a grouped item!" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Group 1</SelectLabel>
+          {group1.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+        <SelectGroup>
+          <SelectLabel>Group 2</SelectLabel>
+          {group2.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+};
+
+export const WithDisabledItem: Story = {
+  render: () => (
+    <Select items={fruits}>
+      <SelectTrigger className="w-80">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          {fruits.map((item) => (
+            <SelectItem
+              key={item.value}
+              value={item.value}
+              disabled={item.value === 'tomato'}
+            >
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+};
+
+export const Disabled: Story = {
+  render: () => (
+    <Select items={fruits} disabled>
+      <SelectTrigger className="w-80">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {fruits.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+};
+
+export const SmallSize: Story = {
+  render: () => (
+    <Select items={fruits}>
+      <SelectTrigger className="w-80" size="sm">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {fruits.map((item) => (
+            <SelectItem key={item.value} value={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
 };

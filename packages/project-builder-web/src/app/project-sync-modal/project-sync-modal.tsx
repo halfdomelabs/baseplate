@@ -100,32 +100,33 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
           setIsOpen(open);
         }}
       >
-        <DialogTrigger asChild>
-          <Button
-            onClick={(e) => {
-              if (!isSyncing && !hasConflicts) {
-                blockBeforeContinue({
-                  onContinue: startSyncProject,
-                });
-                e.preventDefault();
-              }
-            }}
-            size="sm"
-            data-testid="sync-button"
-          >
-            {hasConflicts ? (
-              <MdSyncProblem />
-            ) : hasWarnings ? (
-              <MdWarning />
-            ) : (
-              <MdSync />
-            )}
-            {isSyncing
-              ? 'Syncing...'
-              : hasConflicts
-                ? 'Resolve conflicts'
-                : 'Sync'}
-          </Button>
+        <DialogTrigger
+          render={
+            <Button
+              onClick={(e) => {
+                if (!isSyncing && !hasConflicts) {
+                  blockBeforeContinue({
+                    onContinue: startSyncProject,
+                  });
+                  e.preventDefault();
+                }
+              }}
+              data-testid="sync-button"
+            />
+          }
+        >
+          {hasConflicts ? (
+            <MdSyncProblem />
+          ) : hasWarnings ? (
+            <MdWarning />
+          ) : (
+            <MdSync />
+          )}
+          {isSyncing
+            ? 'Syncing...'
+            : hasConflicts
+              ? 'Resolve conflicts'
+              : 'Sync'}
         </DialogTrigger>
         <DialogContent width="lg" aria-description="Sync project dialog">
           <DialogHeader>

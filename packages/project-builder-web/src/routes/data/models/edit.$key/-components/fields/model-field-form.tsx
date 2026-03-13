@@ -139,10 +139,10 @@ function ModelFieldForm({
       <div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <HiDotsVertical />
-              </Button>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon" />}
+            >
+              <HiDotsVertical />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuGroup>

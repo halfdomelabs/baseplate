@@ -6,6 +6,7 @@ import {
   AuthorizerExpressionParseError,
   buildRelationValidationInfo,
   createAuthorizerRoleSchema,
+  createModelValidationContext,
   modelAuthorizerRoleEntityType,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
@@ -122,10 +123,6 @@ export function ModelAuthorizerRoleForm({
 
   // Build relation info for nested authorizer validation and autocomplete
   const { modelContext, relationInfoList } = useMemo(() => {
-    const scalarFieldNames = new Set<string>(
-      modelConfig.model.fields.map((field: { name: string }) => field.name),
-    );
-
     const relationValidationInfo = buildRelationValidationInfo(
       modelConfig.model.relations,
       definition.models,
@@ -140,10 +137,11 @@ export function ModelAuthorizerRoleForm({
       foreignAuthorizerRoleNames: [...info.foreignAuthorizerRoleNames],
     }));
 
+    const ctx = createModelValidationContext(modelConfig);
+
     return {
       modelContext: {
-        modelName: modelConfig.name,
-        scalarFieldNames,
+        ...ctx,
         relationInfo: relationValidationInfo,
       },
       relationInfoList: relInfoList,
@@ -251,10 +249,12 @@ export function ModelAuthorizerRoleForm({
         }
       />
       <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="secondary" type="button" onClick={onCancel}>
-            Cancel
-          </Button>
+        <DialogClose
+          render={
+            <Button variant="secondary" type="button" onClick={onCancel} />
+          }
+        >
+          Cancel
         </DialogClose>
         <Button type="submit" disabled={!isCreate && !isDirty} form={formId}>
           Save

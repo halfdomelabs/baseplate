@@ -1,4 +1,7 @@
-import type { PluginSpecStore } from '@baseplate-dev/project-builder-lib';
+import type {
+  ModelValidationContext,
+  PluginSpecStore,
+} from '@baseplate-dev/project-builder-lib';
 import type { Diagnostic } from '@codemirror/lint';
 import type { EditorView } from '@codemirror/view';
 
@@ -24,10 +27,7 @@ import {
  * @returns Linter function for CodeMirror
  */
 export function createAuthorizerExpressionLinter(
-  modelContext: {
-    modelName: string;
-    scalarFieldNames: Set<string>;
-  } | null,
+  modelContext: ModelValidationContext | null,
   pluginStore: PluginSpecStore | null,
   definition: unknown,
 ): (view: EditorView) => Diagnostic[] {

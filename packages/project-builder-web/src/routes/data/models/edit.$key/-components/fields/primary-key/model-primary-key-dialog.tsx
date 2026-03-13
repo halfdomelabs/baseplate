@@ -16,23 +16,21 @@ import { ModelPrimaryKeyForm } from './model-primary-key-form.js';
 
 interface ModelPrimaryKeyDialogProps {
   control: Control<ModelConfigInput>;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
-  children?: React.ReactNode;
 }
 
 export function ModelPrimaryKeyDialog({
   control,
-  children,
-  asChild,
+  trigger,
   open,
   onOpenChange,
 }: ModelPrimaryKeyDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Primary Keys</DialogTitle>

@@ -30,6 +30,7 @@ import type {
   HasRoleNode,
   HasSomeRoleNode,
   IsAuthenticatedNode,
+  LiteralValueNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
 } from './authorizer-expression-ast.js';
@@ -165,26 +166,76 @@ function convertLogicalExpression(node: LogicalExpression): BinaryLogicalNode {
 }
 
 /**
- * Convert a BinaryExpression (===) to FieldComparisonNode.
+ * Convert a BinaryExpression (=== or !==) to FieldComparisonNode.
  */
 function convertBinaryExpression(node: BinaryExpression): FieldComparisonNode {
-  if (node.operator !== '===') {
+  if (node.operator !== '===' && node.operator !== '!==') {
     throw new AuthorizerExpressionParseError(
-      `Unsupported comparison operator: ${node.operator}. Only === is supported.`,
+      `Unsupported comparison operator: ${node.operator}. Only === and !== are supported.`,
       node.left.end,
       node.right.start,
     );
   }
 
-  // Acorn's BinaryExpression allows PrivateIdentifier for ES2022+, but we only
-  // support MemberExpression field refs. convertFieldRef will throw if given
-  // anything other than MemberExpression.
+  const left = convertFieldRefOrLiteral(node.left as Expression);
+  const right = convertFieldRefOrLiteral(node.right);
+
+  // At least one side must be a field reference — comparing two literals is not allowed.
+  if (left.type === 'literalValue' && right.type === 'literalValue') {
+    throw new AuthorizerExpressionParseError(
+      'At least one side of a comparison must be a field reference (e.g., model.field or userId).',
+      node,
+    );
+  }
+
   return {
     type: 'fieldComparison',
-    operator: '===',
-    left: convertFieldRef(node.left as Expression),
-    right: convertFieldRef(node.right),
+    operator: node.operator,
+    left,
+    right,
   };
+}
+
+/**
+ * Convert an expression node to either a FieldRefNode or a LiteralValueNode.
+ * Supports string, number, and boolean literals.
+ */
+function convertFieldRefOrLiteral(
+  node: Expression,
+): FieldRefNode | LiteralValueNode {
+  if (
+    node.type === 'UnaryExpression' &&
+    (node.operator === '-' || node.operator === '+') &&
+    node.argument.type === 'Literal' &&
+    typeof node.argument.value === 'number'
+  ) {
+    return {
+      type: 'literalValue',
+      value: node.operator === '-' ? -node.argument.value : node.argument.value,
+      start: node.start,
+      end: node.end,
+    } satisfies LiteralValueNode;
+  }
+  if (node.type === 'Literal') {
+    const { value } = node;
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      return {
+        type: 'literalValue',
+        value,
+        start: node.start,
+        end: node.end,
+      } satisfies LiteralValueNode;
+    }
+    throw new AuthorizerExpressionParseError(
+      'Unsupported literal type. Only string, number, and boolean literals are supported.',
+      node,
+    );
+  }
+  return convertFieldRef(node);
 }
 
 /**
@@ -513,8 +564,12 @@ function extractInfo(
   function walk(node: AuthorizerExpressionNode): void {
     switch (node.type) {
       case 'fieldComparison': {
-        walkFieldRef(node.left);
-        walkFieldRef(node.right);
+        if (node.left.type === 'fieldRef') {
+          walkFieldRef(node.left);
+        }
+        if (node.right.type === 'fieldRef') {
+          walkFieldRef(node.right);
+        }
         break;
       }
 

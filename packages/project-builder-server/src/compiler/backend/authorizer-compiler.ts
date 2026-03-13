@@ -1,6 +1,7 @@
 import type {
   AuthorizerExpressionNode,
   FieldRefNode,
+  LiteralValueNode,
   ModelConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -10,7 +11,7 @@ import {
   ModelUtils,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar } from '@baseplate-dev/utils';
+import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -51,8 +52,8 @@ export function generateAuthorizerExpressionCode(
 ): string {
   switch (node.type) {
     case 'fieldComparison': {
-      const left = generateFieldRefCode(node.left);
-      const right = generateFieldRefCode(node.right);
+      const left = generateComparisonOperandCode(node.left);
+      const right = generateComparisonOperandCode(node.right);
       return `${left} ${node.operator} ${right}`;
     }
     case 'hasRole': {
@@ -107,7 +108,17 @@ function getResolvedRelation(
   return resolved;
 }
 
-function generateFieldRefCode(node: FieldRefNode): string {
+function generateComparisonOperandCode(
+  node: FieldRefNode | LiteralValueNode,
+): string {
+  if (node.type === 'literalValue') {
+    const { value } = node;
+    if (typeof value === 'string') {
+      return quot(value);
+    }
+    // number and boolean emit as-is
+    return String(value);
+  }
   if (node.source === 'model') {
     return `model.${node.field}`;
   }

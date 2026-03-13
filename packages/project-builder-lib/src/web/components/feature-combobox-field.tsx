@@ -63,8 +63,7 @@ function FeatureComboboxField({
     <ComboboxField
       placeholder="Select a feature"
       {...rest}
-      searchQuery={canCreate ? searchQuery : undefined}
-      onSearchQueryChange={setSearchQuery}
+      onInputValueChange={canCreate ? setSearchQuery : undefined}
       options={featureOptions}
       value={value}
     />

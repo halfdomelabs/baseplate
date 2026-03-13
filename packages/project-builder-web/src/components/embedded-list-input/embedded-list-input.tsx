@@ -16,9 +16,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Field,
+  FieldError,
+  FieldLabel,
 } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -141,11 +141,11 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 }: EmbeddedListInputLabelledProps<InputType>): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
-      <FormItem className={className}>
-        {label && <FormLabel>{label}</FormLabel>}
+      <Field data-invalid={!!error} className={className}>
+        {label && <FieldLabel>{label}</FieldLabel>}
         <EmbeddedListInput {...rest} />
-        <FormMessage>{error}</FormMessage>
-      </FormItem>
+        <FieldError>{error}</FieldError>
+      </Field>
     </div>
   );
 };

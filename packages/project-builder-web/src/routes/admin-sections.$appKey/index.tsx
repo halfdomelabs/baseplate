@@ -29,9 +29,11 @@ function AdminSectionsIndexPage(): React.JSX.Element {
         header="No Admin Sections"
         subtitle="Create your first admin section to get started with managing your data"
         actions={
-          <NewAdminSectionDialog appId={app.id} appKey={appKey}>
-            <Button>New Section</Button>
-          </NewAdminSectionDialog>
+          <NewAdminSectionDialog
+            appId={app.id}
+            appKey={appKey}
+            trigger={<Button>New Section</Button>}
+          />
         }
       />
     );

@@ -24,6 +24,42 @@ describe('generateQueryFilterExpressionCode', () => {
         '(ctx.auth.userId != null ? { authorId: ctx.auth.userId } : false)',
       );
     });
+
+    it('should produce not-filter for !== with auth field', () => {
+      expect(generateQF('model.id !== userId')).toBe(
+        '(ctx.auth.userId != null ? { id: { not: ctx.auth.userId } } : false)',
+      );
+    });
+  });
+
+  describe('literal value comparisons', () => {
+    it('should produce static where clause for === string literal', () => {
+      expect(generateQF("model.status === 'active'")).toBe(
+        "{ status: 'active' }",
+      );
+    });
+
+    it('should produce not-filter for !== string literal', () => {
+      expect(generateQF("model.status !== 'draft'")).toBe(
+        "{ status: { not: 'draft' } }",
+      );
+    });
+
+    it('should produce static where clause for === boolean literal', () => {
+      expect(generateQF('model.isPublished === true')).toBe(
+        '{ isPublished: true }',
+      );
+    });
+
+    it('should produce static where clause for === number literal', () => {
+      expect(generateQF('model.count === 42')).toBe('{ count: 42 }');
+    });
+
+    it('should produce static where clause when literal is on left side', () => {
+      expect(generateQF("'active' === model.status")).toBe(
+        "{ status: 'active' }",
+      );
+    });
   });
 
   describe('hasRole / hasSomeRole', () => {
@@ -54,6 +90,36 @@ describe('generateQueryFilterExpressionCode', () => {
     it('should use queryHelpers.and for && expressions', () => {
       expect(generateQF("model.id === userId && hasRole('admin')")).toBe(
         "queryHelpers.and([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin')])",
+      );
+    });
+
+    it('should flatten consecutive && into a single queryHelpers.and call', () => {
+      expect(
+        generateQF(
+          "model.id === userId && hasRole('admin') && isAuthenticated",
+        ),
+      ).toBe(
+        "queryHelpers.and([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin'), ctx.auth.isAuthenticated])",
+      );
+    });
+
+    it('should flatten consecutive || into a single queryHelpers.or call', () => {
+      expect(
+        generateQF(
+          "model.id === userId || hasRole('admin') || isAuthenticated",
+        ),
+      ).toBe(
+        "queryHelpers.or([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin'), ctx.auth.isAuthenticated])",
+      );
+    });
+
+    it('should not flatten across different operators', () => {
+      expect(
+        generateQF(
+          "model.id === userId && hasRole('admin') || isAuthenticated",
+        ),
+      ).toBe(
+        "queryHelpers.or([queryHelpers.and([(ctx.auth.userId != null ? { id: ctx.auth.userId } : false), ctx.auth.hasRole('admin')]), ctx.auth.isAuthenticated])",
       );
     });
   });

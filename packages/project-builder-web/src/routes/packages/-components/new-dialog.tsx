@@ -80,14 +80,14 @@ function getNextDevPort(
 }
 
 interface NewDialogProps {
-  children: React.ReactNode;
+  trigger: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   defaultTab?: TabValue;
 }
 
 export function NewDialog({
-  children,
+  trigger,
   open,
   onOpenChange,
   defaultTab = 'app',
@@ -203,7 +203,7 @@ export function NewDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create New</DialogTitle>

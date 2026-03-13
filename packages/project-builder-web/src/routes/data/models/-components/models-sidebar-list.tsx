@@ -46,12 +46,14 @@ export function ModelsSidebarList({
       )}
     >
       <div className="space-y-4 px-4">
-        <NewModelDialog>
-          <Button variant="secondary" className="w-full">
-            <MdAdd />
-            New Model
-          </Button>
-        </NewModelDialog>
+        <NewModelDialog
+          trigger={
+            <Button variant="secondary" className="w-full">
+              <MdAdd />
+              New Model
+            </Button>
+          }
+        />
         {models.length > 0 && (
           <div className="relative">
             <InputField
@@ -94,13 +96,16 @@ export function ModelsSidebarList({
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {sortedModels.map((model) => (
-              <NavigationMenuItemWithLink key={model.id} asChild>
-                <Link
-                  to="/data/models/edit/$key"
-                  params={{ key: modelEntityType.keyFromId(model.id) }}
-                >
-                  {model.name}
-                </Link>
+              <NavigationMenuItemWithLink
+                key={model.id}
+                render={
+                  <Link
+                    to="/data/models/edit/$key"
+                    params={{ key: modelEntityType.keyFromId(model.id) }}
+                  />
+                }
+              >
+                {model.name}
               </NavigationMenuItemWithLink>
             ))}
           </NavigationMenuList>

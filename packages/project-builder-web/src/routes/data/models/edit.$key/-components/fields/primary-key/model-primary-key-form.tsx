@@ -67,8 +67,8 @@ export function ModelPrimaryKeyForm({
         placeholder="Select fields to use as primary keys"
       />
       <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="secondary">Cancel</Button>
+        <DialogClose render={<Button variant="secondary" />}>
+          Cancel
         </DialogClose>
         <Button type="submit" form={formId}>
           Save

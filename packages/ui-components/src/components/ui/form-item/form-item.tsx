@@ -1,8 +1,5 @@
 'use client';
 
-import type { Label as LabelPrimitive } from 'radix-ui';
-
-import { Slot } from 'radix-ui';
 import * as React from 'react';
 
 import { cn } from '#src/utils/index.js';
@@ -65,9 +62,7 @@ function FormItem({
 function FormLabel({
   className,
   ...props
-}: React.ComponentProps<
-  typeof LabelPrimitive.Root
->): React.ReactElement | null {
+}: React.ComponentProps<'label'>): React.ReactElement | null {
   const { error, formItemId } = useFormField();
 
   if (props.children === null || props.children === undefined) {
@@ -85,23 +80,30 @@ function FormLabel({
   );
 }
 
+/**
+ * FormControl passes form field attributes (id, aria-describedby, aria-invalid)
+ * to its single child element via cloneElement.
+ */
 function FormControl({
+  children,
   ...props
-}: React.ComponentProps<typeof Slot.Root>): React.ReactElement {
+}: React.PropsWithChildren<Record<string, unknown>>): React.ReactElement {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
-  return (
-    <Slot.Root
-      data-slot="form-control"
-      id={formItemId}
-      aria-describedby={
-        error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId
-      }
-      aria-invalid={!!error}
-      {...props}
-    />
-  );
+  if (!React.isValidElement(children)) {
+    throw new Error('FormControl expects a single React element as a child');
+  }
+
+  return React.cloneElement(children, {
+    'data-slot': 'form-control',
+    id: formItemId,
+    'aria-describedby': error
+      ? `${formDescriptionId} ${formMessageId}`
+      : formDescriptionId,
+    'aria-invalid': !!error,
+    ...props,
+  } as Record<string, unknown>);
 }
 
 function FormDescription({

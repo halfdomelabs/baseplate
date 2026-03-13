@@ -14,7 +14,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   InputFieldController,
   MultiComboboxFieldController,
   SelectFieldController,
@@ -38,8 +37,6 @@ interface FileCategoryDialogProps {
   isNew?: boolean;
   onSave: (category: FileCategoryInput) => void;
   parentControl: Control<StoragePluginDefinitionInput>;
-  asChild?: boolean;
-  children?: React.ReactNode;
 }
 
 export function FileCategoryDialog({
@@ -49,8 +46,6 @@ export function FileCategoryDialog({
   isNew = false,
   onSave,
   parentControl,
-  asChild,
-  children,
 }: FileCategoryDialogProps): React.JSX.Element {
   const { definition, pluginContainer } = useProjectDefinition();
 
@@ -87,7 +82,6 @@ export function FileCategoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
         <form
           id={formId}

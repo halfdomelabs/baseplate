@@ -37,11 +37,7 @@ function PackagesListPage(): React.JSX.Element {
         icon={MdApps}
         header="No Apps or Packages"
         subtitle="You haven't created any apps or packages yet"
-        actions={
-          <NewDialog>
-            <Button>Create New</Button>
-          </NewDialog>
-        }
+        actions={<NewDialog trigger={<Button>Create New</Button>} />}
       />
     );
   }

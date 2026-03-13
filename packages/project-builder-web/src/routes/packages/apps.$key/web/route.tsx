@@ -29,19 +29,21 @@ function WebAppLayout(): React.JSX.Element {
   return (
     <div className="p-4">
       <NavigationTabs>
-        <NavigationTabsItem asChild>
-          <Link
-            to="/packages/apps/$key/web"
-            params={{ key }}
-            activeOptions={{ exact: true }}
-          >
-            General
-          </Link>
+        <NavigationTabsItem
+          render={
+            <Link
+              to="/packages/apps/$key/web"
+              params={{ key }}
+              activeOptions={{ exact: true }}
+            />
+          }
+        >
+          General
         </NavigationTabsItem>
-        <NavigationTabsItem asChild>
-          <Link to="/packages/apps/$key/web/admin" params={{ key }}>
-            Admin
-          </Link>
+        <NavigationTabsItem
+          render={<Link to="/packages/apps/$key/web/admin" params={{ key }} />}
+        >
+          Admin
         </NavigationTabsItem>
       </NavigationTabs>
 

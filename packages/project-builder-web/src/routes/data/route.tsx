@@ -52,11 +52,11 @@ function DataLayout(): React.JSX.Element {
         </div>
         <div className="px-4">
           <NavigationTabs className="w-full">
-            <NavigationTabsItem asChild>
-              <Link to="/data/models">Models</Link>
+            <NavigationTabsItem render={<Link to="/data/models" />}>
+              Models
             </NavigationTabsItem>
-            <NavigationTabsItem asChild>
-              <Link to="/data/enums">Enums</Link>
+            <NavigationTabsItem render={<Link to="/data/enums" />}>
+              Enums
             </NavigationTabsItem>
           </NavigationTabs>
         </div>

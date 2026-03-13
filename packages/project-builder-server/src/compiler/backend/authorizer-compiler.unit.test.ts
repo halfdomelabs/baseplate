@@ -21,6 +21,42 @@ describe('generateAuthorizerExpressionCode', () => {
         'model.authorId === ctx.auth.userId',
       );
     });
+
+    it('should transform model field !== userId', () => {
+      expect(generate('model.id !== userId')).toBe(
+        'model.id !== ctx.auth.userId',
+      );
+    });
+  });
+
+  describe('literal value comparisons', () => {
+    it('should transform model.status === string literal', () => {
+      expect(generate("model.status === 'active'")).toBe(
+        "model.status === 'active'",
+      );
+    });
+
+    it('should transform model.isPublished === boolean literal', () => {
+      expect(generate('model.isPublished === true')).toBe(
+        'model.isPublished === true',
+      );
+    });
+
+    it('should transform model.count === number literal', () => {
+      expect(generate('model.count === 42')).toBe('model.count === 42');
+    });
+
+    it('should transform model.status !== string literal', () => {
+      expect(generate("model.status !== 'draft'")).toBe(
+        "model.status !== 'draft'",
+      );
+    });
+
+    it('should transform literal on left side', () => {
+      expect(generate("'active' === model.status")).toBe(
+        "'active' === model.status",
+      );
+    });
   });
 
   describe('hasRole', () => {

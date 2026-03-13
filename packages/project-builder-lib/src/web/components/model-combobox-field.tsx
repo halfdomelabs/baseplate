@@ -63,8 +63,7 @@ function ModelComboboxField({
     <ComboboxField
       placeholder="Select a model"
       {...rest}
-      searchQuery={canCreate ? searchQuery : undefined}
-      onSearchQueryChange={setSearchQuery}
+      onInputValueChange={canCreate ? setSearchQuery : undefined}
       options={modelOptions}
       value={value}
     />

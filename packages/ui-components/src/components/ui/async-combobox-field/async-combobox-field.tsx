@@ -3,7 +3,7 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import type {
   AddOptionRequiredFields,
@@ -13,9 +13,7 @@ import type {
 
 import { useComponentStrings } from '#src/contexts/component-strings.js';
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
-import { useDebounce } from '#src/hooks/use-debounce.js';
-
-import type { ComboboxProps } from '../combobox/combobox.js';
+import { useEventCallback } from '#src/hooks/use-event-callback.js';
 
 import {
   Combobox,
@@ -23,44 +21,35 @@ import {
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
-  ComboboxLoading,
+  ComboboxList,
+  ComboboxStatus,
 } from '../combobox/combobox.js';
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 
 type AsyncOptionLoader<OptionType> = (
   searchQuery: string,
 ) => Promise<OptionType[]>;
 
 export interface AsyncComboboxFieldProps<OptionType>
-  extends
-    Omit<
-      ComboboxProps,
-      | 'value'
-      | 'onChange'
-      | 'label'
-      | 'children'
-      | 'searchQuery'
-      | 'onSearchQueryChange'
-    >,
-    Omit<SelectOptionProps<OptionType>, 'options'>,
-    FormFieldProps {
+  extends Omit<SelectOptionProps<OptionType>, 'options'>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
   loadingText?: React.ReactNode;
   errorText?: React.ReactNode;
   formatError?: (error: unknown) => string;
   loadOptions: AsyncOptionLoader<OptionType>;
-  resolveValue?: (value: string | null) => Promise<OptionType | null>;
   debounceMs?: number;
-  loadingDelay?: number;
   minSearchLength?: number;
   initialOptions?: OptionType[];
+  placeholder?: string;
+  disabled?: boolean;
+  value?: string | null;
+  onChange?: (value: string | null) => void;
 }
 
 /**
@@ -82,16 +71,13 @@ function AsyncComboboxField<OptionType>({
   errorText,
   formatError,
   loadOptions,
-  resolveValue,
   debounceMs = 300,
-  loadingDelay = 200,
   minSearchLength = 0,
   initialOptions = [],
-  ...props
+  disabled,
 }: AsyncComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const [options, setOptions] = useState<OptionType[]>(initialOptions);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -99,16 +85,31 @@ function AsyncComboboxField<OptionType>({
   const [selectedOptionCache, setSelectedOptionCache] =
     useState<OptionType | null>(null);
 
-  const debouncedSearchQuery = useDebounce(searchQuery, debounceMs);
-
   const { comboboxNoResults, comboboxLoading } = useComponentStrings();
 
-  const loadOptionsRef = useRef(loadOptions);
-  loadOptionsRef.current = loadOptions;
+  const id = useId();
+
+  // Stable callbacks that always reference the latest closure
+  const stableLoadOptions = useEventCallback(loadOptions);
+  const stableFormatError = useEventCallback(formatError);
+  const stableGetOptionValue = useEventCallback(getOptionValue);
   const initialOptionsRef = useRef(initialOptions);
   initialOptionsRef.current = initialOptions;
-  const formatErrorRef = useRef(formatError);
-  formatErrorRef.current = formatError;
+
+  // Refs for cancellation
+  const searchAbortRef = useRef<AbortController | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup on unmount
+  useEffect(
+    () => () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      searchAbortRef.current?.abort();
+    },
+    [],
+  );
 
   // Handle external value changes and try to resolve the option
   useEffect(() => {
@@ -117,97 +118,23 @@ function AsyncComboboxField<OptionType>({
       return;
     }
 
-    // Check if we already have this option cached
-    if (selectedOptionCache && getOptionValue(selectedOptionCache) === value) {
+    // Check if already cached
+    if (
+      selectedOptionCache &&
+      stableGetOptionValue(selectedOptionCache) === value
+    ) {
       return;
     }
 
-    // Try to find the option in current options
-    const optionInResults = options.find((o) => getOptionValue(o) === value);
-    if (optionInResults) {
-      setSelectedOptionCache(optionInResults);
-      return;
+    // Try to find in current options or initial options
+    const found =
+      options.find((o) => stableGetOptionValue(o) === value) ??
+      initialOptionsRef.current.find((o) => stableGetOptionValue(o) === value);
+
+    if (found) {
+      setSelectedOptionCache(found);
     }
-
-    // Try to find in initial options
-    const optionInInitial = initialOptions.find(
-      (o) => getOptionValue(o) === value,
-    );
-    if (optionInInitial) {
-      setSelectedOptionCache(optionInInitial);
-      return;
-    }
-
-    // If we have a resolveValue function, try to resolve the option
-    if (resolveValue) {
-      resolveValue(value)
-        .then((resolvedOption) => {
-          if (resolvedOption && getOptionValue(resolvedOption) === value) {
-            setSelectedOptionCache(resolvedOption);
-          }
-        })
-        .catch(() => {
-          // If resolution fails, we'll show the value as-is
-        });
-    }
-  }, [
-    value,
-    options,
-    initialOptions,
-    selectedOptionCache,
-    getOptionValue,
-    resolveValue,
-  ]);
-
-  useEffect(() => {
-    let isAborted = false;
-
-    // Skip loading if search query is shorter than minimum length
-    if (debouncedSearchQuery.length < minSearchLength) {
-      setOptions(initialOptions);
-      setLoadError(null);
-      setIsLoading(false);
-      return;
-    }
-
-    // Clear any previous error state
-    setLoadError(null);
-
-    // Set up loading timeout to prevent flashing for fast requests
-    const loadingTimeout = setTimeout(() => {
-      setIsLoading(true);
-    }, loadingDelay);
-
-    // Execute the async request
-    loadOptionsRef
-      .current(debouncedSearchQuery)
-      .then((newOptions) => {
-        if (!isAborted) {
-          setOptions(newOptions);
-        }
-      })
-      .catch((err: unknown) => {
-        if (!isAborted) {
-          const errorMessage = formatErrorRef.current
-            ? formatErrorRef.current(err)
-            : err instanceof Error
-              ? err.message
-              : 'Failed to load options';
-          setLoadError(errorMessage);
-          setOptions([]);
-        }
-      })
-      .finally(() => {
-        clearTimeout(loadingTimeout);
-        setIsLoading(false);
-      });
-
-    // Cleanup function to handle cancellation
-    return () => {
-      clearTimeout(loadingTimeout);
-      isAborted = true;
-    };
-  }, [debouncedSearchQuery, minSearchLength, loadingDelay, initialOptions]);
+  }, [value, options, stableGetOptionValue, selectedOptionCache]);
 
   const selectedOption = useMemo(() => {
     if (value === null || value === undefined) return null;
@@ -232,96 +159,135 @@ function AsyncComboboxField<OptionType>({
     }
 
     return null;
-  }, [value, selectedOptionCache, options, initialOptions, getOptionValue]);
+  }, [value, options, initialOptions, getOptionValue, selectedOptionCache]);
 
-  const selectedComboboxOption = useMemo(() => {
-    if (value === undefined) return;
+  const handleInputValueChange = useEventCallback(
+    (inputValue: string, eventDetails: { reason: string }) => {
+      // Don't re-fetch when user selects an item
+      if (eventDetails.reason === 'item-press') {
+        return;
+      }
 
-    if (selectedOption) {
-      return {
-        label: getOptionLabel(selectedOption),
-        value: getOptionValue(selectedOption),
-      };
-    }
+      // Clear previous debounce timer and abort previous request
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      searchAbortRef.current?.abort();
 
-    // Fallback: if we have a value but no option, show the value as the label
-    if (value !== null) {
-      return {
-        label: value,
-        value,
-      };
-    }
+      // Clear input: clear selection and reset to initial options
+      if (inputValue === '') {
+        onChange?.(null);
+        setSelectedOptionCache(null);
+        setOptions(initialOptionsRef.current);
+        setLoadError(null);
+        setIsLoading(false);
+        return;
+      }
 
-    return null;
-  }, [value, selectedOption, getOptionLabel, getOptionValue]);
+      // Below min search length: reset to initial options
+      if (inputValue.trim().length < minSearchLength) {
+        setOptions(initialOptionsRef.current);
+        setLoadError(null);
+        setIsLoading(false);
+        return;
+      }
 
-  const handleSearchQueryChange = (query: string): void => {
-    setSearchQuery(query);
-  };
+      // Debounce the actual fetch
+      debounceTimerRef.current = setTimeout(() => {
+        const controller = new AbortController();
+        searchAbortRef.current = controller;
 
-  const renderContent = (): React.ReactElement => {
-    if (isLoading) {
-      return (
-        <ComboboxLoading>{loadingText ?? comboboxLoading}</ComboboxLoading>
-      );
-    }
+        setIsLoading(true);
+        setLoadError(null);
 
-    if (loadError) {
-      return (
-        <div role="alert" className="p-4 text-sm text-destructive">
-          {errorText ?? loadError}
-        </div>
-      );
-    }
-
-    return (
-      <>
-        {options.map((option) => {
-          const val = getOptionValue(option);
-          const label = getOptionLabel(option);
-          return (
-            <ComboboxItem value={val} key={val} label={label}>
-              {renderItemLabel
-                ? renderItemLabel(option, { selected: val === value })
-                : label}
-            </ComboboxItem>
-          );
-        })}
-        <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
-      </>
-    );
-  };
+        stableLoadOptions(inputValue)
+          .then((newOptions) => {
+            if (!controller.signal.aborted) {
+              setOptions(newOptions);
+            }
+          })
+          .catch((err: unknown) => {
+            if (!controller.signal.aborted) {
+              const errorMessage = stableFormatError
+                ? stableFormatError(err)
+                : err instanceof Error
+                  ? err.message
+                  : 'Failed to load options';
+              setLoadError(errorMessage);
+              setOptions([]);
+            }
+          })
+          .finally(() => {
+            if (!controller.signal.aborted) {
+              setIsLoading(false);
+            }
+          });
+      }, debounceMs);
+    },
+  );
 
   return (
-    <FormItem error={error} className={className}>
-      <FormLabel>{label}</FormLabel>
+    <Field data-invalid={!!error} className={className}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Combobox
-        value={selectedComboboxOption}
-        onChange={(comboboxValue) => {
-          const selectedValue = comboboxValue.value;
-
-          // Find the full option object that was selected and cache it
-          const fullOption = options.find(
-            (o) => getOptionValue(o) === selectedValue,
-          );
-          if (fullOption) {
-            setSelectedOptionCache(fullOption);
+        value={selectedOption}
+        onValueChange={(option) => {
+          if (option) {
+            setSelectedOptionCache(option);
           }
-
-          onChange?.(selectedValue);
+          onChange?.(option ? getOptionValue(option) : null);
         }}
-        searchQuery={searchQuery}
-        onSearchQueryChange={handleSearchQueryChange}
-        {...props}
+        onInputValueChange={handleInputValueChange}
+        onOpenChangeComplete={(open) => {
+          if (!open) {
+            setOptions(initialOptionsRef.current);
+          }
+        }}
+        disabled={disabled}
+        items={options}
+        itemToStringLabel={(option: OptionType) => getOptionLabel(option)}
+        itemToStringValue={(option: OptionType) => getOptionValue(option) ?? ''}
+        filter={null}
       >
-        <FormControl>
-          <ComboboxInput placeholder={placeholder} />
-        </FormControl>
-        <ComboboxContent>{renderContent()}</ComboboxContent>
+        <ComboboxInput id={id} placeholder={placeholder} />
+        <ComboboxContent>
+          {isLoading ? (
+            <ComboboxStatus className="flex items-center justify-center p-4 text-sm text-muted-foreground">
+              {loadingText ?? comboboxLoading}
+            </ComboboxStatus>
+          ) : loadError ? (
+            <ComboboxStatus
+              role="alert"
+              className="p-4 text-sm text-destructive"
+            >
+              {errorText ?? loadError}
+            </ComboboxStatus>
+          ) : null}
+          {!isLoading && !loadError && (
+            <ComboboxEmpty className="p-4 text-sm text-muted-foreground">
+              {noResultsText ?? comboboxNoResults}
+            </ComboboxEmpty>
+          )}
+          {!isLoading && !loadError && (
+            <ComboboxList>
+              {(option: OptionType) => {
+                const val = getOptionValue(option);
+                const optionLabel = getOptionLabel(option);
+                return (
+                  <ComboboxItem value={option} key={val}>
+                    {renderItemLabel
+                      ? renderItemLabel(option, { selected: val === value })
+                      : optionLabel}
+                  </ComboboxItem>
+                );
+              }}
+            </ComboboxList>
+          )}
+        </ComboboxContent>
       </Combobox>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

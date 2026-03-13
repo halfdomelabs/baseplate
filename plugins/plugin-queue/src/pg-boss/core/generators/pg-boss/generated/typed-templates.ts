@@ -11,7 +11,12 @@ import { queuesImportsProvider } from '#src/queue/core/generators/queues/generat
 const pgBossPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {},
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
   name: 'pg-boss-plugin',
   projectExports: {},
   referencedGeneratorTemplates: { pgBossService: {} },
@@ -34,7 +39,14 @@ const pgBossService = createTsTemplateFile({
     queuesImports: queuesImportsProvider,
   },
   name: 'pg-boss-service',
-  projectExports: { createQueue: {} },
+  projectExports: {
+    cleanupOrphanedSchedules: { isTypeOnly: false },
+    createQueue: { isTypeOnly: false },
+    getScheduledJobs: { isTypeOnly: false },
+    initializePgBoss: { isTypeOnly: false },
+    shutdownPgBoss: { isTypeOnly: false },
+    startWorkers: { isTypeOnly: false },
+  },
   source: {
     path: path.join(
       import.meta.dirname,

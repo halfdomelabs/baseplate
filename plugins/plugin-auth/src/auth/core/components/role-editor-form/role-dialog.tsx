@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   InputFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,8 +25,6 @@ interface RoleDialogProps {
   role?: AuthRoleInput;
   isNew?: boolean;
   onSave: (role: AuthRoleInput) => void;
-  asChild?: boolean;
-  children?: React.ReactNode;
 }
 
 export function RoleDialog({
@@ -36,8 +33,6 @@ export function RoleDialog({
   role,
   isNew = false,
   onSave,
-  asChild,
-  children,
 }: RoleDialogProps): React.JSX.Element {
   const authRoleSchema = useDefinitionSchema(createAuthRoleSchema);
   const form = useForm({
@@ -56,7 +51,6 @@ export function RoleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
         <form
           id={formId}
