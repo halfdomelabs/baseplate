@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // @ts-nocheck
 
-import { initializeBullMQ, shutdownBullMQ } from '$bullmqService';
+import { initializeBullMQ, shutdownBullMQ, startWorkers } from '$bullmqService';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { QUEUE_REGISTRY, startWorkers } from '%queuesImports';
+import { QUEUE_REGISTRY } from '%queuesImports';
 
 /**
  * Worker script for running BullMQ queue workers.
@@ -22,9 +22,6 @@ async function main(): Promise<void> {
 
   // Initialize BullMQ
   initializeBullMQ();
-  logger.info('BullMQ initialized in worker mode', {
-    event: 'bullmq-initialized',
-  });
 
   const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
 
@@ -39,7 +36,7 @@ async function main(): Promise<void> {
   );
 
   // Start all workers
-  await startWorkers();
+  await startWorkers(QUEUE_REGISTRY);
 
   logger.info('Queue worker process started successfully', {
     event: 'queue-worker-process-started',

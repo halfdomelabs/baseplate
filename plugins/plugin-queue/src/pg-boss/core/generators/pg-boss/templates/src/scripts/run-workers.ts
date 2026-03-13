@@ -1,23 +1,17 @@
 #!/usr/bin/env node
 // @ts-nocheck
 
-import {
-  cleanupOrphanedSchedules,
-  initializePgBoss,
-  shutdownPgBoss,
-} from '$pgBossService';
+import { initializePgBoss, shutdownPgBoss, startWorkers } from '$pgBossService';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { QUEUE_REGISTRY, startWorkers } from '%queuesImports';
+import { QUEUE_REGISTRY } from '%queuesImports';
 
 /**
  * Worker script for running pg-boss queue workers.
  * This script:
  * 1. Initializes pg-boss
- * 2. Syncs scheduled jobs based on the queue registry
- * 3. Cleans up orphaned schedules
- * 4. Starts all queue workers
- * 5. Handles graceful shutdown
+ * 2. Starts all queue workers
+ * 3. Handles graceful shutdown
  */
 
 /**
@@ -28,9 +22,6 @@ async function main(): Promise<void> {
 
   // Initialize pg-boss
   await initializePgBoss();
-  logger.info('pg-boss initialized in worker mode', {
-    event: 'pg-boss-initialized',
-  });
 
   const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
 
@@ -44,11 +35,8 @@ async function main(): Promise<void> {
     'Active queues from registry',
   );
 
-  // Cleanup orphaned schedules (from removed queues)
-  await cleanupOrphanedSchedules(activeQueueNames);
-
-  // Start all workers
-  await startWorkers();
+  // Start all workers (also cleans up orphaned schedules)
+  await startWorkers(QUEUE_REGISTRY);
 
   logger.info('Queue worker process started successfully', {
     event: 'queue-worker-process-started',

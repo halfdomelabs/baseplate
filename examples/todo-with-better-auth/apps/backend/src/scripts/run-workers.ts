@@ -4,10 +4,10 @@ import { QUEUE_REGISTRY } from '../constants/queues.constants.js';
 import {
   initializeBullMQ,
   shutdownBullMQ,
+  startWorkers,
 } from '../services/bullmq.service.js';
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
-import { startWorkers } from '../services/workers.service.js';
 
 /**
  * Worker script for running BullMQ queue workers.
@@ -25,9 +25,6 @@ async function main(): Promise<void> {
 
   // Initialize BullMQ
   initializeBullMQ();
-  logger.info('BullMQ initialized in worker mode', {
-    event: 'bullmq-initialized',
-  });
 
   const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
 
@@ -42,7 +39,7 @@ async function main(): Promise<void> {
   );
 
   // Start all workers
-  await startWorkers();
+  await startWorkers(QUEUE_REGISTRY);
 
   logger.info('Queue worker process started successfully', {
     event: 'queue-worker-process-started',

@@ -2,10 +2,8 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface QueueCoreQueuesPaths {
-  embeddedWorkersPlugin: string;
   queueRegistry: string;
   queueTypes: string;
-  workersService: string;
 }
 
 const queueCoreQueuesPaths = createProviderType<QueueCoreQueuesPaths>(
@@ -21,10 +19,8 @@ const queueCoreQueuesPathsTask = createGeneratorTask({
     return {
       providers: {
         queueCoreQueuesPaths: {
-          embeddedWorkersPlugin: `${srcRoot}/plugins/embedded-workers.plugin.ts`,
           queueRegistry: `${srcRoot}/constants/queues.constants.ts`,
           queueTypes: `${srcRoot}/types/queue.types.ts`,
-          workersService: `${srcRoot}/services/workers.service.ts`,
         },
       },
     };

@@ -1,34 +1,6 @@
 {
   "name": "queue/core/queues",
   "templates": {
-    "embedded-workers-plugin": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        },
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
-        "loggerServiceImportsProvider": {
-          "importName": "loggerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/plugins/embedded-workers.plugin.ts",
-      "projectExports": {
-        "embeddedWorkersPlugin": {
-          "isTypeOnly": false,
-          "name": "embeddedWorkersPlugin"
-        }
-      },
-      "referencedGeneratorTemplates": ["workers-service"],
-      "sourceFile": "src/plugins/embedded-workers.plugin.ts",
-      "variables": { "TPL_IMPLEMENTATION_PLUGIN_NAME": {} }
-    },
     "queue-registry": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -54,23 +26,6 @@
         "RepeatableConfig": { "isTypeOnly": true }
       },
       "sourceFile": "src/types/queue.types.ts",
-      "variables": {}
-    },
-    "workers-service": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/services/workers.service.ts",
-      "projectExports": {
-        "startWorkers": { "isTypeOnly": false, "name": "startWorkers" }
-      },
-      "referencedGeneratorTemplates": ["queue-registry"],
-      "sourceFile": "src/services/workers.service.ts",
       "variables": {}
     }
   }

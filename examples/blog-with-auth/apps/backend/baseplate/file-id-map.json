@@ -128,10 +128,8 @@
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:pg-boss-plugin": "src/plugins/pg-boss.plugin.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:pg-boss-service": "src/services/pg-boss.service.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:run-workers": "src/scripts/run-workers.ts",
-  "@baseplate-dev/plugin-queue#queue/core/queues:embedded-workers-plugin": "src/plugins/embedded-workers.plugin.ts",
   "@baseplate-dev/plugin-queue#queue/core/queues:queue-registry": "src/constants/queues.constants.ts",
   "@baseplate-dev/plugin-queue#queue/core/queues:queue-types": "src/types/queue.types.ts",
-  "@baseplate-dev/plugin-queue#queue/core/queues:workers-service": "src/services/workers.service.ts",
   "@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit:rate-limiter-service": "src/services/rate-limiter.service.ts",
   "@baseplate-dev/plugin-rate-limit#rate-limit/core/rate-limit:rate-limiter-types": "src/types/rate-limiter.types.ts"
 }

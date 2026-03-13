@@ -48,10 +48,5 @@
     "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
     "instanceData": {},
     "template": "service"
-  },
-  "workers.service.ts": {
-    "generator": "@baseplate-dev/plugin-queue#queue/core/queues",
-    "instanceData": {},
-    "template": "workers-service"
   }
 }

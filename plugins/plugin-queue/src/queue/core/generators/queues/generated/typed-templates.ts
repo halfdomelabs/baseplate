@@ -1,29 +1,5 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
-import {
-  configServiceImportsProvider,
-  errorHandlerServiceImportsProvider,
-  loggerServiceImportsProvider,
-} from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
-
-const embeddedWorkersPlugin = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    configServiceImports: configServiceImportsProvider,
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    loggerServiceImports: loggerServiceImportsProvider,
-  },
-  name: 'embedded-workers-plugin',
-  projectExports: { embeddedWorkersPlugin: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { workersService: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/plugins/embedded-workers.plugin.ts',
-    ),
-  },
-  variables: { TPL_IMPLEMENTATION_PLUGIN_NAME: {} },
-});
 
 const queueRegistry = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -60,26 +36,4 @@ const queueTypes = createTsTemplateFile({
   variables: {},
 });
 
-const workersService = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-  },
-  name: 'workers-service',
-  projectExports: { startWorkers: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { queueRegistry: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/services/workers.service.ts',
-    ),
-  },
-  variables: {},
-});
-
-export const QUEUE_CORE_QUEUES_TEMPLATES = {
-  embeddedWorkersPlugin,
-  queueRegistry,
-  queueTypes,
-  workersService,
-};
+export const QUEUE_CORE_QUEUES_TEMPLATES = { queueRegistry, queueTypes };

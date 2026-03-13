@@ -33,10 +33,5 @@
     "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
     "instanceData": {},
     "template": "sentry"
-  },
-  "workers.service.ts": {
-    "generator": "@baseplate-dev/plugin-queue#queue/core/queues",
-    "instanceData": {},
-    "template": "workers-service"
   }
 }
