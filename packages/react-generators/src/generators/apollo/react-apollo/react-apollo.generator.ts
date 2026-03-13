@@ -175,8 +175,8 @@ export const reactApolloGenerator = createGenerator({
       ]),
     }),
     nodeScripts: createNodeTask((node) => {
-      node.scripts.set('gql:codegen', 'graphql-codegen');
-      node.scripts.set('gql:codegen:watch', 'graphql-codegen --watch');
+      node.scripts.set('gql:generate', 'graphql-codegen');
+      node.scripts.set('gql:watch', 'graphql-codegen --watch');
     }),
     reactTypescript: createProviderTask(
       reactTypescriptProvider,

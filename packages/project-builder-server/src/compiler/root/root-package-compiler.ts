@@ -76,8 +76,9 @@ export class RootPackageCompiler extends PackageCompiler {
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
     const mergedTasks = {
-      dev: uniq(tasks.flatMap((task) => task.dev)),
       build: uniq(tasks.flatMap((task) => task.build)),
+      check: uniq(tasks.flatMap((task) => task.check)),
+      dev: uniq(tasks.flatMap((task) => task.dev)),
       watch: uniq(tasks.flatMap((task) => task.watch)),
     };
     const turboTasks = [
@@ -107,8 +108,9 @@ export class RootPackageCompiler extends PackageCompiler {
       { name: 'prettier:write:root', cache: false },
     ];
 
-    const devTasks = mergedTasks.dev.join(' ');
     const buildTasks = mergedTasks.build.join(' ');
+    const checkTasks = mergedTasks.check.join(' ');
+    const devTasks = mergedTasks.dev.join(' ');
     const watchTasks = mergedTasks.watch.join(' ');
 
     const { cliVersion } = this.definitionContainer.parserContext;
@@ -127,6 +129,9 @@ export class RootPackageCompiler extends PackageCompiler {
               build: `turbo run ${buildTasks}`,
               'build:affected': `turbo run ${buildTasks} --affected`,
             }
+          : {}),
+        ...(checkTasks.length > 0
+          ? { check: `turbo run ${checkTasks} --afected --continue` }
           : {}),
         typecheck: `turbo run typecheck`,
         lint: `turbo run lint`,

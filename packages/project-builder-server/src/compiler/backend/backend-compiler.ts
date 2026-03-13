@@ -56,6 +56,7 @@ export class BackendPackageCompiler extends AppCompiler<BackendAppConfig> {
   getTasks(): PackageTasks {
     return {
       build: ['build'],
+      check: ['lint', 'typecheck', 'test', 'prettier:check'],
       dev: ['dev'],
       watch: [],
     };

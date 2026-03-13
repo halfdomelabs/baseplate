@@ -11,8 +11,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "gql:codegen": "graphql-codegen",
-    "gql:codegen:watch": "graphql-codegen --watch",
+    "gql:generate": "graphql-codegen",
+    "gql:watch": "graphql-codegen --watch",
     "preinstall": "npx only-allow pnpm",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

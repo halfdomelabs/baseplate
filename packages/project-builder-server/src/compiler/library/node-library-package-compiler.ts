@@ -46,6 +46,7 @@ class NodeLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> 
   getTasks(): PackageTasks {
     return {
       build: ['build'],
+      check: ['lint', 'typecheck', 'test', 'prettier:check'],
       dev: ['watch'],
       watch: ['watch'],
     };

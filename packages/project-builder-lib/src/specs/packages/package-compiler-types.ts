@@ -26,12 +26,14 @@ export interface PackageEntry {
  */
 export interface PackageTasks {
   build: string[];
+  check: string[];
   dev: string[];
   watch: string[];
 }
 
 export interface PackageCompilerTasks {
   build: string[];
+  check: string[];
   dev: string[];
   watch: string[];
 }
@@ -79,11 +81,12 @@ export abstract class PackageCompiler {
   /**
    * Get the tasks for a package used in turbo configuration
    *
-   * @returns Object with build, dev, and watch tasks
+   * @returns Object with build, check, dev, and watch tasks
    */
   getTasks(): PackageTasks {
     return {
       build: [],
+      check: [],
       dev: [],
       watch: [],
     };

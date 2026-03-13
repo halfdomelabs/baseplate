@@ -8,6 +8,7 @@
       "persistent": false
     },
     "dev": { "cache": false, "persistent": true },
+    "gql:watch": { "cache": false, "persistent": true },
     "lint": { "dependsOn": ["^build"] },
     "prettier:check": {},
     "prettier:check:root": {},
