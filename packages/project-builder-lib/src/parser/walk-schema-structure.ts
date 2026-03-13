@@ -7,17 +7,14 @@ import { getSchemaChildren } from './schema-structure.js';
 // ---------------------------------------------------------------------------
 
 /**
- * Represents a single deterministic step in navigating from a parent entity
- * (or definition root) to a child entity array.
+ * Represents a single step in navigating through a schema structure.
  *
- * Only deterministic navigation steps are represented:
  * - `object-key`: navigate into an object property
  * - `tuple-index`: navigate into a specific tuple position
  * - `discriminated-union-array`: enter an array and pick the unique element
  *   matching a discriminator value
- *
- * Non-deterministic structures (plain arrays, records) are not represented
- * in the path — the walker descends into them without adding path elements.
+ * - `array`: descend into a plain array's element schema (non-deterministic)
+ * - `record`: descend into a record's value schema (non-deterministic)
  */
 export type SchemaPathElement =
   | { type: 'object-key'; key: string }
@@ -26,7 +23,9 @@ export type SchemaPathElement =
       type: 'discriminated-union-array';
       discriminatorKey: string;
       value: string;
-    };
+    }
+  | { type: 'array' }
+  | { type: 'record' };
 
 // ---------------------------------------------------------------------------
 // Visitor types
@@ -64,12 +63,13 @@ export interface SchemaStructureVisitor {
  * at every schema node.
  *
  * Unlike `walkDataWithSchema`, this operates on the schema alone.
- * Only deterministic navigation steps produce path elements:
- * - Object keys and tuple indices add path elements
- * - Arrays of discriminated unions add `discriminated-union-array` elements
- *   (one per branch)
+ * Every structural descent produces a path element:
+ * - Object keys → `object-key`
+ * - Tuple indices → `tuple-index`
+ * - Arrays of discriminated unions → `discriminated-union-array` (one per branch)
+ * - Plain arrays → `array`
+ * - Records → `record`
  * - Discriminated unions on objects are transparent (no path element)
- * - Plain arrays and records are descended into without path elements
  *
  * Uses a `Set<z.ZodType>` circular-reference guard with delete-on-backtrack
  * so the same schema can appear at different paths.
@@ -150,8 +150,13 @@ function walkNode(
           visited,
         );
       } else {
-        // Plain array — descend without adding a path element
-        walkNode(children.elementSchema, path, visitors, visited);
+        // Plain array — descend with an array path element
+        walkNode(
+          children.elementSchema,
+          [...path, { type: 'array' }],
+          visitors,
+          visited,
+        );
       }
       break;
     }
@@ -182,8 +187,13 @@ function walkNode(
     }
 
     case 'record': {
-      // Non-deterministic — walk without path element
-      walkNode(children.valueSchema, path, visitors, visited);
+      // Record — descend with a record path element
+      walkNode(
+        children.valueSchema,
+        [...path, { type: 'record' }],
+        visitors,
+        visited,
+      );
       break;
     }
 

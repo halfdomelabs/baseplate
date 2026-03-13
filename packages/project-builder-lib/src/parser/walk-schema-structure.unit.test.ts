@@ -89,19 +89,17 @@ describe('walkSchemaStructure — simple schemas', () => {
 // ---------------------------------------------------------------------------
 
 describe('walkSchemaStructure — arrays', () => {
-  it('walks plain array elements without adding a path element', () => {
+  it('walks plain array elements with an array path element', () => {
     const schema = z.object({ tags: z.array(z.string()) });
     const visitor = makeRecordingVisitor();
     walkSchemaStructure(schema, [visitor]);
 
-    // The string inside the array should have the same path as the array field
-    // (no array marker in path — non-deterministic)
     expect(visitor.calls).toContainEqual({
       path: [{ type: 'object-key', key: 'tags' }],
       type: 'array',
     });
     expect(visitor.calls).toContainEqual({
-      path: [{ type: 'object-key', key: 'tags' }],
+      path: [{ type: 'object-key', key: 'tags' }, { type: 'array' }],
       type: 'string',
     });
   });
@@ -268,20 +266,19 @@ describe('walkSchemaStructure — tuples', () => {
 // ---------------------------------------------------------------------------
 
 describe('walkSchemaStructure — records', () => {
-  it('walks record values without a path element', () => {
+  it('walks record values with a record path element', () => {
     const schema = z.object({
       data: z.record(z.string(), z.number()),
     });
     const visitor = makeRecordingVisitor();
     walkSchemaStructure(schema, [visitor]);
 
-    // Record value schema visited at the same path as the record field
     expect(visitor.calls).toContainEqual({
       path: [{ type: 'object-key', key: 'data' }],
       type: 'record',
     });
     expect(visitor.calls).toContainEqual({
-      path: [{ type: 'object-key', key: 'data' }],
+      path: [{ type: 'object-key', key: 'data' }, { type: 'record' }],
       type: 'number',
     });
   });
@@ -436,13 +433,10 @@ describe('walkSchemaStructure — entity detection via collectEntityMetadata', (
 
     const childMeta = map.get('du-child');
     expect(childMeta).toBeDefined();
-    // Child is inside branch 'a' of the discriminated union array
+    // Child is inside branch 'a' — the leading discriminated-union-array
+    // element is stripped because it describes the parent's array branch,
+    // not the path from the parent entity to the child.
     expect(childMeta?.relativePath).toEqual([
-      {
-        type: 'discriminated-union-array',
-        discriminatorKey: 'type',
-        value: 'a',
-      },
       { type: 'object-key', key: 'items' },
     ]);
     expect(childMeta?.parentEntityTypeName).toBe('du-parent');

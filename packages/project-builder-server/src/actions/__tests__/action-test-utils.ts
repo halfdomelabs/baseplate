@@ -2,11 +2,15 @@ import type {
   ProjectDefinitionInput,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
+import type z from 'zod';
 
 import { createTestProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib/testing';
 import { createConsoleLogger } from '@baseplate-dev/sync';
 
-import type { ServiceActionContext } from '#src/actions/types.js';
+import type {
+  ServiceAction,
+  ServiceActionContext,
+} from '#src/actions/types.js';
 
 import type { EntityServiceContextResult } from '../definition/load-entity-service-context.js';
 
@@ -57,4 +61,21 @@ export function createTestEntityServiceContext(
   const container = createTestProjectDefinitionContainer(input);
   const entityContext = container.toEntityServiceContext();
   return { entityContext, container, parserContext: container.parserContext };
+}
+
+/**
+ * Invokes a service action for testing, validating input/output schemas
+ * but skipping CLI output formatting.
+ */
+export async function invokeServiceActionForTest<
+  TInputType extends z.ZodType,
+  TOutputType extends z.ZodType,
+>(
+  action: ServiceAction<TInputType, TOutputType>,
+  input: z.input<TInputType>,
+  context: ServiceActionContext,
+): Promise<z.output<TOutputType>> {
+  const parsedInput = action.inputSchema.parse(input);
+  const result = await action.handler(parsedInput, context);
+  return action.outputSchema.parse(result);
 }
