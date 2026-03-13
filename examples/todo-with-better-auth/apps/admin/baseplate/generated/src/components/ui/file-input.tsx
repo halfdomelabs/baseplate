@@ -7,8 +7,7 @@ import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
 import type { FragmentOf } from '@src/gql/graphql';
 
-import { readFragment } from '@src/gql/fragment-masking';
-import { graphql } from '@src/gql/gql';
+import { graphql, readFragment } from '@src/gql';
 import { useUpload } from '@src/hooks/use-upload';
 import { formatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';

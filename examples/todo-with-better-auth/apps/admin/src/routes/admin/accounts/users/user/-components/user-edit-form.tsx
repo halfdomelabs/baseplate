@@ -4,15 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import type { FragmentType } from '@src/gql/fragment-masking';
+import type { FragmentType } from '@src/gql';
 
 import { EmbeddedListFieldController } from '@src/components/admin/embedded-list-field';
 import { EmbeddedObjectFieldController } from '@src/components/admin/embedded-object-field';
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
-import { readFragment } from '@src/gql/fragment-masking';
-import { graphql } from '@src/gql/gql';
+import { graphql, readFragment } from '@src/gql';
 
 import type { UserFormData } from '../-schemas/user-schema';
 

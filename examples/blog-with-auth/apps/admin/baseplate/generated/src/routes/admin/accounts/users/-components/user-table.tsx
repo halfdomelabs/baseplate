@@ -13,7 +13,7 @@ import {
 } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentType } from '@src/gql/fragment-masking';
+import type { FragmentType } from '@src/gql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Badge } from '@src/components/ui/badge';
@@ -32,8 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { readFragment } from '@src/gql/fragment-masking';
-import { graphql } from '@src/gql/gql';
+import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
@@ -44,7 +43,7 @@ import { PasswordResetDialog } from './password-reset-dialog';
 import { RoleManagerDialog } from './role-manager-dialog';
 
 /* HOISTED:delete-action-mutation:START */
-const userListPageDeleteUserMutation = graphql(`
+export const userListPageDeleteUserMutation = graphql(`
   mutation UserListPageDeleteUser($input: DeleteUserInput!) {
     deleteUser(input: $input) {
       user {

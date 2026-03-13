@@ -4,7 +4,7 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
@@ -21,7 +21,7 @@ import {
 /* TPL_UPDATE_MUTATION_VARIABLE=todoListEditPageUpdateMutation */
 
 /* TPL_EDIT_QUERY:START */
-const todoListEditPageQuery = graphql(`
+export const todoListEditPageQuery = graphql(`
   query TodoListEditPage($id: Uuid!) {
     todoList(id: $id) {
       id
@@ -33,7 +33,7 @@ const todoListEditPageQuery = graphql(`
 /* TPL_EDIT_QUERY:END */
 
 /* TPL_UPDATE_MUTATION:START */
-const todoListEditPageUpdateMutation = graphql(`
+export const todoListEditPageUpdateMutation = graphql(`
   mutation TodoListEditPageUpdate($input: UpdateTodoListInput!) {
     updateTodoList(input: $input) {
       todoList {

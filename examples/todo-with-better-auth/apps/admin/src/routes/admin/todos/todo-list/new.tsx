@@ -4,7 +4,7 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
@@ -19,7 +19,7 @@ import {
 /* TPL_CREATE_MUTATION_FIELD_NAME=createTodoList */
 
 /* TPL_CREATE_MUTATION:START */
-const todoListCreatePageCreateMutation = graphql(`
+export const todoListCreatePageCreateMutation = graphql(`
   mutation TodoListCreatePageCreate($input: CreateTodoListInput!) {
     createTodoList(input: $input) {
       todoList {

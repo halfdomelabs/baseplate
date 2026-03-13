@@ -5,14 +5,14 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 
 import { UserTable } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const userListPageQuery = graphql(`
+export const userListPageQuery = graphql(`
   query UserListPage {
     users {
       ...UserTable_items

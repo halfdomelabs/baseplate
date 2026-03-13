@@ -5,14 +5,14 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 
 import { TodoListTable } from './-components/todo-list-table';
 
 /* TPL_COMPONENT_NAME=TodoListListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const todoListListPageQuery = graphql(`
+export const todoListListPageQuery = graphql(`
   query TodoListListPage {
     todoLists {
       ...TodoListTable_items

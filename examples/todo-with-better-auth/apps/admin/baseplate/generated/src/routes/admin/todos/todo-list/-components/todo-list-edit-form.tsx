@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import type { FragmentType } from '@src/gql/fragment-masking';
+import type { FragmentType } from '@src/gql';
 
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
@@ -13,8 +13,7 @@ import { DateTimePickerFieldController } from '@src/components/ui/date-time-pick
 import { FileInputFieldController } from '@src/components/ui/file-input-field';
 import { InputFieldController } from '@src/components/ui/input-field';
 import { SelectFieldController } from '@src/components/ui/select-field';
-import { readFragment } from '@src/gql/fragment-masking';
-import { graphql } from '@src/gql/gql';
+import { graphql, readFragment } from '@src/gql';
 
 import type { TodoListFormData } from '../-schemas/todo-list-schema';
 

@@ -44,31 +44,6 @@
       "sourceFile": "package/codegen.ts",
       "variables": { "TPL_BACKEND_SCHEMA_PATH": {}, "TPL_SCALARS": {} }
     },
-    "gql-fragment-masking": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/gql/fragment-masking.ts",
-      "projectExports": {
-        "FragmentType": { "isTypeOnly": true },
-        "readFragment": {}
-      },
-      "projectExportsOnly": true,
-      "sourceFile": "src/gql/fragment-masking.ts",
-      "variables": {}
-    },
-    "gql-gql": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/gql/gql.ts",
-      "projectExports": { "graphql": {} },
-      "projectExportsOnly": true,
-      "sourceFile": "src/gql/gql.ts",
-      "variables": {}
-    },
     "gql-graphql": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -78,6 +53,21 @@
       "projectExports": { "*": {} },
       "projectExportsOnly": true,
       "sourceFile": "src/gql/graphql.ts",
+      "variables": {}
+    },
+    "gql-index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/gql/index.ts",
+      "projectExports": {
+        "FragmentType": { "isTypeOnly": true },
+        "graphql": {},
+        "readFragment": {}
+      },
+      "projectExportsOnly": true,
+      "sourceFile": "src/gql/index.ts",
       "variables": {}
     },
     "graphql-config": {

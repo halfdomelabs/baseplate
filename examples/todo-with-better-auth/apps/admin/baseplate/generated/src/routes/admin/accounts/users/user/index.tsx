@@ -3,14 +3,14 @@ import type { ReactElement } from 'react';
 import { useReadQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 
 import { UserTable } from './-components/user-table';
 
 /* TPL_COMPONENT_NAME=UserListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const userListPageQuery = graphql(`
+export const userListPageQuery = graphql(`
   query UserListPage {
     users {
       ...UserTable_items

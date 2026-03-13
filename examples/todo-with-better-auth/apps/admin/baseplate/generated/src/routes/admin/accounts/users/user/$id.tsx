@@ -4,7 +4,7 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/gql/gql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
@@ -18,7 +18,7 @@ import { UserEditForm } from './-components/user-edit-form';
 /* TPL_UPDATE_MUTATION_VARIABLE=userEditPageUpdateMutation */
 
 /* TPL_EDIT_QUERY:START */
-const userEditPageQuery = graphql(`
+export const userEditPageQuery = graphql(`
   query UserEditPage($id: Uuid!) {
     user(id: $id) {
       id
@@ -30,7 +30,7 @@ const userEditPageQuery = graphql(`
 /* TPL_EDIT_QUERY:END */
 
 /* TPL_UPDATE_MUTATION:START */
-const userEditPageUpdateMutation = graphql(`
+export const userEditPageUpdateMutation = graphql(`
   mutation UserEditPageUpdate($input: UpdateUserInput!) {
     updateUser(input: $input) {
       user {

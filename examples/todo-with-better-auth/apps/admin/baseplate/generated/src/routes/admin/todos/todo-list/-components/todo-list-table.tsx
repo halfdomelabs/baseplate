@@ -6,7 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentType } from '@src/gql/fragment-masking';
+import type { FragmentType } from '@src/gql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Button } from '@src/components/ui/button';
@@ -24,13 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { readFragment } from '@src/gql/fragment-masking';
-import { graphql } from '@src/gql/gql';
+import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 /* HOISTED:delete-action-mutation:START */
-const todoListListPageDeleteTodoListMutation = graphql(`
+export const todoListListPageDeleteTodoListMutation = graphql(`
   mutation TodoListListPageDeleteTodoList($input: DeleteTodoListInput!) {
     deleteTodoList(input: $input) {
       todoList {

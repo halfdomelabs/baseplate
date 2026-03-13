@@ -5,9 +5,8 @@ export interface ApolloReactApolloPaths {
   appApolloProvider: string;
   cache: string;
   codegen: string;
-  gqlFragmentMasking: string;
-  gqlGql: string;
   gqlGraphql: string;
+  gqlIndex: string;
   graphqlConfig: string;
   service: string;
 }
@@ -29,9 +28,8 @@ const apolloReactApolloPathsTask = createGeneratorTask({
           appApolloProvider: `${srcRoot}/app/app-apollo-provider.tsx`,
           cache: `${srcRoot}/services/apollo/cache.ts`,
           codegen: `${packageRoot}/codegen.ts`,
-          gqlFragmentMasking: `${srcRoot}/gql/fragment-masking.ts`,
-          gqlGql: `${srcRoot}/gql/gql.ts`,
           gqlGraphql: `${srcRoot}/gql/graphql.ts`,
+          gqlIndex: `${srcRoot}/gql/index.ts`,
           graphqlConfig: `${packageRoot}/graphql.config.ts`,
           service: `${srcRoot}/services/apollo/index.ts`,
         },

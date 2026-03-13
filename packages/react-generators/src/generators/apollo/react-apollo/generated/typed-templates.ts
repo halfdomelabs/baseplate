@@ -46,34 +46,27 @@ const codegen = createTsTemplateFile({
   variables: { TPL_BACKEND_SCHEMA_PATH: {}, TPL_SCALARS: {} },
 });
 
-const gqlFragmentMasking = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'gql-fragment-masking',
-  projectExports: { FragmentType: { isTypeOnly: true }, readFragment: {} },
-  projectExportsOnly: true,
-  source: { contents: '' },
-  variables: {},
-});
-
-const gqlGql = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'gql-gql',
-  projectExports: { graphql: {} },
-  projectExportsOnly: true,
-  source: { contents: '' },
-  variables: {},
-});
-
 const gqlGraphql = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {},
   name: 'gql-graphql',
   projectExports: { '*': {} },
+  projectExportsOnly: true,
+  source: { contents: '' },
+  variables: {},
+});
+
+const gqlIndex = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'gql-index',
+  projectExports: {
+    FragmentType: { isTypeOnly: true },
+    graphql: {},
+    readFragment: {},
+  },
   projectExportsOnly: true,
   source: { contents: '' },
   variables: {},
@@ -113,9 +106,8 @@ export const mainGroup = {
   appApolloProvider,
   cache,
   codegen,
-  gqlFragmentMasking,
-  gqlGql,
   gqlGraphql,
+  gqlIndex,
   graphqlConfig,
   service,
 };

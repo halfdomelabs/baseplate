@@ -44,9 +44,9 @@ const apolloReactApolloImportsTask = createGeneratorTask({
       providers: {
         graphqlImports: createTsImportMap(graphqlImportsSchema, {
           '*': paths.gqlGraphql,
-          FragmentType: paths.gqlFragmentMasking,
-          graphql: paths.gqlGql,
-          readFragment: paths.gqlFragmentMasking,
+          FragmentType: paths.gqlIndex,
+          graphql: paths.gqlIndex,
+          readFragment: paths.gqlIndex,
         }),
         reactApolloImports: createTsImportMap(reactApolloImportsSchema, {
           createApolloCache: paths.cache,
