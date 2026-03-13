@@ -46,6 +46,7 @@ export const REACT_PACKAGES = {
   '@graphql-codegen/client-preset': '5.2.4',
   '@graphql-typed-document-node/core': '3.2.0',
   '@graphql-eslint/eslint-plugin': '4.4.0',
+  '@parcel/watcher': '2.5.6',
 
   // Utils
   nanoid: '5.1.6',

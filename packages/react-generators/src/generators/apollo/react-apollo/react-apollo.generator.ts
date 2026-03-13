@@ -172,6 +172,7 @@ export const reactApolloGenerator = createGenerator({
       dev: extractPackageVersions(REACT_PACKAGES, [
         '@graphql-codegen/cli',
         '@graphql-codegen/client-preset',
+        '@parcel/watcher',
       ]),
     }),
     nodeScripts: createNodeTask((node) => {

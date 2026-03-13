@@ -26,7 +26,7 @@
     "prettier:write": "prettier -w -l .",
     "test": "vitest run",
     "typecheck": "tsc -b --noEmit",
-    "watch": "tsc -p tsconfig.build.json --watch"
+    "watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@react-email/components": "1.0.3",

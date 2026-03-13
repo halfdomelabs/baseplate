@@ -67,7 +67,10 @@ export const nodeLibraryGenerator = createGenerator({
       run({ node }) {
         // Add build script using tsc
         node.scripts.set('build', 'tsc -p tsconfig.build.json');
-        node.scripts.set('watch', 'tsc -p tsconfig.build.json --watch');
+        node.scripts.set(
+          'watch',
+          'tsc -p tsconfig.build.json --watch --preserveWatchOutput',
+        );
         node.scripts.set('clean', 'rm -rf dist');
 
         // Configure package exports
