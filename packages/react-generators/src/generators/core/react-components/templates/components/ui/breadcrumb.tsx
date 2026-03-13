@@ -3,13 +3,22 @@
 import type * as React from 'react';
 
 import { cn } from '$cn';
-import { Slot } from 'radix-ui';
+import { mergeProps } from '@base-ui/react/merge-props';
+import { useRender } from '@base-ui/react/use-render';
 import { MdChevronRight, MdMoreHoriz } from 'react-icons/md';
 
 function Breadcrumb({
+  className,
   ...props
 }: React.ComponentProps<'nav'>): React.ReactElement {
-  return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
+  return (
+    <nav
+      aria-label="breadcrumb"
+      data-slot="breadcrumb"
+      className={cn(className)}
+      {...props}
+    />
+  );
 }
 
 function BreadcrumbList({
@@ -20,7 +29,7 @@ function BreadcrumbList({
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        'flex flex-wrap items-center gap-1.5 text-sm break-words text-muted-foreground sm:gap-2.5',
+        'flex flex-wrap items-center gap-1.5 text-sm wrap-break-word text-muted-foreground',
         className,
       )}
       {...props}
@@ -35,28 +44,32 @@ function BreadcrumbItem({
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn('inline-flex items-center gap-1.5', className)}
+      className={cn('inline-flex items-center gap-1', className)}
       {...props}
     />
   );
 }
 
 function BreadcrumbLink({
-  asChild,
   className,
+  render,
+  children,
   ...props
-}: React.ComponentProps<'a'> & {
-  asChild?: boolean;
-}): React.ReactElement {
-  const Comp = asChild ? Slot.Root : 'a';
-
-  return (
-    <Comp
-      data-slot="breadcrumb-link"
-      className={cn('transition-colors hover:text-foreground', className)}
-      {...props}
-    />
-  );
+}: useRender.ComponentProps<'a'>): React.ReactElement {
+  return useRender({
+    defaultTagName: 'a',
+    props: mergeProps<'a'>(
+      {
+        className: cn('transition-colors hover:text-foreground', className),
+        children,
+      },
+      props,
+    ),
+    render,
+    state: {
+      slot: 'breadcrumb-link',
+    },
+  });
 }
 
 function BreadcrumbPage({
@@ -102,10 +115,13 @@ function BreadcrumbEllipsis({
       data-slot="breadcrumb-ellipsis"
       role="presentation"
       aria-hidden="true"
-      className={cn('flex size-9 items-center justify-center', className)}
+      className={cn(
+        'flex size-5 items-center justify-center [&>svg]:size-4',
+        className,
+      )}
       {...props}
     >
-      <MdMoreHoriz className="size-4" />
+      <MdMoreHoriz />
       <span className="sr-only">More</span>
     </span>
   );

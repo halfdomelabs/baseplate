@@ -11,6 +11,5 @@ export * from './pothos-prisma-object/index.js';
 export * from './pothos-prisma-primary-key/index.js';
 export * from './pothos-prisma/index.js';
 export * from './pothos-scalar/index.js';
-export * from './pothos-sentry/index.js';
 export * from './pothos-types-file/index.js';
 export * from './pothos/index.js';

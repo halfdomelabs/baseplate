@@ -9,7 +9,6 @@ export * from './fastify-graceful-shutdown/index.js';
 export * from './fastify-health-check/index.js';
 export * from './fastify-redis/index.js';
 export * from './fastify-scripts/index.js';
-export * from './fastify-sentry/index.js';
 export * from './fastify-server/index.js';
 export * from './fastify/index.js';
 export * from './logger-service/index.js';

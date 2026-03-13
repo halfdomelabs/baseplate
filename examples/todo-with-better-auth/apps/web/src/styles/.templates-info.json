@@ -8,10 +8,5 @@
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "styles-input"
-  },
-  "select.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-components",
-    "instanceData": {},
-    "template": "styles-select"
   }
 }

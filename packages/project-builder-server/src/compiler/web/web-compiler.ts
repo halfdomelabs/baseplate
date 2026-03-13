@@ -20,13 +20,11 @@ import {
   adminLayoutGenerator,
   apolloErrorGenerator,
   apolloErrorLinkGenerator,
-  apolloSentryGenerator,
   composeReactGenerators,
   reactApolloGenerator,
   reactComponentsGenerator,
   reactRouterGenerator,
   reactRoutesGenerator,
-  reactSentryGenerator,
   reactTailwindGenerator,
 } from '@baseplate-dev/react-generators';
 import { safeMerge } from '@baseplate-dev/utils';
@@ -148,14 +146,12 @@ function buildReact(
         }),
         reactComponents: reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({}),
-        reactSentry: reactSentryGenerator({}),
         reactApollo: reactApolloGenerator({
           devApiEndpoint: '/api/graphql',
           schemaLocation: `${backendRelativePath}/schema.graphql`,
           enableSubscriptions: appConfig.enableSubscriptions,
           children: {
             apolloErrorLink: apolloErrorLinkGenerator({}),
-            apolloSentry: apolloSentryGenerator({}),
           },
         }),
         apolloError: apolloErrorGenerator({}),

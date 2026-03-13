@@ -85,8 +85,16 @@
       "name": "BlogPost"
     }
   ],
-  "plugins": [],
-  "schemaVersion": 26,
+  "plugins": [
+    {
+      "config": { "sentryOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-observability_sentry",
+      "name": "sentry",
+      "packageName": "@baseplate-dev/plugin-observability",
+      "version": "0.1.0"
+    }
+  ],
+  "schemaVersion": 27,
   "settings": {
     "general": { "name": "simple", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

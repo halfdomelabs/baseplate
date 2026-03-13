@@ -1,0 +1,133 @@
+import {
+  tsCodeFragment,
+  tsHoistedFragment,
+  tsImportBuilder,
+  tsTypeImportBuilder,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
+import {
+  apolloErrorLinkProvider,
+  reactApolloConfigProvider,
+  reactErrorImportsProvider,
+} from '@baseplate-dev/react-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { z } from 'zod';
+
+import {
+  reactSentryConfigProvider,
+  reactSentryImportsProvider,
+} from '../react-sentry/index.js';
+import { APOLLO_APOLLO_SENTRY_GENERATED } from './generated/index.js';
+
+const descriptorSchema = z.object({});
+
+export const apolloSentryGenerator = createGenerator({
+  name: 'apollo/apollo-sentry',
+  generatorFileUrl: import.meta.url,
+  descriptorSchema,
+  buildTasks: () => ({
+    paths: APOLLO_APOLLO_SENTRY_GENERATED.paths.task,
+    main: createGeneratorTask({
+      dependencies: {
+        reactSentryConfig: reactSentryConfigProvider,
+      },
+      run({ reactSentryConfig }) {
+        const headerFragment = tsHoistedFragment(
+          'configureSentryScopeForGraphqlError',
+          `
+          function configureSentryScopeForGraphqlError(
+            scope: Sentry.Scope,
+            error: GraphQLError | GraphQLFormattedError,
+          ): void {
+            scope.setFingerprint(
+              [
+                '{{ default }}',
+                error.extensions?.code as string,
+                error.path?.join('.'),
+              ].filter((value): value is string => typeof value === 'string' && !!value),
+            );
+            if (error.path?.[0]) {
+              scope.setTransactionName(error.path[0] as string);
+              scope.setTag('path', error.path.join('.'));
+            }
+          }
+          `,
+          [
+            tsImportBuilder(['GraphQLError']).from('graphql'),
+            tsTypeImportBuilder(['GraphQLFormattedError']).from('graphql'),
+          ],
+        );
+        return {
+          build: () => {
+            reactSentryConfig.sentryScopeActions.set(
+              'apollo',
+              tsCodeFragment(
+                `
+                if (CombinedGraphQLErrors.is(error) && error.errors.length === 1) {
+                  const graphqlError = error.errors[0];
+                  configureSentryScopeForGraphqlError(scope, graphqlError);
+                }
+
+                if (error instanceof GraphQLError) {
+                  configureSentryScopeForGraphqlError(scope, error);
+                }
+            `,
+                [
+                  tsImportBuilder(['GraphQLError']).from('graphql'),
+                  tsImportBuilder(['CombinedGraphQLErrors']).from(
+                    '@apollo/client/errors',
+                  ),
+                ],
+                {
+                  hoistedFragments: [headerFragment],
+                },
+              ),
+            );
+          },
+        };
+      },
+    }),
+    apolloSentryLink: createGeneratorTask({
+      dependencies: {
+        reactApolloConfig: reactApolloConfigProvider,
+        apolloErrorLink: apolloErrorLinkProvider,
+        paths: APOLLO_APOLLO_SENTRY_GENERATED.paths.provider,
+      },
+      run({ reactApolloConfig, apolloErrorLink, paths }) {
+        reactApolloConfig.apolloLinks.add({
+          name: 'apolloSentryLink',
+          nameImport: tsImportBuilder(['apolloSentryLink']).from(
+            paths.apolloSentryLink,
+          ),
+          priority: 'error',
+          dependencies: [apolloErrorLink.errorLinkName],
+        });
+      },
+    }),
+    apolloSentryLinkFile: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+        reactSentryImports: reactSentryImportsProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        paths: APOLLO_APOLLO_SENTRY_GENERATED.paths.provider,
+      },
+      run({ typescriptFile, reactSentryImports, reactErrorImports, paths }) {
+        return {
+          async build(builder) {
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template:
+                  APOLLO_APOLLO_SENTRY_GENERATED.templates.apolloSentryLink,
+                destination: paths.apolloSentryLink,
+                importMapProviders: {
+                  reactSentryImports,
+                  reactErrorImports,
+                },
+              }),
+            );
+          },
+        };
+      },
+    }),
+  }),
+});

@@ -87,11 +87,11 @@ export const adminLayoutGenerator = createGenerator({
                   tsImportBuilder(['Link']).from('@tanstack/react-router'),
                 ])`
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link to="${link.path}" ${link.activeOptions ? `activeOptions={${JSON.stringify(link.activeOptions)}}` : ''}>
-                      <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
-                      <span>${link.label}</span>
-                    </Link>
+                  <SidebarMenuButton
+                    render={<Link to="${link.path}" ${link.activeOptions ? `activeOptions={${JSON.stringify(link.activeOptions)}}` : ''} />}
+                  >
+                    <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
+                    <span>${link.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 `,

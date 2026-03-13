@@ -131,21 +131,25 @@ export function UserTable(
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.email}</TableCell>
               <TableCell className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                  <Link
-                    to="/admin/accounts/users/user/$id"
-                    params={{ id: item.id }}
-                  >
-                    <MdEdit />
-                    <span className="sr-only">Edit</span>
-                  </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  render={
+                    <Link
+                      to="/admin/accounts/users/user/$id"
+                      params={{ id: item.id }}
+                    />
+                  }
+                >
+                  <MdEdit />
+                  <span className="sr-only">Edit</span>
                 </Button>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MdMoreVert />
-                      <span className="sr-only">More actions</span>
-                    </Button>
+                  <DropdownMenuTrigger
+                    render={<Button variant="ghost" size="icon" />}
+                  >
+                    <MdMoreVert />
+                    <span className="sr-only">More actions</span>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem

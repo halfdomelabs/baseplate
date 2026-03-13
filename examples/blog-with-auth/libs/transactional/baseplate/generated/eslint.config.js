@@ -61,6 +61,8 @@ export default defineConfig(
       'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
       // Disallow renaming imports, exports, or destructured variables to the same name.
       'no-useless-rename': 'error',
+      // Allow empty patterns in function parameters which are used in test fixtures
+      'no-empty-pattern': ['error', { allowObjectPatternsAsParameters: true }],
     },
   },
 

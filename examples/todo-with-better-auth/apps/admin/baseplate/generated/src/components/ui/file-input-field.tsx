@@ -14,14 +14,8 @@ import { cn } from '@src/utils/cn';
 
 import type { FileInputProps, FileUploadInput } from './file-input';
 
+import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 import { FileInput } from './file-input';
-import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form-item';
 
 interface FileInputFieldProps
   extends Omit<FileInputProps, 'onChange' | 'value'>, FormFieldProps {
@@ -37,14 +31,15 @@ export function FileInputField({
   ...props
 }: FileInputFieldProps): React.ReactElement {
   return (
-    <FormItem error={error} className={cn('flex flex-col gap-1.5', className)}>
-      <FormLabel>{label}</FormLabel>
-      <FormControl>
-        <FileInput {...props} />
-      </FormControl>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+    <Field
+      data-invalid={!!error || undefined}
+      className={cn('flex flex-col gap-1.5', className)}
+    >
+      <FieldLabel>{label}</FieldLabel>
+      <FileInput {...props} />
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

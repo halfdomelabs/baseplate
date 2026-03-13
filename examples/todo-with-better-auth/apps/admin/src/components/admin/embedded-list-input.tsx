@@ -82,15 +82,17 @@ export function EmbeddedListInput<T>({
       }}
     >
       <div className={className}>
-        <DialogTrigger asChild>
-          <Button
-            size="sm"
-            onClick={() => {
-              setValueToEdit({ data: defaultValue });
-            }}
-          >
-            Add Item
-          </Button>
+        <DialogTrigger
+          render={
+            <Button
+              size="sm"
+              onClick={() => {
+                setValueToEdit({ data: defaultValue });
+              }}
+            />
+          }
+        >
+          Add Item
         </DialogTrigger>
         {definedValue.length > 0 ? (
           renderTable({

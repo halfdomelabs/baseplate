@@ -17,7 +17,7 @@ import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 import { CircularProgress } from './circular-progress';
-import { FormMessage } from './form-item';
+import { FieldError } from './field';
 
 export const fileInputValueFragment = graphql(`
   fragment FileInput_value on File {
@@ -288,9 +288,9 @@ export function FileInput({
         );
       })()}
       {!!error && (
-        <FormMessage>
+        <FieldError>
           {formatError(error, 'Sorry, we could not upload the file.')}
-        </FormMessage>
+        </FieldError>
       )}
     </div>
   );

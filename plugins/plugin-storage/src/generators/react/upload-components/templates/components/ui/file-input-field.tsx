@@ -13,11 +13,10 @@ import type {
 import { FileInput } from '$fileInputComponent';
 import {
   cn,
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
 
@@ -35,14 +34,15 @@ export function FileInputField({
   ...props
 }: FileInputFieldProps): React.ReactElement {
   return (
-    <FormItem error={error} className={cn('flex flex-col gap-1.5', className)}>
-      <FormLabel>{label}</FormLabel>
-      <FormControl>
-        <FileInput {...props} />
-      </FormControl>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+    <Field
+      data-invalid={!!error || undefined}
+      className={cn('flex flex-col gap-1.5', className)}
+    >
+      <FieldLabel>{label}</FieldLabel>
+      <FileInput {...props} />
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

@@ -138,8 +138,7 @@ const checkboxField = createTsTemplateFile({
   projectExports: { CheckboxField: {}, CheckboxFieldController: {} },
   referencedGeneratorTemplates: {
     checkbox: {},
-    cn: {},
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     typesForm: {},
   },
@@ -174,15 +173,7 @@ const combobox = createTsTemplateFile({
   importMapProviders: {},
   name: 'combobox',
   projectExports: { Combobox: {} },
-  referencedGeneratorTemplates: {
-    button: {},
-    cn: {},
-    hooksUseControlledState: {},
-    mergeRefs: {},
-    scrollArea: {},
-    stylesInput: {},
-    stylesSelect: {},
-  },
+  referencedGeneratorTemplates: { button: {}, cn: {}, inputGroup: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -200,7 +191,7 @@ const comboboxField = createTsTemplateFile({
   projectExports: { ComboboxField: {}, ComboboxFieldController: {} },
   referencedGeneratorTemplates: {
     combobox: {},
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     typesForm: {},
   },
@@ -208,32 +199,6 @@ const comboboxField = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/combobox-field.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const command = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'command',
-  projectExports: {
-    Command: {},
-    CommandDialog: {},
-    CommandEmpty: {},
-    CommandGroup: {},
-    CommandInput: {},
-    CommandItem: {},
-    CommandList: {},
-    CommandSeparator: {},
-    CommandShortcut: {},
-  },
-  referencedGeneratorTemplates: { cn: {}, dialog: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/components/ui/command.tsx',
     ),
   },
   variables: {},
@@ -273,7 +238,7 @@ const datePickerField = createTsTemplateFile({
     button: {},
     calendar: {},
     cn: {},
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     popover: {},
     typesForm: {},
@@ -300,7 +265,7 @@ const dateTimePickerField = createTsTemplateFile({
     button: {},
     calendar: {},
     cn: {},
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     input: {},
     popover: {},
@@ -334,7 +299,7 @@ const dialog = createTsTemplateFile({
     DialogWidth: { isTypeOnly: true },
     Modal: {},
   },
-  referencedGeneratorTemplates: { cn: {} },
+  referencedGeneratorTemplates: { button: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -424,23 +389,29 @@ const errorDisplay = createTsTemplateFile({
   variables: {},
 });
 
-const formItem = createTsTemplateFile({
+const field = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'form-item',
+  name: 'field',
   projectExports: {
-    FormControl: {},
-    FormDescription: {},
-    FormItem: {},
-    FormLabel: {},
-    FormMessage: {},
+    Field: { isTypeOnly: false },
+    FieldContent: { isTypeOnly: false },
+    FieldDescription: { isTypeOnly: false },
+    FieldError: { isTypeOnly: false },
+    FieldGroup: { isTypeOnly: false },
+    FieldLabel: { isTypeOnly: false },
+    FieldLegend: { isTypeOnly: false },
+    FieldSeparator: { isTypeOnly: false },
+    FieldSet: { isTypeOnly: false },
+    FieldTitle: { isTypeOnly: false },
+    fieldVariants: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: { cn: {}, label: {} },
+  referencedGeneratorTemplates: { cn: {}, label: {}, separator: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/ui/form-item.tsx',
+      '../templates/components/ui/field.tsx',
     ),
   },
   variables: {},
@@ -470,7 +441,7 @@ const inputField = createTsTemplateFile({
   projectExports: { InputField: {}, InputFieldController: {} },
   referencedGeneratorTemplates: {
     cn: {},
-    formItem: {},
+    field: {},
     input: {},
     mergeRefs: {},
     typesForm: {},
@@ -479,6 +450,29 @@ const inputField = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/input-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const inputGroup = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'input-group',
+  projectExports: {
+    InputGroup: { isTypeOnly: false },
+    InputGroupAddon: { isTypeOnly: false },
+    InputGroupButton: { isTypeOnly: false },
+    InputGroupInput: { isTypeOnly: false },
+    InputGroupText: { isTypeOnly: false },
+    InputGroupTextarea: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { button: {}, cn: {}, input: {}, textarea: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/input-group.tsx',
     ),
   },
   variables: {},
@@ -516,38 +510,6 @@ const loader = createTsTemplateFile({
   variables: {},
 });
 
-const multiCombobox = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'multi-combobox',
-  projectExports: {
-    MultiCombobox: {},
-    MultiComboboxContent: {},
-    MultiComboboxEmpty: {},
-    MultiComboboxGroup: {},
-    MultiComboboxInput: {},
-    MultiComboboxItem: {},
-    useMultiComboboxContext: {},
-  },
-  referencedGeneratorTemplates: {
-    badge: {},
-    cn: {},
-    command: {},
-    hooksUseControlledState: {},
-    popover: {},
-    stylesInput: {},
-    stylesSelect: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/components/ui/multi-combobox.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const multiComboboxField = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -559,9 +521,9 @@ const multiComboboxField = createTsTemplateFile({
     MultiComboboxFieldProps: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: {
-    formItem: {},
+    combobox: {},
+    field: {},
     hooksUseControllerMerged: {},
-    multiCombobox: {},
     typesForm: {},
   },
   source: {
@@ -659,7 +621,7 @@ const select = createTsTemplateFile({
   importMapProviders: {},
   name: 'select',
   projectExports: { ReactSelectInput: {}, Select: {}, SelectInput: {} },
-  referencedGeneratorTemplates: { cn: {}, scrollArea: {}, stylesSelect: {} },
+  referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -676,7 +638,7 @@ const selectField = createTsTemplateFile({
   name: 'select-field',
   projectExports: { SelectField: {}, SelectFieldController: {} },
   referencedGeneratorTemplates: {
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     select: {},
     typesForm: {},
@@ -721,7 +683,7 @@ const sheet = createTsTemplateFile({
     SheetTitle: {},
     SheetTrigger: {},
   },
-  referencedGeneratorTemplates: { cn: {} },
+  referencedGeneratorTemplates: { button: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -820,8 +782,7 @@ const switchField = createTsTemplateFile({
   name: 'switch-field',
   projectExports: { SwitchField: {}, SwitchFieldController: {} },
   referencedGeneratorTemplates: {
-    cn: {},
-    formItem: {},
+    field: {},
     hooksUseControllerMerged: {},
     switchComponent: {},
     typesForm: {},
@@ -882,7 +843,7 @@ const textareaField = createTsTemplateFile({
   importMapProviders: {},
   name: 'textarea-field',
   projectExports: { TextareaField: {}, TextareaFieldController: {} },
-  referencedGeneratorTemplates: { formItem: {}, textarea: {}, typesForm: {} },
+  referencedGeneratorTemplates: { field: {}, textarea: {}, typesForm: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -941,7 +902,6 @@ export const componentsGroup = {
   circularProgress,
   combobox,
   comboboxField,
-  command,
   confirmDialog,
   datePickerField,
   dateTimePickerField,
@@ -950,12 +910,12 @@ export const componentsGroup = {
   emptyDisplay,
   errorableLoader,
   errorDisplay,
-  formItem,
+  field,
   input,
   inputField,
+  inputGroup,
   label,
   loader,
-  multiCombobox,
   multiComboboxField,
   navigationMenu,
   notFoundCard,
@@ -1074,24 +1034,7 @@ const stylesInput = createTsTemplateFile({
   variables: {},
 });
 
-const stylesSelect = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'styles',
-  importMapProviders: {},
-  name: 'styles-select',
-  projectExports: {
-    selectCheckVariants: {},
-    selectContentVariants: {},
-    selectItemVariants: {},
-    selectTriggerVariants: {},
-  },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/styles/select.ts'),
-  },
-  variables: {},
-});
-
-export const stylesGroup = { stylesButton, stylesInput, stylesSelect };
+export const stylesGroup = { stylesButton, stylesInput };
 
 const cn = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

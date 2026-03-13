@@ -10,7 +10,7 @@ import {
   Button,
   CircularProgress,
   cn,
-  FormMessage,
+  FieldError,
 } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
 import { useMutation } from '@apollo/client/react';
@@ -287,9 +287,9 @@ export function FileInput({
         );
       })()}
       {!!error && (
-        <FormMessage>
+        <FieldError>
           {formatError(error, 'Sorry, we could not upload the file.')}
-        </FormMessage>
+        </FieldError>
       )}
     </div>
   );

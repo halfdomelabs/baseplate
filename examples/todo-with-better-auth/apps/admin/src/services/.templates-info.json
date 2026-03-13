@@ -25,7 +25,7 @@
     "template": "logger"
   },
   "sentry.ts": {
-    "generator": "@baseplate-dev/react-generators#core/react-sentry",
+    "generator": "@baseplate-dev/plugin-observability#core/react-sentry",
     "instanceData": {},
     "template": "sentry"
   }

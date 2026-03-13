@@ -1,27 +1,27 @@
 'use client';
 
-import type React from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
+import * as React from 'react';
 
 import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/use-controller-merged';
-import { cn } from '@src/utils/cn';
 
 import { Checkbox } from './checkbox';
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form-item';
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from './field';
 
 interface CheckboxFieldProps
   extends
     Omit<
-      ComponentPropsWithRef<'button'>,
+      ComponentPropsWithRef<'span'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
     >,
     FormFieldProps {
@@ -41,25 +41,31 @@ function CheckboxField({
   className,
   ...props
 }: CheckboxFieldProps): React.ReactElement {
+  const id = React.useId();
+
   return (
-    <FormItem error={error} className={cn('space-y-2', className)}>
-      <div className="flex flex-row items-center">
-        <FormControl>
-          <Checkbox
-            {...props}
-            onCheckedChange={(checked) => {
-              onChange?.(checked === true);
-            }}
-            checked={value}
-          />
-        </FormControl>
-        <div className="space-y-0.5">
-          <FormLabel className="cursor-pointer pl-2">{label}</FormLabel>
-          <FormDescription className="pl-2">{description}</FormDescription>
-        </div>
-      </div>
-      <FormMessage />
-    </FormItem>
+    <Field
+      orientation="horizontal"
+      data-invalid={!!error || undefined}
+      className={className}
+    >
+      <Checkbox
+        {...props}
+        id={id}
+        aria-invalid={!!error}
+        onCheckedChange={(checked) => {
+          onChange?.(checked);
+        }}
+        checked={value}
+      />
+      <FieldContent>
+        <FieldLabel htmlFor={id} className="cursor-pointer">
+          {label}
+        </FieldLabel>
+        <FieldDescription>{description}</FieldDescription>
+        <FieldError>{error}</FieldError>
+      </FieldContent>
+    </Field>
   );
 }
 
