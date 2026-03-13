@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   InputFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,8 +32,6 @@ interface AdapterDialogProps {
   adapter?: StoragePluginDefinitionInput['s3Adapters'][0];
   isNew?: boolean;
   onSave: (adapter: StoragePluginDefinitionInput['s3Adapters'][0]) => void;
-  asChild?: boolean;
-  children?: React.ReactNode;
 }
 
 export function AdapterDialog({
@@ -43,8 +40,6 @@ export function AdapterDialog({
   adapter,
   isNew = false,
   onSave,
-  asChild,
-  children,
 }: AdapterDialogProps): React.JSX.Element {
   const form = useForm<AdapterFormData>({
     resolver: zodResolver(adapterSchema),
@@ -62,7 +57,6 @@ export function AdapterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
         <form
           id={formId}

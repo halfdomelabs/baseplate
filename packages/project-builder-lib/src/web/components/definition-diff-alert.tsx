@@ -37,10 +37,8 @@ function DefinitionDiffEntryRow({
           {entry.type}
         </Badge>
         <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm">
-              Details
-            </Button>
+          <DialogTrigger render={<Button variant="ghost" size="sm" />}>
+            Details
           </DialogTrigger>
           <DialogContent width="xl">
             <DialogHeader>

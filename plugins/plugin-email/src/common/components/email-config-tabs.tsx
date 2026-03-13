@@ -39,22 +39,26 @@ export function EmailConfigTabs(): React.ReactElement | null {
 
   return (
     <NavigationTabs>
-      <NavigationTabsItem asChild>
-        <Link
-          to="/plugins/edit/$key"
-          params={{ key: emailPlugin.metadata.key }}
-          activeOptions={{ exact: true }}
-        >
-          Email
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to="/plugins/edit/$key"
+            params={{ key: emailPlugin.metadata.key }}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        Email
       </NavigationTabsItem>
-      <NavigationTabsItem asChild>
-        <Link
-          to={`/plugins/edit/${emailImplementationPlugin.metadata.key}`}
-          activeOptions={{ exact: true }}
-        >
-          {emailImplementationPlugin.metadata.displayName}
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to={`/plugins/edit/${emailImplementationPlugin.metadata.key}`}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        {emailImplementationPlugin.metadata.displayName}
       </NavigationTabsItem>
     </NavigationTabs>
   );

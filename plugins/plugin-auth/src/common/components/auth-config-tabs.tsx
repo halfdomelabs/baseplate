@@ -39,22 +39,26 @@ export function AuthConfigTabs(): React.ReactElement | null {
 
   return (
     <NavigationTabs>
-      <NavigationTabsItem asChild>
-        <Link
-          to="/plugins/edit/$key"
-          params={{ key: authPlugin.metadata.key }}
-          activeOptions={{ exact: true }}
-        >
-          Auth
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to="/plugins/edit/$key"
+            params={{ key: authPlugin.metadata.key }}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        Auth
       </NavigationTabsItem>
-      <NavigationTabsItem asChild>
-        <Link
-          to={`/plugins/edit/${authImplementationPlugin.metadata.key}`}
-          activeOptions={{ exact: true }}
-        >
-          {authImplementationPlugin.metadata.displayName}
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to={`/plugins/edit/${authImplementationPlugin.metadata.key}`}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        {authImplementationPlugin.metadata.displayName}
       </NavigationTabsItem>
     </NavigationTabs>
   );

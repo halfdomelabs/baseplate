@@ -39,22 +39,26 @@ export function QueueConfigTabs(): React.ReactElement | null {
 
   return (
     <NavigationTabs>
-      <NavigationTabsItem asChild>
-        <Link
-          to="/plugins/edit/$key"
-          params={{ key: queuePlugin.metadata.key }}
-          activeOptions={{ exact: true }}
-        >
-          Queue
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to="/plugins/edit/$key"
+            params={{ key: queuePlugin.metadata.key }}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        Queue
       </NavigationTabsItem>
-      <NavigationTabsItem asChild>
-        <Link
-          to={`/plugins/edit/${queueImplementationPlugin.metadata.key}`}
-          activeOptions={{ exact: true }}
-        >
-          {queueImplementationPlugin.metadata.displayName}
-        </Link>
+      <NavigationTabsItem
+        render={
+          <Link
+            to={`/plugins/edit/${queueImplementationPlugin.metadata.key}`}
+            activeOptions={{ exact: true }}
+          />
+        }
+      >
+        {queueImplementationPlugin.metadata.displayName}
       </NavigationTabsItem>
     </NavigationTabs>
   );
