@@ -11,12 +11,11 @@ import type {
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 import {
   Select,
   SelectContent,
@@ -58,20 +57,18 @@ function SelectField<OptionType>({
   })();
 
   return (
-    <FormItem error={error} className={className}>
-      <FormLabel>{label}</FormLabel>
+    <Field data-invalid={!!error} className={className}>
+      <FieldLabel>{label}</FieldLabel>
       <Select
         value={selectedValue}
         onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
         {...props}
       >
-        <FormControl>
-          <SelectTrigger>
-            <SelectValue placeholder={placeholder}>
-              {selectedOption ? getOptionLabel(selectedOption) : null}
-            </SelectValue>
-          </SelectTrigger>
-        </FormControl>
+        <SelectTrigger aria-invalid={!!error}>
+          <SelectValue placeholder={placeholder}>
+            {selectedOption ? getOptionLabel(selectedOption) : null}
+          </SelectValue>
+        </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             {options.map((option) => {
@@ -88,9 +85,9 @@ function SelectField<OptionType>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

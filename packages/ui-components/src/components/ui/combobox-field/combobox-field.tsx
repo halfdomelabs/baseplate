@@ -3,6 +3,8 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
+import { useId } from 'react';
+
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
@@ -12,36 +14,34 @@ import type {
 import { useComponentStrings } from '#src/contexts/component-strings.js';
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 
-import type { ComboboxProps } from '../combobox/combobox.js';
-
 import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
+  ComboboxList,
 } from '../combobox/combobox.js';
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 
 export interface ComboboxFieldProps<OptionType>
-  extends
-    Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
-    SelectOptionProps<OptionType>,
-    FormFieldProps {
+  extends SelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  placeholder?: string;
+  disabled?: boolean;
+  value?: string | null;
+  onChange?: (value: string | null) => void;
 }
 
 /**
  * Field with label and error states that wraps a Combobox component.
  */
-
 function ComboboxField<OptionType>({
   label,
   description,
@@ -55,51 +55,49 @@ function ComboboxField<OptionType>({
   getOptionValue = (val) => (val as { value: string | null }).value,
   className,
   noResultsText,
-  ...props
+  disabled,
 }: ComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const selectedOption = options.find((o) => getOptionValue(o) === value);
-  const selectedComboboxOption = (() => {
-    if (value === undefined) return;
-    if (!selectedOption) return null;
-    return {
-      label: getOptionLabel(selectedOption),
-      value: getOptionValue(selectedOption),
-    };
-  })();
   const { comboboxNoResults } = useComponentStrings();
+  const id = useId();
+
+  const selectedOption =
+    options.find((o) => getOptionValue(o) === value) ?? null;
 
   return (
-    <FormItem error={error} className={className}>
-      <FormLabel>{label}</FormLabel>
+    <Field data-invalid={!!error} className={className}>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Combobox
-        value={selectedComboboxOption}
-        onChange={(value) => {
-          onChange?.(value.value);
+        value={selectedOption}
+        onValueChange={(option) => {
+          onChange?.(option ? getOptionValue(option) : null);
         }}
-        {...props}
+        disabled={disabled}
+        items={options}
+        itemToStringValue={(option) => getOptionValue(option) ?? ''}
+        autoHighlight
       >
-        <FormControl>
-          <ComboboxInput placeholder={placeholder} />
-        </FormControl>
+        <ComboboxInput id={id} placeholder={placeholder} />
         <ComboboxContent>
-          {options.map((option) => {
-            const val = getOptionValue(option);
-            const label = getOptionLabel(option);
-            return (
-              <ComboboxItem value={val} key={val} label={label}>
-                {renderItemLabel
-                  ? renderItemLabel(option, { selected: val === value })
-                  : label}
-              </ComboboxItem>
-            );
-          })}
           <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
+          <ComboboxList>
+            {(option: OptionType) => {
+              const val = getOptionValue(option);
+              const optionLabel = getOptionLabel(option);
+              return (
+                <ComboboxItem value={option} key={val}>
+                  {renderItemLabel
+                    ? renderItemLabel(option, { selected: val === value })
+                    : optionLabel}
+                </ComboboxItem>
+              );
+            }}
+          </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 }
 

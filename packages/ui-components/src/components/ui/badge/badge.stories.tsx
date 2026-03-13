@@ -46,6 +46,18 @@ export const Outline: Story = {
   },
 };
 
+export const Ghost: Story = {
+  args: {
+    variant: 'ghost',
+  },
+};
+
+export const Link: Story = {
+  args: {
+    variant: 'link',
+  },
+};
+
 export const WithIcon: Story = {
   args: {
     variant: 'secondary',

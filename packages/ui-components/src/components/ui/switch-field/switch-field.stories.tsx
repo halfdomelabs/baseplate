@@ -26,3 +26,11 @@ export const Labelled: Story = {
     description: 'This is irreversible.',
   },
 };
+
+export const WithError: Story = {
+  args: {
+    label: 'Initiate Launch?',
+    description: 'This is irreversible.',
+    error: 'You must confirm before proceeding',
+  },
+};

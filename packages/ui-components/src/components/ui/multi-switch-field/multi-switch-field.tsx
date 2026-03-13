@@ -15,11 +15,11 @@ import { cn } from '#src/utils/cn.js';
 import { genericForwardRef } from '#src/utils/generic-forward-ref.js';
 
 import {
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 import { SwitchField } from '../switch-field/switch-field.js';
 
 export interface MultiSwitchFieldProps<OptionType>
@@ -59,8 +59,8 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
   }));
 
   return (
-    <FormItem error={error} className={cn('space-y-3', className)}>
-      <FormLabel>{label}</FormLabel>
+    <Field data-invalid={!!error} className={cn('gap-3', className)}>
+      <FieldLabel>{label}</FieldLabel>
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {
           const optionValue = getOptionValue(option);
@@ -93,9 +93,9 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
           );
         })}
       </div>
-      <FormDescription>{description}</FormDescription>
-      <FormMessage />
-    </FormItem>
+      <FieldDescription>{description}</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
   );
 });
 
