@@ -14,9 +14,7 @@ import { Button } from '../button/button.js';
  *
  * ShadCN changes:
  * - Added custom width property to specify the width of the dialog (sm, md, lg, xl, none).
- * - Added max-h-[90vh] overflow-y-auto to ensure the dialog is scrollable.
- * - DialogOverlay wraps DialogContent to allow scrolling within other components e.g. combobox.
- * - DialogFooter does not have the muted background/border-t styling from the reference.
+ * - Added max-h-[90vh] overflow-y-auto to ensure the dialog is scrollable for long content.
  *
  * https://ui.shadcn.com/docs/components/dialog
  */
@@ -50,7 +48,7 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        'fixed inset-0 isolate z-50 bg-black/50 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
+        'fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
         className,
       )}
       {...props}
@@ -76,9 +74,8 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
-          'max-h-[90vh] overflow-y-auto',
-          width === 'sm' && 'sm:max-w-md',
+          'fixed top-1/2 left-1/2 z-50 grid max-h-[90vh] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+          width === 'sm' && 'sm:max-w-sm',
           width === 'md' && 'sm:max-w-lg',
           width === 'lg' && 'sm:max-w-4xl',
           width === 'xl' && 'sm:max-w-7xl',
@@ -122,17 +119,26 @@ function DialogHeader({
 
 function DialogFooter({
   className,
+  children,
+  showCloseButton = false,
   ...props
-}: React.ComponentProps<'div'>): React.ReactElement {
+}: React.ComponentProps<'div'> & {
+  showCloseButton?: boolean;
+}): React.ReactElement {
   return (
     <div
       data-slot="dialog-footer"
       className={cn(
-        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+        '-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end',
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      {showCloseButton && (
+        <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
+      )}
+    </div>
   );
 }
 
