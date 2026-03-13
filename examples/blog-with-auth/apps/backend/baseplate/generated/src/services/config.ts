@@ -16,6 +16,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   DATABASE_URL: z.string().min(1),
   // Default sender email address for transactional emails
   EMAIL_DEFAULT_FROM: z.string().default('noreply@example.com'),
+  // Enable embedded workers (run queue workers in the API process)
+  ENABLE_EMBEDDED_WORKERS: z.stringbool().optional(),
   // Postmark API server token for sending emails
   POSTMARK_SERVER_TOKEN: z.string().min(1),
   // Sentry DSN

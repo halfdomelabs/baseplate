@@ -79,19 +79,13 @@ function FormActionBar(props: FormActionBarProps): React.ReactElement {
         <>
           <Button
             variant="outline"
-            size="sm"
             type="button"
             onClick={handleReset}
             disabled={isResetDisabled}
           >
             Reset
           </Button>
-          <Button
-            variant="default"
-            size="sm"
-            type="submit"
-            disabled={isSaveDisabled}
-          >
+          <Button variant="default" type="submit" disabled={isSaveDisabled}>
             <MdOutlineSave className="mr-2 h-4 w-4" />
             Save
           </Button>

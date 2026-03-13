@@ -197,13 +197,15 @@ export function GraphQLAuthSection({
               {enabledMutations.map((mutation) => (
                 <th key={mutation.name} className="pl-8">
                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to="/data/models/edit/$key/service"
-                        params={{ key: modelKey }}
-                      >
-                        {mutation.label}
-                      </Link>
+                    <TooltipTrigger
+                      render={
+                        <Link
+                          to="/data/models/edit/$key/service"
+                          params={{ key: modelKey }}
+                        />
+                      }
+                    >
+                      {mutation.label}
                     </TooltipTrigger>
                     <TooltipContent>Configured on Service tab</TooltipContent>
                   </Tooltip>

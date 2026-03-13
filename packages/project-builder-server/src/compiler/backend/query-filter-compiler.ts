@@ -1,6 +1,7 @@
 import type {
   AuthorizerExpressionNode,
   FieldRefNode,
+  LiteralValueNode,
   ModelConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -10,7 +11,7 @@ import {
   ModelUtils,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar } from '@baseplate-dev/utils';
+import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -50,7 +51,11 @@ export function generateQueryFilterExpressionCode(
 ): string {
   switch (node.type) {
     case 'fieldComparison': {
-      return generateFieldComparisonWhereCode(node.left, node.right);
+      return generateFieldComparisonWhereCode(
+        node.left,
+        node.right,
+        node.operator,
+      );
     }
     case 'hasRole': {
       return `ctx.auth.hasRole('${node.role}')`;
@@ -73,12 +78,39 @@ export function generateQueryFilterExpressionCode(
       return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, '${resolved.relationFieldName}', [${roles}])`;
     }
     case 'binaryLogical': {
-      const left = generateQueryFilterExpressionCode(node.left, codeContext);
-      const right = generateQueryFilterExpressionCode(node.right, codeContext);
       const helper = node.operator === '||' ? 'or' : 'and';
-      return `queryHelpers.${helper}([${left}, ${right}])`;
+      // Flatten consecutive same-operator chains so A && B && C becomes
+      // queryHelpers.and([A, B, C]) instead of queryHelpers.and([queryHelpers.and([A, B]), C])
+      const operands = collectLogicalOperands(node, node.operator);
+      const operandCode = operands
+        .map((operand) =>
+          generateQueryFilterExpressionCode(operand, codeContext),
+        )
+        .join(', ');
+      return `queryHelpers.${helper}([${operandCode}])`;
     }
   }
+}
+
+/**
+ * Collect all operands from a chain of the same logical operator.
+ *
+ * For A && (B && C), the AST is `&&(A, &&(B, C))`. This flattens it to [A, B, C]
+ * so we can emit a single `queryHelpers.and([A, B, C])` call.
+ * Mixed operators (A && B || C) are NOT flattened — the differing operator acts
+ * as a boundary and is emitted as a nested call.
+ */
+function collectLogicalOperands(
+  node: AuthorizerExpressionNode,
+  operator: '||' | '&&',
+): AuthorizerExpressionNode[] {
+  if (node.type !== 'binaryLogical' || node.operator !== operator) {
+    return [node];
+  }
+  return [
+    ...collectLogicalOperands(node.left, operator),
+    ...collectLogicalOperands(node.right, operator),
+  ];
 }
 
 /**
@@ -103,18 +135,64 @@ function getResolvedQueryFilter(
 }
 
 /**
+ * Serialize a literal value as a TypeScript literal string.
+ */
+function serializeLiteralValue(value: string | number | boolean): string {
+  if (typeof value === 'string') {
+    return quot(value);
+  }
+  return String(value);
+}
+
+/**
  * Generate a Prisma where clause from a field comparison.
  *
- * In a field comparison one side is always a model field and the other
- * is an auth field. We produce `{ modelField: ctx.auth.authField }`.
+ * Handles three cases:
+ * - model.field === literal → `{ field: literal }`
+ * - model.field !== literal → `{ field: { not: literal } }`
+ * - model.field === auth.userId → `(authExpr != null ? { field: authExpr } : false)`
+ * - model.field !== auth.userId → `(authExpr != null ? { field: { not: authExpr } } : false)`
  */
 function generateFieldComparisonWhereCode(
-  left: FieldRefNode,
-  right: FieldRefNode,
+  left: FieldRefNode | LiteralValueNode,
+  right: FieldRefNode | LiteralValueNode,
+  operator: '===' | '!==',
 ): string {
-  const modelNode = left.source === 'model' ? left : right;
-  const authNode = left.source === 'auth' ? left : right;
-  const authExpr = `ctx.auth.${authNode.field}`;
+  // Identify which side is the model field
+  const modelNode =
+    left.type === 'fieldRef' && left.source === 'model'
+      ? left
+      : right.type === 'fieldRef' && right.source === 'model'
+        ? right
+        : null;
+
+  if (!modelNode) {
+    throw new Error(
+      'Field comparison must have at least one model field reference for query filter generation.',
+    );
+  }
+
+  const otherNode = left === modelNode ? right : left;
+
+  if (otherNode.type === 'literalValue') {
+    // Static literal comparison
+    const serialized = serializeLiteralValue(otherNode.value);
+    if (operator === '!==') {
+      return `{ ${modelNode.field}: { not: ${serialized} } }`;
+    }
+    return `{ ${modelNode.field}: ${serialized} }`;
+  }
+
+  // Auth field comparison — guard against model-vs-model (not supported)
+  if (otherNode.source !== 'auth') {
+    throw new Error(
+      'Field comparison must compare a model field against an auth field or a literal value for query filter generation.',
+    );
+  }
+  const authExpr = `ctx.auth.${otherNode.field}`;
+  if (operator === '!==') {
+    return `(${authExpr} != null ? { ${modelNode.field}: { not: ${authExpr} } } : false)`;
+  }
   return `(${authExpr} != null ? { ${modelNode.field}: ${authExpr} } : false)`;
 }
 

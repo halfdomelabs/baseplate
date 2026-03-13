@@ -56,9 +56,7 @@ const meta: Meta<typeof AsyncComboboxField> = {
     noResultsText: { control: { type: 'text' } },
     errorText: { control: { type: 'text' } },
     formatError: { control: false },
-    resolveValue: { control: false },
     debounceMs: { control: { type: 'number', min: 0, max: 2000, step: 100 } },
-    loadingDelay: { control: { type: 'number', min: 0, max: 1000, step: 50 } },
     minSearchLength: { control: { type: 'number', min: 0, max: 5, step: 1 } },
   },
   decorators: [
@@ -202,21 +200,6 @@ export const WithInitialOptions: Story = {
   },
 };
 
-export const CustomMessages: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(800),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'Custom messages',
-    placeholder: 'Search users...',
-    loadingText: 'Searching database...',
-    noResultsText: 'No users match your search',
-    errorText: 'Connection failed. Check your internet.',
-    className: 'w-96',
-    debounceMs: 300,
-  },
-};
-
 export const WithCustomErrorFormatter: Story = {
   args: {
     loadOptions: createMockLoadOptions(800, true),
@@ -242,81 +225,18 @@ export const WithCustomErrorFormatter: Story = {
   },
 };
 
-export const NoLoadingDelay: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(300),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'No loading delay',
-    description: 'Shows loading immediately (loadingDelay = 0)',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 100,
-    loadingDelay: 0,
-  },
-};
-
-export const LongLoadingDelay: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(400),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'Long loading delay',
-    description: 'Waits 500ms before showing loading (loadingDelay = 500)',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 100,
-    loadingDelay: 500,
-  },
-};
-
-export const FastRequestNoFlashing: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(100),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    label: 'Fast requests without flashing',
-    description:
-      'Fast 100ms requests with 200ms loading delay - no loading indicator should show',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 50,
-    loadingDelay: 200,
-  },
-};
-
-export const PersistentSelectedValue: Story = {
+export const WithPreSelectedValue: Story = {
   args: {
     loadOptions: createMockLoadOptions(600),
     getOptionLabel: (user) => (user as MockUser).name,
     getOptionValue: (user) => (user as MockUser).id,
-    label: 'Persistent selected value',
+    label: 'With pre-selected value',
     description:
-      'Select a user, then search for something else - the selected value persists',
+      'Uses initialOptions to provide the pre-selected option for display',
     placeholder: 'Search users...',
     className: 'w-96',
     debounceMs: 300,
-    value: '2', // Pre-select Jane Smith
-  },
-};
-
-export const WithValueResolver: Story = {
-  args: {
-    loadOptions: createMockLoadOptions(600),
-    getOptionLabel: (user) => (user as MockUser).name,
-    getOptionValue: (user) => (user as MockUser).id,
-    resolveValue: async (value: string | null) => {
-      if (!value) return null;
-      // Simulate API call to resolve user by ID
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      return MOCK_USERS.find((user) => user.id === value) ?? null;
-    },
-    label: 'With value resolver',
-    description:
-      'Uses resolveValue to fetch option details when value is set externally',
-    placeholder: 'Search users...',
-    className: 'w-96',
-    debounceMs: 300,
-    value: '5', // Pre-select Charlie Wilson (not in initial options)
+    initialOptions: [MOCK_USERS[4]], // Charlie Wilson
+    value: '5',
   },
 };

@@ -16,11 +16,15 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <NavigationTabsItem href="#test1" active={true}>
+        <NavigationTabsItem render={<a href="#test1" />} active={true}>
           Tab 1
         </NavigationTabsItem>
-        <NavigationTabsItem href="#test2">Tab 2</NavigationTabsItem>
-        <NavigationTabsItem href="#test3">Tab 3</NavigationTabsItem>
+        <NavigationTabsItem render={<a href="#test2" />}>
+          Tab 2
+        </NavigationTabsItem>
+        <NavigationTabsItem render={<a href="#test3" />}>
+          Tab 3
+        </NavigationTabsItem>
       </>
     ),
   },

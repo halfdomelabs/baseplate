@@ -16,18 +16,16 @@ import { ModelRelationForm } from './model-relation-form.js';
 
 interface ModelRelationDialogProps {
   control: Control<ModelConfigInput>;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
-  children?: React.ReactNode;
   relationId?: string;
   defaultFieldName?: string;
 }
 
 export function ModelRelationDialog({
   control,
-  children,
-  asChild,
+  trigger,
   open,
   onOpenChange,
   relationId,
@@ -36,7 +34,7 @@ export function ModelRelationDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent width="lg">
         <DialogHeader>
           <DialogTitle>

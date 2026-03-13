@@ -52,11 +52,13 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
       <div className="flex h-full flex-col pt-(--topbar-height) sm:pl-(--sidebar-width)">
         <header className="fixed inset-x-0 top-0 z-30 flex h-(--topbar-height) items-center gap-4 border-b bg-background px-4 sm:left-(--sidebar-width) sm:px-4">
           <Sheet>
-            <SheetTrigger asChild>
-              <Button size="icon" variant="outline" className="sm:hidden">
-                <MdMenu className="size-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
+            <SheetTrigger
+              render={
+                <Button size="icon" variant="outline" className="sm:hidden" />
+              }
+            >
+              <MdMenu className="size-5" />
+              <span className="sr-only">Toggle Menu</span>
             </SheetTrigger>
             <SheetContent side="left" className="max-w-xs">
               <AppMobileSidebar />

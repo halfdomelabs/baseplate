@@ -34,6 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   build-essential \
   curl \
+  bubblewrap \
+  socat \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Remove default ubuntu user/group (occupies UID/GID 1000) and create our own
@@ -106,7 +108,7 @@ ENV EDITOR=vim
 ENV VISUAL=vim
 
 # Install Claude
-RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} typescript-language-server typescript"
 
 # Install zplug
 ENV ZPLUG_HOME="$HOME/.zplug"

@@ -35,7 +35,7 @@ import { logAndFormatError } from '#src/services/error-formatter.js';
 import { ModelInfoForm } from '../edit.$key/-components/model-info-form.js';
 
 interface NewModelDialogProps {
-  children: React.ReactNode;
+  trigger: React.ReactElement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -71,7 +71,7 @@ function createNewModel(): ModelConfigInput {
 }
 
 export function NewModelDialog({
-  children,
+  trigger,
   open,
   onOpenChange,
 }: NewModelDialogProps): React.ReactElement {
@@ -160,7 +160,7 @@ export function NewModelDialog({
         }
       }}
     >
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New Model</DialogTitle>
@@ -171,8 +171,8 @@ export function NewModelDialog({
         <form onSubmit={onSubmit} className="space-y-4">
           <ModelInfoForm control={control} />
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
             <Button type="submit">Create Model</Button>
           </DialogFooter>

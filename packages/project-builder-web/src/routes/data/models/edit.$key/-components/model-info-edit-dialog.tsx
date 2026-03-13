@@ -18,16 +18,14 @@ import { ModelInfoForm } from './model-info-form.js';
 interface ModelInfoEditDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  children?: React.ReactNode;
-  asChild?: boolean;
+  trigger?: React.ReactElement;
   modelKey: string;
 }
 
 export function ModelInfoEditDialog({
   open,
   onOpenChange,
-  children,
-  asChild,
+  trigger,
   modelKey,
 }: ModelInfoEditDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
@@ -52,7 +50,7 @@ export function ModelInfoEditDialog({
         }
       }}
     >
-      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      {trigger && <DialogTrigger render={trigger} />}
       <DialogContent aria-describedby={undefined}>
         <form onSubmit={onSubmit} className="space-y-4">
           <DialogHeader>
@@ -60,8 +58,8 @@ export function ModelInfoEditDialog({
           </DialogHeader>
           <ModelInfoForm control={control} />
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
             <Button type="submit">Save</Button>
           </DialogFooter>

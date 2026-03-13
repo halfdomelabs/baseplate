@@ -37,12 +37,14 @@ function PackagesLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="space-y-4" width="sm">
-        <NewDialog>
-          <Button variant="secondary" className="w-full">
-            <MdAdd />
-            New
-          </Button>
-        </NewDialog>
+        <NewDialog
+          trigger={
+            <Button variant="secondary" className="w-full">
+              <MdAdd />
+              New
+            </Button>
+          }
+        />
 
         {/* Apps Section */}
         {sortedApps.length > 0 && (
@@ -53,13 +55,16 @@ function PackagesLayout(): React.JSX.Element {
             <NavigationMenu orientation="vertical">
               <NavigationMenuList>
                 {sortedApps.map((app) => (
-                  <NavigationMenuItemWithLink key={app.id} asChild>
-                    <Link
-                      to="/packages/apps/$key"
-                      params={{ key: appEntityType.keyFromId(app.id) }}
-                    >
-                      {app.name}
-                    </Link>
+                  <NavigationMenuItemWithLink
+                    key={app.id}
+                    render={
+                      <Link
+                        to="/packages/apps/$key"
+                        params={{ key: appEntityType.keyFromId(app.id) }}
+                      />
+                    }
+                  >
+                    {app.name}
                   </NavigationMenuItemWithLink>
                 ))}
               </NavigationMenuList>
@@ -76,13 +81,16 @@ function PackagesLayout(): React.JSX.Element {
             <NavigationMenu orientation="vertical">
               <NavigationMenuList>
                 {sortedLibraries.map((lib) => (
-                  <NavigationMenuItemWithLink key={lib.id} asChild>
-                    <Link
-                      to="/packages/libs/$key"
-                      params={{ key: libraryEntityType.keyFromId(lib.id) }}
-                    >
-                      {lib.name}
-                    </Link>
+                  <NavigationMenuItemWithLink
+                    key={lib.id}
+                    render={
+                      <Link
+                        to="/packages/libs/$key"
+                        params={{ key: libraryEntityType.keyFromId(lib.id) }}
+                      />
+                    }
+                  >
+                    {lib.name}
                   </NavigationMenuItemWithLink>
                 ))}
               </NavigationMenuList>

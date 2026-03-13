@@ -65,16 +65,18 @@ export function ThemeColorsEditor({
                 label={
                   <div className="flex h-6 w-full items-center gap-1">
                     <div>{config.name}</div>
-                    <Tooltip delayDuration={500}>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Color Info"
-                          className="opacity-30"
-                        >
-                          <MdInfo />
-                        </Button>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Color Info"
+                            className="opacity-30"
+                          />
+                        }
+                      >
+                        <MdInfo />
                       </TooltipTrigger>
                       <TooltipContent
                         align="start"

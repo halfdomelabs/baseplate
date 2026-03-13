@@ -46,12 +46,14 @@ export function EnumsSidebarList({
       )}
     >
       <div className="space-y-4 px-4">
-        <NewEnumDialog>
-          <Button variant="secondary" className="w-full">
-            <MdAdd />
-            New Enum
-          </Button>
-        </NewEnumDialog>
+        <NewEnumDialog
+          trigger={
+            <Button variant="secondary" className="w-full">
+              <MdAdd />
+              New Enum
+            </Button>
+          }
+        />
         {enums.length > 0 && (
           <div className="relative">
             <InputField
@@ -95,13 +97,17 @@ export function EnumsSidebarList({
           <NavigationMenuList>
             {sortedEnums.map((enumDef) => (
               <li key={enumDef.id}>
-                <NavigationMenuItemWithLink asChild>
-                  <Link
-                    to="/data/enums/edit/$key"
-                    params={{ key: modelEnumEntityType.keyFromId(enumDef.id) }}
-                  >
-                    {enumDef.name}
-                  </Link>
+                <NavigationMenuItemWithLink
+                  render={
+                    <Link
+                      to="/data/enums/edit/$key"
+                      params={{
+                        key: modelEnumEntityType.keyFromId(enumDef.id),
+                      }}
+                    />
+                  }
+                >
+                  {enumDef.name}
                 </NavigationMenuItemWithLink>
               </li>
             ))}

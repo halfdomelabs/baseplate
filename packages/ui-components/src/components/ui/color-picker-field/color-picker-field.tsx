@@ -12,12 +12,11 @@ import { buttonVariants, inputVariants } from '#src/styles/index.js';
 import { cn } from '#src/utils/index.js';
 
 import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../form-item/form-item.js';
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '../field/field.js';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover.js';
 
 export interface ColorPickerFieldProps extends FormFieldProps {
@@ -77,46 +76,42 @@ function ColorPickerField({
 
   const inputComponent = (
     <Popover>
-      <PopoverTrigger asChild>
-        <button
-          className={cn(
-            buttonVariants({
-              variant: 'outline',
-              size: 'none',
-              justify: 'start',
-            }),
-            className,
-            'flex h-8 items-center gap-2 px-2',
-            hideText ? 'justify-center' : undefined,
-            disabled ? 'opacity-75' : undefined,
-          )}
-          id={id}
-          ref={ref}
-          disabled={disabled}
-        >
-          {hexValue && (
-            <div
-              className="h-4 w-6 rounded-sm border border-border"
-              style={{
-                backgroundColor: hexValue,
-              }}
-            />
-          )}
-          {hideText ? null : hexValue ? (
-            <div>
-              {formatColorName && value ? formatColorName(value) : hexValue}
-            </div>
-          ) : (
-            <div className="opacity-75">{placeholder}</div>
-          )}
-        </button>
+      <PopoverTrigger
+        className={cn(
+          buttonVariants({
+            variant: 'outline',
+            size: 'none',
+            justify: 'start',
+          }),
+          className,
+          'flex h-8 items-center gap-2 px-2',
+          hideText ? 'justify-center' : undefined,
+          disabled ? 'opacity-75' : undefined,
+        )}
+        id={id}
+        ref={ref}
+        disabled={disabled}
+      >
+        {hexValue && (
+          <div
+            className="h-4 w-6 rounded-sm border border-border"
+            style={{
+              backgroundColor: hexValue,
+            }}
+          />
+        )}
+        {hideText ? null : hexValue ? (
+          <div>
+            {formatColorName && value ? formatColorName(value) : hexValue}
+          </div>
+        ) : (
+          <div className="opacity-75">{placeholder}</div>
+        )}
       </PopoverTrigger>
       <PopoverContent
         sideOffset={5}
         align="start"
-        collisionPadding={{ bottom: 50 }}
-        className="space-y-2 rounded-md border border-border bg-white p-4"
-        width="none"
+        className="w-auto space-y-2 rounded-md border border-border bg-white p-4"
       >
         <HexColorInput
           className={cn(inputVariants(), 'p-2')}
@@ -131,12 +126,12 @@ function ColorPickerField({
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>{inputComponent}</FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-      </FormItem>
+      <Field data-invalid={!!error} className={cn('gap-2', wrapperClassName)}>
+        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        {inputComponent}
+        <FieldDescription>{description}</FieldDescription>
+        <FieldError>{error}</FieldError>
+      </Field>
     );
   }
   return inputComponent;

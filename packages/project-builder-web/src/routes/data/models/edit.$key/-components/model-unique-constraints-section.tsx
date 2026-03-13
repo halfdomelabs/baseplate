@@ -79,12 +79,12 @@ export function ModelUniqueConstraintsSection({
               <ModelUniqueConstraintDialog
                 constraintId={constraint.id}
                 control={control}
-                asChild
-              >
-                <Button variant="ghost" size="icon" title="Edit">
-                  <MdEdit />
-                </Button>
-              </ModelUniqueConstraintDialog>
+                trigger={
+                  <Button variant="ghost" size="icon" title="Edit">
+                    <MdEdit />
+                  </Button>
+                }
+              />
               <Button
                 variant="ghostDestructive"
                 size="icon"
@@ -98,12 +98,15 @@ export function ModelUniqueConstraintsSection({
             </RecordViewActions>
           </RecordView>
         ))}
-        <ModelUniqueConstraintDialog control={control} asChild>
-          <Button variant="secondary" size="sm">
-            <MdAdd />
-            Add Unique Constraint
-          </Button>
-        </ModelUniqueConstraintDialog>
+        <ModelUniqueConstraintDialog
+          control={control}
+          trigger={
+            <Button variant="secondary" size="sm">
+              <MdAdd />
+              Add Unique Constraint
+            </Button>
+          }
+        />
       </SectionListSectionContent>
     </SectionListSection>
   );

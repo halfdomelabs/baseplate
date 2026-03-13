@@ -21,6 +21,7 @@ export const bullmqImportsSchema = createTsImportMapSchema({
   getScheduledJobs: {},
   initializeBullMQ: {},
   shutdownBullMQ: {},
+  startWorkers: {},
 });
 
 export type BullmqImportsProvider = TsImportMapProviderFromSchema<
@@ -45,6 +46,7 @@ const bullmqCoreBullmqImportsTask = createGeneratorTask({
           getScheduledJobs: paths.bullmqService,
           initializeBullMQ: paths.bullmqService,
           shutdownBullMQ: paths.bullmqService,
+          startWorkers: paths.bullmqService,
         }),
         queueServiceImports: createTsImportMap(queueServiceImportsSchema, {
           createQueue: paths.bullmqService,

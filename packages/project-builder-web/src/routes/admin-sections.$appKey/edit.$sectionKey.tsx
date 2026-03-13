@@ -140,8 +140,8 @@ function EditAdminSectionPage(): React.JSX.Element {
             </p>
           </div>
           <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="secondary">Delete</Button>
+            <DialogTrigger render={<Button variant="secondary" />}>
+              Delete
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -159,8 +159,8 @@ function EditAdminSectionPage(): React.JSX.Element {
                 application. This cannot be undone.
               </p>
               <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="secondary">Cancel</Button>
+                <DialogClose render={<Button variant="secondary" />}>
+                  Cancel
                 </DialogClose>
                 <Button
                   variant="destructive"

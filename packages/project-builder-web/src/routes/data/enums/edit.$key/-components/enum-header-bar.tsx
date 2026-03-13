@@ -47,17 +47,17 @@ export function EnumHeaderBar({
       <div>
         <EnumInfoEditDialog
           enumKey={modelEnumEntityType.keyFromId(enumDefinition.id)}
-          asChild
-        >
-          <button
-            className="group flex items-center space-x-2 hover:cursor-pointer"
-            type="button"
-            title="Edit Enum Info"
-          >
-            <h1>{enumDefinition.name}</h1>
-            <MdEdit className="invisible size-4 group-hover:visible" />
-          </button>
-        </EnumInfoEditDialog>
+          trigger={
+            <button
+              className="group flex items-center space-x-2 hover:cursor-pointer"
+              type="button"
+              title="Edit Enum Info"
+            >
+              <h1>{enumDefinition.name}</h1>
+              <MdEdit className="invisible size-4 group-hover:visible" />
+            </button>
+          }
+        />
         {enumDefinition.featureRef && (
           <div className="text-xs text-muted-foreground">
             {

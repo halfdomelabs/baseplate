@@ -55,10 +55,27 @@ describe('parseAuthorizerExpression', () => {
       );
     });
 
-    it('should reject != operator', () => {
-      expect(() => parseAuthorizerExpression('model.id !== userId')).toThrow(
-        AuthorizerExpressionParseError,
-      );
+    it('should parse !== operator', () => {
+      const result = parseAuthorizerExpression('model.id !== userId');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '!==',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'id',
+          start: 0,
+          end: 8,
+        },
+        right: {
+          type: 'fieldRef',
+          source: 'auth',
+          field: 'userId',
+          start: 13,
+          end: 19,
+        },
+      });
     });
 
     it('should reject == operator', () => {
@@ -69,6 +86,133 @@ describe('parseAuthorizerExpression', () => {
 
     it('should reject computed property access', () => {
       expect(() => parseAuthorizerExpression('model["id"] === userId')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+  });
+
+  describe('literal value comparisons', () => {
+    it('should parse model.status === string literal', () => {
+      const result = parseAuthorizerExpression("model.status === 'active'");
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'status',
+          start: 0,
+          end: 12,
+        },
+        right: {
+          type: 'literalValue',
+          value: 'active',
+          start: 17,
+          end: 25,
+        },
+      });
+      expect(result.modelFieldRefs).toEqual(['status']);
+      expect(result.authFieldRefs).toEqual([]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse model.isPublished === boolean literal', () => {
+      const result = parseAuthorizerExpression('model.isPublished === true');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'isPublished',
+          start: 0,
+          end: 17,
+        },
+        right: {
+          type: 'literalValue',
+          value: true,
+          start: 22,
+          end: 26,
+        },
+      });
+    });
+
+    it('should parse model.count === number literal', () => {
+      const result = parseAuthorizerExpression('model.count === 42');
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'count',
+          start: 0,
+          end: 11,
+        },
+        right: {
+          type: 'literalValue',
+          value: 42,
+          start: 16,
+          end: 18,
+        },
+      });
+    });
+
+    it('should parse literal on left side (commutative)', () => {
+      const result = parseAuthorizerExpression("'active' === model.status");
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '===',
+        left: {
+          type: 'literalValue',
+          value: 'active',
+          start: 0,
+          end: 8,
+        },
+        right: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'status',
+          start: 13,
+          end: 25,
+        },
+      });
+    });
+
+    it('should parse model.status !== string literal', () => {
+      const result = parseAuthorizerExpression("model.status !== 'draft'");
+
+      expect(result.ast).toEqual({
+        type: 'fieldComparison',
+        operator: '!==',
+        left: {
+          type: 'fieldRef',
+          source: 'model',
+          field: 'status',
+          start: 0,
+          end: 12,
+        },
+        right: {
+          type: 'literalValue',
+          value: 'draft',
+          start: 17,
+          end: 24,
+        },
+      });
+    });
+
+    it('should reject comparing two literals', () => {
+      expect(() => parseAuthorizerExpression("'active' === 'draft'")).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject null literal', () => {
+      expect(() => parseAuthorizerExpression('model.status === null')).toThrow(
         AuthorizerExpressionParseError,
       );
     });
@@ -490,7 +634,7 @@ describe('parseAuthorizerExpression', () => {
     it('should include position in error for invalid operator', () => {
       let caughtError: unknown;
       try {
-        parseAuthorizerExpression('model.id !== userId');
+        parseAuthorizerExpression('model.id == userId');
       } catch (error) {
         caughtError = error;
       }

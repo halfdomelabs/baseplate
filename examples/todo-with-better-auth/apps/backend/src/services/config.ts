@@ -21,6 +21,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   BETTER_AUTH_URL: z.url(),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
+  // Enable embedded workers (run queue workers in the API process)
+  ENABLE_EMBEDDED_WORKERS: z.stringbool().optional(),
   // Redis key prefix for namespace isolation (optional)
   REDIS_KEY_PREFIX: z.string().default(''),
   // Connection URL of Redis

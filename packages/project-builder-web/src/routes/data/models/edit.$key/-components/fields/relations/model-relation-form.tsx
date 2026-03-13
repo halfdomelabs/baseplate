@@ -427,8 +427,8 @@ export function ModelRelationForm({
             </Button>
           )}
           <div className="flex gap-4">
-            <DialogClose asChild>
-              <Button variant="secondary">Cancel</Button>
+            <DialogClose render={<Button variant="secondary" />}>
+              Cancel
             </DialogClose>
             <Button
               type="submit"

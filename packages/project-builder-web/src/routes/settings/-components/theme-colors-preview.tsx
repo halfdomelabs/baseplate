@@ -16,6 +16,7 @@ import {
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
+  ComboboxList,
 } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
@@ -62,19 +63,17 @@ export function ThemeColorsPreview({
           </div>
           <div>
             <PreviewSectionTitle>Combobox</PreviewSectionTitle>
-            <Combobox>
+            <Combobox items={['Option 1', 'Option 2', 'Option 3']}>
               <ComboboxInput placeholder={'Select an option'} />
               <ComboboxContent style={colorCss}>
-                <ComboboxItem value="opt1" label="Option 1">
-                  Option 1
-                </ComboboxItem>
-                <ComboboxItem value="green" label="Option 2">
-                  Option 2
-                </ComboboxItem>
-                <ComboboxItem value="blue" label="Option 3">
-                  Option 3
-                </ComboboxItem>
                 <ComboboxEmpty>No results found</ComboboxEmpty>
+                <ComboboxList>
+                  {(item: string) => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
               </ComboboxContent>
             </Combobox>
           </div>

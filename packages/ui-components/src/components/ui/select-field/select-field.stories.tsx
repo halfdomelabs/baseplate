@@ -27,7 +27,7 @@ const meta: Meta<typeof SelectField> = {
         <Story
           args={{
             ...ctx.args,
-            value: value ? value : ctx.args.value,
+            value: value === undefined ? ctx.args.value : value,
             onChange,
           }}
         />
@@ -42,6 +42,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     options: [
+      { label: 'None of the Above', value: null },
       { label: 'Option 1', value: '1' },
       { label: 'Option 2', value: '2' },
       { label: 'Option 3', value: '3' },

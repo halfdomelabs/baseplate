@@ -44,6 +44,10 @@ export function generateReactEslintConfig(options) {
           version: 'detect',
         },
       },
+      rules: {
+        // Disable for Base UI's render prop pattern where content is injected via useRender
+        'jsx-a11y/anchor-has-content': 'off',
+      },
     },
 
     // Typescript
@@ -106,6 +110,10 @@ export function generateReactEslintConfig(options) {
                   // Ignore classes used in custom component classes
                   ignore: [
                     'toaster', // Sonner library class
+                    'data-ending-style:data-activation-direction=*', // Base UI NavigationMenu compound selectors
+                    'data-starting-style:data-activation-direction=*', // Base UI NavigationMenu compound selectors
+                    String.raw`data-\[ending-style\]:easing-*`, // Base UI NavigationMenu data attribute
+                    'xs:*', // xs breakpoint not recognized
                   ],
                 },
               ],

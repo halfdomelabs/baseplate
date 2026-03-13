@@ -30,7 +30,7 @@ import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 
 interface NewAdminSectionDialogProps {
-  children: React.ReactNode;
+  trigger: React.ReactElement;
   appId: string;
   appKey: string;
   open?: boolean;
@@ -38,7 +38,7 @@ interface NewAdminSectionDialogProps {
 }
 
 function NewAdminSectionDialog({
-  children,
+  trigger,
   appId,
   appKey,
   open,
@@ -132,7 +132,7 @@ function NewAdminSectionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create New Admin Section</DialogTitle>
