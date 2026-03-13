@@ -131,7 +131,7 @@ export class RootPackageCompiler extends PackageCompiler {
             }
           : {}),
         ...(checkTasks.length > 0
-          ? { check: `turbo run ${checkTasks} --afected --continue` }
+          ? { check: `turbo run ${checkTasks} --affected --continue` }
           : {}),
         typecheck: `turbo run typecheck`,
         lint: `turbo run lint`,
