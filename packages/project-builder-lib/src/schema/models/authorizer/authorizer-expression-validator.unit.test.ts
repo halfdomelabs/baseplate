@@ -690,7 +690,7 @@ describe('createModelValidationContext', () => {
       }),
     );
 
-    expect(context.fieldTypes?.get('status')).toBe('string');
-    expect(context.fieldTypes?.get('count')).toBe('int');
+    expect(context.fieldTypes.get('status')).toBe('string');
+    expect(context.fieldTypes.get('count')).toBe('int');
   });
 });

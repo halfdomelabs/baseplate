@@ -11,7 +11,7 @@ import {
   ModelUtils,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar } from '@baseplate-dev/utils';
+import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -139,7 +139,7 @@ function getResolvedQueryFilter(
  */
 function serializeLiteralValue(value: string | number | boolean): string {
   if (typeof value === 'string') {
-    return `'${value}'`;
+    return quot(value);
   }
   return String(value);
 }

@@ -11,7 +11,7 @@ import {
   ModelUtils,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar } from '@baseplate-dev/utils';
+import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -114,7 +114,7 @@ function generateComparisonOperandCode(
   if (node.type === 'literalValue') {
     const { value } = node;
     if (typeof value === 'string') {
-      return `'${value}'`;
+      return quot(value);
     }
     // number and boolean emit as-is
     return String(value);

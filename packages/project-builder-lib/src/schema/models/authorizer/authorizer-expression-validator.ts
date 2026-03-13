@@ -41,7 +41,7 @@ export interface ModelValidationContext {
   /** Set of valid scalar field names on the model */
   scalarFieldNames: Set<string>;
   /** Map of field name → field type (for literal type-checking) */
-  fieldTypes?: Map<string, string>;
+  fieldTypes: Map<string, string>;
   /** Map of relation name → relation validation info (for nested authorizer checks) */
   relationInfo?: Map<string, RelationValidationInfo>;
 }
@@ -279,8 +279,6 @@ export function validateAuthorizerExpression(
     literalNode: LiteralValueNode,
   ): void {
     const { fieldTypes } = modelContext;
-    if (!fieldTypes) return;
-
     const fieldType = fieldTypes.get(fieldRefNode.field);
     if (!fieldType) return;
 
