@@ -227,6 +227,22 @@ function ComboboxEmpty({
   );
 }
 
+function ComboboxStatus({
+  className,
+  ...props
+}: ComboboxPrimitive.Status.Props): React.ReactElement {
+  return (
+    <ComboboxPrimitive.Status
+      data-slot="combobox-status"
+      className={cn(
+        'flex items-center justify-center p-2 text-sm text-muted-foreground',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 function ComboboxSeparator({
   className,
   ...props
@@ -320,6 +336,7 @@ export {
   ComboboxLabel,
   ComboboxList,
   ComboboxSeparator,
+  ComboboxStatus,
   ComboboxTrigger,
   ComboboxValue,
   useComboboxAnchor,

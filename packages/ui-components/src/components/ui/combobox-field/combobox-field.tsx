@@ -74,6 +74,7 @@ function ComboboxField<OptionType>({
         }}
         disabled={disabled}
         items={options}
+        itemToStringLabel={getOptionLabel}
         itemToStringValue={(option) => getOptionValue(option) ?? ''}
         autoHighlight
       >

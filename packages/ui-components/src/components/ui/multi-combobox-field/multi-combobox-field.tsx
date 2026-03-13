@@ -80,6 +80,7 @@ function MultiComboboxField<OptionType>({
         }}
         disabled={disabled}
         items={options}
+        itemToStringLabel={(option) => getOptionLabel(option)}
         itemToStringValue={getOptionValue}
       >
         <ComboboxChips ref={chipsRef}>
