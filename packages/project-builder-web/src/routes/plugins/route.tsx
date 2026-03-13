@@ -52,12 +52,14 @@ function PluginsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
-        <Link to="/plugins">
-          <Button variant="secondary" className="w-full">
-            <MdAdd />
-            Add new plugin
-          </Button>
-        </Link>
+        <Button
+          variant="secondary"
+          className="w-full"
+          render={<Link to="/plugins" />}
+        >
+          <MdAdd />
+          Manage plugins
+        </Button>
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (

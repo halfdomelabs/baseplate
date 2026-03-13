@@ -133,7 +133,13 @@ export function ModelAddFieldButton({
       <DropdownMenu>
         <DropdownMenuTrigger
           disabled={availableAutoFields.length === 0}
-          render={<Button variant="secondary" size="sm" />}
+          render={
+            <Button
+              variant="secondary"
+              size="sm"
+              aria-label="Add auto-generated field"
+            />
+          }
         >
           <MdExpandMore />
         </DropdownMenuTrigger>

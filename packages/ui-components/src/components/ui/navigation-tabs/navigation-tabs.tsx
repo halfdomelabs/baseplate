@@ -19,7 +19,7 @@ function NavigationTabs({
           'inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground',
           className,
         )}
-        role="tablist"
+        role="navigation"
       >
         {children}
       </div>
@@ -45,7 +45,7 @@ function NavigationTabsItem({
         active && 'bg-background text-foreground shadow-sm',
         className,
       ),
-      role: 'tab',
+      'aria-current': active ? 'page' : undefined,
       ...props,
       children,
     },

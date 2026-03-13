@@ -78,7 +78,6 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
-    "radix-ui": "1.4.2",
     "react": "catalog:",
     "react-colorful": "5.6.1",
     "react-day-picker": "9.7.0",

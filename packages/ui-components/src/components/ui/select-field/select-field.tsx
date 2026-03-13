@@ -1,6 +1,9 @@
 'use client';
 
+import type * as React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
+import { useId } from 'react';
 
 import type {
   AddOptionRequiredFields,
@@ -30,10 +33,6 @@ export interface SelectFieldProps<OptionType>
   className?: string;
 }
 
-// we have to use a sentinel value to detect null values since Radix Select doesn't support empty values
-// https://github.com/radix-ui/primitives/issues/2706
-const NULL_SENTINEL = '__NULL_VALUE__';
-
 function SelectField<OptionType>({
   label,
   description,
@@ -49,22 +48,14 @@ function SelectField<OptionType>({
   ...props
 }: SelectFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
+  const triggerId = useId();
   const selectedOption = options.find((o) => getOptionValue(o) === value);
-
-  const selectedValue = (() => {
-    if (!selectedOption || value === undefined) return '';
-    return value ?? NULL_SENTINEL;
-  })();
 
   return (
     <Field data-invalid={!!error} className={className}>
-      <FieldLabel>{label}</FieldLabel>
-      <Select
-        value={selectedValue}
-        onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
-        {...props}
-      >
-        <SelectTrigger aria-invalid={!!error}>
+      <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
+      <Select value={value} onValueChange={(val) => onChange?.(val)} {...props}>
+        <SelectTrigger id={triggerId} aria-invalid={!!error}>
           <SelectValue placeholder={placeholder}>
             {selectedOption ? getOptionLabel(selectedOption) : null}
           </SelectValue>
@@ -75,7 +66,7 @@ function SelectField<OptionType>({
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <SelectItem value={val ?? NULL_SENTINEL} key={val}>
+                <SelectItem value={val} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
