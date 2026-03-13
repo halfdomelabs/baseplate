@@ -44,7 +44,7 @@
     "3130": { "onAutoForward": "ignore" }
   },
 
-  "initializeCommand": "./.devcontainer/setup-mounts.sh",
+  "initializeCommand": "./.devcontainer/initialize.sh",
 
   "postCreateCommand": "./.devcontainer/post-create.sh"
 }

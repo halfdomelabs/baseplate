@@ -39,4 +39,11 @@ if [ ! -f "$SECRETS_FILE" ]; then
 fi
 chmod 600 "$SECRETS_FILE"
 
+# Ensure Claude skills directory exists (prevents bind mount failure if missing)
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+if [ ! -d "$CLAUDE_SKILLS_DIR" ]; then
+    mkdir -p "$CLAUDE_SKILLS_DIR"
+    echo "Created Claude skills directory: $CLAUDE_SKILLS_DIR"
+fi
+
 echo "Mount setup completed successfully"

@@ -29,6 +29,9 @@ services:
       - ${LOCAL_WORKSPACE_FOLDER}/.git/config:/workspaces/${WORKSPACE_BASENAME}/.git/config:ro
       - ${LOCAL_WORKSPACE_FOLDER}/.git/hooks:/workspaces/${WORKSPACE_BASENAME}/.git/hooks:ro
 
+      # Claude skills (mounted on top of the named claude volume)
+      - ${HOME}/.claude/skills:/home/vscode/.claude/skills:ro
+
       # Secrets
       - ${HOME}/.devcontainers/${WORKSPACE_BASENAME}.env:/run/secrets/devcontainer.env:ro
 
