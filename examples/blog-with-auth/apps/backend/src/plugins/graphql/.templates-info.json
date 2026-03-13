@@ -20,7 +20,7 @@
     "template": "use-graph-logger"
   },
   "use-sentry.ts": {
-    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
+    "generator": "@baseplate-dev/plugin-observability#pothos/pothos-sentry",
     "instanceData": {},
     "template": "use-sentry"
   }

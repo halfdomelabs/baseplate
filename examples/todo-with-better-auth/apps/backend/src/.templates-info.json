@@ -5,7 +5,7 @@
     "template": "index"
   },
   "instrument.ts": {
-    "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+    "generator": "@baseplate-dev/plugin-observability#core/fastify-sentry",
     "instanceData": {},
     "template": "instrument"
   },

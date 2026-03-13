@@ -8,13 +8,11 @@ import {
   composeFastifyApplication,
   dataUtilsGenerator,
   fastifyRedisGenerator,
-  fastifySentryGenerator,
   fastifyServerGenerator,
   fastifyStripeGenerator,
   pothosGenerator,
   pothosPrismaGenerator,
   pothosScalarGenerator,
-  pothosSentryGenerator,
   prismaGenerator,
   prismaVitestGenerator,
   readmeGenerator,
@@ -65,7 +63,6 @@ export function buildFastify(
         readme: readmeGenerator({
           projectName: `${projectDefinition.settings.general.name} backend`,
         }),
-        sentry: fastifySentryGenerator({}),
         redis: isRedisEnabled(projectDefinition)
           ? fastifyRedisGenerator({
               defaultUrl: getRedisSettings(projectDefinition).url,
@@ -85,7 +82,6 @@ export function buildFastify(
         }),
         pothos: pothosGenerator({}),
         pothosPrisma: pothosPrismaGenerator({}),
-        pothosSentry: pothosSentryGenerator({}),
         modules: [
           ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
           graphqlBundle,

@@ -1,6 +1,6 @@
 {
   "apollo-sentry-link.ts": {
-    "generator": "@baseplate-dev/react-generators#apollo/apollo-sentry",
+    "generator": "@baseplate-dev/plugin-observability#apollo/apollo-sentry",
     "instanceData": {},
     "template": "apollo-sentry-link"
   },

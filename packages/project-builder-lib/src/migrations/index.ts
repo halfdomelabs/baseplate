@@ -23,6 +23,7 @@ import { migration023AssignAppPorts } from './migration-023-assign-app-ports.js'
 import { migration024GraphqlObjectTypeFieldAuth } from './migration-024-graphql-object-type-field-auth.js';
 import { migration025ServiceMethodAuth } from './migration-025-service-method-auth.js';
 import { migration026QuerySharedRoles } from './migration-026-query-shared-roles.js';
+import { migration027EnableSentryPlugin } from './migration-027-enable-sentry-plugin.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -47,6 +48,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration024GraphqlObjectTypeFieldAuth,
   migration025ServiceMethodAuth,
   migration026QuerySharedRoles,
+  migration027EnableSentryPlugin,
 ];
 
 export function isMigrateableProjectDefinition(

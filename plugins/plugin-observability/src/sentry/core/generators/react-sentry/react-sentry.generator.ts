@@ -9,6 +9,12 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  authIdentifyProvider,
+  REACT_PACKAGES,
+  reactConfigProvider,
+  reactErrorConfigProvider,
+} from '@baseplate-dev/react-generators';
+import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
@@ -16,11 +22,6 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '#src/constants/react-packages.js';
-import { authIdentifyProvider } from '#src/generators/auth/auth-identify/index.js';
-
-import { reactConfigProvider } from '../react-config/index.js';
-import { reactErrorConfigProvider } from '../react-error/index.js';
 import { CORE_REACT_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});

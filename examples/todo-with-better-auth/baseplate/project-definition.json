@@ -1769,9 +1769,16 @@
       "name": "better-auth",
       "packageName": "@baseplate-dev/plugin-auth",
       "version": "0.1.0"
+    },
+    {
+      "config": { "sentryOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-observability_sentry",
+      "name": "sentry",
+      "packageName": "@baseplate-dev/plugin-observability",
+      "version": "0.1.0"
     }
   ],
-  "schemaVersion": 26,
+  "schemaVersion": 27,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

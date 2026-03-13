@@ -41,6 +41,9 @@
       "path": "./plugins/plugin-email/tsconfig.build.json"
     },
     {
+      "path": "./plugins/plugin-observability/tsconfig.build.json"
+    },
+    {
       "path": "./plugins/plugin-queue/tsconfig.build.json"
     },
     {

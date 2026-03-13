@@ -1,0 +1,8 @@
+{
+  "name": "sentry",
+  "displayName": "Sentry",
+  "icon": "icon.svg",
+  "description": "Error monitoring and performance tracking with Sentry for both backend and frontend.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}
