@@ -13,6 +13,7 @@ import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
+import type { ModelConfig } from '../models.js';
 import type {
   AuthorizerExpressionNode,
   FieldRefNode,
@@ -401,18 +402,15 @@ export function buildRelationValidationInfo(
  * @param modelConfig - The parsed model configuration
  * @returns Model validation context for the validator
  */
-export function createModelValidationContext(modelConfig: {
-  name: string;
-  fields?: { name: string; type?: string }[];
-}): ModelValidationContext {
+export function createModelValidationContext(
+  modelConfig: ModelConfig,
+): ModelValidationContext {
   const scalarFieldNames = new Set<string>();
   const fieldTypes = new Map<string, string>();
 
-  for (const field of modelConfig.fields ?? []) {
+  for (const field of modelConfig.model.fields) {
     scalarFieldNames.add(field.name);
-    if (field.type) {
-      fieldTypes.set(field.name, field.type);
-    }
+    fieldTypes.set(field.name, field.type);
   }
 
   return {
