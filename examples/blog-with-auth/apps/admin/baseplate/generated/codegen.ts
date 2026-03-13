@@ -30,7 +30,7 @@ const config: CodegenConfig = {
     // graphql-codegen emits `import * as types` in gql.ts even when there are no documents,
     // causing a TypeScript error with noUnusedLocals.
     afterAllFileWrite: [
-      "printf '\\n// @ts-ignore\\ntype _Unused = typeof types;\\n' >> src/gql/gql.ts",
+      String.raw`printf '\n// @ts-ignore\ntype _Unused = typeof types;\n' >> src/gql/gql.ts`,
     ],
   },
 };
