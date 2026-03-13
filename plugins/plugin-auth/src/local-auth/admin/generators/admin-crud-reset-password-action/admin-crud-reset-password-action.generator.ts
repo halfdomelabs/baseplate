@@ -81,9 +81,9 @@ export const adminCrudResetPasswordActionGenerator = createGenerator({
         const hookContent = tsTemplateWithImports([
           tsImportBuilder(['useState']).from('react'),
           graphqlImports.FragmentType.typeDeclaration(),
-          tsImportBuilder(['passwordResetDialogUserFragment']).from(
-            paths.passwordResetDialog,
-          ),
+          tsImportBuilder(['passwordResetDialogUserFragment'])
+            .typeOnly()
+            .from(paths.passwordResetDialog),
         ])`
           const [passwordResetUser, setPasswordResetUser] = useState<FragmentType<typeof passwordResetDialogUserFragment> | null>(
           null,

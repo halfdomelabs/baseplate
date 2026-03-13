@@ -37,14 +37,11 @@ import { graphql } from '@src/gql/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import {
-  PasswordResetDialog,
-  passwordResetDialogUserFragment,
-} from './password-reset-dialog';
-import {
-  RoleManagerDialog,
-  roleManagerDialogUserFragment,
-} from './role-manager-dialog';
+import type { passwordResetDialogUserFragment } from './password-reset-dialog';
+import type { roleManagerDialogUserFragment } from './role-manager-dialog';
+
+import { PasswordResetDialog } from './password-reset-dialog';
+import { RoleManagerDialog } from './role-manager-dialog';
 
 /* HOISTED:delete-action-mutation:START */
 const userListPageDeleteUserMutation = graphql(`

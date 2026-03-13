@@ -84,9 +84,9 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
         const hookContent = tsTemplateWithImports([
           tsImportBuilder(['useState']).from('react'),
           graphqlImports.FragmentType.typeDeclaration(),
-          tsImportBuilder(['roleManagerDialogUserFragment']).from(
-            paths.roleManagerDialog,
-          ),
+          tsImportBuilder(['roleManagerDialogUserFragment'])
+            .typeOnly()
+            .from(paths.roleManagerDialog),
         ])`
           const [roleDialogUser, setRoleDialogUser] = useState<FragmentType<typeof roleManagerDialogUserFragment> | null>(
             null,

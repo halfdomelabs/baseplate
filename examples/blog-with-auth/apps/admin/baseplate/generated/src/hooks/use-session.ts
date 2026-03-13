@@ -27,4 +27,4 @@ export function useSession(): SessionData {
   return contextValue;
 }
 
-export type { AuthRole };
+export type { AuthRole } from '@src/gql/graphql';
