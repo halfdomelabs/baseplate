@@ -171,7 +171,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                             ? 'Applying...'
                             : 'Apply fix'}
                         </Button>
-                        <Tooltip delay={300}>
+                        <Tooltip>
                           <TooltipTrigger
                             render={
                               <Button
