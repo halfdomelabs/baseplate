@@ -8,6 +8,7 @@ import {
   initializePgBoss,
   shutdownPgBoss,
 } from '../services/pg-boss.service.js';
+import { startWorkers } from '../services/workers.service.js';
 
 /**
  * Worker script for running pg-boss queue workers.
@@ -18,22 +19,6 @@ import {
  * 4. Starts all queue workers
  * 5. Handles graceful shutdown
  */
-
-/**
- * Start all queue workers.
- */
-async function startWorkers(): Promise<void> {
-  // Start workers for all registered queues
-  const startPromises = QUEUE_REGISTRY.map(async (queue) => {
-    try {
-      await queue.work();
-    } catch (error: unknown) {
-      logError(error, { source: 'run-workers', queueName: queue.name });
-    }
-  });
-
-  await Promise.all(startPromises);
-}
 
 /**
  * Main entry point for the worker script.
