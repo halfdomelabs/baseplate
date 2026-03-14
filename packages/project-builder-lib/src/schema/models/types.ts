@@ -24,6 +24,10 @@ export const modelUniqueConstraintEntityType = createEntityType(
   { parentType: modelEntityType },
 );
 
+export const modelIndexEntityType = createEntityType('model-index', {
+  parentType: modelEntityType,
+});
+
 export const modelTransformerEntityType = createEntityType(
   'model-transformer',
   { parentType: modelEntityType },
