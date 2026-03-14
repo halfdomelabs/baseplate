@@ -122,7 +122,6 @@
   "@baseplate-dev/plugin-observability#core/fastify-sentry:sentry": "src/services/sentry.ts",
   "@baseplate-dev/plugin-observability#pothos/pothos-sentry:use-sentry": "src/plugins/graphql/use-sentry.ts",
   "@baseplate-dev/plugin-payments#stripe/fastify-stripe:plugins-webhook": "src/plugins/stripe-webhook.ts",
-  "@baseplate-dev/plugin-payments#stripe/fastify-stripe:plugins-webhook-test": "src/plugins/stripe-webhook.int.test.ts",
   "@baseplate-dev/plugin-payments#stripe/fastify-stripe:service": "src/services/stripe.ts",
   "@baseplate-dev/plugin-payments#stripe/fastify-stripe:service-events": "src/services/stripe-events.ts",
   "@baseplate-dev/plugin-queue#bullmq/core/bullmq:bullmq-plugin": "src/plugins/bullmq.plugin.ts",

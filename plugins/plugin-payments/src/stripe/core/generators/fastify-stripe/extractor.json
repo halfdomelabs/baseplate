@@ -21,21 +21,6 @@
       "sourceFile": "src/plugins/stripe-webhook.ts",
       "variables": {}
     },
-    "plugins-webhook-test": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "plugins",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
-      "referencedGeneratorTemplates": [
-        "plugins-webhook",
-        "service",
-        "service-events"
-      ],
-      "sourceFile": "src/plugins/stripe-webhook.int.test.ts",
-      "variables": {}
-    },
     "service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

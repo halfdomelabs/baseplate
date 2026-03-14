@@ -24,26 +24,7 @@ const pluginsWebhook = createTsTemplateFile({
   variables: {},
 });
 
-const pluginsWebhookTest = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'plugins',
-  importMapProviders: {},
-  name: 'plugins-webhook-test',
-  referencedGeneratorTemplates: {
-    pluginsWebhook: {},
-    service: {},
-    serviceEvents: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/plugins/stripe-webhook.int.test.ts',
-    ),
-  },
-  variables: {},
-});
-
-export const pluginsGroup = { pluginsWebhook, pluginsWebhookTest };
+export const pluginsGroup = { pluginsWebhook };
 
 const service = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
