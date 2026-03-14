@@ -6,6 +6,8 @@
  * - `hasRole('admin')`
  * - `hasSomeRole(['admin', 'moderator'])`
  * - `model.id === userId || hasRole('admin')`
+ * - `exists(model.members, { userId: userId })`
+ * - `all(model.tasks, { isCompleted: true })`
  *
  * The AST is produced by parsing with Acorn and converting from ESTree.
  */
@@ -20,7 +22,8 @@ export type AuthorizerExpressionNode =
   | NestedHasRoleNode
   | NestedHasSomeRoleNode
   | IsAuthenticatedNode
-  | BinaryLogicalNode;
+  | BinaryLogicalNode
+  | RelationFilterNode;
 
 /**
  * A literal value in a comparison expression.
@@ -190,6 +193,66 @@ export interface NestedHasSomeRoleNode {
 }
 
 /**
+ * A condition within a relation filter expression.
+ *
+ * Pairs a field name on the related model with a value to compare against.
+ *
+ * @example
+ * ```typescript
+ * // userId: userId in exists(model.members, { userId: userId })
+ * { field: 'userId', value: { type: 'fieldRef', source: 'auth', field: 'userId', ... } }
+ *
+ * // type: "admin" in exists(model.members, { type: "admin" })
+ * { field: 'type', value: { type: 'literalValue', value: 'admin', ... } }
+ * ```
+ */
+export interface RelationFilterCondition {
+  /** The field name on the related model */
+  field: string;
+  /** The value to compare — auth field ref or literal value */
+  value: FieldRefNode | LiteralValueNode;
+}
+
+/**
+ * A relation filter expression: `exists(model.relation, { ...conditions })` or
+ * `all(model.relation, { ...conditions })`
+ *
+ * Checks if some or all records in a 1:many relation match the given conditions.
+ *
+ * @example
+ * ```typescript
+ * // exists(model.members, { userId: userId })
+ * {
+ *   type: 'relationFilter',
+ *   relationName: 'members',
+ *   operator: 'some',
+ *   conditions: [{ field: 'userId', value: { type: 'fieldRef', source: 'auth', field: 'userId', ... } }],
+ * }
+ *
+ * // all(model.tasks, { isCompleted: true })
+ * {
+ *   type: 'relationFilter',
+ *   relationName: 'tasks',
+ *   operator: 'every',
+ *   conditions: [{ field: 'isCompleted', value: { type: 'literalValue', value: true, ... } }],
+ * }
+ * ```
+ */
+export interface RelationFilterNode {
+  type: 'relationFilter';
+  /** The relation name on the current model (e.g., 'members') */
+  relationName: string;
+  /** Start position of model.relation in the source */
+  relationStart: number;
+  /** End position of model.relation in the source */
+  relationEnd: number;
+  /** 'some' for exists(), 'every' for all() */
+  operator: 'some' | 'every';
+  /** At least one condition required */
+  conditions: RelationFilterCondition[];
+}
+
+/**
  * A boolean indicating whether the user is authenticated.
  *
  * Can be used standalone or in logical expressions:
@@ -265,6 +328,8 @@ export interface AuthorizerExpressionInfo {
   roleRefs: string[];
   /** Nested role references via model relations (e.g., hasRole(model.todoList, 'owner')) */
   nestedRoleRefs: { relationName: string; roles: string[] }[];
+  /** Relation filter references (e.g., exists(model.members, { userId: userId })) */
+  relationFilterRefs: { relationName: string }[];
   /** Whether the expression requires the model instance */
   requiresModel: boolean;
 }

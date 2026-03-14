@@ -217,6 +217,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       allModels.map((m) => ({
         name: m.name,
         authorizer: m.authorizer,
+        fields: m.model?.fields,
       })),
     );
 

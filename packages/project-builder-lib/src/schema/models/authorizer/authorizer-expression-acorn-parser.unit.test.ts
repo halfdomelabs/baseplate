@@ -592,6 +592,209 @@ describe('parseAuthorizerExpression', () => {
     });
   });
 
+  describe('exists() expressions', () => {
+    it('should parse exists(model.members, { userId: userId })', () => {
+      const result = parseAuthorizerExpression(
+        'exists(model.members, { userId: userId })',
+      );
+
+      expect(result.ast).toEqual({
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      });
+      expect(result.modelFieldRefs).toEqual([]);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.relationFilterRefs).toEqual([{ relationName: 'members' }]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse exists with literal condition', () => {
+      const result = parseAuthorizerExpression(
+        "exists(model.members, { type: 'admin' })",
+      );
+
+      expect(result.ast.type).toBe('relationFilter');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'relationFilter' }
+      >;
+      expect(ast.operator).toBe('some');
+      expect(ast.conditions).toEqual([
+        {
+          field: 'type',
+          value: {
+            type: 'literalValue',
+            value: 'admin',
+            start: 30,
+            end: 37,
+          },
+        },
+      ]);
+      expect(result.authFieldRefs).toEqual([]);
+    });
+
+    it('should parse exists with multiple conditions', () => {
+      const result = parseAuthorizerExpression(
+        "exists(model.members, { userId: userId, type: 'admin' })",
+      );
+
+      expect(result.ast.type).toBe('relationFilter');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'relationFilter' }
+      >;
+      expect(ast.conditions).toHaveLength(2);
+      expect(ast.conditions[0].field).toBe('userId');
+      expect(ast.conditions[0].value.type).toBe('fieldRef');
+      expect(ast.conditions[1].field).toBe('type');
+      expect(ast.conditions[1].value.type).toBe('literalValue');
+      expect(result.authFieldRefs).toEqual(['userId']);
+    });
+
+    it('should parse exists with boolean literal condition', () => {
+      const result = parseAuthorizerExpression(
+        'exists(model.tasks, { isCompleted: true })',
+      );
+
+      expect(result.ast.type).toBe('relationFilter');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'relationFilter' }
+      >;
+      expect(ast.conditions[0]).toEqual({
+        field: 'isCompleted',
+        value: {
+          type: 'literalValue',
+          value: true,
+          start: 35,
+          end: 39,
+        },
+      });
+    });
+
+    it('should reject exists with no arguments', () => {
+      expect(() => parseAuthorizerExpression('exists()')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject exists with one argument', () => {
+      expect(() => parseAuthorizerExpression('exists(model.members)')).toThrow(
+        AuthorizerExpressionParseError,
+      );
+    });
+
+    it('should reject exists with non-model relation', () => {
+      expect(() =>
+        parseAuthorizerExpression('exists(foo.members, { userId: userId })'),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject exists with non-object second argument', () => {
+      expect(() =>
+        parseAuthorizerExpression("exists(model.members, 'invalid')"),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject exists with empty conditions object', () => {
+      expect(() =>
+        parseAuthorizerExpression('exists(model.members, {})'),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+
+    it('should reject exists with computed property key', () => {
+      expect(() =>
+        parseAuthorizerExpression(
+          'exists(model.members, { ["userId"]: userId })',
+        ),
+      ).toThrow(AuthorizerExpressionParseError);
+    });
+  });
+
+  describe('all() expressions', () => {
+    it('should parse all(model.tasks, { isCompleted: true })', () => {
+      const result = parseAuthorizerExpression(
+        'all(model.tasks, { isCompleted: true })',
+      );
+
+      expect(result.ast).toEqual({
+        type: 'relationFilter',
+        relationName: 'tasks',
+        relationStart: 4,
+        relationEnd: 15,
+        operator: 'every',
+        conditions: [
+          {
+            field: 'isCompleted',
+            value: {
+              type: 'literalValue',
+              value: true,
+              start: 32,
+              end: 36,
+            },
+          },
+        ],
+      });
+      expect(result.relationFilterRefs).toEqual([{ relationName: 'tasks' }]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse all with auth field condition', () => {
+      const result = parseAuthorizerExpression(
+        'all(model.items, { ownerId: userId })',
+      );
+
+      expect(result.ast.type).toBe('relationFilter');
+      const ast = result.ast as Extract<
+        typeof result.ast,
+        { type: 'relationFilter' }
+      >;
+      expect(ast.operator).toBe('every');
+      expect(ast.conditions[0].field).toBe('ownerId');
+      expect(result.authFieldRefs).toEqual(['userId']);
+    });
+  });
+
+  describe('exists/all combined with logical operators', () => {
+    it('should parse exists combined with ||', () => {
+      const result = parseAuthorizerExpression(
+        'model.id === userId || exists(model.members, { userId: userId })',
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      expect(result.modelFieldRefs).toEqual(['id']);
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.relationFilterRefs).toEqual([{ relationName: 'members' }]);
+      expect(result.requiresModel).toBe(true);
+    });
+
+    it('should parse exists combined with hasRole', () => {
+      const result = parseAuthorizerExpression(
+        "exists(model.members, { userId: userId }) || hasRole('admin')",
+      );
+
+      expect(result.ast.type).toBe('binaryLogical');
+      expect(result.authFieldRefs).toEqual(['userId']);
+      expect(result.roleRefs).toEqual(['admin']);
+      expect(result.relationFilterRefs).toEqual([{ relationName: 'members' }]);
+    });
+  });
+
   describe('syntax errors', () => {
     it('should reject invalid JavaScript syntax', () => {
       expect(() => parseAuthorizerExpression('model.id ===')).toThrow(

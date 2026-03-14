@@ -3,9 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import { generateAuthorizerExpressionCode } from './authorizer-compiler.js';
 
-function generate(expression: string): string {
+function generate(
+  expression: string,
+  codeContext?: Parameters<typeof generateAuthorizerExpressionCode>[1],
+): string {
   const parsed = parseAuthorizerExpression(expression);
-  return generateAuthorizerExpressionCode(parsed.ast);
+  return generateAuthorizerExpressionCode(parsed.ast, codeContext);
 }
 
 describe('generateAuthorizerExpressionCode', () => {
@@ -106,6 +109,90 @@ describe('generateAuthorizerExpressionCode', () => {
       ).toBe(
         "((model.id === ctx.auth.userId) || (ctx.auth.hasRole('admin'))) || (ctx.auth.hasRole('moderator'))",
       );
+    });
+  });
+
+  describe('relation filter (exists/all)', () => {
+    const codeContext = {
+      resolvedRelations: new Map(),
+      resolvedRelationFilters: new Map([
+        [
+          'members',
+          {
+            prismaAccessor: 'brandMember',
+            foreignKeyFieldName: 'brandId',
+            localFieldName: 'id',
+          },
+        ],
+        [
+          'tasks',
+          {
+            prismaAccessor: 'task',
+            foreignKeyFieldName: 'projectId',
+            localFieldName: 'id',
+          },
+        ],
+      ]),
+    };
+
+    it('should generate exists with auth field condition (null guard)', () => {
+      expect(
+        generate('exists(model.members, { userId: userId })', codeContext),
+      ).toBe(
+        '(ctx.auth.userId != null ? (await prisma.brandMember.count({ where: { brandId: model.id, userId: ctx.auth.userId } })) > 0 : false)',
+      );
+    });
+
+    it('should generate exists with literal condition (no null guard)', () => {
+      expect(
+        generate("exists(model.members, { type: 'admin' })", codeContext),
+      ).toBe(
+        "(await prisma.brandMember.count({ where: { brandId: model.id, type: 'admin' } })) > 0",
+      );
+    });
+
+    it('should generate exists with multiple conditions', () => {
+      expect(
+        generate(
+          "exists(model.members, { userId: userId, type: 'admin' })",
+          codeContext,
+        ),
+      ).toBe(
+        "(ctx.auth.userId != null ? (await prisma.brandMember.count({ where: { brandId: model.id, userId: ctx.auth.userId, type: 'admin' } })) > 0 : false)",
+      );
+    });
+
+    it('should generate all with literal condition', () => {
+      expect(
+        generate('all(model.tasks, { isCompleted: true })', codeContext),
+      ).toBe(
+        '(await prisma.task.count({ where: { projectId: model.id, NOT: { isCompleted: true } } })) === 0',
+      );
+    });
+
+    it('should generate all with auth field condition', () => {
+      expect(
+        generate('all(model.tasks, { assigneeId: userId })', codeContext),
+      ).toBe(
+        '(await prisma.task.count({ where: { projectId: model.id, NOT: { assigneeId: ctx.auth.userId } } })) === 0',
+      );
+    });
+
+    it('should combine exists with logical operators', () => {
+      expect(
+        generate(
+          "exists(model.members, { userId: userId }) || hasRole('admin')",
+          codeContext,
+        ),
+      ).toBe(
+        "((ctx.auth.userId != null ? (await prisma.brandMember.count({ where: { brandId: model.id, userId: ctx.auth.userId } })) > 0 : false)) || (ctx.auth.hasRole('admin'))",
+      );
+    });
+
+    it('should throw when relation filter used without context', () => {
+      expect(() =>
+        generate('exists(model.members, { userId: userId })'),
+      ).toThrow(/no code context was provided/);
     });
   });
 });

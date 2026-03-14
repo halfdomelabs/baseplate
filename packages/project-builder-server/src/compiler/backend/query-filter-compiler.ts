@@ -77,6 +77,9 @@ export function generateQueryFilterExpressionCode(
       const roles = node.roles.map((r) => `'${r}'`).join(', ');
       return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, '${resolved.relationFieldName}', [${roles}])`;
     }
+    case 'relationFilter': {
+      return generateRelationFilterWhereCode(node);
+    }
     case 'binaryLogical': {
       const helper = node.operator === '||' ? 'or' : 'and';
       // Flatten consecutive same-operator chains so A && B && C becomes
@@ -132,6 +135,56 @@ function getResolvedQueryFilter(
     );
   }
   return resolved;
+}
+
+/**
+ * Generate a Prisma where clause for a relation filter expression (exists/all).
+ *
+ * For `exists` (some): `{ relationName: { some: { ...conditions } } }`
+ * For `all` (every): `{ relationName: { every: { ...conditions } } }`
+ */
+function generateRelationFilterWhereCode(
+  node: Extract<AuthorizerExpressionNode, { type: 'relationFilter' }>,
+): string {
+  const prismaOperator = node.operator === 'some' ? 'some' : 'every';
+
+  // Build condition entries
+  const conditionEntries = node.conditions.map((condition) => {
+    const valueCode = generateConditionValueCode(condition.value);
+    return `${condition.field}: ${valueCode}`;
+  });
+  const conditionsCode = conditionEntries.join(', ');
+
+  const whereClause = `{ ${node.relationName}: { ${prismaOperator}: { ${conditionsCode} } } }`;
+
+  // Check if any condition references an auth field (needs null guard)
+  const authFieldConditions = node.conditions.filter(
+    (c) => c.value.type === 'fieldRef' && c.value.source === 'auth',
+  );
+
+  if (authFieldConditions.length > 0) {
+    const nullChecks = authFieldConditions
+      .map((c) => `${generateConditionValueCode(c.value)} != null`)
+      .join(' && ');
+    return `(${nullChecks} ? ${whereClause} : false)`;
+  }
+
+  return whereClause;
+}
+
+/**
+ * Generate code for a condition value (auth field ref or literal).
+ */
+function generateConditionValueCode(
+  node: FieldRefNode | LiteralValueNode,
+): string {
+  if (node.type === 'literalValue') {
+    return serializeLiteralValue(node.value);
+  }
+  if (node.source === 'auth') {
+    return `ctx.auth.${node.field}`;
+  }
+  return `model.${node.field}`;
 }
 
 /**

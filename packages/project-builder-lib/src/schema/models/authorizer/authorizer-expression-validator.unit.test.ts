@@ -16,6 +16,7 @@ import type {
   IsAuthenticatedNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
+  RelationFilterNode,
 } from './authorizer-expression-ast.js';
 
 import {
@@ -556,6 +557,200 @@ describe('validateAuthorizerExpression', () => {
         role: 'owner',
         roleStart: 24,
         roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        defaultModelContext,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+  });
+
+  describe('relation filter validation', () => {
+    const modelContextWithRelations = {
+      modelName: 'Brand',
+      scalarFieldNames: new Set(['id', 'name']),
+      fieldTypes: new Map<string, string>([
+        ['id', 'string'],
+        ['name', 'string'],
+      ]),
+      relationInfo: new Map([
+        [
+          'members',
+          {
+            referenceCount: 1,
+            foreignModelName: 'BrandMember',
+            foreignAuthorizerRoleNames: new Set<string>(),
+            foreignScalarFieldNames: new Set([
+              'id',
+              'userId',
+              'brandId',
+              'type',
+            ]),
+            foreignFieldTypes: new Map([
+              ['id', 'string'],
+              ['userId', 'string'],
+              ['brandId', 'string'],
+              ['type', 'enum'],
+            ]),
+          },
+        ],
+      ]),
+    };
+
+    it('should validate valid exists expression', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for nonexistent relation', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'nonexistent',
+        relationStart: 7,
+        relationEnd: 22,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'nonexistent'");
+      expect(warnings[0].message).toContain("'Brand'");
+    });
+
+    it('should warn for nonexistent condition field on foreign model', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'badField',
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'badField'");
+      expect(warnings[0].message).toContain("'BrandMember'");
+    });
+
+    it('should warn for incompatible literal type in condition', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            value: {
+              type: 'literalValue',
+              value: 123,
+              start: 32,
+              end: 35,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'number'");
+      expect(warnings[0].message).toContain("'userId'");
+      expect(warnings[0].message).toContain("'string'");
+    });
+
+    it('should skip validation when no relationInfo provided', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
       };
 
       const warnings = validateAuthorizerExpression(

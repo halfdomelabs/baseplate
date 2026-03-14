@@ -30,6 +30,10 @@ export interface RelationValidationInfo {
   foreignModelName: string;
   /** Set of role names defined on the foreign model's authorizer */
   foreignAuthorizerRoleNames: Set<string>;
+  /** Scalar field names on the foreign model (for relation filter condition validation) */
+  foreignScalarFieldNames?: Set<string>;
+  /** Field type map for the foreign model (for type-checking relation filter condition values) */
+  foreignFieldTypes?: Map<string, string>;
 }
 
 /**
@@ -212,6 +216,11 @@ export function validateAuthorizerExpression(
         break;
       }
 
+      case 'relationFilter': {
+        validateRelationFilter(node);
+        break;
+      }
+
       case 'isAuthenticated': {
         // No validation needed
         break;
@@ -271,6 +280,102 @@ export function validateAuthorizerExpression(
           end: rolesEnd[i],
         });
       }
+    }
+  }
+
+  function validateRelationFilter(
+    node: Extract<AuthorizerExpressionNode, { type: 'relationFilter' }>,
+  ): void {
+    const { relationInfo } = modelContext;
+    if (!relationInfo) {
+      return;
+    }
+
+    const relation = relationInfo.get(node.relationName);
+    if (!relation) {
+      const availableRelations = [...relationInfo.keys()].join(', ');
+      warnings.push({
+        message: `Relation '${node.relationName}' does not exist on model '${modelContext.modelName}'.${availableRelations ? ` Available relations: ${availableRelations}.` : ''}`,
+        start: node.relationStart,
+        end: node.relationEnd,
+      });
+      return;
+    }
+
+    // Validate condition fields exist on the foreign model
+    for (const condition of node.conditions) {
+      if (
+        relation.foreignScalarFieldNames &&
+        !relation.foreignScalarFieldNames.has(condition.field)
+      ) {
+        const availableFields = [...relation.foreignScalarFieldNames].join(
+          ', ',
+        );
+        warnings.push({
+          message: `Field '${condition.field}' does not exist on model '${relation.foreignModelName}'.${availableFields ? ` Available fields: ${availableFields}.` : ''}`,
+        });
+      }
+
+      // Type-check literal condition values against foreign field types
+      if (
+        condition.value.type === 'literalValue' &&
+        relation.foreignFieldTypes
+      ) {
+        const foreignFieldType = relation.foreignFieldTypes.get(
+          condition.field,
+        );
+        if (foreignFieldType) {
+          validateLiteralTypeCompatibilityForField(
+            condition.field,
+            foreignFieldType,
+            relation.foreignModelName,
+            condition.value,
+          );
+        }
+      }
+    }
+  }
+
+  function validateLiteralTypeCompatibilityForField(
+    fieldName: string,
+    fieldType: string,
+    modelName: string,
+    literalNode: LiteralValueNode,
+  ): void {
+    const literalJsType = typeof literalNode.value;
+
+    const isCompatible = (() => {
+      switch (fieldType) {
+        case 'boolean': {
+          return literalJsType === 'boolean';
+        }
+        case 'int': {
+          return (
+            typeof literalNode.value === 'number' &&
+            Number.isInteger(literalNode.value)
+          );
+        }
+        case 'float':
+        case 'decimal': {
+          return literalJsType === 'number';
+        }
+        case 'string':
+        case 'uuid':
+        case 'enum': {
+          return literalJsType === 'string';
+        }
+        default: {
+          return true;
+        }
+      }
+    })();
+
+    if (!isCompatible) {
+      warnings.push({
+        message: `Literal value type '${literalJsType}' is not compatible with field '${fieldName}' of type '${fieldType}' on model '${modelName}'.`,
+        start: literalNode.start,
+        end: literalNode.end,
+      });
     }
   }
 
@@ -366,6 +471,7 @@ export function buildRelationValidationInfo(
     id?: string;
     name: string;
     authorizer?: { roles?: readonly { name: string }[] };
+    fields?: readonly { name: string; type?: string }[];
   }[],
 ): Map<string, RelationValidationInfo> {
   const relationInfo = new Map<string, RelationValidationInfo>();
@@ -389,10 +495,26 @@ export function buildRelationValidationInfo(
       }
     }
 
+    // Build foreign field info for relation filter validation
+    const foreignScalarFieldNames = new Set<string>();
+    const foreignFieldTypes = new Map<string, string>();
+    if (foreignModel?.fields) {
+      for (const field of foreignModel.fields) {
+        foreignScalarFieldNames.add(field.name);
+        if (field.type) {
+          foreignFieldTypes.set(field.name, field.type);
+        }
+      }
+    }
+
     relationInfo.set(relation.name, {
       referenceCount: relation.references.length,
       foreignModelName: foreignModel?.name ?? relation.modelRef,
       foreignAuthorizerRoleNames,
+      foreignScalarFieldNames:
+        foreignScalarFieldNames.size > 0 ? foreignScalarFieldNames : undefined,
+      foreignFieldTypes:
+        foreignFieldTypes.size > 0 ? foreignFieldTypes : undefined,
     });
   }
 

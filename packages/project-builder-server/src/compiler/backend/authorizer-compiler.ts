@@ -28,11 +28,25 @@ interface ResolvedNestedRelation {
 }
 
 /**
+ * Resolved information about a relation for relation filter code generation.
+ */
+interface ResolvedRelationFilter {
+  /** The Prisma model accessor (e.g., 'brandMember') */
+  prismaAccessor: string;
+  /** The FK field on the foreign model that points back (e.g., 'brandId') */
+  foreignKeyFieldName: string;
+  /** The local field to match against (e.g., 'id') */
+  localFieldName: string;
+}
+
+/**
  * Context for generating authorizer expression code with relation resolution.
  */
 interface AuthorizerExpressionCodeContext {
   /** Map of relation name → resolved nested relation info */
   resolvedRelations: Map<string, ResolvedNestedRelation>;
+  /** Map of relation name → resolved relation filter info */
+  resolvedRelationFilters: Map<string, ResolvedRelationFilter>;
 }
 
 /**
@@ -76,6 +90,9 @@ export function generateAuthorizerExpressionCode(
       );
       return checks.length === 1 ? checks[0] : `(${checks.join(' || ')})`;
     }
+    case 'relationFilter': {
+      return generateRelationFilterCode(node, codeContext);
+    }
     case 'isAuthenticated': {
       return 'ctx.auth.isAuthenticated';
     }
@@ -103,6 +120,70 @@ function getResolvedRelation(
   if (!resolved) {
     throw new Error(
       `Nested authorizer expression references relation '${relationName}' which was not resolved`,
+    );
+  }
+  return resolved;
+}
+
+/**
+ * Generate code for a relation filter expression (exists/all).
+ *
+ * For `exists` (some): checks if any related record matches conditions.
+ * For `all` (every): checks if no related record fails conditions.
+ */
+function generateRelationFilterCode(
+  node: Extract<AuthorizerExpressionNode, { type: 'relationFilter' }>,
+  codeContext: AuthorizerExpressionCodeContext | undefined,
+): string {
+  const resolved = getResolvedRelationFilter(codeContext, node.relationName);
+
+  // Build the condition entries
+  const conditionEntries = node.conditions.map((condition) => {
+    const valueCode = generateComparisonOperandCode(condition.value);
+    return `${condition.field}: ${valueCode}`;
+  });
+
+  // Check if any condition references an auth field (needs null guard)
+  const authFieldConditions = node.conditions.filter(
+    (c) => c.value.type === 'fieldRef' && c.value.source === 'auth',
+  );
+
+  const fkCondition = `${resolved.foreignKeyFieldName}: model.${resolved.localFieldName}`;
+  const allConditions = [fkCondition, ...conditionEntries].join(', ');
+
+  if (node.operator === 'some') {
+    const countExpr = `(await prisma.${resolved.prismaAccessor}.count({ where: { ${allConditions} } })) > 0`;
+    if (authFieldConditions.length > 0) {
+      // Null guard: if any auth field is null, the filter can't match
+      const nullChecks = authFieldConditions
+        .map((c) => `${generateComparisonOperandCode(c.value)} != null`)
+        .join(' && ');
+      return `(${nullChecks} ? ${countExpr} : false)`;
+    }
+    return countExpr;
+  }
+
+  // operator === 'every': count records that DON'T match, expect 0
+  const notConditions = conditionEntries.join(', ');
+  return `(await prisma.${resolved.prismaAccessor}.count({ where: { ${fkCondition}, NOT: { ${notConditions} } } })) === 0`;
+}
+
+/**
+ * Get the resolved relation filter info from the code context, throwing if not found.
+ */
+function getResolvedRelationFilter(
+  codeContext: AuthorizerExpressionCodeContext | undefined,
+  relationName: string,
+): ResolvedRelationFilter {
+  if (!codeContext) {
+    throw new Error(
+      `Relation filter expression references relation '${relationName}' but no code context was provided`,
+    );
+  }
+  const resolved = codeContext.resolvedRelationFilters.get(relationName);
+  if (!resolved) {
+    throw new Error(
+      `Relation filter expression references relation '${relationName}' which was not resolved`,
     );
   }
   return resolved;
@@ -188,6 +269,71 @@ function resolveNestedRelations(
 }
 
 /**
+ * Resolve relation info for relation filter expressions (exists/all) on a model.
+ *
+ * Unlike nested hasRole which uses a local FK field, relation filters target
+ * foreign (1:many) relations where the FK is on the foreign model.
+ */
+function resolveRelationFilters(
+  appBuilder: BackendAppEntryBuilder,
+  model: ModelConfig,
+  relationFilterRefs: { relationName: string }[],
+): Map<string, ResolvedRelationFilter> {
+  const resolvedFilters = new Map<string, ResolvedRelationFilter>();
+
+  for (const { relationName } of relationFilterRefs) {
+    if (resolvedFilters.has(relationName)) {
+      continue;
+    }
+
+    const relation = model.model.relations.find((r) => r.name === relationName);
+    if (!relation) {
+      throw new Error(
+        `Relation '${relationName}' not found on model '${model.name}'`,
+      );
+    }
+
+    if (relation.references.length !== 1) {
+      throw new Error(
+        `Relation '${relationName}' on model '${model.name}' has ${relation.references.length} foreign key references. Relation filters only support single-key relations.`,
+      );
+    }
+
+    const foreignKeyFieldName = appBuilder.nameFromId(
+      relation.references[0].foreignRef,
+    );
+    if (!foreignKeyFieldName) {
+      throw new Error(
+        `Could not resolve foreign FK field for relation '${relationName}' on model '${model.name}'`,
+      );
+    }
+
+    const localFieldName = appBuilder.nameFromId(
+      relation.references[0].localRef,
+    );
+    if (!localFieldName) {
+      throw new Error(
+        `Could not resolve local field for relation '${relationName}' on model '${model.name}'`,
+      );
+    }
+
+    const foreignModel = ModelUtils.byIdOrThrow(
+      appBuilder.projectDefinition,
+      relation.modelRef,
+    );
+    const prismaAccessor = lowercaseFirstChar(foreignModel.name);
+
+    resolvedFilters.set(relationName, {
+      prismaAccessor,
+      foreignKeyFieldName,
+      localFieldName,
+    });
+  }
+
+  return resolvedFilters;
+}
+
+/**
  * Build model authorizer generators for all models in a feature
  * that have non-empty authorizer roles.
  */
@@ -213,11 +359,13 @@ export function buildAuthorizersForFeature(
       }
       const idFieldName = primaryKeyFields[0].name;
 
-      // Collect all nested role refs across all roles for this model
+      // Collect all nested role refs and relation filter refs across all roles
       const allNestedRoleRefs: { relationName: string; roles: string[] }[] = [];
+      const allRelationFilterRefs: { relationName: string }[] = [];
       const parsedRoles = authorizer.roles.map((role) => {
         const parsed = parseAuthorizerExpression(role.expression);
         allNestedRoleRefs.push(...parsed.nestedRoleRefs);
+        allRelationFilterRefs.push(...parsed.relationFilterRefs);
         return { role, parsed };
       });
 
@@ -230,15 +378,25 @@ export function buildAuthorizersForFeature(
               foreignModelNames: [] as string[],
             };
 
+      // Resolve relation filter info if there are relation filter refs
+      const resolvedRelationFilters =
+        allRelationFilterRefs.length > 0
+          ? resolveRelationFilters(appBuilder, model, allRelationFilterRefs)
+          : new Map<string, ResolvedRelationFilter>();
+
       const codeContext: AuthorizerExpressionCodeContext | undefined =
-        resolvedRelations.size > 0 ? { resolvedRelations } : undefined;
+        resolvedRelations.size > 0 || resolvedRelationFilters.size > 0
+          ? { resolvedRelations, resolvedRelationFilters }
+          : undefined;
 
       return prismaModelAuthorizerGenerator({
         modelName: model.name,
         idFieldName,
         foreignAuthorizerModelNames: foreignModelNames,
         roles: parsedRoles.map(({ role, parsed }) => {
-          const hasNestedRefs = parsed.nestedRoleRefs.length > 0;
+          const hasNestedRefs =
+            parsed.nestedRoleRefs.length > 0 ||
+            parsed.relationFilterRefs.length > 0;
           const expressionCode = generateAuthorizerExpressionCode(
             parsed.ast,
             codeContext,
@@ -246,7 +404,7 @@ export function buildAuthorizersForFeature(
 
           let roleCode: string;
           if (hasNestedRefs) {
-            // Nested refs are async (hasRoleById returns Promise)
+            // Nested refs and relation filters are async
             roleCode = parsed.requiresModel
               ? `async (ctx, model) => ${expressionCode}`
               : `async (ctx) => ${expressionCode}`;
