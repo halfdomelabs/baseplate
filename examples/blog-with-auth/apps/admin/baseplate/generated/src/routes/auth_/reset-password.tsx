@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from '@src/components/ui/card';
 import { InputFieldController } from '@src/components/ui/input-field';
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 import { getApolloErrorCode } from '@src/utils/apollo-error';

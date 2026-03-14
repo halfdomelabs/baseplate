@@ -29,8 +29,8 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst, titleizeCamel } from '#src/utils/case.js';
 import {
   mergeGraphqlFields,
-  renderTadaFragment,
-  renderTadaOperation,
+  renderGraphQLFragment,
+  renderGraphQLOperation,
 } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudInput } from '../_providers/admin-crud-input-container.js';
@@ -162,7 +162,7 @@ export const adminCrudEditGenerator = createGenerator({
                   contextFields: ['preloadQuery'],
                 },
               ],
-              propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${editFormDefaultValuesFragmentVariable}> | undefined`,
+              propType: tsTemplate`${graphqlImports.FragmentType.typeFragment()}<typeof ${editFormDefaultValuesFragmentVariable}> | undefined`,
               pageComponentBody: tsTemplateWithImports([
                 tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
               ])`const { data } = useReadQuery(queryRef);`,
@@ -215,9 +215,12 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE:
                     editFormDefaultValuesFragmentVariable,
                   TPL_LIST_ROUTE: reactRoutes.getRoutePrefix(),
-                  TPL_EDIT_FRAGMENT: renderTadaFragment(
+                  TPL_EDIT_FRAGMENT: renderGraphQLFragment(
                     editFormDefaultValuesFragment,
-                    { exported: true, currentPath: editFormComponentPath },
+                    {
+                      exported: true,
+                      graphqlImports,
+                    },
                   ),
                   TPL_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
                     Object.fromEntries(
@@ -340,11 +343,11 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_UPDATE_MUTATION_VARIABLE: updateMutationVariable,
                   TPL_UPDATE_MUTATION_FIELD_NAME: updateMutationFieldName,
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
-                  TPL_EDIT_QUERY: renderTadaOperation(editQuery, {
-                    currentPath: editPagePath,
+                  TPL_EDIT_QUERY: renderGraphQLOperation(editQuery, {
+                    graphqlImports,
                   }),
-                  TPL_UPDATE_MUTATION: renderTadaOperation(updateMutation, {
-                    currentPath: editPagePath,
+                  TPL_UPDATE_MUTATION: renderGraphQLOperation(updateMutation, {
+                    graphqlImports,
                   }),
                   TPL_ROUTE_PROPS: editPageRenderedLoaders.routeLoader
                     ? tsTemplate`loader: ${editPageRenderedLoaders.routeLoader}`
@@ -425,9 +428,12 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
                     TPL_CREATE_MUTATION_FIELD_NAME: createMutationFieldName,
-                    TPL_CREATE_MUTATION: renderTadaOperation(createMutation, {
-                      currentPath: createPagePath,
-                    }),
+                    TPL_CREATE_MUTATION: renderGraphQLOperation(
+                      createMutation,
+                      {
+                        graphqlImports,
+                      },
+                    ),
                     TPL_ROUTE_PROPS: createPageRenderedLoaders.routeLoader
                       ? tsTemplate`loader: ${createPageRenderedLoaders.routeLoader}`
                       : '',

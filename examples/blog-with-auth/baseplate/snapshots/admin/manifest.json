@@ -1,6 +1,10 @@
 {
   "files": {
-    "added": [{ "path": "src/services/apollo/apollo.unit.test.ts" }],
+    "added": [
+      { "path": "src/gql/fragment-masking.ts" },
+      { "path": "src/gql/gql.ts" },
+      { "path": "src/services/apollo/apollo.unit.test.ts" }
+    ],
     "deleted": [],
     "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]
   },

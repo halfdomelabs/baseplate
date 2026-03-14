@@ -3,8 +3,7 @@
     "added": [
       { "path": "build.sh" },
       { "path": "CLAUDE.md" },
-      { "path": "Dockerfile" },
-      { "path": "render.yaml" }
+      { "path": "Dockerfile" }
     ],
     "deleted": [],
     "modified": []

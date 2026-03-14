@@ -1,9 +1,7 @@
 {
   "name": "better-auth/react-better-auth",
   "extractors": {
-    "ts": {
-      "defaultImportProviderName": "betterAuthImportsProvider"
-    }
+    "ts": { "defaultImportProviderName": "betterAuthImportsProvider" }
   },
   "templates": {
     "auth-client": {

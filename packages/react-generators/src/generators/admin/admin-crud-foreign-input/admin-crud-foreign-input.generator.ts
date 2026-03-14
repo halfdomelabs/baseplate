@@ -19,9 +19,9 @@ import { graphqlImportsProvider } from '#src/generators/apollo/index.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
-  renderTadaFragment,
-  renderTadaOperation,
-} from '#src/writers/graphql/gql-tada.js';
+  renderGraphQLFragment,
+  renderGraphQLOperation,
+} from '#src/writers/graphql/graphql-render.js';
 
 import type { DataLoader } from '../_utils/data-loader.js';
 
@@ -112,7 +112,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
             tsImportBuilder(['useReadQuery']).from('@apollo/client/react'),
           ])`const ${optionsName} = useReadQuery(${optionsName}Ref).data.${foreignModelNameVariants.graphqlList};`,
           propName: optionsName,
-          propType: tsTemplate`${graphqlImports.FragmentOf.typeFragment()}<typeof ${optionFragmentVariable}>[]`,
+          propType: tsTemplate`${graphqlImports.FragmentType.typeFragment()}<typeof ${optionFragmentVariable}>[]`,
           propPageValue: tsTemplate`${optionsName}`,
         };
 
@@ -136,16 +136,16 @@ export const adminCrudForeignInputGenerator = createGenerator({
               hoistedFragments: [
                 tsHoistedFragment(
                   `foreign-input-query-${optionsName}`,
-                  renderTadaOperation(loadOptionsQuery, {
+                  renderGraphQLOperation(loadOptionsQuery, {
                     exported: true,
-                    currentPath: parentComponentPath,
+                    graphqlImports,
                   }),
                 ),
                 tsHoistedFragment(
                   `foreign-input-fragment-${optionsName}`,
-                  renderTadaFragment(optionFragment, {
+                  renderGraphQLFragment(optionFragment, {
                     exported: true,
-                    currentPath: parentComponentPath,
+                    graphqlImports,
                   }),
                 ),
               ],

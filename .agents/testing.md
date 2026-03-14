@@ -93,22 +93,22 @@ const files = await globby(['**/*.ts'], { fs: fsAdapter });
 
 > **When adding a new test helper file, add an entry to this table.**
 
-| Package                | File                                                            | Key Exports                                                                             |
-| ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| core-generators        | `src/test-helpers/` (barrel)                                    | `extendFragmentMatchers`, `createTestTsImportMap`, `tsFragmentSerializer`               |
-| fastify-generators     | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                     |
-| react-generators       | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                     |
-| sync                   | `src/runner/tests/factories.test-helper.ts`                     | `buildTestGeneratorBundle`, `buildTestGeneratorTaskEntry`, `buildTestGeneratorEntry`    |
-| sync                   | `src/runner/tests/dependency-entry.test-helper.ts`              | `createDependencyEntry`, `createReadOnlyDependencyEntry`, `createOutputDependencyEntry` |
-| sync                   | `src/output/string-merge-algorithms/tests/merge.test-helper.ts` | `runMergeTests`                                                                         |
-| sync                   | `src/output/builder-action-test-helpers.ts`                     | `createTestTaskOutputBuilder`, `testAction`                                             |
-| sync                   | `src/tests/logger.test-utils.ts`                                | `createTestLogger`, `createConsoleLogger`                                               |
-| sync                   | `src/templates/extractor/test-utils/plugin-test-utils.ts`       | `createMockPluginApi`, `createPluginInstance`                                           |
-| ui-components          | `src/tests/render.test-helper.tsx`                              | `renderWithProviders`                                                                   |
-| project-builder-lib | `src/testing/project-definition-container.test-helper.ts` | `createTestProjectDefinition`, `createTestProjectDefinitionContainer`, `createTestEntityServiceContext` |
-| project-builder-lib    | `src/schema/definition.test-helper.ts`                          | `createTestFeature`, `createTestModel`, `createTestScalarField`                         |
-| project-builder-lib    | `src/plugins/plugins.test-utils.ts`                             | `createTestPluginMetadata`, `createTestMigration`                                       |
-| project-builder-lib    | `src/references/expression-stub-parser.test-helper.ts`          | `stubParser`, `StubParserWithSlots`                                                     |
-| code-morph             | `src/morphers/tests/morpher.test-helper.ts`                     | `runMorpherTests`                                                                       |
-| project-builder-server | `src/tests/chokidar.test-helper.ts`                             | `MockFSWatcher`, `emitMockFsWatcherEvent`                                               |
-| project-builder-cli    | `e2e/fixtures/server-fixture.test-helper.ts`                    | Playwright test fixtures (`test`, `addProject`)                                         |
+| Package                | File                                                            | Key Exports                                                                                             |
+| ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| core-generators        | `src/test-helpers/` (barrel)                                    | `extendFragmentMatchers`, `createTestTsImportMap`, `tsFragmentSerializer`                               |
+| fastify-generators     | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                                     |
+| react-generators       | `src/test-helpers/setup.test-helper.ts`                         | Re-exports core-generators matchers                                                                     |
+| sync                   | `src/runner/tests/factories.test-helper.ts`                     | `buildTestGeneratorBundle`, `buildTestGeneratorTaskEntry`, `buildTestGeneratorEntry`                    |
+| sync                   | `src/runner/tests/dependency-entry.test-helper.ts`              | `createDependencyEntry`, `createReadOnlyDependencyEntry`, `createOutputDependencyEntry`                 |
+| sync                   | `src/output/string-merge-algorithms/tests/merge.test-helper.ts` | `runMergeTests`                                                                                         |
+| sync                   | `src/output/builder-action-test-helpers.ts`                     | `createTestTaskOutputBuilder`, `testAction`                                                             |
+| sync                   | `src/tests/logger.test-utils.ts`                                | `createTestLogger`, `createConsoleLogger`                                                               |
+| sync                   | `src/templates/extractor/test-utils/plugin-test-utils.ts`       | `createMockPluginApi`, `createPluginInstance`                                                           |
+| ui-components          | `src/tests/render.test-helper.tsx`                              | `renderWithProviders`                                                                                   |
+| project-builder-lib    | `src/testing/project-definition-container.test-helper.ts`       | `createTestProjectDefinition`, `createTestProjectDefinitionContainer`, `createTestEntityServiceContext` |
+| project-builder-lib    | `src/schema/definition.test-helper.ts`                          | `createTestFeature`, `createTestModel`, `createTestScalarField`                                         |
+| project-builder-lib    | `src/plugins/plugins.test-utils.ts`                             | `createTestPluginMetadata`, `createTestMigration`                                                       |
+| project-builder-lib    | `src/references/expression-stub-parser.test-helper.ts`          | `stubParser`, `StubParserWithSlots`                                                                     |
+| code-morph             | `src/morphers/tests/morpher.test-helper.ts`                     | `runMorpherTests`                                                                                       |
+| project-builder-server | `src/tests/chokidar.test-helper.ts`                             | `MockFSWatcher`, `emitMockFsWatcherEvent`                                                               |
+| project-builder-cli    | `e2e/fixtures/server-fixture.test-helper.ts`                    | Playwright test fixtures (`test`, `addProject`)                                                         |

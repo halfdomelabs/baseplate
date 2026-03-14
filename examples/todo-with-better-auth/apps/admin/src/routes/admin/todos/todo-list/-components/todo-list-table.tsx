@@ -1,3 +1,4 @@
+import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
@@ -5,7 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentOf, ResultOf } from '@src/graphql';
+import type { FragmentType } from '@src/gql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Button } from '@src/components/ui/button';
@@ -23,12 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { graphql, readFragment } from '@src/graphql';
+import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 /* HOISTED:delete-action-mutation:START */
-const todoListListPageDeleteTodoListMutation = graphql(`
+export const todoListListPageDeleteTodoListMutation = graphql(`
   mutation TodoListListPageDeleteTodoList($input: DeleteTodoListInput!) {
     deleteTodoList(input: $input) {
       todoList {
@@ -56,7 +57,7 @@ export const todoListTableItemsFragment = graphql(`
 
 interface Props {
   /* TPL_PROPS:START */
-  items: FragmentOf<typeof todoListTableItemsFragment>[];
+  items: FragmentType<typeof todoListTableItemsFragment>[];
   /* TPL_PROPS:END */
 }
 

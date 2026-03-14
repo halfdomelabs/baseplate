@@ -6,4 +6,4 @@
 /node_modules
 /src/route-tree.gen.ts
 pnpm-lock.yaml
-src/graphql-env.d.ts
+src/gql

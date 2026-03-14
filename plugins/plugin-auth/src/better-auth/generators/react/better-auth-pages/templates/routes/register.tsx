@@ -1,5 +1,16 @@
 // @ts-nocheck
 
+import { authClient } from '%betterAuthImports';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  InputFieldController,
+} from '%reactComponentsImports';
+import { logError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createFileRoute,
@@ -11,20 +22,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  InputFieldController,
-} from '%reactComponentsImports';
-import { logError } from '%reactErrorImports';
-
-import { authClient } from '%betterAuthImports';
-
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute('/auth/register')({
   validateSearch: z.object({
     return_to: z
       .string()
@@ -36,21 +34,30 @@ export const Route = createFileRoute('/auth/login')({
       throw redirect({ to: return_to ?? '/', replace: true });
     }
   },
-  component: LoginPage,
+  component: RegisterPage,
 });
 
-const formSchema = z.object({
-  email: z.email().transform((value) => value.toLowerCase()),
-  password: z.string().min(8).max(128),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.email().transform((value) => value.toLowerCase()),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .max(128),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
-function LoginPage(): React.JSX.Element {
+function RegisterPage(): React.JSX.Element {
   const {
     control,
     handleSubmit,
-    resetField,
     setError: setFormError,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -62,19 +69,17 @@ function LoginPage(): React.JSX.Element {
 
   const onSubmit = (data: FormData): void => {
     setIsSubmitting(true);
-    authClient.signIn
+    authClient.signUp
       .email({
+        name: data.name,
         email: data.email,
         password: data.password,
       })
       .then(({ error }) => {
         if (error) {
-          resetField('password');
-          setFormError(
-            'password',
-            { message: error.message ?? 'Invalid email or password' },
-            { shouldFocus: true },
-          );
+          setFormError('email', {
+            message: error.message ?? 'Could not create account',
+          });
           return;
         }
         router
@@ -84,12 +89,9 @@ function LoginPage(): React.JSX.Element {
       })
       .catch((err: unknown) => {
         logError(err);
-        resetField('password');
-        setFormError(
-          'password',
-          { message: 'Sorry, we could not log you in.' },
-          { shouldFocus: true },
-        );
+        setFormError('email', {
+          message: 'Sorry, we could not create your account.',
+        });
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -100,14 +102,21 @@ function LoginPage(): React.JSX.Element {
     <div className="flex h-full items-center justify-center">
       <Card className="w-sm">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Create an account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your details below to create your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              <InputFieldController
+                control={control}
+                name="name"
+                type="text"
+                autoComplete="name"
+                placeholder="Your name"
+              />
               <InputFieldController
                 control={control}
                 name="email"
@@ -119,24 +128,29 @@ function LoginPage(): React.JSX.Element {
                 control={control}
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 placeholder="Password"
               />
+              <InputFieldController
+                control={control}
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Confirm password"
+              />
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                Login
+                Sign Up
               </Button>
             </div>
-            <div className="mt-4 flex flex-col gap-4 text-center text-sm">
-              <div>
-                Don&apos;t have an account?{' '}
-                <Link
-                  to="/auth/register"
-                  search={{ return_to }}
-                  className="underline underline-offset-4"
-                >
-                  Sign up
-                </Link>
-              </div>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{' '}
+              <Link
+                to="/auth/login"
+                search={{ return_to }}
+                className="underline underline-offset-4"
+              >
+                Login
+              </Link>
             </div>
           </form>
         </CardContent>

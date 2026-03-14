@@ -1,3 +1,4 @@
+import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
@@ -5,7 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import { toast } from 'sonner';
 
-import type { FragmentOf, ResultOf } from '@src/graphql';
+import type { FragmentType } from '@src/gql';
 
 import { Alert, AlertTitle } from '@src/components/ui/alert';
 import { Button } from '@src/components/ui/button';
@@ -23,12 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from '@src/components/ui/table';
-import { graphql, readFragment } from '@src/graphql';
+import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 /* HOISTED:delete-action-mutation:START */
-const userListPageDeleteUserMutation = graphql(`
+export const userListPageDeleteUserMutation = graphql(`
   mutation UserListPageDeleteUser($input: DeleteUserInput!) {
     deleteUser(input: $input) {
       user {
@@ -55,7 +56,7 @@ export const userTableItemsFragment = graphql(`
 
 interface Props {
   /* TPL_PROPS:START */
-  items: FragmentOf<typeof userTableItemsFragment>[];
+  items: FragmentType<typeof userTableItemsFragment>[];
   /* TPL_PROPS:END */
 }
 

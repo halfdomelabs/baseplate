@@ -69,8 +69,10 @@ export function FileInputFieldController<
     field: { value, onChange },
     fieldState: { error },
   } = useController({ control, name });
-  // TODO: Validate value is correct type
-  const validatedValue = value?.id ? (value as FileUploadInput) : undefined;
+  const validatedValue =
+    typeof value === 'object' && value?.id
+      ? (value as unknown as FileUploadInput)
+      : undefined;
 
   return (
     <FileInputField

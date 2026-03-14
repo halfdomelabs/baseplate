@@ -14,7 +14,7 @@ import {
   reactErrorImportsProvider,
 } from '#src/generators/core/index.js';
 import { graphqlImportsProvider } from '#src/generators/index.js';
-import { renderTadaOperation } from '#src/writers/graphql/gql-tada.js';
+import { renderGraphQLOperation } from '#src/writers/graphql/graphql-render.js';
 
 import { adminCrudActionContainerProvider } from '../_providers/admin-crud-action-container.js';
 import { getModelNameVariants } from '../_utils/get-model-name-variants.js';
@@ -48,12 +48,12 @@ export const adminCrudDeleteActionGenerator = createGenerator({
       }) {
         const parentComponentName =
           adminCrudActionContainer.getParentComponentName();
-        const parentComponentPath =
-          adminCrudActionContainer.getParentComponentPath();
         const itemsFragmentVariable =
           adminCrudActionContainer.getItemsFragmentVariable();
         const itemsFragment = tsTemplateWithImports([
-          graphqlImports.ResultOf.typeDeclaration(),
+          tsImportBuilder(['ResultOf'])
+            .typeOnly()
+            .from('@graphql-typed-document-node/core'),
         ])`ResultOf<typeof ${itemsFragmentVariable}>`;
         const modelNameVariants = getModelNameVariants(modelName);
         const modelTitle = modelNameVariants.title;
@@ -112,9 +112,9 @@ export const adminCrudDeleteActionGenerator = createGenerator({
           ],
         };
 
-        const deleteMutationHoistedFragment = renderTadaOperation(
+        const deleteMutationHoistedFragment = renderGraphQLOperation(
           deleteMutation,
-          { currentPath: parentComponentPath },
+          { graphqlImports },
         );
 
         const hookContent = tsTemplateWithImports(

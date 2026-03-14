@@ -27,5 +27,7 @@ export function getResolverFactory(workingDirectory: string): ResolverFactory {
       '.cjs': ['.cts', '.d.cts', '.cjs'],
       '.mjs': ['.mts', '.d.mts', '.mjs'],
     },
+    // Support type-only packages
+    mainFields: ['module', 'main', 'typings', 'types'],
   });
 }

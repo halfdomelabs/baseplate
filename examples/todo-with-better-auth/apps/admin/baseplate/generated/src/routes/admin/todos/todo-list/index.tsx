@@ -5,26 +5,20 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
 import { Button } from '@src/components/ui/button';
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql';
 
-import {
-  TodoListTable,
-  todoListTableItemsFragment,
-} from './-components/todo-list-table';
+import { TodoListTable } from './-components/todo-list-table';
 
 /* TPL_COMPONENT_NAME=TodoListListPage */
 
 /* TPL_ITEMS_QUERY:START */
-const todoListListPageQuery = graphql(
-  `
-    query TodoListListPage {
-      todoLists {
-        ...TodoListTable_items
-      }
+export const todoListListPageQuery = graphql(`
+  query TodoListListPage {
+    todoLists {
+      ...TodoListTable_items
     }
-  `,
-  [todoListTableItemsFragment],
-);
+  }
+`);
 /* TPL_ITEMS_QUERY:END */
 
 export const Route = createFileRoute(

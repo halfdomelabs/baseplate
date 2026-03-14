@@ -41,8 +41,11 @@ export const REACT_PACKAGES = {
   graphql: '16.11.0',
   'graphql-ws': '5.16.0',
   rxjs: '7.8.2',
-  'gql.tada': '1.9.0',
+  '@graphql-codegen/cli': '6.1.3',
+  '@graphql-codegen/client-preset': '5.2.4',
+  '@graphql-typed-document-node/core': '3.2.0',
   '@graphql-eslint/eslint-plugin': '4.4.0',
+  '@parcel/watcher': '2.5.6',
 
   // Utils
   nanoid: '5.1.6',

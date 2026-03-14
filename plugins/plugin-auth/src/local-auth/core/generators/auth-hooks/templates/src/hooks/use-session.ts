@@ -1,10 +1,8 @@
 // @ts-nocheck
 
-import type { graphql } from '%graphqlImports';
+import type { AuthRole } from '%graphqlImports';
 
 import { createContext, useContext } from 'react';
-
-export type AuthRole = ReturnType<typeof graphql.scalar<'AuthRole'>>;
 
 export interface SessionData {
   userId: string | undefined;
@@ -30,3 +28,5 @@ export function useSession(): SessionData {
 
   return contextValue;
 }
+
+export type { AuthRole } from '@src/gql/graphql';

@@ -21,7 +21,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/login.tsx",
-      "sourceFile": "routes/auth/login.tsx",
+      "sourceFile": "routes/login.tsx",
       "variables": {}
     },
     "register": {
@@ -44,7 +44,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/register.tsx",
-      "sourceFile": "routes/auth/register.tsx",
+      "sourceFile": "routes/register.tsx",
       "variables": {}
     }
   }

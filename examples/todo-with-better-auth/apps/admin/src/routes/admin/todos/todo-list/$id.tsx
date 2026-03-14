@@ -4,7 +4,7 @@ import { useMutation, useReadQuery } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
@@ -12,7 +12,6 @@ import type { TodoListFormData } from './-schemas/todo-list-schema';
 
 import {
   TodoListEditForm,
-  todoListEditFormDefaultValuesFragment,
   todoListEditFormOwnerOptionsQuery,
 } from './-components/todo-list-edit-form';
 
@@ -22,35 +21,29 @@ import {
 /* TPL_UPDATE_MUTATION_VARIABLE=todoListEditPageUpdateMutation */
 
 /* TPL_EDIT_QUERY:START */
-const todoListEditPageQuery = graphql(
-  `
-    query TodoListEditPage($id: Uuid!) {
-      todoList(id: $id) {
+export const todoListEditPageQuery = graphql(`
+  query TodoListEditPage($id: Uuid!) {
+    todoList(id: $id) {
+      id
+      name
+      ...TodoListEditForm_defaultValues
+    }
+  }
+`);
+/* TPL_EDIT_QUERY:END */
+
+/* TPL_UPDATE_MUTATION:START */
+export const todoListEditPageUpdateMutation = graphql(`
+  mutation TodoListEditPageUpdate($input: UpdateTodoListInput!) {
+    updateTodoList(input: $input) {
+      todoList {
         id
         name
         ...TodoListEditForm_defaultValues
       }
     }
-  `,
-  [todoListEditFormDefaultValuesFragment],
-);
-/* TPL_EDIT_QUERY:END */
-
-/* TPL_UPDATE_MUTATION:START */
-const todoListEditPageUpdateMutation = graphql(
-  `
-    mutation TodoListEditPageUpdate($input: UpdateTodoListInput!) {
-      updateTodoList(input: $input) {
-        todoList {
-          id
-          name
-          ...TodoListEditForm_defaultValues
-        }
-      }
-    }
-  `,
-  [todoListEditFormDefaultValuesFragment],
-);
+  }
+`);
 /* TPL_UPDATE_MUTATION:END */
 
 export const Route = createFileRoute(

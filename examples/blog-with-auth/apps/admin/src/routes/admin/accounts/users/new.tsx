@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
@@ -16,7 +16,7 @@ import { UserEditForm } from './-components/user-edit-form';
 /* TPL_CREATE_MUTATION_FIELD_NAME=createUser */
 
 /* TPL_CREATE_MUTATION:START */
-const userCreatePageCreateMutation = graphql(`
+export const userCreatePageCreateMutation = graphql(`
   mutation UserCreatePageCreate($input: CreateUserInput!) {
     createUser(input: $input) {
       user {

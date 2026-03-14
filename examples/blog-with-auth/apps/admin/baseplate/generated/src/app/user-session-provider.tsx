@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { SessionData } from '../hooks/use-session';
 
 import { ErrorableLoader } from '../components/ui/errorable-loader';
-import { graphql } from '../graphql';
+import { graphql } from '../gql';
 import { AuthSessionContext } from '../hooks/use-session';
 import { logError } from '../services/error-logger';
 import { userSessionClient } from '../services/user-session-client';

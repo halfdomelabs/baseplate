@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client/react';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import { graphql } from '../graphql';
+import { graphql } from '../gql';
 import { logAndFormatError } from '../services/error-formatter';
 import { logError } from '../services/error-logger';
 import { userSessionClient } from '../services/user-session-client';

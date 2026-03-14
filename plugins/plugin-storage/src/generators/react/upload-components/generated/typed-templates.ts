@@ -15,7 +15,6 @@ const fileInputComponent = createTsTemplateFile({
   },
   name: 'file-input-component',
   projectExports: {
-    FileCategory: { isTypeOnly: true },
     FileInput: { isTypeOnly: false },
     fileInputValueFragment: { isTypeOnly: false },
   },

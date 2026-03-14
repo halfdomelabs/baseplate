@@ -1,3 +1,4 @@
+import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
@@ -5,9 +6,10 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
-import type { FragmentOf } from '@src/graphql';
+import type { FragmentType } from '@src/gql';
+import type { FileCategory } from '@src/gql/graphql';
 
-import { graphql, readFragment } from '@src/graphql';
+import { graphql, readFragment } from '@src/gql';
 import { useUpload } from '@src/hooks/use-upload';
 import { formatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
@@ -17,48 +19,41 @@ import { Button } from './button';
 import { CircularProgress } from './circular-progress';
 import { FieldError } from './field';
 
-export type FileCategory = ReturnType<typeof graphql.scalar<'FileCategory'>>;
-
-// We unmask the fragment since it's used as a fragment inside form data so we don't
-// want to mask the data inside the form.
 export const fileInputValueFragment = graphql(`
-  fragment FileInput_value on File @_unmask {
+  fragment FileInput_value on File {
     id
     filename
     publicUrl
   }
 `);
 
-const fileInputCreateUploadUrlMutation = graphql(
-  `
-    mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {
-      createPresignedUploadUrl(input: $input) {
-        url
-        fields {
-          name
-          value
-        }
-        method
-        file {
-          id
-          filename
-          publicUrl
-          ...FileInput_value
-        }
+const fileInputCreateUploadUrlMutation = graphql(`
+  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {
+    createPresignedUploadUrl(input: $input) {
+      url
+      fields {
+        name
+        value
+      }
+      method
+      file {
+        id
+        filename
+        publicUrl
+        ...FileInput_value
       }
     }
-  `,
-  [fileInputValueFragment],
-);
+  }
+`);
 
-export type FileUploadInput = FragmentOf<typeof fileInputValueFragment>;
+export type FileUploadInput = ResultOf<typeof fileInputValueFragment>;
 
 export interface FileInputProps {
   className?: string;
   disabled?: boolean;
   name?: string;
   onChange?: (value: FileUploadInput | null) => void;
-  value?: FileUploadInput;
+  value?: FileUploadInput | FragmentType<typeof fileInputValueFragment>;
   placeholder?: string;
   category: FileCategory;
   imagePreview?: boolean;
@@ -111,8 +106,8 @@ export function FileInput({
         } = data;
         return { url, fields: fields ?? [], method, meta: file };
       },
-      onUploaded: (file) => {
-        const uploadedFile = file.meta;
+      onUploaded: (uploadResult) => {
+        const uploadedFile = uploadResult.meta;
         if (onChange) {
           onChange({
             filename: uploadedFile.filename,
@@ -159,7 +154,12 @@ export function FileInput({
     inputRef.current.value = '';
   };
 
-  const file = readFragment(fileInputValueFragment, value);
+  // Because we don't know if we're getting a fragment or a full object, we need to use the readFragment function to get the file object.
+  // And because readFragment is a no-op we can safely cast the value to the fragment type.
+  const file = readFragment(
+    fileInputValueFragment,
+    value as FragmentType<typeof fileInputValueFragment> | undefined,
+  );
 
   return (
     <div className={cn('max-w-md', className)}>

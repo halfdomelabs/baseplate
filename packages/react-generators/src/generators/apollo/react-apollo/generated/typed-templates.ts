@@ -35,22 +35,40 @@ const cache = createTsTemplateFile({
   variables: {},
 });
 
-const graphql = createTsTemplateFile({
+const codegen = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {},
-  name: 'graphql',
-  projectExports: {
-    FragmentOf: { isTypeOnly: false },
-    graphql: { isTypeOnly: false },
-    readFragment: { isTypeOnly: false },
-    ResultOf: { isTypeOnly: false },
-    VariablesOf: { isTypeOnly: false },
-  },
-  referencedGeneratorTemplates: { graphqlEnvD: {} },
+  name: 'codegen',
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/graphql.ts'),
+    path: path.join(import.meta.dirname, '../templates/package/codegen.ts'),
   },
+  variables: { TPL_BACKEND_SCHEMA_PATH: {}, TPL_SCALARS: {} },
+});
+
+const gqlGraphql = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'gql-graphql',
+  projectExports: { '*': {} },
+  projectExportsOnly: true,
+  source: { contents: '' },
+  variables: {},
+});
+
+const gqlIndex = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'gql-index',
+  projectExports: {
+    FragmentType: { isTypeOnly: true },
+    graphql: {},
+    readFragment: {},
+  },
+  projectExportsOnly: true,
+  source: { contents: '' },
   variables: {},
 });
 
@@ -66,20 +84,6 @@ const graphqlConfig = createTsTemplateFile({
     ),
   },
   variables: { TPL_BACKEND_SCHEMA_PATH: {} },
-});
-
-const graphqlEnvD = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'graphql-env-d',
-  projectExports: {
-    introspection: { isTypeOnly: true },
-    introspection_types: { isTypeOnly: true },
-  },
-  projectExportsOnly: true,
-  source: { contents: '' },
-  variables: {},
 });
 
 const service = createTsTemplateFile({
@@ -101,9 +105,10 @@ const service = createTsTemplateFile({
 export const mainGroup = {
   appApolloProvider,
   cache,
-  graphql,
+  codegen,
+  gqlGraphql,
+  gqlIndex,
   graphqlConfig,
-  graphqlEnvD,
   service,
 };
 

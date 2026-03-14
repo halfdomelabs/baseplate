@@ -1,10 +1,8 @@
 // @ts-nocheck
 
-import { useCallback } from 'react';
-
-import { logError } from '%reactErrorImports';
-
 import { authClient } from '%betterAuthImports';
+import { logError } from '%reactErrorImports';
+import { useCallback } from 'react';
 
 export function useLogOut(): () => void {
   return useCallback(() => {

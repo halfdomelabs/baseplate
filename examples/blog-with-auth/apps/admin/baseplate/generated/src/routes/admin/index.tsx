@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client/react';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { ErrorableLoader } from '@src/components/ui/errorable-loader';
-import { graphql } from '@src/graphql';
+import { graphql } from '@src/gql';
 
 export const Route = createFileRoute(
   /* TPL_ROUTE_PATH:START */ '/admin/' /* TPL_ROUTE_PATH:END */,
