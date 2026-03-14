@@ -25,12 +25,12 @@
     "template": "request-context"
   },
   "stripe-webhook.int.test.ts": {
-    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "plugins-webhook-test"
   },
   "stripe-webhook.ts": {
-    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "plugins-webhook"
   }

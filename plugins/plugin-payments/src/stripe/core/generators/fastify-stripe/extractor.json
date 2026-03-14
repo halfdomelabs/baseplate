@@ -48,7 +48,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/stripe.ts",
-      "projectExports": { "stripe": {} },
+      "projectExports": { "stripe": { "isTypeOnly": false, "name": "stripe" } },
       "sourceFile": "src/services/stripe.ts",
       "variables": {}
     },
@@ -65,8 +65,14 @@
       },
       "pathRootRelativePath": "{src-root}/services/stripe-events.ts",
       "projectExports": {
-        "StripeEventHandler": { "isTypeOnly": true },
-        "stripeEventService": {}
+        "StripeEventHandler": {
+          "isTypeOnly": true,
+          "name": "StripeEventHandler"
+        },
+        "stripeEventService": {
+          "isTypeOnly": false,
+          "name": "stripeEventService"
+        }
       },
       "sourceFile": "src/services/stripe-events.ts",
       "variables": {}

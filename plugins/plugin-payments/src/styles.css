@@ -1,0 +1,6 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme) prefix(payments);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(payments);
+
+@import '@baseplate-dev/ui-components/theme.css';

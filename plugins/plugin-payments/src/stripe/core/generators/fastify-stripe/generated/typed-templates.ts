@@ -1,9 +1,10 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
+import {
+  configServiceImportsProvider,
+  errorHandlerServiceImportsProvider,
+  loggerServiceImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
-
-import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
-import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
 
 const pluginsWebhook = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -49,7 +50,7 @@ const service = createTsTemplateFile({
   group: 'services',
   importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'service',
-  projectExports: { stripe: {} },
+  projectExports: { stripe: { isTypeOnly: false } },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/services/stripe.ts'),
   },
@@ -63,7 +64,7 @@ const serviceEvents = createTsTemplateFile({
   name: 'service-events',
   projectExports: {
     StripeEventHandler: { isTypeOnly: true },
-    stripeEventService: {},
+    stripeEventService: { isTypeOnly: false },
   },
   source: {
     path: path.join(

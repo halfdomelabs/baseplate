@@ -107,12 +107,6 @@ function BackendAppEditPage(): React.JSX.Element {
             <div className="space-y-4">
               <SwitchFieldController
                 control={control}
-                name="enableStripe"
-                label="Stripe"
-                description="Enable Stripe for payment processing"
-              />
-              <SwitchFieldController
-                control={control}
                 name="enableAxios"
                 label="Axios"
                 description="Enable Axios for HTTP requests"

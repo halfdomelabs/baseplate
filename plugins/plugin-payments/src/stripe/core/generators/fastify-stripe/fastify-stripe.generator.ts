@@ -5,15 +5,16 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  configServiceProvider,
+  FASTIFY_PACKAGES,
+  fastifyServerConfigProvider,
+} from '@baseplate-dev/fastify-generators';
+import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
-
-import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { configServiceProvider } from '#src/generators/core/config-service/index.js';
-import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
 
 import { STRIPE_FASTIFY_STRIPE_GENERATED } from './generated/index.js';
 

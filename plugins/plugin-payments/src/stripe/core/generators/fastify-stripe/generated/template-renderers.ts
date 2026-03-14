@@ -2,11 +2,12 @@ import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-gener
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  configServiceImportsProvider,
+  errorHandlerServiceImportsProvider,
+  loggerServiceImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
-
-import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
-import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
 
 import { STRIPE_FASTIFY_STRIPE_PATHS } from './template-paths.js';
 import { STRIPE_FASTIFY_STRIPE_TEMPLATES } from './typed-templates.js';
