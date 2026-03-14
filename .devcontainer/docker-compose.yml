@@ -8,12 +8,12 @@ services:
         CLAUDE_CODE_VERSION: latest
     command: sleep infinity
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     cap_add:
       - NET_ADMIN
     environment:
-      NODE_OPTIONS: "--max-old-space-size=4096"
-      CLAUDE_CONFIG_DIR: "/home/vscode/.claude"
+      NODE_OPTIONS: '--max-old-space-size=4096'
+      CLAUDE_CONFIG_DIR: '/home/vscode/.claude'
     volumes:
       # Source code
       - ..:/workspaces/${WORKSPACE_BASENAME}:cached
