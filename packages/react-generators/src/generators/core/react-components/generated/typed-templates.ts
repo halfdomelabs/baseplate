@@ -17,6 +17,38 @@ const alert = createTsTemplateFile({
   variables: {},
 });
 
+const autocomplete = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'autocomplete',
+  projectExports: {
+    Autocomplete: { isTypeOnly: false },
+    AutocompleteClear: { isTypeOnly: false },
+    AutocompleteCollection: { isTypeOnly: false },
+    AutocompleteContent: { isTypeOnly: false },
+    AutocompleteEmpty: { isTypeOnly: false },
+    AutocompleteGroup: { isTypeOnly: false },
+    AutocompleteInput: { isTypeOnly: false },
+    AutocompleteItem: { isTypeOnly: false },
+    AutocompleteLabel: { isTypeOnly: false },
+    AutocompleteList: { isTypeOnly: false },
+    AutocompleteSeparator: { isTypeOnly: false },
+    AutocompleteStatus: { isTypeOnly: false },
+    AutocompleteTrigger: { isTypeOnly: false },
+    AutocompleteValue: { isTypeOnly: false },
+    useAutocompleteFilter: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { cn: {}, inputGroup: {}, spinner: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/autocomplete.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const badge = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -162,6 +194,25 @@ const circularProgress = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/circular-progress.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const collapsible = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'collapsible',
+  projectExports: {
+    Collapsible: { isTypeOnly: false },
+    CollapsibleContent: { isTypeOnly: false },
+    CollapsibleTrigger: { isTypeOnly: false },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/collapsible.tsx',
     ),
   },
   variables: {},
@@ -759,6 +810,38 @@ const skeleton = createTsTemplateFile({
   variables: {},
 });
 
+const slider = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'slider',
+  projectExports: { Slider: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/slider.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const spinner = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'spinner',
+  projectExports: { Spinner: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/spinner.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const switchComponent = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -892,6 +975,7 @@ const tooltip = createTsTemplateFile({
 
 export const componentsGroup = {
   alert,
+  autocomplete,
   badge,
   breadcrumb,
   button,
@@ -900,6 +984,7 @@ export const componentsGroup = {
   checkbox,
   checkboxField,
   circularProgress,
+  collapsible,
   combobox,
   comboboxField,
   confirmDialog,
@@ -927,6 +1012,8 @@ export const componentsGroup = {
   sheet,
   sidebar,
   skeleton,
+  slider,
+  spinner,
   switchComponent,
   switchField,
   table,
