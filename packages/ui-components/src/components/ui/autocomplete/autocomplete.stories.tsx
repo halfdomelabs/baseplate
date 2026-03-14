@@ -134,6 +134,7 @@ function AsyncAutocompleteExample(): React.ReactElement {
   const [isPending, startTransition] = React.useTransition();
   const { contains } = useAutocompleteFilter();
   const abortControllerRef = React.useRef<AbortController | null>(null);
+  const [open, setIsOpen] = React.useState(false);
 
   function getStatus(): React.ReactNode | null {
     if (isPending) {
@@ -148,7 +149,7 @@ function AsyncAutocompleteExample(): React.ReactElement {
     if (searchResults.length === 0) {
       return `No cities matching "${searchValue}"`;
     }
-    return null;
+    return `${searchResults.length} result${searchResults.length === 1 ? '' : 's'} found`;
   }
 
   const status = getStatus();
@@ -158,6 +159,12 @@ function AsyncAutocompleteExample(): React.ReactElement {
       <Autocomplete
         items={searchResults}
         filteredItems={searchResults}
+        open={
+          open &&
+          !(isPending && searchResults.length === 0) &&
+          searchValue !== ''
+        }
+        onOpenChange={setIsOpen}
         value={searchValue}
         onValueChange={(nextValue) => {
           setSearchValue(nextValue);
@@ -188,27 +195,27 @@ function AsyncAutocompleteExample(): React.ReactElement {
       >
         <AutocompleteInput
           placeholder="Search cities or countries..."
-          showClear
+          showSpinner={isPending && open}
         />
         <AutocompleteContent>
-          {status ? (
-            <AutocompleteStatus>
-              <div className="text-sm text-muted-foreground">{status}</div>
-            </AutocompleteStatus>
-          ) : (
-            <AutocompleteList>
-              {(city: City) => (
-                <AutocompleteItem key={city.id} value={city}>
-                  <div className="flex flex-col">
-                    <span>{city.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {city.country}
-                    </span>
-                  </div>
-                </AutocompleteItem>
-              )}
-            </AutocompleteList>
+          <AutocompleteStatus className="sr-only">{status}</AutocompleteStatus>
+          {isPending ? null : (
+            <AutocompleteEmpty>
+              {error ?? `No cities matching "${searchValue}"`}
+            </AutocompleteEmpty>
           )}
+          <AutocompleteList>
+            {(city: City) => (
+              <AutocompleteItem key={city.id} value={city}>
+                <div className="flex flex-col">
+                  <span>{city.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {city.country}
+                  </span>
+                </div>
+              </AutocompleteItem>
+            )}
+          </AutocompleteList>
         </AutocompleteContent>
       </Autocomplete>
     </div>

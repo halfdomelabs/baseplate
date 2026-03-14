@@ -46,6 +46,7 @@ export * from './separator/separator.js';
 export * from './sheet/sheet.js';
 export * from './sidebar/sidebar.js';
 export * from './skeleton/skeleton.js';
+export * from './spinner/spinner.js';
 export * from './switch-field/switch-field.js';
 export * from './switch/switch.js';
 export * from './table/table.js';

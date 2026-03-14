@@ -13,6 +13,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '../input-group/input-group.js';
+import { Spinner } from '../spinner/spinner.js';
 
 /**
  * An autocomplete input that allows users to filter a list of suggestions
@@ -72,10 +73,12 @@ function AutocompleteInput({
   disabled = false,
   showTrigger = false,
   showClear = false,
+  showSpinner = false,
   ...props
 }: AutocompletePrimitive.Input.Props & {
   showTrigger?: boolean;
   showClear?: boolean;
+  showSpinner?: boolean;
 }): React.ReactElement {
   return (
     <InputGroup className={cn('w-auto', className)}>
@@ -83,21 +86,30 @@ function AutocompleteInput({
         render={<InputGroupInput disabled={disabled} />}
         {...props}
       />
-      {(showTrigger || showClear) && (
-        <InputGroupAddon align="inline-end">
-          {showTrigger && (
-            <InputGroupButton
-              size="icon-xs"
-              variant="ghost"
-              render={<AutocompleteTrigger />}
-              data-slot="input-group-button"
-              className="group-has-data-[slot=autocomplete-clear]/input-group:hidden data-pressed:bg-transparent"
-              disabled={disabled}
-            />
-          )}
-          {showClear && <AutocompleteClear disabled={disabled} />}
-        </InputGroupAddon>
-      )}
+      <InputGroupAddon align="inline-end">
+        {showSpinner ? (
+          <div className="flex size-5 items-center justify-center">
+            <Spinner className="size-3.5 text-muted-foreground" />
+          </div>
+        ) : (
+          <>
+            {showTrigger && (
+              <InputGroupButton
+                size="icon-xs"
+                variant="ghost"
+                render={<AutocompleteTrigger />}
+                data-slot="input-group-button"
+                className="group-has-data-[slot=autocomplete-clear]/input-group:hidden data-pressed:bg-transparent"
+                disabled={disabled}
+              />
+            )}
+            {showClear && <AutocompleteClear disabled={disabled} />}
+            {!showTrigger && !showClear && (
+              <div className="size-5" aria-hidden="true" />
+            )}
+          </>
+        )}
+      </InputGroupAddon>
       {children}
     </InputGroup>
   );
@@ -129,7 +141,7 @@ function AutocompleteContent({
         <AutocompletePrimitive.Popup
           data-slot="autocomplete-content"
           className={cn(
-            'group/autocomplete-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95',
+            'group/autocomplete-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-8 *:data-[slot=input-group]:border-input/30 *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0',
             className,
           )}
           {...props}
