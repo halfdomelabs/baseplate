@@ -129,7 +129,7 @@ function PluginConfigPage(): React.JSX.Element {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     disabled={isSavingDefinition}
-                    onSelect={() => {
+                    onClick={() => {
                       requestConfirm({
                         title: 'Disable Plugin',
                         content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,

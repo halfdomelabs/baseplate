@@ -6,7 +6,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Button,
+  buttonVariants,
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
@@ -52,14 +52,16 @@ function PluginsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
-        <Button
-          variant="secondary"
-          className="w-full"
-          render={<Link to="/plugins" />}
+        <Link
+          to="/plugins"
+          className={buttonVariants({
+            variant: 'secondary',
+            className: 'w-full',
+          })}
         >
           <MdAdd />
           Manage plugins
-        </Button>
+        </Link>
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (

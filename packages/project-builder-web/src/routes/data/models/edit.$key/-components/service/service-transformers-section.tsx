@@ -178,7 +178,7 @@ export function ServiceTransformersSection({
                 {addableTransformers.map((transformer, idx) => (
                   <DropdownMenuItem
                     key={transformer.name}
-                    onSelect={() => {
+                    onClick={() => {
                       if (transformer.Form) {
                         setAddableTransformerIdx(idx);
                         setIsNewTransformerDialogOpen(true);

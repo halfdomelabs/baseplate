@@ -81,7 +81,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
               {orderedProjects.map((project) => (
                 <DropdownMenuItem
                   key={project.id}
-                  onSelect={() => {
+                  onClick={() => {
                     setCurrentProjectId(project.id);
                     navigate({ to: '/' }).catch(logAndFormatError);
                   }}

@@ -167,7 +167,7 @@ function UuidDefaultValueInput({
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onSelect={() => {
+              onClick={() => {
                 onOptionsChange({
                   ...optionsValue,
                   genUuid: true,
@@ -235,7 +235,7 @@ function DateTimeDefaultValueInput({
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onSelect={() => {
+              onClick={() => {
                 onOptionsChange({
                   ...optionsValue,
                   defaultToNow: true,
@@ -246,7 +246,7 @@ function DateTimeDefaultValueInput({
               Now
             </DropdownMenuItem>
             <DropdownMenuItem
-              onSelect={() => {
+              onClick={() => {
                 onOptionsChange({
                   ...optionsValue,
                   defaultToNow: true,
