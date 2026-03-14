@@ -4,13 +4,15 @@ import { z } from 'zod';
 import { prismaModelProvider } from '../prisma-model/index.js';
 
 const descriptorSchema = z.object({
-  fields: z.array(z.string().min(1)),
+  fields: z.array(z.object({ name: z.string().min(1) })),
 });
 
 export const prismaModelIndexGenerator = createGenerator({
   name: 'prisma/prisma-model-index',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) =>
+    descriptor.fields.map(({ name }) => name).join('_'),
   buildTasks: ({ fields }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -18,8 +20,8 @@ export const prismaModelIndexGenerator = createGenerator({
       },
       run({ prismaModel }) {
         prismaModel.addModelAttribute({
-          name: 'index',
-          args: [fields],
+          name: '@@index',
+          args: [fields.map(({ name }) => name)],
         });
         return {};
       },
