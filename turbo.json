@@ -55,10 +55,10 @@
       "persistent": true,
       "cache": false
     },
-    "prettier:root:check": {
+    "//#prettier:root:check": {
       "outputLogs": "errors-only"
     },
-    "prettier:root:write": {
+    "//#prettier:root:write": {
       "outputLogs": "errors-only"
     }
   }

@@ -5,8 +5,12 @@
 pnpm-lock.yaml
 **/route-tree.gen.ts
 /.turbo
+/.changeset
+/.pnpm-store
+/.claude
 /examples
 /packages
 /plugins
 /tests
 **/.env*
+**/LICENSE

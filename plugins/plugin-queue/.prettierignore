@@ -1,7 +1,6 @@
-/lib
-/baseplate
 /build
 /coverage
 /dist
+/lib
 /node_modules
 LICENSE

@@ -164,7 +164,10 @@ export default defineWorkspaceMetaConfig({
       }
 
       if (
-        isMatch(parsedTsconfig.compilerOptions, targetConfig.compilerOptions) &&
+        isMatch(
+          parsedTsconfig.compilerOptions ?? {},
+          targetConfig.compilerOptions ?? {},
+        ) &&
         isEqual(parsedTsconfig.references, targetConfig.references)
       ) {
         return;
