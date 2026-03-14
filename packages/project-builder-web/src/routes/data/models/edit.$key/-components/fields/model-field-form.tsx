@@ -148,7 +148,7 @@ function ModelFieldForm({
               <DropdownMenuGroup>
                 {usedRelations.length === 0 && (
                   <DropdownMenuItem
-                    onSelect={() => {
+                    onClick={() => {
                       setIsRelationDialogOpen(true);
                       setRelationId(undefined);
                     }}
@@ -160,7 +160,7 @@ function ModelFieldForm({
                   usedRelations.map((relation) => (
                     <DropdownMenuItem
                       key={relation.id}
-                      onSelect={() => {
+                      onClick={() => {
                         setIsRelationDialogOpen(true);
                         setRelationId(relation.id);
                       }}
@@ -170,7 +170,7 @@ function ModelFieldForm({
                   ))}
                 {!hasCompositePrimaryKey && !isPartOfPrimaryKey && (
                   <DropdownMenuItem
-                    onSelect={() => {
+                    onClick={() => {
                       setValue('model.primaryKeyFieldRefs', [watchedField.id], {
                         shouldDirty: true,
                       });
@@ -181,7 +181,7 @@ function ModelFieldForm({
                 )}
                 {isPartOfPrimaryKey && (
                   <DropdownMenuItem
-                    onSelect={() => {
+                    onClick={() => {
                       setIsPrimaryKeyDialogOpen(true);
                     }}
                   >
@@ -191,7 +191,7 @@ function ModelFieldForm({
                 {ownUniqueConstraints.length === 0 &&
                   (hasCompositePrimaryKey || !isPartOfPrimaryKey) && (
                     <DropdownMenuItem
-                      onSelect={() => {
+                      onClick={() => {
                         setValue(
                           'model.uniqueConstraints',
                           [
@@ -212,7 +212,7 @@ function ModelFieldForm({
                   ownUniqueConstraints.map((uc, idx) => (
                     <DropdownMenuItem
                       key={uc.id}
-                      onSelect={() => {
+                      onClick={() => {
                         setUniqueConstraintId(uc.id);
                         setIsUniqueConstraintDialogOpen(true);
                       }}

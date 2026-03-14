@@ -1,3 +1,6 @@
+/lib
+/build
 /coverage
 /dist
 /node_modules
+LICENSE

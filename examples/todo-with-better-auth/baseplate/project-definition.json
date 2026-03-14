@@ -230,7 +230,6 @@
     {
       "devPort": 6001,
       "enableAxios": true,
-      "enableStripe": true,
       "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
@@ -1776,9 +1775,16 @@
       "name": "sentry",
       "packageName": "@baseplate-dev/plugin-observability",
       "version": "0.1.0"
+    },
+    {
+      "config": { "stripeOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-payments_stripe",
+      "name": "stripe",
+      "packageName": "@baseplate-dev/plugin-payments",
+      "version": "0.1.0"
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 28,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

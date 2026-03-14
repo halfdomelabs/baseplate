@@ -40,12 +40,12 @@
     "template": "sentry"
   },
   "stripe-events.ts": {
-    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "service-events"
   },
   "stripe.ts": {
-    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "service"
   }

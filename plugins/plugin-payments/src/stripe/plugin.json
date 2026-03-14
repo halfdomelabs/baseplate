@@ -1,0 +1,8 @@
+{
+  "name": "stripe",
+  "displayName": "Stripe",
+  "icon": "icon.svg",
+  "description": "Payment processing and webhook handling with Stripe.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

@@ -88,7 +88,6 @@
     {
       "devPort": 5001,
       "enableAxios": false,
-      "enableStripe": false,
       "enableSubscriptions": false,
       "id": "app:acqRWBqOc6tx",
       "name": "backend",
@@ -966,7 +965,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 28,
   "settings": {
     "general": {
       "name": "blog-with-auth",
