@@ -58,6 +58,9 @@ function SwitchField({
         onCheckedChange={(checked) => onChange?.(checked)}
         checked={value}
         aria-invalid={!!error}
+        // Support accessible button for screen readers - https://github.com/shadcn-ui/ui/issues/9249
+        nativeButton={true}
+        render={<button />}
       />
       <FieldContent>
         <FieldLabel htmlFor={switchId}>{label}</FieldLabel>

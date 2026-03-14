@@ -37,8 +37,11 @@ import '#src/styles.css';
 
 function resolveFeatureName(
   definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
-  featureRef: string,
+  featureRef: string | null | undefined,
 ): string {
+  if (!featureRef) {
+    return '';
+  }
   if (featureEntityType.isId(featureRef)) {
     return FeatureUtils.getFeaturePathById(definition, featureRef);
   }
