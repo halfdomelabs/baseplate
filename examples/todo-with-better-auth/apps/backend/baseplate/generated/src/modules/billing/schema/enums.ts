@@ -11,6 +11,7 @@ export const billingSubscriptionStatusEnum = builder.enumType(
       UNPAID: {},
       INCOMPLETE: {},
       INCOMPLETE_EXPIRED: {},
+      PAUSED: {},
     },
   },
 );

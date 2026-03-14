@@ -20,6 +20,9 @@ export const billingSubscriptionStatusEnum = builder.enumType(
       INCOMPLETE_EXPIRED: {
         description: 'The initial payment was not completed within the allowed window.',
       },
+      PAUSED: {
+        description: 'The subscription has been paused.',
+      },
     },
   },
 );

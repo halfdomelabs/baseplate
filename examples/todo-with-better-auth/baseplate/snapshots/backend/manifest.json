@@ -5,21 +5,34 @@
       {
         "path": "src/modules/accounts/users/services/user.data-service.int.test.ts"
       },
+      { "path": "src/modules/billing/services/billing-config.ts" },
+      { "path": "src/modules/billing/services/billing.service.ts" },
       { "path": "src/modules/storage/services/clean-unused-files.int.test.ts" },
       { "path": "src/modules/storage/utils/mime.unit.test.ts" },
       {
         "path": "src/modules/todos/authorizers/todo-item.query-filter.int.test.ts"
       },
       { "path": "src/modules/todos/services/todo-item-service.int.test.ts" },
+      { "path": "src/plugins/stripe-webhook.int.test.ts" },
       { "path": "src/services/bullmq.service.int.test.ts" },
       { "path": "src/services/sentry.e2e.test.ts" },
       { "path": "src/services/sentry.instrument.test-helper.ts" },
       { "path": "src/services/sentry.test-collector.test-helper.ts" },
+      { "path": "src/services/stripe-event-handlers.ts" },
       { "path": "src/utils/query-filters.unit.test.ts" },
       { "path": "src/utils/query-helpers.unit.test.ts" }
     ],
-    "deleted": [],
-    "modified": []
+    "deleted": ["src/services/stripe-events.ts"],
+    "modified": [
+      {
+        "diffFile": "src_modules_billing_schema_enums.ts.diff",
+        "path": "src/modules/billing/schema/enums.ts"
+      },
+      {
+        "diffFile": "src_plugins_stripe-webhook.ts.diff",
+        "path": "src/plugins/stripe-webhook.ts"
+      }
+    ]
   },
   "version": "1"
 }

@@ -305,6 +305,11 @@
           "friendlyName": "Incomplete Expired",
           "id": "model-enum-value:NehyON15mlR0",
           "name": "INCOMPLETE_EXPIRED"
+        },
+        {
+          "friendlyName": "Paused",
+          "id": "model-enum-value:kP3xM7vRnW2q",
+          "name": "PAUSED"
         }
       ]
     }

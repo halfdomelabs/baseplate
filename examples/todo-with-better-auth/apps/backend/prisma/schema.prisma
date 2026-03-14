@@ -68,6 +68,7 @@ enum BillingSubscriptionStatus {
   UNPAID
   INCOMPLETE
   INCOMPLETE_EXPIRED
+  PAUSED
 }
 
 model Customer {

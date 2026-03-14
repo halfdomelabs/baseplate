@@ -9,7 +9,11 @@ import { logError } from '../../../services/error-logger.js';
 import { logger } from '../../../services/logger.js';
 import { prisma } from '../../../services/prisma.js';
 import { stripe } from '../../../services/stripe.js';
-import { SUBSCRIPTION_PLANS } from './billing-config.js';
+import {
+  getPlanKeyByPriceId,
+  type PlanKey,
+  SUBSCRIPTION_PLANS,
+} from './billing-config.js';
 
 /** Maps Stripe subscription status strings to our BillingSubscriptionStatus enum. */
 const STRIPE_STATUS_MAP: Record<
@@ -23,7 +27,7 @@ const STRIPE_STATUS_MAP: Record<
   unpaid: 'UNPAID',
   incomplete: 'INCOMPLETE',
   incomplete_expired: 'INCOMPLETE_EXPIRED',
-  paused: 'INCOMPLETE',
+  paused: 'PAUSED',
 };
 
 /** Statuses that indicate a subscription is currently active. */
@@ -82,6 +86,57 @@ export async function getOrCreateBillingAccount(
 }
 
 /**
+ * Resolves the plan key for a Stripe subscription.
+ *
+ * Tries metadata.planKey first (authoritative). If missing, falls back to
+ * reverse-looking up the plan by the subscription item's price ID. When a
+ * price ID match is found but metadata was missing, auto-heals the Stripe
+ * subscription metadata so future webhooks resolve immediately.
+ *
+ * @param stripeSubscription - The Stripe subscription object.
+ * @param firstItem - The first subscription item.
+ * @returns The resolved plan key, or undefined if no plan could be identified.
+ */
+function resolvePlanKey(
+  stripeSubscription: Stripe.Subscription,
+  firstItem: Stripe.SubscriptionItem,
+): PlanKey | undefined {
+  const metadataPlanKey = stripeSubscription.metadata.planKey;
+
+  if (metadataPlanKey && metadataPlanKey in SUBSCRIPTION_PLANS) {
+    return metadataPlanKey as PlanKey;
+  }
+
+  if (metadataPlanKey) {
+    logger.warn(
+      `Unknown plan key "${metadataPlanKey}" in metadata for subscription: ${stripeSubscription.id}`,
+    );
+  }
+
+  const priceId = firstItem.price.id;
+  const pricePlanKey = getPlanKeyByPriceId(priceId);
+
+  if (!pricePlanKey) {
+    return undefined;
+  }
+
+  logger.info(
+    `Resolved plan key "${pricePlanKey}" from price ID "${priceId}" for subscription: ${stripeSubscription.id}`,
+  );
+
+  // Auto-heal: attach planKey to Stripe metadata so future webhooks resolve immediately
+  stripe.subscriptions
+    .update(stripeSubscription.id, {
+      metadata: { planKey: pricePlanKey },
+    })
+    .catch((err: unknown) => {
+      logError(err);
+    });
+
+  return pricePlanKey;
+}
+
+/**
  * Syncs a Stripe subscription to the database.
  *
  * Uses the Stripe subscription ID (providerId) for idempotent upserts.
@@ -110,28 +165,21 @@ export async function syncSubscriptionFromStripe(
     return;
   }
 
-  const { planKey } = stripeSubscription.metadata;
-
-  if (!planKey) {
-    logger.warn(
-      `No plan key found for Stripe subscription: ${stripeSubscription.id}`,
-    );
-    return;
-  }
-
-  if (!(planKey in SUBSCRIPTION_PLANS)) {
-    logger.warn(
-      `Unknown plan key "${planKey}" for Stripe subscription: ${stripeSubscription.id}`,
-    );
-    return;
-  }
-
   const firstItem = stripeSubscription.items.data.at(0);
   if (!firstItem) {
     logError(
       new Error(
         `No subscription items found for Stripe subscription: ${stripeSubscription.id}`,
       ),
+    );
+    return;
+  }
+
+  const resolvedPlanKey = resolvePlanKey(stripeSubscription, firstItem);
+
+  if (!resolvedPlanKey) {
+    logger.warn(
+      `Could not resolve plan key for Stripe subscription: ${stripeSubscription.id}`,
     );
     return;
   }
@@ -143,7 +191,7 @@ export async function syncSubscriptionFromStripe(
     where: { stripeSubscriptionId: stripeSubscription.id },
     create: {
       billingAccountId: billingAccount.id,
-      planKey,
+      planKey: resolvedPlanKey,
       status,
       stripeSubscriptionId: stripeSubscription.id,
       currentPeriodStart,
@@ -151,7 +199,7 @@ export async function syncSubscriptionFromStripe(
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
     },
     update: {
-      planKey,
+      planKey: resolvedPlanKey,
       status,
       currentPeriodStart,
       currentPeriodEnd,
@@ -160,17 +208,21 @@ export async function syncSubscriptionFromStripe(
   });
 }
 
+/** Stripe event types that carry a subscription object. */
+type SubscriptionEvent =
+  | Stripe.CustomerSubscriptionCreatedEvent
+  | Stripe.CustomerSubscriptionUpdatedEvent
+  | Stripe.CustomerSubscriptionDeletedEvent;
+
 /**
  * Handles a Stripe subscription event by syncing the subscription data.
  *
- * @param event - The Stripe event containing subscription data.
+ * @param event - A Stripe subscription lifecycle event.
  */
 export async function handleSubscriptionEvent(
-  event: Stripe.Event,
+  event: SubscriptionEvent,
 ): Promise<void> {
-  const subscription = event.data.object as Stripe.Subscription;
-  logger.info(
-    `Processing ${event.type} for subscription ${subscription.id}`,
-  );
+  const subscription = event.data.object;
+  logger.info(`Processing ${event.type} for subscription ${subscription.id}`);
   await syncSubscriptionFromStripe(subscription);
 }
