@@ -1,5 +1,6 @@
 import { flattenAppModule } from '../utils/app-modules.js';
 import { accountsModule } from './accounts/index.js';
+import { billingModule } from './billing/index.js';
 import { graphqlModule } from './graphql/index.js';
 import { storageModule } from './storage/index.js';
 import { todosModule } from './todos/index.js';
@@ -9,6 +10,12 @@ import { todosModule } from './todos/index.js';
 export const /* TPL_MODULE_NAME:START */ rootModule /* TPL_MODULE_NAME:END */ =
     flattenAppModule(
       /* TPL_MODULE_CONTENTS:START */ {
-        children: [accountsModule, graphqlModule, storageModule, todosModule],
+        children: [
+          accountsModule,
+          billingModule,
+          graphqlModule,
+          storageModule,
+          todosModule,
+        ],
       } /* TPL_MODULE_CONTENTS:END */,
     );

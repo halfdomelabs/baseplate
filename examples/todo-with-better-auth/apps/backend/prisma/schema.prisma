@@ -33,6 +33,43 @@ model Account {
   @@map("account")
 }
 
+model BillingAccount {
+  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stripeCustomerId     String                @unique @map("stripe_customer_id")
+  createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  billingSubscriptions BillingSubscription[]
+  user                 User?
+
+  @@map("billing_account")
+}
+
+model BillingSubscription {
+  id                   String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  billingAccountId     String                    @map("billing_account_id") @db.Uuid
+  planKey              String                    @map("plan_key")
+  status               BillingSubscriptionStatus
+  stripeSubscriptionId String                    @unique @map("stripe_subscription_id")
+  currentPeriodStart   DateTime                  @map("current_period_start") @db.Timestamptz(3)
+  currentPeriodEnd     DateTime                  @map("current_period_end") @db.Timestamptz(3)
+  cancelAtPeriodEnd    Boolean                   @default(false) @map("cancel_at_period_end")
+  createdAt            DateTime                  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  billingAccount       BillingAccount            @relation(fields: [billingAccountId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("billing_subscription")
+}
+
+enum BillingSubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
 model Customer {
   id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   stripeCustomerId String @map("stripe_customer_id")
@@ -151,23 +188,25 @@ enum TodoListStatus {
 }
 
 model User {
-  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String
-  email          String          @unique
-  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
-  emailVerified  Boolean         @default(false) @map("email_verified")
-  image          String?
-  accounts       Account[]
-  assignedItems  TodoItem[]
-  customer       Customer?
-  files          File[]
-  images         UserImage[]
-  roles          UserRole[]
-  sessions       Session[]
-  todoLists      TodoList[]
-  todoListShares TodoListShare[]
-  userProfile    UserProfile?
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  email            String          @unique
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  emailVerified    Boolean         @default(false) @map("email_verified")
+  image            String?
+  billingAccountId String?         @unique @map("billing_account_id") @db.Uuid
+  accounts         Account[]
+  assignedItems    TodoItem[]
+  billingAccount   BillingAccount? @relation(fields: [billingAccountId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  customer         Customer?
+  files            File[]
+  images           UserImage[]
+  roles            UserRole[]
+  sessions         Session[]
+  todoLists        TodoList[]
+  todoListShares   TodoListShare[]
+  userProfile      UserProfile?
 
   @@map("user")
 }
