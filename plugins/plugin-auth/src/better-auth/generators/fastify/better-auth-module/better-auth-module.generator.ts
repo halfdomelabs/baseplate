@@ -2,6 +2,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
@@ -9,6 +10,7 @@ import {
   configServiceProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
+import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import {
   createGenerator,
   createGeneratorTask,
@@ -24,13 +26,14 @@ import { BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED } from './generated/index.js';
 const descriptorSchema = z.object({
   devWebPorts: z.array(z.number()).default([]),
   devBackendPort: z.number(),
+  devWebDomainPort: z.number(),
 });
 
 export const betterAuthModuleGenerator = createGenerator({
   name: 'better-auth/better-auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ devWebPorts, devBackendPort }) => ({
+  buildTasks: ({ devWebPorts, devBackendPort, devWebDomainPort }) => ({
     paths: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.paths.task,
     imports: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.imports.task,
     renderers: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.renderers.task,
@@ -63,6 +66,13 @@ export const betterAuthModuleGenerator = createGenerator({
         seedValue: allowedOrigins,
         exampleValue: allowedOrigins,
       });
+
+      configService.configFields.set('AUTH_FRONTEND_URL', {
+        validator: tsCodeFragment('z.url()'),
+        comment:
+          'Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)',
+        exampleValue: `http://localhost:${devWebDomainPort}`,
+      });
     }),
     main: createGeneratorTask({
       dependencies: {
@@ -70,8 +80,18 @@ export const betterAuthModuleGenerator = createGenerator({
         renderers: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.renderers.provider,
         appModule: appModuleProvider,
         paths: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.paths.provider,
+        transactionalLibConfig: transactionalLibConfigProvider,
       },
-      run({ prismaOutput, renderers, appModule, paths }) {
+      run({
+        prismaOutput,
+        renderers,
+        appModule,
+        paths,
+        transactionalLibConfig,
+      }) {
+        const transactionalLibPackageName =
+          transactionalLibConfig.getTransactionalLibPackageName();
+
         appModule.moduleFields.set(
           'plugins',
           'betterAuthPlugin',
@@ -90,6 +110,14 @@ export const betterAuthModuleGenerator = createGenerator({
                 variables: {
                   TPL_USER_ROLE_MODEL: prismaOutput.getPrismaModelFragment(
                     BETTER_AUTH_MODELS.userRole,
+                  ),
+                  TPL_PASSWORD_RESET_EMAIL: TsCodeUtils.importFragment(
+                    'PasswordResetEmail',
+                    transactionalLibPackageName,
+                  ),
+                  TPL_ACCOUNT_VERIFICATION_EMAIL: TsCodeUtils.importFragment(
+                    'AccountVerificationEmail',
+                    transactionalLibPackageName,
                   ),
                 },
               }),

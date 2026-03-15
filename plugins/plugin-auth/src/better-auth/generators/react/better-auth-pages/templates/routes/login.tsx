@@ -125,6 +125,12 @@ function LoginPage(): React.JSX.Element {
               </Button>
             </div>
             <div className="mt-4 flex flex-col gap-4 text-center text-sm">
+              <Link
+                to="/auth/forgot-password"
+                className="underline underline-offset-4"
+              >
+                Forgot your password?
+              </Link>
               <div>
                 Don&apos;t have an account?{' '}
                 <Link

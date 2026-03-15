@@ -146,3 +146,83 @@ export function graphql(source: string) {
 }
 
 export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;
+
+// @ts-ignore
+type _Unused = typeof types;

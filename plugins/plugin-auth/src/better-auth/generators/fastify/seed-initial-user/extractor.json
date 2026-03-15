@@ -1,0 +1,31 @@
+{
+  "name": "better-auth/seed-initial-user",
+  "templates": {
+    "seed-initial-user": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "betterAuthModuleImportsProvider": {
+          "importName": "betterAuthModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/fastify/better-auth-module/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/prisma/seed-initial-user.ts",
+      "projectExports": { "seedInitialUser": {} },
+      "sourceFile": "src/prisma/seed-initial-user.ts",
+      "variables": { "TPL_INITIAL_USER_ROLES": {} }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "email-component.types.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "types-email-component"
+  }
+}

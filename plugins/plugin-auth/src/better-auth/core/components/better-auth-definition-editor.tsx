@@ -15,6 +15,7 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
+  MultiComboboxFieldController,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -47,12 +48,23 @@ export function BetterAuthDefinitionEditor({
     createBetterAuthPluginDefinitionSchema,
   );
 
+  const authDefinition = getAuthPluginDefinition(definition);
+  const roles = authDefinition.roles
+    .filter((role) => !role.builtIn)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
+
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
       return pluginMetadata.config as BetterAuthPluginDefinitionInput;
     }
 
-    return {} satisfies BetterAuthPluginDefinitionInput;
+    return {
+      initialUserRoles: [],
+      userAdminRoles: [],
+    } satisfies BetterAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
 
   const form = useResettableForm({
@@ -60,8 +72,6 @@ export function BetterAuthDefinitionEditor({
     defaultValues,
   });
   const { control, reset, handleSubmit } = form;
-
-  const authDefinition = getAuthPluginDefinition(definition);
 
   const authFeature = definition.features.find(
     (f) => f.id === authDefinition.authFeatureRef,
@@ -139,6 +149,48 @@ export function BetterAuthDefinitionEditor({
                   <DefinitionDiffAlert
                     diff={diff}
                     upToDateMessage="All required models are already configured correctly. No changes needed."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Initial User Setup
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    In order to access the admin panel, an initial user must be
+                    created. The plugin will automatically add a seed script to
+                    create the initial user provided a .seed.env exists with the
+                    INITIAL_USER_EMAIL and INITIAL_USER_PASSWORD variables.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <MultiComboboxFieldController
+                    label="Initial User Roles"
+                    name="initialUserRoles"
+                    control={control}
+                    options={roles}
+                    description="The roles that will be assigned to the initial user."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    User Management Permissions
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    Configure which roles can manage users and assign roles to
+                    other users in the admin interface.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <MultiComboboxFieldController
+                    label="User Admin Roles"
+                    name="userAdminRoles"
+                    control={control}
+                    options={roles}
+                    description="Roles that can manage users and assign roles to other users."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

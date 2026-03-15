@@ -245,7 +245,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.2",
   "enums": [
     {
       "featureRef": "todos",
@@ -282,7 +282,13 @@
     { "id": "feature:5yQn3gjSzKEB", "name": "todos" }
   ],
   "isInitialized": true,
-  "libraries": [],
+  "libraries": [
+    {
+      "id": "library:vT7YCeNSObNj",
+      "name": "transactional",
+      "type": "@baseplate-dev/plugin-email/transactional-lib"
+    }
+  ],
   "models": [
     {
       "featureRef": "accounts/auth",
@@ -1781,6 +1787,22 @@
       "id": "plugin:baseplate-dev_plugin-payments_stripe",
       "name": "stripe",
       "packageName": "@baseplate-dev/plugin-payments",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
+      },
+      "id": "plugin:baseplate-dev_plugin-email_email",
+      "name": "email",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
+      "packageName": "@baseplate-dev/plugin-email",
       "version": "0.1.0"
     }
   ],
