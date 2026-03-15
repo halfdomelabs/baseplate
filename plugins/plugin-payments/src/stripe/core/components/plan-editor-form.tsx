@@ -20,6 +20,7 @@ import { useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import type { BillingPlanDefinition } from '../schema/plugin-definition.js';
+import type { AuthRoleOption } from './plan-dialog.js';
 import type { StripeBillingFormValues } from './stripe-definition-editor.js';
 
 import { PlanDialog } from './plan-dialog.js';
@@ -28,9 +29,15 @@ import '#src/styles.css';
 
 interface Props {
   control: Control<StripeBillingFormValues>;
+  availableRoles: AuthRoleOption[];
+  authPluginUrl?: string;
 }
 
-export function PlanEditorForm({ control }: Props): React.JSX.Element {
+export function PlanEditorForm({
+  control,
+  availableRoles,
+  authPluginUrl,
+}: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { append, update, remove } = useFieldArray({
     control,
@@ -123,6 +130,8 @@ export function PlanEditorForm({ control }: Props): React.JSX.Element {
           onOpenChange={setIsEditing}
           plan={planToEdit}
           isNew={planToEdit ? !plans.some((p) => p.id === planToEdit.id) : true}
+          availableRoles={availableRoles}
+          authPluginUrl={authPluginUrl}
           onSave={handleSavePlan}
         />
         <Button

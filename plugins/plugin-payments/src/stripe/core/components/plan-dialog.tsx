@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   InputFieldController,
+  MultiComboboxFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
@@ -26,32 +27,13 @@ const planFormSchema = z.object({
     .min(1, 'Plan key is required')
     .regex(/^[a-z0-9-]+$/, 'Must be kebab-case (e.g. pro-plan)'),
   displayName: z.string().min(1, 'Display name is required'),
-  grantedRolesInput: z.string().default(''),
+  grantedRoles: z.array(z.string()).default([]),
 });
 
-type PlanFormValues = z.infer<typeof planFormSchema>;
-
-/** Converts a BillingPlanDefinition to form values. */
-function toFormValues(plan: BillingPlanDefinition): PlanFormValues {
-  return {
-    id: plan.id,
-    key: plan.key,
-    displayName: plan.displayName,
-    grantedRolesInput: plan.grantedRoles.join(', '),
-  };
-}
-
-/** Converts form values back to a BillingPlanDefinition. */
-function fromFormValues(values: PlanFormValues): BillingPlanDefinition {
-  return {
-    id: values.id,
-    key: values.key,
-    displayName: values.displayName,
-    grantedRoles: values.grantedRolesInput
-      .split(',')
-      .map((r) => r.trim())
-      .filter(Boolean),
-  };
+/** A role option from the auth plugin. */
+export interface AuthRoleOption {
+  name: string;
+  comment: string;
 }
 
 interface PlanDialogProps {
@@ -59,6 +41,8 @@ interface PlanDialogProps {
   onOpenChange?: (open: boolean) => void;
   plan?: BillingPlanDefinition;
   isNew?: boolean;
+  availableRoles: AuthRoleOption[];
+  authPluginUrl?: string;
   onSave: (plan: BillingPlanDefinition) => void;
 }
 
@@ -67,17 +51,19 @@ export function PlanDialog({
   onOpenChange,
   plan,
   isNew = false,
+  availableRoles,
+  authPluginUrl,
   onSave,
 }: PlanDialogProps): React.JSX.Element {
   const form = useForm({
     resolver: zodResolver(planFormSchema),
-    values: plan ? toFormValues(plan) : undefined,
+    values: plan,
   });
 
   const { control, handleSubmit } = form;
 
   const onSubmit = handleSubmit((data) => {
-    onSave(fromFormValues(data));
+    onSave(data);
     onOpenChange?.(false);
   });
 
@@ -115,13 +101,30 @@ export function PlanDialog({
               control={control}
               placeholder="e.g. Pro Plan"
             />
-            <InputFieldController
-              label="Granted Roles"
-              name="grantedRolesInput"
-              control={control}
-              placeholder="e.g. PRO_USER, PREMIUM_USER"
-              description="Auth roles granted when this plan is active (comma-separated)"
-            />
+            <div>
+              <MultiComboboxFieldController
+                label="Granted Roles"
+                name="grantedRoles"
+                control={control}
+                options={availableRoles}
+                getOptionLabel={(role) => role.name}
+                getOptionValue={(role) => role.name}
+                placeholder="Select roles..."
+                description="Auth roles granted when this plan is active"
+              />
+              {authPluginUrl ? (
+                <p className="payments:mt-1 payments:text-xs payments:text-muted-foreground">
+                  Manage roles in the{' '}
+                  <a
+                    href={authPluginUrl}
+                    className="payments:underline payments:hover:text-foreground"
+                  >
+                    Auth plugin settings
+                  </a>
+                  .
+                </p>
+              ) : null}
+            </div>
           </div>
           <DialogFooter>
             <Button
