@@ -32,12 +32,19 @@ export default createPluginModule({
             stripe: fastifyStripeGenerator({}),
           });
 
-          if (config.billingFeatureRef) {
+          const { billing } = config;
+          if (billing.enabled && billing.featureRef) {
             appCompiler.addRootChildren({
               billingWebhook: billingWebhookGenerator({}),
             });
-            appCompiler.addChildrenToFeature(config.billingFeatureRef, {
-              billingModule: billingModuleGenerator({}),
+            appCompiler.addChildrenToFeature(billing.featureRef, {
+              billingModule: billingModuleGenerator({
+                plans: billing.plans.map((p) => ({
+                  key: p.key,
+                  displayName: p.displayName,
+                  grantedRoles: p.grantedRoles,
+                })),
+              }),
             });
           }
         },

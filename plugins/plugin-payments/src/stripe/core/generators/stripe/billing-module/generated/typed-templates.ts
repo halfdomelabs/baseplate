@@ -26,7 +26,7 @@ const billingConfig = createTsTemplateFile({
       '../templates/module/services/billing-config.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_PLANS: {} },
 });
 
 const billingService = createTsTemplateFile({

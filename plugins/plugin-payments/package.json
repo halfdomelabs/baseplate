@@ -52,10 +52,12 @@
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@hookform/lenses": "0.8.1",
     "@hookform/resolvers": "5.2.2",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.71.1",
+    "react-icons": "5.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {

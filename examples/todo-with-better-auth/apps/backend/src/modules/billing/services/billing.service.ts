@@ -191,20 +191,26 @@ export async function syncSubscriptionFromStripe(
   });
 }
 
-/** Stripe event types that carry a subscription object. */
-type SubscriptionEvent =
-  | Stripe.CustomerSubscriptionCreatedEvent
-  | Stripe.CustomerSubscriptionUpdatedEvent
-  | Stripe.CustomerSubscriptionDeletedEvent;
-
 /**
  * Handles a Stripe subscription event by syncing the subscription data.
  *
- * @param event - A Stripe subscription lifecycle event.
+ * Validates the event type at runtime before narrowing to a subscription event.
+ *
+ * @param event - A generic Stripe event (type-checked at runtime).
  */
 export async function handleSubscriptionEvent(
-  event: SubscriptionEvent,
+  event: Stripe.Event,
 ): Promise<void> {
+  if (
+    event.type !== 'customer.subscription.created' &&
+    event.type !== 'customer.subscription.updated' &&
+    event.type !== 'customer.subscription.deleted'
+  ) {
+    throw new Error(
+      `Unexpected event type for subscription handler: ${event.type}`,
+    );
+  }
+
   const subscription = event.data.object;
   logger.info(`Processing ${event.type} for subscription ${subscription.id}`);
   await syncSubscriptionFromStripe(subscription);

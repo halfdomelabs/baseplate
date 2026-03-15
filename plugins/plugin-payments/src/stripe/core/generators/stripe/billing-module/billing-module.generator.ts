@@ -1,9 +1,18 @@
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { STRIPE_BILLING_MODULE_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  plans: z.array(
+    z.object({
+      key: z.string().min(1),
+      displayName: z.string().min(1),
+      grantedRoles: z.array(z.string()),
+    }),
+  ),
+});
 
 /**
  * Generator for billing module files (billing.service.ts, billing-config.ts).
@@ -15,7 +24,7 @@ export const billingModuleGenerator = createGenerator({
   name: 'stripe/billing-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ plans }) => ({
     paths: STRIPE_BILLING_MODULE_GENERATED.paths.task,
     imports: STRIPE_BILLING_MODULE_GENERATED.imports.task,
     renderers: STRIPE_BILLING_MODULE_GENERATED.renderers.task,
@@ -24,9 +33,35 @@ export const billingModuleGenerator = createGenerator({
         renderers: STRIPE_BILLING_MODULE_GENERATED.renderers.provider,
       },
       run({ renderers }) {
+        const plansObject: Record<string, string> = {};
+        for (const plan of plans) {
+          const rolesArray =
+            plan.grantedRoles.length > 0
+              ? `[${plan.grantedRoles.map((r: string) => `'${r}'`).join(', ')}] as const`
+              : 'undefined';
+
+          plansObject[plan.key] = [
+            '{',
+            `  grantedRoles: ${rolesArray},`,
+            '  priceIds: {',
+            `    stage: 'price_PLACEHOLDER_STAGE_${plan.key.toUpperCase().replaceAll('-', '_')}',`,
+            `    prod: 'price_PLACEHOLDER_PROD_${plan.key.toUpperCase().replaceAll('-', '_')}',`,
+            '  },',
+            '}',
+          ].join('\n');
+        }
+
+        const plansFragment = TsCodeUtils.mergeFragmentsAsObject(plansObject);
+
         return {
           build: async (builder) => {
-            await builder.apply(renderers.moduleGroup.render({}));
+            await builder.apply(
+              renderers.moduleGroup.render({
+                variables: {
+                  billingConfig: { TPL_PLANS: plansFragment },
+                },
+              }),
+            );
           },
         };
       },

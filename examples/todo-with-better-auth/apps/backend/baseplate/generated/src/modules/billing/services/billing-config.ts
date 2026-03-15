@@ -17,15 +17,15 @@ interface SubscriptionPlan {
  * Maps internal plan keys to their granted roles and environment-specific
  * Stripe Price IDs.
  */
-export const SUBSCRIPTION_PLANS = {
+export const SUBSCRIPTION_PLANS = /* TPL_PLANS:START */ {
   'pro-plan': {
     grantedRoles: ['PRO_USER'] as const,
     priceIds: {
-      stage: 'price_PLACEHOLDER_STAGE',
-      prod: 'price_PLACEHOLDER_PROD',
+      stage: 'price_PLACEHOLDER_STAGE_PRO_PLAN',
+      prod: 'price_PLACEHOLDER_PROD_PRO_PLAN',
     },
   },
-} as const satisfies Record<string, SubscriptionPlan>;
+} /* TPL_PLANS:END */ as const satisfies Record<string, SubscriptionPlan>;
 
 /** A valid plan key from the billing configuration. */
 export type PlanKey = keyof typeof SUBSCRIPTION_PLANS;

@@ -1627,6 +1627,9 @@ importers:
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@hookform/lenses':
+        specifier: 0.8.1
+        version: 0.8.1(react-hook-form@7.71.1(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.1.0))
@@ -1639,6 +1642,9 @@ importers:
       react-hook-form:
         specifier: 7.71.1
         version: 7.71.1(react@19.1.0)
+      react-icons:
+        specifier: 5.5.0
+        version: 5.5.0(react@19.1.0)
       zod:
         specifier: 'catalog:'
         version: 4.3.6

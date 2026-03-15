@@ -4,17 +4,63 @@ import {
   definitionSchema,
   featureEntityType,
 } from '@baseplate-dev/project-builder-lib';
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
+
+/** Schema for an individual billing plan. */
+const billingPlanSchema = z.object({
+  id: z.string(),
+  key: CASE_VALIDATORS.KEBAB_CASE.min(1),
+  displayName: z.string().min(1),
+  grantedRoles: z.array(z.string()).default([]),
+});
+
+export type BillingPlanDefinition = z.infer<typeof billingPlanSchema>;
 
 export const createStripePluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     stripeOptions: z.object({}).prefault({}),
-    billingFeatureRef: ctx
-      .withRef({
-        type: featureEntityType,
-        onDelete: 'RESTRICT',
+    billing: z
+      .object({
+        enabled: z.boolean().default(false),
+        featureRef: ctx
+          .withRef({
+            type: featureEntityType,
+            onDelete: 'RESTRICT',
+          })
+          .optional(),
+        plans: z
+          .array(billingPlanSchema)
+          .default([])
+          .superRefine((plans, refinementCtx) => {
+            const keys = plans.map((p) => p.key);
+            const duplicates = keys.filter((v, i, a) => a.indexOf(v) !== i);
+            if (duplicates.length > 0) {
+              refinementCtx.addIssue({
+                code: 'custom',
+                message: `Duplicate plan key(s): ${duplicates.join(', ')}`,
+              });
+            }
+          }),
       })
-      .optional(),
+      .superRefine((billing, refinementCtx) => {
+        if (billing.enabled && !billing.featureRef) {
+          refinementCtx.addIssue({
+            code: 'custom',
+            message:
+              'A billing feature must be selected when billing is enabled.',
+            path: ['featureRef'],
+          });
+        }
+        if (billing.enabled && billing.plans.length === 0) {
+          refinementCtx.addIssue({
+            code: 'custom',
+            message: 'At least one plan is required when billing is enabled.',
+            path: ['plans'],
+          });
+        }
+      })
+      .prefault({ enabled: false, plans: [] }),
   }),
 );
 

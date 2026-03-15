@@ -24,7 +24,7 @@
         }
       },
       "sourceFile": "module/services/billing-config.ts",
-      "variables": {}
+      "variables": { "TPL_PLANS": {} }
     },
     "billing-service": {
       "type": "ts",
