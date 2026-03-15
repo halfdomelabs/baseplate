@@ -49,7 +49,9 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/plugin-queue": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "@hookform/resolvers": "5.2.2",
@@ -60,8 +62,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@tailwindcss/vite": "catalog:",
@@ -79,10 +79,6 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"
