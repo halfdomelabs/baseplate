@@ -43,7 +43,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
