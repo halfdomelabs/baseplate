@@ -13,23 +13,15 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/tools"
   },
-  "files": [
-    "eslint-configs/**/*.js",
-    "prettier.config.*.js",
-    "eslint.config.*.js",
-    "tsconfig.*.json",
-    "vitest.*.js",
-    "src-subpath-import-plugin.js"
-  ],
-  "type": "module",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "sideEffects": false,
+  "type": "module",
   "exports": {
     "./eslint-configs/typescript": "./eslint-configs/typescript.js",
     "./eslint-configs/prettier": "./eslint-configs/prettier.js",
@@ -48,10 +40,14 @@
     "./vitest-react": "./vitest.config.react.js",
     "./src-subpath-import-plugin": "./src-subpath-import-plugin.js"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
+  "files": [
+    "eslint-configs/**/*.js",
+    "prettier.config.*.js",
+    "eslint.config.*.js",
+    "tsconfig.*.json",
+    "vitest.*.js",
+    "src-subpath-import-plugin.js"
+  ],
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
@@ -97,5 +93,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

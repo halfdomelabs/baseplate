@@ -10,13 +10,13 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-test"
   },
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "type": "module",
   "scripts": {
     "lint": "eslint .",

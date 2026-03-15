@@ -11,24 +11,15 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/code-generators"
   },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo"
-  ],
-  "type": "module",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "sideEffects": false,
-  "main": "dist/index.js",
+  "type": "module",
   "imports": {
     "#src/*": "./dist/*"
   },
@@ -50,10 +41,15 @@
       "default": "./dist/test-helpers/index.js"
     }
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
+  "main": "dist/index.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
@@ -101,5 +97,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

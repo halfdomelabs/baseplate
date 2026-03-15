@@ -12,20 +12,11 @@
     "ui-components"
   ],
   "homepage": "https://www.baseplate.dev",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "repository": "https://github.com/halfdomelabs/baseplate",
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo"
-  ],
-  "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.js",
+  "type": "module",
   "imports": {
     "#src/*": "./dist/*"
   },
@@ -35,10 +26,15 @@
     "./theme.css": "./dist/theme.css",
     "./utilities.css": "./dist/utilities.css"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
+  "main": "./dist/index.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
   "scripts": {
     "build": "pnpm build:tsc && pnpm build:css",
     "build:css": "cpx \"src/**/*.css\" dist --clean",
@@ -54,6 +50,18 @@
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc -b --noEmit",
     "watch": "pnpm build:css --watch"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
@@ -107,22 +115,14 @@
     "vite-plugin-svgr": "catalog:",
     "vitest": "catalog:"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "engines": {
     "node": "^22.0.0"
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

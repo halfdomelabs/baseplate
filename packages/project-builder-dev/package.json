@@ -12,27 +12,14 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-dev"
   },
-  "bin": {
-    "baseplate-dev": "./bin/baseplate-dev.js"
-  },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo",
-    "bin/**/*"
-  ],
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "type": "module",
-  "main": "dist/index.js",
   "imports": {
     "#src/*": {
       "development": "./src/*",
@@ -49,10 +36,19 @@
       "default": "./dist/e2e-runner/index.js"
     }
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
+  "main": "dist/index.js",
+  "bin": {
+    "baseplate-dev": "./bin/baseplate-dev.js"
   },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -97,5 +93,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

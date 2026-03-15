@@ -19,7 +19,7 @@
       "unknown"
     ]
   },
-  "sortPackageJson": true,
+  "sortPackageJson": false,
   "ignorePatterns": [
     "**/dist/**",
     "**/node_modules/**",

@@ -11,13 +11,19 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/fastify-generators"
   },
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
+  "sideEffects": false,
+  "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "main": "dist/index.js",
   "files": [
     "README.md",
     "LICENSE",
@@ -26,16 +32,6 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
-  "type": "module",
-  "sideEffects": false,
-  "main": "dist/index.js",
-  "imports": {
-    "#src/*": "./dist/*"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
@@ -75,5 +71,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
