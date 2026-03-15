@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/create-project",
-  "version": "0.6.2",
+  "version": "1.0.7",
   "description": "CLI starter kit for creating a new Baseplate project",
   "keywords": [
     "baseplate",

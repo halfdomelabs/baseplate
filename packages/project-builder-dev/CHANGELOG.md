@@ -1,5 +1,15 @@
 # @baseplate-dev/project-builder-dev
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb), [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045), [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7), [`f94d174`](https://github.com/halfdomelabs/baseplate/commit/f94d1745de51cc76885731ea686b21c87b309e02), [`51339e7`](https://github.com/halfdomelabs/baseplate/commit/51339e7cfae849a80747742b770982ddcc8662d5), [`34fc44e`](https://github.com/halfdomelabs/baseplate/commit/34fc44ec930c951c90edfbf2f658878a0cae8bb5), [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50), [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50), [`d5e0b23`](https://github.com/halfdomelabs/baseplate/commit/d5e0b2397ce2aacacfd9663fb33d4176ec61ca61)]:
+  - @baseplate-dev/project-builder-lib@1.0.0
+  - @baseplate-dev/project-builder-server@1.0.0
+  - @baseplate-dev/project-builder-web@1.0.0
+  - @baseplate-dev/utils@1.0.0
+
 ## 0.6.2
 
 ### Patch Changes
