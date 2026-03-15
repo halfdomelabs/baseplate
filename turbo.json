@@ -60,6 +60,9 @@
     },
     "//#prettier:root:write": {
       "outputLogs": "errors-only"
+    },
+    "//#typecheck:root": {
+      "outputLogs": "errors-only"
     }
   }
 }
