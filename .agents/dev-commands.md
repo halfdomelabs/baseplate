@@ -6,7 +6,8 @@
 - Lint affected with auto-fixing: `pnpm lint:only:affected -- --fix`
 - Check types: `pnpm typecheck`
 - Test affected: `pnpm test:affected`
-- Check all code: `pnpm check` (runs linting, type checking, and testing)
+- Check affected code: `pnpm check` (runs formatting, linting, type checking, and testing on affected packages — use this during development)
+- Full check: `pnpm check:full` (runs everything including knip and metadata sync — only run as a final pass before completing a task)
 
 ### For a specific package
 

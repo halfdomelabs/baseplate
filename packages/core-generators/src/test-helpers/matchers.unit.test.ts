@@ -41,7 +41,7 @@ describe('toMatchTsFragment', () => {
 
     expect(() => {
       expect(actual).toMatchTsFragment(expected);
-    }).toThrow();
+    }).toThrow('Expected fragments to be equal');
   });
 
   it('fails when imports differ', () => {
@@ -54,7 +54,7 @@ describe('toMatchTsFragment', () => {
 
     expect(() => {
       expect(actual).toMatchTsFragment(expected);
-    }).toThrow();
+    }).toThrow('Expected fragments to be equal');
   });
 
   it('matches fragments with hoisted fragments in different order', () => {
@@ -117,7 +117,7 @@ describe('toIncludeImport', () => {
 
     expect(() => {
       expect(fragment).toIncludeImport('z', 'zod');
-    }).toThrow();
+    }).toThrow('Expected to include import');
   });
 
   it('fails when import name is present but from wrong module', () => {
@@ -128,7 +128,7 @@ describe('toIncludeImport', () => {
 
     expect(() => {
       expect(fragment).toIncludeImport('z', 'zod');
-    }).toThrow();
+    }).toThrow('Expected to include import');
   });
 
   it('checks type-only imports when specified', () => {
@@ -150,7 +150,7 @@ describe('toIncludeImport', () => {
       expect(fragment).toIncludeImport('MyType', 'types', {
         isTypeOnly: false,
       });
-    }).toThrow();
+    }).toThrow('Expected to include import');
   });
 
   it('matches import regardless of type-only when not specified', () => {

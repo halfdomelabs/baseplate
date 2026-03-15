@@ -10,6 +10,7 @@ import {
   prismaFieldGenerator,
   prismaModelGenerator,
   prismaModelIdGenerator,
+  prismaModelIndexGenerator,
   prismaModelUniqueGenerator,
   prismaRelationFieldGenerator,
 } from '@baseplate-dev/fastify-generators';
@@ -147,6 +148,13 @@ function buildModel(
             })),
           }),
         ),
+      indexes: model.model.indexes.map(({ fields }) =>
+        prismaModelIndexGenerator({
+          fields: fields.map((f) => ({
+            name: appBuilder.nameFromId(f.fieldRef),
+          })),
+        }),
+      ),
     },
   });
 }

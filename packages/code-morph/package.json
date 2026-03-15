@@ -4,13 +4,13 @@
   "private": true,
   "description": "Simple package for running code migrations on the codebase",
   "keywords": [
-    "code-transformation",
-    "typescript",
     "ast-manipulation",
-    "migration-tools",
     "baseplate",
+    "code-generation",
+    "code-transformation",
     "full-stack",
-    "code-generation"
+    "migration-tools",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -33,7 +33,7 @@
     "CHANGELOG"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "run:morpher": "tsx -C development src/scripts/run-morpher.ts",
@@ -58,6 +58,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

@@ -149,7 +149,9 @@ async function extractAndValidatePackage(
           const isMatch = expectedContent.equals(actualContent);
           return { file, isMatch };
         } catch (err) {
-          throw new Error(`Unable to read file ${file}: ${String(err)}`);
+          throw new Error(`Unable to read file ${file}: ${String(err)}`, {
+            cause: err,
+          });
         }
       }),
     );

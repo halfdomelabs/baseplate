@@ -67,11 +67,6 @@ src/
 
 ### Import/Export Rules
 
-- **Always use .js extensions** in import statements, even for TypeScript files
-- Example: `import { getSystemInfo } from '@src/system-info.js';`
-- Use `import type` for type-only imports
-- Follow ESM module resolution with TypeScript's `NodeNext`
-
 ### TypeScript Rules
 
 - **Always specify explicit return types** for functions

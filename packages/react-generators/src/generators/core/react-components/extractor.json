@@ -17,6 +17,69 @@
       "sourceFile": "components/ui/alert.tsx",
       "variables": {}
     },
+    "autocomplete": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/autocomplete.tsx",
+      "projectExports": {
+        "Autocomplete": { "isTypeOnly": false, "name": "Autocomplete" },
+        "AutocompleteClear": {
+          "isTypeOnly": false,
+          "name": "AutocompleteClear"
+        },
+        "AutocompleteCollection": {
+          "isTypeOnly": false,
+          "name": "AutocompleteCollection"
+        },
+        "AutocompleteContent": {
+          "isTypeOnly": false,
+          "name": "AutocompleteContent"
+        },
+        "AutocompleteEmpty": {
+          "isTypeOnly": false,
+          "name": "AutocompleteEmpty"
+        },
+        "AutocompleteGroup": {
+          "isTypeOnly": false,
+          "name": "AutocompleteGroup"
+        },
+        "AutocompleteInput": {
+          "isTypeOnly": false,
+          "name": "AutocompleteInput"
+        },
+        "AutocompleteItem": { "isTypeOnly": false, "name": "AutocompleteItem" },
+        "AutocompleteLabel": {
+          "isTypeOnly": false,
+          "name": "AutocompleteLabel"
+        },
+        "AutocompleteList": { "isTypeOnly": false, "name": "AutocompleteList" },
+        "AutocompleteSeparator": {
+          "isTypeOnly": false,
+          "name": "AutocompleteSeparator"
+        },
+        "AutocompleteStatus": {
+          "isTypeOnly": false,
+          "name": "AutocompleteStatus"
+        },
+        "AutocompleteTrigger": {
+          "isTypeOnly": false,
+          "name": "AutocompleteTrigger"
+        },
+        "AutocompleteValue": {
+          "isTypeOnly": false,
+          "name": "AutocompleteValue"
+        },
+        "useAutocompleteFilter": {
+          "isTypeOnly": false,
+          "name": "useAutocompleteFilter"
+        }
+      },
+      "referencedGeneratorTemplates": ["cn", "input-group", "spinner"],
+      "sourceFile": "components/ui/autocomplete.tsx",
+      "variables": {}
+    },
     "badge": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -145,6 +208,26 @@
       "pathRootRelativePath": "{src-root}/utils/cn.ts",
       "projectExports": { "cn": {} },
       "sourceFile": "src/utils/cn.ts",
+      "variables": {}
+    },
+    "collapsible": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/collapsible.tsx",
+      "projectExports": {
+        "Collapsible": { "isTypeOnly": false, "name": "Collapsible" },
+        "CollapsibleContent": {
+          "isTypeOnly": false,
+          "name": "CollapsibleContent"
+        },
+        "CollapsibleTrigger": {
+          "isTypeOnly": false,
+          "name": "CollapsibleTrigger"
+        }
+      },
+      "sourceFile": "components/ui/collapsible.tsx",
       "variables": {}
     },
     "combobox": {
@@ -662,6 +745,30 @@
       "projectExports": { "Skeleton": {} },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/skeleton.tsx",
+      "variables": {}
+    },
+    "slider": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/slider.tsx",
+      "projectExports": { "Slider": { "isTypeOnly": false, "name": "Slider" } },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/slider.tsx",
+      "variables": {}
+    },
+    "spinner": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/spinner.tsx",
+      "projectExports": {
+        "Spinner": { "isTypeOnly": false, "name": "Spinner" }
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/spinner.tsx",
       "variables": {}
     },
     "styles-button": {

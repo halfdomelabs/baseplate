@@ -142,7 +142,7 @@ function buildReact(
       children: {
         reactRouter: reactRouterGenerator({
           children: routerChildren,
-          renderPlaceholderIndex: adminRoutes ? false : true,
+          renderPlaceholderIndex: !adminRoutes,
         }),
         reactComponents: reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({}),

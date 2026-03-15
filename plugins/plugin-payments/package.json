@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "description": "Payment processing plugins for Baseplate (Stripe)",
   "keywords": [
-    "payments",
-    "stripe",
-    "webhooks",
-    "plugin",
-    "full-stack",
-    "typescript",
     "baseplate",
-    "code-generation"
+    "code-generation",
+    "full-stack",
+    "payments",
+    "plugin",
+    "stripe",
+    "typescript",
+    "webhooks"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -38,14 +38,14 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
@@ -74,6 +74,7 @@
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",

@@ -110,8 +110,8 @@ function createRenderersTask(
   }
 
   // Create dependencies object from collected dependencies
-  const dependencies = TsCodeUtils.mergeFragmentsAsObject({
-    ...Object.fromEntries(
+  const dependencies = TsCodeUtils.mergeFragmentsAsObject(
+    Object.fromEntries(
       [...allDependencies].map(([name, dep]) => [
         name,
         tsCodeFragment(dep.providerExpression ?? dep.providerImportName, [
@@ -121,7 +121,7 @@ function createRenderersTask(
         ]),
       ]),
     ),
-  });
+  );
 
   const taskExportKey = providerExportName.replace(/Provider$/, '');
 

@@ -1,5 +1,6 @@
 export * from './alert/alert.js';
 export * from './async-combobox-field/async-combobox-field.js';
+export * from './autocomplete/autocomplete.js';
 export * from './badge/badge.js';
 export * from './breadcrumb/breadcrumb.js';
 export * from './button-group/button-group.js';
@@ -45,6 +46,8 @@ export * from './separator/separator.js';
 export * from './sheet/sheet.js';
 export * from './sidebar/sidebar.js';
 export * from './skeleton/skeleton.js';
+export * from './slider/slider.js';
+export * from './spinner/spinner.js';
 export * from './switch-field/switch-field.js';
 export * from './switch/switch.js';
 export * from './table/table.js';

@@ -112,8 +112,9 @@ export const gitMergeDriverAlgorithmGenerator =
           // Non-zero exit code implies conflict or failure
           // Git specifies non-zero for conflict, >128 for crash/signal
           if (typeof exitCode !== 'number' || exitCode > 128) {
-            throw new Error(
-              `Git merge driver '${config.name}' crashed or failed with exit code ${exitCode}: ${error.message}`,
+            throw enhanceErrorWithContext(
+              error,
+              `Git merge driver '${config.name}' crashed or failed with exit code ${exitCode}`,
             );
           }
           // Otherwise, assume non-zero means conflict (exit codes 1-128)
