@@ -77,7 +77,7 @@ export const FASTIFY_PACKAGES = {
   postmark: '4.0.7',
 
   // Stripe
-  stripe: '14.5.0',
+  stripe: '20.4.1',
 
   // BullMQ
   bullmq: '5.61.2',

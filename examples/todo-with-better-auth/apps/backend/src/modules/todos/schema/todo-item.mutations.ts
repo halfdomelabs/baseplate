@@ -87,7 +87,7 @@ builder.mutationField('updateTodoItem', (t) =>
       }),
     },
     payload: { todoItem: t.payload.field({ type: todoItemObjectType }) },
-    authorize: ['public', 'user', 'system', 'admin'],
+    authorize: ['public', 'user', 'system', 'admin', 'pro-user'],
     resolve: async (root, { input: { id, data } }, context, info) => {
       const todoItem = await updateTodoItem({
         where: { id },
@@ -104,7 +104,7 @@ builder.mutationField('deleteTodoItem', (t) =>
   t.fieldWithInputPayload({
     input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: { todoItem: t.payload.field({ type: todoItemObjectType }) },
-    authorize: ['public', 'user', 'system', 'admin'],
+    authorize: ['public', 'user', 'system', 'admin', 'pro-user'],
     resolve: async (root, { input: { id } }, context, info) => {
       const todoItem = await deleteTodoItem({
         where: { id },

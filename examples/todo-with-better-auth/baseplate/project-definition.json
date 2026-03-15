@@ -264,6 +264,54 @@
           "name": "INACTIVE"
         }
       ]
+    },
+    {
+      "featureRef": "billing",
+      "id": "model-enum:64WXK8zT5uoI",
+      "isExposed": true,
+      "name": "BillingSubscriptionStatus",
+      "values": [
+        {
+          "friendlyName": "Active",
+          "id": "model-enum-value:TkD2j7Ts7uTy",
+          "name": "ACTIVE"
+        },
+        {
+          "friendlyName": "Trialing",
+          "id": "model-enum-value:pOEP6bMCIa5P",
+          "name": "TRIALING"
+        },
+        {
+          "friendlyName": "Past Due",
+          "id": "model-enum-value:3R2klR8jmvyo",
+          "name": "PAST_DUE"
+        },
+        {
+          "friendlyName": "Canceled",
+          "id": "model-enum-value:_nFT7KZLLCtU",
+          "name": "CANCELED"
+        },
+        {
+          "friendlyName": "Unpaid",
+          "id": "model-enum-value:Al5tFLbJ9uT0",
+          "name": "UNPAID"
+        },
+        {
+          "friendlyName": "Incomplete",
+          "id": "model-enum-value:rxuA5SBMkEzU",
+          "name": "INCOMPLETE"
+        },
+        {
+          "friendlyName": "Incomplete Expired",
+          "id": "model-enum-value:NehyON15mlR0",
+          "name": "INCOMPLETE_EXPIRED"
+        },
+        {
+          "friendlyName": "Paused",
+          "id": "model-enum-value:kP3xM7vRnW2q",
+          "name": "PAUSED"
+        }
+      ]
     }
   ],
   "features": [
@@ -279,7 +327,8 @@
       "parentRef": "accounts"
     },
     { "id": "feature:d2gEAaWMHAeL", "name": "storage" },
-    { "id": "feature:5yQn3gjSzKEB", "name": "todos" }
+    { "id": "feature:5yQn3gjSzKEB", "name": "todos" },
+    { "id": "feature:QL2I7hoOmjBW", "name": "billing" }
   ],
   "isInitialized": true,
   "libraries": [],
@@ -1285,13 +1334,38 @@
             "name": "image",
             "options": { "default": "" },
             "type": "string"
+          },
+          {
+            "id": "model-scalar-field:JrsS7gxqePD5",
+            "isOptional": true,
+            "name": "billingAccountId",
+            "options": {},
+            "type": "uuid"
           }
         ],
         "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:GiNJTpenQ298",
+            "foreignRelationName": "user",
+            "id": "model-local-relation:4YtaLemZegQV",
+            "modelRef": "BillingAccount",
+            "name": "billingAccount",
+            "onDelete": "SetNull",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "id", "localRef": "billingAccountId" }
+            ]
+          }
+        ],
         "uniqueConstraints": [
           {
             "fields": [{ "fieldRef": "email" }],
             "id": "model-unique-constraint:UO6vYbOXLBAp"
+          },
+          {
+            "fields": [{ "fieldRef": "billingAccountId" }],
+            "id": "model-unique-constraint:3b7CpXGml_9s"
           }
         ]
       },
@@ -1666,6 +1740,152 @@
       },
       "name": "Verification",
       "service": { "transformers": [] }
+    },
+    {
+      "featureRef": "billing",
+      "id": "model:yQ8vn0mn0sG0",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:sLwgpRj1rBQu",
+            "isOptional": false,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:__Cd5sxmnA0J",
+            "isOptional": false,
+            "name": "stripeCustomerId",
+            "options": {},
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:MGYyEd8mvzn0",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:onoGYXPFAG1R",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "stripeCustomerId" }],
+            "id": "model-unique-constraint:9HIKDJ4uJBRz"
+          }
+        ]
+      },
+      "name": "BillingAccount",
+      "service": { "transformers": [] }
+    },
+    {
+      "featureRef": "billing",
+      "id": "model:rQOnZgMWGHWP",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:5SAuLT4bAV5_",
+            "isOptional": false,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:0j9aW2_oVZi7",
+            "isOptional": false,
+            "name": "billingAccountId",
+            "options": {},
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:iFOTvtC8ySj_",
+            "isOptional": false,
+            "name": "planKey",
+            "options": {},
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:vDEdhOpEBcgh",
+            "isOptional": false,
+            "name": "status",
+            "options": { "enumRef": "BillingSubscriptionStatus" },
+            "type": "enum"
+          },
+          {
+            "id": "model-scalar-field:jLzXegb1IqTo",
+            "isOptional": false,
+            "name": "stripeSubscriptionId",
+            "options": {},
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:XR_8ZVHS7aB7",
+            "isOptional": false,
+            "name": "currentPeriodStart",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:EucV0WREtHCq",
+            "isOptional": false,
+            "name": "currentPeriodEnd",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:_gldE8Uqnq4q",
+            "isOptional": false,
+            "name": "cancelAtPeriodEnd",
+            "options": { "default": "false" },
+            "type": "boolean"
+          },
+          {
+            "id": "model-scalar-field:8TD82_zwouGj",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:7CWVH5PctvBD",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:wI3FBas_VNa2",
+            "foreignRelationName": "billingSubscriptions",
+            "id": "model-local-relation:7_cnkNOxb0fZ",
+            "modelRef": "BillingAccount",
+            "name": "billingAccount",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "id", "localRef": "billingAccountId" }
+            ]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "stripeSubscriptionId" }],
+            "id": "model-unique-constraint:rVWMdLZ9W36b"
+          }
+        ]
+      },
+      "name": "BillingSubscription",
+      "service": { "transformers": [] }
     }
   ],
   "plugins": [
@@ -1738,6 +1958,12 @@
             "comment": "Administrative role",
             "id": "role:PYGSU4BDOlpQ",
             "name": "admin"
+          },
+          {
+            "builtIn": false,
+            "comment": "Granted to users with an active Pro subscription",
+            "id": "role:bK7mXwR3pL9v",
+            "name": "pro-user"
           }
         ]
       },
@@ -1777,7 +2003,21 @@
       "version": "0.1.0"
     },
     {
-      "config": { "stripeOptions": {} },
+      "config": {
+        "billing": {
+          "enabled": true,
+          "featureRef": "billing",
+          "plans": [
+            {
+              "id": "billing-plan:pro-plan",
+              "key": "pro-plan",
+              "displayName": "Pro Plan",
+              "grantedRoles": ["pro-user"]
+            }
+          ]
+        },
+        "stripeOptions": {}
+      },
       "id": "plugin:baseplate-dev_plugin-payments_stripe",
       "name": "stripe",
       "packageName": "@baseplate-dev/plugin-payments",

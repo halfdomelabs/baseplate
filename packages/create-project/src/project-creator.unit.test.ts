@@ -21,6 +21,9 @@ vi.mock('chalk', () => ({
   },
 }));
 
+vi.mock('fs');
+vi.mock('fs/promises');
+
 // Mock the project generator module
 vi.mock('./project-generator.js', () => ({
   generateRootPackage: vi.fn(() => Promise.resolve()),

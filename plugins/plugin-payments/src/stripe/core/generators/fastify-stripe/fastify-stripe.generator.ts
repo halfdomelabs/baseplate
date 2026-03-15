@@ -1,13 +1,10 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  tsCodeFragment,
-  tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   configServiceProvider,
   FASTIFY_PACKAGES,
-  fastifyServerConfigProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
@@ -18,9 +15,7 @@ import { z } from 'zod';
 
 import { STRIPE_FASTIFY_STRIPE_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+const descriptorSchema = z.object({});
 
 export const fastifyStripeGenerator = createGenerator({
   name: 'stripe/fastify-stripe',
@@ -31,10 +26,7 @@ export const fastifyStripeGenerator = createGenerator({
     imports: STRIPE_FASTIFY_STRIPE_GENERATED.imports.task,
     renderers: STRIPE_FASTIFY_STRIPE_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(FASTIFY_PACKAGES, [
-        'stripe',
-        'fastify-raw-body',
-      ]),
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['stripe']),
     }),
     configService: createProviderTask(
       configServiceProvider,
@@ -43,30 +35,6 @@ export const fastifyStripeGenerator = createGenerator({
           comment: 'Stripe secret API key',
           validator: 'z.string().min(1)',
           seedValue: 'STRIPE_SECRET_KEY',
-        });
-        configService.configFields.set('STRIPE_ENDPOINT_SECRET', {
-          comment: 'Stripe webhook endpoint secret',
-          validator: 'z.string().min(1)',
-          seedValue: 'STRIPE_ENDPOINT_SECRET',
-        });
-      },
-    ),
-    fastifyServerConfig: createProviderTask(
-      fastifyServerConfigProvider,
-      (fastifyServerConfig) => {
-        fastifyServerConfig.plugins.set('rawBodyPlugin', {
-          plugin: tsCodeFragment(
-            'rawBodyPlugin',
-            tsImportBuilder().default('rawBodyPlugin').from('fastify-raw-body'),
-          ),
-        });
-        fastifyServerConfig.plugins.set('stripeWebhookPlugin', {
-          plugin: tsCodeFragment(
-            'stripeWebhookPlugin',
-            tsImportBuilder(['stripeWebhookPlugin']).from(
-              '@/src/plugins/stripe-webhook.js',
-            ),
-          ),
         });
       },
     ),
@@ -77,7 +45,6 @@ export const fastifyStripeGenerator = createGenerator({
       run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(renderers.pluginsGroup.render({}));
             await builder.apply(renderers.servicesGroup.render({}));
           },
         };

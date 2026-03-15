@@ -43,3 +43,17 @@ className={cn("border rounded-lg", isActive && "bg-primary")}
 ```
 
 This convention ensures that plugin styles remain isolated and don't interfere with the main application or other plugins.
+
+## Generator Barrel Exports
+
+All generators must have their public symbols (providers, types) re-exported from their `index.ts` barrel file. This is required so that knip can trace exports and does not flag them as unused.
+
+For example, a generator's `index.ts` should include:
+
+```ts
+export * from './my-generator.generator.js';
+export type { MyGeneratorImportsProvider } from './generated/ts-import-providers.js';
+export { myGeneratorImportsProvider } from './generated/ts-import-providers.js';
+```
+
+Even if these exports are only consumed internally via `#src/` aliases, they must still appear in the barrel to satisfy knip's static analysis.

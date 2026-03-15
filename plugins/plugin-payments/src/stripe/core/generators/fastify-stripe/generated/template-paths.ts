@@ -2,10 +2,7 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface StripeFastifyStripePaths {
-  pluginsWebhook: string;
-  pluginsWebhookTest: string;
   service: string;
-  serviceEvents: string;
 }
 
 const stripeFastifyStripePaths = createProviderType<StripeFastifyStripePaths>(
@@ -20,12 +17,7 @@ const stripeFastifyStripePathsTask = createGeneratorTask({
 
     return {
       providers: {
-        stripeFastifyStripePaths: {
-          pluginsWebhook: `${srcRoot}/plugins/stripe-webhook.ts`,
-          pluginsWebhookTest: `${srcRoot}/plugins/stripe-webhook.int.test.ts`,
-          service: `${srcRoot}/services/stripe.ts`,
-          serviceEvents: `${srcRoot}/services/stripe-events.ts`,
-        },
+        stripeFastifyStripePaths: { service: `${srcRoot}/services/stripe.ts` },
       },
     };
   },

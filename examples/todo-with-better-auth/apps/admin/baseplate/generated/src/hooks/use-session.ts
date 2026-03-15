@@ -4,6 +4,7 @@ import { authClient } from '../services/auth-client';
 
 export const AUTH_ROLES = /* TPL_AUTH_ROLES:START */ [
   'admin',
+  'pro-user',
   'public',
   'system',
   'user',

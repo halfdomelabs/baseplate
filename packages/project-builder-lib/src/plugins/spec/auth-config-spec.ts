@@ -20,9 +20,11 @@ export const authConfigSpec = createFieldMapSpec(
   'core/auth-config',
   (t) => ({
     getAuthConfig: t.scalar<AuthConfigGetter>(),
+    pluginKey: t.scalar<string>(),
   }),
   {
     use: (values) => ({
+      pluginKey: values.pluginKey,
       getAuthConfig: (definition: ProjectDefinition) =>
         values.getAuthConfig?.(definition),
       getAuthConfigOrThrow: (definition: ProjectDefinition) => {

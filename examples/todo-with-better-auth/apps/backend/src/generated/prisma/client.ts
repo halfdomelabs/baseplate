@@ -45,6 +45,16 @@ export { Prisma }
  */
 export type Account = Prisma.AccountModel
 /**
+ * Model BillingAccount
+ * 
+ */
+export type BillingAccount = Prisma.BillingAccountModel
+/**
+ * Model BillingSubscription
+ * 
+ */
+export type BillingSubscription = Prisma.BillingSubscriptionModel
+/**
  * Model Customer
  * 
  */
