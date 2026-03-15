@@ -1,4 +1,5 @@
 import { get, set } from 'es-toolkit/compat';
+import { produce } from 'immer';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { ReferencePath } from '#src/references/types.js';
@@ -7,6 +8,10 @@ import type {
   EntityDefinitionIssue,
 } from '#src/schema/creator/definition-issue-types.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
+import type { DefinitionDiff } from '#src/tools/merge-schema/diff-definition.js';
+
+import { serializeSchema } from '#src/references/serialize-schema.js';
+import { diffSerializedDefinitions } from '#src/tools/merge-schema/diff-definition.js';
 
 /**
  * Resolves a definition issue's path to an absolute path in the definition.
@@ -79,4 +84,30 @@ export function createIssueFixSetter(
   }
 
   return undefined;
+}
+
+/**
+ * Previews the diff that would result from applying an issue's fix.
+ *
+ * Applies the fix to a draft copy of the definition, serializes both versions,
+ * and returns a structured diff. Returns `undefined` if the issue has no fix.
+ */
+export function previewIssueFix(
+  issue: DefinitionIssue,
+  container: ProjectDefinitionContainer,
+): DefinitionDiff | undefined {
+  const setter = createIssueFixSetter(issue, container);
+  if (!setter) return undefined;
+
+  const { schema, definition } = container;
+  const fixedDefinition = produce(definition, setter);
+
+  const currentSerialized = serializeSchema(schema, definition);
+  const fixedSerialized = serializeSchema(schema, fixedDefinition);
+
+  return diffSerializedDefinitions(
+    schema,
+    currentSerialized as Record<string, unknown>,
+    fixedSerialized as Record<string, unknown>,
+  );
 }

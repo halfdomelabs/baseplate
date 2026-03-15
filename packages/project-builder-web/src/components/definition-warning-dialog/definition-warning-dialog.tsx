@@ -4,7 +4,10 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { createIssueFixSetter } from '@baseplate-dev/project-builder-lib';
+import {
+  createIssueFixSetter,
+  previewIssueFix,
+} from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -14,6 +17,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  JsonDiffViewer,
   Table,
   TableBody,
   TableCell,
@@ -21,13 +25,10 @@ import {
   TableHeader,
   TableRow,
   toast,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@baseplate-dev/ui-components';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
-import { MdInfo } from 'react-icons/md';
+import { Fragment, useState } from 'react';
+import { MdChevronRight, MdExpandMore } from 'react-icons/md';
 
 import { useDefinitionWarningDialogState } from '#src/hooks/use-definition-warning-dialog.js';
 import { usePrevious } from '#src/hooks/use-previous.js';
@@ -40,6 +41,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
     useProjectDefinition();
   const { entities } = definitionContainer;
   const [applyingFixIndex, setApplyingFixIndex] = useState<number | null>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   // Cache options during close transition
   const dialogOptionsCached = usePrevious(dialogOptions);
@@ -127,71 +129,113 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                   )
                 : undefined;
 
+              const isExpanded = expandedIndex === index;
+              const diff = isExpanded
+                ? previewIssueFix(warning, definitionContainer)
+                : undefined;
+
               return (
-                <TableRow key={`${pathInEntity}-${index}`}>
-                  <TableCell>
-                    {closestEntity ? (
-                      <div className="text-style-prose">
-                        <div>
-                          {navOptions ? (
-                            <Link
-                              {...navOptions}
-                              onClick={() => {
-                                setDialogOptions(undefined);
-                              }}
-                            >
+                <Fragment key={`${pathInEntity}-${index}`}>
+                  <TableRow>
+                    <TableCell>
+                      {closestEntity ? (
+                        <div className="text-style-prose">
+                          <div>
+                            {navOptions ? (
+                              <Link
+                                {...navOptions}
+                                onClick={() => {
+                                  setDialogOptions(undefined);
+                                }}
+                              >
+                                <strong>{closestEntity.name}</strong>
+                              </Link>
+                            ) : (
                               <strong>{closestEntity.name}</strong>
-                            </Link>
-                          ) : (
-                            <strong>{closestEntity.name}</strong>
-                          )}
+                            )}
+                          </div>
+                          <div className="text-muted-foreground">
+                            {closestEntity.type.name}
+                          </div>
                         </div>
-                        <div className="text-muted-foreground">
-                          {closestEntity.type.name}
-                        </div>
-                      </div>
-                    ) : (
-                      <strong>Root</strong>
-                    )}
-                  </TableCell>
-                  <TableCell>{pathInEntity}</TableCell>
-                  <TableCell>{warning.message}</TableCell>
-                  <TableCell>
-                    {warning.fix ? (
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          disabled={applyingFixIndex !== null}
-                          onClick={() => {
-                            handleApplyFix(warning, index);
-                          }}
-                        >
-                          {applyingFixIndex === index
-                            ? 'Applying...'
-                            : 'Apply fix'}
-                        </Button>
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Fix details"
-                                className="size-7 opacity-50"
-                              />
-                            }
+                      ) : (
+                        <strong>Root</strong>
+                      )}
+                    </TableCell>
+                    <TableCell>{pathInEntity}</TableCell>
+                    <TableCell className="max-w-[300px] break-words whitespace-normal">
+                      {warning.message}
+                    </TableCell>
+                    <TableCell>
+                      {warning.fix ? (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            disabled={applyingFixIndex !== null}
+                            onClick={() => {
+                              handleApplyFix(warning, index);
+                            }}
                           >
-                            <MdInfo />
-                          </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-[300px]">
-                            {warning.fix.label}
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
+                            {applyingFixIndex === index
+                              ? 'Applying...'
+                              : 'Apply fix'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Preview fix diff"
+                            className="size-7 opacity-50"
+                            onClick={() => {
+                              setExpandedIndex(isExpanded ? null : index);
+                            }}
+                          >
+                            {isExpanded ? <MdExpandMore /> : <MdChevronRight />}
+                          </Button>
+                        </div>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                  {isExpanded && diff ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="p-0">
+                        <div className="border-t bg-muted/30 p-3">
+                          <div className="mb-2 text-xs font-medium text-muted-foreground">
+                            Changes that will be applied:
+                          </div>
+                          {diff.entries.map((entry) => (
+                            <div
+                              key={`${entry.path}-${entry.label}`}
+                              className="space-y-2"
+                            >
+                              <div className="text-sm font-medium">
+                                {entry.label} — {entry.type}
+                              </div>
+                              <div className="max-h-[300px] overflow-auto rounded border">
+                                {entry.type === 'added' ? (
+                                  <pre className="p-2 text-xs whitespace-pre-wrap">
+                                    {JSON.stringify(entry.merged, null, 2)}
+                                  </pre>
+                                ) : entry.type === 'removed' ? (
+                                  <pre className="p-2 text-xs whitespace-pre-wrap">
+                                    {JSON.stringify(entry.current, null, 2)}
+                                  </pre>
+                                ) : (
+                                  <JsonDiffViewer
+                                    oldValue={entry.current}
+                                    newValue={entry.merged}
+                                    leftTitle="Current"
+                                    rightTitle="After fix"
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                </Fragment>
               );
             })}
           </TableBody>

@@ -145,10 +145,7 @@ export function LocalAuthDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
-                  <DefinitionDiffAlert
-                    diff={diff}
-                    upToDateMessage="All required models are already configured correctly. No changes needed."
-                  />
+                  <DefinitionDiffAlert diff={diff} />
                 </SectionListSectionContent>
               </SectionListSection>
               <SectionListSection>

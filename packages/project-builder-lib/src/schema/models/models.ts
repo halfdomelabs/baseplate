@@ -41,7 +41,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
     };
 
     const defaultOptionsSchema = z
-      .object({ default: z.string().optional() })
+      .object({ default: z.string().default('') })
       .default({ default: '' });
 
     const union = z.discriminatedUnion('type', [
@@ -55,7 +55,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
         type: z.literal('uuid'),
         options: z
           .object({
-            default: z.string().optional(),
+            default: z.string().default(''),
             genUuid: z.boolean().optional(),
           })
           .default({ default: '' }),
