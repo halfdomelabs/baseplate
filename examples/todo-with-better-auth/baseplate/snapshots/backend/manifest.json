@@ -5,6 +5,7 @@
       {
         "path": "src/modules/accounts/users/services/user.data-service.int.test.ts"
       },
+      { "path": "src/modules/billing/services/billing.service.int.test.ts" },
       { "path": "src/modules/storage/services/clean-unused-files.int.test.ts" },
       { "path": "src/modules/storage/utils/mime.unit.test.ts" },
       {

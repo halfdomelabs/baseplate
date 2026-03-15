@@ -29,6 +29,44 @@ const STRIPE_STATUS_MAP: Record<
   paused: 'PAUSED',
 };
 
+/** Statuses that indicate a subscription is currently active. */
+const ACTIVE_STATUSES: ReadonlySet<BillingSubscriptionStatus> = new Set([
+  'ACTIVE',
+  'TRIALING',
+  'PAST_DUE',
+]);
+
+/**
+ * Syncs a user's roles based on their subscription status.
+ *
+ * Grants plan roles when the subscription is active, removes them when inactive.
+ * Only called when the subscription status actually changed.
+ *
+ * @param userId - The user whose roles to sync.
+ * @param planKey - The subscription plan key.
+ * @param status - The current subscription status.
+ */
+async function syncSubscriptionRoles(
+  userId: string,
+  planKey: PlanKey,
+  status: BillingSubscriptionStatus,
+): Promise<void> {
+  const plan = SUBSCRIPTION_PLANS[planKey];
+  const grantedRoles: readonly string[] = plan.grantedRoles;
+  if (grantedRoles.length === 0) {
+    return;
+  }
+
+  await (ACTIVE_STATUSES.has(status)
+    ? prisma.userRole.createMany({
+        data: grantedRoles.map((role) => ({ userId, role })),
+        skipDuplicates: true,
+      })
+    : prisma.userRole.deleteMany({
+        where: { userId, role: { in: [...grantedRoles] } },
+      }));
+}
+
 /**
  * Gets or creates a BillingAccount for the given user.
  *
@@ -170,6 +208,11 @@ export async function syncSubscriptionFromStripe(
   const currentPeriodStart = new Date(firstItem.current_period_start * 1000);
   const currentPeriodEnd = new Date(firstItem.current_period_end * 1000);
 
+  const existingSubscription = await prisma.billingSubscription.findUnique({
+    where: { stripeSubscriptionId: stripeSubscription.id },
+    select: { status: true },
+  });
+
   await prisma.billingSubscription.upsert({
     where: { stripeSubscriptionId: stripeSubscription.id },
     create: {
@@ -189,6 +232,17 @@ export async function syncSubscriptionFromStripe(
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
     },
   });
+
+  // Sync roles only when subscription status actually changed
+  if (existingSubscription?.status !== status) {
+    const user = await prisma.billingAccount
+      .findUnique({ where: { id: billingAccount.id } })
+      .user();
+
+    if (user) {
+      await syncSubscriptionRoles(user.id, resolvedPlanKey, status);
+    }
+  }
 }
 
 /**
