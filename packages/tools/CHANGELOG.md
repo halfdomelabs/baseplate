@@ -1,10 +1,10 @@
 # @baseplate-dev/tools
 
-## 1.0.7
+## 0.6.3
 
 ### Patch Changes
 
-- [#832](https://github.com/halfdomelabs/baseplate/pull/832) [`6776496`](https://github.com/halfdomelabs/baseplate/commit/6776496d5d0b20142b54c8fc6fe99c4ec5c27168) Thanks [@kingston](https://github.com/kingston)! - Add oxlint base configuration and integrate with ESLint via eslint-plugin-oxlint
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Add oxlint base configuration and integrate with ESLint via eslint-plugin-oxlint
 
 ## 0.6.2
 

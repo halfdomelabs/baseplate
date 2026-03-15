@@ -1,13 +1,13 @@
 # @baseplate-dev/ui-components
 
-## 1.0.7
+## 0.6.3
 
 ### Patch Changes
 
-- [#831](https://github.com/halfdomelabs/baseplate/pull/831) [`1115ba0`](https://github.com/halfdomelabs/baseplate/commit/1115ba082d2288db9f233c459dde3f32b890ff67) Thanks [@kingston](https://github.com/kingston)! - Add autocomplete, slider, collapsible, and spinner UI components
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Add autocomplete, slider, collapsible, and spinner UI components
 
 - Updated dependencies []:
-  - @baseplate-dev/utils@1.0.0
+  - @baseplate-dev/utils@0.6.3
 
 ## 0.6.2
 

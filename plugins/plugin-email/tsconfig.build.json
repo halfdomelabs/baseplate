@@ -34,6 +34,9 @@
       "path": "../../packages/ui-components/tsconfig.build.json"
     },
     {
+      "path": "../../packages/utils/tsconfig.build.json"
+    },
+    {
       "path": "../plugin-queue/tsconfig.build.json"
     }
   ]
