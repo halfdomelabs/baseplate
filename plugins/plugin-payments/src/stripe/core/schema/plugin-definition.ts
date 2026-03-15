@@ -26,7 +26,7 @@ export const createBillingPlanSchema = definitionSchema((ctx) =>
         )
         .default([]),
     }),
-    { type: billingPlanEntityType },
+    { type: billingPlanEntityType, getNameResolver: (data) => data.key },
   ),
 );
 
