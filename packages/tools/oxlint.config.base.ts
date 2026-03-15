@@ -34,6 +34,27 @@ export default {
 
     // In the future we can but right now too many fixes
     'no-shadow': 'off',
+
+    // Style rules from ESLint
+
+    // Enforce using concise arrow function syntax when possible.
+    'no-case-declarations': ['error'],
+    'no-empty': ['error'],
+    'no-fallthrough': ['error', { allowEmptyCase: false }],
+    'no-prototype-builtins': 'error',
+    'no-regex-spaces': 'error',
+    'prefer-template': 'error',
+    'arrow-body-style': ['error', 'as-needed'],
+    'no-var': 'error',
+    'prefer-const': [
+      'error',
+      {
+        destructuring: 'any',
+        ignoreReadBeforeAssign: false,
+      },
+    ],
+    'prefer-rest-params': 'error',
+    'prefer-spread': 'error',
   },
   overrides: [
     {
