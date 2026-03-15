@@ -220,16 +220,19 @@ export const WithFormValidation: Story = {
       defaultValues: { dateTime: undefined },
     });
 
-    const onSubmit = (data: { dateTime: string | undefined }): void => {
-      if (!data.dateTime) {
-        console.error('Validation failed: DateTime is required');
-        return;
-      }
-      console.info('Form submitted with:', data);
-    };
-
     return (
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(
+          (data: { dateTime: string | undefined }): void => {
+            if (!data.dateTime) {
+              console.error('Validation failed: DateTime is required');
+              return;
+            }
+            console.info('Form submitted with:', data);
+          },
+        )}
+        className="space-y-4"
+      >
         <DateTimePickerFieldController
           {...args}
           control={control}

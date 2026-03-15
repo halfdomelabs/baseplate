@@ -102,6 +102,7 @@ export class TypedEventEmitter<T extends object> {
     );
 
     // Keep yielding events until done
+    // oxlint-disable-next-line no-unmodified-loop-condition -- false positive since isDone is set to true in the abort handler
     while (!isDone) {
       const payload =
         queue.shift() ??

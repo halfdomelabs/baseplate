@@ -1,5 +1,5 @@
 import type { SourceFile } from 'ts-morph';
-import type z from 'zod';
+import type { z } from 'zod';
 
 export interface MorpherContext {
   packageDirectory: string;
