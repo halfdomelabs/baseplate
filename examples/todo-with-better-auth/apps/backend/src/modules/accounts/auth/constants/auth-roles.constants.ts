@@ -17,6 +17,10 @@ export interface RoleConfig {
 export const AUTH_ROLE_CONFIG = Object.freeze(
   /* TPL_AUTH_ROLES:START */ {
     admin: { builtIn: false, comment: 'Administrative role' },
+    'pro-user': {
+      builtIn: false,
+      comment: 'Granted to users with an active Pro subscription',
+    },
     public: {
       builtIn: true,
       comment: 'All users (including unauthenticated and authenticated users)',

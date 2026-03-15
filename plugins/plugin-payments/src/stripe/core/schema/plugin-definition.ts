@@ -1,24 +1,37 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
+  authRoleEntityType,
   definitionSchema,
   featureEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-/** Schema for an individual billing plan. */
-const billingPlanSchema = z.object({
+/** Schema for an individual billing plan (without context-dependent fields). */
+const billingPlanBaseSchema = z.object({
   id: z.string(),
   key: CASE_VALIDATORS.KEBAB_CASE.min(1),
   displayName: z.string().min(1),
-  grantedRoles: z.array(z.string()).default([]),
 });
 
-export type BillingPlanDefinition = z.infer<typeof billingPlanSchema>;
+export type BillingPlanDefinition = z.infer<typeof billingPlanBaseSchema> & {
+  grantedRoles: string[];
+};
 
-export const createStripePluginDefinitionSchema = definitionSchema((ctx) =>
-  z.object({
+export const createStripePluginDefinitionSchema = definitionSchema((ctx) => {
+  const billingPlanSchema = billingPlanBaseSchema.extend({
+    grantedRoles: z
+      .array(
+        ctx.withRef({
+          type: authRoleEntityType,
+          onDelete: 'RESTRICT',
+        }),
+      )
+      .default([]),
+  });
+
+  return z.object({
     stripeOptions: z.object({}).prefault({}),
     billing: z
       .object({
@@ -61,8 +74,8 @@ export const createStripePluginDefinitionSchema = definitionSchema((ctx) =>
         }
       })
       .prefault({ enabled: false, plans: [] }),
-  }),
-);
+  });
+});
 
 export type StripePluginDefinition = def.InferOutput<
   typeof createStripePluginDefinitionSchema

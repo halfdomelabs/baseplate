@@ -116,7 +116,7 @@ describe('billing.service', () => {
       });
       expect(roles).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ role: 'PRO_USER' }),
+          expect.objectContaining({ role: 'pro-user' }),
         ]),
       );
     });
@@ -129,7 +129,7 @@ describe('billing.service', () => {
 
       // Verify role was granted
       const rolesBefore = await prisma.userRole.findMany({
-        where: { userId, role: 'PRO_USER' },
+        where: { userId, role: 'pro-user' },
       });
       expect(rolesBefore).toHaveLength(1);
 
@@ -147,7 +147,7 @@ describe('billing.service', () => {
       expect(subscription?.status).toBe('CANCELED');
 
       const rolesAfter = await prisma.userRole.findMany({
-        where: { userId, role: 'PRO_USER' },
+        where: { userId, role: 'pro-user' },
       });
       expect(rolesAfter).toHaveLength(0);
     });
@@ -177,7 +177,7 @@ describe('billing.service', () => {
       );
 
       const roles = await prisma.userRole.findMany({
-        where: { userId, role: 'PRO_USER' },
+        where: { userId, role: 'pro-user' },
       });
       expect(roles).toHaveLength(1);
     });

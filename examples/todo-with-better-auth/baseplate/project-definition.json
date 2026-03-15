@@ -1958,6 +1958,12 @@
             "comment": "Administrative role",
             "id": "role:PYGSU4BDOlpQ",
             "name": "admin"
+          },
+          {
+            "builtIn": false,
+            "comment": "Granted to users with an active Pro subscription",
+            "id": "role:bK7mXwR3pL9v",
+            "name": "pro-user"
           }
         ]
       },
@@ -2006,7 +2012,7 @@
               "id": "plan_pro",
               "key": "pro-plan",
               "displayName": "Pro Plan",
-              "grantedRoles": ["PRO_USER"]
+              "grantedRoles": ["pro-user"]
             }
           ]
         },

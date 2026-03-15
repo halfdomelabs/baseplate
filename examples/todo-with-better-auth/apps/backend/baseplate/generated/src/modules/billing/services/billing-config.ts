@@ -19,7 +19,7 @@ interface SubscriptionPlan {
  */
 export const SUBSCRIPTION_PLANS = /* TPL_PLANS:START */ {
   'pro-plan': {
-    grantedRoles: ['PRO_USER'] as const,
+    grantedRoles: ['pro-user'] as const,
     priceIds: {
       stage: 'price_PLACEHOLDER_STAGE_PRO_PLAN',
       prod: 'price_PLACEHOLDER_PROD_PRO_PLAN',

@@ -22,7 +22,7 @@ export default createPluginModule({
       pluginAppCompiler({
         pluginKey,
         appType: backendAppEntryType,
-        compile: ({ projectDefinition, appCompiler }) => {
+        compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
           const config = PluginUtils.configByKeyOrThrow(
             projectDefinition,
             pluginKey,
@@ -42,7 +42,9 @@ export default createPluginModule({
                 plans: billing.plans.map((p) => ({
                   key: p.key,
                   displayName: p.displayName,
-                  grantedRoles: p.grantedRoles,
+                  grantedRoles: p.grantedRoles.map((r) =>
+                    definitionContainer.nameFromId(r),
+                  ),
                 })),
               }),
             });
