@@ -1,13 +1,13 @@
 import type { PartialProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
 
 /** Model name constants for billing entities. */
-export const BILLING_MODELS = {
+const BILLING_MODELS = {
   billingAccount: 'BillingAccount',
   billingSubscription: 'BillingSubscription',
 } as const;
 
 /** Enum name constants for billing. */
-export const BILLING_ENUMS = {
+const BILLING_ENUMS = {
   billingSubscriptionStatus: 'BillingSubscriptionStatus',
 } as const;
 
