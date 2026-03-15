@@ -1,5 +1,5 @@
 ---
-'@baseplate-dev/plugin-observability': minor
+'@baseplate-dev/plugin-observability': patch
 '@baseplate-dev/fastify-generators': patch
 '@baseplate-dev/react-generators': patch
 '@baseplate-dev/project-builder-server': patch
