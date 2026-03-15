@@ -2,9 +2,10 @@
 
 'use client';
 
+import type * as React from 'react';
+
 import { cn } from '$cn';
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
-import * as React from 'react';
 
 /**
  * An input where the user selects a value from within a given range.
