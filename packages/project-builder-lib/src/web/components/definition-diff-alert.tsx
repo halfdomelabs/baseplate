@@ -30,7 +30,7 @@ function DefinitionDiffEntryRow({
   entry,
 }: DefinitionDiffEntryRowProps): ReactElement {
   return (
-    <div className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm">
+    <div className="flex w-full items-center justify-between px-3 py-2 text-sm">
       <span className="font-medium">{entry.label}</span>
       <div className="flex items-center gap-2">
         <Badge variant={CHANGE_TYPE_BADGE_VARIANT[entry.type]}>
@@ -88,14 +88,14 @@ export function DefinitionDiffAlert({
   }
 
   return (
-    <div className="space-y-4">
-      <Alert variant="warning">
-        <AlertTitle>Pending Changes</AlertTitle>
-        <AlertDescription>
+    <div className="overflow-hidden rounded-lg border">
+      <div className="border-b px-3 py-2">
+        <span className="text-sm font-medium">Pending Changes</span>
+        <p className="text-xs opacity-60">
           The following changes will be applied when you save:
-        </AlertDescription>
-      </Alert>
-      <div className="space-y-1">
+        </p>
+      </div>
+      <div className="divide-y">
         {diff.entries.map((entry) => (
           <DefinitionDiffEntryRow
             key={`${entry.path}-${entry.label}`}
