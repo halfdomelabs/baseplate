@@ -37,5 +37,5 @@ jobs:
       - run: pnpm prettier:check:affected
       - run: pnpm versions:check
       - run: pnpm knip
-      - run: pnpm dedupe --check
+      - run: pnpm turbo run packages:dedupe -- --check
       - run: pnpm metadata:check
