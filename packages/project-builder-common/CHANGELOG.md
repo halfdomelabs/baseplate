@@ -1,24 +1,24 @@
 # @baseplate-dev/project-builder-common
 
-## 1.0.7
+## 0.6.3
 
 ### Patch Changes
 
-- [#826](https://github.com/halfdomelabs/baseplate/pull/826) [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
 
-- [#829](https://github.com/halfdomelabs/baseplate/pull/829) [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7) Thanks [@kingston](https://github.com/kingston)! - Extract Stripe into standalone `@baseplate-dev/plugin-payments` package. Stripe is now managed through the plugin system instead of the `enableStripe` boolean on backend app config. Includes migration to automatically convert existing projects. Overhaul Stripe implementation to provide billing support.
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Extract Stripe into standalone `@baseplate-dev/plugin-payments` package. Stripe is now managed through the plugin system instead of the `enableStripe` boolean on backend app config. Includes migration to automatically convert existing projects. Overhaul Stripe implementation to provide billing support.
 
-- Updated dependencies [[`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb), [`41b09d1`](https://github.com/halfdomelabs/baseplate/commit/41b09d1a95eacb1a29603ea61f60324dea94d1a9), [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045), [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7), [`168793d`](https://github.com/halfdomelabs/baseplate/commit/168793d958e001de2eb8bebed03c2b42397da701), [`34fc44e`](https://github.com/halfdomelabs/baseplate/commit/34fc44ec930c951c90edfbf2f658878a0cae8bb5), [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50), [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50), [`55be8d4`](https://github.com/halfdomelabs/baseplate/commit/55be8d4d2994ff56ff580ff847f5271c6e8cdb25), [`d5e0b23`](https://github.com/halfdomelabs/baseplate/commit/d5e0b2397ce2aacacfd9663fb33d4176ec61ca61), [`d87bad9`](https://github.com/halfdomelabs/baseplate/commit/d87bad97614bb626598916efb073d05c469ec336)]:
-  - @baseplate-dev/project-builder-lib@1.0.0
-  - @baseplate-dev/project-builder-server@1.0.0
-  - @baseplate-dev/plugin-queue@1.0.0
-  - @baseplate-dev/plugin-observability@1.0.0
-  - @baseplate-dev/plugin-payments@1.0.0
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/plugin-auth@1.0.0
-  - @baseplate-dev/plugin-storage@1.0.0
-  - @baseplate-dev/plugin-email@1.0.0
-  - @baseplate-dev/plugin-rate-limit@1.0.0
+- Updated dependencies [[`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931), [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931)]:
+  - @baseplate-dev/project-builder-lib@0.6.3
+  - @baseplate-dev/project-builder-server@0.6.3
+  - @baseplate-dev/plugin-queue@0.6.3
+  - @baseplate-dev/plugin-observability@0.6.3
+  - @baseplate-dev/plugin-payments@0.6.3
+  - @baseplate-dev/sync@0.6.3
+  - @baseplate-dev/plugin-auth@0.6.3
+  - @baseplate-dev/plugin-storage@0.6.3
+  - @baseplate-dev/plugin-email@0.6.3
+  - @baseplate-dev/plugin-rate-limit@0.6.3
 
 ## 0.6.2
 

@@ -83,6 +83,14 @@ if (uniqueVersions.size > 1) {
   process.exit(0);
 }
 
+const [currentVersion] = [...uniqueVersions];
+const [major] = currentVersion.split('.').map(Number);
+if (major > 1) {
+  throw new Error(
+    `fix-versions: major version is ${major} (> 1) — this script should have been removed by now. Current version: ${currentVersion}`,
+  );
+}
+
 let bumped = 0;
 
 for (const relPath of packageJsonPaths) {
