@@ -30,7 +30,7 @@
     "**/tmp/**",
     "pnpm-lock.yaml",
     "**/route-tree.gen.ts",
-    "**/baseplate/generated/**",
+    "examples/**",
     ".changeset/**",
     ".pnpm-store/**",
     ".turbo/**",
