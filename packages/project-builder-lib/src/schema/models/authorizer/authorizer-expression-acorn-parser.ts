@@ -38,8 +38,10 @@ import type {
   RelationFilterCondition,
   RelationFilterNode,
 } from './authorizer-expression-ast.js';
+import type { AuthorizerExpressionVisitor } from './authorizer-expression-visitor.js';
 
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
+import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
 
 /**
  * Parse an authorizer expression string into our domain AST.
@@ -655,71 +657,7 @@ function extractInfo(
   const relationFilterRefs: { relationName: string }[] = [];
   let requiresModel = false;
 
-  function walk(node: AuthorizerExpressionNode): void {
-    switch (node.type) {
-      case 'fieldComparison': {
-        if (node.left.type === 'fieldRef') {
-          walkFieldRef(node.left);
-        }
-        if (node.right.type === 'fieldRef') {
-          walkFieldRef(node.right);
-        }
-        break;
-      }
-
-      case 'hasRole': {
-        roleRefs.push(node.role);
-        break;
-      }
-
-      case 'hasSomeRole': {
-        roleRefs.push(...node.roles);
-        break;
-      }
-
-      case 'nestedHasRole': {
-        nestedRoleRefs.push({
-          relationName: node.relationName,
-          roles: [node.role],
-        });
-        requiresModel = true;
-        break;
-      }
-
-      case 'nestedHasSomeRole': {
-        nestedRoleRefs.push({
-          relationName: node.relationName,
-          roles: node.roles,
-        });
-        requiresModel = true;
-        break;
-      }
-
-      case 'relationFilter': {
-        for (const condition of node.conditions) {
-          if (condition.value.type === 'fieldRef') {
-            walkFieldRef(condition.value);
-          }
-        }
-        relationFilterRefs.push({ relationName: node.relationName });
-        requiresModel = true;
-        break;
-      }
-
-      case 'isAuthenticated': {
-        // No dependencies to track
-        break;
-      }
-
-      case 'binaryLogical': {
-        walk(node.left);
-        walk(node.right);
-        break;
-      }
-    }
-  }
-
-  function walkFieldRef(node: FieldRefNode): void {
+  function collectFieldRef(node: FieldRefNode): void {
     if (node.source === 'model') {
       modelFieldRefs.push(node.field);
       requiresModel = true;
@@ -728,7 +666,54 @@ function extractInfo(
     }
   }
 
-  walk(ast);
+  const infoVisitor: AuthorizerExpressionVisitor<void> = {
+    fieldComparison(node) {
+      if (node.left.type === 'fieldRef') {
+        collectFieldRef(node.left);
+      }
+      if (node.right.type === 'fieldRef') {
+        collectFieldRef(node.right);
+      }
+    },
+    hasRole(node) {
+      roleRefs.push(node.role);
+    },
+    hasSomeRole(node) {
+      roleRefs.push(...node.roles);
+    },
+    nestedHasRole(node) {
+      nestedRoleRefs.push({
+        relationName: node.relationName,
+        roles: [node.role],
+      });
+      requiresModel = true;
+    },
+    nestedHasSomeRole(node) {
+      nestedRoleRefs.push({
+        relationName: node.relationName,
+        roles: node.roles,
+      });
+      requiresModel = true;
+    },
+    relationFilter(node) {
+      for (const condition of node.conditions) {
+        if (condition.value.type === 'fieldRef') {
+          collectFieldRef(condition.value);
+        }
+      }
+      relationFilterRefs.push({ relationName: node.relationName });
+      requiresModel = true;
+    },
+    isAuthenticated() {
+      // No dependencies to track
+    },
+    binaryLogical(_node, _ctx, visit) {
+      visit(_node.left);
+      visit(_node.right);
+    },
+  };
+
+  visitAuthorizerExpression(ast, infoVisitor);
 
   return {
     modelFieldRefs: [...new Set(modelFieldRefs)],

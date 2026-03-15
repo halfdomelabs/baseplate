@@ -1,7 +1,6 @@
 import type {
   AuthorizerExpressionNode,
-  FieldRefNode,
-  LiteralValueNode,
+  AuthorizerExpressionVisitor,
   ModelConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -10,10 +9,13 @@ import { prismaModelAuthorizerGenerator } from '@baseplate-dev/fastify-generator
 import {
   ModelUtils,
   parseAuthorizerExpression,
+  visitAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
+import { lowercaseFirstChar } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
+
+import { generateFieldRefOrLiteralCode } from './authorizer-expression-codegen-utils.js';
 
 /**
  * Resolved information about a relation for nested authorizer code generation.
@@ -50,7 +52,8 @@ interface AuthorizerExpressionCodeContext {
 }
 
 /**
- * Generate TypeScript code from an authorizer expression AST node.
+ * Build a visitor that generates TypeScript boolean-check code from
+ * authorizer expression AST nodes.
  *
  * Transforms the implicit-context DSL into explicit context code:
  * - `model.field` stays as `model.field`
@@ -60,48 +63,59 @@ interface AuthorizerExpressionCodeContext {
  * - `hasRole(model.relation, 'role')` becomes `await foreignAuthorizer.hasRoleById(ctx, model.fkField, 'role')`
  * - `A || B` becomes `(A) || (B)`
  */
-export function generateAuthorizerExpressionCode(
-  node: AuthorizerExpressionNode,
+function createAuthorizerCodeVisitor(
   codeContext?: AuthorizerExpressionCodeContext,
-): string {
-  switch (node.type) {
-    case 'fieldComparison': {
-      const left = generateComparisonOperandCode(node.left);
-      const right = generateComparisonOperandCode(node.right);
+): AuthorizerExpressionVisitor<string> {
+  return {
+    fieldComparison(node) {
+      const left = generateFieldRefOrLiteralCode(node.left);
+      const right = generateFieldRefOrLiteralCode(node.right);
       return `${left} ${node.operator} ${right}`;
-    }
-    case 'hasRole': {
+    },
+    hasRole(node) {
       return `ctx.auth.hasRole('${node.role}')`;
-    }
-    case 'hasSomeRole': {
+    },
+    hasSomeRole(node) {
       const roles = node.roles.map((r: string) => `'${r}'`).join(', ');
       return `ctx.auth.hasSomeRole([${roles}])`;
-    }
-    case 'nestedHasRole': {
+    },
+    nestedHasRole(node) {
       const resolved = getResolvedRelation(codeContext, node.relationName);
       return `await ${resolved.foreignAuthorizerVar}.hasRoleById(ctx, model.${resolved.localFkFieldName}, '${node.role}')`;
-    }
-    case 'nestedHasSomeRole': {
+    },
+    nestedHasSomeRole(node) {
       const resolved = getResolvedRelation(codeContext, node.relationName);
-      // Generate individual hasRoleById calls joined with ||
       const checks = node.roles.map(
         (role) =>
           `await ${resolved.foreignAuthorizerVar}.hasRoleById(ctx, model.${resolved.localFkFieldName}, '${role}')`,
       );
       return checks.length === 1 ? checks[0] : `(${checks.join(' || ')})`;
-    }
-    case 'relationFilter': {
+    },
+    relationFilter(node) {
       return generateRelationFilterCode(node, codeContext);
-    }
-    case 'isAuthenticated': {
+    },
+    isAuthenticated() {
       return 'ctx.auth.isAuthenticated';
-    }
-    case 'binaryLogical': {
-      const left = generateAuthorizerExpressionCode(node.left, codeContext);
-      const right = generateAuthorizerExpressionCode(node.right, codeContext);
+    },
+    binaryLogical(node, _ctx, visit) {
+      const left = visit(node.left);
+      const right = visit(node.right);
       return `(${left}) ${node.operator} (${right})`;
-    }
-  }
+    },
+  };
+}
+
+/**
+ * Generate TypeScript code from an authorizer expression AST node.
+ */
+export function generateAuthorizerExpressionCode(
+  node: AuthorizerExpressionNode,
+  codeContext?: AuthorizerExpressionCodeContext,
+): string {
+  return visitAuthorizerExpression(
+    node,
+    createAuthorizerCodeVisitor(codeContext),
+  );
 }
 
 /**
@@ -139,7 +153,7 @@ function generateRelationFilterCode(
 
   // Build the condition entries
   const conditionEntries = node.conditions.map((condition) => {
-    const valueCode = generateComparisonOperandCode(condition.value);
+    const valueCode = generateFieldRefOrLiteralCode(condition.value);
     return `${condition.field}: ${valueCode}`;
   });
 
@@ -156,7 +170,7 @@ function generateRelationFilterCode(
     if (authFieldConditions.length > 0) {
       // Null guard: if any auth field is null, the filter can't match
       const nullChecks = authFieldConditions
-        .map((c) => `${generateComparisonOperandCode(c.value)} != null`)
+        .map((c) => `${generateFieldRefOrLiteralCode(c.value)} != null`)
         .join(' && ');
       return `(${nullChecks} ? ${countExpr} : false)`;
     }
@@ -187,23 +201,6 @@ function getResolvedRelationFilter(
     );
   }
   return resolved;
-}
-
-function generateComparisonOperandCode(
-  node: FieldRefNode | LiteralValueNode,
-): string {
-  if (node.type === 'literalValue') {
-    const { value } = node;
-    if (typeof value === 'string') {
-      return quot(value);
-    }
-    // number and boolean emit as-is
-    return String(value);
-  }
-  if (node.source === 'model') {
-    return `model.${node.field}`;
-  }
-  return `ctx.auth.${node.field}`;
 }
 
 /**

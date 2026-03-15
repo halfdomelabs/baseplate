@@ -19,6 +19,9 @@ import type {
   FieldRefNode,
   LiteralValueNode,
 } from './authorizer-expression-ast.js';
+import type { AuthorizerExpressionVisitor } from './authorizer-expression-visitor.js';
+
+import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
 
 /**
  * Information about a model relation for nested authorizer validation.
@@ -133,106 +136,97 @@ export function validateAuthorizerExpression(
     }
   }
 
-  function walk(node: AuthorizerExpressionNode): void {
-    switch (node.type) {
-      case 'fieldComparison': {
-        if (node.left.type === 'fieldRef') {
-          validateFieldRef(node.left);
-        }
-        if (node.right.type === 'fieldRef') {
-          validateFieldRef(node.right);
-        }
-        // Type-check: warn if a model field is compared to an incompatible literal
-        const fieldRef = node.left.type === 'fieldRef' ? node.left : node.right;
-        const literalNode =
-          node.left.type === 'literalValue'
-            ? node.left
-            : node.right.type === 'literalValue'
-              ? node.right
-              : null;
-        if (
-          fieldRef.type === 'fieldRef' &&
-          fieldRef.source === 'model' &&
-          literalNode !== null
-        ) {
-          validateLiteralTypeCompatibility(fieldRef, literalNode);
-        }
-        break;
+  const validationVisitor: AuthorizerExpressionVisitor<void> = {
+    fieldComparison(node) {
+      if (node.left.type === 'fieldRef') {
+        validateFieldRef(node.left);
       }
-
-      case 'hasRole': {
-        // Warn if role doesn't exist (but allow - plugins may define roles)
-        if (allRoleNames.has(node.role)) {
-          warnIfBuiltInRole(node.role, node.roleStart, node.roleEnd);
+      if (node.right.type === 'fieldRef') {
+        validateFieldRef(node.right);
+      }
+      // Type-check: warn if a model field is compared to an incompatible literal
+      const fieldRef = node.left.type === 'fieldRef' ? node.left : node.right;
+      const literalNode =
+        node.left.type === 'literalValue'
+          ? node.left
+          : node.right.type === 'literalValue'
+            ? node.right
+            : null;
+      if (
+        fieldRef.type === 'fieldRef' &&
+        fieldRef.source === 'model' &&
+        literalNode !== null
+      ) {
+        const fieldType = modelContext.fieldTypes.get(fieldRef.field);
+        if (fieldType) {
+          validateLiteralTypeCompatibility(
+            fieldRef.field,
+            fieldType,
+            modelContext.modelName,
+            literalNode,
+          );
+        }
+      }
+    },
+    hasRole(node) {
+      // Warn if role doesn't exist (but allow - plugins may define roles)
+      if (allRoleNames.has(node.role)) {
+        warnIfBuiltInRole(node.role, node.roleStart, node.roleEnd);
+      } else {
+        warnings.push({
+          message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
+          start: node.roleStart,
+          end: node.roleEnd,
+        });
+      }
+    },
+    hasSomeRole(node) {
+      for (let i = 0; i < node.roles.length; i++) {
+        const role = node.roles[i];
+        const start = node.rolesStart[i];
+        const end = node.rolesEnd[i];
+        if (allRoleNames.has(role)) {
+          warnIfBuiltInRole(role, start, end);
         } else {
           warnings.push({
-            message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
-            start: node.roleStart,
-            end: node.roleEnd,
+            message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
+            start,
+            end,
           });
         }
-        break;
       }
-
-      case 'hasSomeRole': {
-        for (let i = 0; i < node.roles.length; i++) {
-          const role = node.roles[i];
-          const start = node.rolesStart[i];
-          const end = node.rolesEnd[i];
-          if (allRoleNames.has(role)) {
-            warnIfBuiltInRole(role, start, end);
-          } else {
-            warnings.push({
-              message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
-              start,
-              end,
-            });
-          }
-        }
-        break;
-      }
-
-      case 'nestedHasRole': {
-        validateNestedRelation(
-          node.relationName,
-          node.relationStart,
-          node.relationEnd,
-          [node.role],
-          [node.roleStart],
-          [node.roleEnd],
-        );
-        break;
-      }
-
-      case 'nestedHasSomeRole': {
-        validateNestedRelation(
-          node.relationName,
-          node.relationStart,
-          node.relationEnd,
-          node.roles,
-          node.rolesStart,
-          node.rolesEnd,
-        );
-        break;
-      }
-
-      case 'relationFilter': {
-        validateRelationFilter(node);
-        break;
-      }
-
-      case 'isAuthenticated': {
-        // No validation needed
-        break;
-      }
-
-      case 'binaryLogical': {
-        walk(node.left);
-        walk(node.right);
-        break;
-      }
-    }
-  }
+    },
+    nestedHasRole(node) {
+      validateNestedRelation(
+        node.relationName,
+        node.relationStart,
+        node.relationEnd,
+        [node.role],
+        [node.roleStart],
+        [node.roleEnd],
+      );
+    },
+    nestedHasSomeRole(node) {
+      validateNestedRelation(
+        node.relationName,
+        node.relationStart,
+        node.relationEnd,
+        node.roles,
+        node.rolesStart,
+        node.rolesEnd,
+      );
+    },
+    relationFilter(node) {
+      validateRelationFilter(node);
+    },
+    isAuthenticated() {
+      // No validation needed
+    },
+    binaryLogical(node, _ctx, visit) {
+      visit(node.left);
+      visit(node.right);
+    },
+  };
 
   function validateNestedRelation(
     relationName: string,
@@ -325,7 +319,7 @@ export function validateAuthorizerExpression(
           condition.field,
         );
         if (foreignFieldType) {
-          validateLiteralTypeCompatibilityForField(
+          validateLiteralTypeCompatibility(
             condition.field,
             foreignFieldType,
             relation.foreignModelName,
@@ -336,7 +330,7 @@ export function validateAuthorizerExpression(
     }
   }
 
-  function validateLiteralTypeCompatibilityForField(
+  function validateLiteralTypeCompatibility(
     fieldName: string,
     fieldType: string,
     modelName: string,
@@ -379,53 +373,6 @@ export function validateAuthorizerExpression(
     }
   }
 
-  function validateLiteralTypeCompatibility(
-    fieldRefNode: FieldRefNode,
-    literalNode: LiteralValueNode,
-  ): void {
-    const { fieldTypes } = modelContext;
-    const fieldType = fieldTypes.get(fieldRefNode.field);
-    if (!fieldType) return;
-
-    const literalJsType = typeof literalNode.value;
-
-    // Determine which JS types are compatible with each field type
-    const isCompatible = (() => {
-      switch (fieldType) {
-        case 'boolean': {
-          return literalJsType === 'boolean';
-        }
-        case 'int': {
-          return (
-            typeof literalNode.value === 'number' &&
-            Number.isInteger(literalNode.value)
-          );
-        }
-        case 'float':
-        case 'decimal': {
-          return literalJsType === 'number';
-        }
-        case 'string':
-        case 'uuid':
-        case 'enum': {
-          return literalJsType === 'string';
-        }
-        default: {
-          // Unknown or unsupported field type — no warning
-          return true;
-        }
-      }
-    })();
-
-    if (!isCompatible) {
-      warnings.push({
-        message: `Literal value type '${literalJsType}' is not compatible with field '${fieldRefNode.field}' of type '${fieldType}'.`,
-        start: literalNode.start,
-        end: literalNode.end,
-      });
-    }
-  }
-
   function validateFieldRef(node: FieldRefNode): void {
     if (node.source === 'model') {
       // Check if field exists on model
@@ -446,7 +393,7 @@ export function validateAuthorizerExpression(
     }
   }
 
-  walk(ast);
+  visitAuthorizerExpression(ast, validationVisitor);
 
   return warnings;
 }

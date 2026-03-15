@@ -1,5 +1,6 @@
 import type {
   AuthorizerExpressionNode,
+  AuthorizerExpressionVisitor,
   FieldRefNode,
   LiteralValueNode,
   ModelConfig,
@@ -10,10 +11,16 @@ import { prismaModelQueryFilterGenerator } from '@baseplate-dev/fastify-generato
 import {
   ModelUtils,
   parseAuthorizerExpression,
+  visitAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
-import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
+import { lowercaseFirstChar } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
+
+import {
+  generateFieldRefOrLiteralCode,
+  serializeLiteralValue,
+} from './authorizer-expression-codegen-utils.js';
 
 /**
  * Resolved information about a relation for nested query filter code generation.
@@ -36,8 +43,8 @@ interface QueryFilterCodeContext {
 }
 
 /**
- * Generate TypeScript code from an authorizer expression AST node,
- * producing a Prisma where clause instead of a boolean check.
+ * Build a visitor that generates Prisma where clause code from
+ * authorizer expression AST nodes.
  *
  * - `model.field === userId` → `{ field: ctx.auth.userId }`
  * - `hasRole('admin')` → `ctx.auth.hasRole('admin')` (boolean → true/false)
@@ -45,54 +52,63 @@ interface QueryFilterCodeContext {
  * - `A || B` → `queryHelpers.or([A, B])`
  * - `A && B` → `queryHelpers.and([A, B])`
  */
-export function generateQueryFilterExpressionCode(
-  node: AuthorizerExpressionNode,
+function createQueryFilterCodeVisitor(
   codeContext?: QueryFilterCodeContext,
-): string {
-  switch (node.type) {
-    case 'fieldComparison': {
+): AuthorizerExpressionVisitor<string> {
+  return {
+    fieldComparison(node) {
       return generateFieldComparisonWhereCode(
         node.left,
         node.right,
         node.operator,
       );
-    }
-    case 'hasRole': {
+    },
+    hasRole(node) {
       return `ctx.auth.hasRole('${node.role}')`;
-    }
-    case 'hasSomeRole': {
+    },
+    hasSomeRole(node) {
       const roles = node.roles.map((r: string) => `'${r}'`).join(', ');
       return `ctx.auth.hasSomeRole([${roles}])`;
-    }
-    case 'isAuthenticated': {
+    },
+    isAuthenticated() {
       return 'ctx.auth.isAuthenticated';
-    }
-    case 'nestedHasRole': {
+    },
+    nestedHasRole(node) {
       const resolved = getResolvedQueryFilter(codeContext, node.relationName);
       const roles = `'${node.role}'`;
       return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, '${resolved.relationFieldName}', [${roles}])`;
-    }
-    case 'nestedHasSomeRole': {
+    },
+    nestedHasSomeRole(node) {
       const resolved = getResolvedQueryFilter(codeContext, node.relationName);
       const roles = node.roles.map((r) => `'${r}'`).join(', ');
       return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, '${resolved.relationFieldName}', [${roles}])`;
-    }
-    case 'relationFilter': {
+    },
+    relationFilter(node) {
       return generateRelationFilterWhereCode(node);
-    }
-    case 'binaryLogical': {
+    },
+    binaryLogical(node, _ctx, visit) {
       const helper = node.operator === '||' ? 'or' : 'and';
       // Flatten consecutive same-operator chains so A && B && C becomes
       // queryHelpers.and([A, B, C]) instead of queryHelpers.and([queryHelpers.and([A, B]), C])
       const operands = collectLogicalOperands(node, node.operator);
-      const operandCode = operands
-        .map((operand) =>
-          generateQueryFilterExpressionCode(operand, codeContext),
-        )
-        .join(', ');
+      const operandCode = operands.map((operand) => visit(operand)).join(', ');
       return `queryHelpers.${helper}([${operandCode}])`;
-    }
-  }
+    },
+  };
+}
+
+/**
+ * Generate TypeScript code from an authorizer expression AST node,
+ * producing a Prisma where clause instead of a boolean check.
+ */
+export function generateQueryFilterExpressionCode(
+  node: AuthorizerExpressionNode,
+  codeContext?: QueryFilterCodeContext,
+): string {
+  return visitAuthorizerExpression(
+    node,
+    createQueryFilterCodeVisitor(codeContext),
+  );
 }
 
 /**
@@ -150,7 +166,7 @@ function generateRelationFilterWhereCode(
 
   // Build condition entries
   const conditionEntries = node.conditions.map((condition) => {
-    const valueCode = generateConditionValueCode(condition.value);
+    const valueCode = generateFieldRefOrLiteralCode(condition.value);
     return `${condition.field}: ${valueCode}`;
   });
   const conditionsCode = conditionEntries.join(', ');
@@ -164,37 +180,12 @@ function generateRelationFilterWhereCode(
 
   if (authFieldConditions.length > 0) {
     const nullChecks = authFieldConditions
-      .map((c) => `${generateConditionValueCode(c.value)} != null`)
+      .map((c) => `${generateFieldRefOrLiteralCode(c.value)} != null`)
       .join(' && ');
     return `(${nullChecks} ? ${whereClause} : false)`;
   }
 
   return whereClause;
-}
-
-/**
- * Generate code for a condition value (auth field ref or literal).
- */
-function generateConditionValueCode(
-  node: FieldRefNode | LiteralValueNode,
-): string {
-  if (node.type === 'literalValue') {
-    return serializeLiteralValue(node.value);
-  }
-  if (node.source === 'auth') {
-    return `ctx.auth.${node.field}`;
-  }
-  return `model.${node.field}`;
-}
-
-/**
- * Serialize a literal value as a TypeScript literal string.
- */
-function serializeLiteralValue(value: string | number | boolean): string {
-  if (typeof value === 'string') {
-    return quot(value);
-  }
-  return String(value);
 }
 
 /**
