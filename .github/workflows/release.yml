@@ -40,6 +40,14 @@ jobs:
           publish: pnpm release
           version: pnpm run version
           title: 'chore: Version Packages'
+          createGithubReleases: false
+
+      - name: Create GitHub Release
+        if: steps.changesets.outputs.published == 'true'
+        run: node ./scripts/create-github-release.ts
+        env:
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Format Packages for Slack
         if: steps.changesets.outputs.published == 'true'
