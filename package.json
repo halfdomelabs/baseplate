@@ -80,7 +80,6 @@
     "oxfmt": "0.40.0",
     "oxlint": "catalog:",
     "prettier": "catalog:",
-    "tailwind": "^4.0.0",
     "turbo": "2.5.0",
     "typescript": "catalog:",
     "vitest": "catalog:",
