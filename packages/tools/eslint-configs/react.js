@@ -72,17 +72,15 @@ export function generateReactEslintConfig(options) {
       },
     },
 
-    // React Hooks
-    reactHooksPlugin.configs.flat['recommended'],
-    {
+    // React Hooks -- only enable rules-of-hooks rule for performance reasons
+    // oxc handles exhaustive-deps rule
+    /** @type {ESLintConfig} */ ({
+      files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+      plugins: { 'react-hooks': reactHooksPlugin },
       rules: {
-        // Disable new strict rules from react-hooks v7 until we enable React Compiler
-        'react-hooks/refs': 'off',
-        'react-hooks/set-state-in-effect': 'off',
-        'react-hooks/preserve-manual-memoization': 'off',
-        'react-hooks/incompatible-library': 'off',
+        'react-hooks/rules-of-hooks': 'error',
       },
-    },
+    }),
 
     // Import-X
     eslintPluginImportX.flatConfigs.react,
