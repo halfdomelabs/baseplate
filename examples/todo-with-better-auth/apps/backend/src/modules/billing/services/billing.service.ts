@@ -10,11 +10,9 @@ import { logger } from '@src/services/logger.js';
 import { prisma } from '@src/services/prisma.js';
 import { stripe } from '@src/services/stripe.js';
 
-import {
-  getPriceId,
-  type PlanKey,
-  SUBSCRIPTION_PLANS,
-} from './billing-config.js';
+import type { PlanKey } from './billing-config.js';
+
+import { getPriceId, SUBSCRIPTION_PLANS } from './billing-config.js';
 
 /** Maps Stripe subscription status strings to our BillingSubscriptionStatus enum. */
 const STRIPE_STATUS_MAP: Record<
@@ -97,9 +95,9 @@ function resolvePlanKey(
   }
 
   const priceId = firstItem.price.id;
-  const pricePlanKey = (
-    Object.keys(SUBSCRIPTION_PLANS) as PlanKey[]
-  ).find((key) => getPriceId(key) === priceId);
+  const pricePlanKey = (Object.keys(SUBSCRIPTION_PLANS) as PlanKey[]).find(
+    (key) => getPriceId(key) === priceId,
+  );
 
   if (!pricePlanKey) {
     return undefined;

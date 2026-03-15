@@ -12,7 +12,7 @@ import { stripe } from '@src/services/stripe.js';
 
 import type { PlanKey } from './billing-config.js';
 
-import { getPlanKeyByPriceId, SUBSCRIPTION_PLANS } from './billing-config.js';
+import { getPriceId, SUBSCRIPTION_PLANS } from './billing-config.js';
 
 /** Maps Stripe subscription status strings to our BillingSubscriptionStatus enum. */
 const STRIPE_STATUS_MAP: Record<
@@ -95,7 +95,9 @@ function resolvePlanKey(
   }
 
   const priceId = firstItem.price.id;
-  const pricePlanKey = getPlanKeyByPriceId(priceId);
+  const pricePlanKey = (Object.keys(SUBSCRIPTION_PLANS) as PlanKey[]).find(
+    (key) => getPriceId(key) === priceId,
+  );
 
   if (!pricePlanKey) {
     return undefined;
@@ -189,15 +191,21 @@ export async function syncSubscriptionFromStripe(
   });
 }
 
+/** Stripe event types that carry a subscription object. */
+type SubscriptionEvent =
+  | Stripe.CustomerSubscriptionCreatedEvent
+  | Stripe.CustomerSubscriptionUpdatedEvent
+  | Stripe.CustomerSubscriptionDeletedEvent;
+
 /**
  * Handles a Stripe subscription event by syncing the subscription data.
  *
- * @param event - A Stripe event containing subscription data.
+ * @param event - A Stripe subscription lifecycle event.
  */
 export async function handleSubscriptionEvent(
-  event: Stripe.Event,
+  event: SubscriptionEvent,
 ): Promise<void> {
-  const subscription = event.data.object as Stripe.Subscription;
+  const subscription = event.data.object;
   logger.info(`Processing ${event.type} for subscription ${subscription.id}`);
   await syncSubscriptionFromStripe(subscription);
 }
