@@ -136,7 +136,9 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act & Assert
-    await expect(readTemplateInfoFiles('/project')).rejects.toThrow();
+    await expect(readTemplateInfoFiles('/project')).rejects.toThrow(
+      'Invalid JSON in file',
+    );
   });
 
   it('should validate metadata schema', async () => {

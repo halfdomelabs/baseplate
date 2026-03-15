@@ -291,6 +291,8 @@ export function generateTypescriptEslintConfig(options = {}) {
           'error',
           { additionalTestBlockFunctions: ['test'] },
         ],
+        // Require toThrow with an error message
+        'vitest/require-to-throw-message': 'error',
       },
       settings: {
         vitest: {

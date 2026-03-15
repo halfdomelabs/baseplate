@@ -105,7 +105,7 @@ describe('draft lifecycle', () => {
     // 5. Verify draft session files are cleaned up
     await expect(
       readFile(`${projectDir}/baseplate/.build/draft-session.json`, 'utf-8'),
-    ).rejects.toThrow();
+    ).rejects.toThrow('ENOENT');
   });
 
   test('stage → apply-fix → verify fix applied', async ({
@@ -246,7 +246,7 @@ describe('draft lifecycle', () => {
     // 3. Verify draft session files are deleted
     await expect(
       readFile(`${projectDir}/baseplate/.build/draft-session.json`, 'utf-8'),
-    ).rejects.toThrow();
+    ).rejects.toThrow('ENOENT');
   });
 
   test('stage replaces user-provided IDs with generated IDs', async ({

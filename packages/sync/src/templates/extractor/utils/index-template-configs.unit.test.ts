@@ -204,7 +204,9 @@ describe('indexTemplateConfigs', () => {
 
     const packageMap = new Map([['invalid-pkg', '/packages/invalid-pkg']]);
 
-    await expect(indexTemplateConfigs(packageMap)).rejects.toThrow();
+    await expect(indexTemplateConfigs(packageMap)).rejects.toThrow(
+      'Failed to index some packages',
+    );
   });
 
   it('should throw error for invalid providers.json', async () => {
@@ -221,7 +223,9 @@ describe('indexTemplateConfigs', () => {
 
     const packageMap = new Map([['invalid-pkg', '/packages/invalid-pkg']]);
 
-    await expect(indexTemplateConfigs(packageMap)).rejects.toThrow();
+    await expect(indexTemplateConfigs(packageMap)).rejects.toThrow(
+      'Failed to index some packages',
+    );
   });
 
   it('should handle nested generator directories', async () => {
