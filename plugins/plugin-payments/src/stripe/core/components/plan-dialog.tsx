@@ -1,5 +1,7 @@
 import type React from 'react';
 
+import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -12,7 +14,7 @@ import {
   MultiComboboxFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -30,19 +32,11 @@ const planFormSchema = z.object({
   grantedRoles: z.array(z.string()).default([]),
 });
 
-/** A role option from the auth plugin. */
-export interface AuthRoleOption {
-  name: string;
-  comment: string;
-}
-
 interface PlanDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   plan?: BillingPlanDefinition;
   isNew?: boolean;
-  availableRoles: AuthRoleOption[];
-  authPluginUrl?: string;
   onSave: (plan: BillingPlanDefinition) => void;
 }
 
@@ -51,10 +45,25 @@ export function PlanDialog({
   onOpenChange,
   plan,
   isNew = false,
-  availableRoles,
-  authPluginUrl,
   onSave,
 }: PlanDialogProps): React.JSX.Element {
+  const { definition, definitionContainer } = useProjectDefinition();
+
+  const authConfig = definitionContainer.pluginStore.use(authConfigSpec);
+  const availableRoles = useMemo(() => {
+    const config = authConfig.getAuthConfig(definition);
+    return (config?.roles ?? [])
+      .filter((r) => !r.builtIn)
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        comment: r.comment,
+      }));
+  }, [authConfig, definition]);
+  const authPluginUrl = authConfig.pluginKey
+    ? `/plugins/edit/${authConfig.pluginKey}`
+    : undefined;
+
   const form = useForm({
     resolver: zodResolver(planFormSchema),
     values: plan,
@@ -108,7 +117,7 @@ export function PlanDialog({
                 control={control}
                 options={availableRoles}
                 getOptionLabel={(role) => role.name}
-                getOptionValue={(role) => role.name}
+                getOptionValue={(role) => role.id}
                 placeholder="Select roles..."
                 description="Auth roles granted when this plan is active"
               />

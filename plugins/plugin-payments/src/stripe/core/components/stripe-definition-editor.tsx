@@ -3,7 +3,6 @@ import type React from 'react';
 
 import {
   applyMergedDefinition,
-  authConfigSpec,
   authModelsSpec,
   diffDefinition,
   featureEntityType,
@@ -100,20 +99,6 @@ export function StripeDefinitionEditor({
 
   const authModels = definitionContainer.pluginStore.use(authModelsSpec);
   const userModelName = authModels.getAuthModelsOrThrow(definition).user;
-
-  const authConfig = definitionContainer.pluginStore.use(authConfigSpec);
-  const availableRoles = useMemo(() => {
-    const config = authConfig.getAuthConfig(definition);
-    return (config?.roles ?? [])
-      .filter((r) => !r.builtIn)
-      .map((r) => ({
-        name: r.name,
-        comment: r.comment,
-      }));
-  }, [authConfig, definition]);
-  const authPluginUrl = authConfig.pluginKey
-    ? `/plugins/edit/${authConfig.pluginKey}`
-    : undefined;
 
   const billingFeatureName = resolveFeatureName(definition, billingFeatureRef);
 
@@ -250,11 +235,7 @@ export function StripeDefinitionEditor({
                     </SectionListSectionContent>
                   </SectionListSection>
 
-                  <PlanEditorForm
-                    control={control}
-                    availableRoles={availableRoles}
-                    authPluginUrl={authPluginUrl}
-                  />
+                  <PlanEditorForm control={control} />
                 </>
               )}
             </SectionList>

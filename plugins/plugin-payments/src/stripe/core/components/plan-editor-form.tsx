@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   RecordView,
@@ -20,7 +21,6 @@ import { useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import type { BillingPlanDefinition } from '../schema/plugin-definition.js';
-import type { AuthRoleOption } from './plan-dialog.js';
 import type { StripeBillingFormValues } from './stripe-definition-editor.js';
 
 import { billingPlanEntityType } from '../schema/plugin-definition.js';
@@ -30,20 +30,15 @@ import '#src/styles.css';
 
 interface Props {
   control: Control<StripeBillingFormValues>;
-  availableRoles: AuthRoleOption[];
-  authPluginUrl?: string;
 }
 
-export function PlanEditorForm({
-  control,
-  availableRoles,
-  authPluginUrl,
-}: Props): React.JSX.Element {
+export function PlanEditorForm({ control }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { append, update, remove } = useFieldArray({
     control,
     name: 'billing.plans',
   });
+  const { definitionContainer } = useProjectDefinition();
   const [planToEdit, setPlanToEdit] = useState<
     BillingPlanDefinition | undefined
   >();
@@ -93,7 +88,9 @@ export function PlanEditorForm({
               </RecordViewItem>
               <RecordViewItem title="Granted Roles">
                 {plan.grantedRoles.length > 0 ? (
-                  plan.grantedRoles.join(', ')
+                  plan.grantedRoles
+                    .map((role) => definitionContainer.nameFromId(role))
+                    .join(', ')
                 ) : (
                   <span className="payments:text-muted-foreground">None</span>
                 )}
@@ -131,8 +128,6 @@ export function PlanEditorForm({
           onOpenChange={setIsEditing}
           plan={planToEdit}
           isNew={planToEdit ? !plans.some((p) => p.id === planToEdit.id) : true}
-          availableRoles={availableRoles}
-          authPluginUrl={authPluginUrl}
           onSave={handleSavePlan}
         />
         <Button
