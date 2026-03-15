@@ -2,27 +2,15 @@
 /* eslint-disable import-x/no-extraneous-dependencies */
 
 /**
- * A resilient, monorepo-aware code formatting hook script in TypeScript.
+ * A monorepo-aware formatting and linting hook script.
  *
- * This script is designed for hooks that require prettifying and linting multiple files at once.
- * It groups files by their nearest `package.json` to determine the project root for each file group.
+ * Two code paths:
+ * - Monorepo files (packages/*, plugins/*, etc.): runs oxfmt + oxlint --fix on all
+ *   files in one batch from the repo root.
+ * - Example project files (examples/*): uses per-project grouping with prettier + eslint
+ *   since examples are standalone monorepos with their own tooling.
  *
- * For Prettier: It uses the Prettier Node API to format files concurrently. It first checks
- * if a file is supported by Prettier using `getFileInfo` to avoid unnecessary work.
- *
- * For ESLint: It shells out to run `eslint --fix` on all files for a given project in a single,
- * batched command for better performance.
- *
- * The script runs a tool only if it's found as a dependency in the relevant `package.json`.
- * It's resilient and will report errors from formatters without crashing the hook.
- *
- * Required dependencies:
- * - typescript
- * - ts-node
- * - prettier
- * - eslint
- * - @types/node
- * - @types/prettier
+ * Required root dependencies: typescript, ts-node, oxfmt, oxlint, prettier, @types/node, @types/prettier
  */
 
 import type { Options } from 'prettier';
@@ -42,13 +30,10 @@ const execPromise = promisify(exec);
 
 const VALID_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
-// A cache for Prettier configurations to avoid repeated lookups.
-const prettierConfigCache = new Map<string, Options | null>();
+const ROOT_DIR = path.resolve(import.meta.dirname, '..');
 
 /**
  * Finds the nearest package.json file by traversing up from a starting directory.
- * @param startDir The directory to start searching from.
- * @returns An object with the path and directory of the package.json, or null if not found.
  */
 function findNearestPackageJson(
   startDir: string,
@@ -61,169 +46,161 @@ function findNearestPackageJson(
     }
     const parentDir = path.dirname(currentDir);
     if (parentDir === currentDir) {
-      // Reached the root of the file system
       return null;
     }
     currentDir = parentDir;
   }
 }
 
-/**
- * Resolves and caches the Prettier configuration for a given file path.
- * @param filePath The path of the file to resolve config for.
- * @returns The resolved Prettier options, or null if no config is found.
- */
+// --- Prettier (for examples) ---
+
+const prettierConfigCache = new Map<string, Options | null>();
+
 async function getPrettierConfig(filePath: string): Promise<Options | null> {
   const configFile = await resolveConfigFile(filePath);
-  if (!configFile) {
-    return null; // No config file found
-  }
-
-  // Return from cache if available
+  if (!configFile) return null;
   if (prettierConfigCache.has(configFile)) {
     return prettierConfigCache.get(configFile) ?? null;
   }
-
   const config = await resolveConfig(filePath, { config: configFile });
   prettierConfigCache.set(configFile, config);
   return config;
 }
 
-/**
- * Formats a single file using the Prettier Node API.
- * @param filePath The absolute path to the file to format.
- */
 async function runPrettier(filePath: string): Promise<void> {
-  console.info(`Checking Prettier for ${path.basename(filePath)}...`);
   try {
     const fileInfo = await getFileInfo(filePath);
-
-    if (fileInfo.ignored || !fileInfo.inferredParser) {
-      console.info(
-        `Prettier is skipping ${path.basename(filePath)} (ignored or unsupported).`,
-      );
-      return;
-    }
-
+    if (fileInfo.ignored || !fileInfo.inferredParser) return;
     const config = await getPrettierConfig(filePath);
-    if (!config) {
-      console.info(
-        `No Prettier config found for ${path.basename(filePath)}. Skipping.`,
-      );
-      return;
-    }
-
+    if (!config) return;
     const content = fs.readFileSync(filePath, 'utf8');
     const formattedContent = await format(content, {
       ...config,
       filepath: filePath,
     });
-
     if (content !== formattedContent) {
       fs.writeFileSync(filePath, formattedContent);
       console.info(`✅ Prettier formatted ${path.basename(filePath)}.`);
     }
   } catch (error) {
     console.error(`❌ Prettier failed for ${filePath}.`);
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
+    if (error instanceof Error) console.error(error.message);
   }
 }
 
-/**
- * Runs ESLint as a shell command to autofix a batch of files.
- * @param filePaths An array of full paths to the files to process.
- * @param cwd The current working directory to run the command in.
- */
 async function runEslint(filePaths: string[], cwd: string): Promise<void> {
   console.info(
     `Running ESLint on ${filePaths.length} file(s) in ${path.basename(cwd)}...`,
   );
   try {
-    const filesToLint = filePaths.map((f) => `"${f}"`).join(' ');
-    await execPromise(`npx eslint --fix ${filesToLint}`, {
+    const files = filePaths.map((f) => `"${f}"`).join(' ');
+    await execPromise(`npx eslint --fix ${files}`, {
       cwd,
-      env: {
-        ...process.env,
-        // Make sure we don't strip out unused imports when running ESLint.
-        BASEPLATE_KEEP_UNUSED_IMPORTS: 'true',
-      },
+      env: { ...process.env, BASEPLATE_KEEP_UNUSED_IMPORTS: 'true' },
     });
-    console.info(
-      `✅ ESLint completed successfully for ${filePaths.length} file(s).`,
-    );
+    console.info(`✅ ESLint completed for ${filePaths.length} file(s).`);
   } catch (error) {
     console.error(`❌ ESLint failed for files in ${cwd}.`);
     console.error(error instanceof Error ? error.message : String(error));
   }
 }
 
-const filePaths = process.argv.slice(2);
+// --- oxfmt + oxlint (for monorepo) ---
 
-if (filePaths.length === 0) {
+async function runOxfmt(filePaths: string[]): Promise<void> {
+  console.info(`Running oxfmt on ${filePaths.length} file(s)...`);
+  try {
+    const files = filePaths.map((f) => `"${f}"`).join(' ');
+    await execPromise(`npx oxfmt ${files}`, { cwd: ROOT_DIR });
+    console.info(`✅ oxfmt completed for ${filePaths.length} file(s).`);
+  } catch (error) {
+    console.error('❌ oxfmt failed.');
+    console.error(error instanceof Error ? error.message : String(error));
+  }
+}
+
+async function runOxlint(filePaths: string[]): Promise<void> {
+  console.info(`Running oxlint on ${filePaths.length} file(s)...`);
+  try {
+    const files = filePaths.map((f) => `"${f}"`).join(' ');
+    await execPromise(`npx oxlint --fix ${files}`, { cwd: ROOT_DIR });
+    console.info(`✅ oxlint completed for ${filePaths.length} file(s).`);
+  } catch (error) {
+    console.error('❌ oxlint failed.');
+    console.error(error instanceof Error ? error.message : String(error));
+  }
+}
+
+// --- Main ---
+
+const inputPaths = process.argv.slice(2);
+
+if (inputPaths.length === 0) {
   console.error('Error: Please provide at least one file path as an argument.');
   process.exit(1);
 }
 
-// Group files by their project directory (pkgDir) to process them in batches.
-const filesByProject = new Map<string, { pkgPath: string; files: string[] }>();
+const examplesDir = path.join(ROOT_DIR, 'examples');
 
-for (const filePath of filePaths) {
+const monorepoFiles: string[] = [];
+const exampleFiles: string[] = [];
+
+for (const filePath of inputPaths) {
   const absoluteFilePath = path.resolve(filePath);
-  const extension = path.extname(absoluteFilePath);
-
-  if (!VALID_EXTENSIONS.has(extension)) {
-    console.info(
-      `Skipping file (unsupported extension): ${path.basename(absoluteFilePath)}`,
-    );
-    continue;
+  if (!VALID_EXTENSIONS.has(path.extname(absoluteFilePath))) continue;
+  if (absoluteFilePath.startsWith(examplesDir + path.sep)) {
+    exampleFiles.push(absoluteFilePath);
+  } else {
+    monorepoFiles.push(absoluteFilePath);
   }
-
-  const packageInfo = findNearestPackageJson(path.dirname(absoluteFilePath));
-  if (!packageInfo) {
-    console.info(
-      `No package.json found for ${absoluteFilePath}. Skipping formatters.`,
-    );
-    continue;
-  }
-
-  const { pkgDir, pkgPath } = packageInfo;
-  if (!filesByProject.has(pkgDir)) {
-    filesByProject.set(pkgDir, { pkgPath, files: [] });
-  }
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  filesByProject.get(pkgDir)!.files.push(absoluteFilePath);
 }
 
-// Process each project's files.
-for (const [pkgDir, { pkgPath, files }] of filesByProject.entries()) {
-  console.info(`\nProcessing ${files.length} file(s) in project: ${pkgDir}`);
+// Process monorepo files: run oxfmt + oxlint in parallel from root.
+if (monorepoFiles.length > 0) {
+  console.info(
+    `\nProcessing ${monorepoFiles.length} monorepo file(s) with oxfmt + oxlint...`,
+  );
+  await Promise.all([runOxfmt(monorepoFiles), runOxlint(monorepoFiles)]);
+}
 
-  const pkgContent = fs.readFileSync(pkgPath, 'utf8');
-  const pkg = JSON.parse(pkgContent) as {
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-  };
-  const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
+// Process example files: per-project grouping with prettier + eslint.
+if (exampleFiles.length > 0) {
+  console.info(`\nProcessing ${exampleFiles.length} example file(s)...`);
 
-  const tasks: Promise<void>[] = [];
-
-  // Run ESLint in one batch command for all files in this project.
-  // Set SKIP_ESLINT=1 to skip ESLint (e.g. for faster commits).
-  if (dependencies.eslint && !process.env.SKIP_ESLINT) {
-    await runEslint(files, pkgDir);
+  const filesByProject = new Map<
+    string,
+    { pkgPath: string; files: string[] }
+  >();
+  for (const filePath of exampleFiles) {
+    const packageInfo = findNearestPackageJson(path.dirname(filePath));
+    if (!packageInfo) {
+      console.info(`No package.json found for ${filePath}. Skipping.`);
+      continue;
+    }
+    const { pkgDir, pkgPath } = packageInfo;
+    if (!filesByProject.has(pkgDir)) {
+      filesByProject.set(pkgDir, { pkgPath, files: [] });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    filesByProject.get(pkgDir)!.files.push(filePath);
   }
 
-  // Run Prettier concurrently on each file.
-  if (dependencies.prettier) {
-    for (const file of files) {
-      // eslint-disable-next-line unicorn/prefer-top-level-await
-      tasks.push(runPrettier(file));
+  for (const [pkgDir, { pkgPath, files }] of filesByProject.entries()) {
+    console.info(
+      `Processing ${files.length} file(s) in example project: ${pkgDir}`,
+    );
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+
+    if (deps.eslint) await runEslint(files, pkgDir);
+
+    if (deps.prettier) {
+      await Promise.all(files.map((f) => runPrettier(f)));
     }
   }
-
-  await Promise.all(tasks);
 }
 
-console.info(`\nFormatting hook finished for all provided files.`);
+console.info(`\nFormatting hook finished.`);
