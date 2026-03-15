@@ -8,7 +8,10 @@ import { cn } from '@src/utils/cn';
 /**
  * An input where the user selects a value from within a given range.
  *
- * https://base-ui.com/react/components/slider
+ *  - Fixed single value support
+ *
+ * https://ui.shadcn.com/docs/components/base/slider
+ *
  */
 function Slider({
   className,
@@ -18,15 +21,11 @@ function Slider({
   max = 100,
   ...props
 }: SliderPrimitive.Root.Props): React.ReactElement {
-  const _values = React.useMemo(
-    () =>
-      Array.isArray(value)
-        ? (value as readonly number[])
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
-    [value, defaultValue, min, max],
-  );
+  const thumbCount = Array.isArray(value)
+    ? value.length
+    : Array.isArray(defaultValue)
+      ? defaultValue.length
+      : 1;
 
   return (
     <SliderPrimitive.Root

@@ -293,6 +293,11 @@ function AsyncComboboxField<OptionType>({
         onInputValueChange={handleInputValueChange}
         onOpenChangeComplete={(open) => {
           if (!open) {
+            if (debounceTimerRef.current) {
+              clearTimeout(debounceTimerRef.current);
+              debounceTimerRef.current = null;
+            }
+            searchAbortRef.current?.abort();
             dispatch({
               type: 'reset',
               initialOptions: initialOptionsRef.current,

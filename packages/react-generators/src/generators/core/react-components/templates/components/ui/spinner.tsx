@@ -4,6 +4,13 @@ import type React from 'react';
 
 import { cn } from '$cn';
 
+/**
+ * A spinner component that indicates a loading state.
+ *
+ * - Use CSS only icon
+ *
+ * https://ui.shadcn.com/docs/components/base/spinner
+ */
 function Spinner({
   className,
   ...props

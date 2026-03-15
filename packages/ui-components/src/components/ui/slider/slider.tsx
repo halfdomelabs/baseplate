@@ -1,14 +1,18 @@
 'use client';
 
+import type * as React from 'react';
+
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
-import * as React from 'react';
 
 import { cn } from '#src/utils/index.js';
 
 /**
  * An input where the user selects a value from within a given range.
  *
- * https://base-ui.com/react/components/slider
+ *  - Fixed single value support
+ *
+ * https://ui.shadcn.com/docs/components/base/slider
+ *
  */
 function Slider({
   className,
@@ -18,15 +22,11 @@ function Slider({
   max = 100,
   ...props
 }: SliderPrimitive.Root.Props): React.ReactElement {
-  const _values = React.useMemo(
-    () =>
-      Array.isArray(value)
-        ? (value as readonly number[])
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
-    [value, defaultValue, min, max],
-  );
+  const thumbCount = Array.isArray(value)
+    ? value.length
+    : Array.isArray(defaultValue)
+      ? defaultValue.length
+      : 1;
 
   return (
     <SliderPrimitive.Root
@@ -49,7 +49,7 @@ function Slider({
             className="bg-primary select-none data-horizontal:h-full data-vertical:w-full"
           />
         </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
+        {Array.from({ length: thumbCount }, (_, index) => (
           <SliderPrimitive.Thumb
             data-slot="slider-thumb"
             key={index}
