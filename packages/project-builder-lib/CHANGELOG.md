@@ -1,26 +1,5 @@
 # @baseplate-dev/project-builder-lib
 
-## 1.0.7
-
-### Patch Changes
-
-- [#830](https://github.com/halfdomelabs/baseplate/pull/830) [`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb) Thanks [@kingston](https://github.com/kingston)! - Add support for indexes on tables, mirroring the existing unique constraints implementation
-
-- [#826](https://github.com/halfdomelabs/baseplate/pull/826) [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
-
-- [#829](https://github.com/halfdomelabs/baseplate/pull/829) [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7) Thanks [@kingston](https://github.com/kingston)! - Extract Stripe into standalone `@baseplate-dev/plugin-payments` package. Stripe is now managed through the plugin system instead of the `enableStripe` boolean on backend app config. Includes migration to automatically convert existing projects. Overhaul Stripe implementation to provide billing support.
-
-- [#823](https://github.com/halfdomelabs/baseplate/pull/823) [`34fc44e`](https://github.com/halfdomelabs/baseplate/commit/34fc44ec930c951c90edfbf2f658878a0cae8bb5) Thanks [@kingston](https://github.com/kingston)! - Support literal value comparisons in authorization expressions (e.g. `model.status === 'active'`, `model.isPublished !== false`)
-
-- [#820](https://github.com/halfdomelabs/baseplate/pull/820) [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50) Thanks [@kingston](https://github.com/kingston)! - Fix entity navigation for discriminated union array children (e.g. admin sections) by stripping leading discriminated-union-array element from relative paths in collectEntityMetadata
-
-- [#818](https://github.com/halfdomelabs/baseplate/pull/818) [`d5e0b23`](https://github.com/halfdomelabs/baseplate/commit/d5e0b2397ce2aacacfd9663fb33d4176ec61ca61) Thanks [@kingston](https://github.com/kingston)! - Add auto-fix suggestions for definition issues in the warning dialog, starting with relation field type mismatch fixes
-
-- Updated dependencies [[`1115ba0`](https://github.com/halfdomelabs/baseplate/commit/1115ba082d2288db9f233c459dde3f32b890ff67), [`168793d`](https://github.com/halfdomelabs/baseplate/commit/168793d958e001de2eb8bebed03c2b42397da701)]:
-  - @baseplate-dev/ui-components@1.0.0
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.2
 
 ### Patch Changes

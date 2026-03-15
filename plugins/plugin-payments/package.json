@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-payments",
-  "version": "1.0.7",
+  "version": "0.1.0",
   "description": "Payment processing plugins for Baseplate (Stripe)",
   "keywords": [
     "baseplate",

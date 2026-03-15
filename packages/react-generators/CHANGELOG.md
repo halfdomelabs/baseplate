@@ -1,26 +1,5 @@
 # @baseplate-dev/react-generators
 
-## 1.0.7
-
-### Patch Changes
-
-- [#831](https://github.com/halfdomelabs/baseplate/pull/831) [`1115ba0`](https://github.com/halfdomelabs/baseplate/commit/1115ba082d2288db9f233c459dde3f32b890ff67) Thanks [@kingston](https://github.com/kingston)! - Add autocomplete, slider, collapsible, and spinner UI components
-
-- [#826](https://github.com/halfdomelabs/baseplate/pull/826) [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
-
-- [#825](https://github.com/halfdomelabs/baseplate/pull/825) [`55be8d4`](https://github.com/halfdomelabs/baseplate/commit/55be8d4d2994ff56ff580ff847f5271c6e8cdb25) Thanks [@kingston](https://github.com/kingston)! - Migrate from gql.tada to graphql-code-generator with client-preset
-
-- [#827](https://github.com/halfdomelabs/baseplate/pull/827) [`d87bad9`](https://github.com/halfdomelabs/baseplate/commit/d87bad97614bb626598916efb073d05c469ec336) Thanks [@kingston](https://github.com/kingston)! - Switch generated UI components from radix-ui to @base-ui/react
-  - Replace radix-ui and cmdk dependencies with @base-ui/react in generated projects
-  - Update all generator templates to use base-ui component implementations
-  - Convert asChild prop usage to render prop pattern in admin layout, crud list, and crud edit action generators
-  - Update plugin-storage upload component templates to use Field/FieldError instead of FormItem/FormMessage
-
-- Updated dependencies [[`168793d`](https://github.com/halfdomelabs/baseplate/commit/168793d958e001de2eb8bebed03c2b42397da701)]:
-  - @baseplate-dev/sync@1.0.0
-  - @baseplate-dev/core-generators@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.2
 
 ### Patch Changes

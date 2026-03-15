@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-email",
-  "version": "1.0.7",
+  "version": "0.6.2",
   "description": "Contains the email plugin for Baseplate",
   "keywords": [
     "baseplate",

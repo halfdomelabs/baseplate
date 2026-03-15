@@ -1,26 +1,5 @@
 # @baseplate-dev/project-builder-web
 
-## 1.0.7
-
-### Patch Changes
-
-- [#830](https://github.com/halfdomelabs/baseplate/pull/830) [`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb) Thanks [@kingston](https://github.com/kingston)! - Add support for indexes on tables, mirroring the existing unique constraints implementation
-
-- [#829](https://github.com/halfdomelabs/baseplate/pull/829) [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7) Thanks [@kingston](https://github.com/kingston)! - Extract Stripe into standalone `@baseplate-dev/plugin-payments` package. Stripe is now managed through the plugin system instead of the `enableStripe` boolean on backend app config. Includes migration to automatically convert existing projects. Overhaul Stripe implementation to provide billing support.
-
-- [#815](https://github.com/halfdomelabs/baseplate/pull/815) [`f94d174`](https://github.com/halfdomelabs/baseplate/commit/f94d1745de51cc76885731ea686b21c87b309e02) Thanks [@kingston](https://github.com/kingston)! - Fix model feature not updating on the page after changing it in the general info dialog
-
-- [#817](https://github.com/halfdomelabs/baseplate/pull/817) [`51339e7`](https://github.com/halfdomelabs/baseplate/commit/51339e7cfae849a80747742b770982ddcc8662d5) Thanks [@kingston](https://github.com/kingston)! - Hide GraphQL Subscriptions toggle from backend app configuration for V-Alpha release
-
-- [#823](https://github.com/halfdomelabs/baseplate/pull/823) [`34fc44e`](https://github.com/halfdomelabs/baseplate/commit/34fc44ec930c951c90edfbf2f658878a0cae8bb5) Thanks [@kingston](https://github.com/kingston)! - Support literal value comparisons in authorization expressions (e.g. `model.status === 'active'`, `model.isPublished !== false`)
-
-- [#818](https://github.com/halfdomelabs/baseplate/pull/818) [`d5e0b23`](https://github.com/halfdomelabs/baseplate/commit/d5e0b2397ce2aacacfd9663fb33d4176ec61ca61) Thanks [@kingston](https://github.com/kingston)! - Add auto-fix suggestions for definition issues in the warning dialog, starting with relation field type mismatch fixes
-
-- Updated dependencies [[`1115ba0`](https://github.com/halfdomelabs/baseplate/commit/1115ba082d2288db9f233c459dde3f32b890ff67), [`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb), [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045), [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7), [`34fc44e`](https://github.com/halfdomelabs/baseplate/commit/34fc44ec930c951c90edfbf2f658878a0cae8bb5), [`05b667f`](https://github.com/halfdomelabs/baseplate/commit/05b667fa0a21e78a6af3d553be1900f10e349c50), [`d5e0b23`](https://github.com/halfdomelabs/baseplate/commit/d5e0b2397ce2aacacfd9663fb33d4176ec61ca61)]:
-  - @baseplate-dev/ui-components@1.0.0
-  - @baseplate-dev/project-builder-lib@1.0.0
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.2
 
 ### Patch Changes

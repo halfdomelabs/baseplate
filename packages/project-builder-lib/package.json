@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-lib",
-  "version": "1.0.7",
+  "version": "0.6.2",
   "description": "Library for Project Builder using Baseplate generators",
   "keywords": [
     "baseplate",
