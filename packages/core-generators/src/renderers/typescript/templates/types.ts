@@ -4,14 +4,16 @@ import {
   TemplateFileBase,
   templateFileMetadataBaseSchema,
 } from '@baseplate-dev/sync';
-import { TsCodeFragment } from '../fragments/types.js';
-import { z } from 'zod';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
-import { templateConfigSchema } from '../../../../../sync/dist/templates/extractor/index.js';
+import { z } from 'zod';
+
 import {
   TemplateFileOptions,
   templateFileOptionsSchema,
 } from '#src/renderers/schemas/template-file-options.js';
+
+import { templateConfigSchema } from '../../../../../sync/dist/templates/extractor/index.js';
+import { TsCodeFragment } from '../fragments/types.js';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 

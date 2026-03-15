@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "printWidth": 80,
+  "sortImports": {
+    "internalPattern": ["@src/", "#"],
+    // We use the default groups but ensure we place the side-effect imports last except for instrumentation
+    "groups": [
+      "type-import",
+      ["value-builtin", "value-external"],
+      "type-internal",
+      "value-internal",
+      ["type-parent", "type-sibling", "type-index"],
+      ["value-parent", "value-sibling", "value-index"],
+      "side_effect",
+      "unknown"
+    ]
+  },
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/logs/**",
+    "**/temp/**",
+    "**/tmp/**",
+    "pnpm-lock.yaml",
+    "**/route-tree.gen.ts",
+    ".turbo/**",
+    "**/.env*",
+    "packages/code-morph/src/morphers/tests/**",
+    "packages/sync/src/output/string-merge-algorithms/tests/**",
+    "**/LICENSE"
+  ]
+}

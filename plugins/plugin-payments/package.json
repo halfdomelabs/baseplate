@@ -3,27 +3,19 @@
   "version": "0.1.0",
   "description": "Payment processing plugins for Baseplate (Stripe)",
   "keywords": [
-    "payments",
-    "stripe",
-    "webhooks",
-    "plugin",
-    "full-stack",
-    "typescript",
     "baseplate",
-    "code-generation"
+    "code-generation",
+    "full-stack",
+    "payments",
+    "plugin",
+    "stripe",
+    "typescript",
+    "webhooks"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": "./dist/*"
-  },
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "main": "dist/index.js",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "files": [
     "README.md",
     "LICENSE",
@@ -32,6 +24,18 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
+  "type": "module",
+  "main": "dist/index.js",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
@@ -87,9 +91,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

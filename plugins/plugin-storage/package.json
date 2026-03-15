@@ -3,25 +3,19 @@
   "version": "0.6.2",
   "description": "Contains the storage plugin for Baseplate",
   "keywords": [
-    "storage",
+    "baseplate",
+    "code-generation",
+    "file-storage",
+    "full-stack",
     "plugin",
     "s3",
-    "file-storage",
-    "typescript",
-    "baseplate",
-    "full-stack",
-    "code-generation"
+    "storage",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": "./dist/*",
-    "#src/styles.css": "./src/styles.css"
-  },
-  "main": "dist/index.js",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "files": [
     "README.md",
     "LICENSE",
@@ -30,6 +24,16 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
+  "type": "module",
+  "main": "dist/index.js",
+  "imports": {
+    "#src/*": "./dist/*",
+    "#src/styles.css": "./src/styles.css"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
@@ -88,9 +92,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

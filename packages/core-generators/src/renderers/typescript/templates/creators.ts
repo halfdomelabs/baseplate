@@ -1,6 +1,6 @@
 import { ProviderType } from '@baseplate-dev/sync';
-import { TsTemplateVariableMap } from './types.js';
 
+import { TsTemplateVariableMap } from './types.js';
 import { TsTemplateFile } from './types.js';
 
 /**

@@ -3,22 +3,30 @@
   "version": "0.6.2",
   "description": "Library for syncing Baseplate descriptions",
   "keywords": [
-    "code-generation",
-    "typescript",
-    "sync-engine",
     "baseplate",
-    "full-stack"
+    "code-generation",
+    "full-stack",
+    "sync-engine",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/sync"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "sideEffects": false,
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
   "type": "module",
+  "sideEffects": false,
   "imports": {
     "#src/*": "./dist/*"
   },
@@ -32,14 +40,10 @@
       "import": "./dist/templates/extractor/test-utils/index.js"
     }
   },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -83,9 +87,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

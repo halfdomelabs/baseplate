@@ -4,22 +4,27 @@
   "private": true,
   "description": "Simple package for running code migrations on the codebase",
   "keywords": [
-    "code-transformation",
-    "typescript",
     "ast-manipulation",
-    "migration-tools",
     "baseplate",
+    "code-generation",
+    "code-transformation",
     "full-stack",
-    "code-generation"
+    "migration-tools",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/code-morph"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
+  "files": [
+    "LICENSE",
+    "scripts/**/*",
+    "CHANGELOG"
+  ],
   "type": "module",
   "imports": {
     "#src/*": {
@@ -27,11 +32,6 @@
       "default": "./dist/*"
     }
   },
-  "files": [
-    "LICENSE",
-    "scripts/**/*",
-    "CHANGELOG"
-  ],
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",

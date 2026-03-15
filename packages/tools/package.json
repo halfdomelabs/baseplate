@@ -3,25 +3,33 @@
   "version": "0.6.2",
   "description": "Shared dev configurations for linting, formatting, and testing Baseplate projects",
   "keywords": [
+    "baseplate",
+    "code-generation",
+    "configuration",
     "development-tools",
     "eslint",
-    "prettier",
-    "typescript",
-    "configuration",
-    "baseplate",
     "full-stack",
-    "code-generation"
+    "prettier",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/tools"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "sideEffects": false,
+  "files": [
+    "eslint-configs/**/*.js",
+    "prettier.config.*.js",
+    "eslint.config.*.js",
+    "tsconfig.*.json",
+    "vitest.*.js",
+    "src-subpath-import-plugin.js"
+  ],
   "type": "module",
+  "sideEffects": false,
   "exports": {
     "./eslint-configs/typescript": "./eslint-configs/typescript.js",
     "./eslint-configs/prettier": "./eslint-configs/prettier.js",
@@ -40,14 +48,10 @@
     "./vitest-react": "./vitest.config.react.js",
     "./src-subpath-import-plugin": "./src-subpath-import-plugin.js"
   },
-  "files": [
-    "eslint-configs/**/*.js",
-    "prettier.config.*.js",
-    "eslint.config.*.js",
-    "tsconfig.*.json",
-    "vitest.*.js",
-    "src-subpath-import-plugin.js"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
@@ -93,9 +97,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

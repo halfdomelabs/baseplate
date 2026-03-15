@@ -3,26 +3,19 @@
   "version": "0.6.2",
   "description": "CLI starter kit for creating a new Baseplate project",
   "keywords": [
-    "cli",
-    "scaffolding",
-    "project-starter",
-    "typescript",
-    "development-tools",
     "baseplate",
+    "cli",
+    "code-generation",
+    "development-tools",
     "full-stack",
-    "code-generation"
+    "project-starter",
+    "scaffolding",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": {
-      "development": "./src/*",
-      "default": "./dist/*"
-    }
-  },
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "bin": "./bin/create-baseplate-project.js",
   "files": [
     "README.md",
@@ -34,6 +27,17 @@
     "templates/**/*",
     "bin/**/*"
   ],
+  "type": "module",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -70,9 +74,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

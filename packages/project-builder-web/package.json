@@ -3,22 +3,18 @@
   "version": "0.6.2",
   "description": "Web interface for constructing project builder JSON",
   "keywords": [
-    "react",
-    "project-builder",
-    "ui",
     "baseplate",
+    "code-generation",
     "full-stack",
+    "project-builder",
+    "react",
     "typescript",
-    "code-generation"
+    "ui"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": "./dist/*"
-  },
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "files": [
     "README.md",
     "LICENSE",
@@ -27,6 +23,14 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
+  "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -b && vite build",
     "clean": "rm -rf ./dist",
@@ -38,18 +42,6 @@
     "serve": "vite preview",
     "test": "vitest",
     "typecheck": "tsc -b --noEmit"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "dependencies": {
     "@baseplate-dev/project-builder-lib": "workspace:*",
@@ -112,14 +104,22 @@
     "vite-plugin-svgr": "catalog:",
     "vitest": "catalog:"
   },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "engines": {
     "node": "^22.0.0"
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

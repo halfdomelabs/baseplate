@@ -5,20 +5,29 @@
   "keywords": [
     "backend",
     "baseplate",
+    "code-generation",
     "full-stack",
-    "typescript",
-    "code-generation"
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-server"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "sideEffects": false,
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "dist/index.js",
   "imports": {
     "#src/*": "./dist/*"
   },
@@ -30,15 +39,10 @@
     "./dev-server": "./dist/dev-server/index.js",
     "./user-config": "./dist/user-config/index.js"
   },
-  "main": "dist/index.js",
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -101,9 +105,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

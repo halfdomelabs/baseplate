@@ -3,20 +3,29 @@
   "version": "0.6.2",
   "description": "Shared UI component library",
   "keywords": [
-    "react",
-    "ui-components",
-    "design-system",
     "baseplate",
+    "code-generation",
+    "design-system",
     "full-stack",
+    "react",
     "typescript",
-    "code-generation"
+    "ui-components"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "sideEffects": false,
+  "repository": "https://github.com/halfdomelabs/baseplate",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
   "imports": {
     "#src/*": "./dist/*"
   },
@@ -26,15 +35,10 @@
     "./theme.css": "./dist/theme.css",
     "./utilities.css": "./dist/utilities.css"
   },
-  "main": "./dist/index.js",
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo"
-  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "pnpm build:tsc && pnpm build:css",
     "build:css": "cpx \"src/**/*.css\" dist --clean",
@@ -50,18 +54,6 @@
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc -b --noEmit",
     "watch": "pnpm build:css --watch"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
@@ -115,14 +107,22 @@
     "vite-plugin-svgr": "catalog:",
     "vitest": "catalog:"
   },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "engines": {
     "node": "^22.0.0"
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

@@ -3,32 +3,22 @@
   "version": "0.6.2",
   "description": "Shared utility functions for Baseplate",
   "keywords": [
-    "utilities",
-    "typescript",
-    "helpers",
-    "common",
     "baseplate",
+    "code-generation",
+    "common",
     "full-stack",
-    "code-generation"
+    "helpers",
+    "typescript",
+    "utilities"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/utils"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "sideEffects": false,
-  "type": "module",
-  "imports": {
-    "#src/*": "./dist/*"
-  },
-  "exports": {
-    ".": "./dist/index.js",
-    "./node": "./dist/node.js"
-  },
-  "main": "dist/index.js",
   "files": [
     "README.md",
     "LICENSE",
@@ -37,6 +27,20 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./node": "./dist/node.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -69,9 +73,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }
