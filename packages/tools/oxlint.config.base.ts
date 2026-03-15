@@ -45,6 +45,12 @@ export default {
 
     // Style rules from ESLint
 
+    // Import sorting (just declaration members)
+    'eslint/sort-imports': [
+      'error',
+      { ignoreCase: true, ignoreDeclarationSort: true },
+    ],
+
     // Enforce using concise arrow function syntax when possible.
     'no-case-declarations': ['error'],
     'no-empty': ['error'],
