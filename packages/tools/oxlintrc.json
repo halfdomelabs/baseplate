@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "eslint/no-empty-pattern": "off"
+  },
+  "settings": {},
+  "env": {
+    "builtin": true
+  },
+  "options": {
+    "denyWarnings": true
+  },
+  "globals": {}
+}

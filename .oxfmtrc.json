@@ -30,10 +30,13 @@
     "**/tmp/**",
     "pnpm-lock.yaml",
     "**/route-tree.gen.ts",
+    "**/examples/**",
+    ".changeset/**",
+    ".pnpm-store/**",
     ".turbo/**",
     "**/.env*",
+    "**/LICENSE",
     "packages/code-morph/src/morphers/tests/**",
-    "packages/sync/src/output/string-merge-algorithms/tests/**",
-    "**/LICENSE"
+    "packages/sync/src/output/string-merge-algorithms/tests/**"
   ]
 }
