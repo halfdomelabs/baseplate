@@ -1,5 +1,8 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import { TsCodeUtils } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { STRIPE_BILLING_MODULE_GENERATED } from './generated/index.js';
@@ -33,22 +36,20 @@ export const billingModuleGenerator = createGenerator({
         renderers: STRIPE_BILLING_MODULE_GENERATED.renderers.provider,
       },
       run({ renderers }) {
-        const plansObject: Record<string, string> = {};
+        const plansObject: Record<string, string | TsCodeFragment> = {};
         for (const plan of plans) {
           const rolesArray =
             plan.grantedRoles.length > 0
-              ? `[${plan.grantedRoles.map((r: string) => `'${r}'`).join(', ')}] as const`
-              : 'undefined';
+              ? JSON.stringify(plan.grantedRoles.toSorted(compareStrings))
+              : undefined;
 
-          plansObject[plan.key] = [
-            '{',
-            `  grantedRoles: ${rolesArray},`,
-            '  priceIds: {',
-            `    stage: 'price_PLACEHOLDER_STAGE_${plan.key.toUpperCase().replaceAll('-', '_')}',`,
-            `    prod: 'price_PLACEHOLDER_PROD_${plan.key.toUpperCase().replaceAll('-', '_')}',`,
-            '  },',
-            '}',
-          ].join('\n');
+          plansObject[plan.key] = TsCodeUtils.mergeFragmentsAsObject({
+            grantedRoles: rolesArray,
+            priceIds: JSON.stringify({
+              stage: `price_PLACEHOLDER_STAGE_${plan.key.toUpperCase().replaceAll('-', '_')}`,
+              prod: `price_PLACEHOLDER_PROD_${plan.key.toUpperCase().replaceAll('-', '_')}`,
+            }),
+          });
         }
 
         const plansFragment = TsCodeUtils.mergeFragmentsAsObject(plansObject);

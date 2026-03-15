@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  authRolesImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
@@ -13,7 +14,10 @@ import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastif
 const billingConfig = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
-  importMapProviders: { configServiceImports: configServiceImportsProvider },
+  importMapProviders: {
+    authRolesImports: authRolesImportsProvider,
+    configServiceImports: configServiceImportsProvider,
+  },
   name: 'billing-config',
   projectExports: {
     getPlanKeyByPriceId: { isTypeOnly: false },

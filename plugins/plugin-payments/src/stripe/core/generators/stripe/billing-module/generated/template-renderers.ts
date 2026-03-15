@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  authRolesImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
@@ -36,6 +37,7 @@ const stripeBillingModuleRenderers =
 
 const stripeBillingModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     fastifyStripeImports: fastifyStripeImportsProvider,
@@ -49,6 +51,7 @@ const stripeBillingModuleRenderersTask = createGeneratorTask({
     stripeBillingModuleRenderers: stripeBillingModuleRenderers.export(),
   },
   run({
+    authRolesImports,
     configServiceImports,
     errorHandlerServiceImports,
     fastifyStripeImports,
@@ -67,6 +70,7 @@ const stripeBillingModuleRenderersTask = createGeneratorTask({
                 group: STRIPE_BILLING_MODULE_TEMPLATES.moduleGroup,
                 paths,
                 importMapProviders: {
+                  authRolesImports,
                   configServiceImports,
                   errorHandlerServiceImports,
                   fastifyStripeImports,

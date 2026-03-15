@@ -1,11 +1,13 @@
 // @ts-nocheck
 
+import type { AuthRole } from '%authRolesImports';
+
 import { config } from '%configServiceImports';
 
 /** Defines the shape of a subscription plan. */
 interface SubscriptionPlan {
   /** Roles granted to the user when this plan is active. */
-  grantedRoles?: readonly string[];
+  grantedRoles?: AuthRole[];
   /** Stripe Price IDs keyed by environment. Dev/test use the stage price ID. */
   priceIds: {
     stage: string;

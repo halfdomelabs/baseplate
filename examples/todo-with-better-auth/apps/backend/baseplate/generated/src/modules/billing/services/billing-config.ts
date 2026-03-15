@@ -1,9 +1,11 @@
 import { config } from '@src/services/config.js';
 
+import type { AuthRole } from '../../accounts/auth/constants/auth-roles.constants.js';
+
 /** Defines the shape of a subscription plan. */
 interface SubscriptionPlan {
   /** Roles granted to the user when this plan is active. */
-  grantedRoles?: readonly string[];
+  grantedRoles?: AuthRole[];
   /** Stripe Price IDs keyed by environment. Dev/test use the stage price ID. */
   priceIds: {
     stage: string;
@@ -19,7 +21,7 @@ interface SubscriptionPlan {
  */
 export const SUBSCRIPTION_PLANS = /* TPL_PLANS:START */ {
   'pro-plan': {
-    grantedRoles: ['pro-user'] as const,
+    grantedRoles: ['pro-user'],
     priceIds: {
       stage: 'price_PLACEHOLDER_STAGE_PRO_PLAN',
       prod: 'price_PLACEHOLDER_PROD_PRO_PLAN',
