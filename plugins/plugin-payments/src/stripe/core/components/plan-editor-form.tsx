@@ -23,6 +23,7 @@ import type { BillingPlanDefinition } from '../schema/plugin-definition.js';
 import type { AuthRoleOption } from './plan-dialog.js';
 import type { StripeBillingFormValues } from './stripe-definition-editor.js';
 
+import { billingPlanEntityType } from '../schema/plugin-definition.js';
 import { PlanDialog } from './plan-dialog.js';
 
 import '#src/styles.css';
@@ -139,7 +140,7 @@ export function PlanEditorForm({
           size="sm"
           onClick={() => {
             setPlanToEdit({
-              id: crypto.randomUUID(),
+              id: billingPlanEntityType.generateNewId(),
               key: '',
               displayName: '',
               grantedRoles: [],

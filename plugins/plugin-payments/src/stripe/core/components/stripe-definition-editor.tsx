@@ -118,7 +118,10 @@ export function StripeDefinitionEditor({
   const billingFeatureName = resolveFeatureName(definition, billingFeatureRef);
 
   const partialDef = useMemo(
-    () => createBillingPartialDefinition(billingFeatureName, userModelName),
+    () =>
+      billingFeatureName
+        ? createBillingPartialDefinition(billingFeatureName, userModelName)
+        : { enums: [], models: [] },
     [billingFeatureName, userModelName],
   );
 

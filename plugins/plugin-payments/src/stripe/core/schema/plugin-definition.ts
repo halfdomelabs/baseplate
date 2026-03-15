@@ -2,34 +2,42 @@ import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
   authRoleEntityType,
+  createEntityType,
   definitionSchema,
   featureEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-/** Schema for an individual billing plan (without context-dependent fields). */
-const billingPlanBaseSchema = z.object({
-  id: z.string(),
-  key: CASE_VALIDATORS.KEBAB_CASE.min(1),
-  displayName: z.string().min(1),
-});
+export const billingPlanEntityType = createEntityType('stripe/billing-plan');
 
-export type BillingPlanDefinition = z.infer<typeof billingPlanBaseSchema> & {
-  grantedRoles: string[];
-};
+export const createBillingPlanSchema = definitionSchema((ctx) =>
+  ctx.withEnt(
+    z.object({
+      id: z.string(),
+      key: CASE_VALIDATORS.KEBAB_CASE.min(1),
+      displayName: z.string().min(1),
+      grantedRoles: z
+        .array(
+          ctx.withRef({
+            type: authRoleEntityType,
+            onDelete: 'RESTRICT',
+          }),
+        )
+        .default([]),
+    }),
+    { type: billingPlanEntityType },
+  ),
+);
+
+export type BillingPlanDefinition = def.InferOutput<
+  typeof createBillingPlanSchema
+>;
+
+export type BillingPlanInput = def.InferInput<typeof createBillingPlanSchema>;
 
 export const createStripePluginDefinitionSchema = definitionSchema((ctx) => {
-  const billingPlanSchema = billingPlanBaseSchema.extend({
-    grantedRoles: z
-      .array(
-        ctx.withRef({
-          type: authRoleEntityType,
-          onDelete: 'RESTRICT',
-        }),
-      )
-      .default([]),
-  });
+  const billingPlanSchema = createBillingPlanSchema(ctx);
 
   return z.object({
     stripeOptions: z.object({}).prefault({}),

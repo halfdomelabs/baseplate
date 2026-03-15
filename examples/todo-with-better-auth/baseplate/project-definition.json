@@ -2009,7 +2009,7 @@
           "featureRef": "billing",
           "plans": [
             {
-              "id": "plan_pro",
+              "id": "billing-plan:pro-plan",
               "key": "pro-plan",
               "displayName": "Pro Plan",
               "grantedRoles": ["pro-user"]

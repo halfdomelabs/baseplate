@@ -63,9 +63,15 @@ export function extractDefinitionRefs<T>(
       if (data === null || data === undefined || typeof data !== 'object')
         return;
       const id = get(data, meta.idPath) as unknown;
-      if (typeof id !== 'string' || !id || !meta.type.isId(id)) {
+      if (typeof id !== 'string' || !id) {
         throw new Error(
-          `Unable to find valid id field '${meta.idPath.join('.')}' in entity ${meta.type.name} at path ${context.path.join('.')}`,
+          `Unable to find id field '${meta.idPath.join('.')}' in entity ${meta.type.name} at path ${context.path.join('.')}`,
+        );
+      }
+
+      if (!meta.type.isId(id)) {
+        throw new Error(
+          `Invalid id field '${id}' in entity ${meta.type.name} at path ${context.path.join('.')}. Expected prefix: ${meta.type.prefix}. Got: ${id}`,
         );
       }
 
