@@ -115,9 +115,7 @@ describe('billing.service', () => {
         where: { userId },
       });
       expect(roles).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ role: 'pro-user' }),
-        ]),
+        expect.arrayContaining([expect.objectContaining({ role: 'pro-user' })]),
       );
     });
 
