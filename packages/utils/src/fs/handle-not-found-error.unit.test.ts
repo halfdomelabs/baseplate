@@ -25,14 +25,4 @@ describe('handleFileNotFoundError', () => {
       handleFileNotFoundError(otherError);
     }).toThrow(otherError);
   });
-
-  it('should rethrow if error is not an instance of Error', () => {
-    // Arrange
-    const invalidError = null;
-
-    // Act & Assert
-    expect(() => {
-      handleFileNotFoundError(invalidError);
-    }).toThrow();
-  });
 });

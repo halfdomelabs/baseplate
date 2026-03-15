@@ -5,6 +5,7 @@ export default {
   workspaces: {
     '.': {
       entry: ['.workspace-meta/config.ts', 'scripts/**/*.{js,ts}'],
+      ignore: ['oxlint.config.ts'],
     },
     'packages/*': {
       entry: ['src/index.{ts,tsx}'],

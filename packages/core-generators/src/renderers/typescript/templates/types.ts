@@ -1,17 +1,18 @@
-import {
+import type {
   InferProviderType,
   ProviderType,
   TemplateFileBase,
-  templateFileMetadataBaseSchema,
 } from '@baseplate-dev/sync';
-import { TsCodeFragment } from '../fragments/types.js';
-import { z } from 'zod';
+
+import { templateConfigSchema } from '@baseplate-dev/sync';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
-import { templateConfigSchema } from '../../../../../sync/dist/templates/extractor/index.js';
-import {
-  TemplateFileOptions,
-  templateFileOptionsSchema,
-} from '#src/renderers/schemas/template-file-options.js';
+import { z } from 'zod';
+
+import type { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
+
+import { templateFileOptionsSchema } from '#src/renderers/schemas/template-file-options.js';
+
+import type { TsCodeFragment } from '../fragments/types.js';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 

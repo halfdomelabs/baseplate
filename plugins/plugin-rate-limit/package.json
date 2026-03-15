@@ -3,13 +3,13 @@
   "version": "0.6.2",
   "description": "Contains the rate limiting plugin for Baseplate",
   "keywords": [
+    "baseplate",
+    "code-generation",
+    "full-stack",
+    "plugin",
     "rate-limit",
     "rate-limiting",
-    "plugin",
-    "full-stack",
-    "typescript",
-    "baseplate",
-    "code-generation"
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -37,14 +37,14 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
@@ -71,6 +71,7 @@
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",

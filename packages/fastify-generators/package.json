@@ -3,12 +3,12 @@
   "version": "0.6.2",
   "description": "Fastify generators for Baseplate",
   "keywords": [
-    "fastify",
     "backend",
-    "code-generation",
-    "typescript",
     "baseplate",
-    "full-stack"
+    "code-generation",
+    "fastify",
+    "full-stack",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -37,7 +37,7 @@
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -62,6 +62,7 @@
     "concurrently": "9.2.1",
     "cpx2": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

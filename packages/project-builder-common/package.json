@@ -3,11 +3,11 @@
   "version": "0.6.2",
   "description": "Holds common packages for plugins and generators",
   "keywords": [
-    "common",
     "baseplate",
+    "code-generation",
+    "common",
     "full-stack",
-    "typescript",
-    "code-generation"
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -27,7 +27,7 @@
     "index.d.ts"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l ."
   },
@@ -46,7 +46,8 @@
     "prettier": "catalog:"
   },
   "devDependencies": {
-    "@baseplate-dev/tools": "workspace:*"
+    "@baseplate-dev/tools": "workspace:*",
+    "oxlint": "catalog:"
   },
   "engines": {
     "node": "^22.0.0"

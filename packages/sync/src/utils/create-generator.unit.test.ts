@@ -61,7 +61,9 @@ describe('createGenerator', () => {
     expect(() => generator({ value: 'test' })).not.toThrow();
 
     // Should fail validation
-    expect(() => generator({ value: 123 as unknown as string })).toThrow();
+    expect(() => generator({ value: 123 as unknown as string })).toThrow(
+      'expected string, received number',
+    );
   });
 
   it('supports custom scopes', () => {

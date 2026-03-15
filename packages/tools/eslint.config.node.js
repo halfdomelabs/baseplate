@@ -2,6 +2,7 @@
 
 import { defineConfig } from 'eslint/config';
 
+import oxlintEslintConfig from './eslint-configs/oxlint.js';
 import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
 
@@ -25,6 +26,7 @@ export function defineNodeEslintConfig(options) {
       extraDefaultProjectFiles,
     }),
     prettierEslintConfig,
+    oxlintEslintConfig,
     ...(ignores.length > 0 ? [{ ignores }] : []),
   );
 }

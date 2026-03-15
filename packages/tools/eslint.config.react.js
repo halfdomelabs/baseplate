@@ -3,6 +3,7 @@
 import { defineConfig } from 'eslint/config';
 import path from 'node:path';
 
+import oxlintEslintConfigs from './eslint-configs/oxlint.js';
 import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import { generateReactEslintConfig } from './eslint-configs/react.js';
 import {
@@ -45,6 +46,7 @@ export function defineReactEslintConfig(options) {
       tailwindEntryPoint: absoluteTailwindPath,
     }),
     ...(includeStorybook ? storybookEslintConfig : []),
+    ...oxlintEslintConfigs,
     prettierEslintConfig,
     ...(ignores.length > 0 ? [{ ignores }] : []),
   );

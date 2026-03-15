@@ -3,11 +3,11 @@
   "version": "0.6.2",
   "description": "Library for syncing Baseplate descriptions",
   "keywords": [
-    "code-generation",
-    "typescript",
-    "sync-engine",
     "baseplate",
-    "full-stack"
+    "code-generation",
+    "full-stack",
+    "sync-engine",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -43,7 +43,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -75,6 +75,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.15.1",
+    "oxlint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

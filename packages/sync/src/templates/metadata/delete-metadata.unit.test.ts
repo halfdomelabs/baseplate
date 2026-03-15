@@ -30,12 +30,12 @@ describe('deleteMetadataFiles', () => {
       vol.readFileSync(
         `${testDirectory}/src/controllers/${TEMPLATES_INFO_FILENAME}`,
       ),
-    ).toThrow();
+    ).toThrow('ENOENT');
     expect(() =>
       vol.readFileSync(
         `${testDirectory}/src/models/${TEMPLATES_INFO_FILENAME}`,
       ),
-    ).toThrow();
+    ).toThrow('ENOENT');
 
     // Verify other files are not deleted
     expect(
