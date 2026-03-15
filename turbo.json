@@ -60,6 +60,14 @@
     },
     "//#prettier:root:write": {
       "outputLogs": "errors-only"
+    },
+    "//#typecheck:root": {
+      "outputLogs": "errors-only"
+    },
+    "//#packages:dedupe": {
+      "inputs": ["pnpm-lock.yaml"],
+      "outputs": ["pnpm-lock.yaml"],
+      "outputLogs": "errors-only"
     }
   }
 }

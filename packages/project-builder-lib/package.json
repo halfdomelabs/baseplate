@@ -3,12 +3,12 @@
   "version": "0.6.2",
   "description": "Library for Project Builder using Baseplate generators",
   "keywords": [
-    "configuration",
-    "project-definition",
-    "typescript",
     "baseplate",
+    "code-generation",
+    "configuration",
     "full-stack",
-    "code-generation"
+    "project-definition",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -41,7 +41,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -71,6 +71,7 @@
     "@types/react": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.15.1",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "type-fest": "4.41.0",

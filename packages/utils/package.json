@@ -3,13 +3,13 @@
   "version": "0.6.2",
   "description": "Shared utility functions for Baseplate",
   "keywords": [
-    "utilities",
-    "typescript",
-    "helpers",
-    "common",
     "baseplate",
+    "code-generation",
+    "common",
     "full-stack",
-    "code-generation"
+    "helpers",
+    "typescript",
+    "utilities"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
@@ -40,7 +40,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -60,6 +60,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.15.1",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

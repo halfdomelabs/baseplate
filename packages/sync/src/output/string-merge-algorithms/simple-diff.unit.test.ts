@@ -4,7 +4,7 @@ import { simpleDiffAlgorithm } from './simple-diff.js';
 
 describe('simpleDiffAlgorithm', () => {
   test('should merge text with conflicts when there are differences', () => {
-    const userText = '# This is a simple diff test\n\n' + 'Hello world\n';
+    const userText = '# This is a simple diff test\n\nHello world\n';
     const newText =
       '# This is a simple diff test\n\nHello world\n\nThis is the new text\n';
 
