@@ -29,7 +29,7 @@
     "./eslint-configs/storybook": "./eslint-configs/storybook.js",
     "./eslint-node": "./eslint.config.node.js",
     "./eslint-react": "./eslint.config.react.js",
-    "./oxlintrc": "./oxlintrc.json",
+    "./oxlint-config": "./oxlint.config.ts",
     "./prettier-node": "./prettier.config.node.js",
     "./prettier-react": "./prettier.config.react.js",
     "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
@@ -80,6 +80,7 @@
   "devDependencies": {
     "@types/eslint-plugin-jsx-a11y": "6.10.1",
     "eslint": "catalog:",
+    "oxlint": "1.55.0",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"

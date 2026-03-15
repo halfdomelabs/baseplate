@@ -7,6 +7,9 @@
     "allow": [
       "Bash(pnpm lint*)",
       "Bash(pnpm run lint*)",
+      "Bash(pnpm oxlint*)",
+      "Bash(pnpm run oxlint*)",
+      "Bash(pnpm run lint*)",
       "Bash(pnpm lint:affected*)",
       "Bash(pnpm run lint:affected*)",
       "Bash(pnpm typecheck*)",
