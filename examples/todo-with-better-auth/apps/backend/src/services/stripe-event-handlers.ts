@@ -11,10 +11,9 @@ export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
  * Each event type has a single handler. To handle multiple concerns for one
  * event, compose the logic within the handler function.
  */
-export const stripeEventHandlers: Partial<
-  Record<string, StripeEventHandler>
-> = {
-  'customer.subscription.created': handleSubscriptionEvent,
-  'customer.subscription.updated': handleSubscriptionEvent,
-  'customer.subscription.deleted': handleSubscriptionEvent,
-};
+export const stripeEventHandlers: Partial<Record<string, StripeEventHandler>> =
+  {
+    'customer.subscription.created': handleSubscriptionEvent,
+    'customer.subscription.updated': handleSubscriptionEvent,
+    'customer.subscription.deleted': handleSubscriptionEvent,
+  };
