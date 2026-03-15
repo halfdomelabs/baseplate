@@ -3,9 +3,8 @@
 import type { AuthRole } from '%authRolesImports';
 import type { User } from '%prismaGeneratedImports';
 
-import { prisma } from '%prismaImports';
-
 import { auth } from '%betterAuthModuleImports';
+import { prisma } from '%prismaImports';
 
 const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD } = process.env;
 const INITIAL_USER_ROLES: AuthRole[] = TPL_INITIAL_USER_ROLES;
