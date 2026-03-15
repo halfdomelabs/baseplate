@@ -19,7 +19,7 @@
   "author": "Half Dome Labs LLC",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test:gen": "baseplate-dev test gen",
@@ -34,6 +34,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
   },

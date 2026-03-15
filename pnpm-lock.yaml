@@ -172,6 +172,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       tsx:
         specifier: 'catalog:'
         version: 4.20.6
@@ -251,6 +254,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -297,6 +303,9 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -352,6 +361,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -410,6 +422,9 @@ importers:
       fastify:
         specifier: 5.8.1
         version: 5.8.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -465,6 +480,9 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
 
   packages/project-builder-dev:
     dependencies:
@@ -520,6 +538,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -590,6 +611,9 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -729,6 +753,9 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -757,6 +784,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -920,6 +950,9 @@ importers:
       mime:
         specifier: ^4.0.3
         version: 4.0.3
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -978,6 +1011,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1054,6 +1090,9 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1272,6 +1311,9 @@ importers:
       jsdom:
         specifier: 26.0.0
         version: 26.0.0
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1330,6 +1372,9 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1430,6 +1475,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1524,6 +1572,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1612,6 +1663,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1697,6 +1751,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1785,6 +1842,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1870,6 +1930,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1
@@ -1964,6 +2027,9 @@ importers:
       nodemon:
         specifier: 'catalog:'
         version: 3.1.11
+      oxlint:
+        specifier: 'catalog:'
+        version: 1.55.0
       prettier:
         specifier: 'catalog:'
         version: 3.8.1

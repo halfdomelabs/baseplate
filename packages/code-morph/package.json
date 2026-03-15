@@ -33,7 +33,7 @@
     "CHANGELOG"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "run:morpher": "tsx -C development src/scripts/run-morpher.ts",
@@ -58,6 +58,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

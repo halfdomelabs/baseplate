@@ -50,7 +50,7 @@
     "src-subpath-import-plugin.js"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "typecheck": "tsc --noEmit"

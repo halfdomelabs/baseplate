@@ -40,7 +40,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -59,6 +59,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "memfs": "4.15.1",
     "prettier": "catalog:",
     "typescript": "catalog:",

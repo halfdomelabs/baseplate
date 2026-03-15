@@ -43,7 +43,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "test": "vitest",
@@ -74,6 +74,7 @@
     "@types/ms": "0.7.34",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "oxlint": "catalog:",
     "memfs": "4.15.1",
     "typescript": "catalog:",
     "vitest": "catalog:"

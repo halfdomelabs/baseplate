@@ -46,7 +46,6 @@ const mcpPluginCallback: FastifyPluginCallbackZod<McpPluginOptions> = function (
       });
 
       // Clean up transport when closed
-      // eslint-disable-next-line unicorn/prefer-add-event-listener -- MCP server requires this signature
       transport.onclose = () => {
         if (transport.sessionId) {
           transports[transport.sessionId] = undefined;

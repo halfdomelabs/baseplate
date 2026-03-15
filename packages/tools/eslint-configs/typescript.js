@@ -45,6 +45,7 @@ export function generateTypescriptEslintConfig(options = {}) {
   ];
   const defaultProjectFiles = [
     'vitest.config.ts',
+    'oxlint.config.ts',
     ...(options.extraDefaultProjectFiles ?? []),
   ];
   return defineConfig(
@@ -316,6 +317,6 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Global Ignores
-    { ignores: ['dist', 'node_modules'] },
+    { ignores: ['dist', 'node_modules', 'oxlint.config.ts'] },
   );
 }

@@ -1,5 +1,13 @@
 import type { OxlintConfig } from 'oxlint';
 
+// ignorePatterns are not inherited via extends due to a known oxlint limitation:
+// https://github.com/oxc-project/oxc/issues/10223
+// Consumers should spread this into their own ignorePatterns.
+export const oxlintIgnorePatterns = [
+  '**/dist/**',
+  '**/generators/**/templates/**',
+];
+
 export default {
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react'],
   categories: {
@@ -76,4 +84,4 @@ export default {
     builtin: true,
   },
   globals: {},
-} as OxlintConfig;
+} as Omit<OxlintConfig, 'extends'>;
