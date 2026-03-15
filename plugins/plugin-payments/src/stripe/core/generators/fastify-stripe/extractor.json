@@ -1,26 +1,6 @@
 {
   "name": "stripe/fastify-stripe",
   "templates": {
-    "plugins-webhook": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "plugins",
-      "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        },
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
-      "referencedGeneratorTemplates": ["service", "service-events"],
-      "sourceFile": "src/plugins/stripe-webhook.ts",
-      "variables": {}
-    },
     "service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -35,31 +15,6 @@
       "pathRootRelativePath": "{src-root}/services/stripe.ts",
       "projectExports": { "stripe": { "isTypeOnly": false, "name": "stripe" } },
       "sourceFile": "src/services/stripe.ts",
-      "variables": {}
-    },
-    "service-events": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "services",
-      "importMapProviders": {
-        "loggerServiceImportsProvider": {
-          "importName": "loggerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/services/stripe-events.ts",
-      "projectExports": {
-        "StripeEventHandler": {
-          "isTypeOnly": true,
-          "name": "StripeEventHandler"
-        },
-        "stripeEventService": {
-          "isTypeOnly": false,
-          "name": "stripeEventService"
-        }
-      },
-      "sourceFile": "src/services/stripe-events.ts",
       "variables": {}
     }
   }

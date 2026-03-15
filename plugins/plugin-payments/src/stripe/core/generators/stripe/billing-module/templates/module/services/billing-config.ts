@@ -1,4 +1,6 @@
-import { config } from '@src/services/config.js';
+// @ts-nocheck
+
+import { config } from '%configServiceImports';
 
 /** Defines the shape of a subscription plan. */
 interface SubscriptionPlan {

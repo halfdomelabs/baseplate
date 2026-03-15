@@ -1,11 +1,20 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
-import { definitionSchema } from '@baseplate-dev/project-builder-lib';
+import {
+  definitionSchema,
+  featureEntityType,
+} from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const createStripePluginDefinitionSchema = definitionSchema(() =>
+export const createStripePluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     stripeOptions: z.object({}).prefault({}),
+    billingFeatureRef: ctx
+      .withRef({
+        type: featureEntityType,
+        onDelete: 'RESTRICT',
+      })
+      .optional(),
   }),
 );
 

@@ -25,7 +25,7 @@
     "template": "request-context"
   },
   "stripe-webhook.ts": {
-    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
+    "generator": "@baseplate-dev/plugin-payments#stripe/billing-webhook",
     "instanceData": {},
     "template": "plugins-webhook"
   }

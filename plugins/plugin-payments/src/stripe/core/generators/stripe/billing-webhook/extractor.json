@@ -1,0 +1,58 @@
+{
+  "name": "stripe/billing-webhook",
+  "templates": {
+    "plugins-webhook": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "plugins",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "fastifyStripeImportsProvider": {
+          "importName": "fastifyStripeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-payments:src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
+      "projectExports": {
+        "stripeWebhookPlugin": {
+          "isTypeOnly": false,
+          "name": "stripeWebhookPlugin"
+        }
+      },
+      "referencedGeneratorTemplates": ["service-event-handlers"],
+      "sourceFile": "src/plugins/stripe-webhook.ts",
+      "variables": {}
+    },
+    "service-event-handlers": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "services",
+      "importMapProviders": {
+        "billingModuleImportsProvider": {
+          "importName": "billingModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-payments:src/stripe/core/generators/stripe/billing-module/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/stripe-event-handlers.ts",
+      "projectExports": {
+        "stripeEventHandlers": {
+          "isTypeOnly": false,
+          "name": "stripeEventHandlers"
+        }
+      },
+      "sourceFile": "src/services/stripe-event-handlers.ts",
+      "variables": {}
+    }
+  }
+}

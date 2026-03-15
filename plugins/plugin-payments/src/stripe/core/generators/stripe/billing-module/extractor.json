@@ -1,0 +1,75 @@
+{
+  "name": "stripe/billing-module",
+  "templates": {
+    "billing-config": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/billing-config.ts",
+      "projectExports": {
+        "getPlanKeyByPriceId": {
+          "isTypeOnly": false,
+          "name": "getPlanKeyByPriceId"
+        },
+        "PlanKey": { "isTypeOnly": true, "name": "PlanKey" },
+        "SUBSCRIPTION_PLANS": {
+          "isTypeOnly": false,
+          "name": "SUBSCRIPTION_PLANS"
+        }
+      },
+      "sourceFile": "module/services/billing-config.ts",
+      "variables": {}
+    },
+    "billing-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "fastifyStripeImportsProvider": {
+          "importName": "fastifyStripeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-payments:src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/billing.service.ts",
+      "projectExports": {
+        "getOrCreateBillingAccount": {
+          "isTypeOnly": false,
+          "name": "getOrCreateBillingAccount"
+        },
+        "handleSubscriptionEvent": {
+          "isTypeOnly": false,
+          "name": "handleSubscriptionEvent"
+        },
+        "syncSubscriptionFromStripe": {
+          "isTypeOnly": false,
+          "name": "syncSubscriptionFromStripe"
+        }
+      },
+      "referencedGeneratorTemplates": ["billing-config"],
+      "sourceFile": "module/services/billing.service.ts",
+      "variables": {}
+    }
+  }
+}
