@@ -5,7 +5,7 @@
  * A monorepo-aware formatting and linting hook script.
  *
  * Two code paths:
- * - Monorepo files (packages/*, plugins/*, etc.): runs oxfmt + oxlint --fix on all
+ * - Monorepo files (packages/*, plugins/*, etc.): runs oxlint --fix then oxfmt on all
  *   files in one batch from the repo root.
  * - Example project files (examples/*): uses per-project grouping with prettier + eslint
  *   since examples are standalone monorepos with their own tooling.
@@ -15,7 +15,7 @@
 
 import type { Options } from 'prettier';
 
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import * as fs from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -26,7 +26,7 @@ import {
   resolveConfigFile,
 } from 'prettier';
 
-const execPromise = promisify(exec);
+const execFilePromise = promisify(execFile);
 
 const VALID_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
@@ -93,8 +93,7 @@ async function runEslint(filePaths: string[], cwd: string): Promise<void> {
     `Running ESLint on ${filePaths.length} file(s) in ${path.basename(cwd)}...`,
   );
   try {
-    const files = filePaths.map((f) => `"${f}"`).join(' ');
-    await execPromise(`npx eslint --fix ${files}`, {
+    await execFilePromise('npx', ['eslint', '--fix', ...filePaths], {
       cwd,
       env: { ...process.env, BASEPLATE_KEEP_UNUSED_IMPORTS: 'true' },
     });
@@ -110,8 +109,7 @@ async function runEslint(filePaths: string[], cwd: string): Promise<void> {
 async function runOxfmt(filePaths: string[]): Promise<void> {
   console.info(`Running oxfmt on ${filePaths.length} file(s)...`);
   try {
-    const files = filePaths.map((f) => `"${f}"`).join(' ');
-    await execPromise(`npx oxfmt ${files}`, { cwd: ROOT_DIR });
+    await execFilePromise('npx', ['oxfmt', ...filePaths], { cwd: ROOT_DIR });
     console.info(`✅ oxfmt completed for ${filePaths.length} file(s).`);
   } catch (error) {
     console.error('❌ oxfmt failed.');
@@ -122,8 +120,9 @@ async function runOxfmt(filePaths: string[]): Promise<void> {
 async function runOxlint(filePaths: string[]): Promise<void> {
   console.info(`Running oxlint on ${filePaths.length} file(s)...`);
   try {
-    const files = filePaths.map((f) => `"${f}"`).join(' ');
-    await execPromise(`npx oxlint --fix ${files}`, { cwd: ROOT_DIR });
+    await execFilePromise('npx', ['oxlint', '--fix', ...filePaths], {
+      cwd: ROOT_DIR,
+    });
     console.info(`✅ oxlint completed for ${filePaths.length} file(s).`);
   } catch (error) {
     console.error('❌ oxlint failed.');
@@ -155,12 +154,13 @@ for (const filePath of inputPaths) {
   }
 }
 
-// Process monorepo files: run oxfmt + oxlint in parallel from root.
+// Process monorepo files: run oxlint then oxfmt from root.
 if (monorepoFiles.length > 0) {
   console.info(
-    `\nProcessing ${monorepoFiles.length} monorepo file(s) with oxfmt + oxlint...`,
+    `\nProcessing ${monorepoFiles.length} monorepo file(s) with oxlint + oxfmt...`,
   );
-  await Promise.all([runOxfmt(monorepoFiles), runOxlint(monorepoFiles)]);
+  await runOxlint(monorepoFiles);
+  await runOxfmt(monorepoFiles);
 }
 
 // Process example files: per-project grouping with prettier + eslint.
