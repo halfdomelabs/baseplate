@@ -33,8 +33,8 @@ import {
 } from '@src/utils/data-operations/field-utils.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-import { userImageInputFields } from './user-image.data-service.js';
-import { userProfileInputFields } from './user-profile.data-service.js';
+import { userImageInputFields } from '../../users/services/user-image.data-service.js';
+import { userProfileInputFields } from '../../users/services/user-profile.data-service.js';
 
 const parentModel = createParentModelConfig('user', (value) => ({
   id: value.id,

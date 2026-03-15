@@ -108,7 +108,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
                   blockBeforeContinue({
                     onContinue: startSyncProject,
                   });
-                  e.preventDefault();
+                  e.preventBaseUIHandler();
                 }
               }}
               data-testid="sync-button"

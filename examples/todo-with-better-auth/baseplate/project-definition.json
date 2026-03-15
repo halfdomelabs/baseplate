@@ -245,7 +245,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.2",
   "enums": [
     {
       "featureRef": "todos",
@@ -293,49 +293,49 @@
             "id": "model-scalar-field:TO26eSVGJHKn",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:8CR8_7duFZDD",
             "isOptional": false,
             "name": "accountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7Zg0Ygfa1InE",
             "isOptional": false,
             "name": "providerId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:VOV5qlIu2XTx",
             "isOptional": false,
             "name": "userId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:rrJCr6Bdgn7T",
             "isOptional": true,
             "name": "accessToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5J8fJ59rTkGf",
             "isOptional": true,
             "name": "refreshToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:Cm_SDCJlZyqK",
             "isOptional": true,
             "name": "idToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -356,14 +356,14 @@
             "id": "model-scalar-field:sMUtrMhrJhZt",
             "isOptional": true,
             "name": "scope",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:C5XQpcnBy5tg",
             "isOptional": true,
             "name": "password",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -577,7 +577,7 @@
             "id": "model-scalar-field:qfU8rq8l76z9",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
@@ -1205,7 +1205,7 @@
           }
         ]
       },
-      "featureRef": "accounts/users",
+      "featureRef": "accounts/auth",
       "graphql": {
         "mutations": {
           "create": { "enabled": true },
@@ -1552,7 +1552,7 @@
       }
     },
     {
-      "featureRef": "accounts/users",
+      "featureRef": "accounts/auth",
       "graphql": {
         "objectType": {
           "enabled": true,
@@ -1623,21 +1623,21 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:chXcsUFTBpVH",
             "isOptional": false,
             "name": "identifier",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:LSmKbAh9EZVc",
             "isOptional": false,
             "name": "value",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {

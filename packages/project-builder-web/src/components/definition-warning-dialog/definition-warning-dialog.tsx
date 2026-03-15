@@ -80,7 +80,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
         setDialogOptions(undefined);
       }}
     >
-      <DialogContent width="lg">
+      <DialogContent width="xl">
         <DialogHeader>
           <DialogTitle>Definition warnings</DialogTitle>
         </DialogHeader>
@@ -163,7 +163,7 @@ export function DefinitionWarningDialog(): React.JSX.Element {
                       )}
                     </TableCell>
                     <TableCell>{pathInEntity}</TableCell>
-                    <TableCell className="max-w-[300px] break-words whitespace-normal">
+                    <TableCell className="max-w-[400px] break-words whitespace-normal">
                       {warning.message}
                     </TableCell>
                     <TableCell>
