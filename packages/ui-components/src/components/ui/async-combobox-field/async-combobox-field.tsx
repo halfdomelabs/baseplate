@@ -3,7 +3,7 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useReducer, useRef, useState } from 'react';
 
 import type {
   AddOptionRequiredFields,
@@ -39,6 +39,7 @@ export interface AsyncComboboxFieldProps<OptionType>
   extends Omit<SelectOptionProps<OptionType>, 'options'>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  typeToSearchText?: React.ReactNode;
   loadingText?: React.ReactNode;
   errorText?: React.ReactNode;
   formatError?: (error: unknown) => string;
@@ -50,6 +51,58 @@ export interface AsyncComboboxFieldProps<OptionType>
   disabled?: boolean;
   value?: string | null;
   onChange?: (value: string | null) => void;
+}
+
+interface SearchState<OptionType> {
+  options: OptionType[];
+  isLoading: boolean;
+  loadError: string | null;
+  hasSearched: boolean;
+}
+
+type SearchAction<OptionType> =
+  | { type: 'reset'; initialOptions: OptionType[] }
+  | { type: 'searchStarted' }
+  | { type: 'searchSucceeded'; options: OptionType[] }
+  | { type: 'searchFailed'; error: string }
+  | { type: 'cleared'; initialOptions: OptionType[] };
+
+function searchReducer<OptionType>(
+  state: SearchState<OptionType>,
+  action: SearchAction<OptionType>,
+): SearchState<OptionType> {
+  switch (action.type) {
+    case 'reset': {
+      return {
+        options: action.initialOptions,
+        isLoading: false,
+        loadError: null,
+        hasSearched: false,
+      };
+    }
+    case 'searchStarted': {
+      return { ...state, isLoading: true, loadError: null, hasSearched: true };
+    }
+    case 'searchSucceeded': {
+      return { ...state, options: action.options, isLoading: false };
+    }
+    case 'searchFailed': {
+      return {
+        ...state,
+        options: [],
+        isLoading: false,
+        loadError: action.error,
+      };
+    }
+    case 'cleared': {
+      return {
+        options: action.initialOptions,
+        isLoading: false,
+        loadError: null,
+        hasSearched: false,
+      };
+    }
+  }
 }
 
 /**
@@ -67,6 +120,7 @@ function AsyncComboboxField<OptionType>({
   getOptionValue = (val) => (val as { value: string | null }).value,
   className,
   noResultsText,
+  typeToSearchText,
   loadingText,
   errorText,
   formatError,
@@ -77,15 +131,22 @@ function AsyncComboboxField<OptionType>({
   disabled,
 }: AsyncComboboxFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const [options, setOptions] = useState<OptionType[]>(initialOptions);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [{ options, isLoading, loadError, hasSearched }, dispatch] = useReducer(
+    searchReducer<OptionType>,
+    {
+      options: initialOptions,
+      isLoading: false,
+      loadError: null,
+      hasSearched: false,
+    },
+  );
 
   // Cache the selected option to persist it across searches
   const [selectedOptionCache, setSelectedOptionCache] =
     useState<OptionType | null>(null);
 
-  const { comboboxNoResults, comboboxLoading } = useComponentStrings();
+  const { comboboxNoResults, comboboxTypeToSearch, comboboxLoading } =
+    useComponentStrings();
 
   const id = useId();
 
@@ -178,17 +239,16 @@ function AsyncComboboxField<OptionType>({
       if (inputValue === '') {
         onChange?.(null);
         setSelectedOptionCache(null);
-        setOptions(initialOptionsRef.current);
-        setLoadError(null);
-        setIsLoading(false);
+        dispatch({
+          type: 'cleared',
+          initialOptions: initialOptionsRef.current,
+        });
         return;
       }
 
       // Below min search length: reset to initial options
       if (inputValue.trim().length < minSearchLength) {
-        setOptions(initialOptionsRef.current);
-        setLoadError(null);
-        setIsLoading(false);
+        dispatch({ type: 'reset', initialOptions: initialOptionsRef.current });
         return;
       }
 
@@ -197,13 +257,12 @@ function AsyncComboboxField<OptionType>({
         const controller = new AbortController();
         searchAbortRef.current = controller;
 
-        setIsLoading(true);
-        setLoadError(null);
+        dispatch({ type: 'searchStarted' });
 
         stableLoadOptions(inputValue)
           .then((newOptions) => {
             if (!controller.signal.aborted) {
-              setOptions(newOptions);
+              dispatch({ type: 'searchSucceeded', options: newOptions });
             }
           })
           .catch((err: unknown) => {
@@ -213,13 +272,7 @@ function AsyncComboboxField<OptionType>({
                 : err instanceof Error
                   ? err.message
                   : 'Failed to load options';
-              setLoadError(errorMessage);
-              setOptions([]);
-            }
-          })
-          .finally(() => {
-            if (!controller.signal.aborted) {
-              setIsLoading(false);
+              dispatch({ type: 'searchFailed', error: errorMessage });
             }
           });
       }, debounceMs);
@@ -240,7 +293,10 @@ function AsyncComboboxField<OptionType>({
         onInputValueChange={handleInputValueChange}
         onOpenChangeComplete={(open) => {
           if (!open) {
-            setOptions(initialOptionsRef.current);
+            dispatch({
+              type: 'reset',
+              initialOptions: initialOptionsRef.current,
+            });
           }
         }}
         disabled={disabled}
@@ -265,7 +321,9 @@ function AsyncComboboxField<OptionType>({
           ) : null}
           {!isLoading && !loadError && (
             <ComboboxEmpty className="p-4 text-sm text-muted-foreground">
-              {noResultsText ?? comboboxNoResults}
+              {hasSearched
+                ? (noResultsText ?? comboboxNoResults)
+                : (typeToSearchText ?? comboboxTypeToSearch)}
             </ComboboxEmpty>
           )}
           {!isLoading && !loadError && (
