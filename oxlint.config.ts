@@ -1,8 +1,8 @@
-import oxlintConfig from '@baseplate-dev/tools/oxlint-config';
+import oxlintConfigBase from '@baseplate-dev/tools/oxlint-config-base';
 import { defineConfig } from 'oxlint';
 
 export default defineConfig({
-  extends: [oxlintConfig],
+  extends: [oxlintConfigBase],
   ignorePatterns: [
     '**/generators/**/templates/**',
     '**/dist/**',

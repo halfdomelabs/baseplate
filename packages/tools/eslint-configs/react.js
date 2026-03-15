@@ -2,6 +2,7 @@
 
 /**
  * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
+ * @typedef {import('eslint/config').Config} ESLintConfig
  */
 
 /**
@@ -72,7 +73,7 @@ export function generateReactEslintConfig(options) {
     },
 
     // React Hooks
-    reactHooksPlugin.configs.flat['recommended-latest'],
+    reactHooksPlugin.configs.flat['recommended'],
     {
       rules: {
         // Disable new strict rules from react-hooks v7 until we enable React Compiler
@@ -84,14 +85,12 @@ export function generateReactEslintConfig(options) {
     },
 
     // Import-X
-    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     eslintPluginImportX.flatConfigs.react,
 
     // Better Tailwindcss - correctness rules only (formatting handled by Prettier)
     // Only enable if tailwindEntryPoint is provided (not null/undefined)
-    ...(options.tailwindEntryPoint !== null &&
-    options.tailwindEntryPoint !== undefined
-      ? [
+    ...(options.tailwindEntryPoint
+      ? /** @type {ESLintConfig[]} */ ([
           eslintPluginBetterTailwindcss.configs['correctness'],
           {
             settings: {
@@ -99,8 +98,6 @@ export function generateReactEslintConfig(options) {
                 entryPoint: options.tailwindEntryPoint,
               },
             },
-          },
-          {
             rules: {
               // Detect custom component classes defined in @layer components
               'better-tailwindcss/no-unknown-classes': [
@@ -115,7 +112,7 @@ export function generateReactEslintConfig(options) {
               ],
             },
           },
-        ]
+        ])
       : []),
 
     // Unicorn

@@ -167,7 +167,6 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Import-X Configs
-    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     importX.flatConfigs.recommended,
     importX.flatConfigs.typescript,
     {

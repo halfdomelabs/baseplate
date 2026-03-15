@@ -5,8 +5,9 @@ export default {
   categories: {
     correctness: 'error',
   },
-  rules: {},
-  settings: {},
+  rules: {
+    'no-console': ['error', { allow: ['debug', 'info', 'warn', 'error'] }],
+  },
   overrides: [
     {
       files: ['*.test-helper.ts'],
