@@ -2,7 +2,7 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import { reactErrorImportsProvider } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
-import { reactSentryImportsProvider } from '../../react-sentry/generated/ts-import-providers.js';
+import { reactSentryImportsProvider } from '#src/sentry/core/generators/react-sentry/generated/ts-import-providers.js';
 
 const apolloSentryLink = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

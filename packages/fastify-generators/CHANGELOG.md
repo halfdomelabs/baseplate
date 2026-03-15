@@ -1,5 +1,24 @@
 # @baseplate-dev/fastify-generators
 
+## 1.0.7
+
+### Patch Changes
+
+- [#828](https://github.com/halfdomelabs/baseplate/pull/828) [`69483b8`](https://github.com/halfdomelabs/baseplate/commit/69483b8b703a2b568f9dfcfc349046bf3a2bb948) Thanks [@kingston](https://github.com/kingston)! - Add .env.local support for backend projects - adds .env.local to gitignore and loads it via --env-file-if-exists flag in dev scripts
+
+- [#830](https://github.com/halfdomelabs/baseplate/pull/830) [`c175429`](https://github.com/halfdomelabs/baseplate/commit/c175429101d8e902e178067785f2840cd22347cb) Thanks [@kingston](https://github.com/kingston)! - Add support for indexes on tables, mirroring the existing unique constraints implementation
+
+- [#826](https://github.com/halfdomelabs/baseplate/pull/826) [`fdd496d`](https://github.com/halfdomelabs/baseplate/commit/fdd496da00348cd56b329a50f60d94597e063045) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
+
+- [#829](https://github.com/halfdomelabs/baseplate/pull/829) [`28517d6`](https://github.com/halfdomelabs/baseplate/commit/28517d60059070943a3d1ebdb99d0a2fabbe30a7) Thanks [@kingston](https://github.com/kingston)! - Extract Stripe into standalone `@baseplate-dev/plugin-payments` package. Stripe is now managed through the plugin system instead of the `enableStripe` boolean on backend app config. Includes migration to automatically convert existing projects. Overhaul Stripe implementation to provide billing support.
+
+- [#824](https://github.com/halfdomelabs/baseplate/pull/824) [`ad028b5`](https://github.com/halfdomelabs/baseplate/commit/ad028b5b840d5bf45f3597e95145b75b0e4eb2b7) Thanks [@kingston](https://github.com/kingston)! - Remove Altair GraphQL IDE support in favor of the built-in GraphiQL interface provided by GraphQL Yoga
+
+- Updated dependencies [[`168793d`](https://github.com/halfdomelabs/baseplate/commit/168793d958e001de2eb8bebed03c2b42397da701)]:
+  - @baseplate-dev/sync@1.0.0
+  - @baseplate-dev/core-generators@1.0.0
+  - @baseplate-dev/utils@1.0.0
+
 ## 0.6.2
 
 ### Patch Changes

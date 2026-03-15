@@ -88,7 +88,10 @@ function MultiComboboxField<OptionType>({
                     </ComboboxChip>
                   );
                 })}
-                <ComboboxChipsInput id={id} placeholder={placeholder} />
+                <ComboboxChipsInput
+                  id={id}
+                  placeholder={values.length > 0 ? '' : placeholder}
+                />
               </Fragment>
             )}
           </ComboboxValue>

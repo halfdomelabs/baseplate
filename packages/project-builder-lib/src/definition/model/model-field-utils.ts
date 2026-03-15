@@ -100,6 +100,9 @@ function getModelValidator(modelField: ModelScalarFieldConfig): string {
     case 'uuid': {
       return 'string()';
     }
+    case 'json': {
+      return 'unknown()';
+    }
     default: {
       throw new Error(`Unsupported validator for ${modelField.type}`);
     }

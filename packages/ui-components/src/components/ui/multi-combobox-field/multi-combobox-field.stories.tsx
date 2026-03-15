@@ -12,6 +12,7 @@ const meta: Meta<typeof MultiComboboxField> = {
     label: { control: { type: 'text' } },
     error: { control: { type: 'text' } },
     description: { control: { type: 'text' } },
+    placeholder: { control: { type: 'text' } },
     options: { control: 'object' },
   },
   decorators: [
@@ -61,6 +62,7 @@ export const Labelled: Story = {
     ],
     label: 'What are your favorite options?',
     description: 'We will never judge you for your choice.',
+    placeholder: 'Select your favorite options',
     getOptionLabel: (option) => (option as { label: string }).label,
     getOptionValue: (option) => (option as { value: string }).value,
     className: 'w-96',

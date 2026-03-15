@@ -9,6 +9,7 @@ export const DEFAULT_COMPONENT_STRINGS = {
   buttonCancel: 'Cancel',
   buttonConfirm: 'Confirm',
   comboboxNoResults: 'No results found',
+  comboboxTypeToSearch: 'Type to search...',
   comboboxLoading: 'Loading...',
 };
 

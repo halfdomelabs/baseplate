@@ -533,7 +533,12 @@ const x = A();`,
 
       // Assert
       expect(sourceFile.getFullText()).toBe(
-        "'use client';\n\n" + 'import React from "react";\n\n\nconst x = A();',
+        `'use client';
+
+import React from "react";
+
+
+const x = A();`,
       );
     });
 
@@ -559,7 +564,9 @@ const x = A();`,
 
       // Assert
       expect(sourceFile.getFullText()).toBe(
-        'import React from "react";\n\n' + 'const x = 1;',
+        `import React from "react";
+
+const x = 1;`,
       );
     });
 

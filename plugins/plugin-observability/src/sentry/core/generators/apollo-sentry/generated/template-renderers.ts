@@ -5,7 +5,8 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { reactErrorImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { reactSentryImportsProvider } from '../../react-sentry/generated/ts-import-providers.js';
+import { reactSentryImportsProvider } from '#src/sentry/core/generators/react-sentry/generated/ts-import-providers.js';
+
 import { APOLLO_APOLLO_SENTRY_PATHS } from './template-paths.js';
 import { APOLLO_APOLLO_SENTRY_TEMPLATES } from './typed-templates.js';
 
