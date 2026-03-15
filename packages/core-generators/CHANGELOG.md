@@ -1,5 +1,13 @@
 # @baseplate-dev/core-generators
 
+## 1.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`168793d`](https://github.com/halfdomelabs/baseplate/commit/168793d958e001de2eb8bebed03c2b42397da701)]:
+  - @baseplate-dev/sync@1.0.0
+  - @baseplate-dev/utils@1.0.0
+
 ## 0.6.2
 
 ### Patch Changes
