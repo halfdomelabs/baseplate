@@ -8,6 +8,10 @@
  * `baseplate@{version}` pointing at HEAD, then creates one GitHub release with
  * an aggregated changelog body.
  *
+ * Change entries are deduplicated across packages (the same PR commonly appears
+ * in multiple CHANGELOGs) and grouped by the highest change type seen for that
+ * entry: Major > Minor > Patch.
+ *
  * Usage:
  *   node ./scripts/create-github-release.ts [--dry-run] [--version <version>]
  *
@@ -23,6 +27,10 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 interface PublishedPackage {
   name: string;
   version: string;
@@ -33,6 +41,18 @@ interface WorkspacePackage {
   dir: string;
 }
 
+type ChangeType = 'major' | 'minor' | 'patch';
+
+interface ChangeEntry {
+  /** Raw markdown bullet text (may be multi-line, without the leading "- ") */
+  text: string;
+  type: ChangeType;
+}
+
+// ---------------------------------------------------------------------------
+// CLI args
+// ---------------------------------------------------------------------------
+
 const { values } = parseArgs({
   options: {
     'dry-run': { type: 'boolean', default: false },
@@ -41,6 +61,10 @@ const { values } = parseArgs({
 });
 
 const isDryRun = values['dry-run'];
+
+// ---------------------------------------------------------------------------
+// Workspace discovery
+// ---------------------------------------------------------------------------
 
 /**
  * Discovers all non-private packages in the workspace by scanning `packages/`
@@ -86,64 +110,161 @@ async function getWorkspacePackages(): Promise<WorkspacePackage[]> {
   return results.toSorted((a, b) => a.name.localeCompare(b.name));
 }
 
+// ---------------------------------------------------------------------------
+// CHANGELOG parsing
+// ---------------------------------------------------------------------------
+
+const CHANGE_TYPE_HEADINGS: Record<string, ChangeType> = {
+  'Major Changes': 'major',
+  'Minor Changes': 'minor',
+  'Patch Changes': 'patch',
+};
+
 /**
- * Extracts the changelog section for a specific version from a CHANGELOG.md
- * file, filtering out "Updated dependencies" noise.
+ * Parses all change entries from a package's CHANGELOG section for a given
+ * version. Returns an array of {text, type} — one per bullet, excluding
+ * "Updated dependencies" bullets.
  *
- * Returns null if no section is found or if only dependency bumps remain.
+ * A "bullet" is the leading "- " line plus any subsequent lines that are
+ * indented (continuation of the same list item).
  */
-function extractChangelogSection(
+function parseChangeEntries(
   changelogContent: string,
   version: string,
-): string | null {
+): ChangeEntry[] {
   const lines = changelogContent.split('\n');
 
   // Find the heading line for this version
   const startIdx = lines.indexOf(`## ${version}`);
   if (startIdx === -1) {
-    return null;
+    return [];
   }
 
   // Find the next version heading (or end of file)
   const endIdx = lines.findIndex(
     (line, idx) => idx > startIdx && line.startsWith('## '),
   );
-
   const sectionLines =
     endIdx === -1
       ? lines.slice(startIdx + 1)
       : lines.slice(startIdx + 1, endIdx);
 
-  // Remove "Updated dependencies" block:
-  // - a line matching /^- Updated dependencies/
-  // - followed by indented sub-bullets (lines starting with "  -")
-  const filtered: string[] = [];
-  let skipIndented = false;
+  const entries: ChangeEntry[] = [];
+  let currentType: ChangeType = 'patch';
+  let currentBulletLines: string[] | null = null;
+
+  function flushBullet(): void {
+    if (!currentBulletLines) return;
+    const text = currentBulletLines.join('\n').trimEnd();
+    if (text) {
+      entries.push({ text, type: currentType });
+    }
+    currentBulletLines = null;
+  }
 
   for (const line of sectionLines) {
-    if (line.startsWith('- Updated dependencies')) {
-      skipIndented = true;
+    // Detect change type subheadings (### Major Changes, etc.)
+    if (line.startsWith('### ')) {
+      flushBullet();
+      const heading = line.slice(4).trim();
+      currentType = CHANGE_TYPE_HEADINGS[heading] ?? 'patch';
       continue;
     }
-    if (skipIndented && line.startsWith('  -')) {
+
+    // Start of a new bullet
+    if (line.startsWith('- ')) {
+      flushBullet();
+      const bulletText = line.slice(2);
+      // Skip "Updated dependencies" bullets entirely
+      if (bulletText.startsWith('Updated dependencies')) {
+        currentBulletLines = null;
+        continue;
+      }
+      currentBulletLines = [bulletText];
       continue;
     }
-    skipIndented = false;
-    filtered.push(line);
+
+    // Continuation lines of the current bullet (indented or blank within item)
+    if (currentBulletLines !== null) {
+      // A blank line or indented line continues the bullet;
+      // a non-indented, non-blank line ends it (shouldn't normally occur mid-bullet)
+      if (line === '' || line.startsWith(' ') || line.startsWith('\t')) {
+        currentBulletLines.push(line);
+      } else {
+        flushBullet();
+      }
+    }
   }
 
-  // Trim leading/trailing blank lines
-  let start = 0;
-  let end = filtered.length - 1;
-  while (start <= end && filtered[start].trim() === '') start++;
-  while (end >= start && filtered[end].trim() === '') end--;
-
-  if (start > end) {
-    return null;
-  }
-
-  return filtered.slice(start, end + 1).join('\n');
+  flushBullet();
+  return entries;
 }
+
+// ---------------------------------------------------------------------------
+// Deduplication & aggregation
+// ---------------------------------------------------------------------------
+
+const CHANGE_TYPE_RANK: Record<ChangeType, number> = {
+  major: 3,
+  minor: 2,
+  patch: 1,
+};
+
+/**
+ * Merges change entries from all packages. Entries with identical text are
+ * deduplicated; when the same entry appears under different change types, the
+ * highest-ranked type wins (Major > Minor > Patch).
+ */
+function mergeEntries(allEntries: ChangeEntry[]): ChangeEntry[] {
+  // Use the full bullet text as the dedup key
+  const seen = new Map<string, ChangeEntry>();
+
+  for (const entry of allEntries) {
+    const existing = seen.get(entry.text);
+    if (!existing) {
+      seen.set(entry.text, { ...entry });
+    } else if (CHANGE_TYPE_RANK[entry.type] > CHANGE_TYPE_RANK[existing.type]) {
+      existing.type = entry.type;
+    }
+  }
+
+  return [...seen.values()];
+}
+
+// ---------------------------------------------------------------------------
+// Release body rendering
+// ---------------------------------------------------------------------------
+
+function buildReleaseBody(entries: ChangeEntry[]): string {
+  const byType: Record<ChangeType, string[]> = {
+    major: [],
+    minor: [],
+    patch: [],
+  };
+
+  for (const entry of entries) {
+    // Re-add the leading "- " stripped during parsing
+    byType[entry.type].push(`- ${entry.text}`);
+  }
+
+  const sections: string[] = [];
+
+  if (byType.major.length > 0) {
+    sections.push(`### Major Changes\n\n${byType.major.join('\n\n')}`);
+  }
+  if (byType.minor.length > 0) {
+    sections.push(`### Minor Changes\n\n${byType.minor.join('\n\n')}`);
+  }
+  if (byType.patch.length > 0) {
+    sections.push(`### Patch Changes\n\n${byType.patch.join('\n\n')}`);
+  }
+
+  return sections.join('\n\n');
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
 
 async function createGithubRelease(): Promise<void> {
   // Resolve version
@@ -172,13 +293,13 @@ async function createGithubRelease(): Promise<void> {
   const tag = `baseplate@${version}`;
   console.info(`Preparing GitHub release for ${tag}…`);
 
-  // Collect changelog sections from all workspace packages
+  // Collect and merge change entries across all workspace packages
   const packages = await getWorkspacePackages();
   console.info(
     `Scanning ${packages.length} workspace packages for changelog entries…`,
   );
 
-  const sections: string[] = [];
+  const allEntries: ChangeEntry[] = [];
 
   for (const pkg of packages) {
     const changelogPath = path.join(pkg.dir, 'CHANGELOG.md');
@@ -190,19 +311,19 @@ async function createGithubRelease(): Promise<void> {
       continue; // No CHANGELOG — skip silently
     }
 
-    const section = extractChangelogSection(changelogContent, version);
-    if (section) {
-      sections.push(`## ${pkg.name}\n\n${section}`);
-    }
+    const entries = parseChangeEntries(changelogContent, version);
+    allEntries.push(...entries);
   }
 
-  if (sections.length === 0) {
+  const mergedEntries = mergeEntries(allEntries);
+
+  if (mergedEntries.length === 0) {
     console.warn(
       `Warning: no changelog entries found for version ${version}. The release body will be empty.`,
     );
   }
 
-  const releaseBody = sections.join('\n\n');
+  const releaseBody = buildReleaseBody(mergedEntries);
 
   if (isDryRun) {
     console.info('\n--- DRY RUN ---');
