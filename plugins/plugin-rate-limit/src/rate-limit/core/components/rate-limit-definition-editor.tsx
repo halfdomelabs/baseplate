@@ -103,11 +103,10 @@ export function RateLimitDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
+        const featureName = resolveFeatureName(
           draftConfig,
           data.rateLimitFeatureRef,
         );
-        const featureName = resolveFeatureName(draftConfig, featureRef);
         const partialDef = createRateLimitPartialDefinition(featureName);
         applyMergedDefinition(definitionContainer, partialDef)(draftConfig);
         PluginUtils.setPluginConfig(
@@ -115,7 +114,10 @@ export function RateLimitDefinitionEditor({
           metadata,
           {
             ...data,
-            rateLimitFeatureRef: featureRef,
+            rateLimitFeatureRef: FeatureUtils.getFeatureIdByNameOrThrow(
+              draftConfig,
+              featureName,
+            ),
           },
           definitionContainer,
         );

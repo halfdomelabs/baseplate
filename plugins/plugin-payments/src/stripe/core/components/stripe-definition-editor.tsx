@@ -126,11 +126,10 @@ export function StripeDefinitionEditor({
         const billingData = { ...data };
 
         if (billingData.billing.enabled && billingData.billing.featureRef) {
-          const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
+          const featureName = resolveFeatureName(
             draftConfig,
             billingData.billing.featureRef,
           );
-          const featureName = resolveFeatureName(draftConfig, featureRef);
           const updatedPartialDef = createBillingPartialDefinition(
             featureName,
             userModelName,
@@ -139,10 +138,8 @@ export function StripeDefinitionEditor({
             definitionContainer,
             updatedPartialDef,
           )(draftConfig);
-          billingData.billing = {
-            ...billingData.billing,
-            featureRef,
-          };
+          billingData.billing.featureRef =
+            FeatureUtils.getFeatureIdByNameOrThrow(draftConfig, featureName);
         } else {
           billingData.billing = {
             enabled: false,

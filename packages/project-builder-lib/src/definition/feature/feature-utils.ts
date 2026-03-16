@@ -1,4 +1,8 @@
-import type { FeatureConfig, ProjectDefinition } from '#src/schema/index.js';
+import type {
+  FeatureConfig,
+  PartialProjectDefinitionInput,
+  ProjectDefinition,
+} from '#src/schema/index.js';
 
 import { featureEntityType, featureNameSchema } from '#src/schema/index.js';
 
@@ -92,11 +96,34 @@ function ensureFeatureByNameRecursively(
   return parentRef;
 }
 
+function createPartialFeatures(
+  nameOrPath: string,
+): NonNullable<PartialProjectDefinitionInput['features']> {
+  if (!nameOrPath) return [];
+  const parts = nameOrPath.split('/');
+  return parts.map((_, i) => {
+    const name = parts.slice(0, i + 1).join('/');
+    const parentRef = i > 0 ? parts.slice(0, i).join('/') : undefined;
+    return { name, parentRef };
+  });
+}
+
 function getFeatureByName(
   projectDefinition: ProjectDefinition,
   name: string,
 ): FeatureConfig | undefined {
   return projectDefinition.features.find((f) => f.name === name);
+}
+
+function getFeatureIdByNameOrThrow(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): string {
+  const feature = getFeatureByName(projectDefinition, name);
+  if (!feature) {
+    throw new Error(`Could not find feature with name ${name}`);
+  }
+  return feature.id;
 }
 
 function getFeatureIdByNameOrDefault(
@@ -116,6 +143,8 @@ export const FeatureUtils = {
   getFeaturePathById,
   validateFeatureName,
   ensureFeatureByNameRecursively,
+  createPartialFeatures,
   getFeatureByName,
+  getFeatureIdByNameOrThrow,
   getFeatureIdByNameOrDefault,
 };

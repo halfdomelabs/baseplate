@@ -106,11 +106,10 @@ export function StorageDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
+        const featureName = resolveFeatureName(
           draftConfig,
           data.storageFeatureRef,
         );
-        const featureName = resolveFeatureName(draftConfig, featureRef);
         const updatedPartialDef = createStoragePartialDefinition(
           featureName,
           userModelName,
@@ -124,7 +123,10 @@ export function StorageDefinitionEditor({
           metadata,
           {
             ...data,
-            storageFeatureRef: featureRef,
+            storageFeatureRef: FeatureUtils.getFeatureIdByNameOrThrow(
+              draftConfig,
+              featureName,
+            ),
           },
           definitionContainer,
         );
