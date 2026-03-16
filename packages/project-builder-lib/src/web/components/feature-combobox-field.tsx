@@ -22,10 +22,15 @@ interface FeatureComboboxFieldProps extends Omit<
   canCreate?: boolean;
 }
 
-function createCreateOption(value: string): { label: string; value: string } {
+function createCreateOption(value: string): {
+  label: string;
+  value: string;
+  isCreate?: boolean;
+} {
   return {
-    label: `Create "${value}"`,
+    label: value,
     value,
+    isCreate: true,
   };
 }
 
@@ -41,6 +46,7 @@ function FeatureComboboxField({
     const baseFeatures = definition.features.map((feature) => ({
       label: feature.name,
       value: feature.id,
+      isCreate: false,
     }));
 
     if (!canCreate) return baseFeatures;
@@ -66,6 +72,9 @@ function FeatureComboboxField({
       onInputValueChange={canCreate ? setSearchQuery : undefined}
       options={featureOptions}
       value={value}
+      renderItemLabel={(item) =>
+        item.isCreate ? `Create "${item.label}"` : item.label
+      }
     />
   );
 }
