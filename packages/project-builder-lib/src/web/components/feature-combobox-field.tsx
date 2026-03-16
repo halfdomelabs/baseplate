@@ -40,7 +40,9 @@ function FeatureComboboxField({
   ...rest
 }: FeatureComboboxFieldProps): React.ReactElement {
   const { definition } = useProjectDefinition();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    value ? FeatureUtils.getFeatureById(definition, value)?.name : '',
+  );
 
   const featureOptions = useMemo(() => {
     const baseFeatures = definition.features.map((feature) => ({
@@ -69,7 +71,8 @@ function FeatureComboboxField({
     <ComboboxField
       placeholder="Select a feature"
       {...rest}
-      onInputValueChange={canCreate ? setSearchQuery : undefined}
+      inputValue={searchQuery}
+      onInputValueChange={setSearchQuery}
       options={featureOptions}
       value={value}
       renderItemLabel={(item) =>
