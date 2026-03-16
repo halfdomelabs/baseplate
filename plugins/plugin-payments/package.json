@@ -1,16 +1,16 @@
 {
   "name": "@baseplate-dev/plugin-payments",
-  "version": "0.1.0",
+  "version": "0.6.4",
   "description": "Payment processing plugins for Baseplate (Stripe)",
   "keywords": [
-    "payments",
-    "stripe",
-    "webhooks",
-    "plugin",
-    "full-stack",
-    "typescript",
     "baseplate",
-    "code-generation"
+    "code-generation",
+    "full-stack",
+    "payments",
+    "plugin",
+    "stripe",
+    "typescript",
+    "webhooks"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -38,29 +38,31 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@hookform/lenses": "0.8.1",
     "@hookform/resolvers": "5.2.2",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.71.1",
+    "react-icons": "5.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@tailwindcss/vite": "catalog:",
@@ -72,15 +74,12 @@
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"

@@ -12,7 +12,7 @@ $git_status\
 $git_state\
 $character"""
 
-command_timeout=1000
+command_timeout = 1000
 
 right_format = "$cmd_duration"
 

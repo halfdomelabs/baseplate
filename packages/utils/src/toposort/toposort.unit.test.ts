@@ -19,10 +19,7 @@ describe('toposort', () => {
       // (Handles cases where edges might involve nodes not in the primary 'nodes' list,
       // although our makeOutgoingEdges prevents this)
       if (sourcePos !== undefined && targetPos !== undefined) {
-        expect(
-          sourcePos,
-          `Dependency violated: ${JSON.stringify(source)} should come before ${JSON.stringify(target)}`,
-        ).toBeLessThan(targetPos);
+        expect(sourcePos).toBeLessThan(targetPos);
       } else {
         // This case should ideally not be reached if input validation is correct
         if (!positions.has(source))

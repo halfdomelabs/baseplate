@@ -1,5 +1,35 @@
 # @baseplate-dev/react-generators
 
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.4
+  - @baseplate-dev/sync@0.6.4
+  - @baseplate-dev/utils@0.6.4
+
+## 0.6.3
+
+### Patch Changes
+
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Add autocomplete, slider, collapsible, and spinner UI components
+
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Extract Sentry into standalone plugin package `@baseplate-dev/plugin-observability` and add migration to auto-enable Sentry plugin on existing projects
+
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Migrate from gql.tada to graphql-code-generator with client-preset
+
+- [#835](https://github.com/halfdomelabs/baseplate/pull/835) [`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931) Thanks [@kingston](https://github.com/kingston)! - Switch generated UI components from radix-ui to @base-ui/react
+  - Replace radix-ui and cmdk dependencies with @base-ui/react in generated projects
+  - Update all generator templates to use base-ui component implementations
+  - Convert asChild prop usage to render prop pattern in admin layout, crud list, and crud edit action generators
+  - Update plugin-storage upload component templates to use Field/FieldError instead of FormItem/FormMessage
+
+- Updated dependencies [[`8072019`](https://github.com/halfdomelabs/baseplate/commit/8072019942287ee35720520d08f517272510c931)]:
+  - @baseplate-dev/sync@0.6.3
+  - @baseplate-dev/core-generators@0.6.3
+  - @baseplate-dev/utils@0.6.3
+
 ## 0.6.2
 
 ### Patch Changes

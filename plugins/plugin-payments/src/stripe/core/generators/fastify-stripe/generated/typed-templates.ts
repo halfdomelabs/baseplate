@@ -6,15 +6,20 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
+import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.js';
+
 const pluginsWebhook = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'plugins',
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    fastifyStripeImports: fastifyStripeImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
   },
   name: 'plugins-webhook',
-  referencedGeneratorTemplates: { service: {}, serviceEvents: {} },
+  projectExports: { stripeWebhookPlugin: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { serviceEventHandlers: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -24,26 +29,7 @@ const pluginsWebhook = createTsTemplateFile({
   variables: {},
 });
 
-const pluginsWebhookTest = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'plugins',
-  importMapProviders: {},
-  name: 'plugins-webhook-test',
-  referencedGeneratorTemplates: {
-    pluginsWebhook: {},
-    service: {},
-    serviceEvents: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/plugins/stripe-webhook.int.test.ts',
-    ),
-  },
-  variables: {},
-});
-
-export const pluginsGroup = { pluginsWebhook, pluginsWebhookTest };
+export const pluginsGroup = { pluginsWebhook };
 
 const service = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -57,24 +43,27 @@ const service = createTsTemplateFile({
   variables: {},
 });
 
-const serviceEvents = createTsTemplateFile({
+export const servicesGroup = { service };
+
+const serviceEventHandlers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
-  importMapProviders: { loggerServiceImports: loggerServiceImportsProvider },
-  name: 'service-events',
-  projectExports: {
-    StripeEventHandler: { isTypeOnly: true },
-    stripeEventService: { isTypeOnly: false },
-  },
+  group: 'webhook-services',
+  importMapProviders: {},
+  name: 'service-event-handlers',
+  projectExports: { stripeEventHandlers: { isTypeOnly: false } },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/services/stripe-events.ts',
+      '../templates/src/services/stripe-event-handlers.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_EVENT_HANDLERS: {} },
 });
 
-export const servicesGroup = { service, serviceEvents };
+export const webhookServicesGroup = { serviceEventHandlers };
 
-export const STRIPE_FASTIFY_STRIPE_TEMPLATES = { pluginsGroup, servicesGroup };
+export const STRIPE_FASTIFY_STRIPE_TEMPLATES = {
+  pluginsGroup,
+  servicesGroup,
+  webhookServicesGroup,
+};

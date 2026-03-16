@@ -9,6 +9,8 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.js';
+
 import { STRIPE_FASTIFY_STRIPE_PATHS } from './template-paths.js';
 import { STRIPE_FASTIFY_STRIPE_TEMPLATES } from './typed-templates.js';
 
@@ -33,6 +35,16 @@ export interface StripeFastifyStripeRenderers {
       >,
     ) => BuilderAction;
   };
+  webhookServicesGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.webhookServicesGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const stripeFastifyStripeRenderers =
@@ -44,6 +56,7 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
   dependencies: {
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    fastifyStripeImports: fastifyStripeImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: STRIPE_FASTIFY_STRIPE_PATHS.provider,
     typescriptFile: typescriptFileProvider,
@@ -54,6 +67,7 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
   run({
     configServiceImports,
     errorHandlerServiceImports,
+    fastifyStripeImports,
     loggerServiceImports,
     paths,
     typescriptFile,
@@ -69,6 +83,8 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   configServiceImports,
                   errorHandlerServiceImports,
+                  fastifyStripeImports,
+                  loggerServiceImports,
                 },
                 generatorPaths: paths,
                 ...options,
@@ -81,8 +97,15 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   configServiceImports,
-                  loggerServiceImports,
                 },
+                ...options,
+              }),
+          },
+          webhookServicesGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: STRIPE_FASTIFY_STRIPE_TEMPLATES.webhookServicesGroup,
+                paths,
                 ...options,
               }),
           },

@@ -1,7 +1,10 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import { findClosestMatch } from '@baseplate-dev/utils';
+import {
+  enhanceErrorWithContext,
+  findClosestMatch,
+} from '@baseplate-dev/utils';
 
 import { discoverGenerators } from '../../template-extractor/discover-generators.js';
 
@@ -39,11 +42,9 @@ export async function resolveGenerator(
 
     return generator.generatorDirectory;
   } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error(
-      `Failed to resolve generator '${generatorName}': ${String(error)}`,
+    throw enhanceErrorWithContext(
+      error,
+      `Failed to resolve generator '${generatorName}'`,
     );
   }
 }

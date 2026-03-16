@@ -30,6 +30,7 @@ export interface ComboboxFieldProps<OptionType>
   disabled?: boolean;
   value?: string | null;
   onChange?: (value: string | null) => void;
+  inputValue?: string;
   onInputValueChange?: (value: string) => void;
 }
 
@@ -45,6 +46,7 @@ function ComboboxField<OptionType>({
   options,
   renderItemLabel,
   onChange,
+  inputValue,
   onInputValueChange,
   getOptionLabel = (val) => (val as { label: string }).label,
   getOptionValue = (val) => (val as { value: string | null }).value,
@@ -66,6 +68,7 @@ function ComboboxField<OptionType>({
         onValueChange={(option) => {
           onChange?.(option ? getOptionValue(option) : null);
         }}
+        inputValue={inputValue}
         onInputValueChange={onInputValueChange}
         disabled={disabled}
         items={options}

@@ -75,14 +75,17 @@ const register = createTsTemplateFile({
     reactSessionImports: reactSessionImportsProvider,
   },
   name: 'register',
-  referencedGeneratorTemplates: { constants: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/routes/auth_/register.tsx',
     ),
   },
-  variables: {},
+  variables: {
+    TPL_NAME_FORM_CONTROL: {},
+    TPL_REGISTER_INPUT: {},
+    TPL_REGISTER_SCHEMA: {},
+  },
 });
 
 const resetPassword = createTsTemplateFile({

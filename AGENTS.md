@@ -74,7 +74,8 @@ Baseplate consists of two main tiers:
 
 ## Key Reminders
 
-- Run `pnpm check` after finishing a new feature or bug fix to validate everything works correctly
+- Run `pnpm check` during development to validate affected packages (formatting, linting, type checking, testing)
+- Only run `pnpm check:full` as a final pass when completely done — it runs everything including knip and metadata sync and is much slower
 - If you are adding a new feature or changing an existing feature, please also add a new Changeset for it in the `.changeset/` directory of the form (keeping things to patch changes for now):
 
   ```markdown

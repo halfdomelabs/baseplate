@@ -17,6 +17,7 @@ export default createPluginModule({
   },
   initialize: ({ authConfig, pluginConfig }, { pluginKey }) => {
     pluginConfig.schemas.set(pluginKey, createAuthPluginDefinitionSchema);
+    authConfig.pluginKey.set(pluginKey);
     authConfig.getAuthConfig.set((definition) => {
       const pluginConfig = PluginUtils.configByKeyOrThrow(
         definition,

@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "async-boundary"
   },
+  "autocomplete.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "autocomplete"
+  },
   "badge.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
@@ -48,6 +53,11 @@
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "circular-progress"
+  },
+  "collapsible.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "collapsible"
   },
   "combobox-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -198,6 +208,16 @@
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "skeleton"
+  },
+  "slider.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "slider"
+  },
+  "spinner.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "spinner"
   },
   "switch-field.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",

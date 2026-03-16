@@ -288,6 +288,7 @@ export type QueryUsersArgs = {
 /** Input type for registerWithEmailPassword mutation */
 export type RegisterWithEmailPasswordInput = {
   email: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
 };
 

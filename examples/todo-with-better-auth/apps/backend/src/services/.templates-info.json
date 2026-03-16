@@ -39,10 +39,10 @@
     "instanceData": {},
     "template": "sentry"
   },
-  "stripe-events.ts": {
+  "stripe-event-handlers.ts": {
     "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
-    "template": "service-events"
+    "template": "service-event-handlers"
   },
   "stripe.ts": {
     "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",

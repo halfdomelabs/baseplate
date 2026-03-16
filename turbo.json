@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalPassThroughEnv": ["PLAYWRIGHT_*", "VITE_*"],
+  "globalPassThroughEnv": ["PLAYWRIGHT_*", "VITE_*", "TMPDIR"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -59,6 +59,14 @@
       "outputLogs": "errors-only"
     },
     "//#prettier:root:write": {
+      "outputLogs": "errors-only"
+    },
+    "//#typecheck:root": {
+      "outputLogs": "errors-only"
+    },
+    "//#packages:dedupe": {
+      "inputs": ["pnpm-lock.yaml"],
+      "outputs": ["pnpm-lock.yaml"],
       "outputLogs": "errors-only"
     }
   }

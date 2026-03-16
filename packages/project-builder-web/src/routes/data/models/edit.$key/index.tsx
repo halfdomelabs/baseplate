@@ -9,6 +9,7 @@ import { ErrorBoundary } from '#src/components/index.js';
 import { useModelForm } from '../-hooks/use-model-form.js';
 import { OriginalModelProvider } from '../-hooks/use-original-model.js';
 import { ModelFieldsForm } from './-components/fields/model-fields-form.js';
+import { ModelIndexesSection } from './-components/model-indexes-section.js';
 import { ModelRelationsSection } from './-components/model-relations-section.js';
 import { ModelUniqueConstraintsSection } from './-components/model-unique-constraints-section.js';
 
@@ -41,6 +42,7 @@ function ModelEditModelPage(): React.JSX.Element {
           <SectionList>
             <ModelRelationsSection control={control} />
             <ModelUniqueConstraintsSection control={control} />
+            <ModelIndexesSection control={control} />
           </SectionList>
           <FormActionBar form={form} />
         </form>

@@ -5,6 +5,7 @@ import type { Control } from 'react-hook-form';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 
+import { ModelFieldIndexBadge } from '../indexes/model-index-badge.js';
 import { ModelPrimaryKeyBadge } from '../primary-key/model-primary-key-badge.js';
 import { ModelRelationsBadge } from '../relations/model-relation-badge.js';
 import { ModelFieldUniqueBadge } from '../unique-constraints/model-unique-constraint-badge.js';
@@ -36,6 +37,14 @@ export function ModelFieldBadges({
         )
         .map((uc) => uc.id) ?? [],
   });
+  const indexes = useWatch({
+    control,
+    name: 'model.indexes',
+    compute: (idxs) =>
+      idxs
+        ?.filter((idx) => idx.fields.some((f) => f.fieldRef === field.id))
+        .map((idx) => idx.id) ?? [],
+  });
   const modelFieldRelations = useWatch({
     control,
     name: 'model.relations',
@@ -46,7 +55,10 @@ export function ModelFieldBadges({
   });
 
   const totalBadges =
-    (isPrimary ? 1 : 0) + uniqueConstraints.length + modelFieldRelations.length;
+    (isPrimary ? 1 : 0) +
+    uniqueConstraints.length +
+    indexes.length +
+    modelFieldRelations.length;
   const autoCollapse = totalBadges > 2;
 
   const badges = [
@@ -62,6 +74,14 @@ export function ModelFieldBadges({
         key={uc}
         control={control}
         constraintId={uc}
+        autoCollapse={autoCollapse}
+      />
+    )),
+    ...indexes.map((idx) => (
+      <ModelFieldIndexBadge
+        key={idx}
+        control={control}
+        indexId={idx}
         autoCollapse={autoCollapse}
       />
     )),

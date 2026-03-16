@@ -5,6 +5,7 @@ import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactComponentsPaths {
   alert: string;
+  autocomplete: string;
   badge: string;
   breadcrumb: string;
   button: string;
@@ -14,6 +15,7 @@ export interface CoreReactComponentsPaths {
   checkboxField: string;
   circularProgress: string;
   cn: string;
+  collapsible: string;
   combobox: string;
   comboboxField: string;
   confirmDialog: string;
@@ -44,6 +46,8 @@ export interface CoreReactComponentsPaths {
   sheet: string;
   sidebar: string;
   skeleton: string;
+  slider: string;
+  spinner: string;
   stylesButton: string;
   stylesInput: string;
   switchComponent: string;
@@ -77,6 +81,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
       providers: {
         coreReactComponentsPaths: {
           alert: `${componentsRoot}/ui/alert.tsx`,
+          autocomplete: `${componentsRoot}/ui/autocomplete.tsx`,
           badge: `${componentsRoot}/ui/badge.tsx`,
           breadcrumb: `${componentsRoot}/ui/breadcrumb.tsx`,
           button: `${componentsRoot}/ui/button.tsx`,
@@ -86,6 +91,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           checkboxField: `${componentsRoot}/ui/checkbox-field.tsx`,
           circularProgress: `${componentsRoot}/ui/circular-progress.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
+          collapsible: `${componentsRoot}/ui/collapsible.tsx`,
           combobox: `${componentsRoot}/ui/combobox.tsx`,
           comboboxField: `${componentsRoot}/ui/combobox-field.tsx`,
           confirmDialog: `${componentsRoot}/ui/confirm-dialog.tsx`,
@@ -116,6 +122,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           sheet: `${componentsRoot}/ui/sheet.tsx`,
           sidebar: `${componentsRoot}/ui/sidebar.tsx`,
           skeleton: `${componentsRoot}/ui/skeleton.tsx`,
+          slider: `${componentsRoot}/ui/slider.tsx`,
+          spinner: `${componentsRoot}/ui/spinner.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
           switchComponent: `${componentsRoot}/ui/switch.tsx`,

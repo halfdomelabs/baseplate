@@ -48,11 +48,11 @@ function DefinitionDiffEntryRow({
             </DialogHeader>
             <div className="max-h-[60vh] overflow-auto">
               {entry.type === 'added' ? (
-                <pre className="whitespace-pre-wrap text-xs">
+                <pre className="text-xs whitespace-pre-wrap">
                   {JSON.stringify(entry.merged, null, 2)}
                 </pre>
               ) : entry.type === 'removed' ? (
-                <pre className="whitespace-pre-wrap text-xs">
+                <pre className="text-xs whitespace-pre-wrap">
                   {JSON.stringify(entry.current, null, 2)}
                 </pre>
               ) : (

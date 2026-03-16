@@ -3,7 +3,7 @@ import {
   readJsonWithSchema,
   writeStablePrettyJson,
 } from '@baseplate-dev/utils/node';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, rename } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { SyncMetadata } from './sync-metadata.js';
@@ -48,6 +48,9 @@ export async function writeSyncMetadata(
   syncMetadata: SyncMetadata,
 ): Promise<void> {
   const syncMetadataPath = path.join(projectDirectory, SYNC_METADATA_PATH);
-  await mkdir(path.dirname(syncMetadataPath), { recursive: true });
-  await writeStablePrettyJson(syncMetadataPath, syncMetadata);
+  const dir = path.dirname(syncMetadataPath);
+  await mkdir(dir, { recursive: true });
+  const tmpPath = path.join(dir, `.sync_result.${Date.now()}.tmp`);
+  await writeStablePrettyJson(tmpPath, syncMetadata);
+  await rename(tmpPath, syncMetadataPath);
 }

@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["scripts/**/*", ".workspace-meta/**/*"]
+  "include": ["scripts/**/*", ".workspace-meta/**/*", "oxlint.config.ts"]
 }

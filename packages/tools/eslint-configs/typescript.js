@@ -45,6 +45,7 @@ export function generateTypescriptEslintConfig(options = {}) {
   ];
   const defaultProjectFiles = [
     'vitest.config.ts',
+    'oxlint.config.ts',
     ...(options.extraDefaultProjectFiles ?? []),
   ];
   return defineConfig(
@@ -167,7 +168,6 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Import-X Configs
-    // @ts-ignore - bug with incompatible types between @types/eslint and typescript eslint config - https://github.com/un-ts/eslint-plugin-import-x/issues/421
     importX.flatConfigs.recommended,
     importX.flatConfigs.typescript,
     {
@@ -291,6 +291,8 @@ export function generateTypescriptEslintConfig(options = {}) {
           'error',
           { additionalTestBlockFunctions: ['test'] },
         ],
+        // Require toThrow with an error message
+        'vitest/require-to-throw-message': 'error',
       },
       settings: {
         vitest: {
@@ -315,6 +317,6 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Global Ignores
-    { ignores: ['dist', 'node_modules'] },
+    { ignores: ['dist', 'node_modules', 'oxlint.config.ts'] },
   );
 }

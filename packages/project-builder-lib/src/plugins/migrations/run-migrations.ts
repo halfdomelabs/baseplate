@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { produce } from 'immer';
 
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
@@ -39,8 +40,9 @@ export function runPluginMigrations(
               migrationResult.updateProjectDefinition(draft);
             }
           } catch (error) {
-            throw new Error(
-              `Error migrating plugin ${pluginDefinition.id} to version ${migration.version}: ${String(error)}`,
+            throw enhanceErrorWithContext(
+              error,
+              `Error migrating plugin ${pluginDefinition.id} to version ${migration.version}`,
             );
           }
         }

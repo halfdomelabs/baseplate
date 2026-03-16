@@ -2,7 +2,10 @@ import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
-import { modelUniqueConstraintEntityType } from '@baseplate-dev/project-builder-lib';
+import {
+  modelIndexEntityType,
+  modelUniqueConstraintEntityType,
+} from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   DropdownMenu,
@@ -21,6 +24,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
 import { ModelFieldBadges } from './badges/model-field-badges.js';
+import { ModelIndexDialog } from './indexes/model-index-dialog.js';
 import { ModelFieldDefaultValueInput } from './model-field-default-value-input.js';
 import { ModelFieldTypeInput } from './model-field-type-input.js';
 import { ModelPrimaryKeyDialog } from './primary-key/model-primary-key-dialog.js';
@@ -52,11 +56,15 @@ function ModelFieldForm({
   });
   const uniqueConstraints =
     useWatch({ control, name: 'model.uniqueConstraints' }) ?? [];
+  const indexes = useWatch({ control, name: 'model.indexes' }) ?? [];
   const isPartOfPrimaryKey = primaryKeyFieldRefs.includes(watchedField.id);
   const hasCompositePrimaryKey = primaryKeyFieldRefs.length > 1;
 
   const ownUniqueConstraints = uniqueConstraints.filter((uc) =>
     uc.fields.some((f) => f.fieldRef === watchedField.id),
+  );
+  const ownIndexes = indexes.filter((idx) =>
+    idx.fields.some((f) => f.fieldRef === watchedField.id),
   );
   const usedRelations =
     watchedRelations?.filter((relation) =>
@@ -82,6 +90,14 @@ function ModelFieldForm({
     ) {
       return `Unable to remove field as it is being used in in a unique constraint`;
     }
+    // check indexes
+    if (
+      indexes.some((idx) =>
+        idx.fields.some((f) => f.fieldRef === watchedField.id),
+      )
+    ) {
+      return `Unable to remove field as it is being used in an index`;
+    }
     return;
   })();
 
@@ -105,6 +121,9 @@ function ModelFieldForm({
   const [uniqueConstriantId, setUniqueConstraintId] = useState<
     string | undefined
   >();
+
+  const [isIndexDialogOpen, setIsIndexDialogOpen] = useState(false);
+  const [indexId, setIndexId] = useState<string | undefined>();
 
   const [isRelationDialogOpen, setIsRelationDialogOpen] = useState(false);
   const [relationId, setRelationId] = useState<string | undefined>();
@@ -209,7 +228,7 @@ function ModelFieldForm({
                     </DropdownMenuItem>
                   )}
                 {ownUniqueConstraints.length > 0 &&
-                  ownUniqueConstraints.map((uc, idx) => (
+                  ownUniqueConstraints.map((uc, ucIdx) => (
                     <DropdownMenuItem
                       key={uc.id}
                       onClick={() => {
@@ -218,7 +237,38 @@ function ModelFieldForm({
                       }}
                     >
                       Edit Unique Constraint{' '}
-                      {ownUniqueConstraints.length > 1 && idx + 1}
+                      {ownUniqueConstraints.length > 1 && ucIdx + 1}
+                    </DropdownMenuItem>
+                  ))}
+                {ownIndexes.length === 0 && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setValue(
+                        'model.indexes',
+                        [
+                          ...indexes,
+                          {
+                            id: modelIndexEntityType.generateNewId(),
+                            fields: [{ fieldRef: watchedField.id }],
+                          },
+                        ],
+                        { shouldDirty: true },
+                      );
+                    }}
+                  >
+                    Add Index
+                  </DropdownMenuItem>
+                )}
+                {ownIndexes.length > 0 &&
+                  ownIndexes.map((ownIdx, idxNum) => (
+                    <DropdownMenuItem
+                      key={ownIdx.id}
+                      onClick={() => {
+                        setIndexId(ownIdx.id);
+                        setIsIndexDialogOpen(true);
+                      }}
+                    >
+                      Edit Index {ownIndexes.length > 1 && idxNum + 1}
                     </DropdownMenuItem>
                   ))}
               </DropdownMenuGroup>
@@ -234,6 +284,12 @@ function ModelFieldForm({
             open={isUniqueConstraintDialogOpen}
             onOpenChange={setIsUniqueConstraintDialogOpen}
             constraintId={uniqueConstriantId}
+          />
+          <ModelIndexDialog
+            control={control}
+            open={isIndexDialogOpen}
+            onOpenChange={setIsIndexDialogOpen}
+            indexId={indexId}
           />
           <ModelRelationDialog
             control={control}

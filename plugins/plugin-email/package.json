@@ -1,14 +1,14 @@
 {
   "name": "@baseplate-dev/plugin-email",
-  "version": "0.6.2",
+  "version": "0.6.4",
   "description": "Contains the email plugin for Baseplate",
   "keywords": [
-    "email",
-    "plugin",
-    "full-stack",
-    "typescript",
     "baseplate",
-    "code-generation"
+    "code-generation",
+    "email",
+    "full-stack",
+    "plugin",
+    "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -36,21 +36,24 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
-    "lint": "eslint .",
+    "lint": "oxlint && eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w -l .",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:vite": "nodemon --watch vite.config.ts --watch \"src/*/plugin.json\" --exec \"vite build --watch\""
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/plugin-queue": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "@hookform/resolvers": "5.2.2",
     "@tanstack/react-router": "1.159.5",
     "react": "catalog:",
@@ -59,8 +62,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@tailwindcss/vite": "catalog:",
@@ -72,16 +73,12 @@
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
+    "oxlint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
-    "@baseplate-dev/utils": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"

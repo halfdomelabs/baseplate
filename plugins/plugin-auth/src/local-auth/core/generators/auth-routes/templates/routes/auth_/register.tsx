@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '$constants';
 import { getApolloErrorCode } from '%apolloErrorImports';
 import { graphql } from '%graphqlImports';
 import {
@@ -41,10 +40,7 @@ export const Route = createFileRoute('/auth_/register')({
   },
 });
 
-const formSchema = z.object({
-  email: z.email().transform((value) => value.toLowerCase()),
-  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
-});
+const formSchema = TPL_REGISTER_SCHEMA;
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -76,10 +72,7 @@ function RegisterPage(): React.JSX.Element {
   const onSubmit = (data: FormData): void => {
     registerWithEmailPassword({
       variables: {
-        input: {
-          email: data.email,
-          password: data.password,
-        },
+        input: TPL_REGISTER_INPUT,
       },
     })
       .then(({ data }) => {
@@ -121,13 +114,14 @@ function RegisterPage(): React.JSX.Element {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <InputFieldController
               control={control}
               name="email"
               type="email"
               autoComplete="email"
               placeholder="user@example.com"
+              label="Email"
             />
             <InputFieldController
               control={control}
@@ -135,7 +129,9 @@ function RegisterPage(): React.JSX.Element {
               type="password"
               autoComplete="new-password"
               placeholder="Password"
+              label="Password"
             />
+            <TPL_NAME_FORM_CONTROL />
             <Button type="submit" className="w-full" disabled={loading}>
               Register
             </Button>

@@ -24,6 +24,7 @@ import {
   modelEnumEntityType,
   modelEnumValueEntityType,
   modelForeignRelationEntityType,
+  modelIndexEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelTransformerEntityType,
@@ -40,7 +41,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
     };
 
     const defaultOptionsSchema = z
-      .object({ default: z.string().optional() })
+      .object({ default: z.string().default('') })
       .default({ default: '' });
 
     const union = z.discriminatedUnion('type', [
@@ -54,7 +55,7 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
         type: z.literal('uuid'),
         options: z
           .object({
-            default: z.string().optional(),
+            default: z.string().default(''),
             genUuid: z.boolean().optional(),
           })
           .default({ default: '' }),
@@ -255,6 +256,41 @@ export type ModelUniqueConstraintConfig = def.InferOutput<
 
 export type ModelUniqueConstraintConfigInput = def.InferInput<
   typeof createModelUniqueConstraintSchema
+>;
+
+export const createModelIndexSchema = definitionSchemaWithSlots(
+  { modelSlot: modelEntityType },
+  (ctx, { modelSlot }) =>
+    ctx.withEnt(
+      z.object({
+        id: z.string(),
+        fields: z.array(
+          z.object({
+            fieldRef: ctx.withRef({
+              type: modelScalarFieldEntityType,
+              onDelete: 'RESTRICT',
+              parentSlot: modelSlot,
+            }),
+          }),
+        ),
+      }),
+      {
+        type: modelIndexEntityType,
+        parentSlot: modelSlot,
+        getNameResolver(value) {
+          return createDefinitionEntityNameResolver({
+            idsToResolve: { fields: value.fields.map((f) => f.fieldRef) },
+            resolveName: (entityNames) => entityNames.fields.join('_'),
+          });
+        },
+      },
+    ),
+);
+
+export type ModelIndexConfig = def.InferOutput<typeof createModelIndexSchema>;
+
+export type ModelIndexConfigInput = def.InferInput<
+  typeof createModelIndexSchema
 >;
 
 /**
@@ -503,6 +539,9 @@ export const createModelBaseSchema = definitionSchemaWithSlots(
             .min(1),
           uniqueConstraints: z
             .array(createModelUniqueConstraintSchema(ctx, slots))
+            .apply(withDefault([])),
+          indexes: z
+            .array(createModelIndexSchema(ctx, slots))
             .apply(withDefault([])),
         }),
         service: createModelServiceSchema(ctx, slots).apply(withDefault({})),

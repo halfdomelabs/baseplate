@@ -2,12 +2,20 @@
 
 import type { Stripe } from 'stripe';
 
-import { stripe } from '$service';
-import { stripeEventService } from '$serviceEvents';
+import { stripeEventHandlers } from '$serviceEventHandlers';
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
+import { stripe } from '%fastifyStripeImports';
+import { logger } from '%loggerServiceImports';
 import fp from 'fastify-plugin';
 
+/**
+ * Constructs and verifies a Stripe event from the raw webhook body.
+ *
+ * @param rawBody - The raw request body.
+ * @param signature - The Stripe signature header.
+ * @returns The verified Stripe event.
+ */
 async function getStripeEvent(
   rawBody: string | Buffer = '',
   signature: string | string[] = '',
@@ -24,6 +32,7 @@ async function getStripeEvent(
   }
 }
 
+/** Fastify plugin that handles incoming Stripe webhook events. */
 export const stripeWebhookPlugin = fp(
   (fastify, opts, done) => {
     fastify.post('/webhooks/stripe', {
@@ -33,7 +42,13 @@ export const stripeWebhookPlugin = fp(
 
         const event = await getStripeEvent(req.rawBody, signature);
 
-        await stripeEventService.handleStripeEvent(event);
+        const handler = stripeEventHandlers[event.type];
+
+        if (handler) {
+          await handler(event);
+        } else {
+          logger.info(`No handler registered for event type ${event.type}`);
+        }
 
         await reply.send({ success: true });
       },
