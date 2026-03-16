@@ -1,5 +1,7 @@
 import type { PartialProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
 
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+
 import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
 export function createStoragePartialDefinition(
@@ -7,6 +9,7 @@ export function createStoragePartialDefinition(
   userModelName: string,
 ): PartialProjectDefinitionInput {
   return {
+    features: FeatureUtils.createPartialFeatures(storageFeatureName),
     models: [
       {
         name: STORAGE_MODELS.file,

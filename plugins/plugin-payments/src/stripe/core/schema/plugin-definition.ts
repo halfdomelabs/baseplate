@@ -5,6 +5,7 @@ import {
   createEntityType,
   definitionSchema,
   featureEntityType,
+  withFix,
 } from '@baseplate-dev/project-builder-lib';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -54,13 +55,18 @@ export const createStripePluginDefinitionSchema = definitionSchema((ctx) => {
           .array(billingPlanSchema)
           .default([])
           .superRefine((plans, refinementCtx) => {
-            const keys = plans.map((p) => p.key);
-            const duplicates = keys.filter((v, i, a) => a.indexOf(v) !== i);
-            if (duplicates.length > 0) {
-              refinementCtx.addIssue({
-                code: 'custom',
-                message: `Duplicate plan key(s): ${duplicates.join(', ')}`,
-              });
+            const seen = new Set<string>();
+            for (const [i, plan] of plans.entries()) {
+              const { key } = plan;
+              if (seen.has(key)) {
+                refinementCtx.addIssue({
+                  code: 'custom',
+                  message: `Duplicate plan key: ${key}`,
+                  path: [i, 'key'],
+                });
+                break;
+              }
+              seen.add(key);
             }
           }),
       })
@@ -73,15 +79,19 @@ export const createStripePluginDefinitionSchema = definitionSchema((ctx) => {
             path: ['featureRef'],
           });
         }
-        if (billing.enabled && billing.plans.length === 0) {
-          refinementCtx.addIssue({
-            code: 'custom',
-            message: 'At least one plan is required when billing is enabled.',
-            path: ['plans'],
-          });
-        }
       })
-      .prefault({ enabled: false, plans: [] }),
+      .apply(
+        withFix((value) => {
+          if (!value.enabled) {
+            return {
+              enabled: false,
+              featureRef: undefined,
+              plans: [],
+            };
+          }
+          return value;
+        }),
+      ),
   });
 });
 

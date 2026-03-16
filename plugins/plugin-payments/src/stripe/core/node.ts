@@ -10,7 +10,6 @@ import type { StripePluginDefinition } from './schema/plugin-definition.js';
 
 import { fastifyStripeGenerator } from './generators/fastify-stripe/index.js';
 import { billingModuleGenerator } from './generators/stripe/billing-module/index.js';
-import { billingWebhookGenerator } from './generators/stripe/billing-webhook/index.js';
 
 export default createPluginModule({
   name: 'node',
@@ -34,9 +33,6 @@ export default createPluginModule({
 
           const { billing } = config;
           if (billing.enabled && billing.featureRef) {
-            appCompiler.addRootChildren({
-              billingWebhook: billingWebhookGenerator({}),
-            });
             appCompiler.addChildrenToFeature(billing.featureRef, {
               billingModule: billingModuleGenerator({
                 plans: billing.plans.map((p) => ({

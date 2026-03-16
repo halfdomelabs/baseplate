@@ -5,6 +5,8 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { stripeWebhookConfigProvider } from '#src/stripe/core/generators/fastify-stripe/index.js';
+
 import { STRIPE_BILLING_MODULE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -31,6 +33,30 @@ export const billingModuleGenerator = createGenerator({
     paths: STRIPE_BILLING_MODULE_GENERATED.paths.task,
     imports: STRIPE_BILLING_MODULE_GENERATED.imports.task,
     renderers: STRIPE_BILLING_MODULE_GENERATED.renderers.task,
+    webhookHandlers: createGeneratorTask({
+      dependencies: {
+        stripeWebhookConfig: stripeWebhookConfigProvider,
+        paths: STRIPE_BILLING_MODULE_GENERATED.paths.provider,
+      },
+      run({ stripeWebhookConfig, paths }) {
+        const handlerFragment = TsCodeUtils.importFragment(
+          'handleSubscriptionEvent',
+          paths.billingService,
+        );
+        stripeWebhookConfig.eventHandlers.set(
+          'customer.subscription.created',
+          handlerFragment,
+        );
+        stripeWebhookConfig.eventHandlers.set(
+          'customer.subscription.updated',
+          handlerFragment,
+        );
+        stripeWebhookConfig.eventHandlers.set(
+          'customer.subscription.deleted',
+          handlerFragment,
+        );
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: STRIPE_BILLING_MODULE_GENERATED.renderers.provider,

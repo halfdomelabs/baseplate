@@ -12,8 +12,10 @@ export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
  * event, compose the logic within the handler function.
  */
 export const stripeEventHandlers: Partial<Record<string, StripeEventHandler>> =
+  /* TPL_EVENT_HANDLERS:START */
   {
     'customer.subscription.created': handleSubscriptionEvent,
-    'customer.subscription.updated': handleSubscriptionEvent,
     'customer.subscription.deleted': handleSubscriptionEvent,
+    'customer.subscription.updated': handleSubscriptionEvent,
   };
+/* TPL_EVENT_HANDLERS:END */

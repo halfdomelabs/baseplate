@@ -22,10 +22,15 @@ interface FeatureComboboxFieldProps extends Omit<
   canCreate?: boolean;
 }
 
-function createCreateOption(value: string): { label: string; value: string } {
+function createCreateOption(value: string): {
+  label: string;
+  value: string;
+  isCreate?: boolean;
+} {
   return {
-    label: `Create "${value}"`,
+    label: value,
     value,
+    isCreate: true,
   };
 }
 
@@ -35,12 +40,15 @@ function FeatureComboboxField({
   ...rest
 }: FeatureComboboxFieldProps): React.ReactElement {
   const { definition } = useProjectDefinition();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    value ? FeatureUtils.getFeatureById(definition, value)?.name : '',
+  );
 
   const featureOptions = useMemo(() => {
     const baseFeatures = definition.features.map((feature) => ({
       label: feature.name,
       value: feature.id,
+      isCreate: false,
     }));
 
     if (!canCreate) return baseFeatures;
@@ -63,9 +71,13 @@ function FeatureComboboxField({
     <ComboboxField
       placeholder="Select a feature"
       {...rest}
-      onInputValueChange={canCreate ? setSearchQuery : undefined}
+      inputValue={searchQuery}
+      onInputValueChange={setSearchQuery}
       options={featureOptions}
       value={value}
+      renderItemLabel={(item) =>
+        item.isCreate ? `Create "${item.label}"` : item.label
+      }
     />
   );
 }
