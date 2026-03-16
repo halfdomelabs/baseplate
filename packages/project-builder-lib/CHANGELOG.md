@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.6.4
+
+### Patch Changes
+
+- [#837](https://github.com/halfdomelabs/baseplate/pull/837) [`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a) Thanks [@kingston](https://github.com/kingston)! - Add `resolveFeatureName`, `createPartialFeatures`, and `getFeatureIdByNameOrThrow` to `FeatureUtils`.
+
+- Updated dependencies [[`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a)]:
+  - @baseplate-dev/ui-components@0.6.4
+  - @baseplate-dev/sync@0.6.4
+  - @baseplate-dev/utils@0.6.4
+
 ## 0.6.3
 
 ### Patch Changes

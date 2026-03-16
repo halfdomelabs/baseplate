@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies [[`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a)]:
+  - @baseplate-dev/project-builder-lib@0.6.4
+  - @baseplate-dev/project-builder-web@0.6.4
+  - @baseplate-dev/project-builder-common@0.6.4
+  - @baseplate-dev/project-builder-server@0.6.4
+  - @baseplate-dev/utils@0.6.4
+
 ## 0.6.3
 
 ### Patch Changes
