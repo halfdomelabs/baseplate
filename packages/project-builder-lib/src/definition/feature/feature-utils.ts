@@ -133,6 +133,17 @@ function getFeatureIdByNameOrDefault(
   return getFeatureByName(projectDefinition, name)?.id ?? name;
 }
 
+function resolveFeatureName(
+  projectDefinition: ProjectDefinition,
+  featureRef: string | null | undefined,
+): string {
+  if (!featureRef) return '';
+  if (featureEntityType.isId(featureRef)) {
+    return getFeaturePathById(projectDefinition, featureRef);
+  }
+  return featureRef;
+}
+
 export const FeatureUtils = {
   getRootFeatures,
   getFeatureById,
@@ -147,4 +158,5 @@ export const FeatureUtils = {
   getFeatureByName,
   getFeatureIdByNameOrThrow,
   getFeatureIdByNameOrDefault,
+  resolveFeatureName,
 };

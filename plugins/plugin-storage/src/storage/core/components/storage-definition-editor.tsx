@@ -5,7 +5,6 @@ import {
   applyMergedDefinition,
   authModelsSpec,
   diffDefinition,
-  featureEntityType,
   FeatureUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -35,19 +34,6 @@ import { createStoragePartialDefinition } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
 import FileCategoryEditorForm from './file-category-editor-form.js';
-
-function resolveFeatureName(
-  definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
-  featureRef: string | null | undefined,
-): string {
-  if (!featureRef) {
-    return '';
-  }
-  if (featureEntityType.isId(featureRef)) {
-    return FeatureUtils.getFeaturePathById(definition, featureRef);
-  }
-  return featureRef;
-}
 
 export function StorageDefinitionEditor({
   definition: pluginMetadata,
@@ -86,7 +72,10 @@ export function StorageDefinitionEditor({
   const authModels = definitionContainer.pluginStore.use(authModelsSpec);
   const userModelName = authModels.getAuthModelsOrThrow(definition).user;
 
-  const storageFeatureName = resolveFeatureName(definition, storageFeatureRef);
+  const storageFeatureName = FeatureUtils.resolveFeatureName(
+    definition,
+    storageFeatureRef,
+  );
 
   const partialDef = useMemo(
     () => createStoragePartialDefinition(storageFeatureName, userModelName),
@@ -106,7 +95,7 @@ export function StorageDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureName = resolveFeatureName(
+        const featureName = FeatureUtils.resolveFeatureName(
           draftConfig,
           data.storageFeatureRef,
         );

@@ -4,7 +4,6 @@ import type React from 'react';
 import {
   applyMergedDefinition,
   diffDefinition,
-  featureEntityType,
   FeatureUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -34,19 +33,6 @@ import { createRateLimitPartialDefinition } from '../schema/models.js';
 import { createRateLimitPluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
-
-function resolveFeatureName(
-  definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
-  featureRef: string | null | undefined,
-): string {
-  if (!featureRef) {
-    return '';
-  }
-  if (featureEntityType.isId(featureRef)) {
-    return FeatureUtils.getFeaturePathById(definition, featureRef);
-  }
-  return featureRef;
-}
 
 export function RateLimitDefinitionEditor({
   definition: pluginMetadata,
@@ -90,7 +76,7 @@ export function RateLimitDefinitionEditor({
     const featureRef = pluginConfig?.rateLimitFeatureRef ?? '';
     if (!featureRef) return undefined;
 
-    const featureName = resolveFeatureName(definition, featureRef);
+    const featureName = FeatureUtils.resolveFeatureName(definition, featureRef);
     const partialDef = createRateLimitPartialDefinition(featureName);
 
     return diffDefinition(
@@ -103,7 +89,7 @@ export function RateLimitDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureName = resolveFeatureName(
+        const featureName = FeatureUtils.resolveFeatureName(
           draftConfig,
           data.rateLimitFeatureRef,
         );
