@@ -22,6 +22,7 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
+  SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
@@ -63,6 +64,7 @@ export function LocalAuthDefinitionEditor({
     return {
       initialUserRoles: [],
       userAdminRoles: [],
+      requireNameOnRegistration: false,
     } satisfies LocalAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
 
@@ -188,6 +190,25 @@ export function LocalAuthDefinitionEditor({
                     control={control}
                     options={roles}
                     description="Roles that can manage users and assign roles to other users."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Registration Settings
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    Configure what information is collected during user
+                    registration.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <SwitchFieldController
+                    label="Require Name on Registration"
+                    name="requireNameOnRegistration"
+                    control={control}
+                    description="When enabled, users must provide their name when registering."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

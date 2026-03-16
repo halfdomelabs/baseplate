@@ -34,6 +34,7 @@ const emailPasswordSchema = z.object({
     .max(PASSWORD_MAX_LENGTH)
     .transform((value) => value.toLowerCase()),
   password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
+  name: z.string().min(1).max(100).optional(),
 });
 
 /**
@@ -67,11 +68,17 @@ export async function createUserWithEmailAndPassword({
   input: {
     email: string;
     password: string;
+    name?: string;
   };
 }): Promise<User> {
-  const { email, password } = await emailPasswordSchema
+  const { email, password, name } = await emailPasswordSchema
     .parseAsync(input)
     .catch(handleZodRequestValidationError);
+  /* TPL_NAME_REQUIRED_CHECK:START */
+  if (!name) {
+    throw new BadRequestError('Name is required', 'name-required');
+  }
+  /* TPL_NAME_REQUIRED_CHECK:END */
   // check if user with that email already exists
   const existingUser = await prisma.userAccount.findUnique({
     where: {
@@ -90,6 +97,7 @@ export async function createUserWithEmailAndPassword({
   const user = await prisma.user.create({
     data: {
       email,
+      name,
       accounts: {
         create: {
           accountId: email,
@@ -110,6 +118,7 @@ export async function registerUserWithEmailAndPassword({
   input: {
     email: string;
     password: string;
+    name?: string;
   };
   context: RequestServiceContext;
 }): Promise<{ session: UserSessionPayload; user: User }> {

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-payments",
-  "version": "0.1.0",
+  "version": "0.6.3",
   "description": "Payment processing plugins for Baseplate (Stripe)",
   "keywords": [
     "baseplate",
@@ -50,17 +50,19 @@
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@hookform/lenses": "0.8.1",
     "@hookform/resolvers": "5.2.2",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.71.1",
+    "react-icons": "5.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@tailwindcss/vite": "catalog:",
@@ -78,10 +80,6 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "@baseplate-dev/project-builder-lib": "workspace:*",
-    "@baseplate-dev/sync": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"

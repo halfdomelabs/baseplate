@@ -5,12 +5,14 @@
       {
         "path": "src/modules/accounts/users/services/user.data-service.int.test.ts"
       },
+      { "path": "src/modules/billing/services/billing.service.int.test.ts" },
       { "path": "src/modules/storage/services/clean-unused-files.int.test.ts" },
       { "path": "src/modules/storage/utils/mime.unit.test.ts" },
       {
         "path": "src/modules/todos/authorizers/todo-item.query-filter.int.test.ts"
       },
       { "path": "src/modules/todos/services/todo-item-service.int.test.ts" },
+      { "path": "src/plugins/stripe-webhook.int.test.ts" },
       { "path": "src/services/bullmq.service.int.test.ts" },
       { "path": "src/services/sentry.e2e.test.ts" },
       { "path": "src/services/sentry.instrument.test-helper.ts" },

@@ -1,0 +1,12 @@
+{
+  "billing-config.ts": {
+    "generator": "@baseplate-dev/plugin-payments#stripe/billing-module",
+    "instanceData": {},
+    "template": "billing-config"
+  },
+  "billing.service.ts": {
+    "generator": "@baseplate-dev/plugin-payments#stripe/billing-module",
+    "instanceData": {},
+    "template": "billing-service"
+  }
+}

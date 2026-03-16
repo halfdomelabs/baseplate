@@ -17,11 +17,15 @@ builder.mutationField('registerWithEmailPassword', (t) =>
     },
     input: {
       email: t.input.field({ required: true, type: 'String' }),
+      name: t.input.field({ required: false, type: 'String' }),
       password: t.input.field({ required: true, type: 'String' }),
     },
     resolve: async (root, { input }, context) =>
       registerUserWithEmailAndPassword({
-        input,
+        input: {
+          ...input,
+          name: input.name ?? undefined,
+        },
         context,
       }),
   }),

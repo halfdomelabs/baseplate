@@ -80,6 +80,8 @@ export default createPluginModule({
                     definitionContainer.nameFromId(role),
                   ),
                   devWebDomainPort,
+                  requireNameOnRegistration:
+                    localAuthDefinition.requireNameOnRegistration,
                 }),
                 hasher: passwordHasherServiceGenerator({}),
               },
@@ -90,13 +92,21 @@ export default createPluginModule({
       {
         pluginKey,
         appType: webAppEntryType,
-        compile: ({ appCompiler }) => {
+        compile: ({ projectDefinition, appCompiler }) => {
+          const localAuthDefinition = PluginUtils.configByKeyOrThrow(
+            projectDefinition,
+            pluginKey,
+          ) as LocalAuthPluginDefinition;
+
           appCompiler.addRootChildren({
             authApollo: authApolloGenerator({}),
             reactAuth: reactAuthGenerator({}),
             authHooks: authHooksGenerator({}),
             reactSession: reactSessionGenerator({}),
-            authRoutes: authRoutesGenerator({}),
+            authRoutes: authRoutesGenerator({
+              requireNameOnRegistration:
+                localAuthDefinition.requireNameOnRegistration,
+            }),
           });
         },
       },
