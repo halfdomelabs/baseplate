@@ -103,9 +103,12 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/auth_/register.tsx",
-      "referencedGeneratorTemplates": ["constants"],
       "sourceFile": "routes/auth_/register.tsx",
-      "variables": {}
+      "variables": {
+        "TPL_NAME_FORM_CONTROL": {},
+        "TPL_REGISTER_INPUT": {},
+        "TPL_REGISTER_SCHEMA": {}
+      }
     },
     "reset-password": {
       "type": "ts",

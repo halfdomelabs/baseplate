@@ -94,7 +94,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.2",
+  "cliVersion": "0.6.3",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
@@ -320,7 +320,7 @@
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
@@ -876,7 +876,11 @@
   ],
   "plugins": [
     {
-      "config": { "initialUserRoles": ["admin"], "userAdminRoles": ["admin"] },
+      "config": {
+        "initialUserRoles": ["admin"],
+        "requireNameOnRegistration": true,
+        "userAdminRoles": ["admin"]
+      },
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
       "packageName": "@baseplate-dev/plugin-auth",

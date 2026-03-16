@@ -126,7 +126,7 @@ function LoginPage(): React.JSX.Element {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <InputFieldController
               control={control}
               name="email"

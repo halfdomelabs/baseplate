@@ -162,6 +162,7 @@ type Query {
 """Input type for registerWithEmailPassword mutation"""
 input RegisterWithEmailPasswordInput {
   email: String!
+  name: String
   password: String!
 }
 
