@@ -2,8 +2,6 @@
 
 import type Stripe from 'stripe';
 
-import { handleSubscriptionEvent } from '%billingModuleImports';
-
 /** Handler function for a Stripe webhook event. */
 export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
 
@@ -14,8 +12,4 @@ export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
  * event, compose the logic within the handler function.
  */
 export const stripeEventHandlers: Partial<Record<string, StripeEventHandler>> =
-  {
-    'customer.subscription.created': handleSubscriptionEvent,
-    'customer.subscription.updated': handleSubscriptionEvent,
-    'customer.subscription.deleted': handleSubscriptionEvent,
-  };
+  TPL_EVENT_HANDLERS;

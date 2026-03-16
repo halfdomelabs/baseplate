@@ -21,6 +21,7 @@ import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } 
 const descriptorSchema = z.object({
   adminRoles: z.array(z.string()),
   devWebDomainPort: z.number(),
+  requireNameOnRegistration: z.boolean(),
 });
 
 /**
@@ -30,7 +31,11 @@ export const authEmailPasswordGenerator = createGenerator({
   name: 'local-auth/core/auth-email-password',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ adminRoles, devWebDomainPort }) => ({
+  buildTasks: ({
+    adminRoles,
+    devWebDomainPort,
+    requireNameOnRegistration,
+  }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -90,6 +95,13 @@ export const authEmailPasswordGenerator = createGenerator({
                       'PasswordChangedEmail',
                       transactionalLibPackageName,
                     ),
+                  },
+                  servicesUserPassword: {
+                    TPL_NAME_REQUIRED_CHECK: requireNameOnRegistration
+                      ? tsCodeFragment(
+                          "if (!name) {\n    throw new BadRequestError('Name is required', 'name-required');\n  }",
+                        )
+                      : '',
                   },
                 },
               }),

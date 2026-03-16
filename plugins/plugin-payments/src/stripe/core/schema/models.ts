@@ -1,5 +1,7 @@
 import type { PartialProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
 
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+
 /** Model name constants for billing entities. */
 const BILLING_MODELS = {
   billingAccount: 'BillingAccount',
@@ -26,6 +28,7 @@ export function createBillingPartialDefinition(
   userModelName: string,
 ): PartialProjectDefinitionInput {
   return {
+    features: FeatureUtils.createPartialFeatures(featureName),
     enums: [
       {
         name: BILLING_ENUMS.billingSubscriptionStatus,

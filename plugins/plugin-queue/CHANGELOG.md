@@ -1,5 +1,17 @@
 # @baseplate-dev/plugin-queue
 
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies [[`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a), [`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a)]:
+  - @baseplate-dev/ui-components@0.6.4
+  - @baseplate-dev/project-builder-lib@0.6.4
+  - @baseplate-dev/core-generators@0.6.4
+  - @baseplate-dev/fastify-generators@0.6.4
+  - @baseplate-dev/sync@0.6.4
+  - @baseplate-dev/utils@0.6.4
+
 ## 0.6.3
 
 ### Patch Changes

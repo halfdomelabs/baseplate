@@ -42,10 +42,11 @@ export const Route = createFileRoute('/auth_/register')({
   },
 });
 
-const formSchema = z.object({
+const formSchema = /* TPL_REGISTER_SCHEMA:START */ z.object({
   email: z.email().transform((value) => value.toLowerCase()),
+  name: z.string().min(1).max(100),
   password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
-});
+}); /* TPL_REGISTER_SCHEMA:END */
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -77,10 +78,11 @@ function RegisterPage(): React.JSX.Element {
   const onSubmit = (data: FormData): void => {
     registerWithEmailPassword({
       variables: {
-        input: {
+        input: /* TPL_REGISTER_INPUT:START */ {
           email: data.email,
+          name: data.name,
           password: data.password,
-        },
+        } /* TPL_REGISTER_INPUT:END */,
       },
     })
       .then(({ data }) => {
@@ -122,13 +124,14 @@ function RegisterPage(): React.JSX.Element {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <InputFieldController
               control={control}
               name="email"
               type="email"
               autoComplete="email"
               placeholder="user@example.com"
+              label="Email"
             />
             <InputFieldController
               control={control}
@@ -136,7 +139,18 @@ function RegisterPage(): React.JSX.Element {
               type="password"
               autoComplete="new-password"
               placeholder="Password"
+              label="Password"
             />
+            {/* TPL_NAME_FORM_CONTROL:START */}
+            <InputFieldController
+              control={control}
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Name"
+              label="Name"
+            />
+            {/* TPL_NAME_FORM_CONTROL:END */}
             <Button type="submit" className="w-full" disabled={loading}>
               Register
             </Button>

@@ -127,7 +127,7 @@ const servicesUserPassword = createTsTemplateFile({
       '../templates/module/services/user-password.service.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_NAME_REQUIRED_CHECK: {} },
 });
 
 export const moduleGroup = {
