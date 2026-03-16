@@ -40,7 +40,7 @@
     "template": "sentry"
   },
   "stripe-event-handlers.ts": {
-    "generator": "@baseplate-dev/plugin-payments#stripe/billing-webhook",
+    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "service-event-handlers"
   },
