@@ -266,10 +266,99 @@ function resolveNestedRelations(
 }
 
 /**
+ * Resolve a local relation for relation filter (FK is on this model).
+ * localRef = field on this model, foreignRef = field on the foreign model.
+ */
+function resolveLocalRelationFilter(
+  appBuilder: BackendAppEntryBuilder,
+  model: ModelConfig,
+  relation: ModelConfig['model']['relations'][number],
+): ResolvedRelationFilter {
+  if (relation.references.length !== 1) {
+    throw new Error(
+      `Relation '${relation.name}' on model '${model.name}' has ${relation.references.length} FK references. Relation filters only support single-key relations.`,
+    );
+  }
+
+  const foreignKeyFieldName = appBuilder.nameFromId(
+    relation.references[0].foreignRef,
+  );
+  if (!foreignKeyFieldName) {
+    throw new Error(
+      `Could not resolve foreign FK field for relation '${relation.name}' on model '${model.name}'`,
+    );
+  }
+
+  const localFieldName = appBuilder.nameFromId(relation.references[0].localRef);
+  if (!localFieldName) {
+    throw new Error(
+      `Could not resolve local field for relation '${relation.name}' on model '${model.name}'`,
+    );
+  }
+
+  const foreignModel = ModelUtils.byIdOrThrow(
+    appBuilder.projectDefinition,
+    relation.modelRef,
+  );
+
+  return {
+    prismaAccessor: lowercaseFirstChar(foreignModel.name),
+    foreignKeyFieldName,
+    localFieldName,
+  };
+}
+
+/**
+ * Resolve a foreign/reverse relation for relation filter (FK is on the other model).
+ * The relation is defined on otherModel, so:
+ * - localRef = FK field on otherModel (becomes foreignKeyFieldName)
+ * - foreignRef = join field on current model (becomes localFieldName)
+ */
+function resolveForeignRelationFilter(
+  appBuilder: BackendAppEntryBuilder,
+  _model: ModelConfig,
+  otherModel: ModelConfig,
+  relation: ModelConfig['model']['relations'][number],
+): ResolvedRelationFilter {
+  if (relation.references.length !== 1) {
+    throw new Error(
+      `Foreign relation '${relation.foreignRelationName}' (via ${otherModel.name}.${relation.name}) has ${relation.references.length} FK references. Relation filters only support single-key relations.`,
+    );
+  }
+
+  // For foreign relations, the mapping is inverted:
+  // localRef on the relation = FK on the other model (e.g., blogId on BlogPost)
+  // foreignRef on the relation = join field on the current model (e.g., id on Blog)
+  const foreignKeyFieldName = appBuilder.nameFromId(
+    relation.references[0].localRef,
+  );
+  if (!foreignKeyFieldName) {
+    throw new Error(
+      `Could not resolve FK field for foreign relation '${relation.foreignRelationName}' on model '${otherModel.name}'`,
+    );
+  }
+
+  const localFieldName = appBuilder.nameFromId(
+    relation.references[0].foreignRef,
+  );
+  if (!localFieldName) {
+    throw new Error(
+      `Could not resolve join field for foreign relation '${relation.foreignRelationName}'`,
+    );
+  }
+
+  return {
+    prismaAccessor: lowercaseFirstChar(otherModel.name),
+    foreignKeyFieldName,
+    localFieldName,
+  };
+}
+
+/**
  * Resolve relation info for relation filter expressions (exists/all) on a model.
  *
- * Unlike nested hasRole which uses a local FK field, relation filters target
- * foreign (1:many) relations where the FK is on the foreign model.
+ * Searches both local relations (FK on this model) and foreign/reverse relations
+ * (FK on other models pointing to this model via foreignRelationName).
  */
 function resolveRelationFilters(
   appBuilder: BackendAppEntryBuilder,
@@ -283,48 +372,49 @@ function resolveRelationFilters(
       continue;
     }
 
-    const relation = model.model.relations.find((r) => r.name === relationName);
-    if (!relation) {
-      throw new Error(
-        `Relation '${relationName}' not found on model '${model.name}'`,
-      );
-    }
-
-    if (relation.references.length !== 1) {
-      throw new Error(
-        `Relation '${relationName}' on model '${model.name}' has ${relation.references.length} foreign key references. Relation filters only support single-key relations.`,
-      );
-    }
-
-    const foreignKeyFieldName = appBuilder.nameFromId(
-      relation.references[0].foreignRef,
+    // Try local relations first (FK on this model)
+    const localRelation = model.model.relations.find(
+      (r) => r.name === relationName,
     );
-    if (!foreignKeyFieldName) {
-      throw new Error(
-        `Could not resolve foreign FK field for relation '${relationName}' on model '${model.name}'`,
+
+    if (localRelation) {
+      // Local relation: localRef is on this model, foreignRef is on the foreign model
+      resolvedFilters.set(
+        relationName,
+        resolveLocalRelationFilter(appBuilder, model, localRelation),
       );
+      continue;
     }
 
-    const localFieldName = appBuilder.nameFromId(
-      relation.references[0].localRef,
-    );
-    if (!localFieldName) {
-      throw new Error(
-        `Could not resolve local field for relation '${relationName}' on model '${model.name}'`,
+    // Search foreign/reverse relations: other models that point TO this model
+    let found = false;
+    for (const otherModel of appBuilder.projectDefinition.models) {
+      const foreignRel = otherModel.model.relations.find(
+        (r) =>
+          r.modelRef === model.id && r.foreignRelationName === relationName,
       );
+      if (foreignRel) {
+        // Foreign relation: the relation is defined on otherModel
+        // localRef = FK field on otherModel, foreignRef = join field on current model
+        resolvedFilters.set(
+          relationName,
+          resolveForeignRelationFilter(
+            appBuilder,
+            model,
+            otherModel,
+            foreignRel,
+          ),
+        );
+        found = true;
+        break;
+      }
     }
 
-    const foreignModel = ModelUtils.byIdOrThrow(
-      appBuilder.projectDefinition,
-      relation.modelRef,
-    );
-    const prismaAccessor = lowercaseFirstChar(foreignModel.name);
-
-    resolvedFilters.set(relationName, {
-      prismaAccessor,
-      foreignKeyFieldName,
-      localFieldName,
-    });
+    if (!found) {
+      throw new Error(
+        `Relation '${relationName}' not found on model '${model.name}' (checked both local and foreign relations)`,
+      );
+    }
   }
 
   return resolvedFilters;

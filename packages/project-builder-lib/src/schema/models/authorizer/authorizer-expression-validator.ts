@@ -37,6 +37,8 @@ export interface RelationValidationInfo {
   foreignScalarFieldNames?: Set<string>;
   /** Field type map for the foreign model (for type-checking relation filter condition values) */
   foreignFieldTypes?: Map<string, string>;
+  /** Whether this is a local relation (FK on this model) or foreign/reverse (FK on the other model) */
+  direction: 'local' | 'foreign';
 }
 
 /**
@@ -399,29 +401,87 @@ export function validateAuthorizerExpression(
 }
 
 /**
- * Build relation validation info from model relations and the full list of models.
- *
+ * Shape of a model for expression context building.
  * Uses structural typing so both raw JSON shapes and typed `ModelConfig` objects
  * can be passed directly.
- *
- * @param modelRelations - The relations on the current model
- * @param allModels - All models in the project (for foreign model lookup)
- * @returns Map of relation name → validation info
  */
-export function buildRelationValidationInfo(
-  modelRelations: readonly {
-    name: string;
-    modelRef: string;
-    references: readonly unknown[];
-  }[],
-  allModels: readonly {
-    id?: string;
-    name: string;
-    authorizer?: { roles?: readonly { name: string }[] };
-    fields?: readonly { name: string; type?: string }[];
-  }[],
-): Map<string, RelationValidationInfo> {
-  const relationInfo = new Map<string, RelationValidationInfo>();
+interface ExpressionContextModel {
+  id?: string;
+  name: string;
+  authorizer?: { roles?: readonly { name: string }[] };
+  fields?: readonly { name: string; type?: string }[];
+  model?: {
+    relations?: readonly {
+      name: string;
+      modelRef: string;
+      foreignRelationName?: string;
+      references?: readonly unknown[];
+    }[];
+  };
+}
+
+/**
+ * Build authorizer role info (role names) from a model.
+ */
+function buildAuthorizerRoleNames(model: ExpressionContextModel): Set<string> {
+  const names = new Set<string>();
+  if (model.authorizer?.roles) {
+    for (const role of model.authorizer.roles) {
+      names.add(role.name);
+    }
+  }
+  return names;
+}
+
+/**
+ * Build scalar field info (names + types) from a model.
+ */
+function buildFieldInfo(model: ExpressionContextModel): {
+  foreignScalarFieldNames: Set<string> | undefined;
+  foreignFieldTypes: Map<string, string> | undefined;
+} {
+  const fieldNames = new Set<string>();
+  const fieldTypes = new Map<string, string>();
+  if (model.fields) {
+    for (const field of model.fields) {
+      fieldNames.add(field.name);
+      if (field.type) {
+        fieldTypes.set(field.name, field.type);
+      }
+    }
+  }
+  return {
+    foreignScalarFieldNames: fieldNames.size > 0 ? fieldNames : undefined,
+    foreignFieldTypes: fieldTypes.size > 0 ? fieldTypes : undefined,
+  };
+}
+
+/**
+ * Build complete model expression context from a model and all project models.
+ *
+ * This is the primary entry point for building validation and autocomplete context.
+ * It discovers both local relations (FK on this model) and foreign/reverse relations
+ * (FK on other models pointing to this model) for use with `hasRole()`, `exists()`, `all()`, etc.
+ *
+ * @param model - The current model (structural typing: works with both typed ModelConfig and raw JSON)
+ * @param allModels - All models in the project
+ * @returns Complete model validation context including all relations
+ */
+export function buildModelExpressionContext(
+  model: ExpressionContextModel,
+  allModels: readonly ExpressionContextModel[],
+): ModelValidationContext {
+  // Build scalar field info for the current model
+  const scalarFieldNames = new Set<string>();
+  const fieldTypes = new Map<string, string>();
+  if (model.fields) {
+    for (const field of model.fields) {
+      scalarFieldNames.add(field.name);
+      if (field.type) {
+        fieldTypes.set(field.name, field.type);
+      }
+    }
+  }
 
   // Build lookups by both id and name for flexible matching
   const modelsById = new Map(
@@ -431,48 +491,86 @@ export function buildRelationValidationInfo(
   );
   const modelsByName = new Map(allModels.map((m) => [m.name, m]));
 
-  for (const relation of modelRelations) {
-    const foreignModel =
-      modelsById.get(relation.modelRef) ?? modelsByName.get(relation.modelRef);
+  function lookupModel(ref: string): ExpressionContextModel | undefined {
+    return modelsById.get(ref) ?? modelsByName.get(ref);
+  }
 
-    const foreignAuthorizerRoleNames = new Set<string>();
-    if (foreignModel?.authorizer?.roles) {
-      for (const role of foreignModel.authorizer.roles) {
-        foreignAuthorizerRoleNames.add(role.name);
-      }
-    }
+  const relationInfo = new Map<string, RelationValidationInfo>();
 
-    // Build foreign field info for relation filter validation
-    const foreignScalarFieldNames = new Set<string>();
-    const foreignFieldTypes = new Map<string, string>();
-    if (foreignModel?.fields) {
-      for (const field of foreignModel.fields) {
-        foreignScalarFieldNames.add(field.name);
-        if (field.type) {
-          foreignFieldTypes.set(field.name, field.type);
-        }
-      }
-    }
+  // 1. Local relations (FK on this model) — used by hasRole(model.relation, 'role')
+  for (const relation of model.model?.relations ?? []) {
+    const foreignModel = lookupModel(relation.modelRef);
 
     relationInfo.set(relation.name, {
-      referenceCount: relation.references.length,
+      referenceCount: relation.references?.length ?? 0,
       foreignModelName: foreignModel?.name ?? relation.modelRef,
-      foreignAuthorizerRoleNames,
-      foreignScalarFieldNames:
-        foreignScalarFieldNames.size > 0 ? foreignScalarFieldNames : undefined,
-      foreignFieldTypes:
-        foreignFieldTypes.size > 0 ? foreignFieldTypes : undefined,
+      foreignAuthorizerRoleNames: foreignModel
+        ? buildAuthorizerRoleNames(foreignModel)
+        : new Set(),
+      ...(foreignModel ? buildFieldInfo(foreignModel) : {}),
+      direction: 'local',
     });
   }
 
-  return relationInfo;
+  // 2. Foreign/reverse relations (FK on other models pointing to this model)
+  //    Used by exists(model.members, { ... }) and all(model.tasks, { ... })
+  const currentModelId = model.id ?? model.name;
+  for (const otherModel of allModels) {
+    for (const rel of otherModel.model?.relations ?? []) {
+      if (rel.modelRef !== currentModelId || !rel.foreignRelationName) {
+        continue;
+      }
+
+      // Skip if a local relation already has this name
+      if (relationInfo.has(rel.foreignRelationName)) {
+        continue;
+      }
+
+      // For foreign relations, the "foreign model" (for field/role validation)
+      // is the OTHER model that has the FK
+      relationInfo.set(rel.foreignRelationName, {
+        referenceCount: rel.references?.length ?? 0,
+        foreignModelName: otherModel.name,
+        foreignAuthorizerRoleNames: buildAuthorizerRoleNames(otherModel),
+        ...buildFieldInfo(otherModel),
+        direction: 'foreign',
+      });
+    }
+  }
+
+  return {
+    modelName: model.name,
+    scalarFieldNames,
+    fieldTypes,
+    relationInfo,
+  };
+}
+
+/**
+ * Build relation validation info from model relations and the full list of models.
+ *
+ * @deprecated Use `buildModelExpressionContext` instead, which also discovers foreign relations.
+ */
+export function buildRelationValidationInfo(
+  modelRelations: readonly {
+    name: string;
+    modelRef: string;
+    references: readonly unknown[];
+  }[],
+  allModels: readonly ExpressionContextModel[],
+): Map<string, RelationValidationInfo> {
+  // Delegate to buildModelExpressionContext with a synthetic model
+  const ctx = buildModelExpressionContext(
+    { name: '', model: { relations: modelRelations } },
+    allModels,
+  );
+  return ctx.relationInfo ?? new Map();
 }
 
 /**
  * Extract model validation context from a model configuration.
  *
- * @param modelConfig - The parsed model configuration
- * @returns Model validation context for the validator
+ * @deprecated Use `buildModelExpressionContext` instead, which builds the complete context.
  */
 export function createModelValidationContext(
   modelConfig: ModelConfig,

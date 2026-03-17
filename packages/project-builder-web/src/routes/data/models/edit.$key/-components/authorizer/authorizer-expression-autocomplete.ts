@@ -124,6 +124,8 @@ export interface RelationAutocompleteInfo {
   foreignModelName: string;
   /** Role names defined on the foreign model's authorizer */
   foreignAuthorizerRoleNames: string[];
+  /** Scalar fields on the foreign model for exists/all condition completions */
+  foreignScalarFields?: { name: string; type: string }[];
 }
 
 /**
@@ -163,7 +165,7 @@ export function createAuthorizerCompletions(
       label: rel.relationName,
       type: 'property',
       detail: `→ ${rel.foreignModelName}`,
-      info: 'Relation (use with hasRole/hasSomeRole for nested authorization)',
+      info: 'Relation (use with hasRole/hasSomeRole/exists/all)',
     });
   }
 
@@ -209,6 +211,18 @@ export function createAuthorizerCompletions(
       detail: '(roles: string[]) => boolean',
       info: 'Check if user has any of the specified global auth roles',
     }),
+    snippetCompletion('exists(model.${relation}, { ${field}: ${value} })', {
+      label: 'exists',
+      type: 'method',
+      detail: '(model.relation, conditions) => boolean',
+      info: 'Check if any related record matches conditions',
+    }),
+    snippetCompletion('all(model.${relation}, { ${field}: ${value} })', {
+      label: 'all',
+      type: 'method',
+      detail: '(model.relation, conditions) => boolean',
+      info: 'Check if all related records match conditions',
+    }),
     {
       label: 'true',
       type: 'keyword',
@@ -242,6 +256,32 @@ export function createAuthorizerCompletions(
         ),
       );
     }
+  }
+
+  // Add exists/all snippets for each relation
+  for (const rel of relationInfoList) {
+    topLevelCompletions.push(
+      snippetCompletion(
+        `exists(model.${rel.relationName}, { \${field}: \${value} })`,
+        {
+          label: `exists(model.${rel.relationName})`,
+          type: 'method',
+          detail: `→ ${rel.foreignModelName}`,
+          info: `Check if any related ${rel.foreignModelName} matches conditions`,
+          boost: -3,
+        },
+      ),
+      snippetCompletion(
+        `all(model.${rel.relationName}, { \${field}: \${value} })`,
+        {
+          label: `all(model.${rel.relationName})`,
+          type: 'method',
+          detail: `→ ${rel.foreignModelName}`,
+          info: `Check if all related ${rel.foreignModelName} records match conditions`,
+          boost: -4,
+        },
+      ),
+    );
   }
 
   return (context: CompletionContext): CompletionResult | null => {
@@ -329,9 +369,9 @@ export function createAuthorizerCompletions(
       const word = context.matchBefore(/model\.\w*/);
       if (!word) return null;
 
-      // Check if model. is inside hasRole( or hasSomeRole( as first arg — show relations only
+      // Check if model. is inside a function call expecting a relation arg — show relations only
       const textBefore = context.state.doc.sliceString(0, word.from);
-      const isInsideRoleFnArg = /(?:hasRole|hasSomeRole)\(\s*$/.test(
+      const isInsideRoleFnArg = /(?:hasRole|hasSomeRole|exists|all)\(\s*$/.test(
         textBefore,
       );
 

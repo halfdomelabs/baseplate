@@ -20,6 +20,7 @@ import type {
 } from './authorizer-expression-ast.js';
 
 import {
+  buildModelExpressionContext,
   createModelValidationContext,
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
@@ -401,6 +402,7 @@ describe('validateAuthorizerExpression', () => {
             referenceCount: 1,
             foreignModelName: 'TodoList',
             foreignAuthorizerRoleNames: new Set(['owner', 'editor']),
+            direction: 'local' as const,
           },
         ],
         [
@@ -409,6 +411,7 @@ describe('validateAuthorizerExpression', () => {
             referenceCount: 2,
             foreignModelName: 'Other',
             foreignAuthorizerRoleNames: new Set(['admin']),
+            direction: 'local' as const,
           },
         ],
       ]),
@@ -597,6 +600,7 @@ describe('validateAuthorizerExpression', () => {
               ['brandId', 'string'],
               ['type', 'enum'],
             ]),
+            direction: 'foreign' as const,
           },
         ],
       ]),
@@ -888,5 +892,146 @@ describe('createModelValidationContext', () => {
 
     expect(context.fieldTypes.get('status')).toBe('string');
     expect(context.fieldTypes.get('count')).toBe('int');
+  });
+});
+
+describe('buildModelExpressionContext', () => {
+  it('should discover local relations', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
+        model: {
+          relations: [
+            {
+              name: 'author',
+              modelRef: 'user',
+              references: [{}],
+            },
+          ],
+        },
+      },
+      [
+        {
+          id: 'user',
+          name: 'User',
+          fields: [{ name: 'id', type: 'uuid' }],
+          authorizer: { roles: [{ name: 'admin' }] },
+        },
+      ],
+    );
+
+    const authorRelation = context.relationInfo?.get('author');
+    expect(authorRelation).toBeDefined();
+    expect(authorRelation?.direction).toBe('local');
+    expect(authorRelation?.foreignModelName).toBe('User');
+    expect(authorRelation?.foreignAuthorizerRoleNames.has('admin')).toBe(true);
+  });
+
+  it('should discover foreign relations from other models', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
+      },
+      [
+        {
+          id: 'blog',
+          name: 'Blog',
+          fields: [{ name: 'id', type: 'uuid' }],
+        },
+        {
+          id: 'blogPost',
+          name: 'BlogPost',
+          fields: [
+            { name: 'id', type: 'uuid' },
+            { name: 'blogId', type: 'uuid' },
+            { name: 'title', type: 'string' },
+          ],
+          model: {
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+      ],
+    );
+
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation).toBeDefined();
+    expect(postsRelation?.direction).toBe('foreign');
+    expect(postsRelation?.foreignModelName).toBe('BlogPost');
+    expect(postsRelation?.foreignScalarFieldNames?.has('title')).toBe(true);
+    expect(postsRelation?.foreignScalarFieldNames?.has('blogId')).toBe(true);
+  });
+
+  it('should not overwrite local relations with foreign relations of the same name', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
+        model: {
+          relations: [
+            {
+              name: 'posts',
+              modelRef: 'post',
+              references: [{}],
+            },
+          ],
+        },
+      },
+      [
+        {
+          id: 'other',
+          name: 'Other',
+          model: {
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+        {
+          id: 'post',
+          name: 'Post',
+          fields: [{ name: 'id', type: 'uuid' }],
+        },
+      ],
+    );
+
+    // Local relation should win
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation?.direction).toBe('local');
+    expect(postsRelation?.foreignModelName).toBe('Post');
+  });
+
+  it('should include model scalar fields and types', () => {
+    const context = buildModelExpressionContext(
+      {
+        name: 'Blog',
+        fields: [
+          { name: 'id', type: 'uuid' },
+          { name: 'title', type: 'string' },
+        ],
+      },
+      [],
+    );
+
+    expect(context.modelName).toBe('Blog');
+    expect(context.scalarFieldNames.has('id')).toBe(true);
+    expect(context.scalarFieldNames.has('title')).toBe(true);
+    expect(context.fieldTypes.get('title')).toBe('string');
   });
 });
