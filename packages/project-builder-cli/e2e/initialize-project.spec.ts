@@ -10,7 +10,7 @@ test('can initialize project', async ({ page, addProject }) => {
   await page.getByLabel('Port Offset').fill('6000');
   await page.getByText('Initialize Project').click();
 
-  await expect(page.getByText('Baseplate Project Builder')).toBeVisible();
+  await expect(page.getByText('Welcome to Baseplate')).toBeVisible();
 
   await page.getByText('Settings').click();
   await expect(page.getByLabel('Project Name')).toHaveValue('new-project');
