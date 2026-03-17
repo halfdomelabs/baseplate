@@ -1,7 +1,16 @@
 import type React from 'react';
 
 import { adminSectionEntityType } from '@baseplate-dev/project-builder-lib';
-import { Button, Card, EmptyDisplay } from '@baseplate-dev/ui-components';
+import {
+  Button,
+  Card,
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@baseplate-dev/ui-components';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { MdSettings } from 'react-icons/md';
 
@@ -24,18 +33,27 @@ function AdminSectionsIndexPage(): React.JSX.Element {
 
   if (sections.length === 0) {
     return (
-      <EmptyDisplay
-        icon={MdSettings}
-        header="No Admin Sections"
-        subtitle="Create your first admin section to get started with managing your data"
-        actions={
-          <NewAdminSectionDialog
-            appId={app.id}
-            appKey={appKey}
-            trigger={<Button>New Section</Button>}
-          />
-        }
-      />
+      <div className="h-full">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <MdSettings />
+            </EmptyMedia>
+            <EmptyTitle>No Admin Sections</EmptyTitle>
+            <EmptyDescription>
+              Create your first admin section to get started with managing your
+              data
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <NewAdminSectionDialog
+              appId={app.id}
+              appKey={appKey}
+              trigger={<Button>New Section</Button>}
+            />
+          </EmptyContent>
+        </Empty>
+      </div>
     );
   }
 

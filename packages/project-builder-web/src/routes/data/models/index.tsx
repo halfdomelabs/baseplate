@@ -1,7 +1,15 @@
 import type React from 'react';
 
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import { Button, EmptyDisplay } from '@baseplate-dev/ui-components';
+import {
+  Button,
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 
@@ -16,12 +24,18 @@ function ModelsIndexPage(): React.JSX.Element {
 
   if (definition.models.length === 0) {
     return (
-      <EmptyDisplay
-        icon={HiDatabase}
-        header="No Models"
-        subtitle="Create a model to get started"
-        actions={<NewModelDialog trigger={<Button>New Model</Button>} />}
-      />
+      <Empty className="h-full">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <HiDatabase />
+          </EmptyMedia>
+          <EmptyTitle>No Models</EmptyTitle>
+          <EmptyDescription>Create a model to get started</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <NewModelDialog trigger={<Button>New Model</Button>} />
+        </EmptyContent>
+      </Empty>
     );
   }
 
