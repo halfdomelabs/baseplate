@@ -68,20 +68,30 @@ describe('resolveExpressionCompletionContext', () => {
 
   describe('modelRelation', () => {
     it('should detect model. inside hasRole(', () => {
-      expect(resolve('hasRole(model.|')).toEqual({ type: 'modelRelation' });
+      expect(resolve('hasRole(model.|')).toEqual({
+        type: 'modelRelation',
+        funcName: 'hasRole',
+      });
     });
 
     it('should detect model. inside exists(', () => {
-      expect(resolve('exists(model.|')).toEqual({ type: 'modelRelation' });
+      expect(resolve('exists(model.|')).toEqual({
+        type: 'modelRelation',
+        funcName: 'exists',
+      });
     });
 
     it('should detect model. inside all( with partial prefix', () => {
-      expect(resolve('all(model.t|')).toEqual({ type: 'modelRelation' });
+      expect(resolve('all(model.t|')).toEqual({
+        type: 'modelRelation',
+        funcName: 'all',
+      });
     });
 
     it('should detect model. inside hasSomeRole(', () => {
       expect(resolve('hasSomeRole(model.|')).toEqual({
         type: 'modelRelation',
+        funcName: 'hasSomeRole',
       });
     });
   });

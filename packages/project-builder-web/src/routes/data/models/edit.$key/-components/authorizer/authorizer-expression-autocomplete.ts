@@ -18,7 +18,10 @@ import { syntaxTree } from '@codemirror/language';
 export type ExpressionCompletionContext =
   | { type: 'topLevel' }
   | { type: 'modelField' }
-  | { type: 'modelRelation' }
+  | {
+      type: 'modelRelation';
+      funcName: 'hasRole' | 'hasSomeRole' | 'exists' | 'all';
+    }
   | { type: 'roleString'; nestedRelationName: string | null }
   | { type: 'conditionKey'; relationName: string }
   | { type: 'conditionValue'; relationName: string; fieldName: string | null }
@@ -167,11 +170,15 @@ function detectModelPathContext(
 
   // Check if model. is inside a function call expecting a relation arg
   const textBefore = state.doc.sliceString(0, pos - modelMatch[0].length);
-  const isInsideFnArg = /(?:hasRole|hasSomeRole|exists|all)\(\s*$/.test(
-    textBefore,
-  );
+  const fnMatch = /(hasRole|hasSomeRole|exists|all)\(\s*$/.exec(textBefore);
 
-  return isInsideFnArg ? { type: 'modelRelation' } : { type: 'modelField' };
+  if (fnMatch) {
+    return {
+      type: 'modelRelation',
+      funcName: fnMatch[1] as 'hasRole' | 'hasSomeRole' | 'exists' | 'all',
+    };
+  }
+  return { type: 'modelField' };
 }
 
 // ---------------------------------------------------------------------------
@@ -190,6 +197,8 @@ export interface RelationAutocompleteInfo {
   foreignAuthorizerRoleNames: string[];
   /** Scalar fields on the foreign model for exists/all condition completions */
   foreignScalarFields?: { name: string; type: string }[];
+  /** Whether this is a local (belongs-to) or foreign (has-many) relation */
+  direction: 'local' | 'foreign';
 }
 
 /**
@@ -216,13 +225,29 @@ export function createAuthorizerCompletions(
     }),
   );
 
-  // Build relation completions
-  const relationCompletions: Completion[] = relationInfoList.map((rel) => ({
+  // Build relation completions split by direction
+  const localRelations = relationInfoList.filter(
+    (r) => r.direction === 'local',
+  );
+  const foreignRelations = relationInfoList.filter(
+    (r) => r.direction === 'foreign',
+  );
+
+  const localRelationCompletions: Completion[] = localRelations.map((rel) => ({
     label: rel.relationName,
     type: 'property',
     detail: `→ ${rel.foreignModelName}`,
-    info: 'Relation (use with hasRole/hasSomeRole/exists/all)',
+    info: 'Relation (use with hasRole/hasSomeRole)',
   }));
+
+  const foreignRelationCompletions: Completion[] = foreignRelations.map(
+    (rel) => ({
+      label: rel.relationName,
+      type: 'property',
+      detail: `→ ${rel.foreignModelName}`,
+      info: 'Relation (use with exists/all)',
+    }),
+  );
 
   // Build role lookup maps
   const foreignRolesByRelation = new Map<string, string[]>();
@@ -360,8 +385,8 @@ export function createAuthorizerCompletions(
     { label: 'false', type: 'keyword' },
   ];
 
-  // Add per-relation snippets
-  for (const rel of relationInfoList) {
+  // Add per-relation snippets (local → hasRole/hasSomeRole, foreign → exists/all)
+  for (const rel of localRelations) {
     if (rel.foreignAuthorizerRoleNames.length > 0) {
       topLevelCompletions.push(
         snippetCompletion(`hasRole(model.${rel.relationName}, '\${role}')`, {
@@ -383,6 +408,8 @@ export function createAuthorizerCompletions(
         ),
       );
     }
+  }
+  for (const rel of foreignRelations) {
     topLevelCompletions.push(
       snippetCompletion(
         `exists(model.${rel.relationName}, { \${field}: \${value} })`,
@@ -471,9 +498,13 @@ export function createAuthorizerCompletions(
 
       case 'modelRelation': {
         const word = context.matchBefore(/model\.\w*/);
-        return word
-          ? { from: word.from + 6, options: relationCompletions }
-          : null;
+        if (!word) return null;
+        // hasRole/hasSomeRole use local (belongs-to) relations; exists/all use foreign (has-many)
+        const options =
+          ctxType.funcName === 'exists' || ctxType.funcName === 'all'
+            ? foreignRelationCompletions
+            : localRelationCompletions;
+        return { from: word.from + 6, options };
       }
 
       case 'modelField': {

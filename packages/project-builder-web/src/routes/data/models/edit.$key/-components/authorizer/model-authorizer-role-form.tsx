@@ -142,6 +142,7 @@ export function ModelAuthorizerRoleForm({
             type: info.foreignFieldTypes?.get(name) ?? 'unknown',
           }))
         : undefined,
+      direction: info.direction,
     }));
 
     return {
