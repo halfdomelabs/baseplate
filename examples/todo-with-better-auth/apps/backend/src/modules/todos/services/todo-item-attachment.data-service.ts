@@ -28,7 +28,7 @@ export const todoItemAttachmentTransformers = {
       });
     },
 
-    deleteRemoved: async (removedItems, tx) => {
+    deleteRemoved: async (tx, removedItems) => {
       await tx.todoItemAttachmentTag.deleteMany({
         where: {
           OR: removedItems.map((i) => ({

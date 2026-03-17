@@ -5,7 +5,7 @@ import type { ServiceContext } from '../service-context.js';
 /* eslint-disable @typescript-eslint/no-explicit-any -- generic type utilities */
 
 /** A value that may or may not be wrapped in a Promise */
-type MaybePromise<T> = T | Promise<T>;
+export type MaybePromise<T> = T | Promise<T>;
 
 /** Hook that runs inside a transaction after the main operation */
 export type AfterExecuteHook = (ctx: {

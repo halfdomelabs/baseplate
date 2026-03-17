@@ -6,6 +6,7 @@ import type { ServiceContext } from '../service-context.js';
 import type { GetResult, ModelPropName } from './prisma-types.js';
 import type {
   BoundTransformer,
+  MaybePromise,
   Transformer,
   TransformerResult,
 } from './transformer-types.js';
@@ -15,9 +16,6 @@ import type {
  * Shared Types
  * =========================================
  */
-
-/** A value that may or may not be wrapped in a Promise */
-type MaybePromise<T> = T | Promise<T>;
 
 /** Context passed to nested processCreate / processUpdate callbacks */
 interface NestedProcessContext {
@@ -78,9 +76,9 @@ export interface OneToOneTransformerConfig<
     ctx: NestedProcessContext,
   ) => MaybePromise<DeferredOperation<GetResult<TParentModelName>>>;
 
-  /** Delete the nested entity. Called when input is `null` on update. */
+  /** Delete the nested entity. Called when input is `null` on update and existing is defined. */
   processDelete: (
-    existing: GetResult<TModelName> | undefined,
+    existing: GetResult<TModelName>,
     ctx: NestedProcessContext,
   ) => DeferredOperation<GetResult<TParentModelName>>;
 }
@@ -159,6 +157,7 @@ export function oneToOneTransformer<
           const existing = (await context.loadExisting()) ?? undefined;
 
           if (input === null) {
+            if (!existing) return {};
             const deferredOp = config.processDelete(existing, ctx);
             return {
               afterExecute: [
@@ -239,10 +238,11 @@ export interface OneToManyTransformerConfig<
     ctx: NestedProcessContext,
   ) => MaybePromise<DeferredOperation<GetResult<TParentModelName>>>;
 
-  /** Delete removed items not present in the input array. Called directly with tx. */
+  /** Delete removed items not present in the input array. Called inside the transaction after the main operation. */
   deleteRemoved: (
-    removedItems: GetResult<TModelName>[],
     tx: Prisma.TransactionClient,
+    removedItems: GetResult<TModelName>[],
+    parent: GetResult<TParentModelName>,
   ) => Promise<void>;
 }
 
@@ -260,7 +260,7 @@ export interface OneToManyTransformerConfig<
  *   schema: imageInputSchema,
  *   processCreate: (item, ctx) => async (tx, parent) => { ... },
  *   processUpdate: (item, existing, ctx) => async (tx, parent) => { ... },
- *   deleteRemoved: (removed) => async (tx, parent) => { ... },
+ *   deleteRemoved: async (tx, removed, parent) => { ... },
  * });
  * ```
  */
@@ -346,7 +346,11 @@ export function oneToManyTransformer<
           return {
             afterExecute: [
               async ({ tx, result }) => {
-                await config.deleteRemoved(removedItems, tx);
+                await config.deleteRemoved(
+                  tx,
+                  removedItems,
+                  result as GetResult<TParentModelName>,
+                );
                 for (const op of deferredOps) {
                   await op(tx, result as GetResult<TParentModelName>);
                 }

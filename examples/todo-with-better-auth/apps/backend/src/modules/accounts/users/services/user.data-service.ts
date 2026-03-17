@@ -91,7 +91,7 @@ const userTransformers = {
         transformers: {
           file: userTransformers.userImageFile.forCreate(file),
         },
-        context: ctx.serviceContext,
+        serviceContext: ctx.serviceContext,
       });
 
       return async (tx, parent) => {
@@ -117,7 +117,7 @@ const userTransformers = {
             existingItem.fileId,
           ),
         },
-        context: ctx.serviceContext,
+        serviceContext: ctx.serviceContext,
       });
 
       return async (tx) => {
@@ -135,7 +135,7 @@ const userTransformers = {
       };
     },
 
-    deleteRemoved: async (removedItems, tx) => {
+    deleteRemoved: async (tx, removedItems) => {
       await tx.userImage.deleteMany({
         where: { OR: removedItems.map((i) => ({ id: i.id })) },
       });
@@ -156,7 +156,7 @@ const userTransformers = {
       });
     },
 
-    deleteRemoved: async (removedItems, tx) => {
+    deleteRemoved: async (tx, removedItems) => {
       await tx.userRole.deleteMany({
         where: {
           OR: removedItems.map((i) => ({
@@ -180,7 +180,7 @@ const userTransformers = {
         transformers: {
           avatar: userTransformers.userProfileAvatar.forCreate(avatar),
         },
-        context: ctx.serviceContext,
+        serviceContext: ctx.serviceContext,
       });
 
       return async (tx, parent) => {
@@ -211,7 +211,7 @@ const userTransformers = {
             existing.avatarId,
           ),
         },
-        context: ctx.serviceContext,
+        serviceContext: ctx.serviceContext,
       });
 
       return async (tx) => {
@@ -268,7 +268,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
       roles: userTransformers.roles.forCreate(roles),
       userProfile: userTransformers.userProfile.forCreate(userProfile),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {
@@ -315,7 +315,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
           }),
       }),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {

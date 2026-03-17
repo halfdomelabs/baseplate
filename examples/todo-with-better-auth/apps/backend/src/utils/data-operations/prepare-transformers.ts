@@ -17,7 +17,7 @@ export interface PrepareTransformersConfig<
   /** Bound transformers to process. Each should be the result of `.forCreate()` or `.forUpdate()`. */
   transformers: TTransformers;
   /** Service context with user info, request details, etc. */
-  context: ServiceContext;
+  serviceContext: ServiceContext;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface PrepareTransformersConfig<
  *
  * Each bound transformer's `process` method is called to produce Prisma-compatible
  * data and optional afterExecute hooks. The results are aggregated into a plan
- * that can be passed to `executePlan`.
+ * that can be passed to `executeTransformPlan`.
  *
  * @template TTransformers - Record of bound transformers
  * @param config - Configuration with bound transformers and service context
@@ -37,7 +37,7 @@ export interface PrepareTransformersConfig<
  *   transformers: {
  *     coverPhoto: coverPhotoTransformer.forCreate(coverPhoto),
  *   },
- *   context,
+ *   serviceContext,
  * });
  * ```
  */
@@ -46,18 +46,21 @@ export async function prepareTransformers<
 >(
   config: PrepareTransformersConfig<TTransformers>,
 ): Promise<TransformPlan<TTransformers>> {
-  const { transformers, context } = config;
+  const { transformers, serviceContext } = config;
+
+  const entries = Object.entries(transformers);
+  const results = await Promise.all(
+    entries.map(async ([, boundTransformer]) =>
+      boundTransformer.process({ serviceContext }),
+    ),
+  );
+
   const transformed = {} as InferTransformed<TTransformers>;
   const afterExecute: AfterExecuteHook[] = [];
 
-  for (const [key, boundTransformer] of Object.entries(transformers)) {
-    const result = await boundTransformer.process({
-      serviceContext: context,
-    });
-
-    if (result.data !== undefined) {
-      (transformed as Record<string, unknown>)[key] = result.data;
-    }
+  for (const [index, result] of results.entries()) {
+    const key = entries[index][0];
+    (transformed as Record<string, unknown>)[key] = result.data;
 
     if (result.afterExecute) {
       afterExecute.push(...result.afterExecute);

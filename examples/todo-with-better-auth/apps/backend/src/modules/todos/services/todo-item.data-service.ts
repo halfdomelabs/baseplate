@@ -49,7 +49,7 @@ const todoItemTransformers = {
           transformers: {
             tags: todoItemAttachmentTransformers.tags.forCreate(tags),
           },
-          context: serviceContext,
+          serviceContext,
         });
 
         await executeTransformPlan(plan, {
@@ -78,7 +78,7 @@ const todoItemTransformers = {
                 }),
             }),
           },
-          context: serviceContext,
+          serviceContext,
         });
 
         await executeTransformPlan(plan, {
@@ -91,7 +91,7 @@ const todoItemTransformers = {
         });
       },
 
-    deleteRemoved: async (removedItems, tx) => {
+    deleteRemoved: async (tx, removedItems) => {
       await tx.todoItemAttachment.deleteMany({
         where: { OR: removedItems.map((i) => ({ id: i.id })) },
       });
@@ -115,7 +115,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
     transformers: {
       attachments: todoItemTransformers.attachments.forCreate(attachments),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {
@@ -161,7 +161,7 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
           }),
       }),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {

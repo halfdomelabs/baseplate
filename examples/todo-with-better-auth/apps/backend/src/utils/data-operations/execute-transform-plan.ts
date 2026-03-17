@@ -44,7 +44,8 @@ async function resolveTransformed<
  * `afterExecute` hooks collected from the transformers.
  *
  * If `refetch` is provided, calls it after the transaction with the
- * result to reload the record with includes/relations.
+ * result to reload the record with includes/relations. Cannot be used
+ * with `tx` since the parent transaction may not have committed yet.
  *
  * If `tx` is provided, reuses that transaction (for nested plans).
  * Otherwise opens a new `$transaction`.
@@ -62,36 +63,6 @@ async function resolveTransformed<
 export async function executeTransformPlan<
   TTransformers extends Record<string, AnyBoundTransformer>,
   TResult,
->(
-  plan: TransformPlan<TTransformers>,
-  config: {
-    tx?: Prisma.TransactionClient;
-    execute: (args: {
-      tx: Prisma.TransactionClient;
-      transformed: InferTransformed<TTransformers>;
-    }) => Promise<TResult>;
-  },
-): Promise<TResult>;
-
-export async function executeTransformPlan<
-  TTransformers extends Record<string, AnyBoundTransformer>,
-  TResult,
-  TRefetchResult,
->(
-  plan: TransformPlan<TTransformers>,
-  config: {
-    tx?: Prisma.TransactionClient;
-    execute: (args: {
-      tx: Prisma.TransactionClient;
-      transformed: InferTransformed<TTransformers>;
-    }) => Promise<TResult>;
-    refetch: (result: TResult) => Promise<TRefetchResult>;
-  },
-): Promise<TRefetchResult>;
-
-export async function executeTransformPlan<
-  TTransformers extends Record<string, AnyBoundTransformer>,
-  TResult,
   TRefetchResult = TResult,
 >(
   plan: TransformPlan<TTransformers>,
@@ -105,6 +76,12 @@ export async function executeTransformPlan<
   },
 ): Promise<TResult | TRefetchResult> {
   const { execute, refetch } = config;
+
+  if (config.tx && refetch) {
+    throw new Error(
+      'Cannot use refetch with an existing transaction — the parent transaction may not have committed yet.',
+    );
+  }
 
   const runInTx = async (tx: Prisma.TransactionClient): Promise<TResult> => {
     const resolved = await resolveTransformed(plan.transformed, tx);

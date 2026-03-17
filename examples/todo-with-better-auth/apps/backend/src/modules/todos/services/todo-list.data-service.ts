@@ -53,7 +53,7 @@ export async function createTodoList<
     transformers: {
       coverPhoto: coverPhotoTransformer.forCreate(coverPhoto),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {
@@ -96,7 +96,7 @@ export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
         existingItem.coverPhotoId,
       ),
     },
-    context,
+    serviceContext: context,
   });
 
   const result = await executeTransformPlan(plan, {

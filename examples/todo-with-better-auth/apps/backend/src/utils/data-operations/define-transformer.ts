@@ -2,12 +2,10 @@ import type { ServiceContext } from '../service-context.js';
 import type {
   AfterExecuteHook,
   BoundTransformer,
+  MaybePromise,
   Transformer,
   TransformerResult,
 } from './transformer-types.js';
-
-/** A value that may or may not be wrapped in a Promise */
-type MaybePromise<T> = T | Promise<T>;
 
 /**
  * Configuration for `defineTransformer`.
