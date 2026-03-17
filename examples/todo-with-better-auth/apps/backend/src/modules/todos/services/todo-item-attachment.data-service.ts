@@ -1,34 +1,42 @@
 import { z } from 'zod';
 
-import {
-  createParentModelConfig,
-  nestedOneToManyField,
-  scalarField,
-} from '@src/utils/data-operations/field-definitions.js';
+import { oneToManyTransformer } from '@src/utils/data-operations/nested-transformers.js';
 
-const parentModel = createParentModelConfig('todoItemAttachment', (value) => ({
-  id: value.id,
-}));
+const todoItemAttachmentTagInputSchema = z.object({
+  tag: z.string(),
+});
 
-export const todoItemAttachmentInputFields = {
-  id: scalarField(z.uuid().optional()),
-  position: scalarField(z.int()),
-  url: scalarField(z.string()),
-  tags: nestedOneToManyField({
-    buildCreateData: (data) => data,
-    buildUpdateData: (data) => data,
-    fields: { tag: scalarField(z.string()) },
-    getWhereUnique: (input, parentModel) =>
-      input.tag
-        ? {
-            todoItemAttachmentId_tag: {
-              tag: input.tag,
-              todoItemAttachmentId: parentModel.id,
-            },
-          }
-        : undefined,
+export const todoItemAttachmentInputSchema = z.object({
+  id: z.uuid().optional(),
+  position: z.int(),
+  url: z.string(),
+  tags: z.array(todoItemAttachmentTagInputSchema).optional(),
+});
+
+export const todoItemAttachmentTransformers = {
+  tags: oneToManyTransformer({
+    parentModel: 'todoItemAttachment',
     model: 'todoItemAttachmentTag',
-    parentModel,
-    relationName: 'todoItemAttachment',
+    schema: todoItemAttachmentTagInputSchema,
+
+    processCreate: (itemInput) => async (tx, parent) => {
+      await tx.todoItemAttachmentTag.create({
+        data: {
+          tag: itemInput.tag,
+          todoItemAttachment: { connect: { id: parent.id } },
+        },
+      });
+    },
+
+    deleteRemoved: async (removedItems, tx) => {
+      await tx.todoItemAttachmentTag.deleteMany({
+        where: {
+          OR: removedItems.map((i) => ({
+            todoItemAttachmentId: i.todoItemAttachmentId,
+            tag: i.tag,
+          })),
+        },
+      });
+    },
   }),
 };

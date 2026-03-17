@@ -1,149 +1,96 @@
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type {
-  DataCreateInput,
-  DataDeleteInput,
-  DataUpdateInput,
-} from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import {
-  commitCreate,
-  commitDelete,
-  commitUpdate,
-} from '@src/utils/data-operations/commit-operations.js';
-import {
-  composeCreate,
-  composeUpdate,
-} from '@src/utils/data-operations/compose-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
-import {
-  generateCreateSchema,
-  generateUpdateSchema,
-} from '@src/utils/data-operations/field-utils.js';
+import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-export const todoListShareInputFields = {
-  todoListId: scalarField(z.uuid()),
-  userId: scalarField(z.uuid()),
-  updatedAt: scalarField(z.date().optional()),
-  createdAt: scalarField(z.date().optional()),
-};
+export const todoListShareCreateSchema = z.object({
+  todoListId: z.uuid(),
+  userId: z.uuid(),
+  updatedAt: z.date().optional(),
+  createdAt: z.date().optional(),
+});
 
-export const todoListShareCreateSchema = generateCreateSchema(
-  todoListShareInputFields,
-);
+export const todoListShareUpdateSchema = todoListShareCreateSchema.partial();
 
 export async function createTodoListShare<
-  TIncludeArgs extends ModelInclude<'todoListShare'> =
-    ModelInclude<'todoListShare'>,
+  TQuery extends DataQuery<'todoListShare'>,
 >({
   data: input,
   query,
   context,
-}: DataCreateInput<
-  'todoListShare',
-  typeof todoListShareInputFields,
-  TIncludeArgs
->): Promise<GetPayload<'todoListShare', TIncludeArgs>> {
-  const plan = await composeCreate({
-    model: 'todoListShare',
-    fields: todoListShareInputFields,
-    input,
-    context,
-    authorize: ['user'],
-  });
+}: {
+  data: z.infer<typeof todoListShareCreateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoListShare', TQuery>> {
+  checkGlobalAuthorization(context, ['user']);
+  const { todoListId, userId, ...rest } = input;
 
-  const item = await commitCreate(plan, {
-    query,
-    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
-      const item = await tx.todoListShare.create({
-        data: {
-          ...rest,
-          todoList: relationHelpers.connectCreate({ id: todoListId }),
-          user: relationHelpers.connectCreate({ id: userId }),
-        },
-        ...query,
-      });
-      return item;
+  const result = await prisma.todoListShare.create({
+    data: {
+      ...rest,
+      todoList: relationHelpers.connectCreate({ id: todoListId }),
+      user: relationHelpers.connectCreate({ id: userId }),
     },
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'todoListShare', TQuery>;
 }
 
-export const todoListShareUpdateSchema = generateUpdateSchema(
-  todoListShareInputFields,
-);
-
 export async function updateTodoListShare<
-  TIncludeArgs extends ModelInclude<'todoListShare'> =
-    ModelInclude<'todoListShare'>,
+  TQuery extends DataQuery<'todoListShare'>,
 >({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<
-  'todoListShare',
-  typeof todoListShareInputFields,
-  TIncludeArgs
->): Promise<GetPayload<'todoListShare', TIncludeArgs>> {
-  const plan = await composeUpdate({
-    model: 'todoListShare',
-    fields: todoListShareInputFields,
-    input,
-    context,
-    loadExisting: () => prisma.todoListShare.findUniqueOrThrow({ where }),
-    authorize: ['user'],
-  });
+}: {
+  where: { todoListId_userId: { todoListId: string; userId: string } };
+  data: z.infer<typeof todoListShareUpdateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoListShare', TQuery>> {
+  checkGlobalAuthorization(context, ['user']);
+  const { todoListId, userId, ...rest } = input;
 
-  const item = await commitUpdate(plan, {
-    query,
-    execute: async ({ tx, data: { todoListId, userId, ...rest }, query }) => {
-      const item = await tx.todoListShare.update({
-        where,
-        data: {
-          ...rest,
-          todoList: relationHelpers.connectUpdate({ id: todoListId }),
-          user: relationHelpers.connectUpdate({ id: userId }),
-        },
-        ...query,
-      });
-      return item;
+  const result = await prisma.todoListShare.update({
+    where,
+    data: {
+      ...rest,
+      todoList: relationHelpers.connectUpdate({ id: todoListId }),
+      user: relationHelpers.connectUpdate({ id: userId }),
     },
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'todoListShare', TQuery>;
 }
 
 export async function deleteTodoListShare<
-  TIncludeArgs extends ModelInclude<'todoListShare'> =
-    ModelInclude<'todoListShare'>,
+  TQuery extends DataQuery<'todoListShare'>,
 >({
   where,
   query,
   context,
-}: DataDeleteInput<'todoListShare', TIncludeArgs>): Promise<
-  GetPayload<'todoListShare', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'todoListShare',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.todoListShare.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
-    authorize: ['user'],
+}: {
+  where: { todoListId_userId: { todoListId: string; userId: string } };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoListShare', TQuery>> {
+  checkGlobalAuthorization(context, ['user']);
+
+  const result = await prisma.todoListShare.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'todoListShare', TQuery>;
 }

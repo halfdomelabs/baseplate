@@ -1,196 +1,351 @@
-import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type {
-  DataCreateInput,
-  DataDeleteInput,
-  DataUpdateInput,
-} from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
+import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
+import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
 import {
-  commitCreate,
-  commitDelete,
-  commitUpdate,
-} from '@src/utils/data-operations/commit-operations.js';
-import {
-  composeCreate,
-  composeUpdate,
-} from '@src/utils/data-operations/compose-operations.js';
-import {
-  createParentModelConfig,
-  nestedOneToManyField,
-  nestedOneToOneField,
-  scalarField,
-} from '@src/utils/data-operations/field-definitions.js';
-import {
-  generateCreateSchema,
-  generateUpdateSchema,
-} from '@src/utils/data-operations/field-utils.js';
+  oneToManyTransformer,
+  oneToOneTransformer,
+} from '@src/utils/data-operations/nested-transformers.js';
+import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-import { userImageInputFields } from './user-image.data-service.js';
-import { userProfileInputFields } from './user-profile.data-service.js';
+import {
+  fileInputSchema,
+  fileTransformer,
+} from '../../../storage/services/file-transformer.js';
+import {
+  userImageFileFileCategory,
+  userProfileAvatarFileCategory,
+} from '../constants/file-categories.js';
 
-const parentModel = createParentModelConfig('user', (value) => ({
-  id: value.id,
-}));
+const customerInputSchema = z.object({
+  stripeCustomerId: z.string(),
+});
 
-export const userInputFields = {
-  name: scalarField(z.string()),
-  email: scalarField(z.string()),
-  customer: nestedOneToOneField({
-    buildCreateData: (data) => data,
-    buildUpdateData: (data) => data,
-    fields: { stripeCustomerId: scalarField(z.string()) },
-    getWhereUnique: (parentModel) => ({ id: parentModel.id }),
+const userImageInputSchema = z.object({
+  id: z.uuid().optional(),
+  caption: z.string(),
+  file: fileInputSchema,
+});
+
+const userRoleInputSchema = z.object({
+  role: z.string(),
+});
+
+const userProfileInputSchema = z.object({
+  bio: z.string().nullish(),
+  birthDay: z.date().nullish(),
+  favoriteTodoListId: z.uuid().nullish(),
+  avatar: fileInputSchema.nullish(),
+});
+
+const userTransformers = {
+  userImageFile: fileTransformer({ category: userImageFileFileCategory }),
+  userProfileAvatar: fileTransformer({
+    category: userProfileAvatarFileCategory,
+    optional: true,
+  }),
+
+  customer: oneToOneTransformer({
+    parentModel: 'user',
     model: 'customer',
-    parentModel,
-    relationName: 'user',
+    schema: customerInputSchema,
+
+    processCreate: (input) => async (tx, parent) => {
+      await tx.customer.create({
+        data: {
+          stripeCustomerId: input.stripeCustomerId,
+          user: { connect: { id: parent.id } },
+        },
+      });
+    },
+
+    processUpdate: (input, existing) => async (tx) => {
+      await tx.customer.update({
+        where: { id: existing.id },
+        data: { stripeCustomerId: input.stripeCustomerId },
+      });
+    },
+
+    processDelete: () => async (tx, parent) => {
+      await tx.customer.deleteMany({ where: { id: parent.id } });
+    },
   }),
-  images: nestedOneToManyField({
-    buildCreateData: (data) => data,
-    buildUpdateData: (data) => data,
-    fields: pick(userImageInputFields, ['id', 'caption', 'file'] as const),
-    getWhereUnique: (input) => (input.id ? { id: input.id } : undefined),
+
+  images: oneToManyTransformer({
+    parentModel: 'user',
     model: 'userImage',
-    parentModel,
-    relationName: 'user',
+    schema: userImageInputSchema,
+    compareItem: (input, existing) => input.id === existing.id,
+
+    processCreate: async (itemInput, ctx) => {
+      const { file, ...rest } = itemInput;
+      const plan = await prepareTransformers({
+        transformers: {
+          file: userTransformers.userImageFile.forCreate(file),
+        },
+        context: ctx.serviceContext,
+      });
+
+      return async (tx, parent) => {
+        await executeTransformPlan(plan, {
+          tx,
+          execute: async ({ transformed }) =>
+            tx.userImage.create({
+              data: {
+                ...rest,
+                ...transformed,
+                user: { connect: { id: parent.id } },
+              },
+            }),
+        });
+      };
+    },
+
+    processUpdate: async (itemInput, existingItem, ctx) => {
+      const plan = await prepareTransformers({
+        transformers: {
+          file: userTransformers.userImageFile.forUpdate(
+            itemInput.file,
+            existingItem.fileId,
+          ),
+        },
+        context: ctx.serviceContext,
+      });
+
+      return async (tx) => {
+        await executeTransformPlan(plan, {
+          tx,
+          execute: async ({ transformed }) =>
+            tx.userImage.update({
+              where: { id: existingItem.id },
+              data: {
+                caption: itemInput.caption,
+                ...transformed,
+              },
+            }),
+        });
+      };
+    },
+
+    deleteRemoved: async (removedItems, tx) => {
+      await tx.userImage.deleteMany({
+        where: { OR: removedItems.map((i) => ({ id: i.id })) },
+      });
+    },
   }),
-  roles: nestedOneToManyField({
-    buildCreateData: (data) => data,
-    buildUpdateData: (data) => data,
-    fields: { role: scalarField(z.string()) },
-    getWhereUnique: (input, parentModel) =>
-      input.role
-        ? { userId_role: { role: input.role, userId: parentModel.id } }
-        : undefined,
+
+  roles: oneToManyTransformer({
+    parentModel: 'user',
     model: 'userRole',
-    parentModel,
-    relationName: 'user',
+    schema: userRoleInputSchema,
+
+    processCreate: (itemInput) => async (tx, parent) => {
+      await tx.userRole.create({
+        data: {
+          role: itemInput.role,
+          user: { connect: { id: parent.id } },
+        },
+      });
+    },
+
+    deleteRemoved: async (removedItems, tx) => {
+      await tx.userRole.deleteMany({
+        where: {
+          OR: removedItems.map((i) => ({
+            userId: i.userId,
+            role: i.role,
+          })),
+        },
+      });
+    },
   }),
-  userProfile: nestedOneToOneField({
-    buildCreateData: ({ favoriteTodoListId, ...data }) => ({
-      ...data,
-      favoriteTodoList: relationHelpers.connectCreate({
-        id: favoriteTodoListId,
-      }),
-    }),
-    buildUpdateData: ({ favoriteTodoListId, ...data }) => ({
-      ...data,
-      favoriteTodoList: relationHelpers.connectUpdate({
-        id: favoriteTodoListId,
-      }),
-    }),
-    fields: pick(userProfileInputFields, [
-      'id',
-      'bio',
-      'birthDay',
-      'favoriteTodoListId',
-      'avatar',
-    ] as const),
-    getWhereUnique: (parentModel) => ({ userId: parentModel.id }),
+
+  userProfile: oneToOneTransformer({
+    parentModel: 'user',
     model: 'userProfile',
-    parentModel,
-    relationName: 'user',
+    schema: userProfileInputSchema,
+
+    processCreate: async (input, ctx) => {
+      const { avatar, favoriteTodoListId, ...rest } = input;
+
+      const plan = await prepareTransformers({
+        transformers: {
+          avatar: userTransformers.userProfileAvatar.forCreate(avatar),
+        },
+        context: ctx.serviceContext,
+      });
+
+      return async (tx, parent) => {
+        await executeTransformPlan(plan, {
+          tx,
+          execute: async ({ transformed }) =>
+            tx.userProfile.create({
+              data: {
+                ...rest,
+                ...transformed,
+                favoriteTodoList: relationHelpers.connectCreate({
+                  id: favoriteTodoListId,
+                }),
+                user: { connect: { id: parent.id } },
+              },
+            }),
+        });
+      };
+    },
+
+    processUpdate: async (input, existing, ctx) => {
+      const { avatar, favoriteTodoListId, ...rest } = input;
+
+      const plan = await prepareTransformers({
+        transformers: {
+          avatar: userTransformers.userProfileAvatar.forUpdate(
+            avatar,
+            existing.avatarId,
+          ),
+        },
+        context: ctx.serviceContext,
+      });
+
+      return async (tx) => {
+        await executeTransformPlan(plan, {
+          tx,
+          execute: async ({ transformed }) =>
+            tx.userProfile.update({
+              where: { id: existing.id },
+              data: {
+                ...rest,
+                ...transformed,
+                favoriteTodoList: relationHelpers.connectUpdate({
+                  id: favoriteTodoListId,
+                }),
+              },
+            }),
+        });
+      };
+    },
+
+    processDelete: () => async (tx, parent) => {
+      await tx.userProfile.deleteMany({ where: { userId: parent.id } });
+    },
   }),
 };
 
-export const userCreateSchema = generateCreateSchema(userInputFields);
+export const userCreateSchema = z.object({
+  name: z.string(),
+  email: z.string(),
+  customer: customerInputSchema.nullish(),
+  images: z.array(userImageInputSchema).optional(),
+  roles: z.array(userRoleInputSchema).optional(),
+  userProfile: userProfileInputSchema.nullish(),
+});
 
-export async function createUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
+export const userUpdateSchema = userCreateSchema.partial();
+
+export async function createUser<TQuery extends DataQuery<'user'>>({
   data: input,
   query,
   context,
-}: DataCreateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const plan = await composeCreate({
-    model: 'user',
-    fields: userInputFields,
-    input,
-    context,
-    authorize: ['admin'],
-  });
+}: {
+  data: z.infer<typeof userCreateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+  const { name, email, customer, images, roles, userProfile } = input;
 
-  const item = await commitCreate(plan, {
-    query,
-    execute: async ({ tx, data, query }) => {
-      const item = await tx.user.create({
-        data,
-        ...query,
-      });
-      return item;
+  const plan = await prepareTransformers({
+    transformers: {
+      customer: userTransformers.customer.forCreate(customer),
+      images: userTransformers.images.forCreate(images),
+      roles: userTransformers.roles.forCreate(roles),
+      userProfile: userTransformers.userProfile.forCreate(userProfile),
     },
+    context,
   });
 
-  return item;
+  const result = await executeTransformPlan(plan, {
+    execute: async ({ tx }) => tx.user.create({ data: { name, email } }),
+    refetch: (item) =>
+      prisma.user.findUniqueOrThrow({ where: { id: item.id }, ...query }),
+  });
+
+  return result as GetResult<'user', TQuery>;
 }
 
-export const userUpdateSchema = generateUpdateSchema(userInputFields);
-
-export async function updateUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
+export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const plan = await composeUpdate({
-    model: 'user',
-    fields: userInputFields,
-    input,
-    context,
-    loadExisting: () => prisma.user.findUniqueOrThrow({ where }),
-    authorize: ['admin'],
-  });
+}: {
+  where: { id: string };
+  data: z.infer<typeof userUpdateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+  const { customer, images, roles, userProfile, ...rest } = input;
 
-  const item = await commitUpdate(plan, {
-    query,
-    execute: async ({ tx, data, query }) => {
-      const item = await tx.user.update({
-        where,
-        data,
-        ...query,
-      });
-      return item;
+  const plan = await prepareTransformers({
+    transformers: {
+      customer: userTransformers.customer.forUpdate(customer, {
+        loadExisting: () =>
+          prisma.customer.findUnique({ where: { id: where.id } }),
+      }),
+      images: userTransformers.images.forUpdate(images, {
+        loadExisting: () =>
+          prisma.userImage.findMany({ where: { userId: where.id } }),
+      }),
+      roles: userTransformers.roles.forUpdate(roles, {
+        loadExisting: () =>
+          prisma.userRole.findMany({ where: { userId: where.id } }),
+      }),
+      userProfile: userTransformers.userProfile.forUpdate(userProfile, {
+        loadExisting: () =>
+          prisma.userProfile.findUnique({
+            where: { userId: where.id },
+          }),
+      }),
     },
+    context,
   });
 
-  return item;
+  const result = await executeTransformPlan(plan, {
+    execute: async ({ tx, transformed }) =>
+      tx.user.update({
+        where,
+        data: { ...rest, ...transformed },
+      }),
+    refetch: (item) =>
+      prisma.user.findUniqueOrThrow({ where: { id: item.id }, ...query }),
+  });
+
+  return result as GetResult<'user', TQuery>;
 }
 
-export async function deleteUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
+export async function deleteUser<TQuery extends DataQuery<'user'>>({
   where,
   query,
   context,
-}: DataDeleteInput<'user', TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'user',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.user.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
-    authorize: ['admin'],
+}: {
+  where: { id: string };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+
+  const result = await prisma.user.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'user', TQuery>;
 }

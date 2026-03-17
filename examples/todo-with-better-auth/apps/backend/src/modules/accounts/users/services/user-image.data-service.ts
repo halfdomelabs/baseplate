@@ -1,47 +1,23 @@
-import { z } from 'zod';
-
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type { DataDeleteInput } from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
-import { commitDelete } from '@src/utils/data-operations/commit-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
+import { prisma } from '@src/services/prisma.js';
 
-import { fileField } from '../../../storage/services/file-field.js';
-import { userImageFileFileCategory } from '../constants/file-categories.js';
-
-export const userImageInputFields = {
-  id: scalarField(z.uuid().optional()),
-  caption: scalarField(z.string()),
-  file: fileField({
-    category: userImageFileFileCategory,
-    fileIdFieldName: 'fileId',
-  }),
-};
-
-export async function deleteUserImage<
-  TIncludeArgs extends ModelInclude<'userImage'> = ModelInclude<'userImage'>,
->({
+export async function deleteUserImage<TQuery extends DataQuery<'userImage'>>({
   where,
   query,
-  context,
-}: DataDeleteInput<'userImage', TIncludeArgs>): Promise<
-  GetPayload<'userImage', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'userImage',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.userImage.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
+}: {
+  where: { id: string };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'userImage', TQuery>> {
+  const result = await prisma.userImage.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'userImage', TQuery>;
 }
