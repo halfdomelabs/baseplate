@@ -615,6 +615,8 @@ describe('validateAuthorizerExpression', () => {
         conditions: [
           {
             field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
             value: {
               type: 'fieldRef',
               source: 'auth',
@@ -646,6 +648,8 @@ describe('validateAuthorizerExpression', () => {
         conditions: [
           {
             field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
             value: {
               type: 'fieldRef',
               source: 'auth',
@@ -679,12 +683,14 @@ describe('validateAuthorizerExpression', () => {
         conditions: [
           {
             field: 'badField',
+            fieldStart: 24,
+            fieldEnd: 32,
             value: {
               type: 'fieldRef',
               source: 'auth',
               field: 'userId',
-              start: 32,
-              end: 38,
+              start: 34,
+              end: 40,
             },
           },
         ],
@@ -712,6 +718,8 @@ describe('validateAuthorizerExpression', () => {
         conditions: [
           {
             field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
             value: {
               type: 'literalValue',
               value: 123,
@@ -745,6 +753,8 @@ describe('validateAuthorizerExpression', () => {
         conditions: [
           {
             field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
             value: {
               type: 'fieldRef',
               source: 'auth',

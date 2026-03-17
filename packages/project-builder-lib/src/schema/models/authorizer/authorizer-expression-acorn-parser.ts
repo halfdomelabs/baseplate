@@ -549,9 +549,11 @@ function parseRelationFilterArgs(
     }
 
     const field = prop.key.name;
+    const fieldStart = prop.key.start;
+    const fieldEnd = prop.key.end;
     const value = convertFieldRefOrLiteral(prop.value);
 
-    conditions.push({ field, value });
+    conditions.push({ field, fieldStart, fieldEnd, value });
   }
 
   return {

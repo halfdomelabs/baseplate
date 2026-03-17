@@ -607,6 +607,8 @@ describe('parseAuthorizerExpression', () => {
         conditions: [
           {
             field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
             value: {
               type: 'fieldRef',
               source: 'auth',
@@ -637,6 +639,8 @@ describe('parseAuthorizerExpression', () => {
       expect(ast.conditions).toEqual([
         {
           field: 'type',
+          fieldStart: 24,
+          fieldEnd: 28,
           value: {
             type: 'literalValue',
             value: 'admin',
@@ -678,6 +682,8 @@ describe('parseAuthorizerExpression', () => {
       >;
       expect(ast.conditions[0]).toEqual({
         field: 'isCompleted',
+        fieldStart: 22,
+        fieldEnd: 33,
         value: {
           type: 'literalValue',
           value: true,
@@ -741,6 +747,8 @@ describe('parseAuthorizerExpression', () => {
         conditions: [
           {
             field: 'isCompleted',
+            fieldStart: 19,
+            fieldEnd: 30,
             value: {
               type: 'literalValue',
               value: true,

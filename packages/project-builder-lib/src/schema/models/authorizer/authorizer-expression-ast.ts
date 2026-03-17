@@ -209,6 +209,10 @@ export interface NestedHasSomeRoleNode {
 export interface RelationFilterCondition {
   /** The field name on the related model */
   field: string;
+  /** Start position of the field key in the source */
+  fieldStart: number;
+  /** End position of the field key in the source */
+  fieldEnd: number;
   /** The value to compare — auth field ref or literal value */
   value: FieldRefNode | LiteralValueNode;
 }

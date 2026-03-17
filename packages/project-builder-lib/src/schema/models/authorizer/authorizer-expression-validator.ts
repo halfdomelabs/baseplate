@@ -297,6 +297,16 @@ export function validateAuthorizerExpression(
       return;
     }
 
+    // exists()/all() only make sense on reverse (1:many) relations
+    if (relation.direction === 'local') {
+      warnings.push({
+        message: `Relation '${node.relationName}' is a local (belongs-to) relation on model '${modelContext.modelName}'. exists()/all() require a reverse (has-many) relation.`,
+        start: node.relationStart,
+        end: node.relationEnd,
+      });
+      return;
+    }
+
     // Validate condition fields exist on the foreign model
     for (const condition of node.conditions) {
       if (
@@ -308,7 +318,14 @@ export function validateAuthorizerExpression(
         );
         warnings.push({
           message: `Field '${condition.field}' does not exist on model '${relation.foreignModelName}'.${availableFields ? ` Available fields: ${availableFields}.` : ''}`,
+          start: condition.fieldStart,
+          end: condition.fieldEnd,
         });
+      }
+
+      // Validate field reference values (e.g., model.typo or invalid auth fields)
+      if (condition.value.type === 'fieldRef') {
+        validateFieldRef(condition.value);
       }
 
       // Type-check literal condition values against foreign field types
