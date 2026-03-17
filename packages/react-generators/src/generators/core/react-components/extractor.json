@@ -375,16 +375,15 @@
       "sourceFile": "components/ui/dropdown.tsx",
       "variables": {}
     },
-    "empty-display": {
+    "empty": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/empty-display.tsx",
-      "projectExports": { "EmptyDisplay": {} },
-      "referencedGeneratorTemplates": ["cn", "types-icon"],
-      "sourceFile": "components/ui/empty-display.tsx",
+      "pathRootRelativePath": "{components-root}/ui/empty.tsx",
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/empty.tsx",
       "variables": {}
     },
     "error-display": {

@@ -2,7 +2,13 @@ import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib
 import type React from 'react';
 
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import { EmptyDisplay, ErrorableLoader } from '@baseplate-dev/ui-components';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+  ErrorableLoader,
+} from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -45,10 +51,14 @@ function PluginsHomePage(): React.JSX.Element {
 
   if (plugins.length === 0) {
     return (
-      <EmptyDisplay
-        header="No plugins available."
-        subtitle="Please install plugins via package.json."
-      />
+      <Empty className="h-full">
+        <EmptyHeader>
+          <EmptyTitle>No plugins available.</EmptyTitle>
+          <EmptyDescription>
+            Please install plugins via package.json.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
