@@ -25,10 +25,10 @@ import {
 } from '@baseplate-dev/ui-components';
 import { autocompletion } from '@codemirror/autocomplete';
 import { linter } from '@codemirror/lint';
-import { EditorView } from '@codemirror/view';
+import { EditorView, keymap } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdChevronRight } from 'react-icons/md';
 import { z } from 'zod';
@@ -38,6 +38,7 @@ import type { RelationAutocompleteInfo } from './authorizer-expression-autocompl
 import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { createAuthorizerCompletions } from './authorizer-expression-autocomplete.js';
 import { createAuthorizerExpressionLinter } from './authorizer-expression-linter.js';
+import { Prec } from '@codemirror/state';
 
 interface ModelAuthorizerRoleFormProps {
   className?: string;
@@ -114,6 +115,10 @@ export function ModelAuthorizerRoleForm({
     });
   });
 
+  // Ref to avoid stale closure in CodeMirror keymap extension
+  const handleFormSubmitRef = useRef(handleFormSubmit);
+  handleFormSubmitRef.current = handleFormSubmit;
+
   const formId = useId();
 
   // Get current model config for autocomplete
@@ -177,6 +182,18 @@ export function ModelAuthorizerRoleForm({
         ),
       ),
       EditorView.lineWrapping,
+      Prec.highest(
+        keymap.of([
+          {
+            key: 'Ctrl-Enter',
+            mac: 'Mod-Enter',
+            run: () => {
+              void handleFormSubmitRef.current();
+              return true;
+            },
+          },
+        ]),
+      ),
     ];
 
     return exts;

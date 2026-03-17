@@ -282,7 +282,7 @@
             "name": "owner"
           },
           {
-            "expression": "exists(model.members, { userId: userId })",
+            "expression": "exists(model.members, { userId: userId })\n",
             "id": "model-authorizer-role:VosO0z22wzt0",
             "name": "viewer"
           }
