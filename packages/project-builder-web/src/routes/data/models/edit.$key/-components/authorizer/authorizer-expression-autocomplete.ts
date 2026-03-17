@@ -21,7 +21,7 @@ export type ExpressionCompletionContext =
   | { type: 'modelRelation' }
   | { type: 'roleString'; nestedRelationName: string | null }
   | { type: 'conditionKey'; relationName: string }
-  | { type: 'conditionValue'; relationName: string }
+  | { type: 'conditionValue'; relationName: string; fieldName: string | null }
   | { type: 'none' };
 
 /**
@@ -45,17 +45,21 @@ export function resolveExpressionCompletionContext(
     }
   }
 
-  // 2. Check if cursor is inside exists/all conditions object
-  const textBeforeCursor = state.doc.sliceString(0, pos);
-  const conditionCtx = detectConditionContext(textBeforeCursor);
-  if (conditionCtx) {
-    return conditionCtx;
+  // 2. Check if cursor is inside exists/all conditions object (skip inside strings)
+  if (nodeBefore.name !== 'String') {
+    const textBeforeCursor = state.doc.sliceString(0, pos);
+    const conditionCtx = detectConditionContext(textBeforeCursor);
+    if (conditionCtx) {
+      return conditionCtx;
+    }
   }
 
-  // 3. Check if cursor is completing model.* (via completionPath)
-  const modelCtx = detectModelPathContext(state, pos);
-  if (modelCtx) {
-    return modelCtx;
+  // 3. Check if cursor is completing model.* (skip inside strings)
+  if (nodeBefore.name !== 'String') {
+    const modelCtx = detectModelPathContext(state, pos);
+    if (modelCtx) {
+      return modelCtx;
+    }
   }
 
   // 4. Check for top-level identifier
@@ -135,11 +139,12 @@ function detectConditionContext(
       textBeforeCursor.lastIndexOf(','),
     ),
   );
-  const isTypingValue = /:\s*\w*$/.test(afterLastSeparator);
+  const valueMatch = /(\w+)\s*:\s*\w*$/.exec(afterLastSeparator);
 
-  return isTypingValue
-    ? { type: 'conditionValue', relationName }
-    : { type: 'conditionKey', relationName };
+  if (valueMatch) {
+    return { type: 'conditionValue', relationName, fieldName: valueMatch[1] };
+  }
+  return { type: 'conditionKey', relationName };
 }
 
 /**
@@ -246,8 +251,19 @@ export function createAuthorizerCompletions(
     }
   }
 
-  // Value completions for condition values
-  const conditionValueCompletions: Completion[] = [
+  // Build field type lookup for exists/all condition value completions
+  const foreignFieldTypesByRelation = new Map<string, Map<string, string>>();
+  for (const rel of relationInfoList) {
+    if (rel.foreignScalarFields && rel.foreignScalarFields.length > 0) {
+      foreignFieldTypesByRelation.set(
+        rel.relationName,
+        new Map(rel.foreignScalarFields.map((f) => [f.name, f.type])),
+      );
+    }
+  }
+
+  // Base value completions (used when field type is unknown)
+  const allValueCompletions: Completion[] = [
     {
       label: 'userId',
       type: 'property',
@@ -257,6 +273,45 @@ export function createAuthorizerCompletions(
     { label: 'true', type: 'keyword' },
     { label: 'false', type: 'keyword' },
   ];
+
+  const booleanValueCompletions: Completion[] = [
+    { label: 'true', type: 'keyword' },
+    { label: 'false', type: 'keyword' },
+  ];
+
+  const stringValueCompletions: Completion[] = [
+    {
+      label: 'userId',
+      type: 'property',
+      detail: 'string | undefined',
+      info: 'Current user ID',
+    },
+  ];
+
+  /**
+   * Get condition value completions filtered by the field type when known.
+   */
+  function getConditionValueCompletions(
+    relationName: string,
+    fieldName: string | null,
+  ): Completion[] {
+    if (!fieldName) return allValueCompletions;
+    const fieldTypes = foreignFieldTypesByRelation.get(relationName);
+    if (!fieldTypes) return allValueCompletions;
+    const fieldType = fieldTypes.get(fieldName);
+    switch (fieldType) {
+      case 'boolean': {
+        return booleanValueCompletions;
+      }
+      case 'string':
+      case 'uuid': {
+        return stringValueCompletions;
+      }
+      default: {
+        return allValueCompletions;
+      }
+    }
+  }
 
   // Top-level completions
   const topLevelCompletions: Completion[] = [
@@ -404,7 +459,13 @@ export function createAuthorizerCompletions(
       case 'conditionValue': {
         const word = context.matchBefore(/\w*/);
         return word
-          ? { from: word.from, options: conditionValueCompletions }
+          ? {
+              from: word.from,
+              options: getConditionValueCompletions(
+                ctxType.relationName,
+                ctxType.fieldName,
+              ),
+            }
           : null;
       }
 

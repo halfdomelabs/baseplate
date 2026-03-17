@@ -147,10 +147,11 @@ describe('resolveExpressionCompletionContext', () => {
   });
 
   describe('conditionValue', () => {
-    it('should detect value position after colon', () => {
+    it('should detect value position after colon with field name', () => {
       expect(resolve('exists(model.members, { userId: |')).toEqual({
         type: 'conditionValue',
         relationName: 'members',
+        fieldName: 'userId',
       });
     });
 
@@ -158,13 +159,15 @@ describe('resolveExpressionCompletionContext', () => {
       expect(resolve('exists(model.members, { userId: u|')).toEqual({
         type: 'conditionValue',
         relationName: 'members',
+        fieldName: 'userId',
       });
     });
 
-    it('should detect value position for all()', () => {
+    it('should detect value position for all() with field name', () => {
       expect(resolve('all(model.tasks, { isCompleted: |')).toEqual({
         type: 'conditionValue',
         relationName: 'tasks',
+        fieldName: 'isCompleted',
       });
     });
   });

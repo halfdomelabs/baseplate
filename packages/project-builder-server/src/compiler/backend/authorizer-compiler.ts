@@ -179,7 +179,14 @@ function generateRelationFilterCode(
 
   // operator === 'every': count records that DON'T match, expect 0
   const notConditions = conditionEntries.join(', ');
-  return `(await prisma.${resolved.prismaAccessor}.count({ where: { ${fkCondition}, NOT: { ${notConditions} } } })) === 0`;
+  const everyExpr = `(await prisma.${resolved.prismaAccessor}.count({ where: { ${fkCondition}, NOT: { ${notConditions} } } })) === 0`;
+  if (authFieldConditions.length > 0) {
+    const nullChecks = authFieldConditions
+      .map((c) => `${generateFieldRefOrLiteralCode(c.value)} != null`)
+      .join(' && ');
+    return `(${nullChecks} ? ${everyExpr} : false)`;
+  }
+  return everyExpr;
 }
 
 /**
@@ -316,7 +323,6 @@ function resolveLocalRelationFilter(
  */
 function resolveForeignRelationFilter(
   appBuilder: BackendAppEntryBuilder,
-  _model: ModelConfig,
   otherModel: ModelConfig,
   relation: ModelConfig['model']['relations'][number],
 ): ResolvedRelationFilter {
@@ -398,12 +404,7 @@ function resolveRelationFilters(
         // localRef = FK field on otherModel, foreignRef = join field on current model
         resolvedFilters.set(
           relationName,
-          resolveForeignRelationFilter(
-            appBuilder,
-            model,
-            otherModel,
-            foreignRel,
-          ),
+          resolveForeignRelationFilter(appBuilder, otherModel, foreignRel),
         );
         found = true;
         break;

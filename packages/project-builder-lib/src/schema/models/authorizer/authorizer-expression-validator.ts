@@ -13,7 +13,6 @@ import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
 
-import type { ModelConfig } from '../models.js';
 import type {
   AuthorizerExpressionNode,
   FieldRefNode,
@@ -549,49 +548,5 @@ export function buildModelExpressionContext(
     scalarFieldNames,
     fieldTypes,
     relationInfo,
-  };
-}
-
-/**
- * Build relation validation info from model relations and the full list of models.
- *
- * @deprecated Use `buildModelExpressionContext` instead, which also discovers foreign relations.
- */
-export function buildRelationValidationInfo(
-  modelRelations: readonly {
-    name: string;
-    modelRef: string;
-    references: readonly unknown[];
-  }[],
-  allModels: readonly ExpressionContextModel[],
-): Map<string, RelationValidationInfo> {
-  // Delegate to buildModelExpressionContext with a synthetic model
-  const ctx = buildModelExpressionContext(
-    { name: '', model: { relations: modelRelations } },
-    allModels,
-  );
-  return ctx.relationInfo ?? new Map();
-}
-
-/**
- * Extract model validation context from a model configuration.
- *
- * @deprecated Use `buildModelExpressionContext` instead, which builds the complete context.
- */
-export function createModelValidationContext(
-  modelConfig: ModelConfig,
-): ModelValidationContext {
-  const scalarFieldNames = new Set<string>();
-  const fieldTypes = new Map<string, string>();
-
-  for (const field of modelConfig.model.fields) {
-    scalarFieldNames.add(field.name);
-    fieldTypes.set(field.name, field.type);
-  }
-
-  return {
-    modelName: modelConfig.name,
-    scalarFieldNames,
-    fieldTypes,
   };
 }

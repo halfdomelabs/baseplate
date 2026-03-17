@@ -170,11 +170,11 @@ describe('generateAuthorizerExpressionCode', () => {
       );
     });
 
-    it('should generate all with auth field condition', () => {
+    it('should generate all with auth field condition (null guard)', () => {
       expect(
         generate('all(model.tasks, { assigneeId: userId })', codeContext),
       ).toBe(
-        '(await prisma.task.count({ where: { projectId: model.id, NOT: { assigneeId: ctx.auth.userId } } })) === 0',
+        '(ctx.auth.userId != null ? (await prisma.task.count({ where: { projectId: model.id, NOT: { assigneeId: ctx.auth.userId } } })) === 0 : false)',
       );
     });
 

@@ -3,10 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { createPluginModule } from '#src/plugins/imports/types.js';
 import { createTestPluginSpecStore } from '#src/plugins/plugins.test-utils.js';
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
-import {
-  createTestModel,
-  createTestScalarField,
-} from '#src/testing/definition-helpers.test-helper.js';
 
 import type {
   BinaryLogicalNode,
@@ -21,7 +17,6 @@ import type {
 
 import {
   buildModelExpressionContext,
-  createModelValidationContext,
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
@@ -43,20 +38,24 @@ function createMockPluginStore(
 }
 
 describe('validateAuthorizerExpression', () => {
-  const postFields = [
-    createTestScalarField({ name: 'id', type: 'string' }),
-    createTestScalarField({ name: 'authorId', type: 'string' }),
-    createTestScalarField({ name: 'title', type: 'string' }),
-  ];
-  const defaultModelContext = createModelValidationContext(
-    createTestModel({
+  const defaultModelContext = buildModelExpressionContext(
+    {
       name: 'Post',
-      model: {
-        fields: postFields,
-        primaryKeyFieldRefs: [postFields[0].id],
-      },
-    }),
+      fields: [
+        { name: 'id', type: 'string' },
+        { name: 'authorId', type: 'string' },
+        { name: 'title', type: 'string' },
+      ],
+    },
+    [],
   );
+
+  // Context without relationInfo for testing skip-validation paths
+  const modelContextWithoutRelations = {
+    modelName: defaultModelContext.modelName,
+    scalarFieldNames: defaultModelContext.scalarFieldNames,
+    fieldTypes: defaultModelContext.fieldTypes,
+  };
 
   const defaultPluginStore = createMockPluginStore([
     { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
@@ -564,7 +563,7 @@ describe('validateAuthorizerExpression', () => {
 
       const warnings = validateAuthorizerExpression(
         ast,
-        defaultModelContext,
+        modelContextWithoutRelations,
         defaultPluginStore,
         defaultDefinition,
       );
@@ -759,7 +758,7 @@ describe('validateAuthorizerExpression', () => {
 
       const warnings = validateAuthorizerExpression(
         ast,
-        defaultModelContext,
+        modelContextWithoutRelations,
         defaultPluginStore,
         defaultDefinition,
       );
@@ -851,47 +850,6 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings.some((w) => w.message.includes('badAuth'))).toBe(true);
       expect(warnings.some((w) => w.message.includes('badRole'))).toBe(true);
     });
-  });
-});
-
-describe('createModelValidationContext', () => {
-  it('should extract field names from model config', () => {
-    const userFields = [
-      createTestScalarField({ name: 'id', type: 'string' }),
-      createTestScalarField({ name: 'email', type: 'string' }),
-      createTestScalarField({ name: 'name', type: 'string' }),
-    ];
-    const context = createModelValidationContext(
-      createTestModel({
-        name: 'User',
-        model: {
-          fields: userFields,
-          primaryKeyFieldRefs: [userFields[0].id],
-        },
-      }),
-    );
-
-    expect(context.modelName).toBe('User');
-    expect(context.scalarFieldNames).toEqual(new Set(['id', 'email', 'name']));
-  });
-
-  it('should populate fieldTypes map from model config', () => {
-    const modelFields = [
-      createTestScalarField({ name: 'status', type: 'string' }),
-      createTestScalarField({ name: 'count', type: 'int' }),
-    ];
-    const context = createModelValidationContext(
-      createTestModel({
-        name: 'Article',
-        model: {
-          fields: modelFields,
-          primaryKeyFieldRefs: [modelFields[0].id],
-        },
-      }),
-    );
-
-    expect(context.fieldTypes.get('status')).toBe('string');
-    expect(context.fieldTypes.get('count')).toBe('int');
   });
 });
 

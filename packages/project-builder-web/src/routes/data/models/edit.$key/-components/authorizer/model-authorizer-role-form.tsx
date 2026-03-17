@@ -25,6 +25,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { autocompletion } from '@codemirror/autocomplete';
 import { linter } from '@codemirror/lint';
+import { Prec } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
@@ -38,7 +39,6 @@ import type { RelationAutocompleteInfo } from './authorizer-expression-autocompl
 import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 import { createAuthorizerCompletions } from './authorizer-expression-autocomplete.js';
 import { createAuthorizerExpressionLinter } from './authorizer-expression-linter.js';
-import { Prec } from '@codemirror/state';
 
 interface ModelAuthorizerRoleFormProps {
   className?: string;
