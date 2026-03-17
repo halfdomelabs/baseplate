@@ -230,51 +230,51 @@ export function ModelAuthorizerRoleForm({
         extensions={extensions}
         height="120px"
         description={
-          <Collapsible>
+          <>
             TypeScript boolean expression. Available: <code>model</code>,{' '}
             <code>userId</code>, <code>isAuthenticated</code>,{' '}
             <code>hasRole()</code>, <code>hasSomeRole()</code>,{' '}
             <code>exists()</code>, <code>all()</code>
-            <CollapsibleTrigger className="mt-1 flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
-              <MdChevronRight className="size-3.5 transition-transform" />
-              Show examples
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-              <div>
-                <code>model.id === userId</code>
-              </div>
-              <div>
-                <code>isAuthenticated</code>
-                {' — '}check if user is authenticated
-              </div>
-              <div>
-                <code>hasRole(&apos;admin&apos;)</code>
-              </div>
-              <div>
-                <code>
-                  model.authorId === userId || hasRole(&apos;admin&apos;)
-                </code>
-              </div>
-              <div>
-                <code>hasRole(model.todoList, &apos;owner&apos;)</code>
-                {' — '}check role on related model
-              </div>
-              <div>
-                <code>
-                  exists(model.members, {'{ '}userId: userId{' }'})
-                </code>
-                {' — '}check if any related record matches
-              </div>
-              <div>
-                <code>
-                  all(model.tasks, {'{ '}isCompleted: true{' }'})
-                </code>
-                {' — '}check if all related records match
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+          </>
         }
       />
+      <Collapsible className="-mt-3">
+        <CollapsibleTrigger className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
+          <MdChevronRight className="size-3.5 transition-transform" />
+          Show examples
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+          <div>
+            <code>model.id === userId</code>
+          </div>
+          <div>
+            <code>isAuthenticated</code>
+            {' — '}check if user is authenticated
+          </div>
+          <div>
+            <code>hasRole(&apos;admin&apos;)</code>
+          </div>
+          <div>
+            <code>model.authorId === userId || hasRole(&apos;admin&apos;)</code>
+          </div>
+          <div>
+            <code>hasRole(model.todoList, &apos;owner&apos;)</code>
+            {' — '}check role on related model
+          </div>
+          <div>
+            <code>
+              exists(model.members, {'{ '}userId: userId{' }'})
+            </code>
+            {' — '}check if any related record matches
+          </div>
+          <div>
+            <code>
+              all(model.tasks, {'{ '}isCompleted: true{' }'})
+            </code>
+            {' — '}check if all related records match
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
       <DialogFooter>
         <DialogClose
           render={
