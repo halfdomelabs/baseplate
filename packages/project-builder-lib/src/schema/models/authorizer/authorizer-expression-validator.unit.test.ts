@@ -1034,4 +1034,70 @@ describe('buildModelExpressionContext', () => {
     expect(context.scalarFieldNames.has('title')).toBe(true);
     expect(context.fieldTypes.get('title')).toBe('string');
   });
+
+  it('should read fields from model.fields (ModelConfig shape)', () => {
+    const context = buildModelExpressionContext(
+      {
+        name: 'Blog',
+        model: {
+          fields: [
+            { name: 'id', type: 'uuid' },
+            { name: 'title', type: 'string' },
+          ],
+        },
+      },
+      [],
+    );
+
+    expect(context.scalarFieldNames.has('id')).toBe(true);
+    expect(context.scalarFieldNames.has('title')).toBe(true);
+    expect(context.fieldTypes.get('title')).toBe('string');
+  });
+
+  it('should read foreign model fields from model.fields for foreign relations', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        model: {
+          fields: [{ name: 'id', type: 'uuid' }],
+        },
+      },
+      [
+        {
+          id: 'blog',
+          name: 'Blog',
+          model: {
+            fields: [{ name: 'id', type: 'uuid' }],
+          },
+        },
+        {
+          id: 'blogPost',
+          name: 'BlogPost',
+          model: {
+            fields: [
+              { name: 'id', type: 'uuid' },
+              { name: 'blogId', type: 'uuid' },
+              { name: 'title', type: 'string' },
+            ],
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+      ],
+    );
+
+    // Foreign relation should have fields from BlogPost
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation).toBeDefined();
+    expect(postsRelation?.foreignScalarFieldNames?.has('title')).toBe(true);
+    expect(postsRelation?.foreignScalarFieldNames?.has('blogId')).toBe(true);
+    expect(postsRelation?.foreignFieldTypes?.get('title')).toBe('string');
+  });
 });

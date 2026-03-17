@@ -409,8 +409,11 @@ interface ExpressionContextModel {
   id?: string;
   name: string;
   authorizer?: { roles?: readonly { name: string }[] };
+  /** Top-level fields (used by raw JSON shapes) */
   fields?: readonly { name: string; type?: string }[];
   model?: {
+    /** Nested fields (used by typed ModelConfig objects) */
+    fields?: readonly { name: string; type?: string }[];
     relations?: readonly {
       name: string;
       modelRef: string;
@@ -436,18 +439,23 @@ function buildAuthorizerRoleNames(model: ExpressionContextModel): Set<string> {
 /**
  * Build scalar field info (names + types) from a model.
  */
+function getModelFields(
+  model: ExpressionContextModel,
+): readonly { name: string; type?: string }[] {
+  // Fields can be at top level (raw JSON) or nested under model (typed ModelConfig)
+  return model.fields ?? model.model?.fields ?? [];
+}
+
 function buildFieldInfo(model: ExpressionContextModel): {
   foreignScalarFieldNames: Set<string> | undefined;
   foreignFieldTypes: Map<string, string> | undefined;
 } {
   const fieldNames = new Set<string>();
   const fieldTypes = new Map<string, string>();
-  if (model.fields) {
-    for (const field of model.fields) {
-      fieldNames.add(field.name);
-      if (field.type) {
-        fieldTypes.set(field.name, field.type);
-      }
+  for (const field of getModelFields(model)) {
+    fieldNames.add(field.name);
+    if (field.type) {
+      fieldTypes.set(field.name, field.type);
     }
   }
   return {
@@ -474,12 +482,10 @@ export function buildModelExpressionContext(
   // Build scalar field info for the current model
   const scalarFieldNames = new Set<string>();
   const fieldTypes = new Map<string, string>();
-  if (model.fields) {
-    for (const field of model.fields) {
-      scalarFieldNames.add(field.name);
-      if (field.type) {
-        fieldTypes.set(field.name, field.type);
-      }
+  for (const field of getModelFields(model)) {
+    scalarFieldNames.add(field.name);
+    if (field.type) {
+      fieldTypes.set(field.name, field.type);
     }
   }
 
