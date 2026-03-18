@@ -56,12 +56,12 @@ function createMockTransformField(
 /** Minimal PrismaOutputModel with no relations */
 function createMockModel(
   idFields: string[] = ['id'],
-  relations: Array<{
+  relations: {
     name: string;
     fields: string[];
     references: string[];
     modelType: string;
-  }> = [],
+  }[] = [],
 ): Parameters<typeof buildTransformOperationParts>[0]['prismaModel'] {
   return {
     name: 'TestModel',
@@ -172,7 +172,7 @@ describe('buildTransformOperationParts', () => {
         transformersVarFragment: 'testTransformers',
       });
 
-      expect(field.transformer!.buildForCreateEntry).toHaveBeenCalledWith(
+      expect(field.transformer?.buildForCreateEntry).toHaveBeenCalledWith(
         expect.objectContaining({
           transformersVarFragment: 'testTransformers',
         }),
@@ -191,7 +191,7 @@ describe('buildTransformOperationParts', () => {
         loadExistingVarName: 'where',
       });
 
-      expect(field.transformer!.buildForUpdateEntry).toHaveBeenCalledWith(
+      expect(field.transformer?.buildForUpdateEntry).toHaveBeenCalledWith(
         expect.objectContaining({
           transformersVarFragment: 'testTransformers',
           existingItemVarName: 'existing',
@@ -212,7 +212,7 @@ describe('buildTransformOperationParts', () => {
         loadExistingVarName: 'existingItem',
       });
 
-      expect(field.transformer!.buildForUpdateEntry).toHaveBeenCalledWith(
+      expect(field.transformer?.buildForUpdateEntry).toHaveBeenCalledWith(
         expect.objectContaining({
           loadExistingVarName: 'existingItem',
         }),

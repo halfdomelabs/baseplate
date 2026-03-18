@@ -185,40 +185,33 @@ function createSimpleProcessFunctions(
     existingItemVarName: 'existingItem',
   });
 
-  let processCreateFragment: TsCodeFragment;
-  let processUpdateFragment: TsCodeFragment;
-
-  if (createParts.hasDestructure) {
-    processCreateFragment = tsTemplate`(itemInput) => async (tx, parent) => {
+  const processCreateFragment = createParts.hasDestructure
+    ? tsTemplate`(itemInput) => async (tx, parent) => {
       ${createParts.inputDestructureFragment}
       await tx.${modelVar}.create({
         data: ${createParts.prismaDataFragment},
       });
-    }`;
-  } else {
-    processCreateFragment = tsTemplate`(itemInput) => async (tx, parent) => {
+    }`
+    : tsTemplate`(itemInput) => async (tx, parent) => {
       await tx.${modelVar}.create({
         data: ${createParts.prismaDataFragment},
       });
     }`;
-  }
 
-  if (updateParts.hasDestructure) {
-    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
+  const processUpdateFragment = updateParts.hasDestructure
+    ? tsTemplate`(itemInput, existingItem) => async (tx) => {
       ${updateParts.inputDestructureFragment}
       await tx.${modelVar}.update({
         where: ${whereExpr},
         data: ${updateParts.prismaDataFragment},
       });
-    }`;
-  } else {
-    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
+    }`
+    : tsTemplate`(itemInput, existingItem) => async (tx) => {
       await tx.${modelVar}.update({
         where: ${whereExpr},
         data: ${updateParts.prismaDataFragment},
       });
     }`;
-  }
 
   return { processCreateFragment, processUpdateFragment };
 }
@@ -276,10 +269,18 @@ function createTransformProcessFunctions(
     loadExistingVarName: 'existingItem',
   });
 
-  // Safe to assert: we only enter this path when hasTransformFields is true
+  // We only enter this path when hasTransformFields is true
   // and we pass transformersVarFragment, so these will always be defined
-  const createTransformers = createParts.transformersObjectFragment!;
-  const updateTransformers = updateParts.transformersObjectFragment!;
+  if (
+    !createParts.transformersObjectFragment ||
+    !updateParts.transformersObjectFragment
+  ) {
+    throw new Error(
+      `Nested model ${nestedModel.name} has sub-transform-fields but transformer fragments were not generated.`,
+    );
+  }
+  const createTransformers = createParts.transformersObjectFragment;
+  const updateTransformers = updateParts.transformersObjectFragment;
 
   // processCreate: prepare transformers then execute inside deferred
   const processCreateFragment = tsTemplate`(itemInput, { serviceContext }) => async (tx, parent) => {
@@ -399,10 +400,10 @@ export function writePrismaDataNestedField(
     };
 
     if (compareItemFragment) {
-      configEntries['compareItem'] = compareItemFragment;
+      configEntries.compareItem = compareItemFragment;
     }
 
-    configEntries['processUpdate'] = processUpdateFragment;
+    configEntries.processUpdate = processUpdateFragment;
 
     const configObj = TsCodeUtils.mergeFragmentsAsObject(configEntries);
     transformerFragment = tsTemplate`${dataUtilsImports.oneToManyTransformer.fragment()}(${configObj})`;

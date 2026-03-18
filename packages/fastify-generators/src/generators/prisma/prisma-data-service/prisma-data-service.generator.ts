@@ -280,20 +280,25 @@ export const prismaDataServiceGenerator = createGenerator({
 
             // Register transformers object (only if there are transform fields)
             if (transformersVarName && transformFields.length > 0) {
-              const transformerEntries = transformFields
-                .filter(
-                  (
-                    field,
-                  ): field is InputFieldDefinitionOutput & {
-                    transformer: NonNullable<
-                      InputFieldDefinitionOutput['transformer']
-                    >;
-                  } => field.transformer != null,
-                )
-                .map((field) => [field.name, field.transformer.fragment]);
-              const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
-                Object.fromEntries(transformerEntries),
-              );
+              const transformerEntries: Record<string, TsCodeFragment> =
+                Object.fromEntries(
+                  transformFields
+                    .filter(
+                      (
+                        field,
+                      ): field is InputFieldDefinitionOutput & {
+                        transformer: NonNullable<
+                          InputFieldDefinitionOutput['transformer']
+                        >;
+                      } => field.transformer != null,
+                    )
+                    .map(
+                      (field) =>
+                        [field.name, field.transformer.fragment] as const,
+                    ),
+                );
+              const transformersObject =
+                TsCodeUtils.mergeFragmentsAsObject(transformerEntries);
               serviceFile.registerHeader({
                 name: 'transformers',
                 fragment: tsTemplate`export const ${transformersVarName} = ${transformersObject};`,
