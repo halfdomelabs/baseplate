@@ -17,7 +17,7 @@ import type { ModelValidationContext } from './authorizer-expression-validator.j
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
 import {
-  buildRelationValidationInfo,
+  buildModelExpressionContext,
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
@@ -26,12 +26,14 @@ import {
  * Used for navigating the untyped definition to extract relation and authorizer info.
  */
 interface RawModelDefinition {
+  id?: string;
   name?: string;
   model?: {
     fields?: { name: string; type?: string }[];
     relations?: {
       name: string;
       modelRef: string;
+      foreignRelationName?: string;
       references?: { localRef: string; foreignRef: string }[];
     }[];
   };
@@ -152,11 +154,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   private getModelContext(
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
-  ):
-    | (ModelValidationContext & {
-        relationInfo: ReturnType<typeof buildRelationValidationInfo>;
-      })
-    | undefined {
+  ): ModelValidationContext | undefined {
     const modelPath = resolvedSlots.model;
     if (modelPath.length === 0) {
       return undefined;
@@ -178,29 +176,6 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       return undefined;
     }
 
-    // Model fields are nested under model.model.fields in the definition
-    const scalarFieldNames = new Set<string>();
-    const fieldTypes = new Map<string, string>();
-    for (const field of model.model?.fields ?? []) {
-      if (typeof field.name === 'string') {
-        scalarFieldNames.add(field.name);
-        if (typeof field.type === 'string') {
-          fieldTypes.set(field.name, field.type);
-        }
-      }
-    }
-
-    // Build relation info for nested authorizer validation
-    const relations = (model.model?.relations ?? []).filter(
-      (
-        r,
-      ): r is {
-        name: string;
-        modelRef: string;
-        references?: { localRef: string; foreignRef: string }[];
-      } => typeof r.name === 'string' && typeof r.modelRef === 'string',
-    );
-
     const allModels = (
       (definition as { models?: RawModelDefinition[] }).models ?? []
     ).filter(
@@ -208,24 +183,21 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
         typeof m.name === 'string',
     );
 
-    const relationInfo = buildRelationValidationInfo(
-      relations.map((r) => ({
-        name: r.name,
-        modelRef: r.modelRef,
-        references: r.references ?? [],
-      })),
+    return buildModelExpressionContext(
+      {
+        id: model.id,
+        name: model.name,
+        fields: model.model?.fields,
+        model: { relations: model.model?.relations },
+      },
       allModels.map((m) => ({
+        id: m.id,
         name: m.name,
         authorizer: m.authorizer,
+        fields: m.model?.fields,
+        model: { relations: m.model?.relations },
       })),
     );
-
-    return {
-      modelName: model.name,
-      scalarFieldNames,
-      fieldTypes,
-      relationInfo,
-    };
   }
 }
 

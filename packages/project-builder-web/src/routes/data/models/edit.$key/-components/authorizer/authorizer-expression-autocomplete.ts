@@ -6,78 +6,101 @@ import type {
 } from '@codemirror/autocomplete';
 
 import { snippetCompletion } from '@codemirror/autocomplete';
-import { completionPath } from '@codemirror/lang-javascript';
 import { syntaxTree } from '@codemirror/language';
 
-/**
- * Check if the cursor is inside a string literal by examining the syntax tree.
- * This uses CodeMirror's AST to accurately determine context.
- */
-function isInsideStringLiteral(context: CompletionContext): boolean {
-  const { state, pos } = context;
-  const tree = syntaxTree(state);
+// ---------------------------------------------------------------------------
+// Context resolution — testable independently of completion building
+// ---------------------------------------------------------------------------
 
-  // Get the node at the cursor position
+/**
+ * Discriminated union describing the autocomplete context at a cursor position.
+ */
+export type ExpressionCompletionContext =
+  | { type: 'topLevel' }
+  | { type: 'modelField' }
+  | {
+      type: 'modelRelation';
+      funcName: 'hasRole' | 'hasSomeRole' | 'exists' | 'all';
+    }
+  | { type: 'roleString'; nestedRelationName: string | null }
+  | { type: 'conditionKey'; relationName: string }
+  | { type: 'conditionValue'; relationName: string; fieldName: string | null }
+  | { type: 'none' };
+
+/**
+ * Determine the autocomplete context for a cursor position in an authorizer expression.
+ *
+ * Uses CodeMirror's syntax tree and text analysis to classify what kind of
+ * completion the user needs at the given position.
+ */
+export function resolveExpressionCompletionContext(
+  state: CompletionContext['state'],
+  pos: number,
+): ExpressionCompletionContext {
+  const tree = syntaxTree(state);
   const nodeBefore = tree.resolveInner(pos, -1);
 
-  // Check if we're inside a String node
-  return nodeBefore.name === 'String';
-}
-
-/**
- * Info about the role function context the cursor is inside.
- */
-interface RoleFunctionContext {
-  funcName: 'hasRole' | 'hasSomeRole';
-  /** The relation name if cursor is in a nested call's string arg (e.g., 'todoList' in hasRole(model.todoList, '...')) */
-  nestedRelationName: string | null;
-}
-
-/**
- * Check if the cursor is inside a hasRole() or hasSomeRole() call expression
- * within a string literal. Returns context about the call if found.
- */
-function getRoleFunctionContext(
-  context: CompletionContext,
-): RoleFunctionContext | null {
-  const { state, pos } = context;
-  const tree = syntaxTree(state);
-
-  // Walk up the tree from the cursor position
-  let node = tree.resolveInner(pos, -1);
-
-  // First, check if we're inside a String
-  if (node.name !== 'String') {
-    return null;
+  // 1. Check if cursor is inside a string within hasRole/hasSomeRole
+  if (nodeBefore.name === 'String') {
+    const roleCtx = detectRoleStringContext(state, nodeBefore);
+    if (roleCtx) {
+      return roleCtx;
+    }
   }
 
-  const stringNode = node;
+  // 2. Check if cursor is inside exists/all conditions object (skip inside strings)
+  if (nodeBefore.name !== 'String') {
+    const textBeforeCursor = state.doc.sliceString(0, pos);
+    const conditionCtx = detectConditionContext(textBeforeCursor);
+    if (conditionCtx) {
+      return conditionCtx;
+    }
+  }
 
+  // 3. Check if cursor is completing model.* (skip inside strings)
+  if (nodeBefore.name !== 'String') {
+    const modelCtx = detectModelPathContext(state, pos);
+    if (modelCtx) {
+      return modelCtx;
+    }
+  }
+
+  // 4. Check for top-level identifier
+  // Look for a word being typed that isn't inside a string
+  const lineText = state.doc.sliceString(state.doc.lineAt(pos).from, pos);
+  if (/\w+$/.test(lineText) && nodeBefore.name !== 'String') {
+    return { type: 'topLevel' };
+  }
+
+  return { type: 'none' };
+}
+
+/**
+ * Detect if cursor is inside a role string argument of hasRole/hasSomeRole.
+ */
+function detectRoleStringContext(
+  state: CompletionContext['state'],
+  stringNode: ReturnType<ReturnType<typeof syntaxTree>['resolveInner']>,
+): ExpressionCompletionContext | null {
   // Walk up to find the CallExpression
+  let node = stringNode;
   while (node.parent) {
     node = node.parent;
 
-    // Found a CallExpression
     if (node.name === 'CallExpression') {
-      // Get the function name (first child should be the callee)
       const callee = node.firstChild;
       if (!callee) return null;
 
-      // Get the function name from the source
       const funcName = state.doc.sliceString(callee.from, callee.to);
-
       if (funcName !== 'hasRole' && funcName !== 'hasSomeRole') {
         return null;
       }
 
-      // Check if this is a nested call by looking for a model.X argument before the string
-      const nestedRelationName = extractNestedRelationName(
-        state,
-        node,
-        stringNode,
-      );
+      // Check for nested call: hasRole(model.X, '...')
+      const textBetween = state.doc.sliceString(callee.to, stringNode.from);
+      const nestedRelationName = extractNestedRelationName(textBetween);
 
-      return { funcName, nestedRelationName };
+      return { type: 'roleString', nestedRelationName };
     }
   }
 
@@ -86,33 +109,81 @@ function getRoleFunctionContext(
 
 /**
  * Extract the relation name from a nested hasRole/hasSomeRole call.
- * Returns the relation name if the call has a `model.X` first argument
- * and the cursor's string is NOT the first argument (i.e., it's the role arg).
+ * Looks at text between the callee and the string node for a `model.X` pattern.
  */
-function extractNestedRelationName(
-  state: { doc: { sliceString(from: number, to: number): string } },
-  callNode: { firstChild: { to: number } | null },
-  stringNode: { from: number },
-): string | null {
-  // Look at the text between the callee end and the string node
-  // For `hasRole(model.todoList, '...')`, after callee "hasRole" we have "(model.todoList, '"
-  const callee = callNode.firstChild;
-  if (!callee) return null;
-
-  const textBetween = state.doc.sliceString(callee.to, stringNode.from);
-
+function extractNestedRelationName(textBetween: string): string | null {
   // Match pattern: (model.relationName, followed by quote
   const match = /^\(\s*model\.(\w+)\s*,\s*['"]?$/.exec(textBetween);
-  if (!match) {
-    // Also match inside array: (model.relationName, ['
-    const arrayMatch = /^\(\s*model\.(\w+)\s*,\s*\[?\s*['"]?$/.exec(
-      textBetween,
-    );
-    if (!arrayMatch) return null;
-    return arrayMatch[1];
-  }
-  return match[1];
+  if (match) return match[1];
+
+  // Also match inside array: (model.relationName, ['
+  const arrayMatch = /^\(\s*model\.(\w+)\s*,\s*\[?\s*['"]?$/.exec(textBetween);
+  return arrayMatch?.[1] ?? null;
 }
+
+/**
+ * Detect if cursor is inside the conditions object of exists/all.
+ * Returns conditionKey or conditionValue context.
+ */
+function detectConditionContext(
+  textBeforeCursor: string,
+): ExpressionCompletionContext | null {
+  const conditionMatch = /(?:exists|all)\(\s*model\.(\w+)\s*,\s*\{[^}]*$/.exec(
+    textBeforeCursor,
+  );
+  if (!conditionMatch) return null;
+
+  const relationName = conditionMatch[1];
+
+  // Check if we're typing a value (after ':') or a key
+  const afterLastSeparator = textBeforeCursor.slice(
+    Math.max(
+      textBeforeCursor.lastIndexOf('{'),
+      textBeforeCursor.lastIndexOf(','),
+    ),
+  );
+  const valueMatch = /(\w+)\s*:\s*\w*$/.exec(afterLastSeparator);
+
+  if (valueMatch) {
+    return { type: 'conditionValue', relationName, fieldName: valueMatch[1] };
+  }
+  return { type: 'conditionKey', relationName };
+}
+
+/**
+ * Detect if cursor is completing a model.* path using CodeMirror's completionPath.
+ * Distinguishes between model field access and model relation access (inside function calls).
+ */
+function detectModelPathContext(
+  state: CompletionContext['state'],
+  pos: number,
+): ExpressionCompletionContext | null {
+  // completionPath requires a CompletionContext-like call, but we can construct
+  // a minimal one. However, completionPath needs the actual CompletionContext.
+  // Instead, use text-based detection for model.* paths.
+  const lineFrom = state.doc.lineAt(pos).from;
+  const lineText = state.doc.sliceString(lineFrom, pos);
+
+  // Check if we're typing model.something
+  const modelMatch = /model\.(\w*)$/.exec(lineText);
+  if (!modelMatch) return null;
+
+  // Check if model. is inside a function call expecting a relation arg
+  const textBefore = state.doc.sliceString(0, pos - modelMatch[0].length);
+  const fnMatch = /(hasRole|hasSomeRole|exists|all)\(\s*$/.exec(textBefore);
+
+  if (fnMatch) {
+    return {
+      type: 'modelRelation',
+      funcName: fnMatch[1] as 'hasRole' | 'hasSomeRole' | 'exists' | 'all',
+    };
+  }
+  return { type: 'modelField' };
+}
+
+// ---------------------------------------------------------------------------
+// Completion adapter — maps context types to CodeMirror completions
+// ---------------------------------------------------------------------------
 
 /**
  * Info about a relation for autocomplete purposes.
@@ -124,50 +195,61 @@ export interface RelationAutocompleteInfo {
   foreignModelName: string;
   /** Role names defined on the foreign model's authorizer */
   foreignAuthorizerRoleNames: string[];
+  /** Scalar fields on the foreign model for exists/all condition completions */
+  foreignScalarFields?: { name: string; type: string }[];
+  /** Whether this is a local (belongs-to) or foreign (has-many) relation */
+  direction: 'local' | 'foreign';
 }
 
 /**
- * Creates autocomplete for model and auth context using completionPath.
+ * Creates autocomplete for model and auth context.
  *
- * This implementation uses CodeMirror's completionPath to determine what
- * the user is typing and provides completions accordingly:
- * - Top level: "model", "userId", "hasRole", "hasSomeRole", "true", "false"
- * - "model.": All model fields + relation names
- * - Inside hasRole('...'): All project roles
- * - Inside hasRole(model.relation, '...'): Foreign model's authorizer roles
- *
- * @param modelConfig - The model configuration for field completions
- * @param projectRoles - List of role names from project auth config
- * @param relationInfoList - List of relation autocomplete info for nested expressions
- * @see https://github.com/codemirror/lang-javascript#completionpath
+ * Uses `resolveExpressionCompletionContext` to determine what the user is typing,
+ * then maps the context type to appropriate completions:
+ * - Top level: model, userId, isAuthenticated, hasRole, hasSomeRole, exists, all
+ * - model.: scalar fields or relation names (depending on context)
+ * - Inside hasRole('...'): project roles or foreign model's authorizer roles
+ * - Inside exists/all conditions: foreign model field names or value suggestions
  */
 export function createAuthorizerCompletions(
   modelConfig: ModelConfig,
   projectRoles: string[],
   relationInfoList: RelationAutocompleteInfo[] = [],
 ): (context: CompletionContext) => CompletionResult | null {
-  // Build scalar field completions (for general model.field contexts)
-  const scalarFieldCompletions: Completion[] = [];
-  for (const field of modelConfig.model.fields) {
-    scalarFieldCompletions.push({
+  // Build scalar field completions
+  const scalarFieldCompletions: Completion[] = modelConfig.model.fields.map(
+    (field) => ({
       label: field.name,
       type: 'property',
       detail: field.type,
-    });
-  }
+    }),
+  );
 
-  // Build relation completions (for hasRole/hasSomeRole first arg context)
-  const relationCompletions: Completion[] = [];
-  for (const rel of relationInfoList) {
-    relationCompletions.push({
+  // Build relation completions split by direction
+  const localRelations = relationInfoList.filter(
+    (r) => r.direction === 'local',
+  );
+  const foreignRelations = relationInfoList.filter(
+    (r) => r.direction === 'foreign',
+  );
+
+  const localRelationCompletions: Completion[] = localRelations.map((rel) => ({
+    label: rel.relationName,
+    type: 'property',
+    detail: `→ ${rel.foreignModelName}`,
+    info: 'Relation (use with hasRole/hasSomeRole)',
+  }));
+
+  const foreignRelationCompletions: Completion[] = foreignRelations.map(
+    (rel) => ({
       label: rel.relationName,
       type: 'property',
       detail: `→ ${rel.foreignModelName}`,
-      info: 'Relation (use with hasRole/hasSomeRole for nested authorization)',
-    });
-  }
+      info: 'Relation (use with exists/all)',
+    }),
+  );
 
-  // Build a map of relation name → foreign authorizer role names for quick lookup
+  // Build role lookup maps
   const foreignRolesByRelation = new Map<string, string[]>();
   for (const rel of relationInfoList) {
     if (rel.foreignAuthorizerRoleNames.length > 0) {
@@ -175,6 +257,84 @@ export function createAuthorizerCompletions(
         rel.relationName,
         rel.foreignAuthorizerRoleNames,
       );
+    }
+  }
+
+  // Build foreign field completions for exists/all conditions
+  const foreignFieldsByRelation = new Map<string, Completion[]>();
+  for (const rel of relationInfoList) {
+    if (rel.foreignScalarFields && rel.foreignScalarFields.length > 0) {
+      foreignFieldsByRelation.set(
+        rel.relationName,
+        rel.foreignScalarFields.map((f) => ({
+          label: f.name,
+          type: 'property',
+          detail: f.type,
+          info: `Field on ${rel.foreignModelName}`,
+        })),
+      );
+    }
+  }
+
+  // Build field type lookup for exists/all condition value completions
+  const foreignFieldTypesByRelation = new Map<string, Map<string, string>>();
+  for (const rel of relationInfoList) {
+    if (rel.foreignScalarFields && rel.foreignScalarFields.length > 0) {
+      foreignFieldTypesByRelation.set(
+        rel.relationName,
+        new Map(rel.foreignScalarFields.map((f) => [f.name, f.type])),
+      );
+    }
+  }
+
+  // Base value completions (used when field type is unknown)
+  const allValueCompletions: Completion[] = [
+    {
+      label: 'userId',
+      type: 'property',
+      detail: 'string | undefined',
+      info: 'Current user ID',
+    },
+    { label: 'true', type: 'keyword' },
+    { label: 'false', type: 'keyword' },
+  ];
+
+  const booleanValueCompletions: Completion[] = [
+    { label: 'true', type: 'keyword' },
+    { label: 'false', type: 'keyword' },
+  ];
+
+  const stringValueCompletions: Completion[] = [
+    {
+      label: 'userId',
+      type: 'property',
+      detail: 'string | undefined',
+      info: 'Current user ID',
+    },
+  ];
+
+  /**
+   * Get condition value completions filtered by the field type when known.
+   */
+  function getConditionValueCompletions(
+    relationName: string,
+    fieldName: string | null,
+  ): Completion[] {
+    if (!fieldName) return allValueCompletions;
+    const fieldTypes = foreignFieldTypesByRelation.get(relationName);
+    if (!fieldTypes) return allValueCompletions;
+    const fieldType = fieldTypes.get(fieldName);
+    switch (fieldType) {
+      case 'boolean': {
+        return booleanValueCompletions;
+      }
+      case 'string':
+      case 'uuid': {
+        return stringValueCompletions;
+      }
+      default: {
+        return allValueCompletions;
+      }
     }
   }
 
@@ -209,18 +369,24 @@ export function createAuthorizerCompletions(
       detail: '(roles: string[]) => boolean',
       info: 'Check if user has any of the specified global auth roles',
     }),
-    {
-      label: 'true',
-      type: 'keyword',
-    },
-    {
-      label: 'false',
-      type: 'keyword',
-    },
+    snippetCompletion('exists(model.${relation}, { ${field}: ${value} })', {
+      label: 'exists',
+      type: 'method',
+      detail: '(model.relation, conditions) => boolean',
+      info: 'Check if any related record matches conditions',
+    }),
+    snippetCompletion('all(model.${relation}, { ${field}: ${value} })', {
+      label: 'all',
+      type: 'method',
+      detail: '(model.relation, conditions) => boolean',
+      info: 'Check if all related records match conditions',
+    }),
+    { label: 'true', type: 'keyword' },
+    { label: 'false', type: 'keyword' },
   ];
 
-  // Add nested hasRole/hasSomeRole snippets for each relation with authorizer roles
-  for (const rel of relationInfoList) {
+  // Add per-relation snippets (local → hasRole/hasSomeRole, foreign → exists/all)
+  for (const rel of localRelations) {
     if (rel.foreignAuthorizerRoleNames.length > 0) {
       topLevelCompletions.push(
         snippetCompletion(`hasRole(model.${rel.relationName}, '\${role}')`, {
@@ -243,25 +409,50 @@ export function createAuthorizerCompletions(
       );
     }
   }
+  for (const rel of foreignRelations) {
+    topLevelCompletions.push(
+      snippetCompletion(
+        `exists(model.${rel.relationName}, { \${field}: \${value} })`,
+        {
+          label: `exists(model.${rel.relationName})`,
+          type: 'method',
+          detail: `→ ${rel.foreignModelName}`,
+          info: `Check if any related ${rel.foreignModelName} matches conditions`,
+          boost: -3,
+        },
+      ),
+      snippetCompletion(
+        `all(model.${rel.relationName}, { \${field}: \${value} })`,
+        {
+          label: `all(model.${rel.relationName})`,
+          type: 'method',
+          detail: `→ ${rel.foreignModelName}`,
+          info: `Check if all related ${rel.foreignModelName} records match conditions`,
+          boost: -4,
+        },
+      ),
+    );
+  }
 
+  // Return the completion handler
   return (context: CompletionContext): CompletionResult | null => {
-    // Check if we're inside hasRole() or hasSomeRole() string literals
-    const roleFnContext = getRoleFunctionContext(context);
-    if (roleFnContext) {
-      // We're inside a string within hasRole() or hasSomeRole()
-      // Find the start of the string content for autocomplete
-      const { pos } = context;
-      const tree = syntaxTree(context.state);
-      const stringNode = tree.resolveInner(pos, -1);
+    const ctxType = resolveExpressionCompletionContext(
+      context.state,
+      context.pos,
+    );
 
-      if (stringNode.name === 'String') {
-        // Start autocomplete from the beginning of the string content (after the quote)
+    switch (ctxType.type) {
+      case 'roleString': {
+        const tree = syntaxTree(context.state);
+        const stringNode = tree.resolveInner(context.pos, -1);
+        if (stringNode.name !== 'String') return null;
+
         const stringStart = stringNode.from + 1;
 
-        // If this is a nested call, show foreign model's authorizer roles
-        if (roleFnContext.nestedRelationName) {
+        // Nested call — show foreign model's authorizer roles
+        if (ctxType.nestedRelationName) {
           const foreignRoles = foreignRolesByRelation.get(
-            roleFnContext.nestedRelationName,
+            ctxType.nestedRelationName,
           );
           if (foreignRoles && foreignRoles.length > 0) {
             return {
@@ -269,13 +460,13 @@ export function createAuthorizerCompletions(
               options: foreignRoles.map((role) => ({
                 label: role,
                 type: 'constant',
-                info: `Role on ${relationInfoList.find((r) => r.relationName === roleFnContext.nestedRelationName)?.foreignModelName ?? 'related model'} authorizer`,
+                info: `Role on ${relationInfoList.find((r) => r.relationName === ctxType.nestedRelationName)?.foreignModelName ?? 'related model'} authorizer`,
               })),
             };
           }
         }
 
-        // Otherwise show project-level roles
+        // Project-level roles
         return {
           from: stringStart,
           options: projectRoles.map((role) => ({
@@ -285,65 +476,52 @@ export function createAuthorizerCompletions(
           })),
         };
       }
-    }
 
-    const pathResult = completionPath(context);
-
-    if (!pathResult) {
-      // Top-level - require at least 1 character (not just whitespace)
-      const word = context.matchBefore(/\w+/);
-      if (!word) return null;
-
-      // Don't show top-level completions inside string literals
-      if (isInsideStringLiteral(context)) {
-        return null;
+      case 'conditionKey': {
+        const word = context.matchBefore(/\w*/);
+        const fields = foreignFieldsByRelation.get(ctxType.relationName);
+        return word && fields ? { from: word.from, options: fields } : null;
       }
 
-      return {
-        from: word.from,
-        options: topLevelCompletions,
-      };
-    }
-
-    const { path } = pathResult;
-
-    if (path.length === 0) {
-      // Should not reach here due to check above, but keep for safety
-      const word = context.matchBefore(/\w+/);
-      if (!word) return null;
-
-      // Don't show top-level completions inside string literals
-      if (isInsideStringLiteral(context)) {
-        return null;
+      case 'conditionValue': {
+        const word = context.matchBefore(/\w*/);
+        return word
+          ? {
+              from: word.from,
+              options: getConditionValueCompletions(
+                ctxType.relationName,
+                ctxType.fieldName,
+              ),
+            }
+          : null;
       }
 
-      return {
-        from: word.from,
-        options: topLevelCompletions,
-      };
+      case 'modelRelation': {
+        const word = context.matchBefore(/model\.\w*/);
+        if (!word) return null;
+        // hasRole/hasSomeRole use local (belongs-to) relations; exists/all use foreign (has-many)
+        const options =
+          ctxType.funcName === 'exists' || ctxType.funcName === 'all'
+            ? foreignRelationCompletions
+            : localRelationCompletions;
+        return { from: word.from + 6, options };
+      }
+
+      case 'modelField': {
+        const word = context.matchBefore(/model\.\w*/);
+        return word
+          ? { from: word.from + 6, options: scalarFieldCompletions }
+          : null;
+      }
+
+      case 'topLevel': {
+        const word = context.matchBefore(/\w+/);
+        return word ? { from: word.from, options: topLevelCompletions } : null;
+      }
+
+      case 'none': {
+        return null;
+      }
     }
-
-    // Check if we're completing "model.*"
-    if (path.length === 1 && path[0] === 'model') {
-      // Allow completion immediately after dot (model.) or after typing characters (model.f)
-      const word = context.matchBefore(/model\.\w*/);
-      if (!word) return null;
-
-      // Check if model. is inside hasRole( or hasSomeRole( as first arg — show relations only
-      const textBefore = context.state.doc.sliceString(0, word.from);
-      const isInsideRoleFnArg = /(?:hasRole|hasSomeRole)\(\s*$/.test(
-        textBefore,
-      );
-
-      return {
-        from: word.from + 6, // Length of "model."
-        options: isInsideRoleFnArg
-          ? relationCompletions
-          : scalarFieldCompletions,
-      };
-    }
-
-    // No completions for deeper paths
-    return null;
   };
 }

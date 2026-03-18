@@ -144,7 +144,6 @@ function PluginConfigPage(): React.JSX.Element {
             </DropdownMenu>
           )}
         </div>
-        {}
         <Container
           definition={pluginDefinition}
           metadata={pluginMetadata}

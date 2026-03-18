@@ -181,4 +181,60 @@ describe('generateQueryFilterExpressionCode', () => {
       );
     });
   });
+
+  describe('relation filter (exists/all)', () => {
+    it('should generate exists with auth field condition (null guard)', () => {
+      expect(generateQF('exists(model.members, { userId: userId })')).toBe(
+        '(ctx.auth.userId != null ? { members: { some: { userId: ctx.auth.userId } } } : false)',
+      );
+    });
+
+    it('should generate exists with literal condition (no null guard)', () => {
+      expect(generateQF("exists(model.members, { type: 'admin' })")).toBe(
+        "{ members: { some: { type: 'admin' } } }",
+      );
+    });
+
+    it('should generate exists with multiple conditions', () => {
+      expect(
+        generateQF("exists(model.members, { userId: userId, type: 'admin' })"),
+      ).toBe(
+        "(ctx.auth.userId != null ? { members: { some: { userId: ctx.auth.userId, type: 'admin' } } } : false)",
+      );
+    });
+
+    it('should generate all with literal condition', () => {
+      expect(generateQF('all(model.tasks, { isCompleted: true })')).toBe(
+        '{ tasks: { every: { isCompleted: true } } }',
+      );
+    });
+
+    it('should generate all with auth field condition (null guard)', () => {
+      expect(generateQF('all(model.tasks, { assigneeId: userId })')).toBe(
+        '(ctx.auth.userId != null ? { tasks: { every: { assigneeId: ctx.auth.userId } } } : false)',
+      );
+    });
+
+    it('should combine exists with logical operators', () => {
+      expect(
+        generateQF(
+          "exists(model.members, { userId: userId }) || hasRole('admin')",
+        ),
+      ).toBe(
+        "queryHelpers.or([(ctx.auth.userId != null ? { members: { some: { userId: ctx.auth.userId } } } : false), ctx.auth.hasRole('admin')])",
+      );
+    });
+
+    it('should generate exists with boolean literal', () => {
+      expect(generateQF('exists(model.tasks, { isPublic: true })')).toBe(
+        '{ tasks: { some: { isPublic: true } } }',
+      );
+    });
+
+    it('should generate exists with number literal', () => {
+      expect(generateQF('exists(model.items, { quantity: 0 })')).toBe(
+        '{ items: { some: { quantity: 0 } } }',
+      );
+    });
+  });
 });
