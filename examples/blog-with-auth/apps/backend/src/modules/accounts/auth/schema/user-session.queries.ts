@@ -1,8 +1,8 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
+import { userObjectType } from '../../users/schema/user.object-type.js';
 import { userSessionPayload } from './user-session-payload.object-type.js';
-import { userObjectType } from './user.object-type.js';
 
 builder.queryField('currentUserSession', (t) =>
   t.field({

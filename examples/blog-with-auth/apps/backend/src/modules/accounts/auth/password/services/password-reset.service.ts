@@ -12,7 +12,7 @@ import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 import { handleZodRequestValidationError } from '@src/utils/zod.js';
 
-import { sendEmail } from '../../../emails/services/emails.service.js';
+import { sendEmail } from '../../../../emails/services/emails.service.js';
 import {
   createAuthVerification,
   validateAuthVerification,

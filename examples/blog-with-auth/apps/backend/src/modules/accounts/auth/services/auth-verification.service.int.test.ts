@@ -1,11 +1,12 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 
+import { prisma } from '@src/services/prisma.js';
+
 import {
   cleanupExpiredAuthVerifications,
   createAuthVerification,
   validateAuthVerification,
-} from '@src/modules/accounts/services/auth-verification.service.js';
-import { prisma } from '@src/services/prisma.js';
+} from './auth-verification.service.js';
 
 /**
  * Creates a test user and returns the user ID.

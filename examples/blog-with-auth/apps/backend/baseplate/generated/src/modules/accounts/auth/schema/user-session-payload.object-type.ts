@@ -1,8 +1,8 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
+import { userObjectType } from '../../users/schema/user.object-type.js';
 import { authRoleEnum } from './auth-role.enum.js';
-import { userObjectType } from './user.object-type.js';
 
 export const userSessionPayload = builder.simpleObject(
   'UserSessionPayload',

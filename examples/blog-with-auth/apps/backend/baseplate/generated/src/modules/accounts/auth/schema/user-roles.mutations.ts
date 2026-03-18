@@ -1,7 +1,7 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
+import { userObjectType } from '../../users/schema/user.object-type.js';
 import { updateUserRoles } from '../services/user-roles.service.js';
-import { userObjectType } from './user.object-type.js';
 
 builder.mutationField('updateUserRoles', (t) =>
   t.fieldWithInputPayload({

@@ -1,7 +1,7 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
+import { userObjectType } from '../../../users/schema/user.object-type.js';
 import { userSessionPayload } from '../../schema/user-session-payload.object-type.js';
-import { userObjectType } from '../../schema/user.object-type.js';
 import {
   authenticateUserWithEmailAndPassword,
   changeUserPassword,

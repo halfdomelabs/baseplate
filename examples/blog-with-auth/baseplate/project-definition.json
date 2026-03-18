@@ -100,7 +100,17 @@
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
-    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
+    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" },
+    {
+      "id": "feature:RLpN26dwQNkw",
+      "name": "accounts/auth",
+      "parentRef": "accounts"
+    },
+    {
+      "id": "feature:Cus91nOEvzmO",
+      "name": "accounts/users",
+      "parentRef": "accounts"
+    }
   ],
   "isInitialized": true,
   "libraries": [
@@ -189,7 +199,7 @@
       }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/auth",
       "id": "model:wGEO1hZs5XQE",
       "model": {
         "fields": [
@@ -567,7 +577,7 @@
           }
         ]
       },
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
           "create": { "enabled": true },
@@ -672,7 +682,7 @@
       }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "id": "model:brCokD6pIz7E",
       "model": {
         "fields": [
@@ -753,7 +763,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
           "enabled": true,
@@ -810,7 +820,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "id": "model:8koW3IyW42e_",
       "model": {
         "fields": [
@@ -901,7 +911,8 @@
     },
     {
       "config": {
-        "authFeatureRef": "accounts",
+        "accountsFeatureRef": "accounts/users",
+        "authFeatureRef": "accounts/auth",
         "implementationPluginKey": "baseplate-dev_plugin-auth_local-auth",
         "roles": [
           {
@@ -934,6 +945,7 @@
           }
         ]
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_auth",
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
