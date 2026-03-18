@@ -130,6 +130,7 @@ const transformerTypes = createTsTemplateFile({
     AnyTransformer: { isTypeOnly: true },
     BoundTransformer: { isTypeOnly: true },
     InferTransformed: { isTypeOnly: true },
+    InferUnresolvedTransformed: { isTypeOnly: true },
     MaybePromise: { isTypeOnly: true },
     Transformer: { isTypeOnly: true },
     TransformerResult: { isTypeOnly: true },

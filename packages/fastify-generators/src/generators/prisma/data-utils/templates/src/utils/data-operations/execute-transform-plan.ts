@@ -3,6 +3,7 @@
 import type {
   AnyBoundTransformer,
   InferTransformed,
+  InferUnresolvedTransformed,
   TransformPlan,
 } from '$transformerTypes';
 import type { Prisma } from '%prismaGeneratedImports';
@@ -19,7 +20,7 @@ import { prisma } from '%prismaImports';
 async function resolveTransformed<
   TTransformers extends Record<string, AnyBoundTransformer>,
 >(
-  transformed: InferTransformed<TTransformers>,
+  transformed: InferUnresolvedTransformed<TTransformers>,
   tx: Prisma.TransactionClient,
 ): Promise<InferTransformed<TTransformers>> {
   const resolved: Record<string, unknown> = {};

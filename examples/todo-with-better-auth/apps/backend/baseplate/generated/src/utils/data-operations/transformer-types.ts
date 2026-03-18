@@ -78,24 +78,21 @@ export interface Transformer<
 /** Type alias for any transformer (used for generic constraints) */
 export type AnyTransformer = Transformer<any, any[], any[], any, any>;
 
-/**
- * The result of `prepareTransformers`. Contains resolved transformer data
- * and collected afterExecute hooks.
- *
- * @template TTransformers - Record of bound transformers
- */
-export interface TransformPlan<
-  TTransformers extends Record<string, AnyBoundTransformer>,
-> {
-  /** Resolved data from each transformer, keyed by transformer name */
-  transformed: InferTransformed<TTransformers>;
-  /** Collected afterExecute hooks from all transformers */
-  afterExecute: AfterExecuteHook[];
-}
-
 /** Infer the output type of a bound transformer */
 type InferBoundOutput<T extends AnyBoundTransformer> =
   T extends BoundTransformer<infer TOutput> ? TOutput : never;
+
+/** The shape of a transformer's data before resolution: either a plain value or a deferred function */
+type DeferredOrValue<T> = T | ((tx: Prisma.TransactionClient) => Promise<T>);
+
+/** Infer the unresolved (pre-transaction) data map from a record of bound transformers */
+export type InferUnresolvedTransformed<
+  TTransformers extends Record<string, AnyBoundTransformer>,
+> = {
+  [K in keyof TTransformers]: DeferredOrValue<
+    InferBoundOutput<TTransformers[K]>
+  >;
+};
 
 /** Infer the resolved transformed data map from a record of bound transformers */
 export type InferTransformed<
@@ -103,3 +100,18 @@ export type InferTransformed<
 > = {
   [K in keyof TTransformers]: InferBoundOutput<TTransformers[K]>;
 };
+
+/**
+ * The result of `prepareTransformers`. Contains unresolved transformer data
+ * (which may include deferred functions) and collected afterExecute hooks.
+ *
+ * @template TTransformers - Record of bound transformers
+ */
+export interface TransformPlan<
+  TTransformers extends Record<string, AnyBoundTransformer>,
+> {
+  /** Unresolved data from each transformer — may contain deferred functions */
+  transformed: InferUnresolvedTransformed<TTransformers>;
+  /** Collected afterExecute hooks from all transformers */
+  afterExecute: AfterExecuteHook[];
+}

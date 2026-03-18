@@ -2,7 +2,7 @@ import type { ServiceContext } from '../service-context.js';
 import type {
   AfterExecuteHook,
   AnyBoundTransformer,
-  InferTransformed,
+  InferUnresolvedTransformed,
   TransformPlan,
 } from './transformer-types.js';
 
@@ -55,7 +55,7 @@ export async function prepareTransformers<
     ),
   );
 
-  const transformed = {} as InferTransformed<TTransformers>;
+  const transformed = {} as InferUnresolvedTransformed<TTransformers>;
   const afterExecute: AfterExecuteHook[] = [];
 
   for (const [index, result] of results.entries()) {
