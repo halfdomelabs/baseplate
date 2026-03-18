@@ -63,6 +63,7 @@ export default createPluginModule({
             localAuthDefinition.additionalUserAdminRoles.map((role) =>
               definitionContainer.nameFromId(role),
             );
+          // 'admin' is always included since it is now a built-in role guaranteed to exist
           const adminRoles = [...new Set(['admin', ...additionalAdminRoles])];
 
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {

@@ -56,6 +56,35 @@ function ResetPasswordPage(): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const onSubmit = (data: FormData): void => {
+    setIsSubmitting(true);
+    authClient
+      .resetPassword({
+        newPassword: data.newPassword,
+        token,
+      })
+      .then(({ error }) => {
+        if (error) {
+          setFormError('newPassword', {
+            message:
+              error.message ??
+              'Failed to reset password. The link may have expired.',
+          });
+          return;
+        }
+        setIsSuccess(true);
+      })
+      .catch((err: unknown) => {
+        logError(err);
+        setFormError('newPassword', {
+          message: 'Sorry, something went wrong. Please try again.',
+        });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
   if (!token) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -103,35 +132,6 @@ function ResetPasswordPage(): React.JSX.Element {
       </div>
     );
   }
-
-  const onSubmit = (data: FormData): void => {
-    setIsSubmitting(true);
-    authClient
-      .resetPassword({
-        newPassword: data.newPassword,
-        token,
-      })
-      .then(({ error }) => {
-        if (error) {
-          setFormError('newPassword', {
-            message:
-              error.message ??
-              'Failed to reset password. The link may have expired.',
-          });
-          return;
-        }
-        setIsSuccess(true);
-      })
-      .catch((err: unknown) => {
-        logError(err);
-        setFormError('newPassword', {
-          message: 'Sorry, something went wrong. Please try again.',
-        });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
-  };
 
   return (
     <div className="flex h-full items-center justify-center">

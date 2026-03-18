@@ -140,6 +140,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   authRolesImports,
+                  errorHandlerServiceImports,
                   pothosImports,
                   prismaGeneratedImports,
                   prismaImports,

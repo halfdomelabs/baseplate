@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   authRolesImportsProvider,
+  errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
@@ -44,6 +45,7 @@ const betterAuthBetterAuthAdminModuleRenderers =
 const betterAuthBetterAuthAdminModuleRenderersTask = createGeneratorTask({
   dependencies: {
     authRolesImports: authRolesImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: BETTER_AUTH_BETTER_AUTH_ADMIN_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
@@ -56,6 +58,7 @@ const betterAuthBetterAuthAdminModuleRenderersTask = createGeneratorTask({
   },
   run({
     authRolesImports,
+    errorHandlerServiceImports,
     paths,
     pothosImports,
     prismaGeneratedImports,
@@ -86,6 +89,7 @@ const betterAuthBetterAuthAdminModuleRenderersTask = createGeneratorTask({
                 destination: paths.adminAuthService,
                 importMapProviders: {
                   authRolesImports,
+                  errorHandlerServiceImports,
                   prismaGeneratedImports,
                   prismaImports,
                 },

@@ -4,6 +4,7 @@ import type { AuthRole } from '%authRolesImports';
 import type { User } from '%prismaGeneratedImports';
 
 import { AUTH_ROLE_CONFIG } from '%authRolesImports';
+import { NotFoundError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
 
 /**
@@ -41,7 +42,13 @@ export async function updateUserRoles({
     }),
   ]);
 
-  return prisma.user.findUnique({
+  const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-  }) as Promise<User>;
+  });
+
+  if (updatedUser === null) {
+    throw new NotFoundError('User not found', 'user-not-found');
+  }
+
+  return updatedUser;
 }

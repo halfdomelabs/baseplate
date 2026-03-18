@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   authRolesImportsProvider,
+  errorHandlerServiceImportsProvider,
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
@@ -25,6 +26,7 @@ const adminAuthService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     authRolesImports: authRolesImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
