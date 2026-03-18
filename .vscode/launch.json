@@ -8,20 +8,15 @@
       "name": "Debug Current Test File",
       "autoAttachChildProcesses": true,
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["vitest", "${relativeFile}", "--testTimeout", "0"],
-      "smartStep": true,
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run prisma-crud Generation",
-      "autoAttachChildProcesses": true,
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "cwd": "${workspaceRoot}/packages/project-builder-cli",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "start", "generate", "../../../prisma-crud"],
+      "runtimeExecutable": "mise",
+      "runtimeArgs": [
+        "x",
+        "--",
+        "vitest",
+        "${relativeFile}",
+        "--testTimeout",
+        "0"
+      ],
       "smartStep": true,
       "console": "integratedTerminal"
     }
