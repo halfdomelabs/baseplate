@@ -16,7 +16,7 @@ export const articleCreateSchema = z.object(articleFieldSchemas);
 export const articleUpdateSchema = z.object(articleFieldSchemas).partial();
 
 export async function createArticle<TQuery extends DataQuery<'article'>>({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -27,7 +27,7 @@ export async function createArticle<TQuery extends DataQuery<'article'>>({
   checkGlobalAuthorization(context, ['admin']);
 
   const result = await prisma.article.create({
-    data: input,
+    data,
     ...query,
   });
 
@@ -36,7 +36,7 @@ export async function createArticle<TQuery extends DataQuery<'article'>>({
 
 export async function updateArticle<TQuery extends DataQuery<'article'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -49,7 +49,7 @@ export async function updateArticle<TQuery extends DataQuery<'article'>>({
 
   const result = await prisma.article.update({
     where,
-    data: input,
+    data,
     ...query,
   });
 

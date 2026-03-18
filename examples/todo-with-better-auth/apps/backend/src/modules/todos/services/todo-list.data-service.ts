@@ -40,7 +40,7 @@ export const todoListTransformers = {
 };
 
 export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -49,7 +49,7 @@ export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
   checkGlobalAuthorization(context, ['user']);
-  const { coverPhoto, ownerId, ...rest } = input;
+  const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {
@@ -76,7 +76,7 @@ export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
 
 export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -87,7 +87,7 @@ export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
 }): Promise<GetResult<'todoList', TQuery>> {
   const existingItem = await prisma.todoList.findUniqueOrThrow({ where });
   checkGlobalAuthorization(context, ['user']);
-  const { coverPhoto, ownerId, ...rest } = input;
+  const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {

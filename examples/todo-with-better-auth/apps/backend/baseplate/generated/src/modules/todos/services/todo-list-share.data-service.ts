@@ -26,7 +26,7 @@ export const todoListShareUpdateSchema = z
 export async function createTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,
 >({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -35,7 +35,7 @@ export async function createTodoListShare<
   context: ServiceContext;
 }): Promise<GetResult<'todoListShare', TQuery>> {
   checkGlobalAuthorization(context, ['user']);
-  const { todoListId, userId, ...rest } = input;
+  const { todoListId, userId, ...rest } = data;
 
   const result = await prisma.todoListShare.create({
     data: {
@@ -53,7 +53,7 @@ export async function updateTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,
 >({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -63,7 +63,7 @@ export async function updateTodoListShare<
   context: ServiceContext;
 }): Promise<GetResult<'todoListShare', TQuery>> {
   checkGlobalAuthorization(context, ['user']);
-  const { todoListId, userId, ...rest } = input;
+  const { todoListId, userId, ...rest } = data;
 
   const result = await prisma.todoListShare.update({
     where,

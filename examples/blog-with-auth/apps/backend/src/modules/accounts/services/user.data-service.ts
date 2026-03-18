@@ -20,7 +20,7 @@ export const userCreateSchema = z.object(userFieldSchemas);
 export const userUpdateSchema = z.object(userFieldSchemas).partial();
 
 export async function createUser<TQuery extends DataQuery<'user'>>({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -31,7 +31,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   checkGlobalAuthorization(context, ['admin']);
 
   const result = await prisma.user.create({
-    data: input,
+    data,
     ...query,
   });
 
@@ -40,7 +40,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
 
 export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -53,7 +53,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
 
   const result = await prisma.user.update({
     where,
-    data: input,
+    data,
     ...query,
   });
 

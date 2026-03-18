@@ -210,7 +210,7 @@ export const userTransformers = {
 };
 
 export async function createUser<TQuery extends DataQuery<'user'>>({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -219,7 +219,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
   checkGlobalAuthorization(context, ['admin']);
-  const { customer, images, roles, userProfile, ...rest } = input;
+  const { customer, images, roles, userProfile, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {
@@ -245,7 +245,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
 
 export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -255,7 +255,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
   checkGlobalAuthorization(context, ['admin']);
-  const { customer, images, roles, userProfile, ...rest } = input;
+  const { customer, images, roles, userProfile, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {

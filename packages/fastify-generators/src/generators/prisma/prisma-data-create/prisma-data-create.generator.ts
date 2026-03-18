@@ -104,11 +104,17 @@ export const prismaDataCreateGenerator = createGenerator({
             const transformersObject =
               parts.transformersObjectFragment ?? tsTemplate`{}`;
 
+            // Use property shorthand when data passes through unchanged
+            const prismaDataEntry =
+              parts.prismaDataFragment === 'data'
+                ? 'data,'
+                : tsTemplate`data: ${parts.prismaDataFragment},`;
+
             const createFunction = hasTransformFields
               ? // Transform path: prepareTransformers + executeTransformPlan
                 tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
-                  data: input,
+                  data,
                   query,
                   context,
                 }: {
@@ -127,7 +133,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
                     execute: async ({ tx, transformed }) =>
                       tx.${modelVar}.create({
-                        data: ${parts.prismaDataFragment},
+                        ${prismaDataEntry}
                       }),
                     refetch: (item) =>
                       ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
@@ -139,7 +145,7 @@ export const prismaDataCreateGenerator = createGenerator({
               : // Scalar-only path: direct Prisma call, no transaction
                 tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
-                  data: input,
+                  data,
                   query,
                   context,
                 }: {
@@ -151,7 +157,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   ${parts.inputDestructureFragment}
 
                   const result = await ${prismaImports.prisma.fragment()}.${modelVar}.create({
-                    data: ${parts.prismaDataFragment},
+                    ${prismaDataEntry}
                     ...query,
                   });
 

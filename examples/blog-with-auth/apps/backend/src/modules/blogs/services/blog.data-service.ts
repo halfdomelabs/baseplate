@@ -18,7 +18,7 @@ export const blogUpdateSchema = z.object(blogFieldSchemas).partial();
 
 export async function updateBlog<TQuery extends DataQuery<'blog'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -32,7 +32,7 @@ export async function updateBlog<TQuery extends DataQuery<'blog'>>({
     'admin',
     blogAuthorizer.roles.owner,
   ]);
-  const { userId, ...rest } = input;
+  const { userId, ...rest } = data;
 
   const result = await prisma.blog.update({
     where,

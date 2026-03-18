@@ -21,7 +21,7 @@ interface TransformOperationConfig {
   dataUtilsImports: DataUtilsImportsProvider;
   /** Create or update operation */
   operationType: 'create' | 'update';
-  /** Variable name for the input (default: 'input') */
+  /** Variable name for the input (default: 'data') */
   inputVarName?: string;
   /** Fragment or string for the transformers variable (e.g., 'xTransformers' or an import fragment) */
   transformersVarFragment?: TsCodeFragment | string;
@@ -227,7 +227,7 @@ export function buildTransformOperationParts(
     prismaModel,
     dataUtilsImports,
     operationType,
-    inputVarName = 'input',
+    inputVarName = 'data',
     transformersVarFragment,
     existingItemVarName = 'existingItem',
     loadExistingVarName = 'where',

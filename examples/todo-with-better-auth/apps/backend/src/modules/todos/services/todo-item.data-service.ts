@@ -101,7 +101,7 @@ export const todoItemTransformers = {
 };
 
 export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -110,7 +110,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
   checkGlobalAuthorization(context, ['user']);
-  const { attachments, assigneeId, todoListId, ...rest } = input;
+  const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {
@@ -138,7 +138,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
 
 export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   where,
-  data: input,
+  data,
   query,
   context,
 }: {
@@ -152,7 +152,7 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
     'admin',
     todoItemAuthorizer.roles.owner,
   ]);
-  const { attachments, assigneeId, todoListId, ...rest } = input;
+  const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({
     transformers: {

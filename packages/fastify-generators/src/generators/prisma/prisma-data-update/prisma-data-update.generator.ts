@@ -134,12 +134,18 @@ export const prismaDataUpdateGenerator = createGenerator({
             const transformersObject =
               parts.transformersObjectFragment ?? tsTemplate`{}`;
 
+            // Use property shorthand when data passes through unchanged
+            const prismaDataEntry =
+              parts.prismaDataFragment === 'data'
+                ? 'data,'
+                : tsTemplate`data: ${parts.prismaDataFragment},`;
+
             const updateFunction = hasTransformFields
               ? // Transform path: prepareTransformers + executeTransformPlan
                 tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   where,
-                  data: input,
+                  data,
                   query,
                   context,
                 }: {
@@ -161,7 +167,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                     execute: async ({ tx, transformed }) =>
                       tx.${modelVar}.update({
                         where,
-                        data: ${parts.prismaDataFragment},
+                        ${prismaDataEntry}
                       }),
                     refetch: (item) =>
                       ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
@@ -174,7 +180,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                 tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   where,
-                  data: input,
+                  data,
                   query,
                   context,
                 }: {
@@ -189,7 +195,7 @@ export const prismaDataUpdateGenerator = createGenerator({
 
                   const result = await ${prismaImports.prisma.fragment()}.${modelVar}.update({
                     where,
-                    data: ${parts.prismaDataFragment},
+                    ${prismaDataEntry}
                     ...query,
                   });
 
