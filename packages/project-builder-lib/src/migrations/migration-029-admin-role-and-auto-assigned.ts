@@ -66,7 +66,14 @@ export const migration029AdminRoleAndAutoAssigned = createSchemaMigration<
         }));
 
         // Add admin role if not already present
-        if (!authConfig.roles.some((r) => r.name === 'admin')) {
+        if (authConfig.roles.some((r) => r.name === 'admin')) {
+          // If admin exists but isn't builtIn, make it builtIn
+          authConfig.roles = authConfig.roles.map((role) =>
+            role.name === 'admin'
+              ? { ...role, builtIn: true, autoAssigned: false }
+              : role,
+          );
+        } else {
           authConfig.roles.push({
             id: `auth-role:${crypto.randomUUID()}`,
             name: 'admin',
@@ -74,13 +81,6 @@ export const migration029AdminRoleAndAutoAssigned = createSchemaMigration<
             builtIn: true,
             autoAssigned: false,
           });
-        } else {
-          // If admin exists but isn't builtIn, make it builtIn
-          authConfig.roles = authConfig.roles.map((role) =>
-            role.name === 'admin'
-              ? { ...role, builtIn: true, autoAssigned: false }
-              : role,
-          );
         }
       }
     }
