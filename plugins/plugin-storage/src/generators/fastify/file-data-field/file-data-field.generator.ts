@@ -77,6 +77,8 @@ export const fileDataFieldGenerator = createGenerator({
           );
         }
 
+        const fileIdFieldName = relation.fields[0];
+
         // Get the file category fragment
         const fileCategoryFragment =
           fileCategories.getFileCategoryImportFragment(category);
@@ -123,6 +125,10 @@ export const fileDataFieldGenerator = createGenerator({
               transformer: {
                 fragment: transformerFragment,
                 needsExistingItem: true,
+                forUpdatePattern: {
+                  kind: 'existingField',
+                  existingFieldName: fileIdFieldName,
+                },
               },
               isTransformField: true,
               outputDtoField,

@@ -5,25 +5,9 @@ import { serviceContextImportsProvider } from '#src/generators/core/service-cont
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
-const relationHelpers = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'data-operations',
-  importMapProviders: {},
-  name: 'relation-helpers',
-  projectExports: { relationHelpers: { isTypeOnly: false } },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/utils/data-operations/relation-helpers.ts',
-    ),
-  },
-  variables: {},
-});
-
-export const dataOperationsGroup = { relationHelpers };
-
 const defineTransformer = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'define-transformer',
   projectExports: { defineTransformer: { isTypeOnly: false } },
@@ -39,6 +23,7 @@ const defineTransformer = createTsTemplateFile({
 
 const executeTransformPlan = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: {
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -57,6 +42,7 @@ const executeTransformPlan = createTsTemplateFile({
 
 const nestedTransformers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: {
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
@@ -78,6 +64,7 @@ const nestedTransformers = createTsTemplateFile({
 
 const prepareTransformers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'prepare-transformers',
   projectExports: { prepareTransformers: { isTypeOnly: false } },
@@ -93,6 +80,7 @@ const prepareTransformers = createTsTemplateFile({
 
 const prismaTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: {
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -113,8 +101,24 @@ const prismaTypes = createTsTemplateFile({
   variables: {},
 });
 
+const relationHelpers = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
+  importMapProviders: {},
+  name: 'relation-helpers',
+  projectExports: { relationHelpers: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/data-operations/relation-helpers.ts',
+    ),
+  },
+  variables: {},
+});
+
 const transformerTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'data-operations',
   importMapProviders: {
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
@@ -140,12 +144,14 @@ const transformerTypes = createTsTemplateFile({
   variables: {},
 });
 
-export const PRISMA_DATA_UTILS_TEMPLATES = {
-  dataOperationsGroup,
+export const dataOperationsGroup = {
   defineTransformer,
   executeTransformPlan,
   nestedTransformers,
   prepareTransformers,
   prismaTypes,
+  relationHelpers,
   transformerTypes,
 };
+
+export const PRISMA_DATA_UTILS_TEMPLATES = { dataOperationsGroup };

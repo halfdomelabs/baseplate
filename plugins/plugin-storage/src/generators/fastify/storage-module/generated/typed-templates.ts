@@ -132,6 +132,32 @@ const servicesDownloadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
+const servicesFileTransformer = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: { dataUtilsImports: dataUtilsImportsProvider },
+  name: 'services-file-transformer',
+  projectExports: {
+    FileConnect: { isTypeOnly: true },
+    FileDisconnect: { isTypeOnly: true },
+    FileInput: { isTypeOnly: true },
+    fileInputSchema: { isTypeOnly: false },
+    fileNullableInputSchema: { isTypeOnly: false },
+    fileTransformer: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    typesFileCategory: {},
+    utilsValidatePendingUpload: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/file-transformer.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -256,6 +282,7 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
+  servicesFileTransformer,
   servicesUploadFile,
   typesAdapter,
   typesFileCategory,
@@ -372,31 +399,6 @@ const servicesCleanUnusedFiles = createTsTemplateFile({
   variables: {},
 });
 
-const servicesFileTransformer = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: { dataUtilsImports: dataUtilsImportsProvider },
-  name: 'services-file-transformer',
-  projectExports: {
-    FileConnect: { isTypeOnly: true },
-    FileDisconnect: { isTypeOnly: true },
-    FileInput: { isTypeOnly: true },
-    fileInputSchema: { isTypeOnly: false },
-    fileNullableInputSchema: { isTypeOnly: false },
-    fileTransformer: { isTypeOnly: false },
-  },
-  referencedGeneratorTemplates: {
-    typesFileCategory: {},
-    utilsValidatePendingUpload: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/file-transformer.ts',
-    ),
-  },
-  variables: {},
-});
-
 const servicesGetPublicUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -458,7 +460,6 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   queuesCleanUnusedFiles,
   schemaGroup,
   servicesCleanUnusedFiles,
-  servicesFileTransformer,
   servicesGetPublicUrl,
   utilsGetAdapter,
   utilsValidatePendingUpload,

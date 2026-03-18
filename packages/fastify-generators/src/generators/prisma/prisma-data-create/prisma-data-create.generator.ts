@@ -1,3 +1,5 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import {
@@ -15,6 +17,7 @@ import {
 } from '#src/types/service-output.js';
 
 import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
+import { serviceContextImportsProvider } from '../../core/service-context/generated/ts-import-providers.js';
 import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
 import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
@@ -52,6 +55,7 @@ export const prismaDataCreateGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
+        serviceContextImports: serviceContextImportsProvider,
       },
       run({
         serviceFile,
@@ -60,6 +64,7 @@ export const prismaDataCreateGenerator = createGenerator({
         prismaOutput,
         prismaImports,
         authorizerImports,
+        serviceContextImports,
       }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
@@ -88,9 +93,9 @@ export const prismaDataCreateGenerator = createGenerator({
 
             // Generate FK → relation transformations
             const {
-              createReturnFragment: fkReturnFragment,
               passthrough: noFkRelations,
               foreignKeyFieldNames,
+              createRelationEntries,
             } = generateRelationBuildData({
               prismaModel,
               inputFieldNames: scalarFieldNames,
@@ -120,14 +125,25 @@ export const prismaDataCreateGenerator = createGenerator({
 
             const dataName = hasDestructure ? 'rest' : 'input';
 
-            // Build the Prisma data object
-            const prismaDataFragment = noFkRelations
-              ? hasTransformFields
-                ? tsTemplate`{ ...${dataName}, ...transformed }`
-                : dataName
-              : hasTransformFields
-                ? tsTemplate`{ ...${fkReturnFragment}, ...transformed }`
-                : fkReturnFragment;
+            // Build the Prisma data object with proper spread order:
+            // { ...rest, ...transformed, relation: connectCreate({ id }) }
+            const dataEntries: Record<string, string | TsCodeFragment> = {
+              [`...${dataName}`]: dataName,
+            };
+            if (hasTransformFields) {
+              dataEntries['...transformed'] = 'transformed';
+            }
+            for (const [relationName, fragment] of Object.entries(
+              createRelationEntries,
+            )) {
+              dataEntries[relationName] = fragment;
+            }
+            const prismaDataFragment =
+              noFkRelations && !hasTransformFields
+                ? dataName
+                : TsCodeUtils.mergeFragmentsAsObject(dataEntries, {
+                    disableSort: true,
+                  });
 
             let createFunction;
 
@@ -153,7 +169,7 @@ export const prismaDataCreateGenerator = createGenerator({
                 }: {
                   data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
                   query?: TQuery;
-                  context: ServiceContext;
+                  context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
                   ${inputDestructure}
@@ -185,7 +201,7 @@ export const prismaDataCreateGenerator = createGenerator({
                 }: {
                   data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
                   query?: TQuery;
-                  context: ServiceContext;
+                  context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
                   ${inputDestructure}

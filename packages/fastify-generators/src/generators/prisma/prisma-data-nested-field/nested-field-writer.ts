@@ -306,12 +306,27 @@ export function writePrismaDataNestedField(
     transformerFragment = tsTemplate`${dataUtilsImports.oneToOneTransformer.fragment()}(${configObj})`;
   }
 
+  // Build loadExisting query fragment for the forUpdate pattern
+  const nestedModelVar = lowercaseFirstChar(nestedModel.name);
+  const reverseFields = reverseRelation.fields ?? [];
+  const reverseRefs = reverseRelation.references ?? [];
+  const whereEntries = reverseFields
+    .map((field, i) => `${field}: where.${reverseRefs[i]}`)
+    .join(', ');
+
+  const findMethod = relation.isList ? 'findMany' : 'findUnique';
+  const loadExistingFragment = tsTemplate`prisma.${nestedModelVar}.${findMethod}({ where: { ${whereEntries} } })`;
+
   return {
     name: relation.name,
     schemaFragment,
     transformer: {
       fragment: transformerFragment,
       needsExistingItem: true,
+      forUpdatePattern: {
+        kind: 'loadExisting',
+        loadExistingFragment,
+      },
     },
     isTransformField: true,
     outputDtoField: {

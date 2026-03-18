@@ -27,7 +27,6 @@ import type { InputFieldDefinitionOutput } from '../_shared/field-definition-gen
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
-import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
@@ -118,7 +117,7 @@ export const prismaDataServiceGenerator = createGenerator({
         configValues: prismaDataServiceValuesProvider,
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider,
-        dataUtilsImports: dataUtilsImportsProvider,
+
         prismaGeneratedImports: prismaGeneratedImportsProvider,
       },
       exports: {
@@ -218,19 +217,18 @@ export const prismaDataServiceGenerator = createGenerator({
             },
           },
           build: () => {
-            // Register field schemas
+            // Register field schemas (names are sorted alphabetically by serviceFile)
             serviceFile.registerHeader({
-              name: 'field-schemas',
+              name: 'schemas-1-fields',
               fragment: tsTemplate`const ${fieldSchemasVarName} = ${fieldSchemasObject};`,
             });
 
-            // Register create/update schemas
             serviceFile.registerHeader({
-              name: 'create-schema',
+              name: 'schemas-2-create',
               fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName});`,
             });
             serviceFile.registerHeader({
-              name: 'update-schema',
+              name: 'schemas-3-update',
               fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName}).partial();`,
             });
 

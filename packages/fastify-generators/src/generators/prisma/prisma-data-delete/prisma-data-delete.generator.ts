@@ -15,7 +15,9 @@ import {
 } from '#src/types/service-output.js';
 
 import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
+import { serviceContextImportsProvider } from '../../core/service-context/generated/ts-import-providers.js';
 import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
+import { generateWhereType } from '../_shared/build-data-helpers/generate-where-type.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
@@ -52,6 +54,7 @@ export const prismaDataDeleteGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
+        serviceContextImports: serviceContextImportsProvider,
         modelAuthorizer: prismaModelAuthorizerProvider
           .dependency()
           .optionalReference(modelName),
@@ -63,6 +66,7 @@ export const prismaDataDeleteGenerator = createGenerator({
         prismaOutput,
         prismaImports,
         authorizerImports,
+        serviceContextImports,
         modelAuthorizer,
       }) {
         return {
@@ -86,6 +90,8 @@ export const prismaDataDeleteGenerator = createGenerator({
               ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
               : '';
 
+            const whereType = generateWhereType(prismaModel);
+
             // Generate the delete function
             const deleteFunction = tsTemplate`
               export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
@@ -93,9 +99,9 @@ export const prismaDataDeleteGenerator = createGenerator({
                 query,
                 context,
               }: {
-                where: { id: string };
+                where: ${whereType};
                 query?: TQuery;
-                context: ServiceContext;
+                context: ${serviceContextImports.ServiceContext.typeFragment()};
               }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                 ${existingItemFragment}
                 ${authFragment}

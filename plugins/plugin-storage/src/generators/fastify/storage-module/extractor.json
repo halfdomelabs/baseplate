@@ -238,6 +238,7 @@
     "services-file-transformer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "main",
       "importMapProviders": {
         "dataUtilsImportsProvider": {
           "importName": "dataUtilsImportsProvider",

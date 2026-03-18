@@ -4,6 +4,7 @@
     "define-transformer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
@@ -24,6 +25,7 @@
     "execute-transform-plan": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
@@ -48,6 +50,7 @@
     "nested-transformers": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
@@ -76,6 +79,7 @@
     "prepare-transformers": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
@@ -96,6 +100,7 @@
     "prisma-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
@@ -131,6 +136,7 @@
     "transformer-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "data-operations",
       "importMapProviders": {
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
