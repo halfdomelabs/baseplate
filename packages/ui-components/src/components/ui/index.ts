@@ -20,7 +20,7 @@ export * from './date-picker-field/date-picker-field.js';
 export * from './date-time-picker-field/date-time-picker-field.js';
 export * from './dialog/dialog.js';
 export * from './dropdown/dropdown.js';
-export * from './empty-display/empty-display.js';
+export * from './empty/empty.js';
 export * from './error-display/error-display.js';
 export * from './errorable-loader/errorable-loader.js';
 export * from './field/field.js';

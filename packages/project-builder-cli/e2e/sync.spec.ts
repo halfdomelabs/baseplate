@@ -75,7 +75,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
 
   await expect(page.getByTestId('sync-button')).toHaveText('Syncing...');
 
-  await expect(page.getByText('Synced')).toBeVisible({
+  await expect(page.getByText('Synced', { exact: true })).toBeVisible({
     // this might take a while to sync
     timeout: 30_000,
   });

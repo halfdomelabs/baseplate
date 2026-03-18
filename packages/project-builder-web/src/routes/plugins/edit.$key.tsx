@@ -144,7 +144,6 @@ function PluginConfigPage(): React.JSX.Element {
             </DropdownMenu>
           )}
         </div>
-        {/* eslint-disable-next-line react-hooks/static-components -- we memoize the container */}
         <Container
           definition={pluginDefinition}
           metadata={pluginMetadata}

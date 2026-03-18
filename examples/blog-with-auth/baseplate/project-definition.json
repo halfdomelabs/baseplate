@@ -94,7 +94,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.3",
+  "cliVersion": "0.6.4",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
@@ -280,6 +280,11 @@
             "expression": "model.userId === userId",
             "id": "model-authorizer-role:mYNNLjaYYMAp",
             "name": "owner"
+          },
+          {
+            "expression": "exists(model.members, { userId: userId })\n",
+            "id": "model-authorizer-role:VosO0z22wzt0",
+            "name": "viewer"
           }
         ]
       },
@@ -369,6 +374,15 @@
       }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "hasRole(model.blog, 'owner')\n",
+            "id": "model-authorizer-role:L3Q3EbHXLKIg",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "blogs",
       "id": "model:ZYGsFp93vRhv",
       "model": {

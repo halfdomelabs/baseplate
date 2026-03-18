@@ -11,7 +11,12 @@ import {
   Badge,
   Button,
   Card,
-  EmptyDisplay,
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
@@ -33,12 +38,20 @@ function PackagesListPage(): React.JSX.Element {
 
   if (sortedApps.length === 0 && sortedLibraries.length === 0) {
     return (
-      <EmptyDisplay
-        icon={MdApps}
-        header="No Apps or Packages"
-        subtitle="You haven't created any apps or packages yet"
-        actions={<NewDialog trigger={<Button>Create New</Button>} />}
-      />
+      <Empty className="h-full">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <MdApps />
+          </EmptyMedia>
+          <EmptyTitle>No Apps or Packages</EmptyTitle>
+          <EmptyDescription>
+            You haven&apos;t created any apps or packages yet
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <NewDialog trigger={<Button>Create New</Button>} />
+        </EmptyContent>
+      </Empty>
     );
   }
 
