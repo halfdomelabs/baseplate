@@ -92,16 +92,23 @@ export const prismaDataDeleteGenerator = createGenerator({
 
             const whereType = generateWhereType(prismaModel);
 
+            // Only include context parameter when authorization is needed
+            const hasAuth = authFragment !== '';
+            const contextParam = hasAuth ? 'context,' : '';
+            const contextType = hasAuth
+              ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
+              : '';
+
             // Generate the delete function
             const deleteFunction = tsTemplate`
               export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                 where,
                 query,
-                context,
+                ${contextParam}
               }: {
                 where: ${whereType};
                 query?: TQuery;
-                context: ${serviceContextImports.ServiceContext.typeFragment()};
+                ${contextType}
               }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                 ${existingItemFragment}
                 ${authFragment}
@@ -134,11 +141,15 @@ export const prismaDataDeleteGenerator = createGenerator({
                       idFields: prismaModel.idFields ?? [],
                     },
                   }),
-                  createServiceOutputDtoInjectedArg({
-                    name: 'context',
-                    type: 'injected',
-                    kind: contextKind,
-                  }),
+                  ...(hasAuth
+                    ? [
+                        createServiceOutputDtoInjectedArg({
+                          name: 'context',
+                          type: 'injected' as const,
+                          kind: contextKind,
+                        }),
+                      ]
+                    : []),
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
                     name: 'query',

@@ -15,7 +15,8 @@ import type {
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 import type { DataUtilsImportsProvider } from '../data-utils/index.js';
 
-import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
+import { buildTransformOperationParts } from '../_shared/build-data-helpers/build-transform-operation-parts.js';
+import { generateExistingItemWhere } from '../_shared/build-data-helpers/generate-where-type.js';
 
 interface WritePrismaDataNestedFieldInput {
   parentModel: PrismaOutputModel;
@@ -23,6 +24,8 @@ interface WritePrismaDataNestedFieldInput {
   relation: PrismaOutputRelationField;
   nestedFields: InputFieldDefinitionOutput[];
   dataUtilsImports: DataUtilsImportsProvider;
+  /** Import fragment for the nested model's transformers variable (e.g., todoItemAttachmentTransformers) */
+  nestedTransformersFragment?: TsCodeFragment;
 }
 
 /**
@@ -122,10 +125,31 @@ function createProcessDeleteFragment(
 }
 
 /**
- * Generates processCreate and processUpdate functions for nested relations.
- * These return deferred operations that run inside the parent's transaction.
+ * Builds the parent connect fragment used in processCreate data.
+ * Generates: `relationName: { connect: { field1: parent.field1, ... } }`
  */
-function createProcessFunctions(
+function buildParentConnectEntry(reverseRelation: PrismaOutputRelationField): {
+  key: string;
+  value: TsCodeFragment;
+} {
+  const reverseFields = reverseRelation.fields ?? [];
+  const reverseRefs = reverseRelation.references ?? [];
+  const connectEntries = reverseFields.map((_, i) => {
+    const refField = reverseRefs[i];
+    return `${refField}: parent.${refField}`;
+  });
+
+  return {
+    key: reverseRelation.name,
+    value: tsTemplate`{ connect: { ${connectEntries.join(', ')} } }`,
+  };
+}
+
+/**
+ * Generates processCreate and processUpdate for the SIMPLE path (no sub-transformers).
+ * Uses the shared buildTransformOperationParts for FK handling.
+ */
+function createSimpleProcessFunctions(
   input: WritePrismaDataNestedFieldInput,
   reverseRelation: PrismaOutputRelationField,
 ): {
@@ -134,79 +158,160 @@ function createProcessFunctions(
 } {
   const { nestedModel, nestedFields, dataUtilsImports } = input;
   const modelVar = lowercaseFirstChar(nestedModel.name);
-  const nestedFieldNames = nestedFields.map((f) => f.name);
+  const parentConnect = buildParentConnectEntry(reverseRelation);
+  const whereExpr = generateExistingItemWhere(nestedModel);
 
-  // Get FK → relation build data for the nested model
-  const {
-    createArgumentFragment: fkArgCreate,
-    createReturnFragment: fkRetCreate,
-    updateArgumentFragment: fkArgUpdate,
-    updateReturnFragment: fkRetUpdate,
-    passthrough: noFkRelations,
-  } = generateRelationBuildData({
+  // Use shared helper for field categorization, destructuring, and data object building
+  const createParts = buildTransformOperationParts({
+    fields: nestedFields,
     prismaModel: nestedModel,
-    inputFieldNames: nestedFieldNames,
     dataUtilsImports,
-    dataName: 'rest',
+    operationType: 'create',
+    inputVarName: 'itemInput',
+    additionalDataEntries: { [parentConnect.key]: parentConnect.value },
   });
 
-  // Build the parent connect fragment from the reverse relation
-  const reverseFields = reverseRelation.fields ?? [];
-  const reverseRefs = reverseRelation.references ?? [];
-  const connectEntries = reverseFields.map((_, i) => {
-    const refField = reverseRefs[i];
-    return `${refField}: parent.${refField}`;
+  const updateParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'update',
+    inputVarName: 'itemInput',
+    existingItemVarName: 'existingItem',
   });
-  const parentConnectFragment = tsTemplate`${reverseRelation.name}: { connect: { ${connectEntries.join(', ')} } }`;
-
-  // Check if nested fields have sub-transformers
-  const hasSubTransformers = nestedFields.some((f) => f.isTransformField);
 
   let processCreateFragment: TsCodeFragment;
   let processUpdateFragment: TsCodeFragment;
 
-  if (hasSubTransformers) {
-    // Complex path: nested fields have their own transformers (e.g., file fields inside nested)
-    // TODO: Generate prepareTransformers + executeTransformPlan for sub-transformers
-    // For now, fall through to the simple path
-  }
-
-  // Simple path: no sub-transformers, direct Prisma calls
-  if (noFkRelations) {
+  if (createParts.hasDestructure) {
     processCreateFragment = tsTemplate`(itemInput) => async (tx, parent) => {
+      ${createParts.inputDestructureFragment}
       await tx.${modelVar}.create({
-        data: {
-          ...itemInput,
-          ${parentConnectFragment},
-        },
-      });
-    }`;
-
-    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
-      await tx.${modelVar}.update({
-        where: { id: existingItem.id },
-        data: itemInput,
+        data: ${createParts.prismaDataFragment},
       });
     }`;
   } else {
     processCreateFragment = tsTemplate`(itemInput) => async (tx, parent) => {
-      const ${fkArgCreate} = itemInput;
       await tx.${modelVar}.create({
-        data: {
-          ...${fkRetCreate},
-          ${parentConnectFragment},
-        },
-      });
-    }`;
-
-    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
-      const ${fkArgUpdate} = itemInput;
-      await tx.${modelVar}.update({
-        where: { id: existingItem.id },
-        data: ${fkRetUpdate},
+        data: ${createParts.prismaDataFragment},
       });
     }`;
   }
+
+  if (updateParts.hasDestructure) {
+    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
+      ${updateParts.inputDestructureFragment}
+      await tx.${modelVar}.update({
+        where: ${whereExpr},
+        data: ${updateParts.prismaDataFragment},
+      });
+    }`;
+  } else {
+    processUpdateFragment = tsTemplate`(itemInput, existingItem) => async (tx) => {
+      await tx.${modelVar}.update({
+        where: ${whereExpr},
+        data: ${updateParts.prismaDataFragment},
+      });
+    }`;
+  }
+
+  return { processCreateFragment, processUpdateFragment };
+}
+
+/**
+ * Generates processCreate and processUpdate for the TRANSFORM path (has sub-transformers).
+ * Uses prepareTransformers + executeTransformPlan inside the deferred operations.
+ */
+function createTransformProcessFunctions(
+  input: WritePrismaDataNestedFieldInput,
+  reverseRelation: PrismaOutputRelationField,
+): {
+  processCreateFragment: TsCodeFragment;
+  processUpdateFragment: TsCodeFragment;
+} {
+  const {
+    nestedModel,
+    nestedFields,
+    dataUtilsImports,
+    nestedTransformersFragment,
+  } = input;
+  const modelVar = lowercaseFirstChar(nestedModel.name);
+  const parentConnect = buildParentConnectEntry(reverseRelation);
+  const whereExpr = generateExistingItemWhere(nestedModel);
+
+  if (!nestedTransformersFragment) {
+    throw new Error(
+      `Nested model ${nestedModel.name} has sub-transform-fields but no transformers fragment. ` +
+        `Ensure the nested model has its own prisma-data-service.`,
+    );
+  }
+
+  // Build operation parts for create
+  const createParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'create',
+    inputVarName: 'itemInput',
+    transformersVarFragment: nestedTransformersFragment,
+    additionalDataEntries: { [parentConnect.key]: parentConnect.value },
+  });
+
+  // Build operation parts for update
+  // Use loadExistingVarName: 'existingItem' because in processUpdate,
+  // loadExisting should reference the existing nested item, not the parent's 'where'
+  const updateParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'update',
+    inputVarName: 'itemInput',
+    transformersVarFragment: nestedTransformersFragment,
+    existingItemVarName: 'existingItem',
+    loadExistingVarName: 'existingItem',
+  });
+
+  // Safe to assert: we only enter this path when hasTransformFields is true
+  // and we pass transformersVarFragment, so these will always be defined
+  const createTransformers = createParts.transformersObjectFragment!;
+  const updateTransformers = updateParts.transformersObjectFragment!;
+
+  // processCreate: prepare transformers then execute inside deferred
+  const processCreateFragment = tsTemplate`(itemInput, { serviceContext }) => async (tx, parent) => {
+    ${createParts.inputDestructureFragment}
+
+    const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+      transformers: ${createTransformers},
+      serviceContext,
+    });
+
+    await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+      tx,
+      execute: async (${createParts.hasTransformFields ? '{ transformed }' : ''}) =>
+        tx.${modelVar}.create({
+          data: ${createParts.prismaDataFragment},
+        }),
+    });
+  }`;
+
+  // processUpdate: prepare transformers then execute inside deferred
+  const processUpdateFragment = tsTemplate`(itemInput, existingItem, { serviceContext }) => async (tx) => {
+    ${updateParts.inputDestructureFragment}
+
+    const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+      transformers: ${updateTransformers},
+      serviceContext,
+    });
+
+    await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+      tx,
+      execute: async (${updateParts.hasTransformFields ? '{ transformed }' : ''}) =>
+        tx.${modelVar}.update({
+          where: ${whereExpr},
+          data: ${updateParts.prismaDataFragment},
+        }),
+    });
+  }`;
 
   return { processCreateFragment, processUpdateFragment };
 }
@@ -217,6 +322,9 @@ function createProcessFunctions(
  * Generates:
  * - schemaFragment: Zod schema for the fieldSchemas object
  * - transformer.fragment: oneToOneTransformer({...}) or oneToManyTransformer({...})
+ *
+ * For nested entities with sub-transform-fields (e.g., file fields), generates
+ * processCreate/processUpdate that use prepareTransformers + executeTransformPlan.
  */
 export function writePrismaDataNestedField(
   input: WritePrismaDataNestedFieldInput,
@@ -252,9 +360,12 @@ export function writePrismaDataNestedField(
     );
   }
 
-  // Generate process functions
-  const { processCreateFragment, processUpdateFragment } =
-    createProcessFunctions(input, reverseRelation);
+  // Choose process function generation based on whether nested has sub-transformers
+  const hasSubTransformers = nestedFields.some((f) => f.isTransformField);
+
+  const { processCreateFragment, processUpdateFragment } = hasSubTransformers
+    ? createTransformProcessFunctions(input, reverseRelation)
+    : createSimpleProcessFunctions(input, reverseRelation);
 
   let transformerFragment: TsCodeFragment;
 
@@ -326,6 +437,14 @@ export function writePrismaDataNestedField(
       forUpdatePattern: {
         kind: 'loadExisting',
         loadExistingFragment,
+        loadExistingInfo: {
+          modelVar: nestedModelVar,
+          findMethod,
+          whereEntries: reverseFields.map((field, i) => ({
+            field,
+            referenceField: reverseRefs[i],
+          })),
+        },
       },
     },
     isTransformField: true,

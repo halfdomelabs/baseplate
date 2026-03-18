@@ -1,5 +1,3 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import {
@@ -18,8 +16,8 @@ import {
 
 import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
 import { serviceContextImportsProvider } from '../../core/service-context/generated/ts-import-providers.js';
+import { buildTransformOperationParts } from '../_shared/build-data-helpers/build-transform-operation-parts.js';
 import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
-import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import {
@@ -81,26 +79,16 @@ export const prismaDataCreateGenerator = createGenerator({
             const modelVar = lowercaseFirstChar(modelName);
             const prismaModel = prismaOutput.getPrismaModel(modelName);
             const hasTransformFields = prismaDataService.hasTransformFields();
+            const transformersVarName =
+              prismaDataService.getTransformersVariableName() ?? '';
 
-            // Determine which fields are scalar (FK or plain) for the destructure
-            const scalarFieldNames = usedFields
-              .filter((f) => !f.isTransformField)
-              .map((f) => f.name);
-
-            const transformFieldNames = usedFields
-              .filter((f) => f.isTransformField)
-              .map((f) => f.name);
-
-            // Generate FK → relation transformations
-            const {
-              passthrough: noFkRelations,
-              foreignKeyFieldNames,
-              createRelationEntries,
-            } = generateRelationBuildData({
+            // Use shared helper for field categorization, destructure, and data building
+            const parts = buildTransformOperationParts({
+              fields: usedFields,
               prismaModel,
-              inputFieldNames: scalarFieldNames,
               dataUtilsImports,
-              dataName: 'rest',
+              operationType: 'create',
+              transformersVarFragment: transformersVarName,
             });
 
             // Generate authorization
@@ -112,56 +100,13 @@ export const prismaDataCreateGenerator = createGenerator({
               authorizerImports,
             });
 
-            // Build the destructure pattern
-            const allDestructuredNames = [
-              ...transformFieldNames,
-              ...foreignKeyFieldNames,
-            ];
-            const hasDestructure = allDestructuredNames.length > 0;
+            // Extract transformer entries (guaranteed defined when hasTransformFields is true)
+            const transformersObject =
+              parts.transformersObjectFragment ?? tsTemplate`{}`;
 
-            const inputDestructure = hasDestructure
-              ? tsTemplate`const { ${allDestructuredNames.join(', ')}, ...rest } = input;`
-              : '';
-
-            const dataName = hasDestructure ? 'rest' : 'input';
-
-            // Build the Prisma data object with proper spread order:
-            // { ...rest, ...transformed, relation: connectCreate({ id }) }
-            const dataEntries: Record<string, string | TsCodeFragment> = {
-              [`...${dataName}`]: dataName,
-            };
-            if (hasTransformFields) {
-              dataEntries['...transformed'] = 'transformed';
-            }
-            for (const [relationName, fragment] of Object.entries(
-              createRelationEntries,
-            )) {
-              dataEntries[relationName] = fragment;
-            }
-            const prismaDataFragment =
-              noFkRelations && !hasTransformFields
-                ? dataName
-                : TsCodeUtils.mergeFragmentsAsObject(dataEntries, {
-                    disableSort: true,
-                  });
-
-            let createFunction;
-
-            if (hasTransformFields) {
-              // Transform path: prepareTransformers + executeTransformPlan
-              // Safe: we're inside hasTransformFields check
-              const transformersVarName =
-                prismaDataService.getTransformersVariableName() ?? '';
-              const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
-                Object.fromEntries(
-                  transformFieldNames.map((fieldName) => [
-                    fieldName,
-                    tsTemplate`${transformersVarName}.${fieldName}.forCreate(${fieldName})`,
-                  ]),
-                ),
-              );
-
-              createFunction = tsTemplate`
+            const createFunction = hasTransformFields
+              ? // Transform path: prepareTransformers + executeTransformPlan
+                tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   data: input,
                   query,
@@ -172,7 +117,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
-                  ${inputDestructure}
+                  ${parts.inputDestructureFragment}
 
                   const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
                     transformers: ${transformersObject},
@@ -182,7 +127,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
                     execute: async ({ tx, transformed }) =>
                       tx.${modelVar}.create({
-                        data: ${prismaDataFragment},
+                        data: ${parts.prismaDataFragment},
                       }),
                     refetch: (item) =>
                       ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
@@ -190,10 +135,9 @@ export const prismaDataCreateGenerator = createGenerator({
 
                   return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
                 }
-              `;
-            } else {
-              // Scalar-only path: direct Prisma call, no transaction
-              createFunction = tsTemplate`
+              `
+              : // Scalar-only path: direct Prisma call, no transaction
+                tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   data: input,
                   query,
@@ -204,17 +148,16 @@ export const prismaDataCreateGenerator = createGenerator({
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
-                  ${inputDestructure}
+                  ${parts.inputDestructureFragment}
 
                   const result = await ${prismaImports.prisma.fragment()}.${modelVar}.create({
-                    data: ${prismaDataFragment},
+                    data: ${parts.prismaDataFragment},
                     ...query,
                   });
 
                   return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
                 }
               `;
-            }
 
             const schemaName = `${modelVar}CreateSchema`;
             const methodFragment = TsCodeUtils.importFragment(

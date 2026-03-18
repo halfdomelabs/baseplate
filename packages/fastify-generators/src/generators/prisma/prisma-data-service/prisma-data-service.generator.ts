@@ -84,6 +84,8 @@ export interface PrismaDataServiceProvider {
   getFieldSchemasVariableName(): string;
   /** Variable name for transformers object, e.g. "todoListTransformers" (undefined if no transforms) */
   getTransformersVariableName(): string | undefined;
+  /** Import fragment for the transformers variable (auto-generates import when used in code) */
+  getTransformersFragment(): TsCodeFragment | undefined;
   /** Register a create/update/delete method to be added to the service file */
   registerMethod(method: PrismaDataServiceMethod): void;
 }
@@ -211,26 +213,48 @@ export const prismaDataServiceGenerator = createGenerator({
               hasTransformFields: () => transformFields.length > 0,
               getFieldSchemasVariableName: () => fieldSchemasVarName,
               getTransformersVariableName: () => transformersVarName,
+              getTransformersFragment: () =>
+                transformersVarName
+                  ? TsCodeUtils.importFragment(
+                      transformersVarName,
+                      serviceFile.getServicePath(),
+                    )
+                  : undefined,
               registerMethod(method) {
                 methods.add(method);
               },
             },
           },
           build: () => {
-            // Register field schemas (names are sorted alphabetically by serviceFile)
-            serviceFile.registerHeader({
-              name: 'schemas-1-fields',
-              fragment: tsTemplate`const ${fieldSchemasVarName} = ${fieldSchemasObject};`,
-            });
+            const registeredMethods = methods.getValue();
+            const hasCreateMethod = registeredMethods.some(
+              (m) => m.type === 'create',
+            );
+            const hasUpdateMethod = registeredMethods.some(
+              (m) => m.type === 'update',
+            );
+            const needsSchemas = hasCreateMethod || hasUpdateMethod;
 
-            serviceFile.registerHeader({
-              name: 'schemas-2-create',
-              fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName});`,
-            });
-            serviceFile.registerHeader({
-              name: 'schemas-3-update',
-              fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName}).partial();`,
-            });
+            // Only register schemas when create/update methods exist
+            if (needsSchemas) {
+              serviceFile.registerHeader({
+                name: 'schemas-1-fields',
+                fragment: tsTemplate`const ${fieldSchemasVarName} = ${fieldSchemasObject};`,
+              });
+
+              if (hasCreateMethod) {
+                serviceFile.registerHeader({
+                  name: 'schemas-2-create',
+                  fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName});`,
+                });
+              }
+              if (hasUpdateMethod) {
+                serviceFile.registerHeader({
+                  name: 'schemas-3-update',
+                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName}).partial();`,
+                });
+              }
+            }
 
             // Register transformers object (only if there are transform fields)
             if (transformersVarName && transformFields.length > 0) {
@@ -250,7 +274,7 @@ export const prismaDataServiceGenerator = createGenerator({
               );
               serviceFile.registerHeader({
                 name: 'transformers',
-                fragment: tsTemplate`const ${transformersVarName} = ${transformersObject};`,
+                fragment: tsTemplate`export const ${transformersVarName} = ${transformersObject};`,
               });
             }
 

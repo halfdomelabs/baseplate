@@ -23,6 +23,15 @@ export type ForUpdatePattern =
       kind: 'loadExisting';
       /** Code fragment for the loadExisting query (e.g., prisma.userProfile.findUnique({ where: { userId: where.id } })) */
       loadExistingFragment: TsCodeFragment;
+      /** Structured info to rebuild loadExisting with a different context variable */
+      loadExistingInfo?: {
+        /** Prisma model variable name (e.g., 'userProfile') */
+        modelVar: string;
+        /** Find method (e.g., 'findMany', 'findUnique') */
+        findMethod: string;
+        /** Where clause entries: field name → reference field name on the context variable */
+        whereEntries: Array<{ field: string; referenceField: string }>;
+      };
     };
 
 /**

@@ -138,6 +138,10 @@ export const prismaDataNestedFieldGenerator = createGenerator({
           );
         })();
 
+        // Get the nested model's transformers import fragment (if it has sub-transform-fields)
+        const nestedTransformersFragment =
+          nestedPrismaDataService?.getTransformersFragment();
+
         return {
           build: () => {
             prismaDataServiceSetup.transformFields.add(
@@ -147,6 +151,7 @@ export const prismaDataNestedFieldGenerator = createGenerator({
                 relation,
                 nestedFields,
                 dataUtilsImports,
+                nestedTransformersFragment,
               }),
             );
           },
