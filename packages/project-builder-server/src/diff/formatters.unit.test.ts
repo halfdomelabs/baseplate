@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { DiffSummary, FileDiff } from './types.js';
-
 import {
+  colorizeUnifiedDiff,
   formatCompactDiff,
   formatFileDiff,
   formatUnifiedDiff,
@@ -10,16 +9,8 @@ import {
 
 describe('formatters', () => {
   describe('formatCompactDiff', () => {
-    it('should format empty diff summary', () => {
-      const summary: DiffSummary = {
-        totalFiles: 0,
-        addedFiles: 0,
-        modifiedFiles: 0,
-        deletedFiles: 0,
-        diffs: [],
-      };
-
-      const result = formatCompactDiff(summary);
+    it('should format empty diff list', () => {
+      const result = formatCompactDiff([]);
 
       expect(result).toContain('Diff Summary:');
       expect(result).toContain('Added: 0 files');
@@ -28,43 +19,18 @@ describe('formatters', () => {
       expect(result).toContain('✓ No differences found');
     });
 
-    it('should format diff summary with changes', () => {
-      const diffs: FileDiff[] = [
-        {
-          path: 'new-file.ts',
-          type: 'added',
-          isBinary: false,
-          workingContent: 'content',
-          unifiedDiff:
-            '--- new-file.ts\n<insert> new-file.ts\n@@ -0,0 +1 @@\n+content',
-        },
+    it('should format diff list with changes', () => {
+      const files = [
+        { path: 'new-file.ts', status: 'added' as const },
         {
           path: 'modified-file.ts',
-          type: 'modified',
-          isBinary: false,
-          generatedContent: 'new content',
-          workingContent: 'old content',
-          unifiedDiff:
-            '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-old content\n+new content',
+          status: 'modified' as const,
+          diff: '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-old content\n+new content',
         },
-        {
-          path: 'binary-file.png',
-          type: 'modified',
-          isBinary: true,
-          generatedContent: Buffer.from('new'),
-          workingContent: Buffer.from('old'),
-        },
+        { path: 'binary-file.png', status: 'modified' as const },
       ];
 
-      const summary: DiffSummary = {
-        totalFiles: 3,
-        addedFiles: 1,
-        modifiedFiles: 2,
-        deletedFiles: 0,
-        diffs,
-      };
-
-      const result = formatCompactDiff(summary);
+      const result = formatCompactDiff(files);
 
       expect(result).toContain('Added: 1 files');
       expect(result).toContain('Modified: 2 files');
@@ -73,71 +39,50 @@ describe('formatters', () => {
       expect(result).toContain('+ new-file.ts');
       expect(result).toContain('Modified files:');
       expect(result).toContain('~ modified-file.ts');
-      expect(result).toContain('~ binary-file.png (binary)');
+      expect(result).toContain('~ binary-file.png');
     });
   });
 
   describe('formatFileDiff', () => {
     it('should format added file diff', () => {
-      const diff: FileDiff = {
+      const result = formatFileDiff({
         path: 'new-file.ts',
-        type: 'added',
-        isBinary: false,
-        workingContent: 'export const foo = "bar";',
-        unifiedDiff:
-          '--- new-file.ts\n+++ new-file.ts\n@@ -0,0 +1 @@\n+export const foo = "bar";',
-      };
-
-      const result = formatFileDiff(diff);
+        status: 'added',
+        diff: '--- new-file.ts\n+++ new-file.ts\n@@ -0,0 +1 @@\n+export const foo = "bar";',
+      });
 
       expect(result).toContain('++ new-file.ts');
       expect(result).toContain('+export const foo = "bar";');
     });
 
     it('should format modified file diff', () => {
-      const diff: FileDiff = {
+      const result = formatFileDiff({
         path: 'modified-file.ts',
-        type: 'modified',
-        isBinary: false,
-        generatedContent: 'export const foo = "new";',
-        workingContent: 'export const foo = "old";',
-        unifiedDiff:
-          '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-export const foo = "old";\n+export const foo = "new";',
-      };
-
-      const result = formatFileDiff(diff);
+        status: 'modified',
+        diff: '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-export const foo = "old";\n+export const foo = "new";',
+      });
 
       expect(result).toContain('~~ modified-file.ts');
       expect(result).toContain('-export const foo = "old";');
       expect(result).toContain('+export const foo = "new";');
     });
 
-    it('should format binary file diff', () => {
-      const diff: FileDiff = {
+    it('should format file without diff content', () => {
+      const result = formatFileDiff({
         path: 'image.png',
-        type: 'modified',
-        isBinary: true,
-        generatedContent: Buffer.from('new'),
-        workingContent: Buffer.from('old'),
-      };
-
-      const result = formatFileDiff(diff);
+        status: 'modified',
+      });
 
       expect(result).toContain('~~ image.png');
-      expect(result).toContain('Binary file');
+      expect(result).not.toContain('---');
     });
 
     it('should format deleted file diff', () => {
-      const diff: FileDiff = {
+      const result = formatFileDiff({
         path: 'deleted-file.ts',
-        type: 'deleted',
-        isBinary: false,
-        generatedContent: 'export const foo = "bar";',
-        unifiedDiff:
-          '--- deleted-file.ts\n+++ deleted-file.ts\n@@ -1 +0,0 @@\n-export const foo = "bar";',
-      };
-
-      const result = formatFileDiff(diff);
+        status: 'deleted',
+        diff: '--- deleted-file.ts\n+++ deleted-file.ts\n@@ -1 +0,0 @@\n-export const foo = "bar";',
+      });
 
       expect(result).toContain('-- deleted-file.ts');
       expect(result).toContain('-export const foo = "bar";');
@@ -145,49 +90,27 @@ describe('formatters', () => {
   });
 
   describe('formatUnifiedDiff', () => {
-    it('should format empty diff summary', () => {
-      const summary: DiffSummary = {
-        totalFiles: 0,
-        addedFiles: 0,
-        modifiedFiles: 0,
-        deletedFiles: 0,
-        diffs: [],
-      };
-
-      const result = formatUnifiedDiff(summary);
+    it('should format empty diff list', () => {
+      const result = formatUnifiedDiff([]);
 
       expect(result).toContain('✓ No differences found');
     });
 
-    it('should format diff summary with changes', () => {
-      const diffs: FileDiff[] = [
+    it('should format diff list with changes', () => {
+      const files = [
         {
           path: 'file1.ts',
-          type: 'added',
-          isBinary: false,
-          workingContent: 'content1',
-          unifiedDiff: '--- file1.ts\n+++ file1.ts\n@@ -0,0 +1 @@\n+content1',
+          status: 'added' as const,
+          diff: '--- file1.ts\n+++ file1.ts\n@@ -0,0 +1 @@\n+content1',
         },
         {
           path: 'file2.ts',
-          type: 'modified',
-          isBinary: false,
-          generatedContent: 'new content',
-          workingContent: 'old content',
-          unifiedDiff:
-            '--- file2.ts\n+++ file2.ts\n@@ -1 +1 @@\n-old content\n+new content',
+          status: 'modified' as const,
+          diff: '--- file2.ts\n+++ file2.ts\n@@ -1 +1 @@\n-old content\n+new content',
         },
       ];
 
-      const summary: DiffSummary = {
-        totalFiles: 2,
-        addedFiles: 1,
-        modifiedFiles: 1,
-        deletedFiles: 0,
-        diffs,
-      };
-
-      const result = formatUnifiedDiff(summary);
+      const result = formatUnifiedDiff(files);
 
       expect(result).toContain('Found 2 files with differences:');
       expect(result).toContain('++ file1.ts');
@@ -195,6 +118,17 @@ describe('formatters', () => {
       expect(result).toContain('+content1');
       expect(result).toContain('-old content');
       expect(result).toContain('+new content');
+    });
+  });
+
+  describe('colorizeUnifiedDiff', () => {
+    it('should preserve content in diff lines', () => {
+      const input = '--- a.ts\n+++ b.ts\n@@ -1 +1 @@\n-old\n+new\n context';
+      const result = colorizeUnifiedDiff(input);
+
+      expect(result).toContain('old');
+      expect(result).toContain('new');
+      expect(result).toContain('context');
     });
   });
 });

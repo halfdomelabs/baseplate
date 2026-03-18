@@ -1,59 +1,53 @@
 import chalk from 'chalk';
 
-import type { DiffSummary, FileDiff } from './types.js';
+interface FileDiffEntry {
+  path: string;
+  status: 'added' | 'modified' | 'deleted';
+  diff?: string;
+}
 
 /**
- * Formats a diff summary in compact format
+ * Formats a list of file diffs in compact format (no unified diff content).
  */
-export function formatCompactDiff(summary: DiffSummary): string {
+export function formatCompactDiff(files: FileDiffEntry[]): string {
+  const added = files.filter((f) => f.status === 'added');
+  const modified = files.filter((f) => f.status === 'modified');
+  const deleted = files.filter((f) => f.status === 'deleted');
+
   const lines: string[] = [
-    // Summary header
     chalk.bold('Diff Summary:'),
-    chalk.green(`  Added: ${summary.addedFiles} files`),
-    chalk.yellow(`  Modified: ${summary.modifiedFiles} files`),
-    chalk.red(`  Deleted: ${summary.deletedFiles} files`),
-    chalk.gray(`  Total: ${summary.totalFiles} files with differences`),
+    chalk.green(`  Added: ${added.length} files`),
+    chalk.yellow(`  Modified: ${modified.length} files`),
+    chalk.red(`  Deleted: ${deleted.length} files`),
+    chalk.gray(`  Total: ${files.length} files with differences`),
     '',
   ];
 
-  if (summary.diffs.length === 0) {
+  if (files.length === 0) {
     lines.push(chalk.green('✓ No differences found'));
     return lines.join('\n');
   }
 
-  // Group files by type
-  const byType = {
-    added: summary.diffs.filter((d) => d.type === 'added'),
-    modified: summary.diffs.filter((d) => d.type === 'modified'),
-    deleted: summary.diffs.filter((d) => d.type === 'deleted'),
-  };
-
-  // Show added files
-  if (byType.added.length > 0) {
+  if (added.length > 0) {
     lines.push(chalk.green.bold('Added files:'));
-    for (const diff of byType.added) {
-      const indicator = diff.isBinary ? '(binary)' : '';
-      lines.push(chalk.green(`  + ${diff.path} ${indicator}`));
+    for (const file of added) {
+      lines.push(chalk.green(`  + ${file.path}`));
     }
     lines.push('');
   }
 
-  // Show modified files
-  if (byType.modified.length > 0) {
+  if (modified.length > 0) {
     lines.push(chalk.yellow.bold('Modified files:'));
-    for (const diff of byType.modified) {
-      const indicator = diff.isBinary ? '(binary)' : '';
-      lines.push(chalk.yellow(`  ~ ${diff.path} ${indicator}`));
+    for (const file of modified) {
+      lines.push(chalk.yellow(`  ~ ${file.path}`));
     }
     lines.push('');
   }
 
-  // Show deleted files
-  if (byType.deleted.length > 0) {
+  if (deleted.length > 0) {
     lines.push(chalk.red.bold('Deleted files:'));
-    for (const diff of byType.deleted) {
-      const indicator = diff.isBinary ? '(binary)' : '';
-      lines.push(chalk.red(`  - ${diff.path} ${indicator}`));
+    for (const file of deleted) {
+      lines.push(chalk.red(`  - ${file.path}`));
     }
     lines.push('');
   }
@@ -62,63 +56,72 @@ export function formatCompactDiff(summary: DiffSummary): string {
 }
 
 /**
- * Formats a single file diff in unified format
+ * Colorizes a unified diff string.
  */
-export function formatFileDiff(diff: FileDiff): string {
+export function colorizeUnifiedDiff(unifiedDiff: string): string {
+  return unifiedDiff
+    .split('\n')
+    .map((line) => {
+      if (line.startsWith('+++') || line.startsWith('---')) {
+        return chalk.bold(line);
+      }
+      if (line.startsWith('+')) {
+        return chalk.green(line);
+      }
+      if (line.startsWith('-')) {
+        return chalk.red(line);
+      }
+      if (line.startsWith('@@')) {
+        return chalk.cyan(line);
+      }
+      return line;
+    })
+    .join('\n');
+}
+
+/**
+ * Formats a single file diff entry with colored status and optional unified diff.
+ */
+export function formatFileDiff(file: FileDiffEntry): string {
   const lines: string[] = [];
 
-  // File header
   const typeIndicator =
-    diff.type === 'added' ? '++' : diff.type === 'deleted' ? '--' : '~~';
+    file.status === 'added' ? '++' : file.status === 'deleted' ? '--' : '~~';
 
-  lines.push(chalk.bold(`${typeIndicator} ${diff.path}`));
+  const statusColor =
+    file.status === 'added'
+      ? chalk.green
+      : file.status === 'deleted'
+        ? chalk.red
+        : chalk.yellow;
 
-  if (diff.isBinary) {
-    lines.push(chalk.gray('Binary file'));
-  } else if (diff.unifiedDiff) {
-    // Apply colors to unified diff
-    const diffLines = diff.unifiedDiff.split('\n');
-    for (const line of diffLines) {
-      if (line.startsWith('+++') || line.startsWith('---')) {
-        lines.push(chalk.bold(line));
-      } else if (line.startsWith('+')) {
-        lines.push(chalk.green(line));
-      } else if (line.startsWith('-')) {
-        lines.push(chalk.red(line));
-      } else if (line.startsWith('@@')) {
-        lines.push(chalk.cyan(line));
-      } else {
-        lines.push(line);
-      }
-    }
+  lines.push(statusColor.bold(`${typeIndicator} ${file.path}`));
+
+  if (file.diff) {
+    lines.push(colorizeUnifiedDiff(file.diff));
   }
 
   return lines.join('\n');
 }
 
 /**
- * Formats a diff summary in unified format
+ * Formats a list of file diffs in unified format with colored output.
  */
-export function formatUnifiedDiff(summary: DiffSummary): string {
-  const lines: string[] = [];
-
-  if (summary.diffs.length === 0) {
-    lines.push(chalk.green('✓ No differences found'));
-    return lines.join('\n');
+export function formatUnifiedDiff(files: FileDiffEntry[]): string {
+  if (files.length === 0) {
+    return chalk.green('✓ No differences found');
   }
 
-  // Header
-  lines.push(
-    chalk.bold(`Found ${summary.totalFiles} files with differences:`),
+  const lines: string[] = [
+    chalk.bold(`Found ${files.length} files with differences:`),
     '',
-  );
+  ];
 
-  // Show each diff
-  for (const [index, diff] of summary.diffs.entries()) {
+  for (const [index, file] of files.entries()) {
     if (index > 0) {
       lines.push('');
     }
-    lines.push(formatFileDiff(diff));
+    lines.push(formatFileDiff(file));
   }
 
   return lines.join('\n');
