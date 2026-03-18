@@ -29,8 +29,15 @@ export function createBetterAuthSchemaChecker(
       container.definition,
       authConfig.authFeatureRef,
     );
+    const accountsFeatureName: string = FeatureUtils.getFeaturePathById(
+      container.definition,
+      authConfig.accountsFeatureRef,
+    );
 
-    const partialDef = createBetterAuthPartialDefinition(authFeatureName);
+    const partialDef = createBetterAuthPartialDefinition(
+      authFeatureName,
+      accountsFeatureName,
+    );
     const diff = diffDefinition(
       container.schema,
       container.definition,

@@ -4,12 +4,13 @@ import { BETTER_AUTH_MODELS } from '#src/better-auth/constants/model-names.js';
 
 export function createBetterAuthPartialDefinition(
   authFeatureName: string,
+  accountsFeatureName: string,
 ): PartialProjectDefinitionInput {
   return {
     models: [
       {
         name: BETTER_AUTH_MODELS.user,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -64,7 +65,7 @@ export function createBetterAuthPartialDefinition(
       },
       {
         name: BETTER_AUTH_MODELS.session,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -125,7 +126,7 @@ export function createBetterAuthPartialDefinition(
       },
       {
         name: BETTER_AUTH_MODELS.account,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -242,7 +243,7 @@ export function createBetterAuthPartialDefinition(
       },
       {
         name: BETTER_AUTH_MODELS.userRole,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {

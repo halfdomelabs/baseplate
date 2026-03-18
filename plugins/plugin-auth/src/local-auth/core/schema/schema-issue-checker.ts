@@ -29,8 +29,15 @@ export function createLocalAuthSchemaChecker(
       container.definition,
       authConfig.authFeatureRef,
     );
+    const accountsFeatureName: string = FeatureUtils.getFeaturePathById(
+      container.definition,
+      authConfig.accountsFeatureRef,
+    );
 
-    const partialDef = createLocalAuthPartialDefinition(authFeatureName);
+    const partialDef = createLocalAuthPartialDefinition(
+      authFeatureName,
+      accountsFeatureName,
+    );
     const diff = diffDefinition(
       container.schema,
       container.definition,

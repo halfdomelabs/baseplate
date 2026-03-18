@@ -7,6 +7,7 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
+import { AUTH_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPluginModule({
@@ -17,6 +18,7 @@ export default createPluginModule({
   },
   initialize: ({ authConfig, pluginConfig }, { pluginKey }) => {
     pluginConfig.schemas.set(pluginKey, createAuthPluginDefinitionSchema);
+    pluginConfig.migrations.set(pluginKey, AUTH_PLUGIN_CONFIG_MIGRATIONS);
     authConfig.pluginKey.set(pluginKey);
     authConfig.getAuthConfig.set((definition) => {
       const pluginConfig = PluginUtils.configByKeyOrThrow(
@@ -25,9 +27,6 @@ export default createPluginModule({
       ) as AuthPluginDefinition;
       return {
         roles: pluginConfig.roles,
-        modelNames: {
-          user: pluginConfig.authFeatureRef,
-        },
       };
     });
   },
