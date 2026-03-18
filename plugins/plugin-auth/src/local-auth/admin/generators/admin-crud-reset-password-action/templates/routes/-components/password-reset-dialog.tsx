@@ -123,7 +123,7 @@ export function PasswordResetDialog({
         <DialogHeader>
           <DialogTitle>Reset Password</DialogTitle>
           <DialogDescription>
-            Set a new password for {userData.name ?? userData.email}
+            Set a new password for {userData.name}
           </DialogDescription>
         </DialogHeader>
 

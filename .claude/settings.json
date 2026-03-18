@@ -59,11 +59,7 @@
       "Bash(echo $?)",
       "Bash(jq *)"
     ],
-    "deny": [
-      "Edit(**/baseplate/generated/**)",
-      "Read(**/.env)",
-      "Read(**/.env.local)"
-    ]
+    "deny": ["Edit(**/baseplate/generated/**)"]
   },
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": ["baseplate-dev-server"],

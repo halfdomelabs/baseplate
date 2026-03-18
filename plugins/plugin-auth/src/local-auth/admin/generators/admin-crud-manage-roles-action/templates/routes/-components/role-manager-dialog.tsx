@@ -115,9 +115,7 @@ export function RoleManagerDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Manage Roles</DialogTitle>
-          <DialogDescription>
-            Assign roles to {userData.name ?? userData.email}
-          </DialogDescription>
+          <DialogDescription>Assign roles to {userData.name}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(handleSubmit)}>
