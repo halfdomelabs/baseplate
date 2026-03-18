@@ -311,7 +311,7 @@
   ],
   "models": [
     {
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "id": "model:6X4_jUlB8pFz",
       "model": {
         "fields": [
@@ -595,7 +595,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "id": "model:234OBeqZk62e",
       "model": {
         "fields": [
@@ -1231,7 +1231,7 @@
           }
         ]
       },
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
           "create": { "enabled": true },
@@ -1603,7 +1603,7 @@
       }
     },
     {
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
           "enabled": true,
@@ -1909,6 +1909,7 @@
     },
     {
       "config": {
+        "accountsFeatureRef": "accounts/users",
         "authFeatureRef": "accounts/auth",
         "implementationPluginKey": "baseplate-dev_plugin-auth_better-auth",
         "roles": [
@@ -1949,6 +1950,7 @@
           }
         ]
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_auth",
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
