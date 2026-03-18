@@ -56,7 +56,8 @@
       "mcp__baseplate-dev-server__*",
       "Bash(git fetch *)",
       "Bash(git checkout -b *)",
-      "Bash(echo $?)"
+      "Bash(echo $?)",
+      "Bash(jq *)"
     ],
     "deny": ["Edit(**/baseplate/generated/**)"]
   },

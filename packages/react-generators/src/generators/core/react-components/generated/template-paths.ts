@@ -23,7 +23,7 @@ export interface CoreReactComponentsPaths {
   dateTimePickerField: string;
   dialog: string;
   dropdown: string;
-  emptyDisplay: string;
+  empty: string;
   errorableLoader: string;
   errorDisplay: string;
   field: string;
@@ -99,7 +99,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           dateTimePickerField: `${componentsRoot}/ui/date-time-picker-field.tsx`,
           dialog: `${componentsRoot}/ui/dialog.tsx`,
           dropdown: `${componentsRoot}/ui/dropdown.tsx`,
-          emptyDisplay: `${componentsRoot}/ui/empty-display.tsx`,
+          empty: `${componentsRoot}/ui/empty.tsx`,
           errorableLoader: `${componentsRoot}/ui/errorable-loader.tsx`,
           errorDisplay: `${componentsRoot}/ui/error-display.tsx`,
           field: `${componentsRoot}/ui/field.tsx`,

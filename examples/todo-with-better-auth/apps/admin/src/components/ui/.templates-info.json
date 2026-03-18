@@ -94,10 +94,10 @@
     "instanceData": {},
     "template": "dropdown"
   },
-  "empty-display.tsx": {
+  "empty.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
-    "template": "empty-display"
+    "template": "empty"
   },
   "error-boundary.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-error-boundary",

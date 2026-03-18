@@ -37,6 +37,7 @@
     "**/.env*",
     "**/LICENSE",
     "packages/code-morph/src/morphers/tests/**",
-    "packages/sync/src/output/string-merge-algorithms/tests/**"
+    "packages/sync/src/output/string-merge-algorithms/tests/**",
+    "**/generated/prisma/**"
   ]
 }

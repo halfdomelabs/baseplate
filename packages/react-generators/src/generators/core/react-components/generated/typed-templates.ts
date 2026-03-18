@@ -392,17 +392,16 @@ const dropdown = createTsTemplateFile({
   variables: {},
 });
 
-const emptyDisplay = createTsTemplateFile({
+const empty = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'empty-display',
-  projectExports: { EmptyDisplay: {} },
-  referencedGeneratorTemplates: { cn: {}, typesIcon: {} },
+  name: 'empty',
+  referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/ui/empty-display.tsx',
+      '../templates/components/ui/empty.tsx',
     ),
   },
   variables: {},
@@ -992,7 +991,7 @@ export const componentsGroup = {
   dateTimePickerField,
   dialog,
   dropdown,
-  emptyDisplay,
+  empty,
   errorableLoader,
   errorDisplay,
   field,

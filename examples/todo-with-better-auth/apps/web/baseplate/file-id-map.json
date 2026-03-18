@@ -46,7 +46,7 @@
   "@baseplate-dev/react-generators#core/react-components:date-time-picker-field": "src/components/ui/date-time-picker-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:dialog": "src/components/ui/dialog.tsx",
   "@baseplate-dev/react-generators#core/react-components:dropdown": "src/components/ui/dropdown.tsx",
-  "@baseplate-dev/react-generators#core/react-components:empty-display": "src/components/ui/empty-display.tsx",
+  "@baseplate-dev/react-generators#core/react-components:empty": "src/components/ui/empty.tsx",
   "@baseplate-dev/react-generators#core/react-components:error-display": "src/components/ui/error-display.tsx",
   "@baseplate-dev/react-generators#core/react-components:errorable-loader": "src/components/ui/errorable-loader.tsx",
   "@baseplate-dev/react-generators#core/react-components:field": "src/components/ui/field.tsx",
