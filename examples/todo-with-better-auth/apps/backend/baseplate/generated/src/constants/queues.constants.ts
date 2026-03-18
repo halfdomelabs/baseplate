@@ -1,5 +1,6 @@
 import type { Queue } from '../types/queue.types.js';
 
+import { sendEmailQueue } from '../modules/emails/queues/send-email.queue.js';
 import { cleanUnusedFilesQueue } from '../modules/storage/queues/clean-unused-files.js';
 
 /**
@@ -12,4 +13,5 @@ import { cleanUnusedFilesQueue } from '../modules/storage/queues/clean-unused-fi
  */
 export const QUEUE_REGISTRY: Queue<unknown>[] = /* TPL_QUEUE_LIST:START */ [
   cleanUnusedFilesQueue,
+  sendEmailQueue,
 ]; /* TPL_QUEUE_LIST:END */

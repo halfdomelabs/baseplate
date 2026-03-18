@@ -20,7 +20,15 @@ const authEnabledModule = createPluginModule({
   dependencies: { authConfig: authConfigSpec },
   initialize: ({ authConfig }) => {
     authConfig.getAuthConfig.set(() => ({
-      roles: [{ id: '1', name: 'admin', comment: '', builtIn: false }],
+      roles: [
+        {
+          id: '1',
+          name: 'admin',
+          comment: '',
+          builtIn: false,
+          autoAssigned: false,
+        },
+      ],
     }));
   },
 });

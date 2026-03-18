@@ -7,16 +7,25 @@ export const AUTH_DEFAULT_ROLES: Omit<AuthRoleDefinition, 'id'>[] = [
     name: 'public',
     comment: 'All users (including unauthenticated and authenticated users)',
     builtIn: true,
+    autoAssigned: true,
   },
   {
     name: 'user',
     comment: 'All authenticated users',
     builtIn: true,
+    autoAssigned: true,
   },
   {
     name: 'system',
     comment: 'System processes without a user context, e.g. background jobs',
     builtIn: true,
+    autoAssigned: true,
+  },
+  {
+    name: 'admin',
+    comment: 'Administrator with full access',
+    builtIn: true,
+    autoAssigned: false,
   },
 ];
 

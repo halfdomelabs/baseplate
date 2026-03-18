@@ -117,6 +117,7 @@ const userRolesService = createTsTemplateFile({
   group: 'module',
   importMapProviders: {
     authRolesImports: authRolesImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },

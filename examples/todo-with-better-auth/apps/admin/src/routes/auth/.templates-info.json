@@ -1,4 +1,9 @@
 {
+  "forgot-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+    "instanceData": {},
+    "template": "forgot-password"
+  },
   "login.tsx": {
     "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
     "instanceData": {},
@@ -8,5 +13,15 @@
     "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
     "instanceData": {},
     "template": "register"
+  },
+  "reset-password.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+    "instanceData": {},
+    "template": "reset-password"
+  },
+  "verify-email.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+    "instanceData": {},
+    "template": "verify-email"
   }
 }

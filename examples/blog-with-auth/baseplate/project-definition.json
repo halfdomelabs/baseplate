@@ -891,9 +891,8 @@
   "plugins": [
     {
       "config": {
-        "initialUserRoles": ["admin"],
-        "requireNameOnRegistration": true,
-        "userAdminRoles": ["admin"]
+        "additionalUserAdminRoles": ["admin"],
+        "requireNameOnRegistration": true
       },
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
@@ -906,25 +905,29 @@
         "implementationPluginKey": "baseplate-dev_plugin-auth_local-auth",
         "roles": [
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All users (including unauthenticated and authenticated users)",
             "id": "role:SdoAjeUmYZXC",
             "name": "public"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All authenticated users",
             "id": "role:BDE6HsTbncOA",
             "name": "user"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "System processes without a user context, e.g. background jobs",
             "id": "role:W86r9IpCNx5f",
             "name": "system"
           },
           {
-            "builtIn": false,
+            "autoAssigned": false,
+            "builtIn": true,
             "comment": "Administrator role",
             "id": "role:5_w6OYFY3FuY",
             "name": "admin"
@@ -983,7 +986,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 28,
+  "schemaVersion": 29,
   "settings": {
     "general": {
       "name": "blog-with-auth",

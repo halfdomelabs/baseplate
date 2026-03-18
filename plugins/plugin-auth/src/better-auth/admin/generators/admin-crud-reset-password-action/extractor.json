@@ -1,0 +1,24 @@
+{
+  "name": "better-auth/admin/admin-crud-reset-password-action",
+  "templates": {
+    "password-reset-dialog": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/-components/password-reset-dialog.tsx",
+      "projectExports": {},
+      "sourceFile": "routes/-components/password-reset-dialog.tsx",
+      "variables": {}
+    }
+  }
+}

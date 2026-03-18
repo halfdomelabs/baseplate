@@ -3,7 +3,14 @@ import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
 import { Link } from '@tanstack/react-router';
-import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
+import { useState } from 'react';
+import {
+  MdDelete,
+  MdEdit,
+  MdKey,
+  MdMoreVert,
+  MdSecurity,
+} from 'react-icons/md';
 import { toast } from 'sonner';
 
 import type { FragmentType } from '@src/gql';
@@ -28,6 +35,12 @@ import { graphql, readFragment } from '@src/gql';
 import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
+import type { passwordResetDialogUserFragment } from './password-reset-dialog';
+import type { roleManagerDialogUserFragment } from './role-manager-dialog';
+
+import { PasswordResetDialog } from './password-reset-dialog';
+import { RoleManagerDialog } from './role-manager-dialog';
+
 /* HOISTED:delete-action-mutation:START */
 export const userListPageDeleteUserMutation = graphql(`
   mutation UserListPageDeleteUser($input: DeleteUserInput!) {
@@ -50,6 +63,8 @@ export const userTableItemsFragment = graphql(`
     email
     id
     name
+    ...PasswordResetDialog_user
+    ...RoleManagerDialog_user
   }
 `);
 /* TPL_ITEMS_FRAGMENT:END */
@@ -95,6 +110,12 @@ export function UserTable(
       },
     });
   }
+  const [roleDialogUser, setRoleDialogUser] = useState<FragmentType<
+    typeof roleManagerDialogUserFragment
+  > | null>(null);
+  const [passwordResetUser, setPasswordResetUser] = useState<FragmentType<
+    typeof passwordResetDialogUserFragment
+  > | null>(null);
   /* TPL_ACTION_HOOKS:END */
 
   // Unmask the fragment data for rendering
@@ -160,6 +181,22 @@ export function UserTable(
                       <MdDelete className="mr-2 h-4 w-4" />
                       Delete
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setRoleDialogUser(item);
+                      }}
+                    >
+                      <MdSecurity className="mr-2 h-4 w-4" />
+                      Manage Roles
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setPasswordResetUser(item);
+                      }}
+                    >
+                      <MdKey className="mr-2 h-4 w-4" />
+                      Reset Password
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -169,7 +206,24 @@ export function UserTable(
         </TableBody>
       </Table>
       {/* TPL_ACTION_SIBLING_COMPONENTS:START */}
-
+      {roleDialogUser && (
+        <RoleManagerDialog
+          user={roleDialogUser}
+          open={!!roleDialogUser}
+          onOpenChange={(open) => {
+            if (!open) setRoleDialogUser(null);
+          }}
+        />
+      )}
+      {passwordResetUser && (
+        <PasswordResetDialog
+          user={passwordResetUser}
+          open={!!passwordResetUser}
+          onOpenChange={(open) => {
+            if (!open) setPasswordResetUser(null);
+          }}
+        />
+      )}
       {/* TPL_ACTION_SIBLING_COMPONENTS:END */}
     </>
   );

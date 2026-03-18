@@ -46,6 +46,7 @@ export default createPluginModule({
                 name: r.name,
                 comment: r.comment,
                 builtIn: r.builtIn,
+                autoAssigned: r.autoAssigned,
               })),
             }),
             userSessionTypes: userSessionTypesGenerator({}),
