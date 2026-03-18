@@ -31,12 +31,13 @@ export const auth = betterAuth({
   basePath: '/auth',
   emailAndPassword: {
     enabled: true,
-    async sendResetPassword({ url, user }) {
+    async sendResetPassword({ token, user }) {
+      const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
       await sendEmail(
         /* TPL_PASSWORD_RESET_EMAIL:START */ PasswordResetEmail /* TPL_PASSWORD_RESET_EMAIL:END */,
         {
           to: user.email,
-          data: { resetLink: url },
+          data: { resetLink },
         },
       );
     },
@@ -44,12 +45,13 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendOnSignUp: true,
-    async sendVerificationEmail({ url, user }) {
+    async sendVerificationEmail({ token, user }) {
+      const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
       await sendEmail(
         /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
         {
           to: user.email,
-          data: { verifyLink: url },
+          data: { verifyLink },
         },
       );
     },
