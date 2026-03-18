@@ -117,13 +117,12 @@ export const prismaDataUpdateGenerator = createGenerator({
 
             // Determine if we need existingItem:
             // - Instance auth needs it for checkInstanceAuthorization
-            // - Transform fields with 'existingField' forUpdate pattern need existingItem.fieldId
-            // (loadExisting pattern handles its own fetch, doesn't need top-level existingItem)
-            const hasExistingFieldTransform = usedFields.some(
-              (f) => f.transformer?.forUpdatePattern?.kind === 'existingField',
+            // - Transformers that set needsExistingItem (e.g., file transformers referencing existingItem.fieldId)
+            const hasTransformNeedingExistingItem = usedFields.some(
+              (f) => f.transformer?.needsExistingItem === true,
             );
             const needsExistingItem =
-              hasInstanceAuth || hasExistingFieldTransform;
+              hasInstanceAuth || hasTransformNeedingExistingItem;
             const existingItemFragment = needsExistingItem
               ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
               : '';
@@ -150,7 +149,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                   context,
                 }: {
                   where: ${whereType};
-                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'UpdateSchema')}>;
+                  data: z.infer<typeof ${prismaDataService.getUpdateSchemaVariableName()}>;
                   query?: TQuery;
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
@@ -185,7 +184,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                   context,
                 }: {
                   where: ${whereType};
-                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'UpdateSchema')}>;
+                  data: z.infer<typeof ${prismaDataService.getUpdateSchemaVariableName()}>;
                   query?: TQuery;
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {

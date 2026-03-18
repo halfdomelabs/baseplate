@@ -3,36 +3,20 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import type { ServiceOutputDtoField } from '#src/types/service-output.js';
 
 /**
- * Describes how to generate the .forUpdate() call for this transformer.
+ * Context variables passed to transformer fragment builders so they can
+ * adapt code generation to different call sites (top-level vs nested).
  */
-type ForUpdatePattern =
-  | {
-      /**
-       * Simple: .forUpdate(value, existingItem.fieldId)
-       * Used by file transformers where the existing value is a scalar on the parent.
-       */
-      kind: 'existingField';
-      /** The field name on existingItem (e.g., 'coverPhotoId') */
-      existingFieldName: string;
-    }
-  | {
-      /**
-       * Load existing: .forUpdate(value, { loadExisting: () => prisma.model.findXxx(...) })
-       * Used by nested transformers where the existing data is a separate entity.
-       */
-      kind: 'loadExisting';
-      /** Code fragment for the loadExisting query (e.g., prisma.userProfile.findUnique({ where: { userId: where.id } })) */
-      loadExistingFragment: TsCodeFragment;
-      /** Structured info to rebuild loadExisting with a different context variable */
-      loadExistingInfo?: {
-        /** Prisma model variable name (e.g., 'userProfile') */
-        modelVar: string;
-        /** Find method (e.g., 'findMany', 'findUnique') */
-        findMethod: string;
-        /** Where clause entries: field name → reference field name on the context variable */
-        whereEntries: Array<{ field: string; referenceField: string }>;
-      };
-    };
+export interface TransformerFragmentContext {
+  /** Reference to the transformers variable (e.g., 'todoItemTransformers' or an import fragment) */
+  transformersVarFragment: TsCodeFragment | string;
+  /** Variable name for the existing item in update operations (e.g., 'existingItem') */
+  existingItemVarName: string;
+  /**
+   * Variable name for looking up existing related data in update operations.
+   * Top-level: 'where' (the query arg), Nested: 'existingItem' (the nested existing item).
+   */
+  loadExistingVarName: string;
+}
 
 /**
  * Definition for a transformer instance attached to a field.
@@ -41,10 +25,22 @@ type ForUpdatePattern =
 export interface TransformerDefinition {
   /** Code fragment for the transformer instance (e.g., fileTransformer({...})) */
   fragment: TsCodeFragment;
-  /** Whether this transformer needs the existing item on update */
+  /**
+   * Whether this transformer needs the top-level existing item loaded in update operations.
+   * True for transformers that reference existingItem directly (e.g., file transformer reads existingItem.fileId).
+   * False for transformers that handle their own data loading (e.g., nested transformers use loadExisting).
+   */
   needsExistingItem?: boolean;
-  /** How to generate the .forUpdate() second argument */
-  forUpdatePattern?: ForUpdatePattern;
+  /**
+   * Builds the .forCreate() entry for this field in the transformers object.
+   * E.g., `transformers.coverPhoto.forCreate(coverPhoto)`
+   */
+  buildForCreateEntry: (ctx: TransformerFragmentContext) => TsCodeFragment;
+  /**
+   * Builds the .forUpdate() entry for this field in the transformers object.
+   * E.g., `transformers.coverPhoto.forUpdate(coverPhoto, existingItem.coverPhotoId)`
+   */
+  buildForUpdateEntry: (ctx: TransformerFragmentContext) => TsCodeFragment;
 }
 
 export interface InputFieldDefinitionOutput {

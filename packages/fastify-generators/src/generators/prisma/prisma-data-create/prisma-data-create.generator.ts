@@ -118,7 +118,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   query,
                   context,
                 }: {
-                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
+                  data: z.infer<typeof ${prismaDataService.getCreateSchemaVariableName()}>;
                   query?: TQuery;
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
@@ -149,7 +149,7 @@ export const prismaDataCreateGenerator = createGenerator({
                   query,
                   context,
                 }: {
-                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
+                  data: z.infer<typeof ${prismaDataService.getCreateSchemaVariableName()}>;
                   query?: TQuery;
                   context: ${serviceContextImports.ServiceContext.typeFragment()};
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {

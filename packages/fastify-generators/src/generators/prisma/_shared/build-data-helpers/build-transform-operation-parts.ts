@@ -5,7 +5,10 @@ import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import type { PrismaOutputModel } from '#src/types/prisma-output.js';
 
 import type { DataUtilsImportsProvider } from '../../data-utils/index.js';
-import type { InputFieldDefinitionOutput } from '../field-definition-generators/types.js';
+import type {
+  InputFieldDefinitionOutput,
+  TransformerFragmentContext,
+} from '../field-definition-generators/types.js';
 
 import { generateRelationBuildData } from './generate-relation-build-data.js';
 
@@ -67,16 +70,14 @@ export interface TransformOperationParts {
 /**
  * Builds the transformer entries object for `prepareTransformers()`.
  *
- * For create: `{ field: transformers.field.forCreate(field) }`
- * For update: `{ field: transformers.field.forUpdate(field, existingItem.fieldId) }`
+ * Delegates to each transformer's `buildForCreateEntry` / `buildForUpdateEntry`
+ * callbacks, which produce the complete `.forCreate()` / `.forUpdate()` fragments.
  *
  * @param transformFields - Fields that need transformer handling
  * @param transformersVarFragment - Reference to the transformers variable
  * @param operationType - Create or update
  * @param existingItemVarName - Variable name for the existing item (for update)
- * @param loadExistingVarName - Variable name to use in loadExisting where clauses.
- *   Defaults to 'where'. Set to existingItemVarName for nested processUpdate context
- *   where loadExisting should reference the existing nested item, not the parent's where.
+ * @param loadExistingVarName - Variable name for looking up existing related data
  * @returns TsCodeFragment for the transformers object
  */
 function buildTransformerEntries(
@@ -86,48 +87,27 @@ function buildTransformerEntries(
   existingItemVarName = 'existingItem',
   loadExistingVarName = 'where',
 ): TsCodeFragment {
-  if (operationType === 'create') {
-    return TsCodeUtils.mergeFragmentsAsObject(
-      Object.fromEntries(
-        transformFields.map((field) => [
-          field.name,
-          tsTemplate`${transformersVarFragment}.${field.name}.forCreate(${field.name})`,
-        ]),
-      ),
-    );
-  }
+  const ctx: TransformerFragmentContext = {
+    transformersVarFragment,
+    existingItemVarName,
+    loadExistingVarName,
+  };
 
   return TsCodeUtils.mergeFragmentsAsObject(
     Object.fromEntries(
       transformFields.map((field) => {
-        const pattern = field.transformer?.forUpdatePattern;
-        let forUpdateArg: TsCodeFragment | string;
-
-        if (pattern?.kind === 'loadExisting') {
-          // Rebuild the fragment if structured info is available and the context variable differs
-          if (pattern.loadExistingInfo) {
-            const { modelVar, findMethod, whereEntries } =
-              pattern.loadExistingInfo;
-            const whereClause = whereEntries
-              .map(
-                (e) => `${e.field}: ${loadExistingVarName}.${e.referenceField}`,
-              )
-              .join(', ');
-            forUpdateArg = tsTemplate`{ loadExisting: () => prisma.${modelVar}.${findMethod}({ where: { ${whereClause} } }) }`;
-          } else {
-            forUpdateArg = tsTemplate`{ loadExisting: () => ${pattern.loadExistingFragment} }`;
-          }
-        } else if (pattern?.kind === 'existingField') {
-          forUpdateArg = `${existingItemVarName}.${pattern.existingFieldName}`;
-        } else {
-          // Fallback: assume scalar field ID on existing item
-          forUpdateArg = `${existingItemVarName}.${field.name}Id`;
+        const { transformer } = field;
+        if (!transformer) {
+          throw new Error(
+            `Transform field '${field.name}' has no transformer definition`,
+          );
         }
-
-        return [
-          field.name,
-          tsTemplate`${transformersVarFragment}.${field.name}.forUpdate(${field.name}, ${forUpdateArg})`,
-        ];
+        const { buildForCreateEntry, buildForUpdateEntry } = transformer;
+        const entry =
+          operationType === 'create'
+            ? buildForCreateEntry(ctx)
+            : buildForUpdateEntry(ctx);
+        return [field.name, entry];
       }),
     ),
   );

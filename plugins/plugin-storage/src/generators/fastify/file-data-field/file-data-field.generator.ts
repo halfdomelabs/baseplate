@@ -125,10 +125,13 @@ export const fileDataFieldGenerator = createGenerator({
               transformer: {
                 fragment: transformerFragment,
                 needsExistingItem: true,
-                forUpdatePattern: {
-                  kind: 'existingField',
-                  existingFieldName: fileIdFieldName,
-                },
+                buildForCreateEntry: ({ transformersVarFragment }) =>
+                  tsTemplate`${transformersVarFragment}.${relationName}.forCreate(${relationName})`,
+                buildForUpdateEntry: ({
+                  transformersVarFragment,
+                  existingItemVarName,
+                }) =>
+                  tsTemplate`${transformersVarFragment}.${relationName}.forUpdate(${relationName}, ${existingItemVarName}.${fileIdFieldName})`,
               },
               isTransformField: true,
               outputDtoField,

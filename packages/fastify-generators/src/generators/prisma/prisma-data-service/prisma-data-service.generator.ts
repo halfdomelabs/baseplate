@@ -83,6 +83,10 @@ export interface PrismaDataServiceProvider {
   hasTransformFields(): boolean;
   /** Variable name for field schemas, e.g. "todoListFieldSchemas" */
   getFieldSchemasVariableName(): string;
+  /** Variable name for create schema, e.g. "todoListCreateSchema" */
+  getCreateSchemaVariableName(): string;
+  /** Variable name for update schema, e.g. "todoListUpdateSchema" */
+  getUpdateSchemaVariableName(): string;
   /** Variable name for transformers object, e.g. "todoListTransformers" (undefined if no transforms) */
   getTransformersVariableName(): string | undefined;
   /** Import fragment for the transformers variable (auto-generates import when used in code) */
@@ -215,6 +219,8 @@ export const prismaDataServiceGenerator = createGenerator({
               getTransformFields: () => transformFields,
               hasTransformFields: () => transformFields.length > 0,
               getFieldSchemasVariableName: () => fieldSchemasVarName,
+              getCreateSchemaVariableName: () => createSchemaVarName,
+              getUpdateSchemaVariableName: () => updateSchemaVarName,
               getTransformersVariableName: () => transformersVarName,
               getTransformersFragment: () =>
                 transformersVarName

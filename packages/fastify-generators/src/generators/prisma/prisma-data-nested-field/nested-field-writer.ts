@@ -426,34 +426,30 @@ export function writePrismaDataNestedField(
     transformerFragment = tsTemplate`${dataUtilsImports.oneToOneTransformer.fragment()}(${configObj})`;
   }
 
-  // Build loadExisting query fragment for the forUpdate pattern
+  // Precompute values needed by the forUpdate callback
   const nestedModelVar = lowercaseFirstChar(nestedModel.name);
   const reverseFields = reverseRelation.fields ?? [];
   const reverseRefs = reverseRelation.references ?? [];
-  const whereEntries = reverseFields
-    .map((field, i) => `${field}: where.${reverseRefs[i]}`)
-    .join(', ');
-
   const findMethod = relation.isList ? 'findMany' : 'findUnique';
-  const loadExistingFragment = tsTemplate`prisma.${nestedModelVar}.${findMethod}({ where: { ${whereEntries} } })`;
 
   return {
     name: relation.name,
     schemaFragment,
     transformer: {
       fragment: transformerFragment,
-      needsExistingItem: true,
-      forUpdatePattern: {
-        kind: 'loadExisting',
-        loadExistingFragment,
-        loadExistingInfo: {
-          modelVar: nestedModelVar,
-          findMethod,
-          whereEntries: reverseFields.map((field, i) => ({
-            field,
-            referenceField: reverseRefs[i],
-          })),
-        },
+      needsExistingItem: false,
+      buildForCreateEntry: ({ transformersVarFragment }) =>
+        tsTemplate`${transformersVarFragment}.${relation.name}.forCreate(${relation.name})`,
+      buildForUpdateEntry: ({
+        transformersVarFragment,
+        loadExistingVarName,
+      }) => {
+        const whereClause = reverseFields
+          .map(
+            (field, i) => `${field}: ${loadExistingVarName}.${reverseRefs[i]}`,
+          )
+          .join(', ');
+        return tsTemplate`${transformersVarFragment}.${relation.name}.forUpdate(${relation.name}, { loadExisting: () => prisma.${nestedModelVar}.${findMethod}({ where: { ${whereClause} } }) })`;
       },
     },
     isTransformField: true,
