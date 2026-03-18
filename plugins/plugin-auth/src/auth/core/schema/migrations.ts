@@ -55,9 +55,7 @@ export const AUTH_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
           const draftDef = draft as {
             features?: { id: string; name: string; parentRef?: string }[];
           };
-          if (!draftDef.features) {
-            draftDef.features = [];
-          }
+          draftDef.features ??= [];
 
           if (!accountsFeature) {
             draftDef.features.push({ id: accountsId, name: 'accounts' });
