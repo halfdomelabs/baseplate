@@ -1,11 +1,12 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authorizerUtilsImportsProvider } from '#src/generators/auth/_providers/authorizer-utils-imports.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
@@ -24,6 +25,66 @@ export interface PrismaDataUtilsRenderers {
       >,
     ) => BuilderAction;
   };
+  defineTransformer: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.defineTransformer
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  executeTransformPlan: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.executeTransformPlan
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  nestedTransformers: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.nestedTransformers
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  prepareTransformers: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.prepareTransformers
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  prismaTypes: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.prismaTypes
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  transformerTypes: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_DATA_UTILS_TEMPLATES.transformerTypes
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const prismaDataUtilsRenderers = createProviderType<PrismaDataUtilsRenderers>(
@@ -32,8 +93,6 @@ const prismaDataUtilsRenderers = createProviderType<PrismaDataUtilsRenderers>(
 
 const prismaDataUtilsRenderersTask = createGeneratorTask({
   dependencies: {
-    authorizerUtilsImports: authorizerUtilsImportsProvider,
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: PRISMA_DATA_UTILS_PATHS.provider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -42,8 +101,6 @@ const prismaDataUtilsRenderersTask = createGeneratorTask({
   },
   exports: { prismaDataUtilsRenderers: prismaDataUtilsRenderers.export() },
   run({
-    authorizerUtilsImports,
-    errorHandlerServiceImports,
     paths,
     prismaGeneratedImports,
     prismaImports,
@@ -59,13 +116,84 @@ const prismaDataUtilsRenderersTask = createGeneratorTask({
                 group: PRISMA_DATA_UTILS_TEMPLATES.dataOperationsGroup,
                 paths,
                 importMapProviders: {
-                  authorizerUtilsImports,
-                  errorHandlerServiceImports,
                   prismaGeneratedImports,
                   prismaImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          defineTransformer: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.defineTransformer,
+                destination: paths.defineTransformer,
+                importMapProviders: {
                   serviceContextImports,
                 },
                 generatorPaths: paths,
+                ...options,
+              }),
+          },
+          executeTransformPlan: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.executeTransformPlan,
+                destination: paths.executeTransformPlan,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  prismaImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          nestedTransformers: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.nestedTransformers,
+                destination: paths.nestedTransformers,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  serviceContextImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          prepareTransformers: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.prepareTransformers,
+                destination: paths.prepareTransformers,
+                importMapProviders: {
+                  serviceContextImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          prismaTypes: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.prismaTypes,
+                destination: paths.prismaTypes,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  prismaImports,
+                },
+                ...options,
+              }),
+          },
+          transformerTypes: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_DATA_UTILS_TEMPLATES.transformerTypes,
+                destination: paths.transformerTypes,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                  serviceContextImports,
+                },
                 ...options,
               }),
           },

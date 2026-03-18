@@ -81,6 +81,16 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  servicesFileTransformer: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.servicesFileTransformer
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   servicesGetPublicUrl: {
     render: (
       options: Omit<
@@ -172,7 +182,6 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 group: FASTIFY_STORAGE_MODULE_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
-                  dataUtilsImports,
                   errorHandlerServiceImports,
                   prismaGeneratedImports,
                   serviceContextImports,
@@ -216,6 +225,19 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   errorHandlerServiceImports,
                   loggerServiceImports,
                   prismaImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesFileTransformer: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  FASTIFY_STORAGE_MODULE_TEMPLATES.servicesFileTransformer,
+                destination: paths.servicesFileTransformer,
+                importMapProviders: {
+                  dataUtilsImports,
                 },
                 generatorPaths: paths,
                 ...options,

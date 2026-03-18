@@ -132,32 +132,6 @@ const servicesDownloadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
-const servicesFileField = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    dataUtilsImports: dataUtilsImportsProvider,
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
-  },
-  name: 'services-file-field',
-  projectExports: {
-    fileField: { isTypeOnly: false },
-    FileInput: { isTypeOnly: true },
-  },
-  referencedGeneratorTemplates: {
-    typesFileCategory: {},
-    utilsValidatePendingUpload: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/file-field.ts',
-    ),
-  },
-  variables: {},
-});
-
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -282,7 +256,6 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
-  servicesFileField,
   servicesUploadFile,
   typesAdapter,
   typesFileCategory,
@@ -399,6 +372,31 @@ const servicesCleanUnusedFiles = createTsTemplateFile({
   variables: {},
 });
 
+const servicesFileTransformer = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { dataUtilsImports: dataUtilsImportsProvider },
+  name: 'services-file-transformer',
+  projectExports: {
+    FileConnect: { isTypeOnly: true },
+    FileDisconnect: { isTypeOnly: true },
+    FileInput: { isTypeOnly: true },
+    fileInputSchema: { isTypeOnly: false },
+    fileNullableInputSchema: { isTypeOnly: false },
+    fileTransformer: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    typesFileCategory: {},
+    utilsValidatePendingUpload: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/file-transformer.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesGetPublicUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
@@ -460,6 +458,7 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   queuesCleanUnusedFiles,
   schemaGroup,
   servicesCleanUnusedFiles,
+  servicesFileTransformer,
   servicesGetPublicUrl,
   utilsGetAdapter,
   utilsValidatePendingUpload,

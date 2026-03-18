@@ -4,15 +4,9 @@ import { describe, expect, it } from 'vitest';
 import type { ServiceOutputEnum } from '#src/types/service-output.js';
 
 import { prismaGeneratedImportsSchema } from '../../_providers/prisma-generated-imports.js';
-import { dataUtilsImportsSchema } from '../../data-utils/generated/ts-import-providers.js';
 import { generateScalarInputField } from './generate-scalar-input-field.js';
 
 describe('generateScalarInputField', () => {
-  const dataUtilsImports = createTestTsImportMap(
-    dataUtilsImportsSchema,
-    'data-utils',
-  );
-
   const prismaGeneratedImports = createTestTsImportMap(
     prismaGeneratedImportsSchema,
     'prisma',
@@ -35,37 +29,32 @@ describe('generateScalarInputField', () => {
   });
 
   describe('scalar types', () => {
-    it('generates scalarField call for string type', () => {
+    it('generates Zod schema for string type', () => {
       const result = generateScalarInputField({
         fieldName: 'name',
         scalarField: { ...baseScalarField, name: 'name', scalarType: 'string' },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
       expect(result.name).toBe('name');
-      expect(result.fragment.contents).toBe('scalarField(z.string())');
-      expect(result.fragment).toIncludeImport('z', 'zod');
-      expect(result.fragment).toIncludeImport(
-        'scalarField',
-        'data-utils/scalarField',
-      );
+      expect(result.isTransformField).toBe(false);
+      expect(result.schemaFragment.contents).toBe('z.string()');
+      expect(result.schemaFragment).toIncludeImport('z', 'zod');
     });
 
-    it('generates scalarField call for int type', () => {
+    it('generates Zod schema for int type', () => {
       const result = generateScalarInputField({
         fieldName: 'age',
         scalarField: { ...baseScalarField, name: 'age', scalarType: 'int' },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.int())');
+      expect(result.schemaFragment.contents).toBe('z.int()');
     });
 
-    it('generates scalarField call for float type', () => {
+    it('generates Zod schema for float type', () => {
       const result = generateScalarInputField({
         fieldName: 'weight',
         scalarField: {
@@ -73,15 +62,14 @@ describe('generateScalarInputField', () => {
           name: 'weight',
           scalarType: 'float',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.number())');
+      expect(result.schemaFragment.contents).toBe('z.number()');
     });
 
-    it('generates scalarField call for decimal type', () => {
+    it('generates Zod schema for decimal type', () => {
       const result = generateScalarInputField({
         fieldName: 'height',
         scalarField: {
@@ -89,15 +77,14 @@ describe('generateScalarInputField', () => {
           name: 'height',
           scalarType: 'decimal',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.number())');
+      expect(result.schemaFragment.contents).toBe('z.number()');
     });
 
-    it('generates scalarField call for boolean type', () => {
+    it('generates Zod schema for boolean type', () => {
       const result = generateScalarInputField({
         fieldName: 'isActive',
         scalarField: {
@@ -105,15 +92,14 @@ describe('generateScalarInputField', () => {
           name: 'isActive',
           scalarType: 'boolean',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.boolean())');
+      expect(result.schemaFragment.contents).toBe('z.boolean()');
     });
 
-    it('generates scalarField call for date type', () => {
+    it('generates Zod schema for date type', () => {
       const result = generateScalarInputField({
         fieldName: 'createdAt',
         scalarField: {
@@ -121,15 +107,14 @@ describe('generateScalarInputField', () => {
           name: 'createdAt',
           scalarType: 'date',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.date())');
+      expect(result.schemaFragment.contents).toBe('z.date()');
     });
 
-    it('generates scalarField call for dateTime type', () => {
+    it('generates Zod schema for dateTime type', () => {
       const result = generateScalarInputField({
         fieldName: 'updatedAt',
         scalarField: {
@@ -137,27 +122,25 @@ describe('generateScalarInputField', () => {
           name: 'updatedAt',
           scalarType: 'dateTime',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.date())');
+      expect(result.schemaFragment.contents).toBe('z.date()');
     });
 
-    it('generates scalarField call for json type', () => {
+    it('generates Zod schema for json type', () => {
       const result = generateScalarInputField({
         fieldName: 'data',
         scalarField: { ...baseScalarField, name: 'data', scalarType: 'json' },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.unknown())');
+      expect(result.schemaFragment.contents).toBe('z.unknown()');
     });
 
-    it('generates scalarField call for jsonObject type', () => {
+    it('generates Zod schema for jsonObject type', () => {
       const result = generateScalarInputField({
         fieldName: 'metadata',
         scalarField: {
@@ -165,31 +148,29 @@ describe('generateScalarInputField', () => {
           name: 'metadata',
           scalarType: 'jsonObject',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.record(z.string(), z.unknown()))',
+      expect(result.schemaFragment.contents).toBe(
+        'z.record(z.string(), z.unknown())',
       );
     });
 
-    it('generates scalarField call for uuid type', () => {
+    it('generates Zod schema for uuid type', () => {
       const result = generateScalarInputField({
         fieldName: 'id',
         scalarField: { ...baseScalarField, name: 'id', scalarType: 'uuid' },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.uuid())');
+      expect(result.schemaFragment.contents).toBe('z.uuid()');
     });
   });
 
   describe('optional fields', () => {
-    it('generates scalarField with nullish for optional string', () => {
+    it('generates Zod schema with nullish for optional string', () => {
       const result = generateScalarInputField({
         fieldName: 'name',
         scalarField: {
@@ -198,17 +179,14 @@ describe('generateScalarInputField', () => {
           scalarType: 'string',
           isOptional: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.string().nullish())',
-      );
+      expect(result.schemaFragment.contents).toBe('z.string().nullish()');
     });
 
-    it('generates scalarField with nullish for optional int', () => {
+    it('generates Zod schema with nullish for optional int', () => {
       const result = generateScalarInputField({
         fieldName: 'age',
         scalarField: {
@@ -217,17 +195,16 @@ describe('generateScalarInputField', () => {
           scalarType: 'int',
           isOptional: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.int().nullish())');
+      expect(result.schemaFragment.contents).toBe('z.int().nullish()');
     });
   });
 
   describe('fields with defaults', () => {
-    it('generates scalarField with optional for string with default', () => {
+    it('generates Zod schema with optional for string with default', () => {
       const result = generateScalarInputField({
         fieldName: 'name',
         scalarField: {
@@ -236,17 +213,14 @@ describe('generateScalarInputField', () => {
           scalarType: 'string',
           hasDefault: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.string().optional())',
-      );
+      expect(result.schemaFragment.contents).toBe('z.string().optional()');
     });
 
-    it('generates scalarField with optional for int with default', () => {
+    it('generates Zod schema with optional for int with default', () => {
       const result = generateScalarInputField({
         fieldName: 'age',
         scalarField: {
@@ -255,15 +229,14 @@ describe('generateScalarInputField', () => {
           scalarType: 'int',
           hasDefault: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe('scalarField(z.int().optional())');
+      expect(result.schemaFragment.contents).toBe('z.int().optional()');
     });
 
-    it('generates scalarField with optional for enum with default', () => {
+    it('generates Zod schema with optional for enum with default', () => {
       const result = generateScalarInputField({
         fieldName: 'status',
         scalarField: {
@@ -273,13 +246,12 @@ describe('generateScalarInputField', () => {
           enumType: 'Status',
           hasDefault: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.enum($Enums.Status).optional())',
+      expect(result.schemaFragment.contents).toBe(
+        'z.enum($Enums.Status).optional()',
       );
     });
 
@@ -293,19 +265,16 @@ describe('generateScalarInputField', () => {
           isOptional: true,
           hasDefault: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.string().nullish())',
-      );
+      expect(result.schemaFragment.contents).toBe('z.string().nullish()');
     });
   });
 
   describe('enum type', () => {
-    it('generates scalarField with enum for enum type', () => {
+    it('generates Zod schema with enum for enum type', () => {
       const result = generateScalarInputField({
         fieldName: 'status',
         scalarField: {
@@ -314,23 +283,16 @@ describe('generateScalarInputField', () => {
           scalarType: 'enum',
           enumType: 'Status',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.enum($Enums.Status))',
-      );
-      expect(result.fragment).toIncludeImport('z', 'zod');
-      expect(result.fragment).toIncludeImport('$Enums', 'prisma/$Enums');
-      expect(result.fragment).toIncludeImport(
-        'scalarField',
-        'data-utils/scalarField',
-      );
+      expect(result.schemaFragment.contents).toBe('z.enum($Enums.Status)');
+      expect(result.schemaFragment).toIncludeImport('z', 'zod');
+      expect(result.schemaFragment).toIncludeImport('$Enums', 'prisma/$Enums');
     });
 
-    it('generates scalarField with nullish for optional enum', () => {
+    it('generates Zod schema with nullish for optional enum', () => {
       const result = generateScalarInputField({
         fieldName: 'status',
         scalarField: {
@@ -340,13 +302,12 @@ describe('generateScalarInputField', () => {
           enumType: 'Status',
           isOptional: true,
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      expect(result.fragment.contents).toBe(
-        'scalarField(z.enum($Enums.Status).nullish())',
+      expect(result.schemaFragment.contents).toBe(
+        'z.enum($Enums.Status).nullish()',
       );
     });
 
@@ -359,7 +320,6 @@ describe('generateScalarInputField', () => {
             name: 'status',
             scalarType: 'enum',
           },
-          dataUtilsImports,
           prismaGeneratedImports,
           lookupEnum,
         }),
@@ -368,22 +328,16 @@ describe('generateScalarInputField', () => {
   });
 
   describe('imports', () => {
-    it('includes all required imports', () => {
+    it('includes z import only for scalar fields', () => {
       const result = generateScalarInputField({
         fieldName: 'name',
         scalarField: { ...baseScalarField, name: 'name', scalarType: 'string' },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      // Should have 2 imports: z from zod, scalarField from data-utils/scalarField
-      expect(result.fragment.imports).toHaveLength(2);
-      expect(result.fragment).toIncludeImport('z', 'zod');
-      expect(result.fragment).toIncludeImport(
-        'scalarField',
-        'data-utils/scalarField',
-      );
+      expect(result.schemaFragment.imports).toHaveLength(1);
+      expect(result.schemaFragment).toIncludeImport('z', 'zod');
     });
 
     it('includes $Enums import for enum types', () => {
@@ -395,19 +349,13 @@ describe('generateScalarInputField', () => {
           scalarType: 'enum',
           enumType: 'Status',
         },
-        dataUtilsImports,
         prismaGeneratedImports,
         lookupEnum,
       });
 
-      // Should have 3 imports: z, scalarField, $Enums
-      expect(result.fragment.imports).toHaveLength(3);
-      expect(result.fragment).toIncludeImport('z', 'zod');
-      expect(result.fragment).toIncludeImport(
-        'scalarField',
-        'data-utils/scalarField',
-      );
-      expect(result.fragment).toIncludeImport('$Enums', 'prisma/$Enums');
+      expect(result.schemaFragment.imports).toHaveLength(2);
+      expect(result.schemaFragment).toIncludeImport('z', 'zod');
+      expect(result.schemaFragment).toIncludeImport('$Enums', 'prisma/$Enums');
     });
   });
 });

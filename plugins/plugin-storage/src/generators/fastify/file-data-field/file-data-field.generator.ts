@@ -115,10 +115,15 @@ export const fileDataFieldGenerator = createGenerator({
 
         return {
           build: () => {
-            // Add the file field to virtual input fields
-            prismaDataServiceSetup.virtualInputFields.add({
+            // Add the file transformer to transform fields
+            prismaDataServiceSetup.transformFields.add({
               name: relationName,
-              fragment: fieldFragment,
+              schemaFragment: fieldFragment, // TODO: should be fileInputSchema.nullish() or fileInputSchema
+              transformer: {
+                fragment: fieldFragment, // TODO: should be fileTransformer({...})
+                needsExistingItem: true,
+              },
+              isTransformField: true,
               outputDtoField,
             });
           },

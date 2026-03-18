@@ -1,9 +1,4 @@
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  tsTemplate,
-  tsTemplateWithImports,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import {
   lowercaseFirstChar,
@@ -23,10 +18,9 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import {
-  generateAuthorizeFragment,
-  generateUpdateExecuteCallback,
-} from '../_shared/build-data-helpers/index.js';
+import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
+import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
+import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
@@ -45,6 +39,12 @@ const descriptorSchema = z.object({
 
 /**
  * Generator for prisma/prisma-data-update
+ *
+ * Generates an update function that:
+ * - Loads existing item (always, for authorization and/or transform fields)
+ * - Checks authorization (global and/or instance)
+ * - For scalar-only models: calls prisma.model.update directly
+ * - For models with transformers: uses prepareTransformers + executeTransformPlan
  */
 export const prismaDataUpdateGenerator = createGenerator({
   name: 'prisma/prisma-data-update',
@@ -58,6 +58,7 @@ export const prismaDataUpdateGenerator = createGenerator({
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
+        authorizerImports: authorizerUtilsImportsProvider,
         modelAuthorizer: prismaModelAuthorizerProvider
           .dependency()
           .optionalReference(modelName),
@@ -68,6 +69,7 @@ export const prismaDataUpdateGenerator = createGenerator({
         dataUtilsImports,
         prismaOutput,
         prismaImports,
+        authorizerImports,
         modelAuthorizer,
       }) {
         const serviceFields = prismaDataService.getFields();
@@ -79,80 +81,163 @@ export const prismaDataUpdateGenerator = createGenerator({
             `Fields ${fields.filter((field) => !usedFields.some((f) => f.name === field)).join(', ')} not found in service fields`,
           );
         }
+
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);
-
-            const useAllFields = fields.length === serviceFields.length;
-            const fieldsVariableName = useAllFields
-              ? prismaDataService.getFieldsVariableName()
-              : `${modelVar}UpdateFields`;
-
-            const fieldsDeclarationFragment = useAllFields
-              ? ''
-              : tsTemplateWithImports([
-                  tsImportBuilder(['pick']).from('es-toolkit'),
-                ])`const ${fieldsVariableName} = pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const);\n\n`;
-
-            // Generate execute callback that transforms FK fields into relations
-            const { executeCallbackFragment } = generateUpdateExecuteCallback({
-              prismaModel: prismaOutput.getPrismaModel(modelName),
-              inputFieldNames: fields,
-              dataUtilsImports,
-              modelVariableName: modelVar,
-            });
-
-            // Generate the schema export and update function together
-            const schemaName = `${modelVar}UpdateSchema`;
-
-            // Build authorize array from global + instance roles
-            const authorizeFragment = generateAuthorizeFragment({
-              modelName,
-              methodType: 'Update',
-              globalRoles,
-              instanceRoles,
-              modelAuthorizer,
-            });
-
-            const updateFunction = tsTemplate`
-              ${fieldsDeclarationFragment}\nexport const ${schemaName} = ${dataUtilsImports.generateUpdateSchema.fragment()}(${fieldsVariableName});
-
-              export async function ${name}<
-                TIncludeArgs extends ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}>,
-              >({
-                where,
-                data: input,
-                query,
-                context,
-              }: ${dataUtilsImports.DataUpdateInput.typeFragment()}<
-                ${quot(modelVar)},
-                typeof ${fieldsVariableName},
-                TIncludeArgs
-              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>> {
-                const plan = await ${dataUtilsImports.composeUpdate.fragment()}({
-                  model: ${quot(modelVar)},
-                  fields: ${fieldsVariableName},
-                  input,
-                  context,
-                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),${authorizeFragment}
-                });
-
-                const item = await ${dataUtilsImports.commitUpdate.fragment()}(plan, {
-                  query,
-                  execute: ${executeCallbackFragment},
-                });
-
-                return item;
-              }
-            `;
-
             const prismaModel = prismaOutput.getPrismaModel(modelName);
+            const hasTransformFields = prismaDataService.hasTransformFields();
 
+            // Determine which fields are scalar (FK or plain) for the destructure
+            const scalarFieldNames = usedFields
+              .filter((f) => !f.isTransformField)
+              .map((f) => f.name);
+
+            const transformFieldNames = usedFields
+              .filter((f) => f.isTransformField)
+              .map((f) => f.name);
+
+            // Generate FK → relation transformations (for update, use connectUpdate)
+            const {
+              updateArgumentFragment: fkArgumentFragment,
+              updateReturnFragment: fkReturnFragment,
+              passthrough: noFkRelations,
+            } = generateRelationBuildData({
+              prismaModel,
+              inputFieldNames: scalarFieldNames,
+              dataUtilsImports,
+              dataName: 'rest',
+            });
+
+            // Generate authorization
+            const { fragment: authFragment, hasInstanceAuth } =
+              generateAuthorizationStatements({
+                modelName,
+                methodType: 'Update',
+                globalRoles,
+                instanceRoles,
+                modelAuthorizer,
+                authorizerImports,
+              });
+
+            // Determine if we need existingItem (for instance auth or transform fields)
+            const needsExistingItem = hasInstanceAuth || hasTransformFields;
+            const existingItemFragment = needsExistingItem
+              ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
+              : '';
+
+            // Build the destructure pattern
+            const destructureNames = [
+              ...transformFieldNames,
+              ...(noFkRelations ? [] : [fkArgumentFragment]),
+            ];
+            const hasDestructure = destructureNames.length > 0;
+
+            const inputDestructure = hasDestructure
+              ? tsTemplate`const { ${destructureNames.join(', ')}, ...rest } = input;`
+              : '';
+
+            const dataName = hasDestructure ? 'rest' : 'input';
+
+            // Build the Prisma data object
+            const prismaDataFragment = noFkRelations
+              ? hasTransformFields
+                ? tsTemplate`{ ...${dataName}, ...transformed }`
+                : dataName
+              : hasTransformFields
+                ? tsTemplate`{ ...${fkReturnFragment}, ...transformed }`
+                : fkReturnFragment;
+
+            let updateFunction;
+
+            if (hasTransformFields) {
+              // Transform path: prepareTransformers + executeTransformPlan
+              const transformersVarName =
+                prismaDataService.getTransformersVariableName() ?? '';
+
+              // TODO: Generate proper .forUpdate() calls with existing values
+              // For now, generate a basic structure that handles simple transform fields
+              const transformerEntries = transformFieldNames.map(
+                (fieldName) =>
+                  tsTemplate`${fieldName}: ${transformersVarName}.${fieldName}.forUpdate(${fieldName}, existingItem.${fieldName}Id)`,
+              );
+              const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
+                Object.fromEntries(
+                  transformerEntries.map((entry, i) => [
+                    transformFieldNames[i],
+                    entry,
+                  ]),
+                ),
+              );
+
+              updateFunction = tsTemplate`
+                export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
+                  where,
+                  data: input,
+                  query,
+                  context,
+                }: {
+                  where: { id: string };
+                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'UpdateSchema')}>;
+                  query?: TQuery;
+                  context: ServiceContext;
+                }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
+                  ${existingItemFragment}
+                  ${authFragment}
+                  ${inputDestructure}
+
+                  const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+                    transformers: ${transformersObject},
+                    serviceContext: context,
+                  });
+
+                  const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+                    execute: async ({ tx, transformed }) =>
+                      tx.${modelVar}.update({
+                        where,
+                        data: ${prismaDataFragment},
+                      }),
+                    refetch: (item) =>
+                      ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
+                  });
+
+                  return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
+                }
+              `;
+            } else {
+              // Scalar-only path: direct Prisma call
+              updateFunction = tsTemplate`
+                export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
+                  where,
+                  data: input,
+                  query,
+                  context,
+                }: {
+                  where: { id: string };
+                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'UpdateSchema')}>;
+                  query?: TQuery;
+                  context: ServiceContext;
+                }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
+                  ${existingItemFragment}
+                  ${authFragment}
+                  ${inputDestructure}
+
+                  const result = await ${prismaImports.prisma.fragment()}.${modelVar}.update({
+                    where,
+                    data: ${prismaDataFragment},
+                    ...query,
+                  });
+
+                  return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
+                }
+              `;
+            }
+
+            const schemaName = `${modelVar}UpdateSchema`;
             const methodFragment = TsCodeUtils.importFragment(
               name,
               serviceFile.getServicePath(),
             );
-
             const schemaMethodFragment = TsCodeUtils.importFragment(
               schemaName,
               serviceFile.getServicePath(),

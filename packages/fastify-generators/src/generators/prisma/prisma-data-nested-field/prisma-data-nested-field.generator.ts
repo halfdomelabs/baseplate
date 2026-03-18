@@ -144,7 +144,7 @@ export const prismaDataNestedFieldGenerator = createGenerator({
 
         return {
           build: () => {
-            prismaDataServiceSetup.virtualInputFields.add(
+            prismaDataServiceSetup.transformFields.add(
               writePrismaDataNestedField({
                 parentModel,
                 nestedModel,

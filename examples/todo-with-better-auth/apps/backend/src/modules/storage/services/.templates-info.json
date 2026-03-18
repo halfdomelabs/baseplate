@@ -19,10 +19,10 @@
     "instanceData": {},
     "template": "services-download-file"
   },
-  "file-field.ts": {
+  "file-transformer.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},
-    "template": "services-file-field"
+    "template": "services-file-transformer"
   },
   "get-public-url.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",

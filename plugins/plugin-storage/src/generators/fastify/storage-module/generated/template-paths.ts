@@ -15,7 +15,7 @@ export interface FastifyStorageModulePaths {
   servicesCreatePresignedDownloadUrl: string;
   servicesCreatePresignedUploadUrl: string;
   servicesDownloadFile: string;
-  servicesFileField: string;
+  servicesFileTransformer: string;
   servicesGetPublicUrl: string;
   servicesUploadFile: string;
   typesAdapter: string;
@@ -53,7 +53,7 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           servicesCreatePresignedDownloadUrl: `${moduleRoot}/services/create-presigned-download-url.ts`,
           servicesCreatePresignedUploadUrl: `${moduleRoot}/services/create-presigned-upload-url.ts`,
           servicesDownloadFile: `${moduleRoot}/services/download-file.ts`,
-          servicesFileField: `${moduleRoot}/services/file-field.ts`,
+          servicesFileTransformer: `${moduleRoot}/services/file-transformer.ts`,
           servicesGetPublicUrl: `${moduleRoot}/services/get-public-url.ts`,
           servicesUploadFile: `${moduleRoot}/services/upload-file.ts`,
           typesAdapter: `${moduleRoot}/types/adapter.ts`,

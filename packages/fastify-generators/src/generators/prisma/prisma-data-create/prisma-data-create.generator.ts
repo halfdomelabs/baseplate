@@ -1,9 +1,4 @@
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  tsTemplate,
-  tsTemplateWithImports,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import {
   lowercaseFirstChar,
@@ -19,13 +14,15 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import {
-  generateAuthorizeFragment,
-  generateCreateExecuteCallback,
-} from '../_shared/build-data-helpers/index.js';
+import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
+import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
+import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaOutputProvider } from '../prisma/prisma.generator.js';
+import {
+  prismaImportsProvider,
+  prismaOutputProvider,
+} from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -36,6 +33,11 @@ const descriptorSchema = z.object({
 
 /**
  * Generator for prisma/prisma-data-create
+ *
+ * Generates a create function that:
+ * - Checks authorization (global only for creates)
+ * - For scalar-only models: calls prisma.model.create directly
+ * - For models with transformers: uses prepareTransformers + executeTransformPlan
  */
 export const prismaDataCreateGenerator = createGenerator({
   name: 'prisma/prisma-data-create',
@@ -48,8 +50,17 @@ export const prismaDataCreateGenerator = createGenerator({
         prismaDataService: prismaDataServiceProvider,
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
+        prismaImports: prismaImportsProvider,
+        authorizerImports: authorizerUtilsImportsProvider,
       },
-      run({ serviceFile, prismaDataService, dataUtilsImports, prismaOutput }) {
+      run({
+        serviceFile,
+        prismaDataService,
+        dataUtilsImports,
+        prismaOutput,
+        prismaImports,
+        authorizerImports,
+      }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
           fields.includes(field.name),
@@ -59,75 +70,145 @@ export const prismaDataCreateGenerator = createGenerator({
             `Fields ${fields.filter((field) => !usedFields.some((f) => f.name === field)).join(', ')} not found in service fields`,
           );
         }
+
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);
-
-            const useAllFields = fields.length === serviceFields.length;
-            const fieldsVariableName = useAllFields
-              ? prismaDataService.getFieldsVariableName()
-              : `${modelVar}CreateFields`;
-
-            const fieldsDeclarationFragment = useAllFields
-              ? ''
-              : tsTemplateWithImports([
-                  tsImportBuilder(['pick']).from('es-toolkit'),
-                ])`const ${fieldsVariableName} = pick(${prismaDataService.getFieldsVariableName()}, [${fields.map((field) => quot(field)).join(', ')}] as const);\n`;
-
-            // Generate execute callback that transforms FK fields into relations
             const prismaModel = prismaOutput.getPrismaModel(modelName);
-            const { executeCallbackFragment } = generateCreateExecuteCallback({
+            const hasTransformFields = prismaDataService.hasTransformFields();
+
+            // Determine which fields are scalar (FK or plain) for the destructure
+            const scalarFieldNames = usedFields
+              .filter((f) => !f.isTransformField)
+              .map((f) => f.name);
+
+            const transformFieldNames = usedFields
+              .filter((f) => f.isTransformField)
+              .map((f) => f.name);
+
+            // Generate FK → relation transformations
+            const {
+              createArgumentFragment: fkArgumentFragment,
+              createReturnFragment: fkReturnFragment,
+              passthrough: noFkRelations,
+            } = generateRelationBuildData({
               prismaModel,
-              inputFieldNames: fields,
+              inputFieldNames: scalarFieldNames,
               dataUtilsImports,
-              modelVariableName: modelVar,
+              dataName: 'rest',
             });
 
-            // Generate the schema export and create function together
-            const schemaName = `${modelVar}CreateSchema`;
-
-            const authorizeFragment = generateAuthorizeFragment({
+            // Generate authorization
+            const { fragment: authFragment } = generateAuthorizationStatements({
               modelName,
               methodType: 'Create',
               globalRoles,
               modelAuthorizer: undefined,
+              authorizerImports,
             });
 
-            const createFunction = tsTemplate`
-              ${fieldsDeclarationFragment}\nexport const ${schemaName} = ${dataUtilsImports.generateCreateSchema.fragment()}(${fieldsVariableName});
+            // Build the destructure pattern
+            const destructureNames = [
+              ...transformFieldNames,
+              ...(noFkRelations ? [] : [fkArgumentFragment]),
+            ];
+            const hasDestructure = destructureNames.length > 0;
 
-              export async function ${name}<
-                TIncludeArgs extends ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}>,
-              >({
-                data: input,
-                query,
-                context,
-              }: ${dataUtilsImports.DataCreateInput.typeFragment()}<
-                ${quot(modelVar)},
-                typeof ${fieldsVariableName},
-                TIncludeArgs
-              >): Promise<${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>> {
-                const plan = await ${dataUtilsImports.composeCreate.fragment()}({
-                  model: ${quot(modelVar)},
-                  fields: ${fieldsVariableName},
-                  input,
-                  context,${authorizeFragment}
-                });
+            const inputDestructure = hasDestructure
+              ? tsTemplate`const { ${destructureNames.join(', ')}, ...rest } = input;`
+              : '';
 
-                const item = await ${dataUtilsImports.commitCreate.fragment()}(plan, {
+            const dataName = hasDestructure ? 'rest' : 'input';
+
+            // Build the Prisma data object
+            const prismaDataFragment = noFkRelations
+              ? hasTransformFields
+                ? tsTemplate`{ ...${dataName}, ...transformed }`
+                : dataName
+              : hasTransformFields
+                ? tsTemplate`{ ...${fkReturnFragment}, ...transformed }`
+                : fkReturnFragment;
+
+            let createFunction;
+
+            if (hasTransformFields) {
+              // Transform path: prepareTransformers + executeTransformPlan
+              // Safe: we're inside hasTransformFields check
+              const transformersVarName =
+                prismaDataService.getTransformersVariableName() ?? '';
+              const transformerEntries = transformFieldNames.map(
+                (fieldName) =>
+                  tsTemplate`${fieldName}: ${transformersVarName}.${fieldName}.forCreate(${fieldName})`,
+              );
+              const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
+                Object.fromEntries(
+                  transformerEntries.map((entry, i) => [
+                    transformFieldNames[i],
+                    entry,
+                  ]),
+                ),
+              );
+
+              createFunction = tsTemplate`
+                export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
+                  data: input,
                   query,
-                  execute: ${executeCallbackFragment},
-                });
+                  context,
+                }: {
+                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
+                  query?: TQuery;
+                  context: ServiceContext;
+                }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
+                  ${authFragment}
+                  ${inputDestructure}
 
-                return item;
-              }
-            `;
+                  const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+                    transformers: ${transformersObject},
+                    serviceContext: context,
+                  });
 
+                  const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+                    execute: async ({ tx, transformed }) =>
+                      tx.${modelVar}.create({
+                        data: ${prismaDataFragment},
+                      }),
+                    refetch: (item) =>
+                      ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
+                  });
+
+                  return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
+                }
+              `;
+            } else {
+              // Scalar-only path: direct Prisma call, no transaction
+              createFunction = tsTemplate`
+                export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
+                  data: input,
+                  query,
+                  context,
+                }: {
+                  data: z.infer<typeof ${prismaDataService.getFieldSchemasVariableName().replace('FieldSchemas', 'CreateSchema')}>;
+                  query?: TQuery;
+                  context: ServiceContext;
+                }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
+                  ${authFragment}
+                  ${inputDestructure}
+
+                  const result = await ${prismaImports.prisma.fragment()}.${modelVar}.create({
+                    data: ${prismaDataFragment},
+                    ...query,
+                  });
+
+                  return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
+                }
+              `;
+            }
+
+            const schemaName = `${modelVar}CreateSchema`;
             const methodFragment = TsCodeUtils.importFragment(
               name,
               serviceFile.getServicePath(),
             );
-
             const schemaMethodFragment = TsCodeUtils.importFragment(
               schemaName,
               serviceFile.getServicePath(),

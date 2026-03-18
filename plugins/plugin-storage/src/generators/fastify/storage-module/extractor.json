@@ -235,34 +235,32 @@
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
-    "services-file-field": {
+    "services-file-transformer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "group": "main",
       "importMapProviders": {
         "dataUtilsImportsProvider": {
           "importName": "dataUtilsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
-        },
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
-        "prismaGeneratedImportsProvider": {
-          "importName": "prismaGeneratedImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/services/file-field.ts",
+      "pathRootRelativePath": "{module-root}/services/file-transformer.ts",
       "projectExports": {
-        "fileField": { "isTypeOnly": false, "name": "fileField" },
-        "FileInput": { "isTypeOnly": true, "name": "FileInput" }
+        "FileConnect": { "isTypeOnly": true, "name": "FileConnect" },
+        "FileDisconnect": { "isTypeOnly": true, "name": "FileDisconnect" },
+        "FileInput": { "isTypeOnly": true, "name": "FileInput" },
+        "fileInputSchema": { "isTypeOnly": false, "name": "fileInputSchema" },
+        "fileNullableInputSchema": {
+          "isTypeOnly": false,
+          "name": "fileNullableInputSchema"
+        },
+        "fileTransformer": { "isTypeOnly": false, "name": "fileTransformer" }
       },
       "referencedGeneratorTemplates": [
         "types-file-category",
         "utils-validate-pending-upload"
       ],
-      "sourceFile": "module/services/file-field.ts",
+      "sourceFile": "module/services/file-transformer.ts",
       "variables": {}
     },
     "services-get-public-url": {
