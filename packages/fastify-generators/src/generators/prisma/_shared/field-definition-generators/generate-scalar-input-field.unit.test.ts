@@ -137,7 +137,10 @@ describe('generateScalarInputField', () => {
         lookupEnum,
       });
 
-      expect(result.schemaFragment.contents).toBe('z.unknown()');
+      expect(result.schemaFragment.contents).toBe(
+        'z.json().transform((val) => (val === null ? Prisma.JsonNull : val))',
+      );
+      expect(result.schemaFragment).toIncludeImport('Prisma', 'prisma/Prisma');
     });
 
     it('generates Zod schema for jsonObject type', () => {

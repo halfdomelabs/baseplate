@@ -54,6 +54,14 @@ function generateValidator({
     modifier = '.optional()';
   }
 
+  if (scalarType === 'json') {
+    // JSON fields use z.json() with a transform to handle Prisma's JsonNull sentinel.
+    // Use .optional() instead of .nullish() since the transform handles null → Prisma.JsonNull.
+    const jsonModifier = isOptional || hasDefault ? '.optional()' : '';
+    const prismaFrag = prismaGeneratedImports.Prisma.fragment();
+    return tsTemplate`${zFrag}.json().transform((val) => (val === null ? ${prismaFrag}.JsonNull : val))${jsonModifier}`;
+  }
+
   if (scalarType === 'enum') {
     if (!enumType) {
       throw new Error('Enum name is required for enum scalar type');

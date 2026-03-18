@@ -1,0 +1,31 @@
+import { z } from 'zod';
+
+import { builder } from '@src/plugins/graphql/builder.js';
+import { prisma } from '@src/services/prisma.js';
+
+builder.queryField('blogPost', (t) =>
+  t.prismaField({
+    type: 'BlogPost',
+    authorize: ['user'],
+    args: { id: t.arg({ required: true, type: 'Uuid' }) },
+    resolve: async (query, root, { id }) =>
+      prisma.blogPost.findUniqueOrThrow({ ...query, where: { id } }),
+  }),
+);
+
+builder.queryField('blogPosts', (t) =>
+  t.prismaField({
+    type: ['BlogPost'],
+    args: {
+      skip: t.arg.int({ validate: z.int().min(0) }),
+      take: t.arg.int({ validate: z.int().min(0) }),
+    },
+    authorize: ['user'],
+    resolve: async (query, _root, { skip, take }) =>
+      prisma.blogPost.findMany({
+        ...query,
+        skip: skip ?? undefined,
+        take: take ?? undefined,
+      }),
+  }),
+);
