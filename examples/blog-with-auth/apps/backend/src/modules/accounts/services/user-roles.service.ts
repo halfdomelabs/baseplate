@@ -1,6 +1,7 @@
 import type { User } from '@src/generated/prisma/client.js';
 
 import { prisma } from '@src/services/prisma.js';
+import { NotFoundError } from '@src/utils/http-errors.js';
 
 import type { AuthRole } from '../constants/auth-roles.constants.js';
 
@@ -22,13 +23,13 @@ export async function updateUserRoles({
   userId: string;
   roles: string[];
 }): Promise<User> {
-  // Filter out built-in roles (public, user, system)
+  // Filter out auto-assigned roles (public, user, system) that cannot be manually assigned
   const validRoles = roles.filter((role) => {
     if (!(role in AUTH_ROLE_CONFIG)) {
       return false;
     }
     const roleConfig = AUTH_ROLE_CONFIG[role as AuthRole];
-    return !roleConfig.builtIn;
+    return !roleConfig.autoAssigned;
   });
 
   await prisma.$transaction([
@@ -41,7 +42,13 @@ export async function updateUserRoles({
     }),
   ]);
 
-  return prisma.user.findUnique({
+  const updatedUser = await prisma.user.findUnique({
     where: { id: userId },
-  }) as Promise<User>;
+  });
+
+  if (updatedUser === null) {
+    throw new NotFoundError('User not found', 'user-not-found');
+  }
+
+  return updatedUser;
 }

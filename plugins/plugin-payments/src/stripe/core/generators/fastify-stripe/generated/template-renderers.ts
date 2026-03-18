@@ -2,18 +2,42 @@ import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-gener
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
-import { configServiceImportsProvider } from '@baseplate-dev/fastify-generators';
+import {
+  configServiceImportsProvider,
+  errorHandlerServiceImportsProvider,
+  loggerServiceImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { STRIPE_FASTIFY_STRIPE_PATHS } from './template-paths.js';
 import { STRIPE_FASTIFY_STRIPE_TEMPLATES } from './typed-templates.js';
 
 export interface StripeFastifyStripeRenderers {
+  pluginsGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.pluginsGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   servicesGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
           typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.servicesGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  webhookServicesGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.webhookServicesGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -29,16 +53,38 @@ const stripeFastifyStripeRenderers =
 const stripeFastifyStripeRenderersTask = createGeneratorTask({
   dependencies: {
     configServiceImports: configServiceImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
     paths: STRIPE_FASTIFY_STRIPE_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     stripeFastifyStripeRenderers: stripeFastifyStripeRenderers.export(),
   },
-  run({ configServiceImports, paths, typescriptFile }) {
+  run({
+    configServiceImports,
+    errorHandlerServiceImports,
+    loggerServiceImports,
+    paths,
+    typescriptFile,
+  }) {
     return {
       providers: {
         stripeFastifyStripeRenderers: {
+          pluginsGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: STRIPE_FASTIFY_STRIPE_TEMPLATES.pluginsGroup,
+                paths,
+                importMapProviders: {
+                  configServiceImports,
+                  errorHandlerServiceImports,
+                  loggerServiceImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
           servicesGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -47,6 +93,14 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   configServiceImports,
                 },
+                ...options,
+              }),
+          },
+          webhookServicesGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: STRIPE_FASTIFY_STRIPE_TEMPLATES.webhookServicesGroup,
+                paths,
                 ...options,
               }),
           },

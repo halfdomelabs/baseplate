@@ -45,3 +45,4 @@ saveWorkspaceProtocol: rolling
 
 publicHoistPattern:
   - prettier-plugin-packagejson
+  - prettier-plugin-tailwindcss

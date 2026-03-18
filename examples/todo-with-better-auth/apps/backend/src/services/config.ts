@@ -5,6 +5,8 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   ALLOWED_ORIGINS: z.string().default(''),
   // Environment the app is running in
   APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
+  // Frontend URL for authentication flows including password reset and email verification (e.g., https://app.example.com)
+  AUTH_FRONTEND_URL: z.url(),
   // AWS access key ID
   AWS_ACCESS_KEY_ID: z.string().min(1),
   // AWS default region
@@ -21,8 +23,12 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   BETTER_AUTH_URL: z.url(),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
+  // Default sender email address for transactional emails
+  EMAIL_DEFAULT_FROM: z.string().default('noreply@example.com'),
   // Enable embedded workers (run queue workers in the API process)
   ENABLE_EMBEDDED_WORKERS: z.stringbool().optional(),
+  // Postmark API server token for sending emails
+  POSTMARK_SERVER_TOKEN: z.string().min(1),
   // Redis key prefix for namespace isolation (optional)
   REDIS_KEY_PREFIX: z.string().default(''),
   // Connection URL of Redis

@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.6.4
+
+### Patch Changes
+
+- [#837](https://github.com/halfdomelabs/baseplate/pull/837) [`ba315aa`](https://github.com/halfdomelabs/baseplate/commit/ba315aaaec0e8842ec7fadb765b1fed5e3abda5a) Thanks [@kingston](https://github.com/kingston)! - Add `inputValue` prop to `ComboboxField` for controlled input state.
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.4
+
 ## 0.6.3
 
 ### Patch Changes

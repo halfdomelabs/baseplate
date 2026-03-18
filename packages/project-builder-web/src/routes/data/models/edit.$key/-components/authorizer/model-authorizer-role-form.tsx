@@ -4,9 +4,8 @@ import type React from 'react';
 import {
   authConfigSpec,
   AuthorizerExpressionParseError,
-  buildRelationValidationInfo,
+  buildModelExpressionContext,
   createAuthorizerRoleSchema,
-  createModelValidationContext,
   modelAuthorizerRoleEntityType,
   parseAuthorizerExpression,
 } from '@baseplate-dev/project-builder-lib';
@@ -26,10 +25,11 @@ import {
 } from '@baseplate-dev/ui-components';
 import { autocompletion } from '@codemirror/autocomplete';
 import { linter } from '@codemirror/lint';
-import { EditorView } from '@codemirror/view';
+import { Prec } from '@codemirror/state';
+import { EditorView, keymap } from '@codemirror/view';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdChevronRight } from 'react-icons/md';
 import { z } from 'zod';
@@ -115,6 +115,10 @@ export function ModelAuthorizerRoleForm({
     });
   });
 
+  // Ref to avoid stale closure in CodeMirror keymap extension
+  const handleFormSubmitRef = useRef(handleFormSubmit);
+  handleFormSubmitRef.current = handleFormSubmit;
+
   const formId = useId();
 
   // Get current model config for autocomplete
@@ -123,27 +127,26 @@ export function ModelAuthorizerRoleForm({
 
   // Build relation info for nested authorizer validation and autocomplete
   const { modelContext, relationInfoList } = useMemo(() => {
-    const relationValidationInfo = buildRelationValidationInfo(
-      modelConfig.model.relations,
-      definition.models,
-    );
+    const ctx = buildModelExpressionContext(modelConfig, definition.models);
 
     // Derive autocomplete info from validation info
     const relInfoList: RelationAutocompleteInfo[] = [
-      ...relationValidationInfo.entries(),
+      ...(ctx.relationInfo?.entries() ?? []),
     ].map(([relationName, info]) => ({
       relationName,
       foreignModelName: info.foreignModelName,
       foreignAuthorizerRoleNames: [...info.foreignAuthorizerRoleNames],
+      foreignScalarFields: info.foreignScalarFieldNames
+        ? [...info.foreignScalarFieldNames].map((name) => ({
+            name,
+            type: info.foreignFieldTypes?.get(name) ?? 'unknown',
+          }))
+        : undefined,
+      direction: info.direction,
     }));
 
-    const ctx = createModelValidationContext(modelConfig);
-
     return {
-      modelContext: {
-        ...ctx,
-        relationInfo: relationValidationInfo,
-      },
+      modelContext: ctx,
       relationInfoList: relInfoList,
     };
   }, [modelConfig, definition]);
@@ -156,7 +159,7 @@ export function ModelAuthorizerRoleForm({
       definitionContainer.definition,
     )?.roles;
     return (
-      roles?.filter((role) => !role.builtIn).map((role) => role.name) ?? []
+      roles?.filter((role) => !role.autoAssigned).map((role) => role.name) ?? []
     );
   }, [definitionContainer]);
 
@@ -180,6 +183,18 @@ export function ModelAuthorizerRoleForm({
         ),
       ),
       EditorView.lineWrapping,
+      Prec.highest(
+        keymap.of([
+          {
+            key: 'Ctrl-Enter',
+            mac: 'Mod-Enter',
+            run: () => {
+              void handleFormSubmitRef.current();
+              return true;
+            },
+          },
+        ]),
+      ),
     ];
 
     return exts;
@@ -216,38 +231,51 @@ export function ModelAuthorizerRoleForm({
         extensions={extensions}
         height="120px"
         description={
-          <Collapsible>
+          <>
             TypeScript boolean expression. Available: <code>model</code>,{' '}
             <code>userId</code>, <code>isAuthenticated</code>,{' '}
-            <code>hasRole()</code>, <code>hasSomeRole()</code>
-            <CollapsibleTrigger className="mt-1 flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
-              <MdChevronRight className="size-3.5 transition-transform" />
-              Show examples
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-              <div>
-                <code>model.id === userId</code>
-              </div>
-              <div>
-                <code>isAuthenticated</code>
-                {' — '}check if user is authenticated
-              </div>
-              <div>
-                <code>hasRole(&apos;admin&apos;)</code>
-              </div>
-              <div>
-                <code>
-                  model.authorId === userId || hasRole(&apos;admin&apos;)
-                </code>
-              </div>
-              <div>
-                <code>hasRole(model.todoList, &apos;owner&apos;)</code>
-                {' — '}check role on related model
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+            <code>hasRole()</code>, <code>hasSomeRole()</code>,{' '}
+            <code>exists()</code>, <code>all()</code>
+          </>
         }
       />
+      <Collapsible className="-mt-3">
+        <CollapsibleTrigger className="flex items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground [&[data-state=open]>svg]:rotate-90">
+          <MdChevronRight className="size-3.5 transition-transform" />
+          Show examples
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+          <div>
+            <code>model.id === userId</code>
+          </div>
+          <div>
+            <code>isAuthenticated</code>
+            {' — '}check if user is authenticated
+          </div>
+          <div>
+            <code>hasRole(&apos;admin&apos;)</code>
+          </div>
+          <div>
+            <code>model.authorId === userId || hasRole(&apos;admin&apos;)</code>
+          </div>
+          <div>
+            <code>hasRole(model.todoList, &apos;owner&apos;)</code>
+            {' — '}check role on related model
+          </div>
+          <div>
+            <code>
+              exists(model.members, {'{ '}userId: userId{' }'})
+            </code>
+            {' — '}check if any related record matches
+          </div>
+          <div>
+            <code>
+              all(model.tasks, {'{ '}isCompleted: true{' }'})
+            </code>
+            {' — '}check if all related records match
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
       <DialogFooter>
         <DialogClose
           render={

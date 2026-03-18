@@ -5,6 +5,7 @@ import { betterAuthPlugin } from './plugins/better-auth.plugin.js';
 
 /* TPL_IMPORTS:START */
 import './schema/user-role.object-type.js';
+import './schema/admin-auth.mutations.js';
 import './schema/user-session.queries.js';
 import './schema/user.mutations.js';
 import './schema/user.object-type.js';

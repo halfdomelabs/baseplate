@@ -4,6 +4,6 @@
   "icon": "icon.svg",
   "description": "Self-hosted authentication using Better Auth with email/password, cookie-based sessions, and Prisma adapter.",
   "version": "0.1.0",
-  "moduleDirectories": ["core"],
+  "moduleDirectories": ["core", "admin"],
   "managedBy": "@baseplate-dev/plugin-auth:auth"
 }

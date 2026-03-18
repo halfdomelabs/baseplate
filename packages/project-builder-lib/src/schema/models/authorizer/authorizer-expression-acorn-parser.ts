@@ -6,6 +6,8 @@
  * - `hasRole('admin')`
  * - `hasSomeRole(['admin', 'moderator'])`
  * - `model.id === userId || hasRole('admin')`
+ * - `exists(model.members, { userId: userId })`
+ * - `all(model.tasks, { isCompleted: true })`
  *
  * Uses Acorn to parse as JavaScript, then converts the ESTree AST
  * to our domain-specific AST, rejecting unsupported constructs.
@@ -33,9 +35,13 @@ import type {
   LiteralValueNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
+  RelationFilterCondition,
+  RelationFilterNode,
 } from './authorizer-expression-ast.js';
+import type { AuthorizerExpressionVisitor } from './authorizer-expression-visitor.js';
 
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
+import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
 
 /**
  * Parse an authorizer expression string into our domain AST.
@@ -123,7 +129,7 @@ function convertNode(node: Expression): AuthorizerExpressionNode {
         return { type: 'isAuthenticated' } satisfies IsAuthenticatedNode;
       }
       throw new AuthorizerExpressionParseError(
-        `Unknown identifier '${node.name}'. Use hasRole(), hasSomeRole(), isAuthenticated, or a comparison like model.id === userId.`,
+        `Unknown identifier '${node.name}'. Use hasRole(), hasSomeRole(), exists(), all(), isAuthenticated, or a comparison like model.id === userId.`,
         node,
       );
     }
@@ -239,18 +245,25 @@ function convertFieldRefOrLiteral(
 }
 
 /**
- * Convert a CallExpression to HasRoleNode or HasSomeRoleNode.
+ * Convert a CallExpression to a role check or relation filter node.
  * Supports:
  * - `hasRole('admin')`
  * - `hasSomeRole(['admin', 'moderator'])`
+ * - `exists(model.relation, { field: value })`
+ * - `all(model.relation, { field: value })`
  */
 function convertCallExpression(
   node: CallExpression,
-): HasRoleNode | HasSomeRoleNode | NestedHasRoleNode | NestedHasSomeRoleNode {
+):
+  | HasRoleNode
+  | HasSomeRoleNode
+  | NestedHasRoleNode
+  | NestedHasSomeRoleNode
+  | RelationFilterNode {
   // Only support direct calls (e.g., hasRole(...))
   if (node.callee.type !== 'Identifier') {
     throw new AuthorizerExpressionParseError(
-      'Function calls must be standalone (hasRole, hasSomeRole)',
+      'Function calls must be standalone (hasRole, hasSomeRole, exists, all)',
       node.callee,
     );
   }
@@ -265,8 +278,16 @@ function convertCallExpression(
     return parseHasSomeRoleArgs(node, 'hasSomeRole()');
   }
 
+  if (funcName === 'exists') {
+    return parseRelationFilterArgs(node, 'some', 'exists()');
+  }
+
+  if (funcName === 'all') {
+    return parseRelationFilterArgs(node, 'every', 'all()');
+  }
+
   throw new AuthorizerExpressionParseError(
-    `Unknown function '${funcName}'. Use hasRole() or hasSomeRole().`,
+    `Unknown function '${funcName}'. Use hasRole(), hasSomeRole(), exists(), or all().`,
     node.callee,
   );
 }
@@ -470,6 +491,82 @@ function parseHasSomeRoleArgs(
 }
 
 /**
+ * Parse exists(model.relation, { field: value }) or all(model.relation, { field: value }) arguments.
+ */
+function parseRelationFilterArgs(
+  node: CallExpression,
+  operator: 'some' | 'every',
+  funcName: string,
+): RelationFilterNode {
+  if (node.arguments.length !== 2) {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} requires exactly 2 arguments (e.g., ${funcName.replace('()', '')}(model.relation, { field: value })), got ${node.arguments.length}`,
+      node,
+    );
+  }
+
+  const relationArg = node.arguments[0];
+  const conditionsArg = node.arguments[1];
+
+  const relation = parseModelRelationArg(relationArg as Expression, funcName);
+
+  if (conditionsArg.type !== 'ObjectExpression') {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} second argument must be an object literal (e.g., { userId: userId })`,
+      conditionsArg,
+    );
+  }
+
+  if (conditionsArg.properties.length === 0) {
+    throw new AuthorizerExpressionParseError(
+      `${funcName} conditions object must have at least one property`,
+      conditionsArg,
+    );
+  }
+
+  const conditions: RelationFilterCondition[] = [];
+
+  for (const prop of conditionsArg.properties) {
+    if (prop.type === 'SpreadElement') {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} spread elements are not supported in conditions`,
+        prop,
+      );
+    }
+
+    if (prop.computed) {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} computed property keys are not supported in conditions`,
+        prop,
+      );
+    }
+
+    if (prop.key.type !== 'Identifier') {
+      throw new AuthorizerExpressionParseError(
+        `${funcName} condition keys must be identifiers (e.g., { userId: userId })`,
+        prop.key,
+      );
+    }
+
+    const field = prop.key.name;
+    const fieldStart = prop.key.start;
+    const fieldEnd = prop.key.end;
+    const value = convertFieldRefOrLiteral(prop.value);
+
+    conditions.push({ field, fieldStart, fieldEnd, value });
+  }
+
+  return {
+    type: 'relationFilter',
+    relationName: relation.relationName,
+    relationStart: relation.relationStart,
+    relationEnd: relation.relationEnd,
+    operator,
+    conditions,
+  };
+}
+
+/**
  * Convert to FieldRefNode.
  * Supports:
  * - Standalone identifier for implicit auth context: `userId`
@@ -559,62 +656,10 @@ function extractInfo(
   const authFieldRefs: string[] = [];
   const roleRefs: string[] = [];
   const nestedRoleRefs: { relationName: string; roles: string[] }[] = [];
+  const relationFilterRefs: { relationName: string }[] = [];
   let requiresModel = false;
 
-  function walk(node: AuthorizerExpressionNode): void {
-    switch (node.type) {
-      case 'fieldComparison': {
-        if (node.left.type === 'fieldRef') {
-          walkFieldRef(node.left);
-        }
-        if (node.right.type === 'fieldRef') {
-          walkFieldRef(node.right);
-        }
-        break;
-      }
-
-      case 'hasRole': {
-        roleRefs.push(node.role);
-        break;
-      }
-
-      case 'hasSomeRole': {
-        roleRefs.push(...node.roles);
-        break;
-      }
-
-      case 'nestedHasRole': {
-        nestedRoleRefs.push({
-          relationName: node.relationName,
-          roles: [node.role],
-        });
-        requiresModel = true;
-        break;
-      }
-
-      case 'nestedHasSomeRole': {
-        nestedRoleRefs.push({
-          relationName: node.relationName,
-          roles: node.roles,
-        });
-        requiresModel = true;
-        break;
-      }
-
-      case 'isAuthenticated': {
-        // No dependencies to track
-        break;
-      }
-
-      case 'binaryLogical': {
-        walk(node.left);
-        walk(node.right);
-        break;
-      }
-    }
-  }
-
-  function walkFieldRef(node: FieldRefNode): void {
+  function collectFieldRef(node: FieldRefNode): void {
     if (node.source === 'model') {
       modelFieldRefs.push(node.field);
       requiresModel = true;
@@ -623,13 +668,61 @@ function extractInfo(
     }
   }
 
-  walk(ast);
+  const infoVisitor: AuthorizerExpressionVisitor<void> = {
+    fieldComparison(node) {
+      if (node.left.type === 'fieldRef') {
+        collectFieldRef(node.left);
+      }
+      if (node.right.type === 'fieldRef') {
+        collectFieldRef(node.right);
+      }
+    },
+    hasRole(node) {
+      roleRefs.push(node.role);
+    },
+    hasSomeRole(node) {
+      roleRefs.push(...node.roles);
+    },
+    nestedHasRole(node) {
+      nestedRoleRefs.push({
+        relationName: node.relationName,
+        roles: [node.role],
+      });
+      requiresModel = true;
+    },
+    nestedHasSomeRole(node) {
+      nestedRoleRefs.push({
+        relationName: node.relationName,
+        roles: node.roles,
+      });
+      requiresModel = true;
+    },
+    relationFilter(node) {
+      for (const condition of node.conditions) {
+        if (condition.value.type === 'fieldRef') {
+          collectFieldRef(condition.value);
+        }
+      }
+      relationFilterRefs.push({ relationName: node.relationName });
+      requiresModel = true;
+    },
+    isAuthenticated() {
+      // No dependencies to track
+    },
+    binaryLogical(_node, _ctx, visit) {
+      visit(_node.left);
+      visit(_node.right);
+    },
+  };
+
+  visitAuthorizerExpression(ast, infoVisitor);
 
   return {
     modelFieldRefs: [...new Set(modelFieldRefs)],
     authFieldRefs: [...new Set(authFieldRefs)],
     roleRefs: [...new Set(roleRefs)],
     nestedRoleRefs,
+    relationFilterRefs,
     requiresModel,
   };
 }

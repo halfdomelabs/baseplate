@@ -108,10 +108,11 @@ function RegisterPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <InputFieldController
                 control={control}
                 name="name"
+                label="Name"
                 type="text"
                 autoComplete="name"
                 placeholder="Your name"
@@ -119,6 +120,7 @@ function RegisterPage(): React.JSX.Element {
               <InputFieldController
                 control={control}
                 name="email"
+                label="Email"
                 type="email"
                 autoComplete="email"
                 placeholder="user@example.com"
@@ -126,6 +128,7 @@ function RegisterPage(): React.JSX.Element {
               <InputFieldController
                 control={control}
                 name="password"
+                label="Password"
                 type="password"
                 autoComplete="new-password"
                 placeholder="Password"
@@ -133,6 +136,7 @@ function RegisterPage(): React.JSX.Element {
               <InputFieldController
                 control={control}
                 name="confirmPassword"
+                label="Confirm Password"
                 type="password"
                 autoComplete="new-password"
                 placeholder="Confirm password"

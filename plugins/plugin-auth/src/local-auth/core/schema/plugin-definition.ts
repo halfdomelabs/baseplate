@@ -8,16 +8,7 @@ import { z } from 'zod';
 
 export const createLocalAuthPluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
-    initialUserRoles: ctx.withDefault(
-      z.array(
-        ctx.withRef({
-          type: authRoleEntityType,
-          onDelete: 'DELETE',
-        }),
-      ),
-      [],
-    ),
-    userAdminRoles: ctx.withDefault(
+    additionalUserAdminRoles: ctx.withDefault(
       z.array(
         ctx.withRef({
           type: authRoleEntityType,

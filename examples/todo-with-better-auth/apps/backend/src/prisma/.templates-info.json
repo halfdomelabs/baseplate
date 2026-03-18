@@ -1,4 +1,9 @@
 {
+  "seed-initial-user.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/seed-initial-user",
+    "instanceData": {},
+    "template": "seed-initial-user"
+  },
   "seed.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
     "instanceData": {},

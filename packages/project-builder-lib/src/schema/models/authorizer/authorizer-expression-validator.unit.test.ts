@@ -3,10 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { createPluginModule } from '#src/plugins/imports/types.js';
 import { createTestPluginSpecStore } from '#src/plugins/plugins.test-utils.js';
 import { authConfigSpec } from '#src/plugins/spec/auth-config-spec.js';
-import {
-  createTestModel,
-  createTestScalarField,
-} from '#src/testing/definition-helpers.test-helper.js';
 
 import type {
   BinaryLogicalNode,
@@ -16,10 +12,11 @@ import type {
   IsAuthenticatedNode,
   NestedHasRoleNode,
   NestedHasSomeRoleNode,
+  RelationFilterNode,
 } from './authorizer-expression-ast.js';
 
 import {
-  createModelValidationContext,
+  buildModelExpressionContext,
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 
@@ -27,7 +24,13 @@ import {
  * Create a plugin spec store with custom auth roles for testing.
  */
 function createMockPluginStore(
-  roles: { id: string; name: string; comment: string; builtIn: boolean }[],
+  roles: {
+    id: string;
+    name: string;
+    comment: string;
+    builtIn: boolean;
+    autoAssigned: boolean;
+  }[],
 ): ReturnType<typeof createTestPluginSpecStore> {
   return createTestPluginSpecStore([
     createPluginModule({
@@ -41,24 +44,40 @@ function createMockPluginStore(
 }
 
 describe('validateAuthorizerExpression', () => {
-  const postFields = [
-    createTestScalarField({ name: 'id', type: 'string' }),
-    createTestScalarField({ name: 'authorId', type: 'string' }),
-    createTestScalarField({ name: 'title', type: 'string' }),
-  ];
-  const defaultModelContext = createModelValidationContext(
-    createTestModel({
+  const defaultModelContext = buildModelExpressionContext(
+    {
       name: 'Post',
-      model: {
-        fields: postFields,
-        primaryKeyFieldRefs: [postFields[0].id],
-      },
-    }),
+      fields: [
+        { name: 'id', type: 'string' },
+        { name: 'authorId', type: 'string' },
+        { name: 'title', type: 'string' },
+      ],
+    },
+    [],
   );
 
+  // Context without relationInfo for testing skip-validation paths
+  const modelContextWithoutRelations = {
+    modelName: defaultModelContext.modelName,
+    scalarFieldNames: defaultModelContext.scalarFieldNames,
+    fieldTypes: defaultModelContext.fieldTypes,
+  };
+
   const defaultPluginStore = createMockPluginStore([
-    { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-    { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
+    {
+      id: '1',
+      name: 'admin',
+      comment: 'Admin role',
+      builtIn: true,
+      autoAssigned: false,
+    },
+    {
+      id: '2',
+      name: 'editor',
+      comment: 'Editor role',
+      builtIn: false,
+      autoAssigned: false,
+    },
   ]);
   const defaultDefinition = {};
 
@@ -207,10 +226,22 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings).toEqual([]);
     });
 
-    it('should warn for built-in role in hasRole', () => {
+    it('should warn for auto-assigned role in hasRole', () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'system', comment: 'System role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'system',
+          comment: 'System role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasRoleNode = {
         type: 'hasRole',
@@ -228,7 +259,7 @@ describe('validateAuthorizerExpression', () => {
 
       expect(warnings).toHaveLength(1);
       expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].message).toContain('auto-assigned');
     });
 
     it('should warn for role that does not exist in project', () => {
@@ -298,11 +329,29 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[1].end).toBe(36);
     });
 
-    it('should warn for built-in role in hasSomeRole', () => {
+    it('should warn for auto-assigned role in hasSomeRole', () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'public', comment: 'Public role', builtIn: true },
-        { id: '3', name: 'system', comment: 'System role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'public',
+          comment: 'Public role',
+          builtIn: true,
+          autoAssigned: true,
+        },
+        {
+          id: '3',
+          name: 'system',
+          comment: 'System role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasSomeRoleNode = {
         type: 'hasSomeRole',
@@ -320,7 +369,7 @@ describe('validateAuthorizerExpression', () => {
 
       expect(warnings).toHaveLength(1);
       expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].message).toContain('auto-assigned');
       expect(warnings[0].start).toBe(21);
       expect(warnings[0].end).toBe(29);
     });
@@ -365,8 +414,20 @@ describe('validateAuthorizerExpression', () => {
 
     it("should warn for hasRole('user') suggesting isAuthenticated", () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'user', comment: 'User role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'user',
+          comment: 'User role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasRoleNode = {
         type: 'hasRole',
@@ -400,6 +461,7 @@ describe('validateAuthorizerExpression', () => {
             referenceCount: 1,
             foreignModelName: 'TodoList',
             foreignAuthorizerRoleNames: new Set(['owner', 'editor']),
+            direction: 'local' as const,
           },
         ],
         [
@@ -408,6 +470,7 @@ describe('validateAuthorizerExpression', () => {
             referenceCount: 2,
             foreignModelName: 'Other',
             foreignAuthorizerRoleNames: new Set(['admin']),
+            direction: 'local' as const,
           },
         ],
       ]),
@@ -560,7 +623,212 @@ describe('validateAuthorizerExpression', () => {
 
       const warnings = validateAuthorizerExpression(
         ast,
-        defaultModelContext,
+        modelContextWithoutRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+  });
+
+  describe('relation filter validation', () => {
+    const modelContextWithRelations = {
+      modelName: 'Brand',
+      scalarFieldNames: new Set(['id', 'name']),
+      fieldTypes: new Map<string, string>([
+        ['id', 'string'],
+        ['name', 'string'],
+      ]),
+      relationInfo: new Map([
+        [
+          'members',
+          {
+            referenceCount: 1,
+            foreignModelName: 'BrandMember',
+            foreignAuthorizerRoleNames: new Set<string>(),
+            foreignScalarFieldNames: new Set([
+              'id',
+              'userId',
+              'brandId',
+              'type',
+            ]),
+            foreignFieldTypes: new Map([
+              ['id', 'string'],
+              ['userId', 'string'],
+              ['brandId', 'string'],
+              ['type', 'enum'],
+            ]),
+            direction: 'foreign' as const,
+          },
+        ],
+      ]),
+    };
+
+    it('should validate valid exists expression', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for nonexistent relation', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'nonexistent',
+        relationStart: 7,
+        relationEnd: 22,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'nonexistent'");
+      expect(warnings[0].message).toContain("'Brand'");
+    });
+
+    it('should warn for nonexistent condition field on foreign model', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'badField',
+            fieldStart: 24,
+            fieldEnd: 32,
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 34,
+              end: 40,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'badField'");
+      expect(warnings[0].message).toContain("'BrandMember'");
+    });
+
+    it('should warn for incompatible literal type in condition', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
+            value: {
+              type: 'literalValue',
+              value: 123,
+              start: 32,
+              end: 35,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'number'");
+      expect(warnings[0].message).toContain("'userId'");
+      expect(warnings[0].message).toContain("'string'");
+    });
+
+    it('should skip validation when no relationInfo provided', () => {
+      const ast: RelationFilterNode = {
+        type: 'relationFilter',
+        relationName: 'members',
+        relationStart: 7,
+        relationEnd: 20,
+        operator: 'some',
+        conditions: [
+          {
+            field: 'userId',
+            fieldStart: 24,
+            fieldEnd: 30,
+            value: {
+              type: 'fieldRef',
+              source: 'auth',
+              field: 'userId',
+              start: 32,
+              end: 38,
+            },
+          },
+        ],
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithoutRelations,
         defaultPluginStore,
         defaultDefinition,
       );
@@ -655,43 +923,209 @@ describe('validateAuthorizerExpression', () => {
   });
 });
 
-describe('createModelValidationContext', () => {
-  it('should extract field names from model config', () => {
-    const userFields = [
-      createTestScalarField({ name: 'id', type: 'string' }),
-      createTestScalarField({ name: 'email', type: 'string' }),
-      createTestScalarField({ name: 'name', type: 'string' }),
-    ];
-    const context = createModelValidationContext(
-      createTestModel({
-        name: 'User',
+describe('buildModelExpressionContext', () => {
+  it('should discover local relations', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
         model: {
-          fields: userFields,
-          primaryKeyFieldRefs: [userFields[0].id],
+          relations: [
+            {
+              name: 'author',
+              modelRef: 'user',
+              references: [{}],
+            },
+          ],
         },
-      }),
+      },
+      [
+        {
+          id: 'user',
+          name: 'User',
+          fields: [{ name: 'id', type: 'uuid' }],
+          authorizer: { roles: [{ name: 'admin' }] },
+        },
+      ],
     );
 
-    expect(context.modelName).toBe('User');
-    expect(context.scalarFieldNames).toEqual(new Set(['id', 'email', 'name']));
+    const authorRelation = context.relationInfo?.get('author');
+    expect(authorRelation).toBeDefined();
+    expect(authorRelation?.direction).toBe('local');
+    expect(authorRelation?.foreignModelName).toBe('User');
+    expect(authorRelation?.foreignAuthorizerRoleNames.has('admin')).toBe(true);
   });
 
-  it('should populate fieldTypes map from model config', () => {
-    const modelFields = [
-      createTestScalarField({ name: 'status', type: 'string' }),
-      createTestScalarField({ name: 'count', type: 'int' }),
-    ];
-    const context = createModelValidationContext(
-      createTestModel({
-        name: 'Article',
-        model: {
-          fields: modelFields,
-          primaryKeyFieldRefs: [modelFields[0].id],
+  it('should discover foreign relations from other models', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
+      },
+      [
+        {
+          id: 'blog',
+          name: 'Blog',
+          fields: [{ name: 'id', type: 'uuid' }],
         },
-      }),
+        {
+          id: 'blogPost',
+          name: 'BlogPost',
+          fields: [
+            { name: 'id', type: 'uuid' },
+            { name: 'blogId', type: 'uuid' },
+            { name: 'title', type: 'string' },
+          ],
+          model: {
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+      ],
     );
 
-    expect(context.fieldTypes.get('status')).toBe('string');
-    expect(context.fieldTypes.get('count')).toBe('int');
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation).toBeDefined();
+    expect(postsRelation?.direction).toBe('foreign');
+    expect(postsRelation?.foreignModelName).toBe('BlogPost');
+    expect(postsRelation?.foreignScalarFieldNames?.has('title')).toBe(true);
+    expect(postsRelation?.foreignScalarFieldNames?.has('blogId')).toBe(true);
+  });
+
+  it('should not overwrite local relations with foreign relations of the same name', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        fields: [{ name: 'id', type: 'uuid' }],
+        model: {
+          relations: [
+            {
+              name: 'posts',
+              modelRef: 'post',
+              references: [{}],
+            },
+          ],
+        },
+      },
+      [
+        {
+          id: 'other',
+          name: 'Other',
+          model: {
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+        {
+          id: 'post',
+          name: 'Post',
+          fields: [{ name: 'id', type: 'uuid' }],
+        },
+      ],
+    );
+
+    // Local relation should win
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation?.direction).toBe('local');
+    expect(postsRelation?.foreignModelName).toBe('Post');
+  });
+
+  it('should include model scalar fields and types', () => {
+    const context = buildModelExpressionContext(
+      {
+        name: 'Blog',
+        fields: [
+          { name: 'id', type: 'uuid' },
+          { name: 'title', type: 'string' },
+        ],
+      },
+      [],
+    );
+
+    expect(context.modelName).toBe('Blog');
+    expect(context.scalarFieldNames.has('id')).toBe(true);
+    expect(context.scalarFieldNames.has('title')).toBe(true);
+    expect(context.fieldTypes.get('title')).toBe('string');
+  });
+
+  it('should read fields from model.fields (ModelConfig shape)', () => {
+    const context = buildModelExpressionContext(
+      {
+        name: 'Blog',
+        model: {
+          fields: [
+            { name: 'id', type: 'uuid' },
+            { name: 'title', type: 'string' },
+          ],
+        },
+      },
+      [],
+    );
+
+    expect(context.scalarFieldNames.has('id')).toBe(true);
+    expect(context.scalarFieldNames.has('title')).toBe(true);
+    expect(context.fieldTypes.get('title')).toBe('string');
+  });
+
+  it('should read foreign model fields from model.fields for foreign relations', () => {
+    const context = buildModelExpressionContext(
+      {
+        id: 'blog',
+        name: 'Blog',
+        model: {
+          fields: [{ name: 'id', type: 'uuid' }],
+        },
+      },
+      [
+        {
+          id: 'blog',
+          name: 'Blog',
+          model: {
+            fields: [{ name: 'id', type: 'uuid' }],
+          },
+        },
+        {
+          id: 'blogPost',
+          name: 'BlogPost',
+          model: {
+            fields: [
+              { name: 'id', type: 'uuid' },
+              { name: 'blogId', type: 'uuid' },
+              { name: 'title', type: 'string' },
+            ],
+            relations: [
+              {
+                name: 'blog',
+                modelRef: 'blog',
+                foreignRelationName: 'posts',
+                references: [{}],
+              },
+            ],
+          },
+        },
+      ],
+    );
+
+    // Foreign relation should have fields from BlogPost
+    const postsRelation = context.relationInfo?.get('posts');
+    expect(postsRelation).toBeDefined();
+    expect(postsRelation?.foreignScalarFieldNames?.has('title')).toBe(true);
+    expect(postsRelation?.foreignScalarFieldNames?.has('blogId')).toBe(true);
+    expect(postsRelation?.foreignFieldTypes?.get('title')).toBe('string');
   });
 });

@@ -1,1 +1,9 @@
+#!/usr/bin/env sh
+
+# Check if a merge is in progress
+if [ -f .git/MERGE_HEAD ]; then
+  echo "Merge detected: skipping lint-staged"
+  exit 0
+fi
+
 pnpm lint:staged

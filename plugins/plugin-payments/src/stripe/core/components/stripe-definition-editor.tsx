@@ -5,7 +5,6 @@ import {
   applyMergedDefinition,
   authModelsSpec,
   diffDefinition,
-  featureEntityType,
   FeatureUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
@@ -41,19 +40,6 @@ import '#src/styles.css';
 
 /** Form values type exported for child components. */
 export type StripeBillingFormValues = StripePluginDefinitionInput;
-
-function resolveFeatureName(
-  definition: Parameters<typeof FeatureUtils.getFeaturePathById>[0],
-  featureRef: string | null | undefined,
-): string {
-  if (!featureRef) {
-    return '';
-  }
-  if (featureEntityType.isId(featureRef)) {
-    return FeatureUtils.getFeaturePathById(definition, featureRef);
-  }
-  return featureRef;
-}
 
 export function StripeDefinitionEditor({
   definition: pluginMetadata,
@@ -100,7 +86,10 @@ export function StripeDefinitionEditor({
   const authModels = definitionContainer.pluginStore.use(authModelsSpec);
   const userModelName = authModels.getAuthModelsOrThrow(definition).user;
 
-  const billingFeatureName = resolveFeatureName(definition, billingFeatureRef);
+  const billingFeatureName = FeatureUtils.resolveFeatureName(
+    definition,
+    billingFeatureRef,
+  );
 
   const partialDef = useMemo(
     () =>
@@ -126,11 +115,10 @@ export function StripeDefinitionEditor({
         const billingData = { ...data };
 
         if (billingData.billing.enabled && billingData.billing.featureRef) {
-          const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
+          const featureName = FeatureUtils.resolveFeatureName(
             draftConfig,
             billingData.billing.featureRef,
           );
-          const featureName = resolveFeatureName(draftConfig, featureRef);
           const updatedPartialDef = createBillingPartialDefinition(
             featureName,
             userModelName,
@@ -139,10 +127,8 @@ export function StripeDefinitionEditor({
             definitionContainer,
             updatedPartialDef,
           )(draftConfig);
-          billingData.billing = {
-            ...billingData.billing,
-            featureRef,
-          };
+          billingData.billing.featureRef =
+            FeatureUtils.getFeatureIdByNameOrThrow(draftConfig, featureName);
         } else {
           billingData.billing = {
             enabled: false,

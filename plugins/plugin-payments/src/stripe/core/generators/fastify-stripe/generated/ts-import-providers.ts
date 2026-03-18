@@ -14,6 +14,8 @@ import { STRIPE_FASTIFY_STRIPE_PATHS } from './template-paths.js';
 
 export const fastifyStripeImportsSchema = createTsImportMapSchema({
   stripe: {},
+  stripeEventHandlers: {},
+  stripeWebhookPlugin: {},
 });
 
 export type FastifyStripeImportsProvider = TsImportMapProviderFromSchema<
@@ -37,6 +39,8 @@ const stripeFastifyStripeImportsTask = createGeneratorTask({
       providers: {
         fastifyStripeImports: createTsImportMap(fastifyStripeImportsSchema, {
           stripe: paths.service,
+          stripeEventHandlers: paths.serviceEventHandlers,
+          stripeWebhookPlugin: paths.pluginsWebhook,
         }),
       },
     };

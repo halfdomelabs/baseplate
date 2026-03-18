@@ -15,6 +15,7 @@ export const createAuthRoleSchema = definitionSchema((ctx) =>
       name: z.string().min(1),
       comment: z.string().min(1),
       builtIn: z.boolean().default(false),
+      autoAssigned: z.boolean().default(false),
     }),
     { type: authRoleEntityType },
   ),

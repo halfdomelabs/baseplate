@@ -5,5 +5,9 @@ export const blogQueryFilter = createModelQueryFilter({
   roles: {
     owner: (ctx) =>
       ctx.auth.userId != null ? { userId: ctx.auth.userId } : false,
+    viewer: (ctx) =>
+      ctx.auth.userId != null
+        ? { members: { some: { userId: ctx.auth.userId } } }
+        : false,
   },
 });

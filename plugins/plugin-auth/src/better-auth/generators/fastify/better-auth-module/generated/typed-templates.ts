@@ -7,6 +7,7 @@ import {
   prismaImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import path from 'node:path';
 
 const auth = createTsTemplateFile({
@@ -14,6 +15,7 @@ const auth = createTsTemplateFile({
   importMapProviders: {
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
     prismaImports: prismaImportsProvider,
   },
   name: 'auth',
@@ -24,7 +26,11 @@ const auth = createTsTemplateFile({
       '../templates/module/services/auth.ts',
     ),
   },
-  variables: { TPL_USER_ROLE_MODEL: {} },
+  variables: {
+    TPL_ACCOUNT_VERIFICATION_EMAIL: {},
+    TPL_PASSWORD_RESET_EMAIL: {},
+    TPL_USER_ROLE_MODEL: {},
+  },
 });
 
 const betterAuthPlugin = createTsTemplateFile({
