@@ -17,8 +17,8 @@ const descriptorSchema = z.object({
 /**
  * Generator for better-auth/seed-initial-user.
  *
- * Creates a seed script that uses better-auth's API to create an initial
- * admin user with the configured roles.
+ * Creates a seed script that creates an initial admin user with email/password
+ * credentials and assigns the configured roles via direct Prisma calls.
  */
 export const betterAuthSeedInitialUserGenerator = createGenerator({
   name: 'better-auth/seed-initial-user',

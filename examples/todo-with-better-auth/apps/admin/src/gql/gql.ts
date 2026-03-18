@@ -18,9 +18,13 @@ type Documents = {
     "\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n": typeof types.FileInputCreateUploadUrlDocument,
     "\n  query UserEditPage($id: Uuid!) {\n    user(id: $id) {\n      id\n      name\n      ...UserEditForm_defaultValues\n    }\n  }\n": typeof types.UserEditPageDocument,
     "\n  mutation UserEditPageUpdate($input: UpdateUserInput!) {\n    updateUser(input: $input) {\n      user {\n        id\n        name\n        ...UserEditForm_defaultValues\n      }\n    }\n  }\n": typeof types.UserEditPageUpdateDocument,
-    "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n": typeof types.UserEditForm_DefaultValuesFragmentDoc,
+    "\n  fragment PasswordResetDialog_user on User {\n    id\n    name\n    email\n  }\n": typeof types.PasswordResetDialog_UserFragmentDoc,
+    "\n  mutation ResetUserPassword($input: ResetUserPasswordInput!) {\n    resetUserPassword(input: $input) {\n      user {\n        ...PasswordResetDialog_user\n      }\n    }\n  }\n": typeof types.ResetUserPasswordDocument,
+    "\n  fragment RoleManagerDialog_user on User {\n    id\n    name\n    email\n    roles {\n      role\n    }\n  }\n": typeof types.RoleManagerDialog_UserFragmentDoc,
+    "\n  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {\n    updateUserRoles(input: $input) {\n      user {\n        ...RoleManagerDialog_user\n      }\n    }\n  }\n": typeof types.UpdateUserRolesDocument,
+    "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n  }\n": typeof types.UserEditForm_DefaultValuesFragmentDoc,
     "\n  mutation UserListPageDeleteUser($input: DeleteUserInput!) {\n    deleteUser(input: $input) {\n      user {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UserListPageDeleteUserDocument,
-    "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n  }\n": typeof types.UserTable_ItemsFragmentDoc,
+    "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n    ...PasswordResetDialog_user\n    ...RoleManagerDialog_user\n  }\n": typeof types.UserTable_ItemsFragmentDoc,
     "\n  query UserListPage {\n    users {\n      ...UserTable_items\n    }\n  }\n": typeof types.UserListPageDocument,
     "\n  query HomePage {\n    viewer {\n      id\n      email\n    }\n  }\n": typeof types.HomePageDocument,
     "\n  query TodoListEditPage($id: Uuid!) {\n    todoList(id: $id) {\n      id\n      name\n      ...TodoListEditForm_defaultValues\n    }\n  }\n": typeof types.TodoListEditPageDocument,
@@ -38,9 +42,13 @@ const documents: Documents = {
     "\n  mutation FileInputCreateUploadUrl($input: CreatePresignedUploadUrlInput!) {\n    createPresignedUploadUrl(input: $input) {\n      url\n      fields {\n        name\n        value\n      }\n      method\n      file {\n        id\n        filename\n        publicUrl\n        ...FileInput_value\n      }\n    }\n  }\n": types.FileInputCreateUploadUrlDocument,
     "\n  query UserEditPage($id: Uuid!) {\n    user(id: $id) {\n      id\n      name\n      ...UserEditForm_defaultValues\n    }\n  }\n": types.UserEditPageDocument,
     "\n  mutation UserEditPageUpdate($input: UpdateUserInput!) {\n    updateUser(input: $input) {\n      user {\n        id\n        name\n        ...UserEditForm_defaultValues\n      }\n    }\n  }\n": types.UserEditPageUpdateDocument,
-    "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n": types.UserEditForm_DefaultValuesFragmentDoc,
+    "\n  fragment PasswordResetDialog_user on User {\n    id\n    name\n    email\n  }\n": types.PasswordResetDialog_UserFragmentDoc,
+    "\n  mutation ResetUserPassword($input: ResetUserPasswordInput!) {\n    resetUserPassword(input: $input) {\n      user {\n        ...PasswordResetDialog_user\n      }\n    }\n  }\n": types.ResetUserPasswordDocument,
+    "\n  fragment RoleManagerDialog_user on User {\n    id\n    name\n    email\n    roles {\n      role\n    }\n  }\n": types.RoleManagerDialog_UserFragmentDoc,
+    "\n  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {\n    updateUserRoles(input: $input) {\n      user {\n        ...RoleManagerDialog_user\n      }\n    }\n  }\n": types.UpdateUserRolesDocument,
+    "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n  }\n": types.UserEditForm_DefaultValuesFragmentDoc,
     "\n  mutation UserListPageDeleteUser($input: DeleteUserInput!) {\n    deleteUser(input: $input) {\n      user {\n        id\n        name\n      }\n    }\n  }\n": types.UserListPageDeleteUserDocument,
-    "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n  }\n": types.UserTable_ItemsFragmentDoc,
+    "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n    ...PasswordResetDialog_user\n    ...RoleManagerDialog_user\n  }\n": types.UserTable_ItemsFragmentDoc,
     "\n  query UserListPage {\n    users {\n      ...UserTable_items\n    }\n  }\n": types.UserListPageDocument,
     "\n  query HomePage {\n    viewer {\n      id\n      email\n    }\n  }\n": types.HomePageDocument,
     "\n  query TodoListEditPage($id: Uuid!) {\n    todoList(id: $id) {\n      id\n      name\n      ...TodoListEditForm_defaultValues\n    }\n  }\n": types.TodoListEditPageDocument,
@@ -87,7 +95,23 @@ export function graphql(source: "\n  mutation UserEditPageUpdate($input: UpdateU
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n"): (typeof documents)["\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n    roles {\n      role\n      userId\n    }\n  }\n"];
+export function graphql(source: "\n  fragment PasswordResetDialog_user on User {\n    id\n    name\n    email\n  }\n"): (typeof documents)["\n  fragment PasswordResetDialog_user on User {\n    id\n    name\n    email\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ResetUserPassword($input: ResetUserPasswordInput!) {\n    resetUserPassword(input: $input) {\n      user {\n        ...PasswordResetDialog_user\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ResetUserPassword($input: ResetUserPasswordInput!) {\n    resetUserPassword(input: $input) {\n      user {\n        ...PasswordResetDialog_user\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment RoleManagerDialog_user on User {\n    id\n    name\n    email\n    roles {\n      role\n    }\n  }\n"): (typeof documents)["\n  fragment RoleManagerDialog_user on User {\n    id\n    name\n    email\n    roles {\n      role\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {\n    updateUserRoles(input: $input) {\n      user {\n        ...RoleManagerDialog_user\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUserRoles($input: UpdateUserRolesInput!) {\n    updateUserRoles(input: $input) {\n      user {\n        ...RoleManagerDialog_user\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n  }\n"): (typeof documents)["\n  fragment UserEditForm_defaultValues on User {\n    email\n    id\n    name\n    customer {\n      id\n      stripeCustomerId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -95,7 +119,7 @@ export function graphql(source: "\n  mutation UserListPageDeleteUser($input: Del
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n  }\n"): (typeof documents)["\n  fragment UserTable_items on User {\n    email\n    id\n    name\n  }\n"];
+export function graphql(source: "\n  fragment UserTable_items on User {\n    email\n    id\n    name\n    ...PasswordResetDialog_user\n    ...RoleManagerDialog_user\n  }\n"): (typeof documents)["\n  fragment UserTable_items on User {\n    email\n    id\n    name\n    ...PasswordResetDialog_user\n    ...RoleManagerDialog_user\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -146,83 +170,5 @@ export function graphql(source: string) {
 }
 
 export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
-// @ts-ignore
-type _Unused = typeof types;
-
 // @ts-ignore
 type _Unused = typeof types;

@@ -105,10 +105,11 @@ function LoginPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <InputFieldController
                 control={control}
                 name="email"
+                label="Email"
                 type="email"
                 autoComplete="email"
                 placeholder="user@example.com"
@@ -116,6 +117,7 @@ function LoginPage(): React.JSX.Element {
               <InputFieldController
                 control={control}
                 name="password"
+                label="Password"
                 type="password"
                 autoComplete="current-password"
                 placeholder="Password"

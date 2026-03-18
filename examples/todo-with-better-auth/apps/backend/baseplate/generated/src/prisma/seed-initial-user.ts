@@ -1,13 +1,22 @@
+import { hashPassword } from 'better-auth/crypto';
+
 import type { User } from '../generated/prisma/client.js';
 import type { AuthRole } from '../modules/accounts/auth/constants/auth-roles.constants.js';
 
-import { auth } from '../modules/accounts/auth/services/auth.js';
 import { prisma } from '../services/prisma.js';
 
 const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD } = process.env;
-const INITIAL_USER_ROLES: AuthRole[] =
-  /* TPL_INITIAL_USER_ROLES:START */ []; /* TPL_INITIAL_USER_ROLES:END */
+const INITIAL_USER_ROLES: AuthRole[] = /* TPL_INITIAL_USER_ROLES:START */ [
+  'admin',
+]; /* TPL_INITIAL_USER_ROLES:END */
 
+/**
+ * Seeds the initial user with email/password credentials and assigns roles.
+ * Uses direct Prisma calls instead of the auth API to avoid triggering
+ * verification emails during seeding.
+ *
+ * @returns The seeded user, or undefined if env vars are not set
+ */
 export async function seedInitialUser(): Promise<User | undefined> {
   if (!INITIAL_USER_EMAIL || !INITIAL_USER_PASSWORD) {
     console.warn(
@@ -21,29 +30,26 @@ export async function seedInitialUser(): Promise<User | undefined> {
   });
 
   if (!user) {
-    const result = await auth.api.signUpEmail({
-      body: {
+    const passwordHash = await hashPassword(INITIAL_USER_PASSWORD);
+
+    user = await prisma.user.create({
+      data: {
         name: INITIAL_USER_EMAIL.split('@')[0] ?? 'Admin',
         email: INITIAL_USER_EMAIL,
-        password: INITIAL_USER_PASSWORD,
+        emailVerified: true,
+        accounts: {
+          create: {
+            accountId: INITIAL_USER_EMAIL,
+            providerId: 'credential',
+            password: passwordHash,
+          },
+        },
       },
     });
 
-    if (!result.user) {
-      console.error('Failed to create initial user');
-      return undefined;
-    }
-
-    user = await prisma.user.findUnique({
-      where: { id: result.user.id },
-    });
-
-    if (!user) {
-      console.error('Failed to find created user');
-      return undefined;
-    }
-
-    console.info(`Created initial user with email ${INITIAL_USER_EMAIL}!`);
+    console.info(
+      `Seeded user "${INITIAL_USER_EMAIL}" with roles "${INITIAL_USER_ROLES.join(', ')}"`,
+    );
   }
 
   await prisma.userRole.createMany({

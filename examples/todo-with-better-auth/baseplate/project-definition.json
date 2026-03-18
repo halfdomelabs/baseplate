@@ -116,33 +116,6 @@
                 "modelRef": "Customer",
                 "name": "customer",
                 "type": "object"
-              },
-              {
-                "form": {
-                  "fields": [
-                    {
-                      "id": "admin-crud-input:O3HQh5kYheIG",
-                      "label": "Role",
-                      "modelFieldRef": "role",
-                      "type": "text",
-                      "validation": ""
-                    }
-                  ]
-                },
-                "id": "admin-crud-embedded-form:UtuGJ_24FFu7",
-                "modelRef": "UserRole",
-                "name": "roles",
-                "table": {
-                  "columns": [
-                    {
-                      "id": "admin-crud-column:hHo512O7ikoy",
-                      "label": "Role",
-                      "modelFieldRef": "role",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "type": "list"
               }
             ],
             "featureRef": "accounts/users",
@@ -168,18 +141,6 @@
                   "label": "Customer",
                   "modelRelationRef": "customer",
                   "type": "embedded"
-                },
-                {
-                  "embeddedFormRef": "roles",
-                  "id": "admin-crud-input:bf_bFetNJISe",
-                  "label": "Roles",
-                  "modelRelationRef": "roles",
-                  "type": "embedded"
-                },
-                {
-                  "id": "admin-crud-input:DJMnduxgwiw1",
-                  "label": "Password",
-                  "type": "password"
                 }
               ]
             },
@@ -199,6 +160,16 @@
                   "id": "admin-crud-action:2pdFwp039pMD",
                   "position": "dropdown",
                   "type": "delete"
+                },
+                {
+                  "id": "admin-crud-action:Hcp9rUWsGuUT",
+                  "position": "dropdown",
+                  "type": "manage-roles"
+                },
+                {
+                  "id": "admin-crud-action:nXfYXh1lJ_Fy",
+                  "position": "dropdown",
+                  "type": "reset-password"
                 }
               ],
               "columns": [
@@ -245,7 +216,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.2",
+  "cliVersion": "0.6.4",
   "enums": [
     {
       "featureRef": "todos",
@@ -348,49 +319,49 @@
             "id": "model-scalar-field:TO26eSVGJHKn",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:8CR8_7duFZDD",
             "isOptional": false,
             "name": "accountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7Zg0Ygfa1InE",
             "isOptional": false,
             "name": "providerId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:VOV5qlIu2XTx",
             "isOptional": false,
             "name": "userId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:rrJCr6Bdgn7T",
             "isOptional": true,
             "name": "accessToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5J8fJ59rTkGf",
             "isOptional": true,
             "name": "refreshToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:Cm_SDCJlZyqK",
             "isOptional": true,
             "name": "idToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -411,14 +382,14 @@
             "id": "model-scalar-field:sMUtrMhrJhZt",
             "isOptional": true,
             "name": "scope",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:C5XQpcnBy5tg",
             "isOptional": true,
             "name": "password",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -632,7 +603,7 @@
             "id": "model-scalar-field:qfU8rq8l76z9",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
@@ -1345,7 +1316,7 @@
             "id": "model-scalar-field:JrsS7gxqePD5",
             "isOptional": true,
             "name": "billingAccountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           }
         ],
@@ -1703,21 +1674,21 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:chXcsUFTBpVH",
             "isOptional": false,
             "name": "identifier",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:LSmKbAh9EZVc",
             "isOptional": false,
             "name": "value",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1756,14 +1727,14 @@
             "id": "model-scalar-field:sLwgpRj1rBQu",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:__Cd5sxmnA0J",
             "isOptional": false,
             "name": "stripeCustomerId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1801,21 +1772,21 @@
             "id": "model-scalar-field:5SAuLT4bAV5_",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:0j9aW2_oVZi7",
             "isOptional": false,
             "name": "billingAccountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:iFOTvtC8ySj_",
             "isOptional": false,
             "name": "planKey",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1829,7 +1800,7 @@
             "id": "model-scalar-field:jLzXegb1IqTo",
             "isOptional": false,
             "name": "stripeSubscriptionId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1942,30 +1913,35 @@
         "implementationPluginKey": "baseplate-dev_plugin-auth_better-auth",
         "roles": [
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All users (including unauthenticated and authenticated users)",
             "id": "role:6wrjv_fs5rHf",
             "name": "public"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All authenticated users",
             "id": "role:zbp8hfo8qDZp",
             "name": "user"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "System processes without a user context, e.g. background jobs",
             "id": "role:_tnnEc4bvDHX",
             "name": "system"
           },
           {
-            "builtIn": false,
+            "autoAssigned": false,
+            "builtIn": true,
             "comment": "Administrative role",
             "id": "role:PYGSU4BDOlpQ",
             "name": "admin"
           },
           {
+            "autoAssigned": false,
             "builtIn": false,
             "comment": "Granted to users with an active Pro subscription",
             "id": "role:bK7mXwR3pL9v",
@@ -2015,10 +1991,10 @@
           "featureRef": "billing",
           "plans": [
             {
-              "id": "billing-plan:pro-plan",
-              "key": "pro-plan",
               "displayName": "Pro Plan",
-              "grantedRoles": ["pro-user"]
+              "grantedRoles": ["pro-user"],
+              "id": "billing-plan:pro-plan",
+              "key": "pro-plan"
             }
           ]
         },
@@ -2046,7 +2022,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 28,
+  "schemaVersion": 29,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

@@ -4,11 +4,12 @@ export interface RoleConfig {
    */
   comment: string;
   /**
-   * Whether this role is built-in and is added automatically to the user context.
+   * Whether this role is automatically assigned to all user contexts.
    *
-   * These roles should not be added to the user directly.
+   * Auto-assigned roles (public, user, system) should not be used in
+   * authorizer expressions or assigned to users directly.
    */
-  builtIn: boolean;
+  autoAssigned: boolean;
 }
 
 /**
@@ -16,16 +17,16 @@ export interface RoleConfig {
  */
 export const AUTH_ROLE_CONFIG = Object.freeze(
   /* TPL_AUTH_ROLES:START */ {
-    admin: { builtIn: false, comment: 'Administrator role' },
+    admin: { autoAssigned: false, comment: 'Administrator role' },
     public: {
-      builtIn: true,
+      autoAssigned: true,
       comment: 'All users (including unauthenticated and authenticated users)',
     },
     system: {
-      builtIn: true,
+      autoAssigned: true,
       comment: 'System processes without a user context, e.g. background jobs',
     },
-    user: { builtIn: true, comment: 'All authenticated users' },
+    user: { autoAssigned: true, comment: 'All authenticated users' },
   } /* TPL_AUTH_ROLES:END */,
 ) satisfies Record<string, RoleConfig>;
 

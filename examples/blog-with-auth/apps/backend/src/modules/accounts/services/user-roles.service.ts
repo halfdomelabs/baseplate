@@ -22,13 +22,13 @@ export async function updateUserRoles({
   userId: string;
   roles: string[];
 }): Promise<User> {
-  // Filter out built-in roles (public, user, system)
+  // Filter out auto-assigned roles (public, user, system) that cannot be manually assigned
   const validRoles = roles.filter((role) => {
     if (!(role in AUTH_ROLE_CONFIG)) {
       return false;
     }
     const roleConfig = AUTH_ROLE_CONFIG[role as AuthRole];
-    return !roleConfig.builtIn;
+    return !roleConfig.autoAssigned;
   });
 
   await prisma.$transaction([

@@ -46,7 +46,7 @@ function ForgotPasswordPage(): React.JSX.Element {
   const onSubmit = (data: FormData): void => {
     setIsSubmitting(true);
     authClient
-      .forgetPassword({
+      .requestPasswordReset({
         email: data.email,
         redirectTo: '/auth/reset-password',
       })
@@ -106,10 +106,11 @@ function ForgotPasswordPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <InputFieldController
                 control={control}
                 name="email"
+                label="Email"
                 type="email"
                 autoComplete="email"
                 placeholder="user@example.com"

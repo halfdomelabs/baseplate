@@ -25,6 +25,7 @@ import { migration025ServiceMethodAuth } from './migration-025-service-method-au
 import { migration026QuerySharedRoles } from './migration-026-query-shared-roles.js';
 import { migration027EnableSentryPlugin } from './migration-027-enable-sentry-plugin.js';
 import { migration028EnableStripePlugin } from './migration-028-enable-stripe-plugin.js';
+import { migration029AdminRoleAndAutoAssigned } from './migration-029-admin-role-and-auto-assigned.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -51,6 +52,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration026QuerySharedRoles,
   migration027EnableSentryPlugin,
   migration028EnableStripePlugin,
+  migration029AdminRoleAndAutoAssigned,
 ];
 
 export function isMigrateableProjectDefinition(

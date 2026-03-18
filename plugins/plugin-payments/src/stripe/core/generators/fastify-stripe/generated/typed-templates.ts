@@ -6,20 +6,17 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.js';
-
 const pluginsWebhook = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'plugins',
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    fastifyStripeImports: fastifyStripeImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
   },
   name: 'plugins-webhook',
   projectExports: { stripeWebhookPlugin: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { serviceEventHandlers: {} },
+  referencedGeneratorTemplates: { service: {}, serviceEventHandlers: {} },
   source: {
     path: path.join(
       import.meta.dirname,

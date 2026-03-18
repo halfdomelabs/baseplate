@@ -142,10 +142,11 @@ function ResetPasswordPage(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <InputFieldController
                 control={control}
                 name="newPassword"
+                label="New Password"
                 type="password"
                 autoComplete="new-password"
                 placeholder="New password"
@@ -153,6 +154,7 @@ function ResetPasswordPage(): React.JSX.Element {
               <InputFieldController
                 control={control}
                 name="confirmPassword"
+                label="Confirm Password"
                 type="password"
                 autoComplete="new-password"
                 placeholder="Confirm new password"

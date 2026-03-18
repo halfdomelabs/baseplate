@@ -1,3 +1,14 @@
+enum BillingSubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  PAST_DUE
+  PAUSED
+  TRIALING
+  UNPAID
+}
+
 """Input type for createPresignedDownloadUrl mutation"""
 input CreatePresignedDownloadUrlInput {
   fileId: Uuid!
@@ -204,10 +215,12 @@ type Mutation {
   deleteTodoList(input: DeleteTodoListInput!): DeleteTodoListPayload!
   deleteTodoListShare(input: DeleteTodoListShareInput!): DeleteTodoListSharePayload!
   deleteUser(input: DeleteUserInput!): DeleteUserPayload!
+  resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
   updateTodoItem(input: UpdateTodoItemInput!): UpdateTodoItemPayload!
   updateTodoList(input: UpdateTodoListInput!): UpdateTodoListPayload!
   updateTodoListShare(input: UpdateTodoListShareInput!): UpdateTodoListSharePayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
 }
 
 type PresignedUrlField {
@@ -229,6 +242,17 @@ type Query {
 
   """The currently authenticated user"""
   viewer: User
+}
+
+"""Input type for resetUserPassword mutation"""
+input ResetUserPasswordInput {
+  newPassword: String!
+  userId: Uuid!
+}
+
+"""Payload type for resetUserPassword mutation"""
+type ResetUserPasswordPayload {
+  user: User!
 }
 
 type TodoItem {
@@ -377,6 +401,17 @@ input UpdateUserInput {
 
 """Payload type for updateUser mutation"""
 type UpdateUserPayload {
+  user: User!
+}
+
+"""Input type for updateUserRoles mutation"""
+input UpdateUserRolesInput {
+  roles: [String!]!
+  userId: Uuid!
+}
+
+"""Payload type for updateUserRoles mutation"""
+type UpdateUserRolesPayload {
   user: User!
 }
 

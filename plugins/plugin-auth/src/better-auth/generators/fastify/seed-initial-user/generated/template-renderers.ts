@@ -9,8 +9,6 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { betterAuthModuleImportsProvider } from '#src/better-auth/generators/fastify/better-auth-module/generated/ts-import-providers.js';
-
 import { BETTER_AUTH_SEED_INITIAL_USER_PATHS } from './template-paths.js';
 import { BETTER_AUTH_SEED_INITIAL_USER_TEMPLATES } from './typed-templates.js';
 
@@ -35,7 +33,6 @@ const betterAuthSeedInitialUserRenderers =
 const betterAuthSeedInitialUserRenderersTask = createGeneratorTask({
   dependencies: {
     authRolesImports: authRolesImportsProvider,
-    betterAuthModuleImports: betterAuthModuleImportsProvider,
     paths: BETTER_AUTH_SEED_INITIAL_USER_PATHS.provider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -47,7 +44,6 @@ const betterAuthSeedInitialUserRenderersTask = createGeneratorTask({
   },
   run({
     authRolesImports,
-    betterAuthModuleImports,
     paths,
     prismaGeneratedImports,
     prismaImports,
@@ -64,7 +60,6 @@ const betterAuthSeedInitialUserRenderersTask = createGeneratorTask({
                 destination: paths.seedInitialUser,
                 importMapProviders: {
                   authRolesImports,
-                  betterAuthModuleImports,
                   prismaGeneratedImports,
                   prismaImports,
                 },

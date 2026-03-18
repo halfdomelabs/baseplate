@@ -8,7 +8,7 @@ import {
 
 builder.mutationField('resetUserPassword', (t) =>
   t.fieldWithInputPayload({
-    authorize: /* TPL_ADMIN_ROLES:START */ [] /* TPL_ADMIN_ROLES:END */,
+    authorize: /* TPL_ADMIN_ROLES:START */ ['admin'] /* TPL_ADMIN_ROLES:END */,
     payload: {
       user: t.payload.field({
         type: /* TPL_USER_OBJECT_TYPE:START */ userObjectType /* TPL_USER_OBJECT_TYPE:END */,
@@ -30,7 +30,7 @@ builder.mutationField('resetUserPassword', (t) =>
 
 builder.mutationField('updateUserRoles', (t) =>
   t.fieldWithInputPayload({
-    authorize: /* TPL_ADMIN_ROLES:START */ [] /* TPL_ADMIN_ROLES:END */,
+    authorize: /* TPL_ADMIN_ROLES:START */ ['admin'] /* TPL_ADMIN_ROLES:END */,
     payload: {
       user: t.payload.field({
         type: /* TPL_USER_OBJECT_TYPE:START */ userObjectType /* TPL_USER_OBJECT_TYPE:END */,

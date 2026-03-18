@@ -9,10 +9,6 @@
           "importName": "authRolesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
         },
-        "betterAuthModuleImportsProvider": {
-          "importName": "betterAuthModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/fastify/better-auth-module/generated/ts-import-providers.ts"
-        },
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"

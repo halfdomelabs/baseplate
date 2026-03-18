@@ -35,9 +35,9 @@
       "projectExports": { "auth": {}, "cookiePrefix": {} },
       "sourceFile": "module/services/auth.ts",
       "variables": {
-        "TPL_USER_ROLE_MODEL": {},
+        "TPL_ACCOUNT_VERIFICATION_EMAIL": {},
         "TPL_PASSWORD_RESET_EMAIL": {},
-        "TPL_ACCOUNT_VERIFICATION_EMAIL": {}
+        "TPL_USER_ROLE_MODEL": {}
       }
     },
     "better-auth-plugin": {

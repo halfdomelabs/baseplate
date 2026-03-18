@@ -34,7 +34,7 @@ function VerifyEmailPage(): React.JSX.Element {
 
     authClient
       .verifyEmail({
-        token,
+        query: { token },
       })
       .then(({ error }) => {
         if (error) {

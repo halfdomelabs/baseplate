@@ -58,15 +58,15 @@ export default createPluginModule({
             devWebPorts[0] ??
             projectDefinition.settings.general.portOffset + 30;
 
-          const userAdminRoles = betterAuthDefinition.userAdminRoles.map(
-            (role) => definitionContainer.nameFromId(role),
-          );
+          const additionalAdminRoles =
+            betterAuthDefinition.additionalUserAdminRoles.map((role) =>
+              definitionContainer.nameFromId(role),
+            );
+          const adminRoles = [...new Set(['admin', ...additionalAdminRoles])];
 
           appCompiler.addChildrenToFeature(auth.authFeatureRef, {
             seedInitialUser: betterAuthSeedInitialUserGenerator({
-              initialUserRoles: betterAuthDefinition.initialUserRoles.map(
-                (role) => definitionContainer.nameFromId(role),
-              ),
+              initialUserRoles: ['admin'],
             }),
             betterAuthModule: betterAuthModuleGenerator({
               devWebPorts,
@@ -74,7 +74,7 @@ export default createPluginModule({
               devWebDomainPort,
             }),
             betterAuthAdminModule: betterAuthAdminModuleGenerator({
-              adminRoles: userAdminRoles,
+              adminRoles,
             }),
           });
         },

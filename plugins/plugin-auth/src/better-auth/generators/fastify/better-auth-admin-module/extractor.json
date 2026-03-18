@@ -1,29 +1,6 @@
 {
   "name": "better-auth/better-auth-admin-module",
   "templates": {
-    "admin-auth-service": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module",
-      "importMapProviders": {
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
-        "prismaGeneratedImportsProvider": {
-          "importName": "prismaGeneratedImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/services/admin-auth.service.ts",
-      "projectExports": { "resetUserPassword": {}, "updateUserRoles": {} },
-      "sourceFile": "module/services/admin-auth.service.ts",
-      "variables": {}
-    },
     "admin-auth-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -36,10 +13,30 @@
       "pathRootRelativePath": "{module-root}/schema/admin-auth.mutations.ts",
       "referencedGeneratorTemplates": ["admin-auth-service"],
       "sourceFile": "module/schema/admin-auth.mutations.ts",
-      "variables": {
-        "TPL_ADMIN_ROLES": {},
-        "TPL_USER_OBJECT_TYPE": {}
-      }
+      "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "admin-auth-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/admin-auth.service.ts",
+      "projectExports": { "resetUserPassword": {}, "updateUserRoles": {} },
+      "sourceFile": "module/services/admin-auth.service.ts",
+      "variables": {}
     }
   }
 }

@@ -62,8 +62,7 @@ export function BetterAuthDefinitionEditor({
     }
 
     return {
-      initialUserRoles: [],
-      userAdminRoles: [],
+      additionalUserAdminRoles: [],
     } satisfies BetterAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
 
@@ -155,42 +154,21 @@ export function BetterAuthDefinitionEditor({
               <SectionListSection>
                 <SectionListSectionHeader>
                   <SectionListSectionTitle>
-                    Initial User Setup
-                  </SectionListSectionTitle>
-                  <SectionListSectionDescription>
-                    In order to access the admin panel, an initial user must be
-                    created. The plugin will automatically add a seed script to
-                    create the initial user provided a .seed.env exists with the
-                    INITIAL_USER_EMAIL and INITIAL_USER_PASSWORD variables.
-                  </SectionListSectionDescription>
-                </SectionListSectionHeader>
-                <SectionListSectionContent className="auth:space-y-6">
-                  <MultiComboboxFieldController
-                    label="Initial User Roles"
-                    name="initialUserRoles"
-                    control={control}
-                    options={roles}
-                    description="The roles that will be assigned to the initial user."
-                  />
-                </SectionListSectionContent>
-              </SectionListSection>
-              <SectionListSection>
-                <SectionListSectionHeader>
-                  <SectionListSectionTitle>
                     User Management Permissions
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure which roles can manage users and assign roles to
-                    other users in the admin interface.
+                    The &quot;admin&quot; role always has user management
+                    permissions. Optionally add more roles that can manage users
+                    and assign roles in the admin interface.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
                   <MultiComboboxFieldController
-                    label="User Admin Roles"
-                    name="userAdminRoles"
+                    label="Additional User Admin Roles"
+                    name="additionalUserAdminRoles"
                     control={control}
                     options={roles}
-                    description="Roles that can manage users and assign roles to other users."
+                    description="Additional roles (beyond admin) that can manage users and assign roles."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

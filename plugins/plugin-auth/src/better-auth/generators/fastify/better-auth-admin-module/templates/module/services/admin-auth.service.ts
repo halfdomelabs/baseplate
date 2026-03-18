@@ -5,7 +5,7 @@ import type { User } from '%prismaGeneratedImports';
 
 import { AUTH_ROLE_CONFIG } from '%authRolesImports';
 import { prisma } from '%prismaImports';
-import { hash } from 'better-auth/crypto';
+import { hashPassword } from 'better-auth/crypto';
 
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 255;
@@ -43,7 +43,7 @@ export async function resetUserPassword({
     throw new Error('User not found');
   }
 
-  const passwordHash = await hash.value(newPassword);
+  const passwordHash = await hashPassword(newPassword);
 
   await prisma.account.updateMany({
     where: {
@@ -74,13 +74,13 @@ export async function updateUserRoles({
   userId: string;
   roles: string[];
 }): Promise<User> {
-  // Filter out built-in roles (public, user, system)
+  // Filter out auto-assigned roles (public, user, system) that cannot be manually assigned
   const validRoles = roles.filter((role) => {
     if (!(role in AUTH_ROLE_CONFIG)) {
       return false;
     }
     const roleConfig = AUTH_ROLE_CONFIG[role as AuthRole];
-    return !roleConfig.builtIn;
+    return !roleConfig.autoAssigned;
   });
 
   await prisma.$transaction([

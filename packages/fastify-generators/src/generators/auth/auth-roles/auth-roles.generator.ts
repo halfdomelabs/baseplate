@@ -16,6 +16,7 @@ const descriptorSchema = z.object({
         .regex(/^[a-z]+(-[a-z]+)*$/),
       comment: z.string().min(1),
       builtIn: z.boolean(),
+      autoAssigned: z.boolean(),
     }),
   ),
 });
@@ -52,7 +53,10 @@ export const authRolesGenerator = createGenerator({
                     Object.fromEntries(
                       roles.map((r) => [
                         r.name,
-                        { comment: r.comment, builtIn: r.builtIn },
+                        {
+                          comment: r.comment,
+                          autoAssigned: r.autoAssigned,
+                        },
                       ]),
                     ),
                   ),

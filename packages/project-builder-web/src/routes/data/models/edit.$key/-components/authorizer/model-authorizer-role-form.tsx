@@ -156,7 +156,7 @@ export function ModelAuthorizerRoleForm({
       definitionContainer.definition,
     )?.roles;
     return (
-      roles?.filter((role) => !role.builtIn).map((role) => role.name) ?? []
+      roles?.filter((role) => !role.autoAssigned).map((role) => role.name) ?? []
     );
   }, [definitionContainer]);
 

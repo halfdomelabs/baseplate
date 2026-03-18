@@ -6,13 +6,10 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-import { betterAuthModuleImportsProvider } from '#src/better-auth/generators/fastify/better-auth-module/generated/ts-import-providers.js';
-
 const seedInitialUser = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     authRolesImports: authRolesImportsProvider,
-    betterAuthModuleImports: betterAuthModuleImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },

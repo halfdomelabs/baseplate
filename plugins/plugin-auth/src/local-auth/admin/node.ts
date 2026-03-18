@@ -41,7 +41,7 @@ function buildManageRolesActionCompiler(): AdminCrudActionCompiler<AdminCrudMana
         position: definition.position,
         availableRoles: authConfig
           .getAuthConfigOrThrow(definitionContainer.definition)
-          .roles.filter((r) => !r.builtIn),
+          .roles.filter((r) => !r.autoAssigned),
       });
     },
   };
