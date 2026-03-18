@@ -132,7 +132,8 @@ async function runOxlint(filePaths: string[]): Promise<void> {
 
 // --- Main ---
 
-const inputPaths = process.argv.slice(2);
+const skipEslint = process.argv.includes('--no-eslint');
+const inputPaths = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
 
 if (inputPaths.length === 0) {
   console.error('Error: Please provide at least one file path as an argument.');
@@ -195,7 +196,7 @@ if (exampleFiles.length > 0) {
     };
     const deps = { ...pkg.dependencies, ...pkg.devDependencies };
 
-    if (deps.eslint) await runEslint(files, pkgDir);
+    if (deps.eslint && !skipEslint) await runEslint(files, pkgDir);
 
     if (deps.prettier) {
       await Promise.all(files.map((f) => runPrettier(f)));
