@@ -134,9 +134,25 @@ export function buildTransformerEntries(
 }
 
 /**
+ * Builds a data expression that omits specified fields.
+ * Returns `omit(dataExpr, ['field1', 'field2'])` as a TsCodeFragment.
+ */
+function buildOmitExpression(
+  dataExpr: string,
+  fieldsToOmit: string[],
+): TsCodeFragment {
+  const omitFrag = TsCodeUtils.importFragment('omit', 'es-toolkit');
+  const fieldsList = fieldsToOmit.map((f) => `'${f}'`).join(', ');
+  return tsTemplate`${omitFrag}(${dataExpr}, [${fieldsList}])`;
+}
+
+/**
  * Builds the Prisma data fragment for create/update operations.
  *
  * Merges: `{ ...dataName, ...transformed, relation: connect(...), ...additionalEntries }`
+ *
+ * When `fieldsToOmit` is provided, wraps the data spread with `omit()` from es-toolkit
+ * to exclude ID fields that shouldn't be in Prisma update data.
  *
  * @param config - Configuration for building the data fragment
  * @returns TsCodeFragment or string for the Prisma data argument
@@ -147,6 +163,8 @@ export function buildPrismaDataFragment(config: {
   relationEntries: Record<string, TsCodeFragment>;
   noRelations: boolean;
   additionalEntries?: Record<string, TsCodeFragment | string>;
+  /** ID fields to omit from the data (for update operations) */
+  fieldsToOmit?: string[];
 }): TsCodeFragment | string {
   const {
     dataName,
@@ -154,17 +172,26 @@ export function buildPrismaDataFragment(config: {
     relationEntries,
     noRelations,
     additionalEntries,
+    fieldsToOmit = [],
   } = config;
 
+  const hasOmit = fieldsToOmit.length > 0;
   const hasAdditional =
     additionalEntries && Object.keys(additionalEntries).length > 0;
 
+  // Simple case: just the data variable (possibly wrapped in omit)
   if (noRelations && !hasTransformFields && !hasAdditional) {
-    return dataName;
+    return hasOmit ? buildOmitExpression(dataName, fieldsToOmit) : dataName;
   }
 
+  // Build the spread expression for the data variable
+  const dataSpreadExpr = hasOmit
+    ? buildOmitExpression(dataName, fieldsToOmit)
+    : dataName;
+  const dataSpreadKey = hasOmit ? `...omit(${dataName})` : `...${dataName}`;
+
   const entries: Record<string, string | TsCodeFragment> = {
-    [`...${dataName}`]: dataName,
+    [dataSpreadKey]: dataSpreadExpr,
   };
   if (hasTransformFields) {
     entries['...transformed'] = 'transformed';
@@ -227,9 +254,10 @@ export function buildTransformOperationParts(
     dataName: 'rest',
   });
 
-  // For update operations, also exclude ID fields from the rest spread
-  // (ID fields go in the where clause, not the data)
-  const idFieldsToExclude =
+  // For update operations, compute ID fields that need to be omitted from the data.
+  // Prisma will crash if ID fields are included in update data.
+  // These are model ID fields that are in the input but not already handled as FK or transform fields.
+  const fieldsToOmit =
     operationType === 'update'
       ? (prismaModel.idFields ?? []).filter(
           (f) =>
@@ -237,13 +265,9 @@ export function buildTransformOperationParts(
         )
       : [];
 
-  // Build the destructure pattern
+  // Build the destructure pattern (transform fields + FK fields only)
   const allDestructuredNames = [
-    ...new Set([
-      ...transformFieldNames,
-      ...foreignKeyFieldNames,
-      ...idFieldsToExclude,
-    ]),
+    ...new Set([...transformFieldNames, ...foreignKeyFieldNames]),
   ];
   const hasDestructure = allDestructuredNames.length > 0;
 
@@ -262,8 +286,9 @@ export function buildTransformOperationParts(
     dataName,
     hasTransformFields,
     relationEntries,
-    noRelations: noFkRelations && idFieldsToExclude.length === 0,
+    noRelations: noFkRelations,
     additionalEntries: additionalDataEntries,
+    fieldsToOmit,
   });
 
   // Build transformer entries (if there are transform fields and a transformers var)

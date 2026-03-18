@@ -1,10 +1,27 @@
+import { z } from 'zod';
+
 import type {
   DataQuery,
   GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
+
+import {
+  fileInputSchema,
+  fileTransformer,
+} from '../../../storage/services/file-transformer.js';
+import { userImageFileFileCategory } from '../constants/file-categories.js';
+
+export const userImageFieldSchemas = {
+  id: z.uuid().optional(),
+  caption: z.string(),
+  file: fileInputSchema,
+};
+
+export const userImageTransformers = {
+  file: fileTransformer({ category: userImageFileFileCategory }),
+};
 
 export async function deleteUserImage<TQuery extends DataQuery<'userImage'>>({
   where,
@@ -12,7 +29,6 @@ export async function deleteUserImage<TQuery extends DataQuery<'userImage'>>({
 }: {
   where: { id: string };
   query?: TQuery;
-  context: ServiceContext;
 }): Promise<GetResult<'userImage', TQuery>> {
   const result = await prisma.userImage.delete({
     where,

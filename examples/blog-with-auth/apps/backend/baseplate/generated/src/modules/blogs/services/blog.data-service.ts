@@ -1,90 +1,67 @@
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type {
-  DataDeleteInput,
-  DataUpdateInput,
-} from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import {
-  commitDelete,
-  commitUpdate,
-} from '@src/utils/data-operations/commit-operations.js';
-import { composeUpdate } from '@src/utils/data-operations/compose-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
-import { generateUpdateSchema } from '@src/utils/data-operations/field-utils.js';
+import { checkInstanceAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import { blogAuthorizer } from '../authorizers/blog.authorizer.js';
 
-export const blogInputFields = {
-  name: scalarField(z.string()),
-  userId: scalarField(z.uuid()),
-};
+const blogFieldSchemas = { name: z.string(), userId: z.uuid() };
 
-export const blogUpdateSchema = generateUpdateSchema(blogInputFields);
+export const blogUpdateSchema = z.object(blogFieldSchemas).partial();
 
-export async function updateBlog<
-  TIncludeArgs extends ModelInclude<'blog'> = ModelInclude<'blog'>,
->({
+export async function updateBlog<TQuery extends DataQuery<'blog'>>({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<'blog', typeof blogInputFields, TIncludeArgs>): Promise<
-  GetPayload<'blog', TIncludeArgs>
-> {
-  const plan = await composeUpdate({
-    model: 'blog',
-    fields: blogInputFields,
-    input,
-    context,
-    loadExisting: () => prisma.blog.findUniqueOrThrow({ where }),
-    authorize: ['admin', blogAuthorizer.roles.owner],
+}: {
+  where: { id: string };
+  data: z.infer<typeof blogUpdateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'blog', TQuery>> {
+  const existingItem = await prisma.blog.findUniqueOrThrow({ where });
+  await checkInstanceAuthorization(context, existingItem, [
+    'admin',
+    blogAuthorizer.roles.owner,
+  ]);
+  const { userId, ...rest } = input;
+
+  const result = await prisma.blog.update({
+    where,
+    data: { ...rest, user: relationHelpers.connectUpdate({ id: userId }) },
+    ...query,
   });
 
-  const item = await commitUpdate(plan, {
-    query,
-    execute: async ({ tx, data: { userId, ...rest }, query }) => {
-      const item = await tx.blog.update({
-        where,
-        data: { ...rest, user: relationHelpers.connectUpdate({ id: userId }) },
-        ...query,
-      });
-      return item;
-    },
-  });
-
-  return item;
+  return result as GetResult<'blog', TQuery>;
 }
 
-export async function deleteBlog<
-  TIncludeArgs extends ModelInclude<'blog'> = ModelInclude<'blog'>,
->({
+export async function deleteBlog<TQuery extends DataQuery<'blog'>>({
   where,
   query,
   context,
-}: DataDeleteInput<'blog', TIncludeArgs>): Promise<
-  GetPayload<'blog', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'blog',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.blog.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
-    authorize: ['admin', blogAuthorizer.roles.owner],
-    loadExisting: () => prisma.blog.findUniqueOrThrow({ where }),
+}: {
+  where: { id: string };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'blog', TQuery>> {
+  const existingItem = await prisma.blog.findUniqueOrThrow({ where });
+  await checkInstanceAuthorization(context, existingItem, [
+    'admin',
+    blogAuthorizer.roles.owner,
+  ]);
+
+  const result = await prisma.blog.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'blog', TQuery>;
 }

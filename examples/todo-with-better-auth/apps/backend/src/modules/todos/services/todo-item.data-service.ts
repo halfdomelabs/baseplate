@@ -1,3 +1,4 @@
+import { omit } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
@@ -18,28 +19,33 @@ import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js'
 
 import { todoItemAuthorizer } from '../authorizers/todo-item.authorizer.js';
 import {
-  todoItemAttachmentInputSchema,
+  todoItemAttachmentFieldSchemas,
   todoItemAttachmentTransformers,
 } from './todo-item-attachment.data-service.js';
 
-export const todoItemCreateSchema = z.object({
+const todoItemFieldSchemas = {
   todoListId: z.uuid(),
   position: z.int(),
   text: z.string(),
   done: z.boolean(),
   assigneeId: z.uuid().nullish(),
-  attachments: z.array(todoItemAttachmentInputSchema).optional(),
-});
+  attachments: z.array(z.object(todoItemAttachmentFieldSchemas)).optional(),
+};
 
-export const todoItemUpdateSchema = todoItemCreateSchema.partial();
+export const todoItemCreateSchema = z.object(todoItemFieldSchemas);
 
-const todoItemTransformers = {
+export const todoItemUpdateSchema = z.object(todoItemFieldSchemas).partial();
+
+export const todoItemTransformers = {
   attachments: oneToManyTransformer({
-    parentModel: 'todoItem',
-    model: 'todoItemAttachment',
-    schema: todoItemAttachmentInputSchema,
     compareItem: (input, existing) => input.id === existing.id,
-
+    deleteRemoved: async (tx, removedItems) => {
+      await tx.todoItemAttachment.deleteMany({
+        where: { OR: removedItems.map((i) => ({ id: i.id })) },
+      });
+    },
+    model: 'todoItemAttachment',
+    parentModel: 'todoItem',
     processCreate:
       (itemInput, { serviceContext }) =>
       async (tx, parent) => {
@@ -54,16 +60,16 @@ const todoItemTransformers = {
 
         await executeTransformPlan(plan, {
           tx,
-          execute: async () =>
+          execute: async ({ transformed }) =>
             tx.todoItemAttachment.create({
               data: {
                 ...rest,
+                ...transformed,
                 todoItem: { connect: { id: parent.id } },
               },
             }),
         });
       },
-
     processUpdate:
       (itemInput, existingItem, { serviceContext }) =>
       async (tx) => {
@@ -83,19 +89,14 @@ const todoItemTransformers = {
 
         await executeTransformPlan(plan, {
           tx,
-          execute: async () =>
+          execute: async ({ transformed }) =>
             tx.todoItemAttachment.update({
               where: { id: existingItem.id },
-              data: rest,
+              data: { ...omit(rest, ['id']), ...transformed },
             }),
         });
       },
-
-    deleteRemoved: async (tx, removedItems) => {
-      await tx.todoItemAttachment.deleteMany({
-        where: { OR: removedItems.map((i) => ({ id: i.id })) },
-      });
-    },
+    schema: z.object(todoItemAttachmentFieldSchemas),
   }),
 };
 
@@ -109,7 +110,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
   checkGlobalAuthorization(context, ['user']);
-  const { assigneeId, todoListId, attachments, ...rest } = input;
+  const { attachments, assigneeId, todoListId, ...rest } = input;
 
   const plan = await prepareTransformers({
     transformers: {
@@ -119,10 +120,11 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   });
 
   const result = await executeTransformPlan(plan, {
-    execute: async ({ tx }) =>
+    execute: async ({ tx, transformed }) =>
       tx.todoItem.create({
         data: {
           ...rest,
+          ...transformed,
           assignee: relationHelpers.connectCreate({ id: assigneeId }),
           todoList: relationHelpers.connectCreate({ id: todoListId }),
         },
@@ -150,14 +152,14 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
     'admin',
     todoItemAuthorizer.roles.owner,
   ]);
-  const { assigneeId, todoListId, attachments, ...rest } = input;
+  const { attachments, assigneeId, todoListId, ...rest } = input;
 
   const plan = await prepareTransformers({
     transformers: {
       attachments: todoItemTransformers.attachments.forUpdate(attachments, {
         loadExisting: () =>
           prisma.todoItemAttachment.findMany({
-            where: { todoItemId: existingItem.id },
+            where: { todoItemId: where.id },
           }),
       }),
     },
@@ -165,11 +167,12 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   });
 
   const result = await executeTransformPlan(plan, {
-    execute: async ({ tx }) =>
+    execute: async ({ tx, transformed }) =>
       tx.todoItem.update({
         where,
         data: {
           ...rest,
+          ...transformed,
           assignee: relationHelpers.connectUpdate({ id: assigneeId }),
           todoList: relationHelpers.connectUpdate({ id: todoListId }),
         },

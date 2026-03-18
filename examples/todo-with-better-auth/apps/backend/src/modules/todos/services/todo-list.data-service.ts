@@ -19,11 +19,6 @@ import {
 } from '../../storage/services/file-transformer.js';
 import { todoListCoverPhotoFileCategory } from '../constants/file-categories.js';
 
-const coverPhotoTransformer = fileTransformer({
-  category: todoListCoverPhotoFileCategory,
-  optional: true,
-});
-
 const todoListFieldSchemas = {
   ownerId: z.uuid(),
   position: z.int(),
@@ -35,9 +30,16 @@ const todoListFieldSchemas = {
 
 export const todoListCreateSchema = z.object(todoListFieldSchemas);
 
-export async function createTodoList<
-  TQuery extends DataQuery<'todoList'> = DataQuery<'todoList'>,
->({
+export const todoListUpdateSchema = z.object(todoListFieldSchemas).partial();
+
+export const todoListTransformers = {
+  coverPhoto: fileTransformer({
+    category: todoListCoverPhotoFileCategory,
+    optional: true,
+  }),
+};
+
+export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   data: input,
   query,
   context,
@@ -51,7 +53,7 @@ export async function createTodoList<
 
   const plan = await prepareTransformers({
     transformers: {
-      coverPhoto: coverPhotoTransformer.forCreate(coverPhoto),
+      coverPhoto: todoListTransformers.coverPhoto.forCreate(coverPhoto),
     },
     serviceContext: context,
   });
@@ -72,8 +74,6 @@ export async function createTodoList<
   return result as GetResult<'todoList', TQuery>;
 }
 
-export const todoListUpdateSchema = z.object(todoListFieldSchemas).partial();
-
 export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   where,
   data: input,
@@ -85,13 +85,13 @@ export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
-  checkGlobalAuthorization(context, ['user']);
   const existingItem = await prisma.todoList.findUniqueOrThrow({ where });
+  checkGlobalAuthorization(context, ['user']);
   const { coverPhoto, ownerId, ...rest } = input;
 
   const plan = await prepareTransformers({
     transformers: {
-      coverPhoto: coverPhotoTransformer.forUpdate(
+      coverPhoto: todoListTransformers.coverPhoto.forUpdate(
         coverPhoto,
         existingItem.coverPhotoId,
       ),

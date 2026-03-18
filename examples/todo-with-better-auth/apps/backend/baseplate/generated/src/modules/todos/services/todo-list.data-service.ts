@@ -1,150 +1,136 @@
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type {
-  DataCreateInput,
-  DataDeleteInput,
-  DataUpdateInput,
-} from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { $Enums } from '@src/generated/prisma/client.js';
 import { prisma } from '@src/services/prisma.js';
-import {
-  commitCreate,
-  commitDelete,
-  commitUpdate,
-} from '@src/utils/data-operations/commit-operations.js';
-import {
-  composeCreate,
-  composeUpdate,
-} from '@src/utils/data-operations/compose-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
-import {
-  generateCreateSchema,
-  generateUpdateSchema,
-} from '@src/utils/data-operations/field-utils.js';
+import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
+import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
+import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-import { fileField } from '../../storage/services/file-field.js';
+import {
+  fileInputSchema,
+  fileTransformer,
+} from '../../storage/services/file-transformer.js';
 import { todoListCoverPhotoFileCategory } from '../constants/file-categories.js';
 
-export const todoListInputFields = {
-  ownerId: scalarField(z.uuid()),
-  position: scalarField(z.int()),
-  name: scalarField(z.string()),
-  createdAt: scalarField(z.date().optional()),
-  status: scalarField(z.enum($Enums.TodoListStatus).nullish()),
-  coverPhoto: fileField({
+const todoListFieldSchemas = {
+  ownerId: z.uuid(),
+  position: z.int(),
+  name: z.string(),
+  createdAt: z.date().optional(),
+  status: z.enum($Enums.TodoListStatus).nullish(),
+  coverPhoto: fileInputSchema.nullish(),
+};
+
+export const todoListCreateSchema = z.object(todoListFieldSchemas);
+
+export const todoListUpdateSchema = z.object(todoListFieldSchemas).partial();
+
+export const todoListTransformers = {
+  coverPhoto: fileTransformer({
     category: todoListCoverPhotoFileCategory,
-    fileIdFieldName: 'coverPhotoId',
     optional: true,
   }),
 };
 
-export const todoListCreateSchema = generateCreateSchema(todoListInputFields);
-
-export async function createTodoList<
-  TIncludeArgs extends ModelInclude<'todoList'> = ModelInclude<'todoList'>,
->({
+export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   data: input,
   query,
   context,
-}: DataCreateInput<
-  'todoList',
-  typeof todoListInputFields,
-  TIncludeArgs
->): Promise<GetPayload<'todoList', TIncludeArgs>> {
-  const plan = await composeCreate({
-    model: 'todoList',
-    fields: todoListInputFields,
-    input,
-    context,
-    authorize: ['user'],
+}: {
+  data: z.infer<typeof todoListCreateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoList', TQuery>> {
+  checkGlobalAuthorization(context, ['user']);
+  const { coverPhoto, ownerId, ...rest } = input;
+
+  const plan = await prepareTransformers({
+    transformers: {
+      coverPhoto: todoListTransformers.coverPhoto.forCreate(coverPhoto),
+    },
+    serviceContext: context,
   });
 
-  const item = await commitCreate(plan, {
-    query,
-    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
-      const item = await tx.todoList.create({
+  const result = await executeTransformPlan(plan, {
+    execute: async ({ tx, transformed }) =>
+      tx.todoList.create({
         data: {
           ...rest,
+          ...transformed,
           owner: relationHelpers.connectCreate({ id: ownerId }),
         },
-        ...query,
-      });
-      return item;
-    },
+      }),
+    refetch: (item) =>
+      prisma.todoList.findUniqueOrThrow({ where: { id: item.id }, ...query }),
   });
 
-  return item;
+  return result as GetResult<'todoList', TQuery>;
 }
 
-export const todoListUpdateSchema = generateUpdateSchema(todoListInputFields);
-
-export async function updateTodoList<
-  TIncludeArgs extends ModelInclude<'todoList'> = ModelInclude<'todoList'>,
->({
+export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   where,
   data: input,
   query,
   context,
-}: DataUpdateInput<
-  'todoList',
-  typeof todoListInputFields,
-  TIncludeArgs
->): Promise<GetPayload<'todoList', TIncludeArgs>> {
-  const plan = await composeUpdate({
-    model: 'todoList',
-    fields: todoListInputFields,
-    input,
-    context,
-    loadExisting: () => prisma.todoList.findUniqueOrThrow({ where }),
-    authorize: ['user'],
+}: {
+  where: { id: string };
+  data: z.infer<typeof todoListUpdateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoList', TQuery>> {
+  const existingItem = await prisma.todoList.findUniqueOrThrow({ where });
+  checkGlobalAuthorization(context, ['user']);
+  const { coverPhoto, ownerId, ...rest } = input;
+
+  const plan = await prepareTransformers({
+    transformers: {
+      coverPhoto: todoListTransformers.coverPhoto.forUpdate(
+        coverPhoto,
+        existingItem.coverPhotoId,
+      ),
+    },
+    serviceContext: context,
   });
 
-  const item = await commitUpdate(plan, {
-    query,
-    execute: async ({ tx, data: { ownerId, ...rest }, query }) => {
-      const item = await tx.todoList.update({
+  const result = await executeTransformPlan(plan, {
+    execute: async ({ tx, transformed }) =>
+      tx.todoList.update({
         where,
         data: {
           ...rest,
+          ...transformed,
           owner: relationHelpers.connectUpdate({ id: ownerId }),
         },
-        ...query,
-      });
-      return item;
-    },
+      }),
+    refetch: (item) =>
+      prisma.todoList.findUniqueOrThrow({ where: { id: item.id }, ...query }),
   });
 
-  return item;
+  return result as GetResult<'todoList', TQuery>;
 }
 
-export async function deleteTodoList<
-  TIncludeArgs extends ModelInclude<'todoList'> = ModelInclude<'todoList'>,
->({
+export async function deleteTodoList<TQuery extends DataQuery<'todoList'>>({
   where,
   query,
   context,
-}: DataDeleteInput<'todoList', TIncludeArgs>): Promise<
-  GetPayload<'todoList', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'todoList',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.todoList.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
-    authorize: ['user'],
+}: {
+  where: { id: string };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'todoList', TQuery>> {
+  checkGlobalAuthorization(context, ['user']);
+
+  const result = await prisma.todoList.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'todoList', TQuery>;
 }

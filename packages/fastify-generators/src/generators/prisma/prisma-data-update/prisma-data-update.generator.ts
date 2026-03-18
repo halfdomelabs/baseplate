@@ -115,8 +115,15 @@ export const prismaDataUpdateGenerator = createGenerator({
                 authorizerImports,
               });
 
-            // Determine if we need existingItem (for instance auth or transform fields)
-            const needsExistingItem = hasInstanceAuth || hasTransformFields;
+            // Determine if we need existingItem:
+            // - Instance auth needs it for checkInstanceAuthorization
+            // - Transform fields with 'existingField' forUpdate pattern need existingItem.fieldId
+            // (loadExisting pattern handles its own fetch, doesn't need top-level existingItem)
+            const hasExistingFieldTransform = usedFields.some(
+              (f) => f.transformer?.forUpdatePattern?.kind === 'existingField',
+            );
+            const needsExistingItem =
+              hasInstanceAuth || hasExistingFieldTransform;
             const existingItemFragment = needsExistingItem
               ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
               : '';

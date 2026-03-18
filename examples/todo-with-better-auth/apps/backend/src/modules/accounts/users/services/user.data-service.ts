@@ -1,3 +1,4 @@
+import { omit } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
@@ -17,84 +18,66 @@ import { prepareTransformers } from '@src/utils/data-operations/prepare-transfor
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import {
-  fileInputSchema,
-  fileTransformer,
-} from '../../../storage/services/file-transformer.js';
+  userImageFieldSchemas,
+  userImageTransformers,
+} from './user-image.data-service.js';
 import {
-  userImageFileFileCategory,
-  userProfileAvatarFileCategory,
-} from '../constants/file-categories.js';
+  userProfileFieldSchemas,
+  userProfileTransformers,
+} from './user-profile.data-service.js';
 
-const customerInputSchema = z.object({
-  stripeCustomerId: z.string(),
-});
+const userFieldSchemas = {
+  name: z.string(),
+  email: z.string(),
+  customer: z.object({ stripeCustomerId: z.string() }).nullish(),
+  images: z.array(z.object(userImageFieldSchemas)).optional(),
+  roles: z.array(z.object({ role: z.string() })).optional(),
+  userProfile: z.object(userProfileFieldSchemas).nullish(),
+};
 
-const userImageInputSchema = z.object({
-  id: z.uuid().optional(),
-  caption: z.string(),
-  file: fileInputSchema,
-});
+export const userCreateSchema = z.object(userFieldSchemas);
 
-const userRoleInputSchema = z.object({
-  role: z.string(),
-});
+export const userUpdateSchema = z.object(userFieldSchemas).partial();
 
-const userProfileInputSchema = z.object({
-  bio: z.string().nullish(),
-  birthDay: z.date().nullish(),
-  favoriteTodoListId: z.uuid().nullish(),
-  avatar: fileInputSchema.nullish(),
-});
-
-const userTransformers = {
-  userImageFile: fileTransformer({ category: userImageFileFileCategory }),
-  userProfileAvatar: fileTransformer({
-    category: userProfileAvatarFileCategory,
-    optional: true,
-  }),
-
+export const userTransformers = {
   customer: oneToOneTransformer({
-    parentModel: 'user',
     model: 'customer',
-    schema: customerInputSchema,
-
-    processCreate: (input) => async (tx, parent) => {
+    parentModel: 'user',
+    processCreate: (itemInput) => async (tx, parent) => {
       await tx.customer.create({
-        data: {
-          stripeCustomerId: input.stripeCustomerId,
-          user: { connect: { id: parent.id } },
-        },
+        data: { ...itemInput, user: { connect: { id: parent.id } } },
       });
     },
-
-    processUpdate: (input, existing) => async (tx) => {
-      await tx.customer.update({
-        where: { id: existing.id },
-        data: { stripeCustomerId: input.stripeCustomerId },
-      });
-    },
-
     processDelete: () => async (tx, parent) => {
       await tx.customer.deleteMany({ where: { id: parent.id } });
     },
-  }),
-
-  images: oneToManyTransformer({
-    parentModel: 'user',
-    model: 'userImage',
-    schema: userImageInputSchema,
-    compareItem: (input, existing) => input.id === existing.id,
-
-    processCreate: async (itemInput, ctx) => {
-      const { file, ...rest } = itemInput;
-      const plan = await prepareTransformers({
-        transformers: {
-          file: userTransformers.userImageFile.forCreate(file),
-        },
-        serviceContext: ctx.serviceContext,
+    processUpdate: (itemInput, existingItem) => async (tx) => {
+      await tx.customer.update({
+        where: { id: existingItem.id },
+        data: itemInput,
       });
+    },
+    schema: z.object({ stripeCustomerId: z.string() }),
+  }),
+  images: oneToManyTransformer({
+    compareItem: (input, existing) => input.id === existing.id,
+    deleteRemoved: async (tx, removedItems) => {
+      await tx.userImage.deleteMany({
+        where: { OR: removedItems.map((i) => ({ id: i.id })) },
+      });
+    },
+    model: 'userImage',
+    parentModel: 'user',
+    processCreate:
+      (itemInput, { serviceContext }) =>
+      async (tx, parent) => {
+        const { file, ...rest } = itemInput;
 
-      return async (tx, parent) => {
+        const plan = await prepareTransformers({
+          transformers: { file: userImageTransformers.file.forCreate(file) },
+          serviceContext,
+        });
+
         await executeTransformPlan(plan, {
           tx,
           execute: async ({ transformed }) =>
@@ -106,84 +89,74 @@ const userTransformers = {
               },
             }),
         });
-      };
-    },
+      },
+    processUpdate:
+      (itemInput, existingItem, { serviceContext }) =>
+      async (tx) => {
+        const { file, ...rest } = itemInput;
 
-    processUpdate: async (itemInput, existingItem, ctx) => {
-      const plan = await prepareTransformers({
-        transformers: {
-          file: userTransformers.userImageFile.forUpdate(
-            itemInput.file,
-            existingItem.fileId,
-          ),
-        },
-        serviceContext: ctx.serviceContext,
-      });
+        const plan = await prepareTransformers({
+          transformers: {
+            file: userImageTransformers.file.forUpdate(
+              file,
+              existingItem.fileId,
+            ),
+          },
+          serviceContext,
+        });
 
-      return async (tx) => {
         await executeTransformPlan(plan, {
           tx,
           execute: async ({ transformed }) =>
             tx.userImage.update({
               where: { id: existingItem.id },
-              data: {
-                caption: itemInput.caption,
-                ...transformed,
-              },
+              data: { ...omit(rest, ['id']), ...transformed },
             }),
         });
-      };
-    },
-
-    deleteRemoved: async (tx, removedItems) => {
-      await tx.userImage.deleteMany({
-        where: { OR: removedItems.map((i) => ({ id: i.id })) },
-      });
-    },
+      },
+    schema: z.object(userImageFieldSchemas),
   }),
-
   roles: oneToManyTransformer({
-    parentModel: 'user',
-    model: 'userRole',
-    schema: userRoleInputSchema,
-
-    processCreate: (itemInput) => async (tx, parent) => {
-      await tx.userRole.create({
-        data: {
-          role: itemInput.role,
-          user: { connect: { id: parent.id } },
-        },
-      });
-    },
-
+    compareItem: (input, existing) => input.role === existing.role,
     deleteRemoved: async (tx, removedItems) => {
       await tx.userRole.deleteMany({
         where: {
-          OR: removedItems.map((i) => ({
-            userId: i.userId,
-            role: i.role,
-          })),
+          OR: removedItems.map((i) => ({ userId: i.userId, role: i.role })),
         },
       });
     },
-  }),
-
-  userProfile: oneToOneTransformer({
+    model: 'userRole',
     parentModel: 'user',
-    model: 'userProfile',
-    schema: userProfileInputSchema,
-
-    processCreate: async (input, ctx) => {
-      const { avatar, favoriteTodoListId, ...rest } = input;
-
-      const plan = await prepareTransformers({
-        transformers: {
-          avatar: userTransformers.userProfileAvatar.forCreate(avatar),
-        },
-        serviceContext: ctx.serviceContext,
+    processCreate: (itemInput) => async (tx, parent) => {
+      await tx.userRole.create({
+        data: { ...itemInput, user: { connect: { id: parent.id } } },
       });
+    },
+    processUpdate: (itemInput, existingItem) => async (tx) => {
+      await tx.userRole.update({
+        where: {
+          userId_role: { userId: existingItem.userId, role: existingItem.role },
+        },
+        data: omit(itemInput, ['role']),
+      });
+    },
+    schema: z.object({ role: z.string() }),
+  }),
+  userProfile: oneToOneTransformer({
+    model: 'userProfile',
+    parentModel: 'user',
+    processCreate:
+      (itemInput, { serviceContext }) =>
+      async (tx, parent) => {
+        const { avatar, favoriteTodoListId, ...rest } = itemInput;
 
-      return async (tx, parent) => {
+        const plan = await prepareTransformers({
+          transformers: {
+            avatar: userProfileTransformers.avatar.forCreate(avatar),
+          },
+          serviceContext,
+        });
+
         await executeTransformPlan(plan, {
           tx,
           execute: async ({ transformed }) =>
@@ -198,30 +171,32 @@ const userTransformers = {
               },
             }),
         });
-      };
+      },
+    processDelete: () => async (tx, parent) => {
+      await tx.userProfile.deleteMany({ where: { userId: parent.id } });
     },
+    processUpdate:
+      (itemInput, existingItem, { serviceContext }) =>
+      async (tx) => {
+        const { avatar, favoriteTodoListId, ...rest } = itemInput;
 
-    processUpdate: async (input, existing, ctx) => {
-      const { avatar, favoriteTodoListId, ...rest } = input;
+        const plan = await prepareTransformers({
+          transformers: {
+            avatar: userProfileTransformers.avatar.forUpdate(
+              avatar,
+              existingItem.avatarId,
+            ),
+          },
+          serviceContext,
+        });
 
-      const plan = await prepareTransformers({
-        transformers: {
-          avatar: userTransformers.userProfileAvatar.forUpdate(
-            avatar,
-            existing.avatarId,
-          ),
-        },
-        serviceContext: ctx.serviceContext,
-      });
-
-      return async (tx) => {
         await executeTransformPlan(plan, {
           tx,
           execute: async ({ transformed }) =>
             tx.userProfile.update({
-              where: { id: existing.id },
+              where: { id: existingItem.id },
               data: {
-                ...rest,
+                ...omit(rest, ['id']),
                 ...transformed,
                 favoriteTodoList: relationHelpers.connectUpdate({
                   id: favoriteTodoListId,
@@ -229,25 +204,10 @@ const userTransformers = {
               },
             }),
         });
-      };
-    },
-
-    processDelete: () => async (tx, parent) => {
-      await tx.userProfile.deleteMany({ where: { userId: parent.id } });
-    },
+      },
+    schema: z.object(userProfileFieldSchemas),
   }),
 };
-
-export const userCreateSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  customer: customerInputSchema.nullish(),
-  images: z.array(userImageInputSchema).optional(),
-  roles: z.array(userRoleInputSchema).optional(),
-  userProfile: userProfileInputSchema.nullish(),
-});
-
-export const userUpdateSchema = userCreateSchema.partial();
 
 export async function createUser<TQuery extends DataQuery<'user'>>({
   data: input,
@@ -259,7 +219,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
   checkGlobalAuthorization(context, ['admin']);
-  const { name, email, customer, images, roles, userProfile } = input;
+  const { customer, images, roles, userProfile, ...rest } = input;
 
   const plan = await prepareTransformers({
     transformers: {
@@ -272,7 +232,10 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   });
 
   const result = await executeTransformPlan(plan, {
-    execute: async ({ tx }) => tx.user.create({ data: { name, email } }),
+    execute: async ({ tx, transformed }) =>
+      tx.user.create({
+        data: { ...rest, ...transformed },
+      }),
     refetch: (item) =>
       prisma.user.findUniqueOrThrow({ where: { id: item.id }, ...query }),
   });
@@ -310,9 +273,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
       }),
       userProfile: userTransformers.userProfile.forUpdate(userProfile, {
         loadExisting: () =>
-          prisma.userProfile.findUnique({
-            where: { userId: where.id },
-          }),
+          prisma.userProfile.findUnique({ where: { userId: where.id } }),
       }),
     },
     serviceContext: context,
