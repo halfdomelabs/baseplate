@@ -1,3 +1,5 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import {
   createNodePackagesTask,
   extractPackageVersions,
@@ -142,6 +144,19 @@ export const prismaDataNestedFieldGenerator = createGenerator({
         const nestedTransformersFragment =
           nestedPrismaDataService?.getTransformersFragment();
 
+        // Request fieldSchemas export from nested data service so the parent
+        // can import it instead of duplicating schemas inline
+        let nestedFieldSchemasFragment: TsCodeFragment | undefined;
+        let allDataServiceFieldNames: string[] | undefined;
+        if (nestedPrismaDataService) {
+          nestedPrismaDataService.requestFieldSchemas();
+          nestedFieldSchemasFragment =
+            nestedPrismaDataService.getFieldSchemasFragment();
+          allDataServiceFieldNames = nestedPrismaDataService
+            .getFields()
+            .map((f) => f.name);
+        }
+
         return {
           build: () => {
             prismaDataServiceSetup.transformFields.add(
@@ -152,6 +167,8 @@ export const prismaDataNestedFieldGenerator = createGenerator({
                 nestedFields,
                 dataUtilsImports,
                 nestedTransformersFragment,
+                nestedFieldSchemasFragment,
+                allDataServiceFieldNames,
               }),
             );
           },

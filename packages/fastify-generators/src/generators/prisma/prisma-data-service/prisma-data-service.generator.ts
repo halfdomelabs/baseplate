@@ -26,6 +26,7 @@ import { serviceFileProvider } from '#src/generators/core/index.js';
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
+import { buildFieldSchemasObject } from '../_shared/build-data-helpers/build-schema-fragments.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
@@ -86,6 +87,10 @@ export interface PrismaDataServiceProvider {
   getTransformersVariableName(): string | undefined;
   /** Import fragment for the transformers variable (auto-generates import when used in code) */
   getTransformersFragment(): TsCodeFragment | undefined;
+  /** Request that fieldSchemas be exported (for import by parent nested-field-writer) */
+  requestFieldSchemas(): void;
+  /** Import fragment for the fieldSchemas variable (auto-generates import when used in code) */
+  getFieldSchemasFragment(): TsCodeFragment;
   /** Register a create/update/delete method to be added to the service file */
   registerMethod(method: PrismaDataServiceMethod): void;
 }
@@ -186,13 +191,10 @@ export const prismaDataServiceGenerator = createGenerator({
         const scalarFields = allFields.filter((f) => !f.isTransformField);
         const transformFields = allFields.filter((f) => f.isTransformField);
 
-        // Build the field schemas object: { field: z.string(), ... }
-        const fieldSchemasObject = TsCodeUtils.mergeFragmentsAsObject(
-          Object.fromEntries(
-            allFields.map((field) => [field.name, field.schemaFragment]),
-          ),
-          { disableSort: true },
-        );
+        // Build the field schemas object using shared utility
+        const fieldSchemasObject = buildFieldSchemasObject(allFields, {
+          disableSort: true,
+        });
 
         const fieldSchemasVarName = `${lowercaseFirstChar(modelName)}FieldSchemas`;
         const createSchemaVarName = `${lowercaseFirstChar(modelName)}CreateSchema`;
@@ -203,6 +205,7 @@ export const prismaDataServiceGenerator = createGenerator({
             : undefined;
 
         const zFrag = TsCodeUtils.importFragment('z', 'zod');
+        let fieldSchemasRequested = false;
 
         return {
           providers: {
@@ -220,6 +223,14 @@ export const prismaDataServiceGenerator = createGenerator({
                       serviceFile.getServicePath(),
                     )
                   : undefined,
+              requestFieldSchemas() {
+                fieldSchemasRequested = true;
+              },
+              getFieldSchemasFragment: () =>
+                TsCodeUtils.importFragment(
+                  fieldSchemasVarName,
+                  serviceFile.getServicePath(),
+                ),
               registerMethod(method) {
                 methods.add(method);
               },
@@ -234,12 +245,17 @@ export const prismaDataServiceGenerator = createGenerator({
               (m) => m.type === 'update',
             );
             const needsSchemas = hasCreateMethod || hasUpdateMethod;
+            const needsFieldSchemas = needsSchemas || fieldSchemasRequested;
 
-            // Only register schemas when create/update methods exist
-            if (needsSchemas) {
+            // Only register schemas when needed by methods or external references
+            if (needsFieldSchemas) {
+              // Export fieldSchemas when explicitly requested (for import by parent)
+              const fieldSchemasKeyword = fieldSchemasRequested
+                ? 'export const'
+                : 'const';
               serviceFile.registerHeader({
                 name: 'schemas-1-fields',
-                fragment: tsTemplate`const ${fieldSchemasVarName} = ${fieldSchemasObject};`,
+                fragment: tsTemplate`${fieldSchemasKeyword} ${fieldSchemasVarName} = ${fieldSchemasObject};`,
               });
 
               if (hasCreateMethod) {

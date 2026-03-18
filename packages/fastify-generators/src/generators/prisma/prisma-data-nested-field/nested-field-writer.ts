@@ -15,6 +15,7 @@ import type {
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 import type { DataUtilsImportsProvider } from '../data-utils/index.js';
 
+import { buildNestedSchemaFragments } from '../_shared/build-data-helpers/build-schema-fragments.js';
 import { buildTransformOperationParts } from '../_shared/build-data-helpers/build-transform-operation-parts.js';
 import { generateExistingItemWhere } from '../_shared/build-data-helpers/generate-where-type.js';
 
@@ -26,6 +27,10 @@ interface WritePrismaDataNestedFieldInput {
   dataUtilsImports: DataUtilsImportsProvider;
   /** Import fragment for the nested model's transformers variable (e.g., todoItemAttachmentTransformers) */
   nestedTransformersFragment?: TsCodeFragment;
+  /** Import fragment for the nested model's fieldSchemas variable (e.g., userImageFieldSchemas) */
+  nestedFieldSchemasFragment?: TsCodeFragment;
+  /** All field names in the nested model's data service (for subset detection) */
+  allDataServiceFieldNames?: string[];
 }
 
 /**
@@ -329,22 +334,26 @@ function createTransformProcessFunctions(
 export function writePrismaDataNestedField(
   input: WritePrismaDataNestedFieldInput,
 ): InputFieldDefinitionOutput {
-  const { parentModel, nestedModel, relation, nestedFields, dataUtilsImports } =
-    input;
+  const {
+    parentModel,
+    nestedModel,
+    relation,
+    nestedFields,
+    dataUtilsImports,
+    nestedFieldSchemasFragment,
+    allDataServiceFieldNames,
+  } = input;
 
   const nestedFieldNames = nestedFields.map((f) => f.name);
-  const zFrag = TsCodeUtils.importFragment('z', 'zod');
 
-  // Build the Zod schema for the nested entity's input
-  const nestedSchemaEntries = TsCodeUtils.mergeFragmentsAsObject(
-    Object.fromEntries(nestedFields.map((f) => [f.name, f.schemaFragment])),
-  );
-
-  // Build the Zod schema fragment for the fieldSchemas object
-  const itemSchema = tsTemplate`${zFrag}.object(${nestedSchemaEntries})`;
-  const schemaFragment = relation.isList
-    ? tsTemplate`${zFrag}.array(${itemSchema}).optional()`
-    : tsTemplate`${itemSchema}.nullish()`;
+  // Build schema using shared utility (handles fieldSchemas import, subset pick, and inline)
+  const { itemSchema, schemaFragment } = buildNestedSchemaFragments({
+    fields: nestedFields,
+    fieldNames: nestedFieldNames,
+    isList: relation.isList,
+    nestedFieldSchemasFragment,
+    allDataServiceFieldNames,
+  });
 
   // Find reverse relation (nested model → parent model)
   const reverseRelation = nestedModel.fields.find(
