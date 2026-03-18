@@ -1,128 +1,80 @@
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type {
-  DataCreateInput,
-  DataDeleteInput,
-  DataUpdateInput,
-} from '@src/utils/data-operations/types.js';
+import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import {
-  commitCreate,
-  commitDelete,
-  commitUpdate,
-} from '@src/utils/data-operations/commit-operations.js';
-import {
-  composeCreate,
-  composeUpdate,
-} from '@src/utils/data-operations/compose-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
-import {
-  generateCreateSchema,
-  generateUpdateSchema,
-} from '@src/utils/data-operations/field-utils.js';
+import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 
-export const userInputFields = {
-  email: scalarField(z.string().nullish()),
-  name: scalarField(z.string().nullish()),
-  emailVerified: scalarField(z.boolean().optional()),
+const userFieldSchemas = {
+  email: z.string().nullish(),
+  name: z.string().nullish(),
+  emailVerified: z.boolean().optional(),
 };
 
-export const userCreateSchema = generateCreateSchema(userInputFields);
+export const userCreateSchema = z.object(userFieldSchemas);
 
-export async function createUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
-  data: input,
+export const userUpdateSchema = z.object(userFieldSchemas).partial();
+
+export async function createUser<TQuery extends DataQuery<'user'>>({
+  data,
   query,
   context,
-}: DataCreateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const plan = await composeCreate({
-    model: 'user',
-    fields: userInputFields,
-    input,
-    context,
-    authorize: ['admin'],
+}: {
+  data: z.infer<typeof userCreateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+
+  const result = await prisma.user.create({
+    data,
+    ...query,
   });
 
-  const item = await commitCreate(plan, {
-    query,
-    execute: async ({ tx, data, query }) => {
-      const item = await tx.user.create({
-        data,
-        ...query,
-      });
-      return item;
-    },
-  });
-
-  return item;
+  return result as GetResult<'user', TQuery>;
 }
 
-export const userUpdateSchema = generateUpdateSchema(userInputFields);
-
-export async function updateUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
+export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,
-  data: input,
+  data,
   query,
   context,
-}: DataUpdateInput<'user', typeof userInputFields, TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const plan = await composeUpdate({
-    model: 'user',
-    fields: userInputFields,
-    input,
-    context,
-    loadExisting: () => prisma.user.findUniqueOrThrow({ where }),
-    authorize: ['admin'],
+}: {
+  where: { id: string };
+  data: z.infer<typeof userUpdateSchema>;
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+
+  const result = await prisma.user.update({
+    where,
+    data,
+    ...query,
   });
 
-  const item = await commitUpdate(plan, {
-    query,
-    execute: async ({ tx, data, query }) => {
-      const item = await tx.user.update({
-        where,
-        data,
-        ...query,
-      });
-      return item;
-    },
-  });
-
-  return item;
+  return result as GetResult<'user', TQuery>;
 }
 
-export async function deleteUser<
-  TIncludeArgs extends ModelInclude<'user'> = ModelInclude<'user'>,
->({
+export async function deleteUser<TQuery extends DataQuery<'user'>>({
   where,
   query,
   context,
-}: DataDeleteInput<'user', TIncludeArgs>): Promise<
-  GetPayload<'user', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'user',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.user.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
-    authorize: ['admin'],
+}: {
+  where: { id: string };
+  query?: TQuery;
+  context: ServiceContext;
+}): Promise<GetResult<'user', TQuery>> {
+  checkGlobalAuthorization(context, ['admin']);
+
+  const result = await prisma.user.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'user', TQuery>;
 }

@@ -1,6 +1,8 @@
+import chalk from 'chalk';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
+import { formatCompactDiff, formatUnifiedDiff } from '#src/diff/formatters.js';
 
 import { getProjectByNameOrId } from '../utils/projects.js';
 
@@ -97,33 +99,30 @@ export const diffProjectAction = createServiceAction({
       hasDifferences: result.hasDifferences,
     };
   },
-  writeCliOutput: (output) => {
+  writeCliOutput: (output, input) => {
     if (!output.hasDifferences) {
-      console.info('✓ No differences found across all packages');
+      console.info(chalk.green('✓ No differences found across all packages'));
       return;
     }
 
     console.info(
-      `Found differences in ${output.totalDiffs} file(s) across ${output.packageResults.length} package(s):`,
+      chalk.bold(
+        `Found differences in ${output.totalDiffs} file(s) across ${output.packageResults.length} package(s):`,
+      ),
     );
 
     for (const packageResult of output.packageResults) {
       if (packageResult.hasDifferences) {
         console.info(
-          `\n=== ${packageResult.name} (${packageResult.packageDirectory}) ===`,
-        );
-        console.info(
-          `  Files with differences: ${packageResult.diffSummary.totalFiles}`,
+          chalk.bold(
+            `\n=== ${packageResult.name} (${packageResult.packageDirectory}) ===`,
+          ),
         );
 
-        for (const file of packageResult.diffSummary.files) {
-          console.info(`\n  ${file.status.toUpperCase()}: ${file.path}`);
-
-          // Show diff content if available
-          if (file.diff) {
-            console.info(file.diff);
-          }
-        }
+        const formatted = input.compact
+          ? formatCompactDiff(packageResult.diffSummary.files)
+          : formatUnifiedDiff(packageResult.diffSummary.files);
+        console.info(formatted);
       }
     }
   },

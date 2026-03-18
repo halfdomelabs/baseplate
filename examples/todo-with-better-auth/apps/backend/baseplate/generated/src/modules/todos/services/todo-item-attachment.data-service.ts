@@ -1,34 +1,49 @@
+import { omit } from 'es-toolkit';
 import { z } from 'zod';
 
-import {
-  createParentModelConfig,
-  nestedOneToManyField,
-  scalarField,
-} from '@src/utils/data-operations/field-definitions.js';
+import { oneToManyTransformer } from '@src/utils/data-operations/nested-transformers.js';
 
-const parentModel = createParentModelConfig('todoItemAttachment', (value) => ({
-  id: value.id,
-}));
+export const todoItemAttachmentFieldSchemas = {
+  id: z.uuid().optional(),
+  position: z.int(),
+  url: z.string(),
+  tags: z.array(z.object({ tag: z.string() })).optional(),
+};
 
-export const todoItemAttachmentInputFields = {
-  id: scalarField(z.uuid().optional()),
-  position: scalarField(z.int()),
-  url: scalarField(z.string()),
-  tags: nestedOneToManyField({
-    buildCreateData: (data) => data,
-    buildUpdateData: (data) => data,
-    fields: { tag: scalarField(z.string()) },
-    getWhereUnique: (input, parentModel) =>
-      input.tag
-        ? {
-            todoItemAttachmentId_tag: {
-              tag: input.tag,
-              todoItemAttachmentId: parentModel.id,
-            },
-          }
-        : undefined,
+export const todoItemAttachmentTransformers = {
+  tags: oneToManyTransformer({
+    compareItem: (input, existing) => input.tag === existing.tag,
+    deleteRemoved: async (tx, removedItems) => {
+      await tx.todoItemAttachmentTag.deleteMany({
+        where: {
+          OR: removedItems.map((i) => ({
+            todoItemAttachmentId: i.todoItemAttachmentId,
+            tag: i.tag,
+          })),
+        },
+      });
+    },
     model: 'todoItemAttachmentTag',
-    parentModel,
-    relationName: 'todoItemAttachment',
+    parentModel: 'todoItemAttachment',
+    processCreate: (itemInput) => async (tx, parent) => {
+      await tx.todoItemAttachmentTag.create({
+        data: {
+          ...itemInput,
+          todoItemAttachment: { connect: { id: parent.id } },
+        },
+      });
+    },
+    processUpdate: (itemInput, existingItem) => async (tx) => {
+      await tx.todoItemAttachmentTag.update({
+        where: {
+          todoItemAttachmentId_tag: {
+            todoItemAttachmentId: existingItem.todoItemAttachmentId,
+            tag: existingItem.tag,
+          },
+        },
+        data: omit(itemInput, ['tag']),
+      });
+    },
+    schema: z.object({ tag: z.string() }),
   }),
 };
