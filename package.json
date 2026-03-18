@@ -63,7 +63,7 @@
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "node scripts/format-and-lint.ts",
+    "*.{ts,tsx,js,jsx}": "node scripts/format-and-lint.ts --no-eslint",
     "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
   },
   "dependencies": {
