@@ -79,7 +79,7 @@ export interface TransformOperationParts {
  *   where loadExisting should reference the existing nested item, not the parent's where.
  * @returns TsCodeFragment for the transformers object
  */
-export function buildTransformerEntries(
+function buildTransformerEntries(
   transformFields: InputFieldDefinitionOutput[],
   transformersVarFragment: TsCodeFragment | string,
   operationType: 'create' | 'update',
@@ -157,7 +157,7 @@ function buildOmitExpression(
  * @param config - Configuration for building the data fragment
  * @returns TsCodeFragment or string for the Prisma data argument
  */
-export function buildPrismaDataFragment(config: {
+function buildPrismaDataFragment(config: {
   dataName: string;
   hasTransformFields: boolean;
   relationEntries: Record<string, TsCodeFragment>;

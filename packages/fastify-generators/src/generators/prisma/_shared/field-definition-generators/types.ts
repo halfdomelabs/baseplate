@@ -5,7 +5,7 @@ import type { ServiceOutputDtoField } from '#src/types/service-output.js';
 /**
  * Describes how to generate the .forUpdate() call for this transformer.
  */
-export type ForUpdatePattern =
+type ForUpdatePattern =
   | {
       /**
        * Simple: .forUpdate(value, existingItem.fieldId)
