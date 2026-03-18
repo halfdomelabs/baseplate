@@ -7,7 +7,6 @@ export interface PrismaDataUtilsPaths {
   nestedTransformers: string;
   prepareTransformers: string;
   prismaTypes: string;
-  prismaUtils: string;
   relationHelpers: string;
   transformerTypes: string;
 }
@@ -30,7 +29,6 @@ const prismaDataUtilsPathsTask = createGeneratorTask({
           nestedTransformers: `${srcRoot}/utils/data-operations/nested-transformers.ts`,
           prepareTransformers: `${srcRoot}/utils/data-operations/prepare-transformers.ts`,
           prismaTypes: `${srcRoot}/utils/data-operations/prisma-types.ts`,
-          prismaUtils: `${srcRoot}/utils/data-operations/prisma-utils.ts`,
           relationHelpers: `${srcRoot}/utils/data-operations/relation-helpers.ts`,
           transformerTypes: `${srcRoot}/utils/data-operations/transformer-types.ts`,
         },

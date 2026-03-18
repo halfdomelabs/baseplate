@@ -132,15 +132,11 @@ export const prismaDataNestedFieldGenerator = createGenerator({
             generateScalarInputField({
               fieldName: field.name,
               scalarField: field,
-              dataUtilsImports,
               prismaGeneratedImports,
               lookupEnum: (name) => prismaOutput.getServiceEnum(name),
             }),
           );
         })();
-
-        const dataServiceFieldsFragment =
-          nestedPrismaDataService?.getFieldsFragment();
 
         return {
           build: () => {
@@ -149,7 +145,6 @@ export const prismaDataNestedFieldGenerator = createGenerator({
                 parentModel,
                 nestedModel,
                 relation,
-                dataServiceFieldsFragment,
                 nestedFields,
                 dataUtilsImports,
               }),

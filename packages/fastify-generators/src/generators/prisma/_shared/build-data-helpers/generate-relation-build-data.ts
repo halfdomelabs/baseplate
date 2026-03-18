@@ -41,6 +41,8 @@ interface GenerateRelationBuildDataResult {
   buildUpdateDataFragment: TsCodeFragment;
   /** Whether this is a simple passthrough (no relations to transform) */
   passthrough: boolean;
+  /** Foreign key field names that need to be destructured from input */
+  foreignKeyFieldNames: string[];
 }
 
 /**
@@ -308,5 +310,6 @@ export function generateRelationBuildData(
     buildCreateDataFragment: tsTemplate`(${createBody.argumentFragment}) => (${createBody.returnFragment})`,
     buildUpdateDataFragment: tsTemplate`(${updateBody.argumentFragment}) => (${updateBody.returnFragment})`,
     passthrough,
+    foreignKeyFieldNames,
   };
 }

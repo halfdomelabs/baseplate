@@ -5,24 +5,6 @@ import { serviceContextImportsProvider } from '#src/generators/core/service-cont
 import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { prismaImportsProvider } from '#src/generators/prisma/prisma/generated/ts-import-providers.js';
 
-const prismaUtils = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'data-operations',
-  importMapProviders: {
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
-  name: 'prisma-utils',
-  referencedGeneratorTemplates: { prismaTypes: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/utils/data-operations/prisma-utils.ts',
-    ),
-  },
-  variables: {},
-});
-
 const relationHelpers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'data-operations',
@@ -38,7 +20,7 @@ const relationHelpers = createTsTemplateFile({
   variables: {},
 });
 
-export const dataOperationsGroup = { prismaUtils, relationHelpers };
+export const dataOperationsGroup = { relationHelpers };
 
 const defineTransformer = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

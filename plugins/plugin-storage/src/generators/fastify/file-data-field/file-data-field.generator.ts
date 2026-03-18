@@ -9,7 +9,6 @@ import {
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { fileCategoriesProvider } from '#src/storage/core/generators/file-categories/file-categories.generator.js';
@@ -30,9 +29,10 @@ const descriptorSchema = z.object({
 /**
  * Generator for fastify/file-data-field
  *
- * Creates a virtual input field for file uploads in data services.
- * This replaces the old transformer-based approach with a field-based approach
- * that integrates with the new data operations system.
+ * Creates a transform field for file uploads in data services.
+ * Emits:
+ * - schemaFragment: `fileInputSchema.nullish()` or `fileInputSchema` for the fieldSchemas
+ * - transformer: `fileTransformer({ category: ..., optional: true })` for the transformers object
  */
 export const fileDataFieldGenerator = createGenerator({
   name: 'fastify/file-data-field',
@@ -77,21 +77,23 @@ export const fileDataFieldGenerator = createGenerator({
           );
         }
 
-        const fileIdFieldName = relation.fields[0];
-
         // Get the file category fragment
         const fileCategoryFragment =
           fileCategories.getFileCategoryImportFragment(category);
 
-        // Create the field configuration object
-        const fieldConfig = TsCodeUtils.mergeFragmentsAsObject({
+        // Build the Zod schema fragment for the fieldSchemas object
+        const schemaFragment = relation.isOptional
+          ? tsTemplate`${storageModuleImports.fileInputSchema.fragment()}.nullish()`
+          : storageModuleImports.fileInputSchema.fragment();
+
+        // Build the transformer config
+        const transformerConfig = TsCodeUtils.mergeFragmentsAsObject({
           category: fileCategoryFragment,
-          fileIdFieldName: quot(fileIdFieldName),
           optional: relation.isOptional ? 'true' : undefined,
         });
 
-        // Create the field fragment using storageModuleImports.fileField
-        const fieldFragment = tsTemplate`${storageModuleImports.fileField.fragment()}(${fieldConfig})`;
+        // Build the transformer fragment
+        const transformerFragment = tsTemplate`${storageModuleImports.fileTransformer.fragment()}(${transformerConfig})`;
 
         // Create the DTO field for FileUploadInput
         const outputDtoField = {
@@ -115,12 +117,11 @@ export const fileDataFieldGenerator = createGenerator({
 
         return {
           build: () => {
-            // Add the file transformer to transform fields
             prismaDataServiceSetup.transformFields.add({
               name: relationName,
-              schemaFragment: fieldFragment, // TODO: should be fileInputSchema.nullish() or fileInputSchema
+              schemaFragment,
               transformer: {
-                fragment: fieldFragment, // TODO: should be fileTransformer({...})
+                fragment: transformerFragment,
                 needsExistingItem: true,
               },
               isTransformField: true,

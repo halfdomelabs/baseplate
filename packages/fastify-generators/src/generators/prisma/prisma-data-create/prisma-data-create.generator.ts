@@ -88,9 +88,9 @@ export const prismaDataCreateGenerator = createGenerator({
 
             // Generate FK → relation transformations
             const {
-              createArgumentFragment: fkArgumentFragment,
               createReturnFragment: fkReturnFragment,
               passthrough: noFkRelations,
+              foreignKeyFieldNames,
             } = generateRelationBuildData({
               prismaModel,
               inputFieldNames: scalarFieldNames,
@@ -108,14 +108,14 @@ export const prismaDataCreateGenerator = createGenerator({
             });
 
             // Build the destructure pattern
-            const destructureNames = [
+            const allDestructuredNames = [
               ...transformFieldNames,
-              ...(noFkRelations ? [] : [fkArgumentFragment]),
+              ...foreignKeyFieldNames,
             ];
-            const hasDestructure = destructureNames.length > 0;
+            const hasDestructure = allDestructuredNames.length > 0;
 
             const inputDestructure = hasDestructure
-              ? tsTemplate`const { ${destructureNames.join(', ')}, ...rest } = input;`
+              ? tsTemplate`const { ${allDestructuredNames.join(', ')}, ...rest } = input;`
               : '';
 
             const dataName = hasDestructure ? 'rest' : 'input';
@@ -136,15 +136,11 @@ export const prismaDataCreateGenerator = createGenerator({
               // Safe: we're inside hasTransformFields check
               const transformersVarName =
                 prismaDataService.getTransformersVariableName() ?? '';
-              const transformerEntries = transformFieldNames.map(
-                (fieldName) =>
-                  tsTemplate`${fieldName}: ${transformersVarName}.${fieldName}.forCreate(${fieldName})`,
-              );
               const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
                 Object.fromEntries(
-                  transformerEntries.map((entry, i) => [
-                    transformFieldNames[i],
-                    entry,
+                  transformFieldNames.map((fieldName) => [
+                    fieldName,
+                    tsTemplate`${transformersVarName}.${fieldName}.forCreate(${fieldName})`,
                   ]),
                 ),
               );

@@ -115,11 +115,6 @@ const prismaDataUtilsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: PRISMA_DATA_UTILS_TEMPLATES.dataOperationsGroup,
                 paths,
-                importMapProviders: {
-                  prismaGeneratedImports,
-                  prismaImports,
-                },
-                generatorPaths: paths,
                 ...options,
               }),
           },

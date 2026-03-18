@@ -99,9 +99,9 @@ export const prismaDataUpdateGenerator = createGenerator({
 
             // Generate FK → relation transformations (for update, use connectUpdate)
             const {
-              updateArgumentFragment: fkArgumentFragment,
               updateReturnFragment: fkReturnFragment,
               passthrough: noFkRelations,
+              foreignKeyFieldNames,
             } = generateRelationBuildData({
               prismaModel,
               inputFieldNames: scalarFieldNames,
@@ -127,14 +127,14 @@ export const prismaDataUpdateGenerator = createGenerator({
               : '';
 
             // Build the destructure pattern
-            const destructureNames = [
+            const allDestructuredNames = [
               ...transformFieldNames,
-              ...(noFkRelations ? [] : [fkArgumentFragment]),
+              ...foreignKeyFieldNames,
             ];
-            const hasDestructure = destructureNames.length > 0;
+            const hasDestructure = allDestructuredNames.length > 0;
 
             const inputDestructure = hasDestructure
-              ? tsTemplate`const { ${destructureNames.join(', ')}, ...rest } = input;`
+              ? tsTemplate`const { ${allDestructuredNames.join(', ')}, ...rest } = input;`
               : '';
 
             const dataName = hasDestructure ? 'rest' : 'input';
@@ -155,17 +155,12 @@ export const prismaDataUpdateGenerator = createGenerator({
               const transformersVarName =
                 prismaDataService.getTransformersVariableName() ?? '';
 
-              // TODO: Generate proper .forUpdate() calls with existing values
-              // For now, generate a basic structure that handles simple transform fields
-              const transformerEntries = transformFieldNames.map(
-                (fieldName) =>
-                  tsTemplate`${fieldName}: ${transformersVarName}.${fieldName}.forUpdate(${fieldName}, existingItem.${fieldName}Id)`,
-              );
               const transformersObject = TsCodeUtils.mergeFragmentsAsObject(
                 Object.fromEntries(
-                  transformerEntries.map((entry, i) => [
-                    transformFieldNames[i],
-                    entry,
+                  transformFieldNames.map((fieldName) => [
+                    fieldName,
+                    // TODO: Generate proper existing value access based on transformer type
+                    tsTemplate`${transformersVarName}.${fieldName}.forUpdate(${fieldName}, existingItem.${fieldName}Id)`,
                   ]),
                 ),
               );
