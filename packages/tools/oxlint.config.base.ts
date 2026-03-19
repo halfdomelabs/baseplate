@@ -205,6 +205,13 @@ export default {
         'import/no-unassigned-import': 'off',
       },
     },
+    {
+      files: ['eslint.config.js'],
+      rules: {
+        // Allow unsafe assignments in eslint config files
+        'typescript/no-unsafe-assignment': 'off',
+      },
+    },
   ],
   env: {
     builtin: true,

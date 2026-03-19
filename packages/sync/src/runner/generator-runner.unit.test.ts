@@ -46,10 +46,10 @@ function buildGeneratorEntry(
     build?: (
       builder: GeneratorTaskOutputBuilder,
       deps: Record<string, Provider | undefined>,
-    ) => // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
+    ) => // oxlint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
       | void
       | Record<string, unknown>
-      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
+      // oxlint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
       | Promise<void | Record<string, unknown>>;
     generatorName?: string;
     phase?: TaskPhase;
