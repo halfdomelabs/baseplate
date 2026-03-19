@@ -60,9 +60,9 @@ export function addMockExtractorConfig(
   },
 ): void {
   // Access the private cache directly for testing
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
   const configLookup = context.configLookup as any;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
   const cache = configLookup.extractorConfigCache as Map<string, any>;
 
   const [packageName, generatorBaseName] = generatorName.includes('#')

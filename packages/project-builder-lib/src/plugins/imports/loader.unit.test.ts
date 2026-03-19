@@ -33,7 +33,7 @@ function createPluginModule(
     module: {
       name: key.split('/').pop() ?? key,
       dependencies,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      // oxlint-disable-next-line @typescript-eslint/no-empty-function
       initialize: initialize ?? (() => {}),
     },
   };

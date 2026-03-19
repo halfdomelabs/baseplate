@@ -120,7 +120,7 @@ export function stringifyPrettyCompact(
       typeof obj === 'object' &&
       typeof (obj as { toJSON: unknown }).toJSON === 'function'
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      // oxlint-disable-next-line typescript/no-confusing-void-expression
       obj = (obj as { toJSON: () => void }).toJSON();
     }
 

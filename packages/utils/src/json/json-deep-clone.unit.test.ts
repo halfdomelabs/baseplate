@@ -11,7 +11,7 @@ describe('jsonDeepClone', () => {
 
     it('should clone undefined', () => {
       const input = undefined;
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- generic returning undefined
+      // oxlint-disable-next-line @typescript-eslint/no-confusing-void-expression -- generic returning undefined
       const result = jsonDeepClone(input);
       expect(result).toBe(undefined);
     });

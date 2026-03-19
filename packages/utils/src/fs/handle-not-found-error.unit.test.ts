@@ -9,7 +9,7 @@ describe('handleFileNotFoundError', () => {
     enoentError.code = 'ENOENT';
 
     // Act
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- we want to test the return value
+    // oxlint-disable-next-line @typescript-eslint/no-confusing-void-expression -- we want to test the return value
     const result = handleFileNotFoundError(enoentError);
 
     // Assert

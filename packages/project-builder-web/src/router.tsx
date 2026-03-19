@@ -20,7 +20,7 @@ export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundCard,
   defaultErrorComponent: ErrorComponent,
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we instantiate the context in the RouteProvider
+  // oxlint-disable-next-line @typescript-eslint/no-non-null-assertion -- we instantiate the context in the RouteProvider
   context: { projectDefinition: undefined!, schemaParserContext: undefined! },
 });
 

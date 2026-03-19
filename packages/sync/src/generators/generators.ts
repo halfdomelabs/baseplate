@@ -176,7 +176,7 @@ export interface GeneratorTask<
     exports: undefined;
     outputs: undefined;
   }
-    ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    ? // oxlint-disable-next-line @typescript-eslint/no-invalid-void-type
       void | GeneratorTaskResult<
         InferExportProviderMap<ExportMap>,
         InferExportProviderMap<OutputMap>
