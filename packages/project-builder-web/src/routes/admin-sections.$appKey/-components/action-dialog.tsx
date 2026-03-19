@@ -143,7 +143,7 @@ export function ActionDialog({
             {/* Render action-specific configuration */}
             {WebForm && model && (
               <WebForm
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                // oxlint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
                 formProps={form as any}
                 model={model}
                 pluginKey={actionWebConfig.pluginKey}

@@ -31,7 +31,7 @@ describe('migration005PrimaryUniqueRefs', () => {
             fields: [{ name: 'id' }, { name: 'email' }, { name: 'username' }],
             uniqueConstraints: [
               {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                // oxlint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 id: expect.any(String),
                 fields: [{ fieldRef: 'email' }],
               },
@@ -70,7 +70,7 @@ describe('migration005PrimaryUniqueRefs', () => {
             fields: [{ name: 'id' }, { name: 'email' }, { name: 'username' }],
             uniqueConstraints: [
               {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                // oxlint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 id: expect.any(String),
                 fields: [{ fieldRef: 'email' }],
               },
