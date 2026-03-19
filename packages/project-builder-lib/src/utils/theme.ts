@@ -79,21 +79,32 @@ export function generateCssFromThemeConfig(
   );
 }
 
+export function generateCssBlockFromThemeColors(
+  config: ThemeColorsConfig,
+): string {
+  const cssVars = generateCssFromThemeConfig(config);
+  return Object.entries(cssVars)
+    .map(([key, value]) => `  ${key}: ${value};`)
+    .join('\n');
+}
+
 export function generateDefaultTheme(): ThemeConfig {
-  const slatePalette = {
-    paletteName: 'slate',
-    shades: COLOR_PALETTES.slate,
-  };
-  const slatePalettes = {
-    base: slatePalette,
-    primary: slatePalette,
+  const palettes = {
+    base: {
+      paletteName: 'slate',
+      shades: COLOR_PALETTES.slate,
+    },
+    primary: {
+      paletteName: 'indigo',
+      shades: COLOR_PALETTES.indigo,
+    },
   };
 
   return {
-    palettes: slatePalettes,
+    palettes,
     colors: {
-      light: generateThemeColorsFromShade(slatePalettes, 'light'),
-      dark: generateThemeColorsFromShade(slatePalettes, 'dark'),
+      light: generateThemeColorsFromShade(palettes, 'light'),
+      dark: generateThemeColorsFromShade(palettes, 'dark'),
     },
   };
 }

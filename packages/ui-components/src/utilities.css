@@ -91,10 +91,6 @@
     &:hover {
       @apply underline;
     }
-
-    &:visited {
-      @apply text-link-visited;
-    }
   }
 }
 

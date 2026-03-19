@@ -889,6 +889,9 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.1.0
+      react-colorful:
+        specifier: 5.6.1
+        version: 5.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react-dom:
         specifier: 'catalog:'
         version: 19.1.0(react@19.1.0)

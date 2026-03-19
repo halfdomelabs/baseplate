@@ -16,6 +16,26 @@ export function parseOklch(color: string): Oklch {
 }
 
 /**
+ * Format an Oklch object into a canonical OKLCH string with consistent precision.
+ * @param oklch - The Oklch object
+ * @returns The OKLCH color string in format "oklch(l c h [/ a])" with 3 decimal places
+ */
+export function formatOklch(oklch: Oklch): string {
+  return `oklch(${oklch.l.toFixed(3)} ${oklch.c.toFixed(3)} ${oklch.h?.toFixed(3) ?? 0}${
+    oklch.alpha === undefined ? '' : ` / ${oklch.alpha.toFixed(3)}`
+  })`;
+}
+
+/**
+ * Normalize an OKLCH color string to canonical format (3 decimal places).
+ * @param oklch - The OKLCH color string to normalize
+ * @returns The normalized OKLCH color string
+ */
+export function normalizeOklch(oklch: string): string {
+  return formatOklch(parseOklch(oklch));
+}
+
+/**
  * Convert an OKLCH color string to a hex color.
  * @param oklch - The OKLCH color string in format "l c h" (e.g. "0.5 0.2 180")
  * @returns The hex color string
@@ -38,7 +58,5 @@ export function convertHexToOklch(hex: string): string {
   if (!oklch) {
     return 'oklch(0 0 0)';
   }
-  return `oklch(${oklch.l.toFixed(3)} ${oklch.c.toFixed(3)} ${oklch.h?.toFixed(3) ?? 0}${
-    oklch.alpha === undefined ? '' : `/ ${oklch.alpha.toFixed(3)}`
-  })`;
+  return formatOklch(oklch);
 }
