@@ -156,7 +156,7 @@ export function createNonOverwriteableMap<T extends object>(
         if (key in overrideValues && key in value) {
           throw new Error(`Cannot merge key ${key} because it already exists.`);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
+        // oxlint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
         return sourceValue;
       });
       return this;
@@ -171,10 +171,10 @@ export function createNonOverwriteableMap<T extends object>(
             Array.isArray(targetValue) &&
             Array.isArray(sourceValue)
           ) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
+            // oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
             return uniq([...targetValue, ...sourceValue]);
           }
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          // oxlint-disable-next-line @typescript-eslint/no-unsafe-return
           return sourceValue;
         },
       );

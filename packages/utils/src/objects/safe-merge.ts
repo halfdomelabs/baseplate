@@ -24,12 +24,12 @@ export function safeMerge<
   return mergeWith(itemOne, itemTwo, (targetValue, sourceValue, key) => {
     if (key in itemOne && key in itemTwo) {
       if (options.allowEqualValues && isEqual(targetValue, sourceValue)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
+        // oxlint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
         return sourceValue;
       }
       throw new Error(`Cannot merge key ${key} because it already exists.`);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
+    // oxlint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
     return sourceValue;
   });
 }

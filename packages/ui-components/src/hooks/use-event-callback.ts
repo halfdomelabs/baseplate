@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- allow for better matching of function types */
-
 type FunctionType<T extends (...args: any[]) => any> = (
   ...args: Parameters<T>
 ) => ReturnType<T>;
@@ -24,7 +22,7 @@ export function useEventCallback<T extends (...args: any[]) => any>(
     if (!current) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- safe to return the function
+    // oxlint-disable-next-line @typescript-eslint/no-unsafe-return -- safe to return the function
     return (...args) => current(...args);
   }, []);
 }
