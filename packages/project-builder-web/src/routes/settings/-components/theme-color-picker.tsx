@@ -3,7 +3,7 @@ import type {
   ThemeConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
-import type { Control, FieldPath, UseFormSetValue } from 'react-hook-form';
+import type { Control, FieldPath } from 'react-hook-form';
 
 import {
   COLOR_PALETTES,
@@ -101,11 +101,9 @@ interface ThemeColorPickerProps {
   name: FieldPath<ThemeConfig>;
   label: string;
   description: string;
-  currentValue: string | undefined;
   defaultValue: string | undefined;
   baseShades: PaletteShades;
   primaryShades: PaletteShades;
-  setValue: UseFormSetValue<ThemeConfig>;
   formatColorName: (color: string) => string;
 }
 
@@ -121,14 +119,13 @@ export function ThemeColorPicker({
   name,
   label,
   description,
-  currentValue,
   defaultValue,
   baseShades,
   primaryShades,
-  setValue,
   formatColorName,
 }: ThemeColorPickerProps): React.JSX.Element {
   const { field } = useController({ control, name });
+  const currentValue = field.value as string | undefined;
   const hexValue = currentValue ? convertOklchToHex(currentValue) : undefined;
 
   const handleHexChange = (newHex: string): void => {
@@ -136,8 +133,8 @@ export function ThemeColorPicker({
     field.onChange(convertHexToOklch(newHex));
   };
 
-  const handleSwatchSelect = (oklch: string): void => {
-    setValue(name, oklch);
+  const handleColorSelect = (oklch: string): void => {
+    field.onChange(oklch);
   };
 
   return (
@@ -198,13 +195,13 @@ export function ThemeColorPicker({
                   label="Base"
                   shades={baseShades}
                   currentValue={currentValue}
-                  onSelect={handleSwatchSelect}
+                  onSelect={handleColorSelect}
                 />
                 <PaletteSwatchRow
                   label="Primary"
                   shades={primaryShades}
                   currentValue={currentValue}
-                  onSelect={handleSwatchSelect}
+                  onSelect={handleColorSelect}
                 />
                 <ComboboxField
                   label="Other colors"
@@ -223,7 +220,7 @@ export function ThemeColorPicker({
                   value={currentValue ?? null}
                   onChange={(oklch) => {
                     if (oklch) {
-                      handleSwatchSelect(oklch);
+                      handleColorSelect(oklch);
                     }
                   }}
                   placeholder="Search colors..."
@@ -236,7 +233,7 @@ export function ThemeColorPicker({
                     size="sm"
                     className="w-full"
                     onClick={() => {
-                      handleSwatchSelect(defaultValue);
+                      handleColorSelect(defaultValue);
                     }}
                   >
                     <MdRestartAlt />

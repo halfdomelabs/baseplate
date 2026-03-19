@@ -67,28 +67,32 @@ function ThemeBuilderPage(): React.JSX.Element {
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {
       const palettes = getValues('palettes');
-      setValue('colors', {
-        light: generateThemeColorsFromShade(
-          palettes,
-          'light',
-          resetColors
-            ? undefined
-            : {
-                palettes: values.palettes,
-                config: values.colors.light,
-              },
-        ),
-        dark: generateThemeColorsFromShade(
-          palettes,
-          'dark',
-          resetColors
-            ? undefined
-            : {
-                palettes: values.palettes,
-                config: values.colors.dark,
-              },
-        ),
-      });
+      setValue(
+        'colors',
+        {
+          light: generateThemeColorsFromShade(
+            palettes,
+            'light',
+            resetColors
+              ? undefined
+              : {
+                  palettes: values.palettes,
+                  config: values.colors.light,
+                },
+          ),
+          dark: generateThemeColorsFromShade(
+            palettes,
+            'dark',
+            resetColors
+              ? undefined
+              : {
+                  palettes: values.palettes,
+                  config: values.colors.dark,
+                },
+          ),
+        },
+        { shouldDirty: true },
+      );
     },
     [getValues, setValue, values],
   );
@@ -180,18 +184,10 @@ function ThemeBuilderPage(): React.JSX.Element {
                     <TabsTrigger value="dark">Dark</TabsTrigger>
                   </TabsList>
                   <TabsContent value="light">
-                    <ThemeColorsEditor
-                      control={control}
-                      setValue={setValue}
-                      mode="light"
-                    />
+                    <ThemeColorsEditor control={control} mode="light" />
                   </TabsContent>
                   <TabsContent value="dark">
-                    <ThemeColorsEditor
-                      control={control}
-                      setValue={setValue}
-                      mode="dark"
-                    />
+                    <ThemeColorsEditor control={control} mode="dark" />
                   </TabsContent>
                 </Tabs>
                 <Button

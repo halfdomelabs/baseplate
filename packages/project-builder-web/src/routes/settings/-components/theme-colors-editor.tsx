@@ -5,7 +5,7 @@ import type {
   ThemeConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
-import type { Control, UseFormSetValue } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 
 import {
   convertOklchToColorName,
@@ -22,7 +22,6 @@ interface ThemeColorEditorProps {
   className?: string;
   control: Control<ThemeConfig>;
   mode: 'light' | 'dark';
-  setValue: UseFormSetValue<ThemeConfig>;
 }
 
 interface ColorSection {
@@ -71,10 +70,8 @@ export function ThemeColorsEditor({
   className,
   control,
   mode,
-  setValue,
 }: ThemeColorEditorProps): React.JSX.Element {
   const palettes = useWatch({ control, name: 'palettes' });
-  const themeColors = useWatch({ control, name: `colors.${mode}` });
 
   const formatColorName = useCallback(
     (color: string): string => {
@@ -104,8 +101,6 @@ export function ThemeColorsEditor({
           control={control}
           mode={mode}
           palettes={palettes}
-          themeColors={themeColors}
-          setValue={setValue}
           formatColorName={formatColorName}
         />
       ))}
@@ -118,16 +113,12 @@ function ColorSectionGrid({
   control,
   mode,
   palettes,
-  themeColors,
-  setValue,
   formatColorName,
 }: {
   section: ColorSection;
   control: Control<ThemeConfig>;
   mode: 'light' | 'dark';
   palettes: PalettesConfig;
-  themeColors: Record<string, string | undefined>;
-  setValue: UseFormSetValue<ThemeConfig>;
   formatColorName: (color: string) => string;
 }): React.JSX.Element {
   return (
@@ -151,7 +142,6 @@ function ColorSectionGrid({
                 name={`colors.${mode}.${themeKey}`}
                 label={config.name}
                 description={config.description}
-                currentValue={themeColors[themeKey]}
                 defaultValue={getDefaultThemeColorFromShade(
                   palettes,
                   mode,
@@ -159,7 +149,6 @@ function ColorSectionGrid({
                 )}
                 baseShades={palettes.base.shades}
                 primaryShades={palettes.primary.shades}
-                setValue={setValue}
                 formatColorName={formatColorName}
               />
             </div>
