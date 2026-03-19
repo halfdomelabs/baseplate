@@ -48,7 +48,6 @@
   --color-destructive-hover: var(--destructive-hover);
 
   --color-link: var(--link);
-  --color-link-visited: var(--link-visited);
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -66,11 +65,17 @@
 
 :root {
   /* TPL_LIGHT_COLORS */
+  --primary-hover: color-mix(in oklab, var(--primary) 85%, black);
+  --secondary-hover: color-mix(in oklab, var(--secondary) 80%, black);
+  --destructive-hover: color-mix(in oklab, var(--destructive) 85%, black);
 }
 
 .dark,
 html[data-theme='dark'] {
   /* TPL_DARK_COLORS */
+  --primary-hover: color-mix(in oklab, var(--primary) 85%, white);
+  --secondary-hover: color-mix(in oklab, var(--secondary) 80%, white);
+  --destructive-hover: color-mix(in oklab, var(--destructive) 85%, white);
 }
 
 /**
@@ -194,10 +199,6 @@ html[data-theme='dark'] {
 
     &:hover {
       @apply underline;
-    }
-
-    &:visited {
-      @apply text-link-visited;
     }
   }
 }

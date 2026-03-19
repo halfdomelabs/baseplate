@@ -94,7 +94,7 @@ function ServiceTransformerRecord({
             onRemove(idx);
           }}
           title="Remove"
-          className="text-destructive hover:text-destructive-hover"
+          className="text-destructive hover:text-destructive/80"
         >
           <MdOutlineDelete />
         </Button>
