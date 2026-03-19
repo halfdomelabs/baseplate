@@ -10,7 +10,7 @@ import type { DefinitionSchemaParserContext } from './types.js';
  */
 type AnyDefinitionSchemaCreator = (
   ctx: DefinitionSchemaParserContext,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) => z.ZodType;
 

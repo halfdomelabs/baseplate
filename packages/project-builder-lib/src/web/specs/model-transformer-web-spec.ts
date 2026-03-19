@@ -7,7 +7,7 @@ import type { ModelConfigInput, TransformerConfig } from '#src/schema/index.js';
 import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js';
 
 export interface ModelTransformerWebFormProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   formProps: UseFormReturn<any>;
   name: string;
   originalModel: ModelConfigInput;
@@ -52,7 +52,7 @@ export function createModelTransformerWebConfig<T extends TransformerConfig>(
 export const modelTransformerWebSpec = createFieldMapSpec(
   'core/model-transformer-web',
   (t) => ({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying transformer types at runtime
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying transformer types at runtime
     transformers: t.namedArrayToMap<ModelTransformerWebConfig<any>>(),
   }),
   {

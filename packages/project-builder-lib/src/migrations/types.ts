@@ -4,7 +4,7 @@
  * @template TInputConfig - The type of the input configuration.
  * @template TOutputConfig - The type of the output configuration.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 export interface SchemaMigration<TInputConfig = any, TOutputConfig = any> {
   /**
    * The version of the migration. Must be sequential.

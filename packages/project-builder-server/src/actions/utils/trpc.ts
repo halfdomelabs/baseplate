@@ -25,7 +25,7 @@ export interface TrpcFromActionBuilder {
 }
 
 export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   baseProcedure: ProcedureBuilder<Ctx, any, any, any, any, any, any, false>,
 ): TrpcFromActionBuilder {
   return {

@@ -13,7 +13,7 @@ type TransformFn<From = unknown, To = unknown> = (input: From) => To;
 export function transformJsonPath(
   data: unknown,
   path: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- make it easier to use any transform functions
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- make it easier to use any transform functions
   transformFn: TransformFn<any>,
 ): unknown {
   // Split the path into parts

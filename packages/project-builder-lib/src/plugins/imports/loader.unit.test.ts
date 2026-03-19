@@ -22,9 +22,9 @@ const spec2 = createPluginSpec('spec-2', {
 function createPluginModule(
   key: string,
   pluginKey: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   dependencies?: Record<string, any>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   initialize?: (deps: any, ctx: any) => void,
 ): PluginModuleWithKey {
   return {

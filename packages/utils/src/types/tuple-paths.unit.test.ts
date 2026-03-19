@@ -80,7 +80,7 @@ describe('TuplePaths Type Definitions', () => {
   });
 
   test('IsAny Guard: Should handle any type without excessive depth', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     type Result = TuplePaths<any>;
 
     // Should return never instead of causing type instantiation errors
@@ -89,7 +89,7 @@ describe('TuplePaths Type Definitions', () => {
 
   test('IsAny Guard: Should handle objects with any properties', () => {
     interface DataWithAny {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       value: any;
       name: string;
     }
