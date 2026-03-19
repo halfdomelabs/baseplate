@@ -6,11 +6,14 @@ import type React from 'react';
 import type { Control, FieldPath, UseFormSetValue } from 'react-hook-form';
 
 import {
+  COLOR_PALETTES,
   convertHexToOklch,
   convertOklchToHex,
+  FIXED_COLOR_MAPPINGS,
 } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
+  ComboboxField,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -26,6 +29,33 @@ import { clsx } from 'clsx';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { useController } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
+
+interface NamedColor {
+  name: string;
+  oklch: string;
+  hex: string;
+}
+
+/**
+ * Build a flat list of all named colors from Tailwind palettes + fixed colors.
+ * This is static data so it's computed once at module level.
+ */
+const ALL_NAMED_COLORS: NamedColor[] = (() => {
+  const colors: NamedColor[] = [];
+  for (const [name, oklch] of Object.entries(FIXED_COLOR_MAPPINGS)) {
+    colors.push({ name, oklch, hex: convertOklchToHex(oklch) });
+  }
+  for (const [paletteName, shades] of Object.entries(COLOR_PALETTES)) {
+    for (const [shade, oklch] of Object.entries(shades)) {
+      colors.push({
+        name: `${paletteName}-${shade}`,
+        oklch,
+        hex: convertOklchToHex(oklch),
+      });
+    }
+  }
+  return colors;
+})();
 
 interface PaletteSwatchRowProps {
   label: string;
@@ -83,7 +113,7 @@ interface ThemeColorPickerProps {
  * Color picker for theme colors with tabbed palette/custom selection.
  *
  * The popover contains two tabs:
- * - "Palette" — clickable shade swatches for base and primary palettes
+ * - "Palette" — swatch rows for base/primary + combobox for all named colors
  * - "Custom" — hex color input and color wheel picker
  */
 export function ThemeColorPicker({
@@ -175,6 +205,29 @@ export function ThemeColorPicker({
                   shades={primaryShades}
                   currentValue={currentValue}
                   onSelect={handleSwatchSelect}
+                />
+                <ComboboxField
+                  label="Other colors"
+                  options={ALL_NAMED_COLORS}
+                  getOptionLabel={(c) => c.name}
+                  getOptionValue={(c) => c.oklch}
+                  renderItemLabel={(c) => (
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-4 w-4 rounded-sm border border-border"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      <span>{c.name}</span>
+                    </div>
+                  )}
+                  value={currentValue ?? null}
+                  onChange={(oklch) => {
+                    if (oklch) {
+                      handleSwatchSelect(oklch);
+                    }
+                  }}
+                  placeholder="Search colors..."
+                  noResultsText="No matching colors"
                 />
                 {defaultValue && currentValue !== defaultValue && (
                   <Button
