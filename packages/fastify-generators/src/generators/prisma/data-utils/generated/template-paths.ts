@@ -2,14 +2,13 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PrismaDataUtilsPaths {
-  commitOperations: string;
-  composeOperations: string;
-  fieldDefinitions: string;
-  fieldUtils: string;
+  defineTransformer: string;
+  executeTransformPlan: string;
+  nestedTransformers: string;
+  prepareTransformers: string;
   prismaTypes: string;
-  prismaUtils: string;
   relationHelpers: string;
-  types: string;
+  transformerTypes: string;
 }
 
 const prismaDataUtilsPaths = createProviderType<PrismaDataUtilsPaths>(
@@ -25,14 +24,13 @@ const prismaDataUtilsPathsTask = createGeneratorTask({
     return {
       providers: {
         prismaDataUtilsPaths: {
-          commitOperations: `${srcRoot}/utils/data-operations/commit-operations.ts`,
-          composeOperations: `${srcRoot}/utils/data-operations/compose-operations.ts`,
-          fieldDefinitions: `${srcRoot}/utils/data-operations/field-definitions.ts`,
-          fieldUtils: `${srcRoot}/utils/data-operations/field-utils.ts`,
+          defineTransformer: `${srcRoot}/utils/data-operations/define-transformer.ts`,
+          executeTransformPlan: `${srcRoot}/utils/data-operations/execute-transform-plan.ts`,
+          nestedTransformers: `${srcRoot}/utils/data-operations/nested-transformers.ts`,
+          prepareTransformers: `${srcRoot}/utils/data-operations/prepare-transformers.ts`,
           prismaTypes: `${srcRoot}/utils/data-operations/prisma-types.ts`,
-          prismaUtils: `${srcRoot}/utils/data-operations/prisma-utils.ts`,
           relationHelpers: `${srcRoot}/utils/data-operations/relation-helpers.ts`,
-          types: `${srcRoot}/utils/data-operations/types.ts`,
+          transformerTypes: `${srcRoot}/utils/data-operations/transformer-types.ts`,
         },
       },
     };

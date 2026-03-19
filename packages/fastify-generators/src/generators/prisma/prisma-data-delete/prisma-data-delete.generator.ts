@@ -14,10 +14,10 @@ import {
   prismaToServiceOutputDto,
 } from '#src/types/service-output.js';
 
-import {
-  generateAuthorizeFragment,
-  generateDeleteExecuteCallback,
-} from '../_shared/build-data-helpers/index.js';
+import { authorizerUtilsImportsProvider } from '../../auth/_providers/authorizer-utils-imports.js';
+import { serviceContextImportsProvider } from '../../core/service-context/generated/ts-import-providers.js';
+import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
+import { generateWhereType } from '../_shared/build-data-helpers/generate-where-type.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
 import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
@@ -35,6 +35,11 @@ const descriptorSchema = z.object({
 
 /**
  * Generator for prisma/prisma-data-delete
+ *
+ * Generates a delete function that:
+ * - Checks authorization (global and/or instance)
+ * - Calls prisma.model.delete directly (no transaction wrapper)
+ * - Returns the deleted record
  */
 export const prismaDataDeleteGenerator = createGenerator({
   name: 'prisma/prisma-data-delete',
@@ -48,6 +53,8 @@ export const prismaDataDeleteGenerator = createGenerator({
         dataUtilsImports: dataUtilsImportsProvider,
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
+        authorizerImports: authorizerUtilsImportsProvider,
+        serviceContextImports: serviceContextImportsProvider,
         modelAuthorizer: prismaModelAuthorizerProvider
           .dependency()
           .optionalReference(modelName),
@@ -58,6 +65,8 @@ export const prismaDataDeleteGenerator = createGenerator({
         dataUtilsImports,
         prismaOutput,
         prismaImports,
+        authorizerImports,
+        serviceContextImports,
         modelAuthorizer,
       }) {
         return {
@@ -65,48 +74,51 @@ export const prismaDataDeleteGenerator = createGenerator({
             const modelVar = lowercaseFirstChar(modelName);
             const prismaModel = prismaOutput.getPrismaModel(modelName);
 
-            // Generate execute callback
-            const { executeCallbackFragment } = generateDeleteExecuteCallback({
-              prismaModel,
-              modelVariableName: modelVar,
-            });
+            // Generate authorization statements
+            const { fragment: authFragment, hasInstanceAuth } =
+              generateAuthorizationStatements({
+                modelName,
+                methodType: 'Delete',
+                globalRoles,
+                instanceRoles,
+                modelAuthorizer,
+                authorizerImports,
+              });
 
-            // Build authorize array from global + instance roles
-            const authorizeFragment = generateAuthorizeFragment({
-              modelName,
-              methodType: 'Delete',
-              globalRoles,
-              instanceRoles,
-              modelAuthorizer,
-            });
+            // Fetch existing item if needed for instance auth
+            const existingItemFragment = hasInstanceAuth
+              ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
+              : '';
 
-            // Instance roles require loadExisting to fetch the model instance
-            const hasInstanceRoles =
-              instanceRoles != null && instanceRoles.length > 0;
-            const loadExistingFragment = hasInstanceRoles
-              ? tsTemplate`
-                  loadExisting: () => ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where }),`
+            const whereType = generateWhereType(prismaModel);
+
+            // Only include context parameter when authorization is needed
+            const hasAuth = authFragment !== '';
+            const contextParam = hasAuth ? 'context,' : '';
+            const contextType = hasAuth
+              ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
               : '';
 
             // Generate the delete function
             const deleteFunction = tsTemplate`
-              export async function ${name}<
-                TIncludeArgs extends ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}> = ${dataUtilsImports.ModelInclude.typeFragment()}<${quot(modelVar)}>,
-              >({
+              export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                 where,
                 query,
-                context,
-              }: ${dataUtilsImports.DataDeleteInput.typeFragment()}<${quot(modelVar)}, TIncludeArgs>): Promise<
-                ${dataUtilsImports.GetPayload.typeFragment()}<${quot(modelVar)}, TIncludeArgs>
-              > {
-                const item = await ${dataUtilsImports.commitDelete.fragment()}({
-                  model: ${quot(modelVar)},
-                  query,
-                  context,
-                  execute: ${executeCallbackFragment},${authorizeFragment}${loadExistingFragment}
+                ${contextParam}
+              }: {
+                where: ${whereType};
+                query?: TQuery;
+                ${contextType}
+              }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
+                ${existingItemFragment}
+                ${authFragment}
+
+                const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
+                  where,
+                  ...query,
                 });
 
-                return item;
+                return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
               }
             `;
 
@@ -129,11 +141,15 @@ export const prismaDataDeleteGenerator = createGenerator({
                       idFields: prismaModel.idFields ?? [],
                     },
                   }),
-                  createServiceOutputDtoInjectedArg({
-                    name: 'context',
-                    type: 'injected',
-                    kind: contextKind,
-                  }),
+                  ...(hasAuth
+                    ? [
+                        createServiceOutputDtoInjectedArg({
+                          name: 'context',
+                          type: 'injected' as const,
+                          kind: contextKind,
+                        }),
+                      ]
+                    : []),
                   createServiceOutputDtoInjectedArg({
                     type: 'injected',
                     name: 'query',

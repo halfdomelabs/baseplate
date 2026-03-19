@@ -1,6 +1,9 @@
 import { flattenAppModule } from '@src/utils/app-modules.js';
 
 /* TPL_IMPORTS:START */
+import './schema/blog-post.mutations.js';
+import './schema/blog-post.object-type.js';
+import './schema/blog-post.queries.js';
 import './schema/blog.mutations.js';
 import './schema/blog.object-type.js';
 import './schema/blog.queries.js';

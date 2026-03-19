@@ -394,6 +394,28 @@
         ]
       },
       "featureRef": "blogs",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "blogId" },
+            { "ref": "publisherId" },
+            { "ref": "title" },
+            { "ref": "content" },
+            { "ref": "metadata" }
+          ]
+        },
+        "queries": {
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
+        }
+      },
       "id": "model:ZYGsFp93vRhv",
       "model": {
         "fields": [
@@ -431,6 +453,13 @@
             "name": "content",
             "options": { "default": "" },
             "type": "string"
+          },
+          {
+            "id": "model-scalar-field:cK70M8wINoNY",
+            "isOptional": true,
+            "name": "metadata",
+            "options": { "default": "" },
+            "type": "json"
           },
           {
             "id": "model-scalar-field:lKjrrVtoNkEP",
@@ -472,7 +501,20 @@
         ]
       },
       "name": "BlogPost",
-      "service": { "transformers": [] }
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["blogId", "publisherId", "title", "content", "metadata"],
+          "globalRoles": ["admin"]
+        },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
+        "transformers": [],
+        "update": {
+          "enabled": true,
+          "fields": ["blogId", "publisherId", "title", "content", "metadata"],
+          "globalRoles": ["admin"]
+        }
+      }
     },
     {
       "featureRef": "blogs",

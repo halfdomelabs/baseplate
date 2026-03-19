@@ -132,18 +132,18 @@ const servicesDownloadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
-const servicesFileField = createTsTemplateFile({
+const servicesFileTransformer = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {
-    dataUtilsImports: dataUtilsImportsProvider,
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
-  },
-  name: 'services-file-field',
+  importMapProviders: { dataUtilsImports: dataUtilsImportsProvider },
+  name: 'services-file-transformer',
   projectExports: {
-    fileField: { isTypeOnly: false },
+    FileConnect: { isTypeOnly: true },
+    FileDisconnect: { isTypeOnly: true },
     FileInput: { isTypeOnly: true },
+    fileInputSchema: { isTypeOnly: false },
+    fileNullableInputSchema: { isTypeOnly: false },
+    fileTransformer: { isTypeOnly: false },
   },
   referencedGeneratorTemplates: {
     typesFileCategory: {},
@@ -152,7 +152,7 @@ const servicesFileField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/file-field.ts',
+      '../templates/module/services/file-transformer.ts',
     ),
   },
   variables: {},
@@ -282,7 +282,7 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
-  servicesFileField,
+  servicesFileTransformer,
   servicesUploadFile,
   typesAdapter,
   typesFileCategory,

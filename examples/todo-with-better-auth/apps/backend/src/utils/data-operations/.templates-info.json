@@ -1,42 +1,37 @@
 {
-  "commit-operations.ts": {
+  "define-transformer.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
-    "template": "commit-operations"
+    "template": "define-transformer"
   },
-  "compose-operations.ts": {
+  "execute-transform-plan.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
-    "template": "compose-operations"
+    "template": "execute-transform-plan"
   },
-  "field-definitions.ts": {
+  "nested-transformers.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
-    "template": "field-definitions"
+    "template": "nested-transformers"
   },
-  "field-utils.ts": {
+  "prepare-transformers.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
-    "template": "field-utils"
+    "template": "prepare-transformers"
   },
   "prisma-types.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
     "template": "prisma-types"
   },
-  "prisma-utils.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
-    "instanceData": {},
-    "template": "prisma-utils"
-  },
   "relation-helpers.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
     "template": "relation-helpers"
   },
-  "types.ts": {
+  "transformer-types.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/data-utils",
     "instanceData": {},
-    "template": "types"
+    "template": "transformer-types"
   }
 }
