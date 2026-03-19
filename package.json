@@ -9,7 +9,7 @@
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
-    "check": "pnpm oxfmt:fix && pnpm oxlint:fix && turbo run prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common",
+    "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run prettier:write test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix",
     "check:full": "pnpm oxfmt:fix && turbo run lint prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
     "clean": "turbo run clean",
