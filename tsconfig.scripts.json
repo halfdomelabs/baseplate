@@ -2,7 +2,7 @@
   "extends": "@baseplate-dev/tools/tsconfig.node.cli.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"]
+    "allowJs": true
   },
   "include": ["scripts/**/*", ".workspace-meta/**/*", "oxlint.config.ts"]
 }
