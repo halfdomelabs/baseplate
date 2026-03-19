@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
+import { compareStrings } from '@baseplate-dev/utils';
 
 import type {
   PrismaOutputModel,
@@ -222,7 +223,9 @@ function generateBuildDataBody(
   }
 
   // Add relation fragments
-  const sortedRelationFragments = relationFragments.toSorted();
+  const sortedRelationFragments = relationFragments.toSorted((a, b) =>
+    compareStrings(a.relationName, b.relationName),
+  );
   for (const { relationName, fragment } of sortedRelationFragments) {
     returnObjectFragments[relationName] = fragment;
   }

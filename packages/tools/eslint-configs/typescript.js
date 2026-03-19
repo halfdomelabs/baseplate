@@ -22,7 +22,10 @@ import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependenc
  */
 
 // Generate a custom alphabet string where '.' and '/' strictly precede '_' to match oxfmt's sorting order
-const strictPathAlphabet = Alphabet.generateRecommendedAlphabet()
+const allAscii = Array.from({ length: 128 }, (_, i) =>
+  String.fromCodePoint(i),
+).join('');
+const strictPathAlphabet = Alphabet.generateFrom(allAscii)
   .placeCharacterBefore({ characterBefore: '.', characterAfter: '_' })
   .placeCharacterBefore({ characterBefore: '/', characterAfter: '_' })
   .getCharacters();

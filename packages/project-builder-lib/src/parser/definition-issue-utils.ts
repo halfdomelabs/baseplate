@@ -8,8 +8,10 @@ import type {
   DefinitionIssue,
   EntityDefinitionIssue,
 } from '#src/schema/creator/definition-issue-types.js';
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
-import type { PartialProjectDefinitionInput } from '#src/schema/project-definition.js';
+import type {
+  PartialProjectDefinitionInput,
+  ProjectDefinition,
+} from '#src/schema/project-definition.js';
 import type { DefinitionDiff } from '#src/tools/merge-schema/diff-definition.js';
 
 import { PluginUtils } from '#src/definition/plugins/plugin-utils.js';

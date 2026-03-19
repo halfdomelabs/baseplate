@@ -220,7 +220,7 @@ for (const packageName of PACKAGE_ORDER) {
 
   const isPlugin = PLUGIN_PACKAGES.has(packageName);
 
-  console.info(`${packageName}`);
+  console.info(packageName);
   console.info(`  Versions to unpublish: ${versions.length}`);
 
   for (const version of versions) {
