@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 
+// oxlint-disable typescript/no-explicit-any
+
 type FunctionType<T extends (...args: any[]) => any> = (
   ...args: Parameters<T>
 ) => ReturnType<T>;
