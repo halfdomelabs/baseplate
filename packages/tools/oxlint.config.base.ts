@@ -69,6 +69,19 @@ export default {
     ],
     'prefer-rest-params': 'error',
     'prefer-spread': 'error',
+
+    // Typescript rules
+    // We can look into disabling but it's pretty overeager
+    'typescript/no-unsafe-type-assertion': 'off',
+    'typescript/no-unnecessary-type-arguments': 'off',
+    // Allow floating navigate from useNavigate to be handled by the router
+    'typescript/no-floating-promises': [
+      'error',
+      { allowForKnownSafeCalls: [{ from: 'file', name: 'navigate' }] },
+    ],
+    // Re-enable rules that are not default
+    'typescript/ban-ts-comment': ['error', { minimumDescriptionLength: 10 }],
+    'no-array-constructor': 'error',
   },
   overrides: [
     {
@@ -88,6 +101,10 @@ export default {
   ],
   env: {
     builtin: true,
+    node: true,
   },
   globals: {},
+  options: {
+    typeAware: true,
+  },
 } as Omit<OxlintConfig, 'extends'>;

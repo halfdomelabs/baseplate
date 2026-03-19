@@ -81,6 +81,7 @@
     "lint-staged": "16.1.0",
     "oxfmt": "0.40.0",
     "oxlint": "catalog:",
+    "oxlint-tsgolint": "0.17.0",
     "prettier": "catalog:",
     "turbo": "2.5.0",
     "typescript": "catalog:",
