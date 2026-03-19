@@ -1,6 +1,9 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * @param {unknown} logger
+ */
 export async function getDefaultPlugins(logger) {
   // dynamically import to avoid loading the server package unnecessarily
   const { discoverPlugins } =

@@ -6,6 +6,7 @@ import type { OxlintConfig } from 'oxlint';
 export const oxlintIgnorePatterns = [
   '**/dist/**',
   '**/generators/**/templates/**',
+  '**/__mocks__/**',
 ];
 
 export default {
@@ -98,7 +99,13 @@ export default {
     'typescript/no-empty-object-type': 'error',
     'typescript/no-explicit-any': 'error',
     'typescript/no-invalid-void-type': 'error',
-    'typescript/no-misused-promises': 'error',
+    // Allow promises to be returned from functions for attributes in React
+    // to allow for React Hook Form handleSubmit to work as expected
+    // See https://github.com/orgs/react-hook-form/discussions/8020
+    'typescript/no-misused-promises': [
+      'error',
+      { checksVoidReturn: { attributes: false } },
+    ],
     'typescript/no-mixed-enums': 'error',
     'typescript/no-namespace': 'error',
     'typescript/no-non-null-asserted-nullish-coalescing': 'error',
@@ -117,12 +124,21 @@ export default {
     'typescript/no-unsafe-member-access': 'error',
     'typescript/no-unsafe-return': 'error',
     'typescript/no-useless-default-assignment': 'error',
+    // Allow redirect and notFound to be thrown from routes
     'typescript/only-throw-error': [
       'error',
       {
         allow: [
-          { from: 'file', name: 'NotFoundError' },
-          { from: 'file', name: 'Redirect' },
+          {
+            from: 'package',
+            name: 'NotFoundError',
+            package: '@tanstack/router-core',
+          },
+          {
+            from: 'package',
+            name: 'Redirect',
+            package: '@tanstack/router-core',
+          },
         ],
       },
     ],
