@@ -1,3 +1,5 @@
+import { omit } from 'es-toolkit';
+
 import { createSchemaMigration } from './types.js';
 
 const REMOVED_THEME_COLOR_KEYS = [
@@ -5,11 +7,9 @@ const REMOVED_THEME_COLOR_KEYS = [
   'secondaryHover',
   'destructiveHover',
   'linkVisited',
-];
+] as const;
 
-interface ThemeColors {
-  [key: string]: unknown;
-}
+type ThemeColors = Record<string, unknown>;
 
 interface OldConfig {
   settings?: {
@@ -26,11 +26,7 @@ interface OldConfig {
 }
 
 function stripRemovedKeys(colors: ThemeColors): ThemeColors {
-  const result = { ...colors };
-  for (const key of REMOVED_THEME_COLOR_KEYS) {
-    delete result[key];
-  }
-  return result;
+  return omit(colors, REMOVED_THEME_COLOR_KEYS);
 }
 
 export const migration030RemoveThemeHoverColors = createSchemaMigration<

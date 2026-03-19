@@ -34,7 +34,13 @@ describe('migration030RemoveThemeHoverColors', () => {
 
     const result = migration030RemoveThemeHoverColors.migrate(oldConfig);
 
-    const { light, dark } = result.settings!.theme!.colors!;
+    const colors = result.settings?.theme?.colors;
+    expect(colors).toBeDefined();
+
+    const { light, dark } = colors as {
+      light: Record<string, unknown>;
+      dark: Record<string, unknown>;
+    };
     expect(light).not.toHaveProperty('primaryHover');
     expect(light).not.toHaveProperty('secondaryHover');
     expect(light).not.toHaveProperty('destructiveHover');
@@ -98,7 +104,7 @@ describe('migration030RemoveThemeHoverColors', () => {
 
     const result = migration030RemoveThemeHoverColors.migrate(oldConfig);
 
-    expect(result.settings!.theme!.colors!.light).toEqual({
+    expect(result.settings?.theme?.colors?.light).toEqual({
       background: 'oklch(1 0 0)',
       primary: 'oklch(0.4 0.2 265)',
     });
