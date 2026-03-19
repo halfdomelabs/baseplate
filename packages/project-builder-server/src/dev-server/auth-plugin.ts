@@ -7,7 +7,7 @@ import type { DevServerConfig } from './get-or-create-config.js';
 const devServerAuthPluginCallback: FastifyPluginCallbackZod<DevServerConfig> =
   function (fastify, { port, token }, done) {
     // Add authentication hook for all routes
-    fastify.addHook('onRequest', async (request, reply) => {
+    fastify.addHook('onRequest', (request, reply, done) => {
       // Check origin for DNS rebinding protection
       const { origin } = request.headers;
       const { host } = request.headers;
@@ -48,6 +48,8 @@ const devServerAuthPluginCallback: FastifyPluginCallbackZod<DevServerConfig> =
         reply.code(401).send({ error: 'Invalid token' });
         return;
       }
+
+      done();
     });
 
     done();
