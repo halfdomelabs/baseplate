@@ -182,5 +182,5 @@ function PreviewSectionTitle({
 }: {
   children: React.ReactNode;
 }): React.JSX.Element {
-  return <h4 className="text-lg font-semibold">{children}</h4>;
+  return <h4 className="font-semibold">{children}</h4>;
 }
