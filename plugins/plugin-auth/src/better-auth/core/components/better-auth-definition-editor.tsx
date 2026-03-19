@@ -81,9 +81,19 @@ export function BetterAuthDefinitionEditor({
     );
   }
 
+  const accountsFeature = definition.features.find(
+    (f) => f.id === authDefinition.accountsFeatureRef,
+  );
+  if (!accountsFeature) {
+    throw new Error(
+      `Accounts feature not found for ref: ${authDefinition.accountsFeatureRef}`,
+    );
+  }
+
   const partialDef = useMemo(
-    () => createBetterAuthPartialDefinition(authFeature.name),
-    [authFeature.name],
+    () =>
+      createBetterAuthPartialDefinition(authFeature.name, accountsFeature.name),
+    [authFeature.name, accountsFeature.name],
   );
 
   const diff = useMemo(

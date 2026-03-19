@@ -1,6 +1,6 @@
-import type { AuthContext } from '../modules/accounts/types/auth-context.types.js';
+import type { AuthContext } from '../modules/accounts/auth/types/auth-context.types.js';
 
-import { createSystemAuthContext } from '../modules/accounts/utils/auth-context.utils.js';
+import { createSystemAuthContext } from '../modules/accounts/auth/utils/auth-context.utils.js';
 
 export interface ServiceContext {
   /* TPL_CONTEXT_INTERFACE:START */

@@ -82,9 +82,19 @@ export function LocalAuthDefinitionEditor({
     );
   }
 
+  const accountsFeature = definition.features.find(
+    (f) => f.id === authDefinition.accountsFeatureRef,
+  );
+  if (!accountsFeature) {
+    throw new Error(
+      `Accounts feature not found for ref: ${authDefinition.accountsFeatureRef}`,
+    );
+  }
+
   const partialDef = useMemo(
-    () => createLocalAuthPartialDefinition(authFeature.name),
-    [authFeature.name],
+    () =>
+      createLocalAuthPartialDefinition(authFeature.name, accountsFeature.name),
+    [authFeature.name, accountsFeature.name],
   );
 
   const diff = useMemo(
@@ -146,10 +156,7 @@ export function LocalAuthDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
-                  <DefinitionDiffAlert
-                    diff={diff}
-                    upToDateMessage="All required models are already configured correctly. No changes needed."
-                  />
+                  <DefinitionDiffAlert diff={diff} />
                 </SectionListSectionContent>
               </SectionListSection>
               <SectionListSection>

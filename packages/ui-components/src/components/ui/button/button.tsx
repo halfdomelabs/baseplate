@@ -27,7 +27,7 @@ function Button({
   size,
   justify,
   ...props
-}: React.ComponentProps<'button'> &
+}: ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
     render?: ButtonPrimitive.Props['render'];
   }): React.ReactElement {

@@ -44,7 +44,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               z.object({
                 ref: ctx.withRef({
                   type: modelScalarFieldEntityType,
-                  onDelete: 'DELETE',
+                  onDelete: 'DELETE_PARENT',
                   parentSlot: modelSlot,
                 }),
                 globalRoles: createRoleArray(ctx),
@@ -67,7 +67,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               z.object({
                 ref: ctx.withRef({
                   type: modelLocalRelationEntityType,
-                  onDelete: 'DELETE',
+                  onDelete: 'DELETE_PARENT',
                   parentSlot: modelSlot,
                 }),
                 globalRoles: createRoleArray(ctx),
@@ -90,7 +90,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               z.object({
                 ref: ctx.withRef({
                   type: modelForeignRelationEntityType,
-                  onDelete: 'DELETE',
+                  onDelete: 'DELETE_PARENT',
                   parentSlot: modelSlot,
                 }),
                 globalRoles: createRoleArray(ctx),

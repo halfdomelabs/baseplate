@@ -1,4 +1,4 @@
-import type { AuthRole } from '../modules/accounts/constants/auth-roles.constants.js';
+import type { AuthRole } from '../modules/accounts/auth/constants/auth-roles.constants.js';
 import type {
   ModelPropName,
   WhereInput,

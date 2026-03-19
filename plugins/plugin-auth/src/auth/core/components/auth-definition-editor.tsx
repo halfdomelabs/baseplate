@@ -73,12 +73,17 @@ export function AuthDefinitionEditor({
 
     const defaultAuthFeatureRef = FeatureUtils.getFeatureIdByNameOrDefault(
       definition,
-      'auth',
+      'accounts/auth',
+    );
+    const defaultAccountsFeatureRef = FeatureUtils.getFeatureIdByNameOrDefault(
+      definition,
+      'accounts/users',
     );
 
     return {
       implementationPluginKey: defaultImplementation.key,
       authFeatureRef: defaultAuthFeatureRef,
+      accountsFeatureRef: defaultAccountsFeatureRef,
       roles: createDefaultAuthRoles(),
     } satisfies AuthPluginDefinitionInput;
   }, [definition, pluginMetadata?.config, defaultImplementation]);
@@ -114,12 +119,17 @@ export function AuthDefinitionEditor({
           draftConfig,
           data.authFeatureRef,
         );
+        const accountsFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
+          draftConfig,
+          data.accountsFeatureRef,
+        );
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
           {
             ...data,
             authFeatureRef: featureRef,
+            accountsFeatureRef,
           },
           definitionContainer,
         );
@@ -202,7 +212,14 @@ export function AuthDefinitionEditor({
                     name="authFeatureRef"
                     control={control}
                     canCreate
-                    description="Specify the feature path where auth functionality will be generated"
+                    description="Specify the feature path where auth infrastructure will be generated"
+                  />
+                  <FeatureComboboxFieldController
+                    label="Accounts Feature Path"
+                    name="accountsFeatureRef"
+                    control={control}
+                    canCreate
+                    description="Specify the feature path where user account models will be generated"
                   />
                   <SelectFieldController
                     label="Authentication Provider"

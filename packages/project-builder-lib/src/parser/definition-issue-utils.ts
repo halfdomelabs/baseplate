@@ -1,12 +1,25 @@
 import { get, set } from 'es-toolkit/compat';
+import { produce } from 'immer';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { ReferencePath } from '#src/references/types.js';
+import type { DefinitionIssueChecker } from '#src/schema/creator/definition-issue-checker-spec.js';
 import type {
   DefinitionIssue,
   EntityDefinitionIssue,
 } from '#src/schema/creator/definition-issue-types.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
+import type { PartialProjectDefinitionInput } from '#src/schema/project-definition.js';
+import type { DefinitionDiff } from '#src/tools/merge-schema/diff-definition.js';
+
+import { PluginUtils } from '#src/definition/plugins/plugin-utils.js';
+import { serializeSchema } from '#src/references/serialize-schema.js';
+import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
+import {
+  diffDefinition,
+  diffSerializedDefinitions,
+} from '#src/tools/merge-schema/diff-definition.js';
+import { applyMergedDefinition } from '#src/tools/merge-schema/merge-definition.js';
 
 /**
  * Resolves a definition issue's path to an absolute path in the definition.
@@ -79,4 +92,87 @@ export function createIssueFixSetter(
   }
 
   return undefined;
+}
+
+/**
+ * Creates a definition-level issue checker that warns when a plugin's required
+ * models are out of sync with what the plugin expects.
+ *
+ * The `buildPartialDef` callback receives the container and should return the
+ * expected partial definition, or `undefined` to skip the check (e.g. when a
+ * required feature ref is missing or dangling).
+ *
+ * The helper handles the common pattern of:
+ * 1. Guarding against a missing plugin config
+ * 2. Diffing the current definition against the expected partial definition
+ * 3. Returning a fixable warning if there are changes
+ */
+export function createPluginModelSyncChecker(options: {
+  pluginKey: string;
+  pluginLabel: string;
+  buildPartialDef: (
+    container: ProjectDefinitionContainer,
+  ) => PartialProjectDefinitionInput | undefined;
+}): DefinitionIssueChecker {
+  return (container) => {
+    const pluginConfig = PluginUtils.configByKey(
+      container.definition,
+      options.pluginKey,
+    );
+    if (!pluginConfig) return [];
+
+    const partialDef = options.buildPartialDef(container);
+    if (!partialDef) return [];
+
+    const diff = diffDefinition(
+      container.schema,
+      container.definition,
+      partialDef,
+    );
+    if (!diff.hasChanges) return [];
+
+    const changedLabels = diff.entries.map((e) => e.label).join(', ');
+
+    return [
+      createEntityIssue(
+        container,
+        pluginEntityType.idFromKey(options.pluginKey),
+        [],
+        {
+          message: `${options.pluginLabel} plugin models are out of sync: ${changedLabels}. Save the ${options.pluginLabel} plugin settings to update.`,
+          severity: 'warning',
+          fix: {
+            label: `Sync ${options.pluginLabel} models`,
+            applySetter: applyMergedDefinition(container, partialDef),
+          },
+        },
+      ),
+    ];
+  };
+}
+
+/**
+ * Previews the diff that would result from applying an issue's fix.
+ *
+ * Applies the fix to a draft copy of the definition, serializes both versions,
+ * and returns a structured diff. Returns `undefined` if the issue has no fix.
+ */
+export function previewIssueFix(
+  issue: DefinitionIssue,
+  container: ProjectDefinitionContainer,
+): DefinitionDiff | undefined {
+  const setter = createIssueFixSetter(issue, container);
+  if (!setter) return undefined;
+
+  const { schema, definition } = container;
+  const fixedDefinition = produce(definition, setter);
+
+  const currentSerialized = serializeSchema(schema, definition);
+  const fixedSerialized = serializeSchema(schema, fixedDefinition);
+
+  return diffSerializedDefinitions(
+    schema,
+    currentSerialized as Record<string, unknown>,
+    fixedSerialized as Record<string, unknown>,
+  );
 }

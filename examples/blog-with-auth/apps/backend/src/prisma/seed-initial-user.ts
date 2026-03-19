@@ -1,7 +1,7 @@
 import type { User } from '../generated/prisma/client.js';
-import type { AuthRole } from '../modules/accounts/constants/auth-roles.constants.js';
+import type { AuthRole } from '../modules/accounts/auth/constants/auth-roles.constants.js';
 
-import { createUserWithEmailAndPassword } from '../modules/accounts/password/services/user-password.service.js';
+import { createUserWithEmailAndPassword } from '../modules/accounts/auth/password/services/user-password.service.js';
 import { prisma } from '../services/prisma.js';
 
 const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD } = process.env;

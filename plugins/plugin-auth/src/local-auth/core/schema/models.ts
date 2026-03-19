@@ -4,12 +4,13 @@ import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
 export function createLocalAuthPartialDefinition(
   authFeatureName: string,
+  accountsFeatureName: string,
 ): PartialProjectDefinitionInput {
   return {
     models: [
       {
         name: LOCAL_AUTH_MODELS.user,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -58,7 +59,7 @@ export function createLocalAuthPartialDefinition(
       },
       {
         name: LOCAL_AUTH_MODELS.userAccount,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -114,7 +115,7 @@ export function createLocalAuthPartialDefinition(
       },
       {
         name: LOCAL_AUTH_MODELS.userRole,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
@@ -151,7 +152,7 @@ export function createLocalAuthPartialDefinition(
       },
       {
         name: LOCAL_AUTH_MODELS.userSession,
-        featureRef: authFeatureName,
+        featureRef: accountsFeatureName,
         model: {
           fields: [
             {
