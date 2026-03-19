@@ -13,9 +13,6 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   FormActionBar,
   SectionList,
@@ -32,7 +29,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
-import { MdConstruction } from 'react-icons/md';
 
 import { ThemeColorsCssDisplay } from './-components/theme-colors-css-display.js';
 import { ThemeColorsEditor } from './-components/theme-colors-editor.js';
@@ -126,15 +122,6 @@ function ThemeBuilderPage(): React.JSX.Element {
           </p>
         </div>
         <div className="pt-4">
-          {/* TODO: check if this should be removed */}
-          <Alert className="max-w-fit">
-            <MdConstruction />
-            <AlertTitle>Work in Progress</AlertTitle>
-            <AlertDescription>
-              This page is still a work in progress. It is not being used for
-              generation at the moment.
-            </AlertDescription>
-          </Alert>
           <SectionList>
             <SectionListSection>
               <SectionListSectionHeader>
