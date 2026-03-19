@@ -10,6 +10,7 @@ export { collectExpressionIssues } from './collect-expression-issues.js';
 export {
   createEntityIssue,
   createIssueFixSetter,
+  createPluginModelSyncChecker,
   previewIssueFix,
   resolveIssuePath,
 } from './definition-issue-utils.js';
