@@ -219,68 +219,78 @@
   "cliVersion": "0.6.4",
   "enums": [
     {
-      "featureRef": "todos",
-      "id": "model-enum:4I1OfJa0epEZ",
-      "isExposed": true,
-      "name": "TodoListStatus",
-      "values": [
-        {
-          "friendlyName": "Active",
-          "id": "model-enum-value:8SQqTpDLRomR",
-          "name": "ACTIVE"
-        },
-        {
-          "friendlyName": "Inactive",
-          "id": "model-enum-value:NZ9grJBhJVfe",
-          "name": "INACTIVE"
-        }
-      ]
-    },
-    {
       "featureRef": "billing",
       "id": "model-enum:64WXK8zT5uoI",
       "isExposed": true,
       "name": "BillingSubscriptionStatus",
       "values": [
         {
+          "description": "Subscription is active and billing normally",
           "friendlyName": "Active",
           "id": "model-enum-value:TkD2j7Ts7uTy",
           "name": "ACTIVE"
         },
         {
+          "description": "Subscription is in a free trial period",
           "friendlyName": "Trialing",
           "id": "model-enum-value:pOEP6bMCIa5P",
           "name": "TRIALING"
         },
         {
+          "description": "Payment failed but the subscription has not been canceled yet",
           "friendlyName": "Past Due",
           "id": "model-enum-value:3R2klR8jmvyo",
           "name": "PAST_DUE"
         },
         {
+          "description": "Subscription has been canceled",
           "friendlyName": "Canceled",
           "id": "model-enum-value:_nFT7KZLLCtU",
           "name": "CANCELED"
         },
         {
+          "description": "Payment retries have been exhausted and the subscription remains unpaid",
           "friendlyName": "Unpaid",
           "id": "model-enum-value:Al5tFLbJ9uT0",
           "name": "UNPAID"
         },
         {
+          "description": "Initial payment attempt failed when creating the subscription",
           "friendlyName": "Incomplete",
           "id": "model-enum-value:rxuA5SBMkEzU",
           "name": "INCOMPLETE"
         },
         {
+          "description": "First invoice was not paid within the allowed time period",
           "friendlyName": "Incomplete Expired",
           "id": "model-enum-value:NehyON15mlR0",
           "name": "INCOMPLETE_EXPIRED"
         },
         {
+          "description": "Subscription has been temporarily paused",
           "friendlyName": "Paused",
           "id": "model-enum-value:kP3xM7vRnW2q",
           "name": "PAUSED"
+        }
+      ]
+    },
+    {
+      "featureRef": "todos",
+      "id": "model-enum:4I1OfJa0epEZ",
+      "isExposed": true,
+      "name": "TodoListStatus",
+      "values": [
+        {
+          "description": "",
+          "friendlyName": "Active",
+          "id": "model-enum-value:8SQqTpDLRomR",
+          "name": "ACTIVE"
+        },
+        {
+          "description": "",
+          "friendlyName": "Inactive",
+          "id": "model-enum-value:NZ9grJBhJVfe",
+          "name": "INACTIVE"
         }
       ]
     }

@@ -105,12 +105,12 @@ export function useEnumForm({
   const onSubmit = useMemo(
     () =>
       handleSubmit((data) => {
-        const updatedDefinition = {
+        const updatedDefinition = baseEnumSchema.parse({
           ...enumDefinition,
           ...data,
           // generate new ID if new
           id: enumDefinition?.id ?? modelEnumEntityType.generateNewId(),
-        };
+        });
         // check for enums with the same name
         const existingEnum = definition.enums?.find(
           (e) =>
@@ -174,6 +174,7 @@ export function useEnumForm({
       enumDefinition,
       newEnumDefinition,
       handleSubmitSuccess,
+      baseEnumSchema,
     ],
   );
 

@@ -328,6 +328,11 @@ function buildEnumFileForModel(
       enums: enums.map((enumConfig) =>
         pothosPrismaEnumGenerator({
           enumName: enumConfig.name,
+          valueDescriptions: Object.fromEntries(
+            enumConfig.values.flatMap((v) =>
+              v.description ? [[v.name, v.description]] : [],
+            ),
+          ),
         }),
       ),
     },

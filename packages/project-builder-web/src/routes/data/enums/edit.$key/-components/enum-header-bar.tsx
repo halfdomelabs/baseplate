@@ -1,4 +1,4 @@
-import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
+import type { EnumConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -17,7 +17,7 @@ import { EnumInfoEditDialog } from './enum-info-edit-dialog.js';
 
 interface EnumHeaderBarProps {
   className?: string;
-  enumDefinition: EnumConfig;
+  enumDefinition: EnumConfigInput;
 }
 
 export function EnumHeaderBar({

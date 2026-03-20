@@ -11,6 +11,7 @@ import { pothosImportsProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   enumName: z.string().min(1),
+  valueDescriptions: z.record(z.string(), z.string()).optional(),
 });
 
 export const pothosPrismaEnumGenerator = createGenerator({
@@ -18,7 +19,7 @@ export const pothosPrismaEnumGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.enumName,
-  buildTasks: ({ enumName }) => ({
+  buildTasks: ({ enumName, valueDescriptions }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -33,7 +34,15 @@ export const pothosPrismaEnumGenerator = createGenerator({
           export const ${exportName} = ${pothosImports.builder.fragment()}.enumType(${quot(enumName)}, {
             values: ${TsCodeUtils.mergeFragmentsAsObject(
               Object.fromEntries(
-                enumBlock.values.map((value) => [value.name, '{}']),
+                enumBlock.values.map((value) => {
+                  const description = valueDescriptions?.[value.name];
+                  return [
+                    value.name,
+                    description
+                      ? `{ description: ${quot(description)} }`
+                      : '{}',
+                  ];
+                }),
               ),
               // use sort from prisma output
               { disableSort: true },
