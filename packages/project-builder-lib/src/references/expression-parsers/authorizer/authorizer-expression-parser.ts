@@ -7,6 +7,7 @@ import type {
   RefExpressionWarning,
   ResolvedExpressionSlots,
 } from '#src/references/expression-types.js';
+import type { DefinitionEntityType } from '#src/references/types.js';
 import type { ModelConfig } from '#src/schema/models/models.js';
 import type { modelEntityType } from '#src/schema/models/types.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
@@ -14,6 +15,7 @@ import type { ProjectDefinition } from '#src/schema/project-definition.js';
 import { RefExpressionParser } from '#src/references/expression-types.js';
 import { modelAuthorizerRoleEntityType } from '#src/schema/models/authorizer/types.js';
 import {
+  modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/types.js';
@@ -128,32 +130,45 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = (definition.models ?? []).filter(
+    const allModels = definition.models.filter(
       (m): m is ModelConfig => typeof m.name === 'string',
     );
 
     // Build lookup maps
     const fieldByName = new Map<string, { id: string }>();
-    for (const field of model.model?.fields ?? []) {
-      if (field.id) {
-        fieldByName.set(field.name, { id: field.id });
-      }
+    for (const field of model.model.fields) {
+      fieldByName.set(field.name, { id: field.id });
     }
 
-    const relationByName = new Map<string, { id: string; modelRef: string }>();
-    for (const relation of model.model?.relations ?? []) {
-      if (relation.id) {
-        relationByName.set(relation.name, {
-          id: relation.id,
-          modelRef: relation.modelRef,
-        });
-      }
+    const relationByName = new Map<
+      string,
+      { id: string; modelRef: string; entityType: DefinitionEntityType }
+    >();
+    // Local relations (defined on this model)
+    for (const relation of model.model.relations) {
+      relationByName.set(relation.name, {
+        id: relation.id,
+        modelRef: relation.modelRef,
+        entityType: modelLocalRelationEntityType,
+      });
     }
 
     const modelById = new Map<string, ModelConfig>();
     for (const m of allModels) {
-      if (m.id) {
-        modelById.set(m.id, m);
+      modelById.set(m.id, m);
+    }
+
+    // Foreign relations (defined on other models pointing to this model via foreignRelationName)
+    for (const m of allModels) {
+      for (const relation of m.model.relations) {
+        if (relation.foreignRelationName && relation.modelRef === model.id) {
+          relationByName.set(relation.foreignRelationName, {
+            id: relation.foreignId,
+            // Foreign relation points back to the model that defines it
+            modelRef: m.id,
+            entityType: modelForeignRelationEntityType,
+          });
+        }
       }
     }
 
@@ -187,23 +202,25 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
         const relation = relationByName.get(node.relationName);
         if (relation) {
           deps.push({
-            entityType: modelLocalRelationEntityType,
+            entityType: relation.entityType,
             entityId: relation.id,
             start: node.relationEnd - node.relationName.length,
             end: node.relationEnd,
           });
           // Foreign authorizer role
           const foreignModel = modelById.get(relation.modelRef);
-          const foreignRole = foreignModel?.authorizer?.roles?.find(
-            (r) => r.name === node.role,
-          );
-          if (foreignRole?.id) {
-            deps.push({
-              entityType: modelAuthorizerRoleEntityType,
-              entityId: foreignRole.id,
-              start: node.roleStart + 1,
-              end: node.roleEnd - 1,
-            });
+          if (foreignModel) {
+            const foreignRole = foreignModel.authorizer.roles.find(
+              (r) => r.name === node.role,
+            );
+            if (foreignRole) {
+              deps.push({
+                entityType: modelAuthorizerRoleEntityType,
+                entityId: foreignRole.id,
+                start: node.roleStart + 1,
+                end: node.roleEnd - 1,
+              });
+            }
           }
         }
       },
@@ -211,21 +228,19 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
         const relation = relationByName.get(node.relationName);
         if (relation) {
           deps.push({
-            entityType: modelLocalRelationEntityType,
+            entityType: relation.entityType,
             entityId: relation.id,
             start: node.relationEnd - node.relationName.length,
             end: node.relationEnd,
           });
           const foreignModel = modelById.get(relation.modelRef);
-          if (foreignModel?.authorizer?.roles) {
+          if (foreignModel) {
             const foreignRoleByName = new Map(
-              foreignModel.authorizer.roles
-                .filter((r) => r.id)
-                .map((r) => [r.name, r]),
+              foreignModel.authorizer.roles.map((r) => [r.name, r]),
             );
             for (let i = 0; i < node.roles.length; i++) {
               const foreignRole = foreignRoleByName.get(node.roles[i]);
-              if (foreignRole?.id) {
+              if (foreignRole) {
                 deps.push({
                   entityType: modelAuthorizerRoleEntityType,
                   entityId: foreignRole.id,
@@ -241,7 +256,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
         const relation = relationByName.get(node.relationName);
         if (relation) {
           deps.push({
-            entityType: modelLocalRelationEntityType,
+            entityType: relation.entityType,
             entityId: relation.id,
             start: node.relationEnd - node.relationName.length,
             end: node.relationEnd,
@@ -249,8 +264,8 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
           // Foreign model fields referenced in conditions
           const foreignModel = modelById.get(relation.modelRef);
           const foreignFieldByName = new Map<string, { id: string }>();
-          for (const f of foreignModel?.model?.fields ?? []) {
-            if (f.id) {
+          if (foreignModel) {
+            for (const f of foreignModel.model.fields) {
               foreignFieldByName.set(f.name, { id: f.id });
             }
           }
@@ -344,7 +359,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   ): ModelValidationContext {
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = (definition.models ?? []).filter(
+    const allModels = definition.models.filter(
       (m): m is ModelConfig => typeof m.name === 'string',
     );
 
@@ -352,15 +367,15 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       {
         id: model.id,
         name: model.name,
-        fields: model.model?.fields,
-        model: { relations: model.model?.relations },
+        fields: model.model.fields,
+        model: { relations: model.model.relations },
       },
       allModels.map((m) => ({
         id: m.id,
         name: m.name,
         authorizer: m.authorizer,
-        fields: m.model?.fields,
-        model: { relations: m.model?.relations },
+        fields: m.model.fields,
+        model: { relations: m.model.relations },
       })),
     );
   }
