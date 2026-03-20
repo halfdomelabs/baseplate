@@ -23,7 +23,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/prisma/seed-initial-user.ts",
-      "projectExports": { "seedInitialUser": {} },
       "sourceFile": "src/prisma/seed-initial-user.ts",
       "variables": { "TPL_INITIAL_USER_ROLES": {} }
     }
