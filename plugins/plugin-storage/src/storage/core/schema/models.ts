@@ -84,7 +84,7 @@ export function createStoragePartialDefinition(
               references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
               modelRef: userModelName,
               foreignRelationName: 'files',
-              onDelete: 'Cascade',
+              onDelete: 'SetNull',
               onUpdate: 'Restrict',
             },
           ],

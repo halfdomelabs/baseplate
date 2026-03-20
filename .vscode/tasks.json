@@ -38,6 +38,9 @@
       "command": "mise x -- pnpm run watch",
       "group": "build",
       "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
       "presentation": {
         "close": true
       },
@@ -135,6 +138,22 @@
           "fileLocation": ["relative", "${workspaceFolder}"]
         }
       ]
+    },
+    {
+      "label": "Dev Serve",
+      "type": "shell",
+      "command": "mise x -- pnpm run dev:serve",
+      "group": "none",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
     },
     {
       "label": "Reset to Main",
