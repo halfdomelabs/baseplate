@@ -27,6 +27,7 @@ export function ModelPrimaryKeyBadge({
       trigger={
         <Badge
           variant="secondary"
+          render={<button type="button" />}
           className={className}
           onMouseEnter={() => {
             setIsHovered(true);

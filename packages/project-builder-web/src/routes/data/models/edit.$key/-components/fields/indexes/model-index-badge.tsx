@@ -38,6 +38,7 @@ export function ModelFieldIndexBadge({
       trigger={
         <Badge
           variant="secondary"
+          render={<button type="button" />}
           className={clsx('', className)}
           onMouseEnter={() => {
             setIsHovered(true);

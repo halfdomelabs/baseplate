@@ -38,6 +38,7 @@ export function ModelFieldUniqueBadge({
       trigger={
         <Badge
           variant="secondary"
+          render={<button type="button" />}
           className={clsx('', className)}
           onMouseEnter={() => {
             setIsHovered(true);
