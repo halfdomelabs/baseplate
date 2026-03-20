@@ -11,12 +11,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
 } from '@baseplate-dev/ui-components';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -76,54 +76,42 @@ export function PluginDependenciesDialog({
           {pluginDisplayName} requires the following plugins to be enabled
           first.
         </DialogDescription>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Plugin</TableHead>
-              <TableHead />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {dependencies.map((dep, index) => (
-              <TableRow key={dep.metadata.key}>
-                <TableCell className="max-w-md wrap-break-word">
-                  <div>
-                    <strong>{dep.metadata.displayName}</strong>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {dep.metadata.description}
-                  </div>
-                </TableCell>
-                <TableCell className="w-28 text-right">
-                  {dep.hasWebConfig ? (
-                    <Link
-                      to="/plugins/edit/$key"
-                      params={{ key: dep.metadata.key }}
-                      onClick={() => {
-                        onOpenChange(false);
-                      }}
-                    >
-                      <Button variant="secondary" size="sm">
-                        Configure
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={isSavingDefinition || enablingIndex !== null}
-                      onClick={() => {
-                        handleEnable(dep, index);
-                      }}
-                    >
-                      {enablingIndex === index ? 'Enabling...' : 'Enable'}
+        <ItemGroup>
+          {dependencies.map((dep, index) => (
+            <Item key={dep.metadata.key} variant="outline">
+              <ItemContent>
+                <ItemTitle>{dep.metadata.displayName}</ItemTitle>
+                <ItemDescription>{dep.metadata.description}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                {dep.hasWebConfig ? (
+                  <Link
+                    to="/plugins/edit/$key"
+                    params={{ key: dep.metadata.key }}
+                    onClick={() => {
+                      onOpenChange(false);
+                    }}
+                  >
+                    <Button variant="secondary" size="sm">
+                      Configure
                     </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={isSavingDefinition || enablingIndex !== null}
+                    onClick={() => {
+                      handleEnable(dep, index);
+                    }}
+                  >
+                    {enablingIndex === index ? 'Enabling...' : 'Enable'}
+                  </Button>
+                )}
+              </ItemActions>
+            </Item>
+          ))}
+        </ItemGroup>
         <DialogFooter>
           <Button
             onClick={() => {
