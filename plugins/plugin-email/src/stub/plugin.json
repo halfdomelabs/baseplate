@@ -1,0 +1,9 @@
+{
+  "name": "stub",
+  "displayName": "Stub / Custom",
+  "icon": "icon.svg",
+  "description": "Stub email provider for local development or as a starting point for a custom email provider integration.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "managedBy": "@baseplate-dev/plugin-email:email"
+}
