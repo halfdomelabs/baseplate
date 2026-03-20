@@ -23,7 +23,7 @@ const descriptorSchema = z.object({
   relationshipName: z.string().optional(),
   relationshipType: z.enum(['oneToOne', 'oneToMany']).default('oneToMany'),
   optional: z.boolean().default(false),
-  onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
+  onDelete: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
   onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
 });
 

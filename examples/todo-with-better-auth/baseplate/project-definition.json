@@ -585,7 +585,7 @@
             "id": "model-local-relation:yCV4Nw0uAf8p",
             "modelRef": "User",
             "name": "uploader",
-            "onDelete": "Cascade",
+            "onDelete": "SetNull",
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "uploaderId" }]
           }
