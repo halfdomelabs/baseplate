@@ -21,8 +21,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
-import { UnlinkSection } from '../-components/unlink-section.js';
-
 export const Route = createFileRoute('/packages/apps/$key/backend')({
   component: BackendAppEditPage,
   loader: ({ context: { app }, params: { key } }) => {
@@ -114,12 +112,6 @@ function BackendAppEditPage(): React.JSX.Element {
             </div>
           </SectionListSectionContent>
         </SectionListSection>
-
-        <UnlinkSection
-          entityType="app"
-          entityId={backendDefinition.id}
-          name={backendDefinition.name}
-        />
       </SectionList>
       <FormActionBar form={formProps} />
     </form>

@@ -3,6 +3,7 @@ import type React from 'react';
 
 import {
   getManagedPluginsForPlugin,
+  libraryEntityType,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -15,6 +16,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   FormActionBar,
   SectionList,
   SectionListSection,
@@ -26,13 +28,16 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from '@tanstack/react-router';
+import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 
 import { EmailConfigTabs } from '#src/common/index.js';
+import { TRANSACTIONAL_LIB_TYPE } from '#src/email/transactional-lib/schema/transactional-lib-definition.js';
 
 import type { EmailPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createEmailPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { getTransactionalLibName } from '../schema/schema-issue-checker.js';
 
 import '#src/styles.css';
 
@@ -42,10 +47,21 @@ export function EmailDefinitionEditor({
   onSave,
 }: WebConfigProps): React.JSX.Element {
   const {
+    definition,
     definitionContainer,
     schemaParserContext,
     saveDefinitionWithFeedback,
   } = useProjectDefinition();
+
+  const hasTransactionalLib = definition.libraries.some(
+    (lib) => lib.type === TRANSACTIONAL_LIB_TYPE,
+  );
+
+  const transactionalLibName = useMemo(
+    () =>
+      hasTransactionalLib ? undefined : getTransactionalLibName(definition),
+    [hasTransactionalLib, definition],
+  );
 
   const emailPluginDefinitionSchema = useDefinitionSchema(
     createEmailPluginDefinitionSchema,
@@ -123,6 +139,21 @@ export function EmailDefinitionEditor({
             draftConfig,
             plugin.key,
             definitionContainer.parserContext,
+          );
+        }
+
+        // Auto-create transactional email library if one doesn't exist
+        if (!hasTransactionalLib && transactionalLibName) {
+          draftConfig.libraries = sortBy(
+            [
+              ...draftConfig.libraries,
+              {
+                id: libraryEntityType.generateNewId(),
+                name: transactionalLibName,
+                type: TRANSACTIONAL_LIB_TYPE,
+              },
+            ],
+            [(lib) => lib.name],
           );
         }
       },
@@ -208,10 +239,60 @@ export function EmailDefinitionEditor({
                   />
                 </SectionListSectionContent>
               </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Email Templates
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    A transactional email library provides React Email-based
+                    templates for your project.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent>
+                  {hasTransactionalLib ? (
+                    <Alert variant="default">
+                      <AlertTitle>Up to Date</AlertTitle>
+                      <AlertDescription>
+                        A transactional email library is already configured. No
+                        changes needed.
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="email:overflow-hidden email:rounded-lg email:border">
+                      <div className="email:border-b email:px-3 email:py-2">
+                        <span className="email:text-sm email:font-medium">
+                          Pending Changes
+                        </span>
+                        <p className="email:text-xs email:opacity-60">
+                          The following changes will be applied when you save:
+                        </p>
+                      </div>
+                      <div className="email:px-3 email:py-2 email:text-sm">
+                        <div className="email:flex email:items-center email:justify-between">
+                          <span className="email:font-medium">
+                            Transactional Email Library
+                          </span>
+                          <Badge variant="default">added</Badge>
+                        </div>
+                        <p className="email:mt-1 email:text-xs email:text-muted-foreground">
+                          A library package named{' '}
+                          <strong>{transactionalLibName}</strong> with React
+                          Email components for building and rendering typed
+                          email templates used by the email plugin.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </SectionListSectionContent>
+              </SectionListSection>
             </SectionList>
           </div>
 
-          <FormActionBar form={form} allowSaveWithoutDirty={!pluginMetadata} />
+          <FormActionBar
+            form={form}
+            allowSaveWithoutDirty={!pluginMetadata || !hasTransactionalLib}
+          />
         </form>
       </div>
     </div>
