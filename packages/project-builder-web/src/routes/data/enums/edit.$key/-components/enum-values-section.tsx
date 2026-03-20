@@ -6,14 +6,12 @@ import { modelEnumValueEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   InputFieldController,
-  Label,
   SectionListSection,
   SectionListSectionContent,
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
-import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdDeleteOutline } from 'react-icons/md';
 
@@ -39,17 +37,19 @@ export function EnumValuesSection({
 
   const values = useWatch({ control, name: 'values' });
 
-  const gridClassNames =
-    'grid grid-cols-[repeat(2,minmax(130px,1fr))_80px] gap-3';
-
   const valueListItems = valueFields.map((field, i) => ({
     id: field.id,
     element: (
-      <div className={gridClassNames}>
-        <InputFieldController control={control} name={`values.${i}.name`} />
+      <div className="grid grid-cols-[repeat(3,minmax(130px,1fr))_40px] items-start gap-3 border-b pb-4">
+        <InputFieldController
+          control={control}
+          name={`values.${i}.name`}
+          label="Value Name"
+        />
         <InputFieldController
           control={control}
           name={`values.${i}.friendlyName`}
+          label="Friendly Name"
           onFocus={() => {
             if (!values[i].friendlyName && values[i].name) {
               setValue(
@@ -59,7 +59,14 @@ export function EnumValuesSection({
             }
           }}
         />
+        <InputFieldController
+          control={control}
+          name={`values.${i}.description`}
+          label="Optional Description"
+          placeholder="Enter description"
+        />
         <Button
+          className="mt-6"
           variant="ghost"
           size="icon"
           onClick={() => {
@@ -76,32 +83,19 @@ export function EnumValuesSection({
   return (
     <SectionListSection>
       <SectionListSectionHeader>
-        <SectionListSectionTitle>Values</SectionListSectionTitle>
+        <SectionListSectionTitle>Enum Values</SectionListSectionTitle>
         <SectionListSectionDescription>
           Configure the allowed values for this enum.
         </SectionListSectionDescription>
       </SectionListSectionHeader>
       <SectionListSectionContent className="space-y-4">
-        <div className="space-y-2">
-          <div
-            className={clsx(
-              gridClassNames,
-              // account for handle in sortable list
-              'pl-12',
-            )}
-          >
-            <Label>Value Name, e.g. ACTIVE</Label>
-            <Label>Value Friendly Name, e.g. Active</Label>
-            <div />
-          </div>
-          {valueFields.length === 0 ? (
-            <p className="pt-4 text-style-muted">
-              Add some values to get started
-            </p>
-          ) : (
-            <SortableList listItems={valueListItems} sortItems={sortValues} />
-          )}
-        </div>
+        {valueFields.length === 0 ? (
+          <p className="pt-4 text-style-muted">
+            Add some values to get started
+          </p>
+        ) : (
+          <SortableList listItems={valueListItems} sortItems={sortValues} />
+        )}
         <Button
           size="sm"
           variant="secondary"
@@ -110,6 +104,7 @@ export function EnumValuesSection({
               id: modelEnumValueEntityType.generateNewId(),
               name: '',
               friendlyName: '',
+              description: '',
             });
           }}
         >

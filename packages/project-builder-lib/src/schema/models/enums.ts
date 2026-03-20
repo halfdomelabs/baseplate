@@ -19,6 +19,7 @@ export const createEnumValueSchema = definitionSchemaWithSlots(
         id: z.string(),
         name: VALIDATORS.CONSTANT_CASE_STRING,
         friendlyName: z.string().min(1),
+        description: z.string().default(''),
       }),
       {
         type: modelEnumValueEntityType,
