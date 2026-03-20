@@ -134,6 +134,11 @@
     "instanceData": {},
     "template": "input"
   },
+  "item.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "item"
+  },
   "label.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},

@@ -55,6 +55,7 @@
   "@baseplate-dev/react-generators#core/react-components:input": "src/components/ui/input.tsx",
   "@baseplate-dev/react-generators#core/react-components:input-field": "src/components/ui/input-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:input-group": "src/components/ui/input-group.tsx",
+  "@baseplate-dev/react-generators#core/react-components:item": "src/components/ui/item.tsx",
   "@baseplate-dev/react-generators#core/react-components:label": "src/components/ui/label.tsx",
   "@baseplate-dev/react-generators#core/react-components:loader": "src/components/ui/loader.tsx",
   "@baseplate-dev/react-generators#core/react-components:merge-refs": "src/utils/merge-refs.ts",

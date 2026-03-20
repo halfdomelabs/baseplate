@@ -528,6 +528,32 @@ const inputGroup = createTsTemplateFile({
   variables: {},
 });
 
+const item = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'item',
+  projectExports: {
+    Item: { isTypeOnly: false },
+    ItemActions: { isTypeOnly: false },
+    ItemContent: { isTypeOnly: false },
+    ItemDescription: { isTypeOnly: false },
+    ItemFooter: { isTypeOnly: false },
+    ItemGroup: { isTypeOnly: false },
+    ItemHeader: { isTypeOnly: false },
+    ItemMedia: { isTypeOnly: false },
+    itemMediaVariants: { isTypeOnly: false },
+    ItemSeparator: { isTypeOnly: false },
+    ItemTitle: { isTypeOnly: false },
+    itemVariants: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { cn: {}, separator: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/components/ui/item.tsx'),
+  },
+  variables: {},
+});
+
 const label = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -998,6 +1024,7 @@ export const componentsGroup = {
   input,
   inputField,
   inputGroup,
+  item,
   label,
   loader,
   multiComboboxField,
