@@ -195,7 +195,7 @@ export const createModelRelationFieldSchema = definitionSchemaWithSlots(
                 provides: foreignModelSlot,
               }),
               foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
-              onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
+              onDelete: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
               onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
             }),
             {
