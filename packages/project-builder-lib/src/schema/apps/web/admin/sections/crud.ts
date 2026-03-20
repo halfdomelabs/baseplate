@@ -7,6 +7,7 @@ import {
   modelEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/index.js';
+import { VALIDATORS } from '#src/schema/utils/validation.js';
 
 import { createBaseAdminSectionValidators } from './base.js';
 import { createAdminCrudActionSchema } from './crud-actions/admin-crud-action.js';
@@ -21,7 +22,7 @@ const createAdminCrudEmbeddedObjectSchemaInternal = definitionSchemaWithSlots(
   (ctx, { modelSlot, adminSectionSlot }) =>
     z.object({
       id: z.string().min(1),
-      name: z.string().min(1),
+      name: VALIDATORS.CAMEL_CASE_STRING,
       modelRef: ctx.withRef({
         type: modelEntityType,
         onDelete: 'RESTRICT',
@@ -42,7 +43,7 @@ const createAdminCrudEmbeddedListSchemaInternal = definitionSchemaWithSlots(
   (ctx, { modelSlot, adminSectionSlot }) =>
     z.object({
       id: z.string().min(1),
-      name: z.string().min(1),
+      name: VALIDATORS.CAMEL_CASE_STRING,
       modelRef: ctx.withRef({
         type: modelEntityType,
         onDelete: 'RESTRICT',
