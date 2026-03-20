@@ -4,6 +4,8 @@ export * from './deserialize-schema.js';
 export * from './expression-types.js';
 export { withEnt, withRef } from './extend-parser-context-with-refs.js';
 export * from './extract-definition-refs.js';
+export * from './fix-definition-refs.js';
+export * from './fix-expression-renames.js';
 export * from './fix-ref-deletions.js';
 export * from './ref-context-slot.js';
 export * from './ref-schema-visitor.js';

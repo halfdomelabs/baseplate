@@ -43,8 +43,13 @@ export const stageUpdateEntityAction = createServiceAction({
   handler: async (input, context) => {
     assertEntityTypeNotBlacklisted(input.entityTypeName);
 
-    const { session, entityContext, parserContext, projectDirectory } =
-      await getOrCreateDraftSession(input.project, context);
+    const {
+      session,
+      entityContext,
+      oldRefPayload,
+      parserContext,
+      projectDirectory,
+    } = await getOrCreateDraftSession(input.project, context);
 
     const newDefinition = updateEntity(
       {
@@ -60,6 +65,8 @@ export const stageUpdateEntityAction = createServiceAction({
       parserContext,
       session,
       projectDirectory,
+      undefined,
+      oldRefPayload,
     );
 
     return {

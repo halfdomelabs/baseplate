@@ -13,13 +13,20 @@ import { RefExpressionParser } from '#src/references/expression-types.js';
 import type { modelEntityType } from '../types.js';
 import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
 import type { ModelValidationContext } from './authorizer-expression-validator.js';
+import type { AuthorizerExpressionVisitor } from './authorizer-expression-visitor.js';
 
+import {
+  modelLocalRelationEntityType,
+  modelScalarFieldEntityType,
+} from '../types.js';
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
 import {
   buildModelExpressionContext,
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
+import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
+import { modelAuthorizerRoleEntityType } from './types.js';
 
 /**
  * Shape of a raw model in the project definition JSON.
@@ -29,8 +36,9 @@ interface RawModelDefinition {
   id?: string;
   name?: string;
   model?: {
-    fields?: { name: string; type?: string }[];
+    fields?: { id?: string; name: string; type?: string }[];
     relations?: {
+      id?: string;
       name: string;
       modelRef: string;
       foreignRelationName?: string;
@@ -38,7 +46,7 @@ interface RawModelDefinition {
     }[];
   };
   authorizer?: {
-    roles?: { name: string }[];
+    roles?: { id?: string; name: string }[];
   };
 }
 
@@ -106,15 +114,11 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): RefExpressionWarning[] {
-    // Get model context from resolved slots
+    // Get model context from resolved slots (throws if model not found)
     const modelContext = this.getModelContext(
       context.definition,
       resolvedSlots,
     );
-    if (!modelContext) {
-      // Can't validate without model context
-      return [];
-    }
 
     // Validate the expression against model fields and roles
     return validateAuthorizerExpression(
@@ -126,26 +130,232 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   }
 
   /**
-   * Get entity/field dependencies from the expression.
+   * Get entity references from the expression with their positions.
    *
-   * Currently returns empty array as we don't yet track
-   * entity-level dependencies (just field names).
-   * Future: could track model field entity references for renames.
+   * Walks the AST and resolves each name reference (field, relation, role)
+   * to its entity ID by navigating the model definition from the resolved slots.
+   * Returns positions marking exactly which text to replace when an entity is renamed.
    */
-  getDependencies(): RefExpressionDependency[] {
-    // TODO: Track model field entities for rename support
-    return [];
+  getReferencedEntities(
+    _value: string,
+    parseResult: RefExpressionParseResult<AuthorizerExpressionInfo>,
+    definition: unknown,
+    resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
+  ): RefExpressionDependency[] {
+    if (!parseResult.success) {
+      return [];
+    }
+
+    const model = this.getRawModel(definition, resolvedSlots);
+
+    const allModels = (
+      (definition as { models?: RawModelDefinition[] }).models ?? []
+    ).filter(
+      (m): m is RawModelDefinition & { name: string } =>
+        typeof m.name === 'string',
+    );
+
+    // Build lookup maps
+    const fieldByName = new Map<string, { id: string }>();
+    for (const field of model.model?.fields ?? []) {
+      if (field.id) {
+        fieldByName.set(field.name, { id: field.id });
+      }
+    }
+
+    const relationByName = new Map<string, { id: string; modelRef: string }>();
+    for (const relation of model.model?.relations ?? []) {
+      if (relation.id) {
+        relationByName.set(relation.name, {
+          id: relation.id,
+          modelRef: relation.modelRef,
+        });
+      }
+    }
+
+    const modelById = new Map<string, RawModelDefinition & { name: string }>();
+    for (const m of allModels) {
+      if (m.id) {
+        modelById.set(m.id, m);
+      }
+    }
+
+    const deps: RefExpressionDependency[] = [];
+
+    const visitor: AuthorizerExpressionVisitor<void> = {
+      fieldComparison(node) {
+        for (const side of [node.left, node.right]) {
+          if (side.type === 'fieldRef' && side.source === 'model') {
+            const field = fieldByName.get(side.field);
+            if (field) {
+              deps.push({
+                entityType: modelScalarFieldEntityType,
+                entityId: field.id,
+                start: side.end - side.field.length,
+                end: side.end,
+              });
+            }
+          }
+        }
+      },
+      hasRole() {
+        // Global auth roles are defined by plugins, not navigable from
+        // the raw model definition. Skip — auth role renames are rare
+        // and would require traversing plugin-specific config.
+      },
+      hasSomeRole() {
+        // Same as hasRole — skip global auth role references
+      },
+      nestedHasRole(node) {
+        const relation = relationByName.get(node.relationName);
+        if (relation) {
+          deps.push({
+            entityType: modelLocalRelationEntityType,
+            entityId: relation.id,
+            start: node.relationEnd - node.relationName.length,
+            end: node.relationEnd,
+          });
+          // Foreign authorizer role
+          const foreignModel = modelById.get(relation.modelRef);
+          const foreignRole = foreignModel?.authorizer?.roles?.find(
+            (r) => r.name === node.role,
+          );
+          if (foreignRole?.id) {
+            deps.push({
+              entityType: modelAuthorizerRoleEntityType,
+              entityId: foreignRole.id,
+              start: node.roleStart + 1,
+              end: node.roleEnd - 1,
+            });
+          }
+        }
+      },
+      nestedHasSomeRole(node) {
+        const relation = relationByName.get(node.relationName);
+        if (relation) {
+          deps.push({
+            entityType: modelLocalRelationEntityType,
+            entityId: relation.id,
+            start: node.relationEnd - node.relationName.length,
+            end: node.relationEnd,
+          });
+          const foreignModel = modelById.get(relation.modelRef);
+          if (foreignModel?.authorizer?.roles) {
+            const foreignRoleByName = new Map(
+              foreignModel.authorizer.roles
+                .filter((r) => r.id)
+                .map((r) => [r.name, r]),
+            );
+            for (let i = 0; i < node.roles.length; i++) {
+              const foreignRole = foreignRoleByName.get(node.roles[i]);
+              if (foreignRole?.id) {
+                deps.push({
+                  entityType: modelAuthorizerRoleEntityType,
+                  entityId: foreignRole.id,
+                  start: node.rolesStart[i] + 1,
+                  end: node.rolesEnd[i] - 1,
+                });
+              }
+            }
+          }
+        }
+      },
+      relationFilter(node) {
+        const relation = relationByName.get(node.relationName);
+        if (relation) {
+          deps.push({
+            entityType: modelLocalRelationEntityType,
+            entityId: relation.id,
+            start: node.relationEnd - node.relationName.length,
+            end: node.relationEnd,
+          });
+          // Foreign model fields referenced in conditions
+          const foreignModel = modelById.get(relation.modelRef);
+          const foreignFieldByName = new Map<string, { id: string }>();
+          for (const f of foreignModel?.model?.fields ?? []) {
+            if (f.id) {
+              foreignFieldByName.set(f.name, { id: f.id });
+            }
+          }
+          for (const condition of node.conditions) {
+            // Condition key references a field on the foreign model
+            const foreignField = foreignFieldByName.get(condition.field);
+            if (foreignField) {
+              deps.push({
+                entityType: modelScalarFieldEntityType,
+                entityId: foreignField.id,
+                start: condition.fieldStart,
+                end: condition.fieldEnd,
+              });
+            }
+            // Condition value may be a model field ref
+            if (
+              condition.value.type === 'fieldRef' &&
+              condition.value.source === 'model'
+            ) {
+              const field = fieldByName.get(condition.value.field);
+              if (field) {
+                deps.push({
+                  entityType: modelScalarFieldEntityType,
+                  entityId: field.id,
+                  start: condition.value.end - condition.value.field.length,
+                  end: condition.value.end,
+                });
+              }
+            }
+          }
+        }
+      },
+      isAuthenticated() {
+        // No entity references
+      },
+      binaryLogical(_node, _ctx, visit) {
+        visit(_node.left);
+        visit(_node.right);
+      },
+    };
+
+    visitAuthorizerExpression(parseResult.value.ast, visitor);
+
+    return deps;
   }
 
   /**
-   * Update the expression when dependencies are renamed.
+   * Navigate to the raw model object from the definition using resolved slots.
    *
-   * Currently returns value unchanged as we don't yet
-   * support field renames in expressions.
+   * Resolved slot paths point to the entity's ID field (e.g., `['models', 2, 'id']`),
+   * so we walk parent paths until we find an object with a string `name` property.
    */
-  updateForRename(value: string): string {
-    // TODO: Implement rename support using AST position info
-    return value;
+  private getRawModel(
+    definition: unknown,
+    resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
+  ): RawModelDefinition & { name: string } {
+    const modelPath = resolvedSlots.model;
+
+    // Walk progressively shorter paths to find the model object.
+    // Slot paths include the idPath suffix (e.g., ['models', 2, 'id']),
+    // so we try the full path first, then strip segments until we find
+    // an object with a name property.
+    for (let len = modelPath.length; len > 0; len--) {
+      let current: unknown = definition;
+      for (let i = 0; i < len; i++) {
+        if (current === null || current === undefined) {
+          break;
+        }
+        current = (current as Record<string | number, unknown>)[modelPath[i]];
+      }
+      if (
+        current !== null &&
+        current !== undefined &&
+        typeof current === 'object' &&
+        'name' in current &&
+        typeof (current as Record<string, unknown>).name === 'string'
+      ) {
+        return current as RawModelDefinition & { name: string };
+      }
+    }
+
+    throw new Error(`Could not resolve model at path ${modelPath.join('.')}`);
   }
 
   /**
@@ -154,27 +364,8 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   private getModelContext(
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
-  ): ModelValidationContext | undefined {
-    const modelPath = resolvedSlots.model;
-    if (modelPath.length === 0) {
-      return undefined;
-    }
-
-    // Navigate to the model in the project definition
-    // The path is like ['models', 0] for models[0]
-    let current: unknown = definition;
-    for (const segment of modelPath) {
-      if (current === null || current === undefined) {
-        return undefined;
-      }
-      current = (current as Record<string | number, unknown>)[segment];
-    }
-
-    const model = current as RawModelDefinition | null;
-
-    if (!model || typeof model.name !== 'string') {
-      return undefined;
-    }
+  ): ModelValidationContext {
+    const model = this.getRawModel(definition, resolvedSlots);
 
     const allModels = (
       (definition as { models?: RawModelDefinition[] }).models ?? []

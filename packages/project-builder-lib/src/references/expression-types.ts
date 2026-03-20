@@ -97,8 +97,7 @@ export type ResolvedExpressionSlots<
  *   readonly name = 'stub';
  *   parse(): undefined { return undefined; }
  *   getWarnings(): [] { return []; }
- *   getDependencies(): [] { return []; }
- *   updateForRename(value: string): string { return value; }
+ *   getReferencedEntities(): [] { return []; }
  * }
  *
  * // A parser that requires a model slot
@@ -159,31 +158,25 @@ export abstract class RefExpressionParser<
   ): RefExpressionWarning[];
 
   /**
-   * Get entity/field dependencies from the expression.
-   * Used for tracking what the expression references for rename handling.
+   * Get entity references from the expression with their positions.
+   *
+   * Used by the generic rename system to detect and apply renames.
+   * Each returned dependency identifies an entity by ID and marks the
+   * position in the expression text that should be replaced with the
+   * entity's new name if it is renamed.
    *
    * @param value - The raw expression value
    * @param parseResult - The cached parse result
-   * @returns Array of dependencies
+   * @param definition - The project definition (typed as unknown to avoid circular reference)
+   * @param resolvedSlots - The resolved slot paths for this expression
+   * @returns Array of entity references with positions for rename
    */
-  abstract getDependencies(
+  abstract getReferencedEntities(
     value: TValue,
     parseResult: RefExpressionParseResult<TParseResult>,
+    definition: unknown,
+    resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionDependency[];
-
-  /**
-   * Update the expression when dependencies are renamed.
-   *
-   * @param value - The raw expression value
-   * @param parseResult - The cached parse result
-   * @param renames - Map of old entity ID to new name
-   * @returns The updated expression value
-   */
-  abstract updateForRename(
-    value: TValue,
-    parseResult: RefExpressionParseResult<TParseResult>,
-    renames: Map<string, string>,
-  ): TValue;
 
   /**
    * Convenience method that combines parse() and getWarnings() into a single call.
