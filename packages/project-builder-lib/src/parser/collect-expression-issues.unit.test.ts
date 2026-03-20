@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import type { RefExpressionParser } from '#src/references/expression-types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
 import { extractDefinitionRefs } from '#src/references/extract-definition-refs.js';
@@ -14,6 +15,8 @@ import {
   FailingParser,
   WarningParser,
 } from '#src/testing/expression-warning-parser.test-helper.js';
+
+import type { CollectExpressionIssuesInput } from './collect-expression-issues.js';
 
 import { collectExpressionIssues } from './collect-expression-issues.js';
 
@@ -37,15 +40,12 @@ describe('collectExpressionIssues', () => {
   function buildInput(
     schema: z.ZodType,
     data: unknown,
-  ): {
-    definition: unknown;
-    pluginStore: PluginSpecStore;
-    expressions: ReturnType<typeof extractDefinitionRefs>['expressions'];
-  } {
+  ): CollectExpressionIssuesInput {
     const parsed = schema.parse(data);
     const refPayload = extractDefinitionRefs(schema, parsed);
     return {
-      definition: parsed,
+      // Cast: test schemas produce mock data, not real ProjectDefinition
+      definition: parsed as ProjectDefinition,
       pluginStore,
       expressions: refPayload.expressions,
     };
@@ -142,7 +142,7 @@ describe('collectExpressionIssues', () => {
 
   it('returns empty array when schema has no expression annotations', () => {
     const issues = collectExpressionIssues({
-      definition: 'not an object',
+      definition: 'not an object' as unknown as ProjectDefinition,
       pluginStore,
       expressions: [],
     });

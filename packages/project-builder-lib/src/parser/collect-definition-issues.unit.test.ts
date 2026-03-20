@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
+
 import { PluginSpecStore } from '#src/plugins/index.js';
 import { extractDefinitionRefs } from '#src/references/extract-definition-refs.js';
 import {
@@ -276,7 +278,7 @@ describe('collectExpressionIssues', () => {
     const parsed = schema.parse(data);
     const refPayload = extractDefinitionRefs(schema, parsed);
     const issues = collectExpressionIssues({
-      definition: parsed,
+      definition: parsed as unknown as ProjectDefinition,
       pluginStore,
       expressions: refPayload.expressions,
     });

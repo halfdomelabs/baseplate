@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { DefinitionEntityType, ReferencePath } from './types.js';
@@ -11,8 +12,8 @@ import type { DefinitionEntityType, ReferencePath } from './types.js';
  * validating expressions against model fields, roles, etc.
  */
 export interface ExpressionValidationContext {
-  /** The raw project definition data */
-  readonly definition: unknown;
+  /** The project definition data */
+  readonly definition: ProjectDefinition;
   /** The plugin spec store for accessing plugin-registered configuration */
   readonly pluginStore: PluginSpecStore;
 }
@@ -135,12 +136,12 @@ export abstract class RefExpressionParser<
    * The result is cached on the marker for subsequent operations.
    *
    * @param value - The raw expression value
-   * @param projectDef - The project definition for context (typed as unknown to avoid circular reference)
+   * @param projectDef - The project definition for context
    * @returns Success with parsed value, or failure with error message
    */
   abstract parse(
     value: TValue,
-    projectDef: unknown,
+    projectDef: ProjectDefinition,
   ): RefExpressionParseResult<TParseResult>;
 
   /**
@@ -168,14 +169,14 @@ export abstract class RefExpressionParser<
    *
    * @param value - The raw expression value
    * @param parseResult - The cached parse result
-   * @param definition - The project definition (typed as unknown to avoid circular reference)
+   * @param definition - The project definition
    * @param resolvedSlots - The resolved slot paths for this expression
    * @returns Array of entity references with positions for rename
    */
   abstract getReferencedEntities(
     value: TValue,
     parseResult: RefExpressionParseResult<TParseResult>,
-    definition: unknown,
+    definition: ProjectDefinition,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionDependency[];
 
@@ -191,7 +192,7 @@ export abstract class RefExpressionParser<
    */
   validate(
     value: TValue,
-    projectDef: unknown,
+    projectDef: ProjectDefinition,
     context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionWarning[] {

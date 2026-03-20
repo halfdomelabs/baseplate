@@ -1,5 +1,7 @@
 import { set } from 'es-toolkit/compat';
 
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
+
 import type {
   DefinitionEntity,
   ReferencePath,
@@ -55,11 +57,13 @@ export function applyExpressionRenames<T>(
   let modified = false;
   const updates: { path: ReferencePath; value: string }[] = [];
 
+  const oldDefinition = oldRefPayload.data as ProjectDefinition;
+
   for (const expression of oldExpressions) {
     // Parse and resolve entities against the OLD definition where old names still exist
     const parseResult = expression.parser.parse(
       expression.value,
-      oldRefPayload.data,
+      oldDefinition,
     );
     if (!parseResult.success) {
       // Don't touch broken expressions
@@ -69,7 +73,7 @@ export function applyExpressionRenames<T>(
     const refs = expression.parser.getReferencedEntities(
       expression.value,
       parseResult,
-      oldRefPayload.data,
+      oldDefinition,
       expression.resolvedSlots,
     );
 

@@ -4,13 +4,14 @@ import type {
   ExpressionValidationContext,
 } from '#src/references/expression-types.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 /**
  * Input for expression issue collection.
  * Satisfied by ProjectDefinitionContainer and by lightweight test fixtures.
  */
 export interface CollectExpressionIssuesInput {
-  definition: unknown;
+  definition: ProjectDefinition;
   pluginStore: PluginSpecStore;
   expressions: readonly DefinitionExpression[];
 }

@@ -119,7 +119,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   getReferencedEntities(
     _value: string,
     parseResult: RefExpressionParseResult<AuthorizerExpressionInfo>,
-    definition: unknown,
+    definition: ProjectDefinition,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): RefExpressionDependency[] {
     if (!parseResult.success) {
@@ -128,7 +128,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = ((definition as ProjectDefinition).models ?? []).filter(
+    const allModels = (definition.models ?? []).filter(
       (m): m is ModelConfig => typeof m.name === 'string',
     );
 
@@ -304,7 +304,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * so we walk parent paths until we find an object with a string `name` property.
    */
   private getRawModel(
-    definition: unknown,
+    definition: ProjectDefinition,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): ModelConfig {
     const modelPath = resolvedSlots.model;
@@ -339,12 +339,12 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
    * Extract model context from the project definition using resolved slots.
    */
   private getModelContext(
-    definition: unknown,
+    definition: ProjectDefinition,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
   ): ModelValidationContext {
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = ((definition as ProjectDefinition).models ?? []).filter(
+    const allModels = (definition.models ?? []).filter(
       (m): m is ModelConfig => typeof m.name === 'string',
     );
 

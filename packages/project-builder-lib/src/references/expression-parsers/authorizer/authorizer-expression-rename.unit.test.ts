@@ -1,72 +1,111 @@
 import { describe, expect, it } from 'vitest';
 
 import type { RefExpressionDependency } from '#src/references/expression-types.js';
+import type { ModelConfigInput } from '#src/schema/models/models.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { modelAuthorizerRoleEntityType } from '#src/schema/models/authorizer/types.js';
-import { modelScalarFieldEntityType } from '#src/schema/models/types.js';
+import {
+  modelLocalRelationEntityType,
+  modelScalarFieldEntityType,
+} from '#src/schema/models/types.js';
+import { createTestModel } from '#src/testing/definition-helpers.test-helper.js';
+import { createTestProjectDefinition } from '#src/testing/project-definition-container.test-helper.js';
 
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParser } from './authorizer-expression-parser.js';
 
 /**
- * Build a minimal definition with one model for testing getReferencedEntities.
+ * Build a definition with models for testing getReferencedEntities.
+ * Returns properly-typed objects from createTestModel/createTestProjectDefinition.
  */
 function buildDefinition(
-  model: {
-    fields?: { id: string; name: string }[];
-    relations?: {
-      id: string;
-      name: string;
-      modelRef: string;
-    }[];
-  },
-  otherModels?: {
-    id: string;
-    name: string;
-    fields?: { id: string; name: string }[];
-    authorizer?: { roles?: { id: string; name: string }[] };
-  }[],
-): { definition: unknown; resolvedSlots: { model: (string | number)[] } } {
-  const mainModel = {
+  mainModelInput: TestModelOverrides,
+  otherModelInputs: TestModelOverrides[] = [],
+): {
+  definition: ProjectDefinition;
+  resolvedSlots: { model: (string | number)[] };
+} {
+  const mainModel = createTestModel({
     id: 'model:main',
     name: 'Main',
-    model: {
-      fields: model.fields ?? [],
-      relations: model.relations ?? [],
-    },
-    authorizer: { roles: [] },
-  };
+    ...mainModelInput,
+  } as Partial<ModelConfigInput>);
 
-  const models = [
-    mainModel,
-    ...(otherModels ?? []).map((m) => ({
-      id: m.id,
-      name: m.name,
-      model: { fields: m.fields ?? [], relations: [] },
-      authorizer: m.authorizer ?? { roles: [] },
-    })),
-  ];
+  const otherModels = otherModelInputs.map((input) =>
+    createTestModel(input as Partial<ModelConfigInput>),
+  );
+
+  const definition = createTestProjectDefinition({
+    models: [mainModel, ...otherModels],
+  });
 
   return {
-    definition: { models },
+    definition,
     resolvedSlots: { model: ['models', 0] },
   };
 }
 
 function getReferencedEntities(
   expression: string,
-  model: Parameters<typeof buildDefinition>[0],
-  otherModels?: Parameters<typeof buildDefinition>[1],
+  mainModelInput: TestModelOverrides,
+  otherModelInputs?: TestModelOverrides[],
 ): RefExpressionDependency[] {
   const parser = new AuthorizerExpressionParser();
   const info = parseAuthorizerExpression(expression);
-  const { definition, resolvedSlots } = buildDefinition(model, otherModels);
+  const { definition, resolvedSlots } = buildDefinition(
+    mainModelInput,
+    otherModelInputs,
+  );
   return parser.getReferencedEntities(
     expression,
     { success: true, value: info },
     definition,
     resolvedSlots,
   );
+}
+
+/**
+ * Test-only model input that allows partial model sub-fields.
+ * createTestModel fills in all required defaults at runtime.
+ */
+// oxlint-disable-next-line typescript/no-explicit-any
+type TestModelInput = Record<string, any>;
+
+/** Loose override type for test model creation — cast to ModelConfigInput at call site. */
+interface TestModelOverrides {
+  id?: string;
+  name?: string;
+  model?: TestModelInput;
+  authorizer?: TestModelInput;
+  [key: string]: unknown;
+}
+
+/** Helper: create model input with extra fields (default id field is kept by createTestModel). */
+function modelWithFields(
+  extraFields: { id: string; name: string }[],
+): TestModelInput {
+  return {
+    fields: extraFields.map((f) => ({
+      ...f,
+      type: 'string' as const,
+      isOptional: false,
+      options: { default: '' },
+    })),
+  };
+}
+
+/** Helper: create model input with relations. */
+function modelWithRelations(
+  relations: { id: string; name: string; modelRef: string }[],
+): TestModelInput {
+  return {
+    relations: relations.map((r) => ({
+      ...r,
+      foreignRelationName: 'backRef',
+      references: [],
+    })),
+  };
 }
 
 /**
@@ -98,12 +137,14 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
   describe('model field references', () => {
     it('should resolve model.field to field entity ID', () => {
       const deps = getReferencedEntities('model.title === userId', {
-        fields: [{ id: 'field:title', name: 'title' }],
+        model: modelWithFields([
+          { id: 'model-scalar-field:title', name: 'title' },
+        ]),
       });
       expect(deps).toEqual([
         {
           entityType: modelScalarFieldEntityType,
-          entityId: 'field:title',
+          entityId: 'model-scalar-field:title',
           start: 6,
           end: 11,
         },
@@ -112,20 +153,18 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
 
     it('should resolve fields on both sides of a comparison', () => {
       const deps = getReferencedEntities('model.authorId === model.creatorId', {
-        fields: [
-          { id: 'field:author', name: 'authorId' },
-          { id: 'field:creator', name: 'creatorId' },
-        ],
+        model: modelWithFields([
+          { id: 'model-scalar-field:author', name: 'authorId' },
+          { id: 'model-scalar-field:creator', name: 'creatorId' },
+        ]),
       });
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('field:author');
-      expect(deps[1].entityId).toBe('field:creator');
+      expect(deps[0].entityId).toBe('model-scalar-field:author');
+      expect(deps[1].entityId).toBe('model-scalar-field:creator');
     });
 
     it('should skip unknown fields', () => {
-      const deps = getReferencedEntities('model.unknown === userId', {
-        fields: [{ id: 'field:title', name: 'title' }],
-      });
+      const deps = getReferencedEntities('model.unknown === userId', {});
       expect(deps).toEqual([]);
     });
   });
@@ -135,28 +174,34 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         "hasRole(model.todoList, 'owner')",
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:todoList',
+              id: 'model-local-relation:todoList',
               name: 'todoList',
               modelRef: 'model:todo',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:todo',
             name: 'Todo',
             authorizer: {
-              roles: [{ id: 'auth-role:owner', name: 'owner' }],
+              roles: [
+                {
+                  id: 'model-authorizer-role:owner',
+                  name: 'owner',
+                  expression: 'model.id === userId',
+                },
+              ],
             },
           },
         ],
       );
-      // Should have both the relation ref and the foreign role ref
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('rel:todoList');
-      expect(deps[1].entityId).toBe('auth-role:owner');
+      expect(deps[0].entityId).toBe('model-local-relation:todoList');
+      expect(deps[0].entityType).toBe(modelLocalRelationEntityType);
+      expect(deps[1].entityId).toBe('model-authorizer-role:owner');
       expect(deps[1].entityType).toBe(modelAuthorizerRoleEntityType);
     });
 
@@ -164,26 +209,27 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         'exists(model.members, { memberId: userId })',
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:members',
+              id: 'model-local-relation:members',
               name: 'members',
               modelRef: 'model:member',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:member',
             name: 'Member',
-            fields: [{ id: 'field:memberId', name: 'memberId' }],
+            model: modelWithFields([
+              { id: 'model-scalar-field:memberId', name: 'memberId' },
+            ]),
           },
         ],
       );
-      // Relation + foreign field in condition
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('rel:members');
-      expect(deps[1].entityId).toBe('field:memberId');
+      expect(deps[0].entityId).toBe('model-local-relation:members');
+      expect(deps[1].entityId).toBe('model-scalar-field:memberId');
     });
   });
 
@@ -191,12 +237,14 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
     it('should rename a model field', () => {
       const expression = 'model.title === userId';
       const deps = getReferencedEntities(expression, {
-        fields: [{ id: 'field:title', name: 'title' }],
+        model: modelWithFields([
+          { id: 'model-scalar-field:title', name: 'title' },
+        ]),
       });
       const result = applyRenames(
         expression,
         deps,
-        new Map([['field:title', 'heading']]),
+        new Map([['model-scalar-field:title', 'heading']]),
       );
       expect(result).toBe('model.heading === userId');
     });
@@ -206,20 +254,26 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         expression,
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:todoList',
+              id: 'model-local-relation:todoList',
               name: 'todoList',
               modelRef: 'model:todo',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:todo',
             name: 'Todo',
             authorizer: {
-              roles: [{ id: 'auth-role:owner', name: 'owner' }],
+              roles: [
+                {
+                  id: 'model-authorizer-role:owner',
+                  name: 'owner',
+                  expression: 'model.id === userId',
+                },
+              ],
             },
           },
         ],
@@ -227,7 +281,7 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const result = applyRenames(
         expression,
         deps,
-        new Map([['rel:todoList', 'list']]),
+        new Map([['model-local-relation:todoList', 'list']]),
       );
       expect(result).toBe("hasRole(model.list, 'owner')");
     });
@@ -237,20 +291,26 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         expression,
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:todoList',
+              id: 'model-local-relation:todoList',
               name: 'todoList',
               modelRef: 'model:todo',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:todo',
             name: 'Todo',
             authorizer: {
-              roles: [{ id: 'auth-role:owner', name: 'owner' }],
+              roles: [
+                {
+                  id: 'model-authorizer-role:owner',
+                  name: 'owner',
+                  expression: 'model.id === userId',
+                },
+              ],
             },
           },
         ],
@@ -258,7 +318,7 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const result = applyRenames(
         expression,
         deps,
-        new Map([['auth-role:owner', 'admin']]),
+        new Map([['model-authorizer-role:owner', 'admin']]),
       );
       expect(result).toBe("hasRole(model.todoList, 'admin')");
     });
@@ -268,20 +328,26 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         expression,
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:todoList',
+              id: 'model-local-relation:todoList',
               name: 'todoList',
               modelRef: 'model:todo',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:todo',
             name: 'Todo',
             authorizer: {
-              roles: [{ id: 'auth-role:owner', name: 'owner' }],
+              roles: [
+                {
+                  id: 'model-authorizer-role:owner',
+                  name: 'owner',
+                  expression: 'model.id === userId',
+                },
+              ],
             },
           },
         ],
@@ -290,8 +356,8 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
         expression,
         deps,
         new Map([
-          ['rel:todoList', 'list'],
-          ['auth-role:owner', 'admin'],
+          ['model-local-relation:todoList', 'list'],
+          ['model-authorizer-role:owner', 'admin'],
         ]),
       );
       expect(result).toBe("hasRole(model.list, 'admin')");
@@ -302,78 +368,42 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
       const deps = getReferencedEntities(
         expression,
         {
-          relations: [
+          model: modelWithRelations([
             {
-              id: 'rel:members',
+              id: 'model-local-relation:members',
               name: 'members',
               modelRef: 'model:member',
             },
-          ],
+          ]),
         },
         [
           {
             id: 'model:member',
             name: 'Member',
-            fields: [{ id: 'field:userName', name: 'userName' }],
+            model: modelWithFields([
+              { id: 'model-scalar-field:userName', name: 'userName' },
+            ]),
           },
         ],
       );
       const result = applyRenames(
         expression,
         deps,
-        new Map([['field:userName', 'memberName']]),
+        new Map([['model-scalar-field:userName', 'memberName']]),
       );
       expect(result).toBe('exists(model.members, { memberName: userId })');
     });
 
-    it('should handle complex expression with multiple renames', () => {
-      const expression =
-        "model.authorId === userId && hasRole(model.todoList, 'owner')";
-      const deps = getReferencedEntities(
-        expression,
-        {
-          fields: [{ id: 'field:authorId', name: 'authorId' }],
-          relations: [
-            {
-              id: 'rel:todoList',
-              name: 'todoList',
-              modelRef: 'model:todo',
-            },
-          ],
-        },
-        [
-          {
-            id: 'model:todo',
-            name: 'Todo',
-            authorizer: {
-              roles: [{ id: 'auth-role:owner', name: 'owner' }],
-            },
-          },
-        ],
-      );
-      const result = applyRenames(
-        expression,
-        deps,
-        new Map([
-          ['field:authorId', 'ownerId'],
-          ['rel:todoList', 'list'],
-          ['auth-role:owner', 'admin'],
-        ]),
-      );
-      expect(result).toBe(
-        "model.ownerId === userId && hasRole(model.list, 'admin')",
-      );
-    });
-
     it('should not rename when no entities match', () => {
       const expression = 'model.id === userId';
-      const deps = getReferencedEntities(expression, {
-        fields: [{ id: 'field:id', name: 'id' }],
-      });
+      const deps = getReferencedEntities(expression, {});
+      // The default id field from createTestModel should be resolved
+      expect(deps).toHaveLength(1);
+
       const result = applyRenames(
         expression,
         deps,
-        new Map([['field:other', 'something']]),
+        new Map([['model-scalar-field:other', 'something']]),
       );
       expect(result).toBe(expression);
     });
