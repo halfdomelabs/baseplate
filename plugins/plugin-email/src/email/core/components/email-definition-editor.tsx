@@ -1,7 +1,4 @@
-import type {
-  ProjectDefinition,
-  WebConfigProps,
-} from '@baseplate-dev/project-builder-lib';
+import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -40,19 +37,9 @@ import { TRANSACTIONAL_LIB_TYPE } from '#src/email/transactional-lib/schema/tran
 import type { EmailPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createEmailPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { getTransactionalLibName } from '../schema/schema-issue-checker.js';
 
 import '#src/styles.css';
-
-function getTransactionalLibName(definition: ProjectDefinition): string {
-  const existingNames = new Set(definition.libraries.map((lib) => lib.name));
-  let name = 'transactional';
-  let counter = 2;
-  while (existingNames.has(name)) {
-    name = `transactional-${counter}`;
-    counter++;
-  }
-  return name;
-}
 
 export function EmailDefinitionEditor({
   definition: pluginMetadata,

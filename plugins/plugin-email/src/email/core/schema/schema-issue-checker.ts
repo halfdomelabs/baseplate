@@ -1,4 +1,7 @@
-import type { DefinitionIssueChecker } from '@baseplate-dev/project-builder-lib';
+import type {
+  DefinitionIssueChecker,
+  ProjectDefinition,
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   createEntityIssue,
@@ -9,6 +12,17 @@ import {
 import { sortBy } from 'es-toolkit';
 
 import { TRANSACTIONAL_LIB_TYPE } from '#src/email/transactional-lib/schema/transactional-lib-definition.js';
+
+export function getTransactionalLibName(definition: ProjectDefinition): string {
+  const existingNames = new Set(definition.libraries.map((lib) => lib.name));
+  let name = 'transactional';
+  let counter = 2;
+  while (existingNames.has(name)) {
+    name = `transactional-${counter}`;
+    counter++;
+  }
+  return name;
+}
 
 export function createEmailSchemaChecker(
   pluginKey: string,
@@ -25,6 +39,8 @@ export function createEmailSchemaChecker(
     );
     if (hasTransactionalLib) return [];
 
+    const libName = getTransactionalLibName(container.definition);
+
     return [
       createEntityIssue(container, pluginEntityType.idFromKey(pluginKey), [], {
         message:
@@ -38,7 +54,7 @@ export function createEmailSchemaChecker(
                 ...draft.libraries,
                 {
                   id: libraryEntityType.generateNewId(),
-                  name: 'transactional',
+                  name: libName,
                   type: TRANSACTIONAL_LIB_TYPE,
                 },
               ],
