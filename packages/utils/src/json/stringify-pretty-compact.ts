@@ -10,7 +10,7 @@ function forEach(
   cb: (val: unknown, key: string | number) => void,
 ): void {
   if (Array.isArray(obj)) {
-    // eslint-disable-next-line unicorn/no-array-for-each
+    // oxlint-disable-next-line unicorn/no-array-for-each
     obj.forEach(cb);
   } else if (isObject(obj)) {
     for (const key of Object.keys(obj)) {
@@ -164,7 +164,7 @@ export function stringifyPrettyCompact(
         }
         delimiters = '[]';
       } else {
-        // eslint-disable-next-line unicorn/no-array-for-each
+        // oxlint-disable-next-line unicorn/no-array-for-each
         Object.keys(obj).forEach((key, index, array) => {
           const keyPart = `${JSON.stringify(key)}: `;
           const value = stringifyRecursive(

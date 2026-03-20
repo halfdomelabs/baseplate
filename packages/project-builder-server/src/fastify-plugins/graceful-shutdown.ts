@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-process-exit */
+/* oxlint-disable unicorn/no-process-exit */
 import fp from 'fastify-plugin';
 
 const TIMEOUT = 10_000; // time out if shutdown takes longer than 10 seconds
