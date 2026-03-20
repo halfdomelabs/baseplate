@@ -2,4 +2,4 @@
 '@baseplate-dev/plugin-email': patch
 ---
 
-Add Resend as a supported email provider alongside Postmark
+Add Resend and Stub/Custom email providers alongside Postmark
