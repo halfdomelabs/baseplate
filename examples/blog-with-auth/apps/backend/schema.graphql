@@ -24,6 +24,14 @@ type Blog {
   userId: Uuid!
 }
 
+type BlogPost {
+  blogId: Uuid!
+  content: String!
+  metadata: JSON
+  publisherId: Uuid!
+  title: String!
+}
+
 """Input type for changePassword mutation"""
 input ChangePasswordInput {
   currentPassword: String!
@@ -48,6 +56,24 @@ input CreateArticleInput {
 """Payload type for createArticle mutation"""
 type CreateArticlePayload {
   article: Article!
+}
+
+input CreateBlogPostData {
+  blogId: Uuid!
+  content: String!
+  metadata: JSON
+  publisherId: Uuid!
+  title: String!
+}
+
+"""Input type for createBlogPost mutation"""
+input CreateBlogPostInput {
+  data: CreateBlogPostData!
+}
+
+"""Payload type for createBlogPost mutation"""
+type CreateBlogPostPayload {
+  blogPost: BlogPost!
 }
 
 input CreateUserData {
@@ -84,6 +110,16 @@ input DeleteBlogInput {
 """Payload type for deleteBlog mutation"""
 type DeleteBlogPayload {
   blog: Blog!
+}
+
+"""Input type for deleteBlogPost mutation"""
+input DeleteBlogPostInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteBlogPost mutation"""
+type DeleteBlogPostPayload {
+  blogPost: BlogPost!
 }
 
 """Input type for deleteUser mutation"""
@@ -126,8 +162,10 @@ type LoginWithEmailPasswordPayload {
 type Mutation {
   changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
   createArticle(input: CreateArticleInput!): CreateArticlePayload!
+  createBlogPost(input: CreateBlogPostInput!): CreateBlogPostPayload!
   createUser(input: CreateUserInput!): CreateUserPayload!
   deleteBlog(input: DeleteBlogInput!): DeleteBlogPayload!
+  deleteBlogPost(input: DeleteBlogPostInput!): DeleteBlogPostPayload!
   deleteUser(input: DeleteUserInput!): DeleteUserPayload!
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
@@ -138,6 +176,7 @@ type Mutation {
   resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
   updateArticle(input: UpdateArticleInput!): UpdateArticlePayload!
   updateBlog(input: UpdateBlogInput!): UpdateBlogPayload!
+  updateBlogPost(input: UpdateBlogPostInput!): UpdateBlogPostPayload!
   updateUser(input: UpdateUserInput!): UpdateUserPayload!
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
   validatePasswordResetToken(input: ValidatePasswordResetTokenInput!): ValidatePasswordResetTokenPayload!
@@ -148,6 +187,8 @@ type Query {
   article(id: Uuid!): Article!
   articles(skip: Int, take: Int): [Article!]!
   blog(id: Uuid!): Blog!
+  blogPost(id: Uuid!): BlogPost!
+  blogPosts(skip: Int, take: Int): [BlogPost!]!
   blogs(skip: Int, take: Int): [Blog!]!
 
   """Get the current user session"""
@@ -238,6 +279,25 @@ input UpdateBlogInput {
 """Payload type for updateBlog mutation"""
 type UpdateBlogPayload {
   blog: Blog!
+}
+
+input UpdateBlogPostData {
+  blogId: Uuid
+  content: String
+  metadata: JSON
+  publisherId: Uuid
+  title: String
+}
+
+"""Input type for updateBlogPost mutation"""
+input UpdateBlogPostInput {
+  data: UpdateBlogPostData!
+  id: Uuid!
+}
+
+"""Payload type for updateBlogPost mutation"""
+type UpdateBlogPostPayload {
+  blogPost: BlogPost!
 }
 
 input UpdateUserData {
