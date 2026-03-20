@@ -1,3 +1,4 @@
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -10,15 +11,18 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import {
@@ -27,12 +31,16 @@ import {
   notFound,
   useNavigate,
 } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
-import { MdWarning } from 'react-icons/md';
 
 import { NotFoundCard } from '#src/components/index.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
+
+interface UnmetDep {
+  metadata: PluginMetadataWithPaths;
+  hasWebConfig: boolean;
+}
 
 export const Route = createFileRoute('/plugins/edit/$key')({
   component: PluginConfigPage,
@@ -97,12 +105,25 @@ function PluginConfigPage(): React.JSX.Element {
   ]);
 
   // Check for unmet dependencies when plugin is not yet enabled
-  const unmetDeps = useMemo(() => {
+  const unmetDeps = useMemo((): UnmetDep[] => {
     if (pluginDefinition) return [];
     const { pluginStore } = schemaParserContext;
     const enabledPlugins = definitionContainer.definition.plugins ?? [];
     const enabledFqns = buildEnabledPluginFqnSet(pluginStore, enabledPlugins);
-    return getUnmetPluginDependencies(pluginStore, key, enabledFqns);
+    const deps = getUnmetPluginDependencies(pluginStore, key, enabledFqns);
+    return deps.map((dep) => {
+      const implementations = createPluginImplementationStoreWithNewPlugins(
+        pluginStore,
+        [dep],
+        definitionContainer.definition,
+      );
+      return {
+        metadata: dep,
+        hasWebConfig: implementations
+          .use(webConfigSpec)
+          .components.has(dep.key),
+      };
+    });
   }, [pluginDefinition, schemaParserContext, definitionContainer, key]);
 
   if (!Container) {
@@ -111,42 +132,10 @@ function PluginConfigPage(): React.JSX.Element {
 
   if (unmetDeps.length > 0) {
     return (
-      <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
-        <h1>{pluginMetadata.displayName} Plugin</h1>
-        <Alert variant="warning">
-          <MdWarning />
-          <AlertTitle>Missing Required Dependencies</AlertTitle>
-          <AlertDescription>
-            <p>
-              {pluginMetadata.displayName} requires the following plugins to be
-              enabled and configured first:
-            </p>
-            <ul className="list-inside list-disc">
-              {unmetDeps.map((dep) => (
-                <li key={dep.key}>
-                  <Link
-                    to="/plugins/edit/$key"
-                    params={{ key: dep.key }}
-                    className="underline"
-                  >
-                    {dep.displayName}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="mt-2"
-              onClick={() => {
-                navigate({ to: '/plugins' }).catch(logAndFormatError);
-              }}
-            >
-              Back to Plugins
-            </Button>
-          </AlertDescription>
-        </Alert>
-      </div>
+      <UnmetDependenciesView
+        pluginMetadata={pluginMetadata}
+        unmetDeps={unmetDeps}
+      />
     );
   }
 
@@ -210,6 +199,100 @@ function PluginConfigPage(): React.JSX.Element {
           metadata={pluginMetadata}
           onSave={onSave}
         />
+      </div>
+    </div>
+  );
+}
+
+function UnmetDependenciesView({
+  pluginMetadata,
+  unmetDeps,
+}: {
+  pluginMetadata: PluginMetadataWithPaths;
+  unmetDeps: UnmetDep[];
+}): React.ReactElement {
+  const {
+    saveDefinitionWithFeedbackSync,
+    definitionContainer,
+    isSavingDefinition,
+  } = useProjectDefinition();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const [enablingKey, setEnablingKey] = useState<string | null>(null);
+
+  function handleEnable(dep: UnmetDep): void {
+    setEnablingKey(dep.metadata.key);
+    saveDefinitionWithFeedbackSync(
+      (draft) => {
+        PluginUtils.setPluginConfig(
+          draft,
+          dep.metadata,
+          {},
+          definitionContainer,
+        );
+      },
+      {
+        successMessage: `Enabled ${dep.metadata.displayName}!`,
+        onSuccess: () => {
+          setEnablingKey(null);
+        },
+      },
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
+      <h1>{pluginMetadata.displayName} Plugin</h1>
+      <div className="flex max-w-lg flex-col gap-3">
+        <p className="text-sm text-muted-foreground">
+          {pluginMetadata.displayName} requires the following plugins to be
+          enabled and configured first:
+        </p>
+        <ItemGroup>
+          {unmetDeps.map((dep) => (
+            <Item key={dep.metadata.key} variant="outline">
+              <ItemContent>
+                <ItemTitle>{dep.metadata.displayName}</ItemTitle>
+                <ItemDescription>{dep.metadata.description}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                {dep.hasWebConfig ? (
+                  <Link
+                    to="/plugins/edit/$key"
+                    params={{ key: dep.metadata.key }}
+                  >
+                    <Button variant="secondary" size="sm">
+                      Configure
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={isSavingDefinition || enablingKey !== null}
+                    onClick={() => {
+                      handleEnable(dep);
+                    }}
+                  >
+                    {enablingKey === dep.metadata.key
+                      ? 'Enabling...'
+                      : 'Enable'}
+                  </Button>
+                )}
+              </ItemActions>
+            </Item>
+          ))}
+        </ItemGroup>
+        <div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              navigate({ to: '/plugins' }).catch(logAndFormatError);
+            }}
+          >
+            Back to Plugins
+          </Button>
+        </div>
       </div>
     </div>
   );
