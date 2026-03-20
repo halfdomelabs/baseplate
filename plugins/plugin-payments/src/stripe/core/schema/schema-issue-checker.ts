@@ -18,9 +18,10 @@ export function createStripeSchemaChecker(
     pluginKey,
     pluginLabel: 'Stripe',
     buildPartialDef: (container) => {
-      const config = PluginUtils.configByKey(container.definition, pluginKey) as
-        | StripePluginDefinition
-        | undefined;
+      const config = PluginUtils.configByKey(
+        container.definition,
+        pluginKey,
+      ) as StripePluginDefinition | undefined;
 
       if (!config?.billing.enabled || !config.billing.featureRef) {
         return undefined;
