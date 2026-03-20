@@ -1532,6 +1532,9 @@ importers:
       '@tanstack/react-router':
         specifier: 1.159.5
         version: 1.159.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      es-toolkit:
+        specifier: 1.44.0
+        version: 1.44.0
       react:
         specifier: 'catalog:'
         version: 19.1.0
