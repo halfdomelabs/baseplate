@@ -6,6 +6,7 @@ import {
   definitionSchema,
   definitionSchemaWithSlots,
 } from '#src/schema/creator/schema-creator.js';
+import { VALIDATORS } from '#src/schema/utils/validation.js';
 
 import { featureEntityType } from '../features/index.js';
 import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
@@ -16,8 +17,9 @@ export const createEnumValueSchema = definitionSchemaWithSlots(
     ctx.withEnt(
       z.object({
         id: z.string(),
-        name: z.string().min(1),
+        name: VALIDATORS.CONSTANT_CASE_STRING,
         friendlyName: z.string().min(1),
+        description: z.string().default(''),
       }),
       {
         type: modelEnumValueEntityType,
@@ -33,7 +35,7 @@ export const createEnumBaseSchema = definitionSchemaWithSlots(
   (ctx, { enumSlot }) =>
     z.object({
       id: z.string(),
-      name: z.string().min(1),
+      name: VALIDATORS.PASCAL_CASE_STRING,
       featureRef: ctx.withRef({
         type: featureEntityType,
         onDelete: 'RESTRICT',

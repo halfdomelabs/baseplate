@@ -1,0 +1,32 @@
+{
+  "name": "stub/core/stub",
+  "templates": {
+    "stub-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "emailModuleImportsProvider": {
+          "importName": "emailModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/emails/services/stub.service.ts",
+      "sourceFile": "module/emails/services/stub.service.ts",
+      "variables": {
+        "TPL_ADAPTER_NAME": {
+          "description": "The exported adapter variable name"
+        },
+        "TPL_LOG_MESSAGE": {
+          "description": "The log message for the stub adapter"
+        },
+        "TPL_PROVIDER_NAME": {
+          "description": "The provider name string literal"
+        }
+      }
+    }
+  }
+}

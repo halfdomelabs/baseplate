@@ -5,5 +5,10 @@
   "description": "This plugin sets up a self-hosted auth service using email/password authentication.",
   "version": "0.1.0",
   "moduleDirectories": ["core", "admin"],
-  "managedBy": "@baseplate-dev/plugin-auth:auth"
+  "managedBy": "@baseplate-dev/plugin-auth:auth",
+  "pluginDependencies": [
+    { "plugin": "@baseplate-dev/plugin-email:email" },
+    { "plugin": "@baseplate-dev/plugin-queue:queue" },
+    { "plugin": "@baseplate-dev/plugin-rate-limit:rate-limit" }
+  ]
 }

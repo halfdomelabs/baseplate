@@ -18,6 +18,19 @@ export const pluginSpecDependencySchema = z.object({
 export type PluginSpecDependency = z.infer<typeof pluginSpecDependencySchema>;
 
 /**
+ * Schema for a plugin-level dependency declaration.
+ * Declares that a plugin requires (or optionally suggests) another plugin to be enabled.
+ */
+export const pluginDependencySchema = z.object({
+  /** Fully qualified plugin name, e.g. "@baseplate-dev/plugin-auth:auth" */
+  plugin: z.string().min(1),
+  /** Whether this dependency is optional (suggested but not required). Defaults to false. */
+  optional: z.boolean().optional(),
+});
+
+export type PluginDependency = z.infer<typeof pluginDependencySchema>;
+
+/**
  * Schema for the plugin's metadata (plugin.json)
  */
 export const pluginMetadataSchema = z.object({
@@ -71,6 +84,11 @@ export const pluginMetadataSchema = z.object({
       dependencies: z.array(pluginSpecDependencySchema).optional(),
     })
     .optional(),
+  /**
+   * Plugin-level dependencies that declare which other plugins must (or should) be enabled
+   * for this plugin to function correctly. References plugins by fully qualified name.
+   */
+  pluginDependencies: z.array(pluginDependencySchema).optional(),
   /**
    * Whether the plugin should be hidden in the project builder UI
    *

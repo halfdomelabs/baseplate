@@ -26,8 +26,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { UnlinkSection } from '../../-components/unlink-section.js';
-
 function NodeLibraryEditComponent({
   packageDefinition,
 }: LibraryEditComponentProps): React.JSX.Element {
@@ -67,12 +65,6 @@ function NodeLibraryEditComponent({
             <InputFieldController label="Name" control={control} name="name" />
           </SectionListSectionContent>
         </SectionListSection>
-
-        <UnlinkSection
-          entityType="library"
-          entityId={packageDefinition.id}
-          name={packageDefinition.name}
-        />
       </SectionList>
       <FormActionBar form={formProps} />
     </form>

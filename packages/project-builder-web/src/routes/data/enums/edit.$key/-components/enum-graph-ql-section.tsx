@@ -1,4 +1,4 @@
-import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
+import type { EnumConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -13,7 +13,7 @@ import {
 export function EnumGraphQLSection({
   control,
 }: {
-  control: Control<EnumConfig>;
+  control: Control<EnumConfigInput>;
 }): React.JSX.Element {
   return (
     <SectionListSection>

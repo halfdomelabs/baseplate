@@ -29,7 +29,7 @@
     "./eslint-configs/storybook": "./eslint-configs/storybook.js",
     "./eslint-node": "./eslint.config.node.js",
     "./eslint-react": "./eslint.config.react.js",
-    "./oxlint-config-base": "./oxlint.config.base.ts",
+    "./oxlint-config-base": "./oxlint.config.base.js",
     "./prettier-node": "./prettier.config.node.js",
     "./prettier-react": "./prettier.config.react.js",
     "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
@@ -65,7 +65,7 @@
     "eslint-plugin-better-tailwindcss": "4.3.2",
     "eslint-plugin-import-x": "4.16.2",
     "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-oxlint": "^1.55.0",
+    "eslint-plugin-oxlint": "1.56.0",
     "eslint-plugin-perfectionist": "5.4.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
@@ -92,7 +92,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   },
   "volta": {
     "extends": "../../package.json"

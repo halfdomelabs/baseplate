@@ -50,6 +50,15 @@ export type Blog = {
   userId: Scalars['Uuid']['output'];
 };
 
+export type BlogPost = {
+  __typename?: 'BlogPost';
+  blogId: Scalars['Uuid']['output'];
+  content: Scalars['String']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  publisherId: Scalars['Uuid']['output'];
+  title: Scalars['String']['output'];
+};
+
 /** Input type for changePassword mutation */
 export type ChangePasswordInput = {
   currentPassword: Scalars['String']['input'];
@@ -78,6 +87,25 @@ export type CreateArticlePayload = {
   article: Article;
 };
 
+export type CreateBlogPostData = {
+  blogId: Scalars['Uuid']['input'];
+  content: Scalars['String']['input'];
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  publisherId: Scalars['Uuid']['input'];
+  title: Scalars['String']['input'];
+};
+
+/** Input type for createBlogPost mutation */
+export type CreateBlogPostInput = {
+  data: CreateBlogPostData;
+};
+
+/** Payload type for createBlogPost mutation */
+export type CreateBlogPostPayload = {
+  __typename?: 'CreateBlogPostPayload';
+  blogPost: BlogPost;
+};
+
 export type CreateUserData = {
   email?: InputMaybe<Scalars['String']['input']>;
   emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
@@ -104,6 +132,17 @@ export type DeleteBlogInput = {
 export type DeleteBlogPayload = {
   __typename?: 'DeleteBlogPayload';
   blog: Blog;
+};
+
+/** Input type for deleteBlogPost mutation */
+export type DeleteBlogPostInput = {
+  id: Scalars['Uuid']['input'];
+};
+
+/** Payload type for deleteBlogPost mutation */
+export type DeleteBlogPostPayload = {
+  __typename?: 'DeleteBlogPostPayload';
+  blogPost: BlogPost;
 };
 
 /** Input type for deleteUser mutation */
@@ -140,8 +179,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   changePassword: ChangePasswordPayload;
   createArticle: CreateArticlePayload;
+  createBlogPost: CreateBlogPostPayload;
   createUser: CreateUserPayload;
   deleteBlog: DeleteBlogPayload;
+  deleteBlogPost: DeleteBlogPostPayload;
   deleteUser: DeleteUserPayload;
   logOut: LogOutPayload;
   loginWithEmailPassword: LoginWithEmailPasswordPayload;
@@ -152,6 +193,7 @@ export type Mutation = {
   resetUserPassword: ResetUserPasswordPayload;
   updateArticle: UpdateArticlePayload;
   updateBlog: UpdateBlogPayload;
+  updateBlogPost: UpdateBlogPostPayload;
   updateUser: UpdateUserPayload;
   updateUserRoles: UpdateUserRolesPayload;
   validatePasswordResetToken: ValidatePasswordResetTokenPayload;
@@ -169,6 +211,11 @@ export type MutationCreateArticleArgs = {
 };
 
 
+export type MutationCreateBlogPostArgs = {
+  input: CreateBlogPostInput;
+};
+
+
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
@@ -176,6 +223,11 @@ export type MutationCreateUserArgs = {
 
 export type MutationDeleteBlogArgs = {
   input: DeleteBlogInput;
+};
+
+
+export type MutationDeleteBlogPostArgs = {
+  input: DeleteBlogPostInput;
 };
 
 
@@ -219,6 +271,11 @@ export type MutationUpdateBlogArgs = {
 };
 
 
+export type MutationUpdateBlogPostArgs = {
+  input: UpdateBlogPostInput;
+};
+
+
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
@@ -243,6 +300,8 @@ export type Query = {
   article: Article;
   articles: Array<Article>;
   blog: Blog;
+  blogPost: BlogPost;
+  blogPosts: Array<BlogPost>;
   blogs: Array<Blog>;
   /** Get the current user session */
   currentUserSession?: Maybe<UserSessionPayload>;
@@ -266,6 +325,17 @@ export type QueryArticlesArgs = {
 
 export type QueryBlogArgs = {
   id: Scalars['Uuid']['input'];
+};
+
+
+export type QueryBlogPostArgs = {
+  id: Scalars['Uuid']['input'];
+};
+
+
+export type QueryBlogPostsArgs = {
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -371,6 +441,26 @@ export type UpdateBlogInput = {
 export type UpdateBlogPayload = {
   __typename?: 'UpdateBlogPayload';
   blog: Blog;
+};
+
+export type UpdateBlogPostData = {
+  blogId?: InputMaybe<Scalars['Uuid']['input']>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['JSON']['input']>;
+  publisherId?: InputMaybe<Scalars['Uuid']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Input type for updateBlogPost mutation */
+export type UpdateBlogPostInput = {
+  data: UpdateBlogPostData;
+  id: Scalars['Uuid']['input'];
+};
+
+/** Payload type for updateBlogPost mutation */
+export type UpdateBlogPostPayload = {
+  __typename?: 'UpdateBlogPostPayload';
+  blogPost: BlogPost;
 };
 
 export type UpdateUserData = {

@@ -1,8 +1,10 @@
-import type { OxlintConfig } from 'oxlint';
+/** @typedef {import('oxlint').OxlintConfig} OxlintConfig */
 
 // ignorePatterns are not inherited via extends due to a known oxlint limitation:
 // https://github.com/oxc-project/oxc/issues/10223
 // Consumers should spread this into their own ignorePatterns.
+
+/** @type {string[]} */
 export const oxlintIgnorePatterns = [
   '**/dist/**',
   '**/generators/**/templates/**',
@@ -10,7 +12,7 @@ export const oxlintIgnorePatterns = [
   '**/route-tree.gen.ts',
 ];
 
-export default {
+export const oxlintConfigBase = {
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react'],
   categories: {
     correctness: 'error',
@@ -314,4 +316,4 @@ export default {
   options: {
     typeAware: true,
   },
-} as Omit<OxlintConfig, 'extends'>;
+};

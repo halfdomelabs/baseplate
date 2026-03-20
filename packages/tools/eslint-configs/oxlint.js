@@ -1,9 +1,8 @@
 // @ts-check
 import oxlint from 'eslint-plugin-oxlint';
 
-import oxlintConfig from '../oxlint.config.base.ts';
+import { oxlintConfigBase } from '../oxlint.config.base.js';
 
-// @ts-ignore -- oxlintConfig is not typed correctly
-const oxlintEslintConfigs = oxlint.buildFromOxlintConfig(oxlintConfig);
+const oxlintEslintConfigs = oxlint.buildFromOxlintConfig(oxlintConfigBase);
 
 export default oxlintEslintConfigs;

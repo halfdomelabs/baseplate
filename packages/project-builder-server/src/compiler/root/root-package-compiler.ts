@@ -21,6 +21,7 @@ import {
   DEFAULT_LIBRARIES_FOLDER,
   PackageCompiler,
 } from '@baseplate-dev/project-builder-lib';
+import { compareStrings } from '@baseplate-dev/utils';
 import { uniq } from 'es-toolkit';
 
 import type { PackageEntry } from '../package-entry.js';
@@ -75,11 +76,13 @@ export class RootPackageCompiler extends PackageCompiler {
     const workspacePackages = [`${appsFolder}/*`, `${librariesFolder}/*`];
 
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
+    const sortedUniq = (items: string[]): string[] =>
+      uniq(items).sort(compareStrings);
     const mergedTasks = {
-      build: uniq(tasks.flatMap((task) => task.build)),
-      check: uniq(tasks.flatMap((task) => task.check)),
-      dev: uniq(tasks.flatMap((task) => task.dev)),
-      watch: uniq(tasks.flatMap((task) => task.watch)),
+      build: sortedUniq(tasks.flatMap((task) => task.build)),
+      check: sortedUniq(tasks.flatMap((task) => task.check)),
+      dev: sortedUniq(tasks.flatMap((task) => task.dev)),
+      watch: sortedUniq(tasks.flatMap((task) => task.watch)),
     };
     const turboTasks = [
       ...mergedTasks.dev.map((task) => ({

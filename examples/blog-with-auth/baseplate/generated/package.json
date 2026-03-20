@@ -10,7 +10,7 @@
     "baseplate:serve": "baseplate serve",
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
-    "check": "turbo run lint typecheck test prettier:check --affected --continue",
+    "check": "turbo run lint prettier:check test typecheck --affected --continue",
     "dev": "turbo run dev gql:watch watch",
     "preinstall": "npx only-allow pnpm",
     "lint": "turbo run lint",
@@ -32,12 +32,12 @@
     "turbo": "2.5.0",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.32.1",
   "engines": {
-    "node": "^22.18.0",
-    "pnpm": "^10.27.0"
+    "node": "^24.14.0",
+    "pnpm": "^10.32.0"
   },
   "volta": {
-    "node": "22.18.0"
+    "node": "24.14.0"
   }
 }

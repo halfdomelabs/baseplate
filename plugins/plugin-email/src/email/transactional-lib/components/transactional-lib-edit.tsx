@@ -125,6 +125,7 @@ export const transactionalLibWebConfig = createLibraryWebConfig({
   name: transactionalLibDefinitionSchemaEntry.name,
   displayName: 'Transactional Email Library',
   description: 'React Email templates for transactional emails',
+  singleton: true,
   EditComponent: TransactionalLibEditComponent,
   createDefinition: ({ id, name }) => ({
     id,

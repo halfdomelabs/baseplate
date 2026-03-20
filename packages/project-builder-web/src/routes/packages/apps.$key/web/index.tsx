@@ -21,8 +21,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { UnlinkSection } from '../../-components/unlink-section.js';
-
 export const Route = createFileRoute('/packages/apps/$key/web/')({
   component: WebAppGeneralForm,
 });
@@ -115,12 +113,6 @@ function WebAppGeneralForm(): React.JSX.Element {
             />
           </SectionListSectionContent>
         </SectionListSection>
-
-        <UnlinkSection
-          entityType="app"
-          entityId={webDefinition.id}
-          name={webDefinition.name}
-        />
       </SectionList>
       <FormActionBar form={formProps} />
     </form>

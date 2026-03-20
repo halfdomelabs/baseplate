@@ -507,6 +507,33 @@
       "sourceFile": "components/ui/input-group.tsx",
       "variables": {}
     },
+    "item": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/item.tsx",
+      "projectExports": {
+        "Item": { "isTypeOnly": false, "name": "Item" },
+        "ItemActions": { "isTypeOnly": false, "name": "ItemActions" },
+        "ItemContent": { "isTypeOnly": false, "name": "ItemContent" },
+        "ItemDescription": { "isTypeOnly": false, "name": "ItemDescription" },
+        "ItemFooter": { "isTypeOnly": false, "name": "ItemFooter" },
+        "ItemGroup": { "isTypeOnly": false, "name": "ItemGroup" },
+        "ItemHeader": { "isTypeOnly": false, "name": "ItemHeader" },
+        "ItemMedia": { "isTypeOnly": false, "name": "ItemMedia" },
+        "itemMediaVariants": {
+          "isTypeOnly": false,
+          "name": "itemMediaVariants"
+        },
+        "ItemSeparator": { "isTypeOnly": false, "name": "ItemSeparator" },
+        "ItemTitle": { "isTypeOnly": false, "name": "ItemTitle" },
+        "itemVariants": { "isTypeOnly": false, "name": "itemVariants" }
+      },
+      "referencedGeneratorTemplates": ["cn", "separator"],
+      "sourceFile": "components/ui/item.tsx",
+      "variables": {}
+    },
     "label": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

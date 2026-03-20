@@ -17,7 +17,6 @@ const seedInitialUser = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'seed-initial-user',
-  projectExports: { seedInitialUser: {} },
   source: {
     path: path.join(
       import.meta.dirname,

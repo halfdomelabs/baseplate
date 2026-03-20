@@ -15,6 +15,7 @@ import type {
 } from '#src/schema/project-definition.js';
 
 import { initializePlugins } from '#src/plugins/imports/loader.js';
+import { validatePluginDependencyGraph } from '#src/plugins/imports/validate-plugin-dependencies.js';
 import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
   createDefinitionSchemaParserContext,
@@ -38,6 +39,10 @@ export function createPluginSpecStore(
   projectDefinition: unknown,
 ): PluginSpecStore {
   const { availablePlugins, coreModules } = pluginStore;
+
+  // Validate that the plugin dependency graph has no circular dependencies
+  validatePluginDependencyGraph(availablePlugins);
+
   const pluginData = z
     .object({
       plugins: z.array(basePluginDefinitionSchema).optional(),

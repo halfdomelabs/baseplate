@@ -56,6 +56,7 @@
     "@baseplate-dev/utils": "workspace:*",
     "@hookform/resolvers": "5.2.2",
     "@tanstack/react-router": "1.159.5",
+    "es-toolkit": "1.44.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.71.1",
@@ -81,7 +82,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   },
   "volta": {
     "extends": "../../package.json"

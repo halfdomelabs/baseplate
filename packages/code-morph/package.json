@@ -51,7 +51,7 @@
     "ora": "^8.0.1",
     "prettier": "catalog:",
     "ts-morph": "27.0.2",
-    "yaml": "2.8.1",
+    "yaml": "2.8.2",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   },
   "volta": {
     "extends": "../../package.json"

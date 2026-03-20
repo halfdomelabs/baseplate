@@ -79,6 +79,8 @@ export interface LibraryWebConfig<
   displayName: string;
   /** Short description explaining what this library type is for */
   description: string;
+  /** Whether only one instance of this library type is allowed per project */
+  singleton?: boolean;
   /** React component for editing this library type */
   EditComponent: React.ComponentType<LibraryEditComponentProps<T>>;
   /** Creates a new library definition with the given id and name */

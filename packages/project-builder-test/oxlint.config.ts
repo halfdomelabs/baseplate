@@ -1,4 +1,5 @@
-import oxlintConfigBase, {
+import {
+  oxlintConfigBase,
   oxlintIgnorePatterns,
 } from '@baseplate-dev/tools/oxlint-config-base';
 import { defineConfig } from 'oxlint';
