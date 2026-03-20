@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
+import { extractDefinitionRefs } from '#src/references/extract-definition-refs.js';
 import {
   definitionFieldIssueRegistry,
   withIssueChecker,
@@ -272,7 +273,13 @@ describe('collectExpressionIssues', () => {
     );
     const data = { name: 'test', condition: 'model.badField === auth.userId' };
 
-    const issues = collectExpressionIssues(schema, data, pluginStore);
+    const parsed = schema.parse(data);
+    const refPayload = extractDefinitionRefs(schema, parsed);
+    const issues = collectExpressionIssues({
+      definition: parsed,
+      pluginStore,
+      expressions: refPayload.expressions,
+    });
 
     const expressionIssues = issues.filter(
       (i) => i.message === 'Invalid field reference',

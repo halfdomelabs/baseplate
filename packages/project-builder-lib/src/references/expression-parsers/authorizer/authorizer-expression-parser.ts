@@ -7,18 +7,19 @@ import type {
   RefExpressionWarning,
   ResolvedExpressionSlots,
 } from '#src/references/expression-types.js';
+import type { modelEntityType } from '#src/schema/models/types.js';
 
 import { RefExpressionParser } from '#src/references/expression-types.js';
+import { modelAuthorizerRoleEntityType } from '#src/schema/models/authorizer/types.js';
+import {
+  modelLocalRelationEntityType,
+  modelScalarFieldEntityType,
+} from '#src/schema/models/types.js';
 
-import type { modelEntityType } from '../types.js';
 import type { AuthorizerExpressionInfo } from './authorizer-expression-ast.js';
 import type { ModelValidationContext } from './authorizer-expression-validator.js';
 import type { AuthorizerExpressionVisitor } from './authorizer-expression-visitor.js';
 
-import {
-  modelLocalRelationEntityType,
-  modelScalarFieldEntityType,
-} from '../types.js';
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParseError } from './authorizer-expression-ast.js';
 import {
@@ -26,7 +27,6 @@ import {
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
-import { modelAuthorizerRoleEntityType } from './types.js';
 
 /**
  * Shape of a raw model in the project definition JSON.

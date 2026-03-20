@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import type { RefExpressionDependency } from '#src/references/expression-types.js';
 
-import { modelScalarFieldEntityType } from '../types.js';
+import { modelAuthorizerRoleEntityType } from '#src/schema/models/authorizer/types.js';
+import { modelScalarFieldEntityType } from '#src/schema/models/types.js';
+
 import { parseAuthorizerExpression } from './authorizer-expression-acorn-parser.js';
 import { AuthorizerExpressionParser } from './authorizer-expression-parser.js';
-import { modelAuthorizerRoleEntityType } from './types.js';
 
 /**
  * Build a minimal definition with one model for testing getReferencedEntities.

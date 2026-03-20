@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
+import { authorizerExpressionParser } from '#src/references/expression-parsers/authorizer/authorizer-expression-parser.js';
 import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
 import { VALIDATORS } from '#src/schema/utils/validation.js';
 
 import { modelEntityType } from '../types.js';
-import { authorizerExpressionParser } from './authorizer-expression-parser.js';
 import { modelAuthorizerRoleEntityType } from './types.js';
 
 /**
