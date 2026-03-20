@@ -9,13 +9,9 @@ const stylesCss = createTextTemplateFile({
     path: path.join(import.meta.dirname, '../templates/src/styles.css'),
   },
   variables: {
+    TPL_DARK_COLORS: { description: 'Dark colors to apply to the app' },
     TPL_GLOBAL_STYLES: { description: 'Global styles to apply to the app' },
-    TPL_LIGHT_COLORS: {
-      description: 'CSS variable declarations for light mode theme colors',
-    },
-    TPL_DARK_COLORS: {
-      description: 'CSS variable declarations for dark mode theme colors',
-    },
+    TPL_LIGHT_COLORS: { description: 'Light colors to apply to the app' },
   },
 });
 
