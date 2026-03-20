@@ -195,10 +195,10 @@ function ItemSeparator({
 }: React.ComponentProps<typeof Separator>): React.ReactElement {
   return (
     <Separator
+      {...props}
       data-slot="item-separator"
       orientation="horizontal"
       className={cn('my-2', className)}
-      {...props}
     />
   );
 }

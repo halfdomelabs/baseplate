@@ -15,6 +15,8 @@ import {
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { logError } from '#src/services/error-logger.js';
+
 export interface UnmetPluginDependency {
   metadata: PluginMetadataWithPaths;
   hasWebConfig: boolean;
@@ -31,7 +33,7 @@ export function UnmetDependencyList({
   onNavigate,
 }: UnmetDependencyListProps): React.JSX.Element {
   const {
-    saveDefinitionWithFeedbackSync,
+    saveDefinitionWithFeedback,
     definitionContainer,
     isSavingDefinition,
   } = useProjectDefinition();
@@ -39,7 +41,7 @@ export function UnmetDependencyList({
 
   function handleEnable(dep: UnmetPluginDependency): void {
     setEnablingKey(dep.metadata.key);
-    saveDefinitionWithFeedbackSync(
+    void saveDefinitionWithFeedback(
       (draft) => {
         PluginUtils.setPluginConfig(
           draft,
@@ -50,11 +52,14 @@ export function UnmetDependencyList({
       },
       {
         successMessage: `Enabled ${dep.metadata.displayName}!`,
-        onSuccess: () => {
-          setEnablingKey(null);
-        },
       },
-    );
+    )
+      .finally(() => {
+        setEnablingKey(null);
+      })
+      .catch((err: unknown) => {
+        logError(err);
+      });
   }
 
   return (
