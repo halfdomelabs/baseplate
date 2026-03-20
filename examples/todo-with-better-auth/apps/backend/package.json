@@ -48,6 +48,7 @@
     "@pothos/plugin-tracing": "1.1.0",
     "@pothos/plugin-validation": "4.2.0",
     "@pothos/tracing-sentry": "1.1.4",
+    "@prisma-crud/transactional": "workspace:*",
     "@prisma/adapter-pg": "7.5.0",
     "@prisma/client": "7.5.0",
     "@sentry/core": "10.39.0",
@@ -67,6 +68,7 @@
     "mime-types": "2.1.35",
     "nanoid": "5.1.6",
     "pino": "9.5.0",
+    "postmark": "4.0.7",
     "stripe": "20.4.1",
     "zod": "4.3.6"
   },

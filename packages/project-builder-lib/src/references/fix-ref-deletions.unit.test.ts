@@ -176,6 +176,47 @@ describe('fixRefDeletions', () => {
     );
   });
 
+  it('should work with DELETE_PARENT when ref is inside an object in an array', () => {
+    const entityType = createEntityType('entity');
+    const schema = definitionSchema((ctx) =>
+      z.object({
+        entity: z.array(
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
+            type: entityType,
+          }),
+        ),
+        items: z.array(
+          z.object({
+            ref: ctx.withRef({
+              type: entityType,
+              onDelete: 'DELETE_PARENT',
+            }),
+            extra: z.string(),
+          }),
+        ),
+      }),
+    )(parserContext);
+
+    const data = {
+      entity: [{ id: entityType.idFromKey('kept'), name: 'kept-entity' }],
+      items: [
+        { ref: entityType.idFromKey('removed'), extra: 'a' },
+        { ref: entityType.idFromKey('kept'), extra: 'b' },
+        { ref: entityType.idFromKey('also-removed'), extra: 'c' },
+      ],
+    };
+
+    const refPayload = fixRefDeletions(schema, data);
+
+    expect(refPayload).toMatchObject({
+      type: 'success',
+      value: {
+        entity: [{ id: entityType.idFromKey('kept'), name: 'kept-entity' }],
+        items: [{ ref: entityType.idFromKey('kept'), extra: 'b' }],
+      },
+    });
+  });
+
   it('should work with a simple RESTRICT reference', () => {
     const entityType = createEntityType('entity');
     const schema = definitionSchema((ctx) =>

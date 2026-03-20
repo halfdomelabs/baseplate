@@ -17,6 +17,10 @@ export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),
+    accountsFeatureRef: ctx.withRef({
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
     roles: createAuthRolesSchema(ctx),
   }),
 );

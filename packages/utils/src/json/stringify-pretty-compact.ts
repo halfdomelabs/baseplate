@@ -10,7 +10,7 @@ function forEach(
   cb: (val: unknown, key: string | number) => void,
 ): void {
   if (Array.isArray(obj)) {
-    // eslint-disable-next-line unicorn/no-array-for-each
+    // oxlint-disable-next-line unicorn/no-array-for-each
     obj.forEach(cb);
   } else if (isObject(obj)) {
     for (const key of Object.keys(obj)) {
@@ -120,13 +120,13 @@ export function stringifyPrettyCompact(
       typeof obj === 'object' &&
       typeof (obj as { toJSON: unknown }).toJSON === 'function'
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      // oxlint-disable-next-line typescript/no-confusing-void-expression
       obj = (obj as { toJSON: () => void }).toJSON();
     }
 
     const string = JSON.stringify(obj);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // oxlint-disable-next-line typescript/no-unnecessary-condition
     if (string === undefined) {
       return string;
     }
@@ -164,7 +164,7 @@ export function stringifyPrettyCompact(
         }
         delimiters = '[]';
       } else {
-        // eslint-disable-next-line unicorn/no-array-for-each
+        // oxlint-disable-next-line unicorn/no-array-for-each
         Object.keys(obj).forEach((key, index, array) => {
           const keyPart = `${JSON.stringify(key)}: `;
           const value = stringifyRecursive(
@@ -172,7 +172,7 @@ export function stringifyPrettyCompact(
             nextIndent,
             keyPart.length + atEndOfArray(array, index),
           );
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          // oxlint-disable-next-line typescript/no-unnecessary-condition
           if (value !== undefined) {
             items.push(keyPart + value);
           }

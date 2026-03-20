@@ -1,0 +1,23 @@
+{
+  "name": "better-auth/admin/admin-crud-manage-roles-action",
+  "templates": {
+    "role-manager-dialog": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/-components/role-manager-dialog.tsx",
+      "projectExports": {},
+      "sourceFile": "routes/-components/role-manager-dialog.tsx",
+      "variables": { "TPL_AVAILABLE_ROLES": {} }
+    }
+  }
+}

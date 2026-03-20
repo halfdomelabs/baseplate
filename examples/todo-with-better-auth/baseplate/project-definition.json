@@ -116,33 +116,6 @@
                 "modelRef": "Customer",
                 "name": "customer",
                 "type": "object"
-              },
-              {
-                "form": {
-                  "fields": [
-                    {
-                      "id": "admin-crud-input:O3HQh5kYheIG",
-                      "label": "Role",
-                      "modelFieldRef": "role",
-                      "type": "text",
-                      "validation": ""
-                    }
-                  ]
-                },
-                "id": "admin-crud-embedded-form:UtuGJ_24FFu7",
-                "modelRef": "UserRole",
-                "name": "roles",
-                "table": {
-                  "columns": [
-                    {
-                      "id": "admin-crud-column:hHo512O7ikoy",
-                      "label": "Role",
-                      "modelFieldRef": "role",
-                      "type": "text"
-                    }
-                  ]
-                },
-                "type": "list"
               }
             ],
             "featureRef": "accounts/users",
@@ -168,18 +141,6 @@
                   "label": "Customer",
                   "modelRelationRef": "customer",
                   "type": "embedded"
-                },
-                {
-                  "embeddedFormRef": "roles",
-                  "id": "admin-crud-input:bf_bFetNJISe",
-                  "label": "Roles",
-                  "modelRelationRef": "roles",
-                  "type": "embedded"
-                },
-                {
-                  "id": "admin-crud-input:DJMnduxgwiw1",
-                  "label": "Password",
-                  "type": "password"
                 }
               ]
             },
@@ -199,6 +160,16 @@
                   "id": "admin-crud-action:2pdFwp039pMD",
                   "position": "dropdown",
                   "type": "delete"
+                },
+                {
+                  "id": "admin-crud-action:Hcp9rUWsGuUT",
+                  "position": "dropdown",
+                  "type": "manage-roles"
+                },
+                {
+                  "id": "admin-crud-action:nXfYXh1lJ_Fy",
+                  "position": "dropdown",
+                  "type": "reset-password"
                 }
               ],
               "columns": [
@@ -245,7 +216,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.4",
   "enums": [
     {
       "featureRef": "todos",
@@ -331,10 +302,16 @@
     { "id": "feature:QL2I7hoOmjBW", "name": "billing" }
   ],
   "isInitialized": true,
-  "libraries": [],
+  "libraries": [
+    {
+      "id": "library:vT7YCeNSObNj",
+      "name": "transactional",
+      "type": "@baseplate-dev/plugin-email/transactional-lib"
+    }
+  ],
   "models": [
     {
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "id": "model:6X4_jUlB8pFz",
       "model": {
         "fields": [
@@ -342,49 +319,49 @@
             "id": "model-scalar-field:TO26eSVGJHKn",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:8CR8_7duFZDD",
             "isOptional": false,
             "name": "accountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:7Zg0Ygfa1InE",
             "isOptional": false,
             "name": "providerId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:VOV5qlIu2XTx",
             "isOptional": false,
             "name": "userId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:rrJCr6Bdgn7T",
             "isOptional": true,
             "name": "accessToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:5J8fJ59rTkGf",
             "isOptional": true,
             "name": "refreshToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:Cm_SDCJlZyqK",
             "isOptional": true,
             "name": "idToken",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -405,14 +382,14 @@
             "id": "model-scalar-field:sMUtrMhrJhZt",
             "isOptional": true,
             "name": "scope",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:C5XQpcnBy5tg",
             "isOptional": true,
             "name": "password",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -608,7 +585,7 @@
             "id": "model-local-relation:yCV4Nw0uAf8p",
             "modelRef": "User",
             "name": "uploader",
-            "onDelete": "Cascade",
+            "onDelete": "SetNull",
             "onUpdate": "Restrict",
             "references": [{ "foreignRef": "id", "localRef": "uploaderId" }]
           }
@@ -618,7 +595,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts/auth",
+      "featureRef": "accounts/users",
       "id": "model:234OBeqZk62e",
       "model": {
         "fields": [
@@ -626,7 +603,7 @@
             "id": "model-scalar-field:qfU8rq8l76z9",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
@@ -1339,7 +1316,7 @@
             "id": "model-scalar-field:JrsS7gxqePD5",
             "isOptional": true,
             "name": "billingAccountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           }
         ],
@@ -1697,21 +1674,21 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:chXcsUFTBpVH",
             "isOptional": false,
             "name": "identifier",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:LSmKbAh9EZVc",
             "isOptional": false,
             "name": "value",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1750,14 +1727,14 @@
             "id": "model-scalar-field:sLwgpRj1rBQu",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:__Cd5sxmnA0J",
             "isOptional": false,
             "name": "stripeCustomerId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1795,21 +1772,21 @@
             "id": "model-scalar-field:5SAuLT4bAV5_",
             "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:0j9aW2_oVZi7",
             "isOptional": false,
             "name": "billingAccountId",
-            "options": {},
+            "options": { "default": "" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:iFOTvtC8ySj_",
             "isOptional": false,
             "name": "planKey",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1823,7 +1800,7 @@
             "id": "model-scalar-field:jLzXegb1IqTo",
             "isOptional": false,
             "name": "stripeSubscriptionId",
-            "options": {},
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -1932,34 +1909,40 @@
     },
     {
       "config": {
+        "accountsFeatureRef": "accounts/users",
         "authFeatureRef": "accounts/auth",
         "implementationPluginKey": "baseplate-dev_plugin-auth_better-auth",
         "roles": [
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All users (including unauthenticated and authenticated users)",
             "id": "role:6wrjv_fs5rHf",
             "name": "public"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All authenticated users",
             "id": "role:zbp8hfo8qDZp",
             "name": "user"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "System processes without a user context, e.g. background jobs",
             "id": "role:_tnnEc4bvDHX",
             "name": "system"
           },
           {
-            "builtIn": false,
+            "autoAssigned": false,
+            "builtIn": true,
             "comment": "Administrative role",
             "id": "role:PYGSU4BDOlpQ",
             "name": "admin"
           },
           {
+            "autoAssigned": false,
             "builtIn": false,
             "comment": "Granted to users with an active Pro subscription",
             "id": "role:bK7mXwR3pL9v",
@@ -1967,6 +1950,7 @@
           }
         ]
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_auth",
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
@@ -2009,10 +1993,10 @@
           "featureRef": "billing",
           "plans": [
             {
-              "id": "billing-plan:pro-plan",
-              "key": "pro-plan",
               "displayName": "Pro Plan",
-              "grantedRoles": ["pro-user"]
+              "grantedRoles": ["pro-user"],
+              "id": "billing-plan:pro-plan",
+              "key": "pro-plan"
             }
           ]
         },
@@ -2022,9 +2006,25 @@
       "name": "stripe",
       "packageName": "@baseplate-dev/plugin-payments",
       "version": "0.1.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
+      },
+      "id": "plugin:baseplate-dev_plugin-email_email",
+      "name": "email",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
     }
   ],
-  "schemaVersion": 28,
+  "schemaVersion": 30,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",
@@ -2040,67 +2040,59 @@
       "colors": {
         "dark": {
           "accent": "oklch(0.279 0.037 260.031)",
-          "accentForeground": "oklch(0.968 0.007 247.896)",
+          "accentForeground": "oklch(0.984 0.003 247.858)",
           "background": "oklch(0.129 0.041 264.695)",
           "border": "oklch(0.279 0.037 260.031)",
           "card": "oklch(0.129 0.041 264.695)",
           "cardForeground": "oklch(0.984 0.003 247.858)",
-          "destructive": "oklch(0.396 0.133 25.723)",
+          "destructive": "oklch(0.396 0.141 25.723)",
           "destructiveForeground": "oklch(0.984 0.003 247.858)",
-          "destructiveHover": "oklch(0.505 0.190 27.518)",
-          "error": "oklch(0.258 0.089 26.042)",
-          "errorForeground": "oklch(0.577 0.215 27.325)",
+          "error": "oklch(0.258 0.092 26.042)",
+          "errorForeground": "oklch(0.971 0.013 17.38)",
           "foreground": "oklch(0.984 0.003 247.858)",
           "input": "oklch(0.279 0.037 260.031)",
           "link": "oklch(0.546 0.215 262.881)",
-          "linkVisited": "oklch(0.488 0.217 264.376)",
-          "muted": "oklch(0.208 0.040 265.755)",
+          "muted": "oklch(0.279 0.037 260.031)",
           "mutedForeground": "oklch(0.711 0.035 256.788)",
           "popover": "oklch(0.129 0.041 264.695)",
           "popoverForeground": "oklch(0.984 0.003 247.858)",
-          "primary": "oklch(0.546 0.215 262.881)",
+          "primary": "oklch(0.282 0.087 267.935)",
           "primaryForeground": "oklch(0.984 0.003 247.858)",
-          "primaryHover": "oklch(0.424 0.181 265.638)",
-          "ring": "oklch(0.546 0.215 262.881)",
+          "ring": "oklch(0.623 0.188 259.815)",
           "secondary": "oklch(0.279 0.037 260.031)",
-          "secondaryForeground": "oklch(0.968 0.007 247.896)",
-          "secondaryHover": "oklch(0.446 0.037 257.281)",
-          "success": "oklch(0.262 0.049 172.552)",
-          "successForeground": "oklch(0.596 0.127 163.225)",
-          "warning": "oklch(0.279 0.074 45.635)",
-          "warningForeground": "oklch(0.555 0.146 48.998)"
+          "secondaryForeground": "oklch(0.984 0.003 247.858)",
+          "success": "oklch(0.262 0.051 172.552)",
+          "successForeground": "oklch(0.979 0.021 166.113)",
+          "warning": "oklch(0.279 0.077 45.635)",
+          "warningForeground": "oklch(0.987 0.022 95.277)"
         },
         "light": {
           "accent": "oklch(0.968 0.007 247.896)",
-          "accentForeground": "oklch(0.372 0.039 257.287)",
-          "background": "oklch(1.000 0.000 0)",
+          "accentForeground": "oklch(0.208 0.040 265.755)",
+          "background": "oklch(1 0 0)",
           "border": "oklch(0.929 0.013 255.508)",
-          "card": "oklch(1.000 0.000 0)",
+          "card": "oklch(1 0 0)",
           "cardForeground": "oklch(0.129 0.041 264.695)",
-          "destructive": "oklch(0.637 0.208 25.331)",
+          "destructive": "oklch(0.637 0.237 25.331)",
           "destructiveForeground": "oklch(0.984 0.003 247.858)",
-          "destructiveHover": "oklch(0.505 0.190 27.518)",
-          "error": "oklch(0.971 0.013 17.380)",
-          "errorForeground": "oklch(0.505 0.190 27.518)",
+          "error": "oklch(0.971 0.013 17.38)",
+          "errorForeground": "oklch(0.258 0.092 26.042)",
           "foreground": "oklch(0.129 0.041 264.695)",
           "input": "oklch(0.929 0.013 255.508)",
           "link": "oklch(0.488 0.217 264.376)",
-          "linkVisited": "oklch(0.424 0.181 265.638)",
           "muted": "oklch(0.968 0.007 247.896)",
           "mutedForeground": "oklch(0.554 0.041 257.417)",
-          "popover": "oklch(1.000 0.000 0)",
+          "popover": "oklch(1 0 0)",
           "popoverForeground": "oklch(0.129 0.041 264.695)",
-          "primary": "oklch(0.488 0.217 264.376)",
+          "primary": "oklch(0.424 0.181 265.638)",
           "primaryForeground": "oklch(0.984 0.003 247.858)",
-          "primaryHover": "oklch(0.379 0.138 265.522)",
-          "ring": "oklch(0.488 0.217 264.376)",
+          "ring": "oklch(0.714 0.143 254.624)",
           "secondary": "oklch(0.968 0.007 247.896)",
-          "secondaryForeground": "oklch(0.372 0.039 257.287)",
-          "secondaryHover": "oklch(0.869 0.020 252.894)",
+          "secondaryForeground": "oklch(0.208 0.040 265.755)",
           "success": "oklch(0.979 0.021 166.113)",
-          "successForeground": "oklch(0.508 0.105 165.612)",
-          "warning": "oklch(0.987 0.021 95.277)",
-          "warningForeground": "oklch(0.666 0.157 58.318)"
+          "successForeground": "oklch(0.262 0.051 172.552)",
+          "warning": "oklch(0.987 0.022 95.277)",
+          "warningForeground": "oklch(0.279 0.077 45.635)"
         }
       },
       "palettes": {

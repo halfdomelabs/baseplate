@@ -1,3 +1,5 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import {
   createNodePackagesTask,
   extractPackageVersions,
@@ -132,26 +134,41 @@ export const prismaDataNestedFieldGenerator = createGenerator({
             generateScalarInputField({
               fieldName: field.name,
               scalarField: field,
-              dataUtilsImports,
               prismaGeneratedImports,
               lookupEnum: (name) => prismaOutput.getServiceEnum(name),
             }),
           );
         })();
 
-        const dataServiceFieldsFragment =
-          nestedPrismaDataService?.getFieldsFragment();
+        // Get the nested model's transformers import fragment (if it has sub-transform-fields)
+        const nestedTransformersFragment =
+          nestedPrismaDataService?.getTransformersFragment();
+
+        // Request fieldSchemas export from nested data service so the parent
+        // can import it instead of duplicating schemas inline
+        let nestedFieldSchemasFragment: TsCodeFragment | undefined;
+        let allDataServiceFieldNames: string[] | undefined;
+        if (nestedPrismaDataService) {
+          nestedPrismaDataService.requestFieldSchemas();
+          nestedFieldSchemasFragment =
+            nestedPrismaDataService.getFieldSchemasFragment();
+          allDataServiceFieldNames = nestedPrismaDataService
+            .getFields()
+            .map((f) => f.name);
+        }
 
         return {
           build: () => {
-            prismaDataServiceSetup.virtualInputFields.add(
+            prismaDataServiceSetup.transformFields.add(
               writePrismaDataNestedField({
                 parentModel,
                 nestedModel,
                 relation,
-                dataServiceFieldsFragment,
                 nestedFields,
                 dataUtilsImports,
+                nestedTransformersFragment,
+                nestedFieldSchemasFragment,
+                allDataServiceFieldNames,
               }),
             );
           },

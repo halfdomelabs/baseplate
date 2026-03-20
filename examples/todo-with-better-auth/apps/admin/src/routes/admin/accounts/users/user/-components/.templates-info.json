@@ -4,10 +4,15 @@
     "instanceData": {},
     "template": "embedded-form"
   },
-  "embedded-roles-form.tsx": {
-    "generator": "@baseplate-dev/react-generators#admin/admin-crud-embedded-form",
+  "password-reset-dialog.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/admin/admin-crud-reset-password-action",
     "instanceData": {},
-    "template": "embedded-form"
+    "template": "password-reset-dialog"
+  },
+  "role-manager-dialog.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/admin/admin-crud-manage-roles-action",
+    "instanceData": {},
+    "template": "role-manager-dialog"
   },
   "user-edit-form.tsx": {
     "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",

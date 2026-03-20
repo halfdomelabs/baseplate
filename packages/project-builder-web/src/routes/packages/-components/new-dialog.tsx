@@ -124,14 +124,35 @@ export function NewDialog({
   });
 
   const appTypeOptions = [
-    { label: 'Backend App', value: 'backend' },
-    { label: 'Web App', value: 'web' },
+    {
+      label: 'Backend App',
+      value: 'backend',
+      description: 'Fastify API server for your backend',
+    },
+    {
+      label: 'Web App',
+      value: 'web',
+      description: 'React app for your frontend UI',
+    },
   ];
 
   const packageTypeOptions = libraryWebConfigs.map(([name, config]) => ({
     label: config.displayName,
     value: name,
+    description: config.description,
   }));
+
+  const renderTypeOptionLabel = (option: {
+    label: string;
+    description: string;
+  }): React.ReactElement => (
+    <div className="flex flex-col gap-0.5">
+      <span>{option.label}</span>
+      <span className="text-xs text-muted-foreground">
+        {option.description}
+      </span>
+    </div>
+  );
 
   const onSubmitApp = appForm.handleSubmit((data) => {
     const newId = appEntityType.generateNewId();
@@ -244,7 +265,7 @@ export function NewDialog({
                 control={appForm.control}
                 name="type"
                 options={appTypeOptions}
-                description="Backend apps provide APIs, web apps are client applications"
+                renderItemLabel={renderTypeOptionLabel}
               />
               <DialogFooter>
                 <Button
@@ -284,7 +305,7 @@ export function NewDialog({
                 control={packageForm.control}
                 name="type"
                 options={packageTypeOptions}
-                description="The type of library package to create"
+                renderItemLabel={renderTypeOptionLabel}
               />
               <DialogFooter>
                 <Button

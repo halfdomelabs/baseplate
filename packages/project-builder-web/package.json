@@ -84,6 +84,7 @@
     "jsdom": "26.0.0",
     "loglevel": "1.9.1",
     "react": "catalog:",
+    "react-colorful": "5.6.1",
     "react-dom": "catalog:",
     "react-error-boundary": "6.0.0",
     "react-hook-form": "7.71.1",

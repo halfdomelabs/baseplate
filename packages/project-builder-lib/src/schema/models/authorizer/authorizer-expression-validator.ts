@@ -65,8 +65,8 @@ const VALID_AUTH_FIELDS = new Set(['userId']);
 interface AuthRoleInfo {
   /** All defined role names */
   allRoleNames: Set<string>;
-  /** Role names that are built-in (e.g., 'system', 'public', 'user') */
-  builtInRoleNames: Set<string>;
+  /** Role names that are auto-assigned (e.g., 'system', 'public', 'user') and should not be used in authorizer expressions */
+  autoAssignedRoleNames: Set<string>;
 }
 
 /**
@@ -87,8 +87,8 @@ function getAuthRoleInfo(
   )?.roles;
   return {
     allRoleNames: new Set(roles?.map((role) => role.name)),
-    builtInRoleNames: new Set(
-      roles?.filter((role) => role.builtIn).map((role) => role.name),
+    autoAssignedRoleNames: new Set(
+      roles?.filter((role) => role.autoAssigned).map((role) => role.name),
     ),
   };
 }
@@ -119,20 +119,24 @@ export function validateAuthorizerExpression(
   definition: unknown,
 ): RefExpressionWarning[] {
   const warnings: RefExpressionWarning[] = [];
-  const { allRoleNames, builtInRoleNames } = getAuthRoleInfo(
+  const { allRoleNames, autoAssignedRoleNames } = getAuthRoleInfo(
     pluginStore,
     definition,
   );
-  const nonBuiltInRoleNames = [...allRoleNames].filter(
-    (name) => !builtInRoleNames.has(name),
+  const assignableRoleNames = [...allRoleNames].filter(
+    (name) => !autoAssignedRoleNames.has(name),
   );
 
-  function warnIfBuiltInRole(role: string, start: number, end: number): void {
-    if (builtInRoleNames.has(role)) {
+  function warnIfAutoAssignedRole(
+    role: string,
+    start: number,
+    end: number,
+  ): void {
+    if (autoAssignedRoleNames.has(role)) {
       const message =
         role === 'user'
-          ? `Role 'user' is a built-in role. Use 'isAuthenticated' instead to check if the user is authenticated.`
-          : `Role '${role}' is a built-in role and should not be used in authorizer expressions. Use non-built-in roles: ${nonBuiltInRoleNames.join(', ')}.`;
+          ? `Role 'user' is an auto-assigned role. Use 'isAuthenticated' instead to check if the user is authenticated.`
+          : `Role '${role}' is an auto-assigned role and should not be used in authorizer expressions. Use assignable roles: ${assignableRoleNames.join(', ')}.`;
       warnings.push({ message, start, end });
     }
   }
@@ -172,7 +176,7 @@ export function validateAuthorizerExpression(
     hasRole(node) {
       // Warn if role doesn't exist (but allow - plugins may define roles)
       if (allRoleNames.has(node.role)) {
-        warnIfBuiltInRole(node.role, node.roleStart, node.roleEnd);
+        warnIfAutoAssignedRole(node.role, node.roleStart, node.roleEnd);
       } else {
         warnings.push({
           message: `Role '${node.role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,
@@ -187,7 +191,7 @@ export function validateAuthorizerExpression(
         const start = node.rolesStart[i];
         const end = node.rolesEnd[i];
         if (allRoleNames.has(role)) {
-          warnIfBuiltInRole(role, start, end);
+          warnIfAutoAssignedRole(role, start, end);
         } else {
           warnings.push({
             message: `Role '${role}' is not defined in the project configuration. Available roles: ${[...allRoleNames].join(', ')}.`,

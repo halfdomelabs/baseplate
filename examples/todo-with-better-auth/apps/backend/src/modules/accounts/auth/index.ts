@@ -4,6 +4,7 @@ import { authPlugin } from './plugins/auth.plugin.js';
 import { betterAuthPlugin } from './plugins/better-auth.plugin.js';
 
 /* TPL_IMPORTS:START */
+import './schema/admin-auth.mutations.js';
 import './schema/user-session.queries.js';
 /* TPL_IMPORTS:END */
 

@@ -94,7 +94,7 @@ export function BlockerDialog(): React.JSX.Element {
         disabled={isContinuing}
         variant="secondary"
       >
-        {activeBlocker.buttonContinueWithoutSaveText ?? 'Discard changes'}
+        {activeBlocker.buttonContinueWithoutSaveText}
       </Button>
     );
 

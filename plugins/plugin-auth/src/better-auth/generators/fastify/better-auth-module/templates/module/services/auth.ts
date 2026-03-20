@@ -4,6 +4,7 @@ import type { AuthRole } from '%authRolesImports';
 
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { config } from '%configServiceImports';
+import { sendEmail } from '%emailModuleImports';
 import { prisma } from '%prismaImports';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -24,7 +25,27 @@ export const auth = betterAuth({
   secret: config.BETTER_AUTH_SECRET,
   baseURL: config.BETTER_AUTH_URL,
   basePath: '/auth',
-  emailAndPassword: { enabled: true },
+  emailAndPassword: {
+    enabled: true,
+    async sendResetPassword({ token, user }) {
+      const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
+      await sendEmail(TPL_PASSWORD_RESET_EMAIL, {
+        to: user.email,
+        data: { resetLink },
+      });
+    },
+    resetPasswordTokenExpiresIn: 3600,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    async sendVerificationEmail({ token, user }) {
+      const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
+      await sendEmail(TPL_ACCOUNT_VERIFICATION_EMAIL, {
+        to: user.email,
+        data: { verifyLink },
+      });
+    },
+  },
   session: {
     cookieCache: { enabled: true, maxAge: 5 * 60 },
   },
@@ -39,6 +60,9 @@ export const auth = betterAuth({
     .filter(Boolean),
   user: {
     modelName: 'User',
+    changeEmail: {
+      enabled: true,
+    },
   },
   plugins: [
     customSession(async ({ user, session }) => {

@@ -1,5 +1,3 @@
-import { cloneDeep } from 'es-toolkit';
-
 type TransformFn<From = unknown, To = unknown> = (input: From) => To;
 
 /**
@@ -13,7 +11,7 @@ type TransformFn<From = unknown, To = unknown> = (input: From) => To;
 export function transformJsonPath(
   data: unknown,
   path: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- make it easier to use any transform functions
+  // oxlint-disable-next-line typescript/no-explicit-any -- make it easier to use any transform functions
   transformFn: TransformFn<any>,
 ): unknown {
   // Split the path into parts
@@ -23,7 +21,7 @@ export function transformJsonPath(
   const navigateAndTransform = (current: unknown, parts: string[]): unknown => {
     if (parts.length === 0) {
       // If at the end of the path, apply the transformation function
-      return transformFn(cloneDeep(current));
+      return transformFn(structuredClone(current));
     }
 
     const [currentPart, ...remainingParts] = parts;

@@ -94,8 +94,8 @@ describe('generateRelationBuildData', () => {
 
       expect(result.buildCreateDataFragment.contents).toMatchInlineSnapshot(`
         "({ assigneeId, todoListId, ...data }) => ({...data,
-        todoList: relationHelpers.connectCreate({id: todoListId,}),
-        assignee: relationHelpers.connectCreate({id: assigneeId,}),})"
+        assignee: relationHelpers.connectCreate({id: assigneeId,}),
+        todoList: relationHelpers.connectCreate({id: todoListId,}),})"
       `);
     });
   });

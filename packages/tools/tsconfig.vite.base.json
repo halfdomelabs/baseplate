@@ -3,6 +3,7 @@
   "display": "Vite React Base Config",
   "extends": "@tsconfig/vite-react/tsconfig.json",
   "compilerOptions": {
-    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"]
   }
 }

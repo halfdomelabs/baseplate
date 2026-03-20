@@ -24,7 +24,13 @@ import {
  * Create a plugin spec store with custom auth roles for testing.
  */
 function createMockPluginStore(
-  roles: { id: string; name: string; comment: string; builtIn: boolean }[],
+  roles: {
+    id: string;
+    name: string;
+    comment: string;
+    builtIn: boolean;
+    autoAssigned: boolean;
+  }[],
 ): ReturnType<typeof createTestPluginSpecStore> {
   return createTestPluginSpecStore([
     createPluginModule({
@@ -58,8 +64,20 @@ describe('validateAuthorizerExpression', () => {
   };
 
   const defaultPluginStore = createMockPluginStore([
-    { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-    { id: '2', name: 'editor', comment: 'Editor role', builtIn: false },
+    {
+      id: '1',
+      name: 'admin',
+      comment: 'Admin role',
+      builtIn: true,
+      autoAssigned: false,
+    },
+    {
+      id: '2',
+      name: 'editor',
+      comment: 'Editor role',
+      builtIn: false,
+      autoAssigned: false,
+    },
   ]);
   const defaultDefinition = {};
 
@@ -208,10 +226,22 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings).toEqual([]);
     });
 
-    it('should warn for built-in role in hasRole', () => {
+    it('should warn for auto-assigned role in hasRole', () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'system', comment: 'System role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'system',
+          comment: 'System role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasRoleNode = {
         type: 'hasRole',
@@ -229,7 +259,7 @@ describe('validateAuthorizerExpression', () => {
 
       expect(warnings).toHaveLength(1);
       expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].message).toContain('auto-assigned');
     });
 
     it('should warn for role that does not exist in project', () => {
@@ -299,11 +329,29 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[1].end).toBe(36);
     });
 
-    it('should warn for built-in role in hasSomeRole', () => {
+    it('should warn for auto-assigned role in hasSomeRole', () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'public', comment: 'Public role', builtIn: true },
-        { id: '3', name: 'system', comment: 'System role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'public',
+          comment: 'Public role',
+          builtIn: true,
+          autoAssigned: true,
+        },
+        {
+          id: '3',
+          name: 'system',
+          comment: 'System role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasSomeRoleNode = {
         type: 'hasSomeRole',
@@ -321,7 +369,7 @@ describe('validateAuthorizerExpression', () => {
 
       expect(warnings).toHaveLength(1);
       expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('built-in');
+      expect(warnings[0].message).toContain('auto-assigned');
       expect(warnings[0].start).toBe(21);
       expect(warnings[0].end).toBe(29);
     });
@@ -366,8 +414,20 @@ describe('validateAuthorizerExpression', () => {
 
     it("should warn for hasRole('user') suggesting isAuthenticated", () => {
       const pluginStore = createMockPluginStore([
-        { id: '1', name: 'admin', comment: 'Admin role', builtIn: false },
-        { id: '2', name: 'user', comment: 'User role', builtIn: true },
+        {
+          id: '1',
+          name: 'admin',
+          comment: 'Admin role',
+          builtIn: true,
+          autoAssigned: false,
+        },
+        {
+          id: '2',
+          name: 'user',
+          comment: 'User role',
+          builtIn: true,
+          autoAssigned: true,
+        },
       ]);
       const ast: HasRoleNode = {
         type: 'hasRole',

@@ -62,8 +62,7 @@ export function LocalAuthDefinitionEditor({
     }
 
     return {
-      initialUserRoles: [],
-      userAdminRoles: [],
+      additionalUserAdminRoles: [],
       requireNameOnRegistration: false,
     } satisfies LocalAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
@@ -83,9 +82,19 @@ export function LocalAuthDefinitionEditor({
     );
   }
 
+  const accountsFeature = definition.features.find(
+    (f) => f.id === authDefinition.accountsFeatureRef,
+  );
+  if (!accountsFeature) {
+    throw new Error(
+      `Accounts feature not found for ref: ${authDefinition.accountsFeatureRef}`,
+    );
+  }
+
   const partialDef = useMemo(
-    () => createLocalAuthPartialDefinition(authFeature.name),
-    [authFeature.name],
+    () =>
+      createLocalAuthPartialDefinition(authFeature.name, accountsFeature.name),
+    [authFeature.name, accountsFeature.name],
   );
 
   const diff = useMemo(
@@ -147,33 +156,7 @@ export function LocalAuthDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
-                  <DefinitionDiffAlert
-                    diff={diff}
-                    upToDateMessage="All required models are already configured correctly. No changes needed."
-                  />
-                </SectionListSectionContent>
-              </SectionListSection>
-              <SectionListSection>
-                <SectionListSectionHeader>
-                  <SectionListSectionTitle>
-                    Initial User Setup
-                  </SectionListSectionTitle>
-                  <SectionListSectionDescription>
-                    In order to access the admin panel, an initial user must be
-                    created. To make it easier, the plugin will automatically
-                    add a seed script to create the initial user provided a
-                    .seed.env exists with the INTIIAL_USER_EMAIL and
-                    INTIIAL_USER_PASSWORD variables.
-                  </SectionListSectionDescription>
-                </SectionListSectionHeader>
-                <SectionListSectionContent className="auth:space-y-6">
-                  <MultiComboboxFieldController
-                    label="Initial User Roles"
-                    name="initialUserRoles"
-                    control={control}
-                    options={roles}
-                    description="The roles that will be assigned to the initial user."
-                  />
+                  <DefinitionDiffAlert diff={diff} />
                 </SectionListSectionContent>
               </SectionListSection>
               <SectionListSection>
@@ -182,17 +165,18 @@ export function LocalAuthDefinitionEditor({
                     User Management Permissions
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure which roles can manage users and assign roles to
-                    other users in the admin interface.
+                    The &quot;admin&quot; role always has user management
+                    permissions. Optionally add more roles that can manage users
+                    and assign roles in the admin interface.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
                   <MultiComboboxFieldController
-                    label="User Admin Roles"
-                    name="userAdminRoles"
+                    label="Additional User Admin Roles"
+                    name="additionalUserAdminRoles"
                     control={control}
                     options={roles}
-                    description="Roles that can manage users and assign roles to other users."
+                    description="Additional roles (beyond admin) that can manage users and assign roles."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

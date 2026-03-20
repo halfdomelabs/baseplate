@@ -1,11 +1,6 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  tsTemplate,
-  tsTemplateWithImports,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import {
   lowercaseFirstChar,
   quot,
@@ -20,191 +15,323 @@ import type {
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 import type { DataUtilsImportsProvider } from '../data-utils/index.js';
 
-import { generateRelationBuildData } from '../_shared/build-data-helpers/generate-relation-build-data.js';
+import { buildNestedSchemaFragments } from '../_shared/build-data-helpers/build-schema-fragments.js';
+import { buildTransformOperationParts } from '../_shared/build-data-helpers/build-transform-operation-parts.js';
+import { generateExistingItemWhere } from '../_shared/build-data-helpers/generate-where-type.js';
 
 interface WritePrismaDataNestedFieldInput {
   parentModel: PrismaOutputModel;
   nestedModel: PrismaOutputModel;
   relation: PrismaOutputRelationField;
-  /** The fragment referencing the existing fields array (otherwise we inline the fields) */
-  dataServiceFieldsFragment?: TsCodeFragment;
   nestedFields: InputFieldDefinitionOutput[];
   dataUtilsImports: DataUtilsImportsProvider;
+  /** Import fragment for the nested model's transformers variable (e.g., todoItemAttachmentTransformers) */
+  nestedTransformersFragment?: TsCodeFragment;
+  /** Import fragment for the nested model's fieldSchemas variable (e.g., userImageFieldSchemas) */
+  nestedFieldSchemasFragment?: TsCodeFragment;
+  /** All field names in the nested model's data service (for subset detection) */
+  allDataServiceFieldNames?: string[];
 }
 
 /**
- * Creates a where unique function for parent model config.
- * Generates: (parentModel) => ({ id: parentModel.id })
+ * Creates a compareItem function for one-to-many relations.
+ * Matches input items to existing items by their unique key fields.
  *
- * @param model - The parent Prisma model
- * @param argName - The argument name for the function (default: 'value')
- * @returns TypeScript code fragment for the where unique function
+ * For models with simple ID:
+ * Generates: (input, existing) => input.id === existing.id
+ *
+ * For composite keys:
+ * Generates: (input, existing) => input.role === existing.role
+ * (only compares the input-provided portion of the key)
  */
-function createPrismaWhereUniqueFunction(
-  model: PrismaOutputModel,
-  argName = 'value',
-): TsCodeFragment {
-  const primaryKeys = model.idFields;
-
-  if (!primaryKeys) {
-    throw new Error(
-      `Primary keys on model ${model.name} are required to generate where unique function`,
-    );
-  }
-
-  return tsTemplate`(${argName}) => ${TsCodeUtils.mergeFragmentsAsObject(
-    Object.fromEntries(primaryKeys.map((k) => [k, `${argName}.${k}`])),
-    { wrapWithParenthesis: true },
-  )}`;
-}
-
-/**
- * Creates a where unique function for one-to-one nested relations.
- * Maps parent model fields to nested model's unique constraint based on relation field mapping.
- *
- * For example, UserProfile.userId unique references User.id:
- * Generates: (parentModel) => ({ userId: parentModel.id })
- *
- * @param relation - The relation field from nested model to parent
- * @param nestedModel - The nested Prisma model
- * @returns TypeScript code fragment for the where unique function
- */
-function createOneToOneWhereUniqueFunction(
-  relation: PrismaOutputRelationField,
-  nestedModel: PrismaOutputModel,
-): TsCodeFragment {
-  const relationFields = relation.fields ?? [];
-  const referencedFields = relation.references ?? [];
-
-  if (relationFields.length === 0 || referencedFields.length === 0) {
-    throw new Error(
-      `Relation ${relation.name} on model ${nestedModel.name} must have fields and references defined`,
-    );
-  }
-
-  if (relationFields.length !== referencedFields.length) {
-    throw new Error(
-      `Relation ${relation.name} fields and references must have the same length`,
-    );
-  }
-
-  // Map parent model fields to nested model fields
-  // E.g., { userId: parentModel.id } for UserProfile -> User relation
-  const whereUniqueObject = Object.fromEntries(
-    relationFields.map((relationField, index) => {
-      const referencedField = referencedFields[index];
-      return [relationField, `parentModel.${referencedField}`];
-    }),
-  );
-
-  return tsTemplate`(parentModel) => ${TsCodeUtils.mergeFragmentsAsObject(
-    whereUniqueObject,
-    { wrapWithParenthesis: true },
-  )}`;
-}
-
-/**
- * Creates a where unique function for one-to-many nested relations.
- * Combines input fields with parent model fields to form a composite unique constraint.
- *
- * For example, UserRole with @@id([userId, role]) where role is in input:
- * Generates: (input, parentModel) => ({ userId_role: { userId: parentModel.id, role: input.role } })
- *
- * For simple cases like UserImage with just id in input:
- * Generates: (input) => ({ id: input.id })
- *
- * @param nestedModel - The nested Prisma model
- * @param relation - The relation field from nested model to parent
- * @param inputFieldNames - Field names that are in the input
- * @param parentModel - The parent Prisma model
- * @returns TypeScript code fragment for the where unique function
- */
-function createOneToManyWhereUniqueFunction(
+function createCompareItemFragment(
   nestedModel: PrismaOutputModel,
   relation: PrismaOutputRelationField,
   inputFieldNames: string[],
+): TsCodeFragment | undefined {
+  const { idFields } = nestedModel;
+  if (!idFields || idFields.length === 0) return undefined;
+
+  const relationFields = relation.fields ?? [];
+
+  // Input ID fields = ID fields that come from user input (not relation FK)
+  const inputIdFields = idFields.filter(
+    (f) => inputFieldNames.includes(f) && !relationFields.includes(f),
+  );
+
+  if (inputIdFields.length === 0) return undefined;
+
+  const comparisons = inputIdFields.map(
+    (field) => `input.${field} === existing.${field}`,
+  );
+
+  return tsTemplate`(input, existing) => ${comparisons.join(' && ')}`;
+}
+
+/**
+ * Generates a deleteRemoved function for one-to-many relations.
+ * Uses Prisma deleteMany with OR clause.
+ */
+function createDeleteRemovedFragment(
+  nestedModel: PrismaOutputModel,
+  relation: PrismaOutputRelationField,
 ): TsCodeFragment {
+  const modelVar = lowercaseFirstChar(nestedModel.name);
   const { idFields } = nestedModel;
 
   if (!idFields || idFields.length === 0) {
     throw new Error(
-      `Nested model ${nestedModel.name} must have id fields for one-to-many relation`,
+      `Nested model ${nestedModel.name} must have id fields for deleteRemoved`,
     );
   }
 
   const relationFields = relation.fields ?? [];
-  const referencedFields = relation.references ?? [];
 
-  // Build the where unique object, determining if each field comes from input or parent
-  const whereFields: Record<string, string> = {};
-
-  for (const idField of idFields) {
-    // Check if this field is a relation field (comes from parent)
-    const relationFieldIndex = relationFields.indexOf(idField);
-
-    if (relationFieldIndex !== -1) {
-      // Field comes from parent model via relation
-      const referencedField = referencedFields[relationFieldIndex];
-      whereFields[idField] = `parentModel.${referencedField}`;
-    } else if (inputFieldNames.includes(idField)) {
-      // Field comes from input
-      whereFields[idField] = `input.${idField}`;
-    } else {
-      throw new Error(
-        `ID field ${idField} of ${nestedModel.name} is not in input fields or relation fields`,
-      );
-    }
+  // For simple single ID (not part of relation FK)
+  if (idFields.length === 1 && !relationFields.includes(idFields[0])) {
+    return tsTemplate`async (tx, removedItems) => {
+      await tx.${modelVar}.deleteMany({
+        where: { OR: removedItems.map((i) => ({ ${idFields[0]}: i.${idFields[0]} })) },
+      });
+    }`;
   }
 
-  const inputIdFields = idFields.filter((f) => inputFieldNames.includes(f));
+  // For composite keys, map all ID fields
+  const mapFields = idFields.map((f) => `${f}: i.${f}`).join(', ');
 
-  // Check if all fields come from input (no parent dependency)
-  const allFromInput = idFields.length === inputIdFields.length;
+  return tsTemplate`async (tx, removedItems) => {
+    await tx.${modelVar}.deleteMany({
+      where: { OR: removedItems.map((i) => ({ ${mapFields} })) },
+    });
+  }`;
+}
 
-  // Generate the where unique object
-  const whereUniqueObj = TsCodeUtils.mergeFragmentsAsObject(whereFields, {
-    wrapWithParenthesis: true,
+/**
+ * Generates a processDelete function for one-to-one relations.
+ * Uses Prisma deleteMany (idempotent) based on parent ID.
+ */
+function createProcessDeleteFragment(
+  nestedModel: PrismaOutputModel,
+  reverseRelation: PrismaOutputRelationField,
+): TsCodeFragment {
+  const modelVar = lowercaseFirstChar(nestedModel.name);
+  const reverseFields = reverseRelation.fields ?? [];
+  const reverseRefs = reverseRelation.references ?? [];
+
+  // Build the where clause from the relation fields
+  const whereEntries = reverseFields.map((field, i) => {
+    const refField = reverseRefs[i];
+    return `${field}: parent.${refField}`;
   });
 
-  // Create a conditional for whether the input field sugggests the object has a prior value
-  const hasExistingConditional = inputIdFields
-    .map((field) => `input.${field}`)
-    .join('&&');
+  return tsTemplate`() => async (tx, parent) => {
+    await tx.${modelVar}.deleteMany({ where: { ${whereEntries.join(', ')} } });
+  }`;
+}
 
-  // For composite keys, wrap in composite key syntax
-  if (idFields.length > 1) {
-    const compositeKey = idFields.join('_');
-    const compositeWhereUnique = TsCodeUtils.mergeFragmentsAsObject(
-      {
-        [compositeKey]: whereUniqueObj,
-      },
-      { wrapWithParenthesis: true },
+/**
+ * Builds the parent connect fragment used in processCreate data.
+ * Generates: `relationName: { connect: { field1: parent.field1, ... } }`
+ */
+function buildParentConnectEntry(reverseRelation: PrismaOutputRelationField): {
+  key: string;
+  value: TsCodeFragment;
+} {
+  const reverseFields = reverseRelation.fields ?? [];
+  const reverseRefs = reverseRelation.references ?? [];
+  const connectEntries = reverseFields.map((_, i) => {
+    const refField = reverseRefs[i];
+    return `${refField}: parent.${refField}`;
+  });
+
+  return {
+    key: reverseRelation.name,
+    value: tsTemplate`{ connect: { ${connectEntries.join(', ')} } }`,
+  };
+}
+
+/**
+ * Generates processCreate and processUpdate for the SIMPLE path (no sub-transformers).
+ * Uses the shared buildTransformOperationParts for FK handling.
+ */
+function createSimpleProcessFunctions(
+  input: WritePrismaDataNestedFieldInput,
+  reverseRelation: PrismaOutputRelationField,
+): {
+  processCreateFragment: TsCodeFragment;
+  processUpdateFragment: TsCodeFragment;
+} {
+  const { nestedModel, nestedFields, dataUtilsImports } = input;
+  const modelVar = lowercaseFirstChar(nestedModel.name);
+  const parentConnect = buildParentConnectEntry(reverseRelation);
+  const whereExpr = generateExistingItemWhere(nestedModel);
+
+  // Use shared helper for field categorization, destructuring, and data object building
+  const createParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'create',
+    inputVarName: 'itemInput',
+    additionalDataEntries: { [parentConnect.key]: parentConnect.value },
+  });
+
+  const updateParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'update',
+    inputVarName: 'itemInput',
+    existingItemVarName: 'existingItem',
+  });
+
+  const processCreateFragment = createParts.hasDestructure
+    ? tsTemplate`(itemInput) => async (tx, parent) => {
+      ${createParts.inputDestructureFragment}
+      await tx.${modelVar}.create({
+        data: ${createParts.prismaDataFragment},
+      });
+    }`
+    : tsTemplate`(itemInput) => async (tx, parent) => {
+      await tx.${modelVar}.create({
+        data: ${createParts.prismaDataFragment},
+      });
+    }`;
+
+  const processUpdateFragment = updateParts.hasDestructure
+    ? tsTemplate`(itemInput, existingItem) => async (tx) => {
+      ${updateParts.inputDestructureFragment}
+      await tx.${modelVar}.update({
+        where: ${whereExpr},
+        data: ${updateParts.prismaDataFragment},
+      });
+    }`
+    : tsTemplate`(itemInput, existingItem) => async (tx) => {
+      await tx.${modelVar}.update({
+        where: ${whereExpr},
+        data: ${updateParts.prismaDataFragment},
+      });
+    }`;
+
+  return { processCreateFragment, processUpdateFragment };
+}
+
+/**
+ * Generates processCreate and processUpdate for the TRANSFORM path (has sub-transformers).
+ * Uses prepareTransformers + executeTransformPlan inside the deferred operations.
+ */
+function createTransformProcessFunctions(
+  input: WritePrismaDataNestedFieldInput,
+  reverseRelation: PrismaOutputRelationField,
+): {
+  processCreateFragment: TsCodeFragment;
+  processUpdateFragment: TsCodeFragment;
+} {
+  const {
+    nestedModel,
+    nestedFields,
+    dataUtilsImports,
+    nestedTransformersFragment,
+  } = input;
+  const modelVar = lowercaseFirstChar(nestedModel.name);
+  const parentConnect = buildParentConnectEntry(reverseRelation);
+  const whereExpr = generateExistingItemWhere(nestedModel);
+
+  if (!nestedTransformersFragment) {
+    throw new Error(
+      `Nested model ${nestedModel.name} has sub-transform-fields but no transformers fragment. ` +
+        `Ensure the nested model has its own prisma-data-service.`,
     );
-
-    const conditionalWhereUnique = tsTemplate`${hasExistingConditional} ? ${compositeWhereUnique} : undefined`;
-
-    return allFromInput
-      ? tsTemplate`(input) => ${conditionalWhereUnique}`
-      : tsTemplate`(input, parentModel) => ${conditionalWhereUnique}`;
   }
 
-  const conditionalWhereUniqueObj = tsTemplate`${hasExistingConditional} ? ${whereUniqueObj} : undefined`;
+  // Build operation parts for create
+  const createParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'create',
+    inputVarName: 'itemInput',
+    transformersVarFragment: nestedTransformersFragment,
+    additionalDataEntries: { [parentConnect.key]: parentConnect.value },
+  });
 
-  // For single field, just return the field mapping
-  return allFromInput
-    ? tsTemplate`(input) => ${conditionalWhereUniqueObj}`
-    : tsTemplate`(input, parentModel) => ${conditionalWhereUniqueObj}`;
+  // Build operation parts for update
+  // Use loadExistingVarName: 'existingItem' because in processUpdate,
+  // loadExisting should reference the existing nested item, not the parent's 'where'
+  const updateParts = buildTransformOperationParts({
+    fields: nestedFields,
+    prismaModel: nestedModel,
+    dataUtilsImports,
+    operationType: 'update',
+    inputVarName: 'itemInput',
+    transformersVarFragment: nestedTransformersFragment,
+    existingItemVarName: 'existingItem',
+    loadExistingVarName: 'existingItem',
+  });
+
+  // We only enter this path when hasTransformFields is true
+  // and we pass transformersVarFragment, so these will always be defined
+  if (
+    !createParts.transformersObjectFragment ||
+    !updateParts.transformersObjectFragment
+  ) {
+    throw new Error(
+      `Nested model ${nestedModel.name} has sub-transform-fields but transformer fragments were not generated.`,
+    );
+  }
+  const createTransformers = createParts.transformersObjectFragment;
+  const updateTransformers = updateParts.transformersObjectFragment;
+
+  // processCreate: prepare transformers then execute inside deferred
+  const processCreateFragment = tsTemplate`(itemInput, { serviceContext }) => async (tx, parent) => {
+    ${createParts.inputDestructureFragment}
+
+    const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+      transformers: ${createTransformers},
+      serviceContext,
+    });
+
+    await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+      tx,
+      execute: async (${createParts.hasTransformFields ? '{ transformed }' : ''}) =>
+        tx.${modelVar}.create({
+          data: ${createParts.prismaDataFragment},
+        }),
+    });
+  }`;
+
+  // processUpdate: prepare transformers then execute inside deferred
+  const processUpdateFragment = tsTemplate`(itemInput, existingItem, { serviceContext }) => async (tx) => {
+    ${updateParts.inputDestructureFragment}
+
+    const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
+      transformers: ${updateTransformers},
+      serviceContext,
+    });
+
+    await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
+      tx,
+      execute: async (${updateParts.hasTransformFields ? '{ transformed }' : ''}) =>
+        tx.${modelVar}.update({
+          where: ${whereExpr},
+          data: ${updateParts.prismaDataFragment},
+        }),
+    });
+  }`;
+
+  return { processCreateFragment, processUpdateFragment };
 }
 
-function writeParentModelConfigFragment({
-  parentModel,
-  dataUtilsImports,
-}: WritePrismaDataNestedFieldInput): TsCodeFragment {
-  const whereUniqueFunction = createPrismaWhereUniqueFunction(parentModel);
-
-  return tsTemplate`const parentModel = ${dataUtilsImports.createParentModelConfig.fragment()}(${quot(lowercaseFirstChar(parentModel.name))}, ${whereUniqueFunction})`;
-}
-
+/**
+ * Writes a nested field transformer definition (oneToOneTransformer or oneToManyTransformer).
+ *
+ * Generates:
+ * - schemaFragment: Zod schema for the fieldSchemas object
+ * - transformer.fragment: oneToOneTransformer({...}) or oneToManyTransformer({...})
+ *
+ * For nested entities with sub-transform-fields (e.g., file fields), generates
+ * processCreate/processUpdate that use prepareTransformers + executeTransformPlan.
+ */
 export function writePrismaDataNestedField(
   input: WritePrismaDataNestedFieldInput,
 ): InputFieldDefinitionOutput {
@@ -213,24 +340,23 @@ export function writePrismaDataNestedField(
     nestedModel,
     relation,
     nestedFields,
-    dataServiceFieldsFragment,
     dataUtilsImports,
+    nestedFieldSchemasFragment,
+    allDataServiceFieldNames,
   } = input;
 
-  const parentModelConfigFrag = writeParentModelConfigFragment(input);
-  const fieldConstructor = relation.isList
-    ? dataUtilsImports.nestedOneToManyField
-    : dataUtilsImports.nestedOneToOneField;
-
   const nestedFieldNames = nestedFields.map((f) => f.name);
-  const pickedFieldsFragment = dataServiceFieldsFragment
-    ? tsTemplateWithImports([
-        tsImportBuilder(['pick']).from('es-toolkit'),
-      ])`pick(${dataServiceFieldsFragment}, ${JSON.stringify(nestedFieldNames)} as const)`
-    : TsCodeUtils.mergeFragmentsAsObject(
-        Object.fromEntries(nestedFields.map((f) => [f.name, f.fragment])),
-      );
 
+  // Build schema using shared utility (handles fieldSchemas import, subset pick, and inline)
+  const { itemSchema, schemaFragment } = buildNestedSchemaFragments({
+    fields: nestedFields,
+    fieldNames: nestedFieldNames,
+    isList: relation.isList,
+    nestedFieldSchemasFragment,
+    allDataServiceFieldNames,
+  });
+
+  // Find reverse relation (nested model → parent model)
   const reverseRelation = nestedModel.fields.find(
     (f): f is PrismaOutputRelationField =>
       f.type === 'relation' &&
@@ -244,42 +370,90 @@ export function writePrismaDataNestedField(
     );
   }
 
-  // Generate the appropriate getWhereUnique function based on relation type
-  const getWhereUniqueFragment = relation.isList
-    ? createOneToManyWhereUniqueFunction(
-        nestedModel,
-        reverseRelation,
-        nestedFieldNames,
-      )
-    : createOneToOneWhereUniqueFunction(reverseRelation, nestedModel);
+  // Choose process function generation based on whether nested has sub-transformers
+  const hasSubTransformers = nestedFields.some((f) => f.isTransformField);
 
-  const buildDataResult = generateRelationBuildData({
-    prismaModel: nestedModel,
-    inputFieldNames: nestedFieldNames,
-    dataUtilsImports,
-  });
+  const { processCreateFragment, processUpdateFragment } = hasSubTransformers
+    ? createTransformProcessFunctions(input, reverseRelation)
+    : createSimpleProcessFunctions(input, reverseRelation);
 
-  const fieldOptions = TsCodeUtils.mergeFragmentsAsObject({
-    buildCreateData: buildDataResult.buildCreateDataFragment,
-    buildUpdateData: buildDataResult.buildUpdateDataFragment,
-    fields: pickedFieldsFragment,
-    getWhereUnique: getWhereUniqueFragment,
-    model: quot(lowercaseFirstChar(nestedModel.name)),
-    parentModel: 'parentModel',
-    relationName: quot(reverseRelation.name),
-  });
+  let transformerFragment: TsCodeFragment;
 
-  const fragment = tsTemplateWithImports([], {
-    hoistedFragments: [
-      { ...parentModelConfigFrag, key: 'parent-model-config' },
-    ],
-  })`
-    ${fieldConstructor.fragment()}(${fieldOptions})
-  `;
+  if (relation.isList) {
+    // oneToManyTransformer
+    const compareItemFragment = createCompareItemFragment(
+      nestedModel,
+      reverseRelation,
+      nestedFieldNames,
+    );
+    const deleteRemovedFragment = createDeleteRemovedFragment(
+      nestedModel,
+      reverseRelation,
+    );
+
+    const configEntries: Record<string, TsCodeFragment | string> = {
+      parentModel: quot(lowercaseFirstChar(parentModel.name)),
+      model: quot(lowercaseFirstChar(nestedModel.name)),
+      schema: itemSchema,
+      processCreate: processCreateFragment,
+      deleteRemoved: deleteRemovedFragment,
+    };
+
+    if (compareItemFragment) {
+      configEntries.compareItem = compareItemFragment;
+    }
+
+    configEntries.processUpdate = processUpdateFragment;
+
+    const configObj = TsCodeUtils.mergeFragmentsAsObject(configEntries);
+    transformerFragment = tsTemplate`${dataUtilsImports.oneToManyTransformer.fragment()}(${configObj})`;
+  } else {
+    // oneToOneTransformer
+    const processDeleteFragment = createProcessDeleteFragment(
+      nestedModel,
+      reverseRelation,
+    );
+
+    const configEntries: Record<string, TsCodeFragment | string> = {
+      parentModel: quot(lowercaseFirstChar(parentModel.name)),
+      model: quot(lowercaseFirstChar(nestedModel.name)),
+      schema: itemSchema,
+      processCreate: processCreateFragment,
+      processUpdate: processUpdateFragment,
+      processDelete: processDeleteFragment,
+    };
+
+    const configObj = TsCodeUtils.mergeFragmentsAsObject(configEntries);
+    transformerFragment = tsTemplate`${dataUtilsImports.oneToOneTransformer.fragment()}(${configObj})`;
+  }
+
+  // Precompute values needed by the forUpdate callback
+  const nestedModelVar = lowercaseFirstChar(nestedModel.name);
+  const reverseFields = reverseRelation.fields ?? [];
+  const reverseRefs = reverseRelation.references ?? [];
+  const findMethod = relation.isList ? 'findMany' : 'findUnique';
 
   return {
     name: relation.name,
-    fragment,
+    schemaFragment,
+    transformer: {
+      fragment: transformerFragment,
+      needsExistingItem: false,
+      buildForCreateEntry: ({ transformersVarFragment }) =>
+        tsTemplate`${transformersVarFragment}.${relation.name}.forCreate(${relation.name})`,
+      buildForUpdateEntry: ({
+        transformersVarFragment,
+        loadExistingVarName,
+      }) => {
+        const whereClause = reverseFields
+          .map(
+            (field, i) => `${field}: ${loadExistingVarName}.${reverseRefs[i]}`,
+          )
+          .join(', ');
+        return tsTemplate`${transformersVarFragment}.${relation.name}.forUpdate(${relation.name}, { loadExisting: () => prisma.${nestedModelVar}.${findMethod}({ where: { ${whereClause} } }) })`;
+      },
+    },
+    isTransformField: true,
     outputDtoField: {
       name: relation.name,
       type: 'nested',

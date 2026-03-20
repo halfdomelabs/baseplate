@@ -138,7 +138,7 @@ export async function executeGeneratorEntry(
                   `Could not resolve required dependency ${key} in ${taskId}`,
                 );
               }
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              // oxlint-disable-next-line typescript/no-non-null-assertion
               return provider!; // cheat Type system to prevent null from appearing
             },
           );

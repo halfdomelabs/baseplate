@@ -58,6 +58,7 @@ model BlogPost {
   publisherId String   @map("publisher_id") @db.Uuid
   title       String
   content     String
+  metadata    Json?
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   blog        Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)

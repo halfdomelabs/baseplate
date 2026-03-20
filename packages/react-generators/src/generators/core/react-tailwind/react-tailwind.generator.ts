@@ -24,6 +24,8 @@ import { CORE_REACT_TAILWIND_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   globalBodyClasses: z.string().optional(),
+  lightColorsCss: z.string().optional(),
+  darkColorsCss: z.string().optional(),
 });
 
 export interface ReactTailwindProvider {
@@ -37,7 +39,7 @@ export const reactTailwindGenerator = createGenerator({
   name: 'core/react-tailwind',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ globalBodyClasses }) => ({
+  buildTasks: ({ globalBodyClasses, lightColorsCss, darkColorsCss }) => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['tailwind-merge']),
       dev: extractPackageVersions(REACT_PACKAGES, [
@@ -110,6 +112,8 @@ export const reactTailwindGenerator = createGenerator({
                       !builder.metadataOptions.includeTemplateMetadata
                         ? globalStyles.join('\n\n')
                         : '/* GLOBAL_STYLES */',
+                    TPL_LIGHT_COLORS: lightColorsCss ?? '',
+                    TPL_DARK_COLORS: darkColorsCss ?? '',
                   },
                 },
               }),

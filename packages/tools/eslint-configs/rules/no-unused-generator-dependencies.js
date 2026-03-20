@@ -30,7 +30,7 @@ export default {
       CallExpression(node) {
         // Check if this is a call to `createGeneratorTask`
         // The callee can be `createGeneratorTask` directly or `someObject.createGeneratorTask`
-        const callee = node.callee;
+        const { callee } = node;
         let isCreateGeneratorTaskCall = false;
 
         if (
@@ -108,13 +108,12 @@ export default {
                     fix(fixer) {
                       // Remove the entire property from the dependencies object
                       // This handles commas and whitespace correctly for object properties.
-                      const sourceCode = context.sourceCode;
+                      const { sourceCode } = context;
                       const nextToken = sourceCode.getTokenAfter(depProp);
 
                       // If there's a comma after this property, remove it too
                       if (
-                        nextToken &&
-                        nextToken.type === 'Punctuator' &&
+                        nextToken?.type === 'Punctuator' &&
                         nextToken.value === ',' &&
                         depProp.range
                       ) {

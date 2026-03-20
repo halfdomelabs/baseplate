@@ -1,6 +1,6 @@
-import type { AuthRole } from '../modules/accounts/constants/auth-roles.constants.js';
+import type { AuthRole } from '../modules/accounts/auth/constants/auth-roles.constants.js';
 import type {
-  GetPayload,
+  GetResult,
   ModelPropName,
 } from './data-operations/prisma-types.js';
 import type { ServiceContext } from './service-context.js';
@@ -122,16 +122,16 @@ export async function checkInstanceAuthorization<T>(
  */
 export interface ModelAuthorizerConfig<
   TModelName extends ModelPropName,
-  TRoles extends Record<string, InstanceRoleCheck<GetPayload<TModelName>>>,
+  TRoles extends Record<string, InstanceRoleCheck<GetResult<TModelName>>>,
 > {
   /** Prisma model name */
   model: TModelName;
 
   /** Field used as the primary key */
-  idField: keyof GetPayload<TModelName>;
+  idField: keyof GetResult<TModelName>;
 
   /** Function to load model by ID */
-  getModelById: (id: string) => Promise<GetPayload<TModelName> | null>;
+  getModelById: (id: string) => Promise<GetResult<TModelName> | null>;
 
   /** Role check functions - "who you are" relative to this resource */
   roles: TRoles;
@@ -142,7 +142,7 @@ export interface ModelAuthorizerConfig<
  */
 export interface ModelAuthorizer<
   TModelName extends ModelPropName,
-  TRoles extends Record<string, InstanceRoleCheck<GetPayload<TModelName>>>,
+  TRoles extends Record<string, InstanceRoleCheck<GetResult<TModelName>>>,
 > {
   /** The model name */
   readonly model: TModelName;
@@ -164,7 +164,7 @@ export interface ModelAuthorizer<
    */
   hasRole(
     ctx: ServiceContext,
-    model: GetPayload<TModelName>,
+    model: GetResult<TModelName>,
     role: keyof TRoles,
   ): Promise<boolean>;
 
@@ -200,7 +200,7 @@ export interface ModelAuthorizer<
  */
 export function createModelAuthorizer<
   TModelName extends ModelPropName,
-  TRoles extends Record<string, InstanceRoleCheck<GetPayload<TModelName>>>,
+  TRoles extends Record<string, InstanceRoleCheck<GetResult<TModelName>>>,
 >(
   config: ModelAuthorizerConfig<TModelName, TRoles>,
 ): ModelAuthorizer<TModelName, TRoles> {
@@ -212,7 +212,7 @@ export function createModelAuthorizer<
     return `authz:${config.model}:model:${id}`;
   }
 
-  function getIdFromModel(model: GetPayload<TModelName>): string | number {
+  function getIdFromModel(model: GetResult<TModelName>): string | number {
     const id = model[config.idField];
     if (typeof id !== 'string' && typeof id !== 'number') {
       throw new TypeError(
@@ -224,7 +224,7 @@ export function createModelAuthorizer<
 
   function getRoleCheck(
     role: keyof TRoles,
-  ): InstanceRoleCheck<GetPayload<TModelName>> {
+  ): InstanceRoleCheck<GetResult<TModelName>> {
     if (!(role in config.roles)) {
       throw new Error(`Role ${String(role)} not found`);
     }
@@ -237,7 +237,7 @@ export function createModelAuthorizer<
 
   async function hasRoleWithModel(
     ctx: ServiceContext,
-    model: GetPayload<TModelName>,
+    model: GetResult<TModelName>,
     role: keyof TRoles,
   ): Promise<boolean> {
     const id = getIdFromModel(model);
@@ -274,7 +274,7 @@ export function createModelAuthorizer<
     // Check model cache or load model
     const modelCacheKey = getModelCacheKey(id);
     let model = ctx.authorizerModelCache.get(modelCacheKey) as
-      | GetPayload<TModelName>
+      | GetResult<TModelName>
       | null
       | undefined;
 

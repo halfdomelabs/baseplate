@@ -1,6 +1,29 @@
 {
   "name": "better-auth/better-auth-pages",
   "templates": {
+    "forgot-password": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/forgot-password.tsx",
+      "sourceFile": "routes/forgot-password.tsx",
+      "variables": {}
+    },
     "login": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -45,6 +68,52 @@
       },
       "pathRootRelativePath": "{routes-root}/register.tsx",
       "sourceFile": "routes/register.tsx",
+      "variables": {}
+    },
+    "reset-password": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/reset-password.tsx",
+      "sourceFile": "routes/reset-password.tsx",
+      "variables": {}
+    },
+    "verify-email": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "betterAuthImportsProvider": {
+          "importName": "betterAuthImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/better-auth/generators/react/react-better-auth/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/verify-email.tsx",
+      "sourceFile": "routes/verify-email.tsx",
       "variables": {}
     }
   }

@@ -1,0 +1,42 @@
+{
+  "button.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-button"
+  },
+  "divider.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-divider"
+  },
+  "heading.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-heading"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-index"
+  },
+  "layout.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-layout"
+  },
+  "link.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-link"
+  },
+  "section.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-section"
+  },
+  "text.tsx": {
+    "generator": "@baseplate-dev/plugin-email#email/transactional-lib",
+    "instanceData": {},
+    "template": "components-text"
+  }
+}

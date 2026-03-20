@@ -59,16 +59,19 @@ export default createPluginModule({
             devWebPorts[0] ??
             projectDefinition.settings.general.portOffset + 30;
 
+          const additionalAdminRoles =
+            localAuthDefinition.additionalUserAdminRoles.map((role) =>
+              definitionContainer.nameFromId(role),
+            );
+          // 'admin' is always included since it is now a built-in role guaranteed to exist
+          const adminRoles = [...new Set(['admin', ...additionalAdminRoles])];
+
           appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
             seedInitialUser: seedInitialUserGenerator({
-              initialUserRoles: localAuthDefinition.initialUserRoles.map(
-                (role) => definitionContainer.nameFromId(role),
-              ),
+              initialUserRoles: ['admin'],
             }),
             authModule: authModuleGenerator({
-              userAdminRoles: localAuthDefinition.userAdminRoles.map((role) =>
-                definitionContainer.nameFromId(role),
-              ),
+              userAdminRoles: adminRoles,
               devWebPorts,
             }),
             emailPassword: appModuleGenerator({
@@ -76,9 +79,7 @@ export default createPluginModule({
               name: 'password',
               children: {
                 module: authEmailPasswordGenerator({
-                  adminRoles: localAuthDefinition.userAdminRoles.map((role) =>
-                    definitionContainer.nameFromId(role),
-                  ),
+                  adminRoles,
                   devWebDomainPort,
                   requireNameOnRegistration:
                     localAuthDefinition.requireNameOnRegistration,

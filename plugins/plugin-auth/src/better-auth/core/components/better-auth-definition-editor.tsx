@@ -15,6 +15,7 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
+  MultiComboboxFieldController,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -47,12 +48,22 @@ export function BetterAuthDefinitionEditor({
     createBetterAuthPluginDefinitionSchema,
   );
 
+  const authDefinition = getAuthPluginDefinition(definition);
+  const roles = authDefinition.roles
+    .filter((role) => !role.builtIn)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
+
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
       return pluginMetadata.config as BetterAuthPluginDefinitionInput;
     }
 
-    return {} satisfies BetterAuthPluginDefinitionInput;
+    return {
+      additionalUserAdminRoles: [],
+    } satisfies BetterAuthPluginDefinitionInput;
   }, [pluginMetadata?.config]);
 
   const form = useResettableForm({
@@ -60,8 +71,6 @@ export function BetterAuthDefinitionEditor({
     defaultValues,
   });
   const { control, reset, handleSubmit } = form;
-
-  const authDefinition = getAuthPluginDefinition(definition);
 
   const authFeature = definition.features.find(
     (f) => f.id === authDefinition.authFeatureRef,
@@ -72,9 +81,19 @@ export function BetterAuthDefinitionEditor({
     );
   }
 
+  const accountsFeature = definition.features.find(
+    (f) => f.id === authDefinition.accountsFeatureRef,
+  );
+  if (!accountsFeature) {
+    throw new Error(
+      `Accounts feature not found for ref: ${authDefinition.accountsFeatureRef}`,
+    );
+  }
+
   const partialDef = useMemo(
-    () => createBetterAuthPartialDefinition(authFeature.name),
-    [authFeature.name],
+    () =>
+      createBetterAuthPartialDefinition(authFeature.name, accountsFeature.name),
+    [authFeature.name, accountsFeature.name],
   );
 
   const diff = useMemo(
@@ -139,6 +158,27 @@ export function BetterAuthDefinitionEditor({
                   <DefinitionDiffAlert
                     diff={diff}
                     upToDateMessage="All required models are already configured correctly. No changes needed."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    User Management Permissions
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    The &quot;admin&quot; role always has user management
+                    permissions. Optionally add more roles that can manage users
+                    and assign roles in the admin interface.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <MultiComboboxFieldController
+                    label="Additional User Admin Roles"
+                    name="additionalUserAdminRoles"
+                    control={control}
+                    options={roles}
+                    description="Additional roles (beyond admin) that can manage users and assign roles."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

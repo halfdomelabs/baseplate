@@ -1,0 +1,54 @@
+import type { User } from '@src/generated/prisma/client.js';
+
+import { prisma } from '@src/services/prisma.js';
+import { NotFoundError } from '@src/utils/http-errors.js';
+
+import type { AuthRole } from '../constants/auth-roles.constants.js';
+
+import { AUTH_ROLE_CONFIG } from '../constants/auth-roles.constants.js';
+
+/**
+ * Updates the roles assigned to a user.
+ * Filters out built-in roles (public, user, system) as these are automatically assigned.
+ *
+ * @param params - The parameters for updating user roles
+ * @param params.userId - The ID of the user to update
+ * @param params.roles - Array of role names to assign to the user
+ * @returns The updated user with their roles
+ */
+export async function updateUserRoles({
+  userId,
+  roles,
+}: {
+  userId: string;
+  roles: string[];
+}): Promise<User> {
+  // Filter out auto-assigned roles (public, user, system) that cannot be manually assigned
+  const validRoles = roles.filter((role) => {
+    if (!(role in AUTH_ROLE_CONFIG)) {
+      return false;
+    }
+    const roleConfig = AUTH_ROLE_CONFIG[role as AuthRole];
+    return !roleConfig.autoAssigned;
+  });
+
+  await prisma.$transaction([
+    prisma.userRole.deleteMany({
+      where: { userId, role: { notIn: validRoles } },
+    }),
+    prisma.userRole.createMany({
+      data: validRoles.map((role) => ({ userId, role })),
+      skipDuplicates: true,
+    }),
+  ]);
+
+  const updatedUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (updatedUser === null) {
+    throw new NotFoundError('User not found', 'user-not-found');
+  }
+
+  return updatedUser;
+}

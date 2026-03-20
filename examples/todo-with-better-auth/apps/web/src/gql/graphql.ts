@@ -25,6 +25,16 @@ export type Scalars = {
   Uuid: { input: string; output: string; }
 };
 
+export type BillingSubscriptionStatus =
+  | 'ACTIVE'
+  | 'CANCELED'
+  | 'INCOMPLETE'
+  | 'INCOMPLETE_EXPIRED'
+  | 'PAST_DUE'
+  | 'PAUSED'
+  | 'TRIALING'
+  | 'UNPAID';
+
 /** Input type for createPresignedDownloadUrl mutation */
 export type CreatePresignedDownloadUrlInput = {
   fileId: Scalars['Uuid']['input'];
@@ -219,10 +229,12 @@ export type Mutation = {
   deleteTodoList: DeleteTodoListPayload;
   deleteTodoListShare: DeleteTodoListSharePayload;
   deleteUser: DeleteUserPayload;
+  resetUserPassword: ResetUserPasswordPayload;
   updateTodoItem: UpdateTodoItemPayload;
   updateTodoList: UpdateTodoListPayload;
   updateTodoListShare: UpdateTodoListSharePayload;
   updateUser: UpdateUserPayload;
+  updateUserRoles: UpdateUserRolesPayload;
 };
 
 
@@ -276,6 +288,11 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationResetUserPasswordArgs = {
+  input: ResetUserPasswordInput;
+};
+
+
 export type MutationUpdateTodoItemArgs = {
   input: UpdateTodoItemInput;
 };
@@ -293,6 +310,11 @@ export type MutationUpdateTodoListShareArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
+};
+
+
+export type MutationUpdateUserRolesArgs = {
+  input: UpdateUserRolesInput;
 };
 
 export type PresignedUrlField = {
@@ -370,6 +392,18 @@ export type QueryUserArgs = {
 export type QueryUsersArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Input type for resetUserPassword mutation */
+export type ResetUserPasswordInput = {
+  newPassword: Scalars['String']['input'];
+  userId: Scalars['Uuid']['input'];
+};
+
+/** Payload type for resetUserPassword mutation */
+export type ResetUserPasswordPayload = {
+  __typename?: 'ResetUserPasswordPayload';
+  user: User;
 };
 
 export type TodoItem = {
@@ -526,6 +560,18 @@ export type UpdateUserInput = {
 /** Payload type for updateUser mutation */
 export type UpdateUserPayload = {
   __typename?: 'UpdateUserPayload';
+  user: User;
+};
+
+/** Input type for updateUserRoles mutation */
+export type UpdateUserRolesInput = {
+  roles: Array<Scalars['String']['input']>;
+  userId: Scalars['Uuid']['input'];
+};
+
+/** Payload type for updateUserRoles mutation */
+export type UpdateUserRolesPayload = {
+  __typename?: 'UpdateUserRolesPayload';
   user: User;
 };
 

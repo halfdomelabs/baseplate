@@ -100,7 +100,17 @@
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
-    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
+    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" },
+    {
+      "id": "feature:RLpN26dwQNkw",
+      "name": "accounts/auth",
+      "parentRef": "accounts"
+    },
+    {
+      "id": "feature:Cus91nOEvzmO",
+      "name": "accounts/users",
+      "parentRef": "accounts"
+    }
   ],
   "isInitialized": true,
   "libraries": [
@@ -189,7 +199,7 @@
       }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/auth",
       "id": "model:wGEO1hZs5XQE",
       "model": {
         "fields": [
@@ -384,6 +394,28 @@
         ]
       },
       "featureRef": "blogs",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true },
+          "delete": { "enabled": true },
+          "update": { "enabled": true }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "blogId" },
+            { "ref": "publisherId" },
+            { "ref": "title" },
+            { "ref": "content" },
+            { "ref": "metadata" }
+          ]
+        },
+        "queries": {
+          "get": { "enabled": true },
+          "globalRoles": ["user"],
+          "list": { "enabled": true }
+        }
+      },
       "id": "model:ZYGsFp93vRhv",
       "model": {
         "fields": [
@@ -421,6 +453,13 @@
             "name": "content",
             "options": { "default": "" },
             "type": "string"
+          },
+          {
+            "id": "model-scalar-field:cK70M8wINoNY",
+            "isOptional": true,
+            "name": "metadata",
+            "options": { "default": "" },
+            "type": "json"
           },
           {
             "id": "model-scalar-field:lKjrrVtoNkEP",
@@ -462,7 +501,20 @@
         ]
       },
       "name": "BlogPost",
-      "service": { "transformers": [] }
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["blogId", "publisherId", "title", "content", "metadata"],
+          "globalRoles": ["admin"]
+        },
+        "delete": { "enabled": true, "globalRoles": ["admin"] },
+        "transformers": [],
+        "update": {
+          "enabled": true,
+          "fields": ["blogId", "publisherId", "title", "content", "metadata"],
+          "globalRoles": ["admin"]
+        }
+      }
     },
     {
       "featureRef": "blogs",
@@ -567,7 +619,7 @@
           }
         ]
       },
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "graphql": {
         "mutations": {
           "create": { "enabled": true },
@@ -672,7 +724,7 @@
       }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "id": "model:brCokD6pIz7E",
       "model": {
         "fields": [
@@ -753,7 +805,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
           "enabled": true,
@@ -810,7 +862,7 @@
       "service": { "transformers": [] }
     },
     {
-      "featureRef": "accounts",
+      "featureRef": "accounts/users",
       "id": "model:8koW3IyW42e_",
       "model": {
         "fields": [
@@ -891,9 +943,8 @@
   "plugins": [
     {
       "config": {
-        "initialUserRoles": ["admin"],
-        "requireNameOnRegistration": true,
-        "userAdminRoles": ["admin"]
+        "additionalUserAdminRoles": ["admin"],
+        "requireNameOnRegistration": true
       },
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
@@ -902,35 +953,41 @@
     },
     {
       "config": {
-        "authFeatureRef": "accounts",
+        "accountsFeatureRef": "accounts/users",
+        "authFeatureRef": "accounts/auth",
         "implementationPluginKey": "baseplate-dev_plugin-auth_local-auth",
         "roles": [
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All users (including unauthenticated and authenticated users)",
             "id": "role:SdoAjeUmYZXC",
             "name": "public"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "All authenticated users",
             "id": "role:BDE6HsTbncOA",
             "name": "user"
           },
           {
+            "autoAssigned": true,
             "builtIn": true,
             "comment": "System processes without a user context, e.g. background jobs",
             "id": "role:W86r9IpCNx5f",
             "name": "system"
           },
           {
-            "builtIn": false,
+            "autoAssigned": false,
+            "builtIn": true,
             "comment": "Administrator role",
             "id": "role:5_w6OYFY3FuY",
             "name": "admin"
           }
         ]
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-auth_auth",
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
@@ -983,7 +1040,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 28,
+  "schemaVersion": 30,
   "settings": {
     "general": {
       "name": "blog-with-auth",

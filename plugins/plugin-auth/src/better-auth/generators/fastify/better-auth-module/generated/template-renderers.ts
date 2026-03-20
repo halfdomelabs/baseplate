@@ -10,6 +10,7 @@ import {
   prismaImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { BETTER_AUTH_BETTER_AUTH_MODULE_PATHS } from './template-paths.js';
@@ -78,6 +79,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
+    emailModuleImports: emailModuleImportsProvider,
     paths: BETTER_AUTH_BETTER_AUTH_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -92,6 +94,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
     authContextImports,
     authRolesImports,
     configServiceImports,
+    emailModuleImports,
     paths,
     pothosImports,
     prismaImports,
@@ -109,6 +112,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authRolesImports,
                   configServiceImports,
+                  emailModuleImports,
                   prismaImports,
                 },
                 ...options,

@@ -1,4 +1,8 @@
 {
   "extends": "@baseplate-dev/tools/tsconfig.node.lib.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "checkJs": true
+  },
   "include": ["index.d.ts", "index.js"]
 }

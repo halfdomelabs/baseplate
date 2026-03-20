@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
+import { compareStrings } from '@baseplate-dev/utils';
 
 import type {
   PrismaOutputModel,
@@ -41,6 +42,12 @@ interface GenerateRelationBuildDataResult {
   buildUpdateDataFragment: TsCodeFragment;
   /** Whether this is a simple passthrough (no relations to transform) */
   passthrough: boolean;
+  /** Foreign key field names that need to be destructured from input */
+  foreignKeyFieldNames: string[];
+  /** Individual relation entries for create: { relationName: connectCreate fragment } */
+  createRelationEntries: Record<string, TsCodeFragment>;
+  /** Individual relation entries for update: { relationName: connectUpdate fragment } */
+  updateRelationEntries: Record<string, TsCodeFragment>;
 }
 
 /**
@@ -216,7 +223,9 @@ function generateBuildDataBody(
   }
 
   // Add relation fragments
-  const sortedRelationFragments = relationFragments.toSorted();
+  const sortedRelationFragments = relationFragments.toSorted((a, b) =>
+    compareStrings(a.relationName, b.relationName),
+  );
   for (const { relationName, fragment } of sortedRelationFragments) {
     returnObjectFragments[relationName] = fragment;
   }
@@ -300,6 +309,23 @@ export function generateRelationBuildData(
   // Both should have the same passthrough status since they use the same relations
   const passthrough = createBody.passthrough && updateBody.passthrough;
 
+  // Build individual relation entries for direct use in data objects
+  const relationHelpersFragment = dataUtilsImports.relationHelpers.fragment();
+  const createRelationEntries: Record<string, TsCodeFragment> = {};
+  const updateRelationEntries: Record<string, TsCodeFragment> = {};
+  for (const relation of relevantRelations) {
+    createRelationEntries[relation.name] = generateRelationHelperCall(
+      relation,
+      'create',
+      relationHelpersFragment,
+    );
+    updateRelationEntries[relation.name] = generateRelationHelperCall(
+      relation,
+      'update',
+      relationHelpersFragment,
+    );
+  }
+
   return {
     createArgumentFragment: createBody.argumentFragment,
     createReturnFragment: createBody.returnFragment,
@@ -308,5 +334,8 @@ export function generateRelationBuildData(
     buildCreateDataFragment: tsTemplate`(${createBody.argumentFragment}) => (${createBody.returnFragment})`,
     buildUpdateDataFragment: tsTemplate`(${updateBody.argumentFragment}) => (${updateBody.returnFragment})`,
     passthrough,
+    foreignKeyFieldNames,
+    createRelationEntries,
+    updateRelationEntries,
   };
 }

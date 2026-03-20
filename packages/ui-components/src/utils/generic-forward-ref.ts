@@ -9,7 +9,7 @@ import { forwardRef } from 'react';
  * Taken from https://fettblog.eu/typescript-react-generic-forward-refs/
  */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// oxlint-disable-next-line typescript/no-empty-object-type
 export function genericForwardRef<T, P = {}>(
   render: (props: P, ref: React.Ref<T>) => React.ReactElement | null,
   displayName?: string,

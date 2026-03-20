@@ -2,7 +2,7 @@ import EventEmitter from 'node:events';
 
 const mockFsWatchers = new Set<MockFSWatcher>();
 
-// eslint-disable-next-line unicorn/prefer-event-target -- chokidar uses EventEmitter
+// oxlint-disable-next-line unicorn/prefer-event-target -- chokidar uses EventEmitter
 export class MockFSWatcher extends EventEmitter {
   private watchedPaths = new Set<string>();
 

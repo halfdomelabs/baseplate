@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 
 import type { FragmentType } from '@src/gql';
 
-import { EmbeddedListFieldController } from '@src/components/admin/embedded-list-field';
 import { EmbeddedObjectFieldController } from '@src/components/admin/embedded-object-field';
 import { Button } from '@src/components/ui/button';
 import { Card, CardContent, CardFooter } from '@src/components/ui/card';
@@ -17,7 +16,6 @@ import type { UserFormData } from '../-schemas/user-schema';
 
 import { userEditFormSchema } from '../-schemas/user-schema';
 import { EmbeddedCustomerForm } from './embedded-customer-form';
-import { EmbeddedRolesForm, EmbeddedRolesTable } from './embedded-roles-form';
 
 /* TPL_COMPONENT_NAME=UserEditForm */
 /* TPL_DEFAULT_VALUES_FRAGMENT_VARIABLE=userEditFormDefaultValuesFragment */
@@ -33,10 +31,6 @@ export const userEditFormDefaultValuesFragment = graphql(`
     customer {
       id
       stripeCustomerId
-    }
-    roles {
-      role
-      userId
     }
   }
 `);
@@ -98,24 +92,6 @@ export function UserEditForm(
               renderForm={(formProps) => (
                 <EmbeddedCustomerForm {...formProps} />
               )}
-            />
-            <EmbeddedListFieldController
-              label="Roles"
-              control={control}
-              name="roles"
-              renderForm={(formProps) => <EmbeddedRolesForm {...formProps} />}
-              renderTable={(tableProps) => (
-                <EmbeddedRolesTable {...tableProps} />
-              )}
-            />
-            <InputFieldController
-              label="Password"
-              control={control}
-              name="password"
-              type="password"
-              registerOptions={{
-                setValueAs: (val: string) => (val === '' ? undefined : val),
-              }}
             />
             {/* TPL_INPUTS:END */}
           </CardContent>

@@ -22,6 +22,10 @@
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         },
+        "emailModuleImportsProvider": {
+          "importName": "emailModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
@@ -30,7 +34,11 @@
       "pathRootRelativePath": "{module-root}/services/auth.ts",
       "projectExports": { "auth": {}, "cookiePrefix": {} },
       "sourceFile": "module/services/auth.ts",
-      "variables": { "TPL_USER_ROLE_MODEL": {} }
+      "variables": {
+        "TPL_ACCOUNT_VERIFICATION_EMAIL": {},
+        "TPL_PASSWORD_RESET_EMAIL": {},
+        "TPL_USER_ROLE_MODEL": {}
+      }
     },
     "better-auth-plugin": {
       "type": "ts",
