@@ -95,13 +95,55 @@ export function NewDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const [activeTab, setActiveTab] = useState<TabValue>(defaultTab);
 
-  const { saveDefinitionWithFeedback, isSavingDefinition, pluginContainer } =
-    useProjectDefinition();
+  const {
+    definition,
+    saveDefinitionWithFeedback,
+    isSavingDefinition,
+    pluginContainer,
+  } = useProjectDefinition();
 
   // Get library web configs from the spec
   const librarySpec = pluginContainer.use(libraryTypeSpec);
   const libraryWebConfigs = [...librarySpec.webConfigs.entries()];
   const navigate = useNavigate();
+
+  // Track which app and library types already exist
+  const existingAppTypes = new Set<string>(
+    definition.apps.map((app) => app.type),
+  );
+  const existingLibraryTypes = new Set<string>(
+    definition.libraries.map((lib) => lib.type),
+  );
+
+  const allAppTypeOptions = [
+    {
+      label: 'Backend App',
+      value: 'backend',
+      description: 'Fastify API server for your backend',
+      singleton: true,
+    },
+    {
+      label: 'Web App',
+      value: 'web',
+      description: 'React app for your frontend UI',
+      singleton: false,
+    },
+  ];
+
+  const appTypeOptions = allAppTypeOptions.filter(
+    (option) => !option.singleton || !existingAppTypes.has(option.value),
+  );
+
+  const allPackageTypeOptions = libraryWebConfigs.map(([name, config]) => ({
+    label: config.displayName,
+    value: name,
+    description: config.description,
+    singleton: config.singleton ?? false,
+  }));
+
+  const packageTypeOptions = allPackageTypeOptions.filter(
+    (option) => !option.singleton || !existingLibraryTypes.has(option.value),
+  );
 
   // App form
   const appForm = useForm({
@@ -109,7 +151,7 @@ export function NewDialog({
     defaultValues: {
       id: '',
       name: '',
-      type: 'backend' as const,
+      type: (appTypeOptions[0]?.value ?? 'backend') as 'backend' | 'web',
     },
   });
 
@@ -119,28 +161,9 @@ export function NewDialog({
     defaultValues: {
       id: '',
       name: '',
-      type: 'node-library' as const,
+      type: packageTypeOptions[0]?.value ?? 'node-library',
     },
   });
-
-  const appTypeOptions = [
-    {
-      label: 'Backend App',
-      value: 'backend',
-      description: 'Fastify API server for your backend',
-    },
-    {
-      label: 'Web App',
-      value: 'web',
-      description: 'React app for your frontend UI',
-    },
-  ];
-
-  const packageTypeOptions = libraryWebConfigs.map(([name, config]) => ({
-    label: config.displayName,
-    value: name,
-    description: config.description,
-  }));
 
   const renderTypeOptionLabel = (option: {
     label: string;
@@ -245,83 +268,121 @@ export function NewDialog({
           </TabsList>
 
           <TabsContent value="app">
-            <form
-              onSubmit={(e) => {
-                e.stopPropagation();
-                return onSubmitApp(e);
-              }}
-              className="space-y-4"
-            >
-              <InputFieldController
-                label="Name"
-                control={appForm.control}
-                name="name"
-                placeholder="e.g. backend, web, admin"
-                description="The name of the app, such as 'backend' or 'web'"
-                autoComplete="off"
-              />
-              <SelectFieldController
-                label="Type"
-                control={appForm.control}
-                name="type"
-                options={appTypeOptions}
-                renderItemLabel={renderTypeOptionLabel}
-              />
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    handleOpenChange(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSavingDefinition}>
-                  {isSavingDefinition ? 'Creating...' : 'Create App'}
-                </Button>
-              </DialogFooter>
-            </form>
+            {appTypeOptions.length === 0 ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  All available app types have already been created.
+                </p>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      handleOpenChange(false);
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.stopPropagation();
+                  return onSubmitApp(e);
+                }}
+                className="space-y-4"
+              >
+                <InputFieldController
+                  label="Name"
+                  control={appForm.control}
+                  name="name"
+                  placeholder="e.g. backend, web, admin"
+                  description="The name of the app, such as 'backend' or 'web'"
+                  autoComplete="off"
+                />
+                <SelectFieldController
+                  label="Type"
+                  control={appForm.control}
+                  name="type"
+                  options={appTypeOptions}
+                  renderItemLabel={renderTypeOptionLabel}
+                />
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      handleOpenChange(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSavingDefinition}>
+                    {isSavingDefinition ? 'Creating...' : 'Create App'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
           </TabsContent>
 
           <TabsContent value="library">
-            <form
-              onSubmit={(e) => {
-                e.stopPropagation();
-                return onSubmitPackage(e);
-              }}
-              className="space-y-4"
-            >
-              <InputFieldController
-                label="Name"
-                control={packageForm.control}
-                name="name"
-                placeholder="e.g. shared-utils, common"
-                description="The name of the package in kebab-case"
-                autoComplete="off"
-              />
-              <SelectFieldController
-                label="Type"
-                control={packageForm.control}
-                name="type"
-                options={packageTypeOptions}
-                renderItemLabel={renderTypeOptionLabel}
-              />
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    handleOpenChange(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSavingDefinition}>
-                  {isSavingDefinition ? 'Creating...' : 'Create Package'}
-                </Button>
-              </DialogFooter>
-            </form>
+            {packageTypeOptions.length === 0 ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  All available library types have already been created.
+                </p>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      handleOpenChange(false);
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.stopPropagation();
+                  return onSubmitPackage(e);
+                }}
+                className="space-y-4"
+              >
+                <InputFieldController
+                  label="Name"
+                  control={packageForm.control}
+                  name="name"
+                  placeholder="e.g. shared-utils, common"
+                  description="The name of the package in kebab-case"
+                  autoComplete="off"
+                />
+                <SelectFieldController
+                  label="Type"
+                  control={packageForm.control}
+                  name="type"
+                  options={packageTypeOptions}
+                  renderItemLabel={renderTypeOptionLabel}
+                />
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      handleOpenChange(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSavingDefinition}>
+                    {isSavingDefinition ? 'Creating...' : 'Create Package'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
           </TabsContent>
         </Tabs>
       </DialogContent>

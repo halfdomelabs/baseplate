@@ -6,6 +6,49 @@ import type {
 } from './definition-issue-registry.js';
 
 /**
+ * Creates an issue checker that ensures a specific value for a given field
+ * appears at most once in an array of objects.
+ *
+ * Used with `.apply(withIssueChecker(checkUniqueFieldValue(...)))` on array schemas.
+ *
+ * @param field - The field name to check
+ * @param value - The specific value that should appear at most once
+ * @param options.label - Human-readable label for the item type (e.g. "backend app")
+ * @param options.severity - Severity level for duplicate issues (default: 'error')
+ */
+export function checkUniqueFieldValue<K extends string>(
+  field: K,
+  value: unknown,
+  options: {
+    label?: string;
+    severity?: 'error' | 'warning';
+  } = {},
+): DefinitionFieldIssueChecker<Record<K, unknown>[]> {
+  const { label = String(value), severity = 'error' } = options;
+
+  return (items) => {
+    const issues: FieldIssueResult[] = [];
+    let firstIndex: number | undefined;
+
+    for (const [i, item] of items.entries()) {
+      if (item[field] !== value) continue;
+
+      if (firstIndex === undefined) {
+        firstIndex = i;
+      } else {
+        issues.push({
+          message: `Only one ${label} is allowed`,
+          path: [i, field],
+          severity,
+        });
+      }
+    }
+
+    return issues;
+  };
+}
+
+/**
  * Creates an issue checker that detects duplicate values for a given field
  * in an array of objects.
  *
