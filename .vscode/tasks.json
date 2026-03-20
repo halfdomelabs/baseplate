@@ -3,8 +3,8 @@
   "tasks": [
     {
       "label": "Typecheck",
-      "type": "npm",
-      "script": "typecheck",
+      "type": "shell",
+      "command": "mise x -- pnpm run typecheck",
       "group": "build",
       "problemMatcher": {
         "base": "$tsc",
@@ -34,10 +34,13 @@
     },
     {
       "label": "Watch Build",
-      "type": "npm",
-      "script": "watch",
+      "type": "shell",
+      "command": "mise x -- pnpm run watch",
       "group": "build",
       "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
       "presentation": {
         "close": true
       },
@@ -67,8 +70,8 @@
     },
     {
       "label": "Lint",
-      "type": "npm",
-      "script": "lint",
+      "type": "shell",
+      "command": "mise x -- pnpm run lint",
       "group": "build",
       "problemMatcher": {
         "base": "$eslint-compact",
@@ -92,8 +95,8 @@
     },
     {
       "label": "Knip",
-      "type": "npm",
-      "script": "knip",
+      "type": "shell",
+      "command": "mise x -- pnpm run knip",
       "group": "build",
       "problemMatcher": [
         {
@@ -135,6 +138,22 @@
           "fileLocation": ["relative", "${workspaceFolder}"]
         }
       ]
+    },
+    {
+      "label": "Dev Serve",
+      "type": "shell",
+      "command": "mise x -- pnpm run dev:serve",
+      "group": "none",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "close": true
+      },
+      "problemMatcher": []
     },
     {
       "label": "Reset to Main",

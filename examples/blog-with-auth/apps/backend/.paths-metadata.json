@@ -36,7 +36,15 @@
     "pathRootName": "module-root"
   },
   {
-    "canonicalPath": "@/src/modules/accounts/password",
+    "canonicalPath": "@/src/modules/accounts/users",
+    "pathRootName": "module-root"
+  },
+  {
+    "canonicalPath": "@/src/modules/accounts/auth",
+    "pathRootName": "module-root"
+  },
+  {
+    "canonicalPath": "@/src/modules/accounts/auth/password",
     "pathRootName": "module-root"
   }
 ]

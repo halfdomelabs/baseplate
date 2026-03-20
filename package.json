@@ -9,7 +9,7 @@
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
-    "check": "pnpm oxfmt:fix && pnpm oxlint:fix && turbo run prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common",
+    "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run prettier:write test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix",
     "check:full": "pnpm oxfmt:fix && turbo run lint prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
     "clean": "turbo run clean",
@@ -56,14 +56,14 @@
     "test-project:run-env": "pnpm --filter @baseplate-dev/project-builder-test test-project:run-env",
     "test-project:save": "pnpm --filter @baseplate-dev/project-builder-test test-project:save",
     "typecheck": "turbo run typecheck --affected --continue",
-    "version": "pnpm changeset version && node ./scripts/fix-versions.js",
+    "version": "pnpm changeset version && node ./scripts/fix-versions.ts",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "node scripts/format-and-lint.ts",
+    "*.{ts,tsx,js,jsx}": "node scripts/format-and-lint.ts --no-eslint",
     "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
   },
   "dependencies": {
@@ -81,6 +81,7 @@
     "lint-staged": "16.1.0",
     "oxfmt": "0.40.0",
     "oxlint": "catalog:",
+    "oxlint-tsgolint": "0.17.0",
     "prettier": "catalog:",
     "turbo": "2.5.0",
     "typescript": "catalog:",

@@ -61,7 +61,7 @@ describe('Color Conversion Utilities', () => {
 
     it('should handle hex with alpha', () => {
       const result = convertHexToOklch('#7a7a7a80');
-      expect(result).toBe('oklch(0.580 0.000 0/ 0.502)');
+      expect(result).toBe('oklch(0.580 0.000 0 / 0.502)');
     });
   });
 });

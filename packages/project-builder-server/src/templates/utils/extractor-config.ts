@@ -93,7 +93,7 @@ export async function removeExtractorTemplate(
   }
 
   // Remove the template configuration
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  // oxlint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete config.templates[templateName];
 
   await writeExtractorConfig(generatorDirectory, config);

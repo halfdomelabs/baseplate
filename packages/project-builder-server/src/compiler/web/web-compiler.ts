@@ -12,6 +12,8 @@ import {
 import {
   AppUtils,
   FeatureUtils,
+  generateCssBlockFromThemeColors,
+  generateDefaultTheme,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -117,6 +119,8 @@ function buildReact(
   devWebPort: number,
 ): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
+  const themeConfig =
+    projectDefinition.settings.theme ?? generateDefaultTheme();
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
   const backendRelativePath = AppUtils.getBackendRelativePath(
@@ -145,7 +149,14 @@ function buildReact(
           renderPlaceholderIndex: !adminRoutes,
         }),
         reactComponents: reactComponentsGenerator({}),
-        reactTailwind: reactTailwindGenerator({}),
+        reactTailwind: reactTailwindGenerator({
+          lightColorsCss: generateCssBlockFromThemeColors(
+            themeConfig.colors.light,
+          ),
+          darkColorsCss: generateCssBlockFromThemeColors(
+            themeConfig.colors.dark,
+          ),
+        }),
         reactApollo: reactApolloGenerator({
           devApiEndpoint: '/api/graphql',
           schemaLocation: `${backendRelativePath}/schema.graphql`,

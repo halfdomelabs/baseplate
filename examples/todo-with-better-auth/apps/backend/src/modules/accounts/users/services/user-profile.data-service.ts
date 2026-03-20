@@ -1,51 +1,46 @@
 import { z } from 'zod';
 
 import type {
-  GetPayload,
-  ModelInclude,
+  DataQuery,
+  GetResult,
 } from '@src/utils/data-operations/prisma-types.js';
-import type { DataDeleteInput } from '@src/utils/data-operations/types.js';
 
-import { commitDelete } from '@src/utils/data-operations/commit-operations.js';
-import { scalarField } from '@src/utils/data-operations/field-definitions.js';
+import { prisma } from '@src/services/prisma.js';
 
-import { fileField } from '../../../storage/services/file-field.js';
+import {
+  fileInputSchema,
+  fileTransformer,
+} from '../../../storage/services/file-transformer.js';
 import { userProfileAvatarFileCategory } from '../constants/file-categories.js';
 
-export const userProfileInputFields = {
-  id: scalarField(z.uuid().optional()),
-  bio: scalarField(z.string().nullish()),
-  birthDay: scalarField(z.date().nullish()),
-  favoriteTodoListId: scalarField(z.uuid().nullish()),
-  avatar: fileField({
+export const userProfileFieldSchemas = {
+  id: z.uuid().optional(),
+  bio: z.string().nullish(),
+  birthDay: z.date().nullish(),
+  favoriteTodoListId: z.uuid().nullish(),
+  avatar: fileInputSchema.nullish(),
+};
+
+export const userProfileTransformers = {
+  avatar: fileTransformer({
     category: userProfileAvatarFileCategory,
-    fileIdFieldName: 'avatarId',
     optional: true,
   }),
 };
 
 export async function deleteUserProfile<
-  TIncludeArgs extends ModelInclude<'userProfile'> =
-    ModelInclude<'userProfile'>,
+  TQuery extends DataQuery<'userProfile'>,
 >({
   where,
   query,
-  context,
-}: DataDeleteInput<'userProfile', TIncludeArgs>): Promise<
-  GetPayload<'userProfile', TIncludeArgs>
-> {
-  const item = await commitDelete({
-    model: 'userProfile',
-    query,
-    context,
-    execute: async ({ tx, query }) => {
-      const item = await tx.userProfile.delete({
-        where,
-        ...query,
-      });
-      return item;
-    },
+}: {
+  where: { id: string };
+  query?: TQuery;
+}): Promise<GetResult<'userProfile', TQuery>> {
+  const result = await prisma.userProfile.delete({
+    where,
+    ...query,
   });
 
-  return item;
+  return result as GetResult<'userProfile', TQuery>;
 }

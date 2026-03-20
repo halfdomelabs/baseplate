@@ -34,9 +34,9 @@ export const FASTIFY_PACKAGES = {
   'graphql-ws': '5.16.0',
 
   // Prisma
-  '@prisma/client': '7.4.0',
-  prisma: '7.4.0',
-  '@prisma/adapter-pg': '7.4.0',
+  '@prisma/client': '7.5.0',
+  prisma: '7.5.0',
+  '@prisma/adapter-pg': '7.5.0',
 
   // Utils
   ms: '2.1.3',

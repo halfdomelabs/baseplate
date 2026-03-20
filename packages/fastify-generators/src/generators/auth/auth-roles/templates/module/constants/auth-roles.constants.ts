@@ -6,11 +6,12 @@ export interface RoleConfig {
    */
   comment: string;
   /**
-   * Whether this role is built-in and is added automatically to the user context.
+   * Whether this role is automatically assigned to all user contexts.
    *
-   * These roles should not be added to the user directly.
+   * Auto-assigned roles (public, user, system) should not be used in
+   * authorizer expressions or assigned to users directly.
    */
-  builtIn: boolean;
+  autoAssigned: boolean;
 }
 
 /**

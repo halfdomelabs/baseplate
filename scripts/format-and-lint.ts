@@ -33,6 +33,25 @@ const VALID_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 const ROOT_DIR = path.resolve(import.meta.dirname, '..');
 
 /**
+ * Collects all .prettierignore files from the starting directory up to the repo root.
+ */
+function findPrettierIgnorePaths(startDir: string): string[] {
+  const ignorePaths: string[] = [];
+  let currentDir = startDir;
+  while (true) {
+    const ignorePath = path.join(currentDir, '.prettierignore');
+    if (fs.existsSync(ignorePath)) {
+      ignorePaths.push(ignorePath);
+    }
+    if (currentDir === ROOT_DIR || currentDir === path.dirname(currentDir)) {
+      break;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+  return ignorePaths;
+}
+
+/**
  * Finds the nearest package.json file by traversing up from a starting directory.
  */
 function findNearestPackageJson(
@@ -69,7 +88,8 @@ async function getPrettierConfig(filePath: string): Promise<Options | null> {
 
 async function runPrettier(filePath: string): Promise<void> {
   try {
-    const fileInfo = await getFileInfo(filePath);
+    const ignorePaths = findPrettierIgnorePaths(path.dirname(filePath));
+    const fileInfo = await getFileInfo(filePath, { ignorePath: ignorePaths });
     if (fileInfo.ignored || !fileInfo.inferredParser) return;
     const config = await getPrettierConfig(filePath);
     if (!config) return;
@@ -132,7 +152,8 @@ async function runOxlint(filePaths: string[]): Promise<void> {
 
 // --- Main ---
 
-const inputPaths = process.argv.slice(2);
+const skipEslint = process.argv.includes('--no-eslint');
+const inputPaths = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
 
 if (inputPaths.length === 0) {
   console.error('Error: Please provide at least one file path as an argument.');
@@ -195,7 +216,7 @@ if (exampleFiles.length > 0) {
     };
     const deps = { ...pkg.dependencies, ...pkg.devDependencies };
 
-    if (deps.eslint) await runEslint(files, pkgDir);
+    if (deps.eslint && !skipEslint) await runEslint(files, pkgDir);
 
     if (deps.prettier) {
       await Promise.all(files.map((f) => runPrettier(f)));

@@ -1,4 +1,9 @@
 {
+  "admin-auth.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module",
+    "instanceData": {},
+    "template": "admin-auth-mutations"
+  },
   "user-session.queries.ts": {
     "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
     "instanceData": {},

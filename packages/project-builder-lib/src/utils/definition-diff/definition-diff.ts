@@ -4,7 +4,7 @@
 
 import type { Get, Paths } from 'type-fest';
 
-import { cloneDeep, mapValues, omit, toMerged } from 'es-toolkit';
+import { mapValues, omit, toMerged } from 'es-toolkit';
 import { get, isMatch, set } from 'es-toolkit/compat';
 
 export interface DefinitionDiffOperation<T = unknown> {
@@ -301,7 +301,7 @@ export function applyDefinitionDiff<
   diff: DefinitionDiffOutput<TConfig>,
   configuration: TConfig,
 ): TInput {
-  const clonedCurrent = cloneDeep(current);
+  const clonedCurrent = structuredClone(current);
 
   for (const [key, ops] of Object.entries<
     DefinitionDiffOperation[] | undefined

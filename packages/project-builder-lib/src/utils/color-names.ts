@@ -2,7 +2,7 @@ import type { ColorPaletteName, PaletteShade } from '#src/constants/colors.js';
 
 import { COLOR_PALETTES, FIXED_COLOR_MAPPINGS } from '#src/constants/colors.js';
 
-import { convertOklchToHex } from './color-conversions.js';
+import { convertOklchToHex, normalizeOklch } from './color-conversions.js';
 
 /**
  * Convert a color name to a hex color. Can be one of the following:
@@ -39,11 +39,12 @@ function getReverseColorMapping(): Record<string, string> {
   if (!reverseColorMapping) {
     reverseColorMapping = {};
     for (const [key, value] of Object.entries(FIXED_COLOR_MAPPINGS)) {
-      reverseColorMapping[value] = key;
+      reverseColorMapping[normalizeOklch(value)] = key;
     }
     for (const [paletteName, palette] of Object.entries(COLOR_PALETTES)) {
-      for (const [shade, hex] of Object.entries(palette)) {
-        reverseColorMapping[hex] = `${paletteName}-${shade}`;
+      for (const [shade, oklchValue] of Object.entries(palette)) {
+        reverseColorMapping[normalizeOklch(oklchValue)] =
+          `${paletteName}-${shade}`;
       }
     }
   }
@@ -56,5 +57,7 @@ function getReverseColorMapping(): Record<string, string> {
  * @returns The color name.
  */
 export function convertOklchToColorName(oklch: string): string {
-  return getReverseColorMapping()[oklch] ?? convertOklchToHex(oklch);
+  return (
+    getReverseColorMapping()[normalizeOklch(oklch)] ?? convertOklchToHex(oklch)
+  );
 }

@@ -7,6 +7,7 @@ export interface AuthRole {
   name: string;
   comment: string;
   builtIn: boolean;
+  autoAssigned: boolean;
 }
 
 type AuthConfigGetter = (definition: ProjectDefinition) => {

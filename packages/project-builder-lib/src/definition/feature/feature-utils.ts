@@ -49,7 +49,7 @@ function getFeatureNameById(
   return getFeatureName(feature);
 }
 
-function getFeaturePathById(
+function getFeaturePathByIdOrThrow(
   projectDefinition: ProjectDefinition,
   featureId: string,
 ): string {
@@ -139,7 +139,7 @@ function resolveFeatureName(
 ): string {
   if (!featureRef) return '';
   if (featureEntityType.isId(featureRef)) {
-    return getFeaturePathById(projectDefinition, featureRef);
+    return getFeaturePathByIdOrThrow(projectDefinition, featureRef);
   }
   return featureRef;
 }
@@ -151,7 +151,7 @@ export const FeatureUtils = {
   getFeatureChildren,
   getFeatureName,
   getFeatureNameById,
-  getFeaturePathById,
+  getFeaturePathByIdOrThrow,
   validateFeatureName,
   ensureFeatureByNameRecursively,
   createPartialFeatures,

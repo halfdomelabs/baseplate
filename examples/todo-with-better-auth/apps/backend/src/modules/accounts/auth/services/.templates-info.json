@@ -1,4 +1,9 @@
 {
+  "admin-auth.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module",
+    "instanceData": {},
+    "template": "admin-auth-service"
+  },
   "auth.ts": {
     "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
     "instanceData": {},

@@ -128,7 +128,7 @@ export function createTestRelationField(
     modelRef: 'mockModel',
     foreignRelationName: 'mockForeignRelation',
     references: [],
-    onDelete: 'Cascade',
+    onDelete: 'Restrict',
     onUpdate: 'Restrict',
     ...relation,
   };

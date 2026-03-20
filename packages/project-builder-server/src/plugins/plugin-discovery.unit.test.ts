@@ -143,7 +143,7 @@ describe('discoverPlugins', () => {
 
     // Assert
     expect(result).toEqual([]);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // oxlint-disable-next-line typescript/unbound-method
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Could not find package.json file for the plugin baseplate-plugin-test.',
     );

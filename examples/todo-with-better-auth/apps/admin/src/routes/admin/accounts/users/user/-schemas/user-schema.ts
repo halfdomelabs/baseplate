@@ -12,14 +12,6 @@ export type EmbeddedCustomerFormData = z.infer<
 
 /* HOISTED:embeddedCustomerFormSchema:END */
 
-/* HOISTED:embeddedRolesFormSchema:START */
-
-export const embeddedRolesFormSchema = z.object({ role: z.string() });
-
-export type EmbeddedRolesFormData = z.infer<typeof embeddedRolesFormSchema>;
-
-/* HOISTED:embeddedRolesFormSchema:END */
-
 /* TPL_FORM_DATA_NAME=UserFormData */
 /* TPL_SCHEMA_NAME=userEditFormSchema */
 
@@ -28,8 +20,6 @@ export const userEditFormSchema = z.object(
     customer: embeddedCustomerFormSchema.nullish(),
     email: z.email().min(1),
     name: z.string().nullish(),
-    password: z.string().nullish(),
-    roles: z.array(embeddedRolesFormSchema).nullish(),
   } /* TPL_SCHEMA_OBJECT:END */,
 );
 

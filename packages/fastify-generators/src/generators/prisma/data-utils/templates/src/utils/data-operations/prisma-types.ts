@@ -26,13 +26,13 @@ export type ModelPropName = Prisma.TypeMap['meta']['modelProps'];
  * @example
  * ```typescript
  * // Basic user type
- * type User = GetPayload<'user'>;
+ * type User = GetResult<'user'>;
  *
  * // User with posts included
- * type UserWithPosts = GetPayload<'user', { include: { posts: true } }>;
+ * type UserWithPosts = GetResult<'user', { include: { posts: true } }>;
  * ```
  */
-export type GetPayload<
+export type GetResult<
   TModelName extends ModelPropName,
   TIncludeArgs = undefined,
 > = Result<
@@ -49,18 +49,18 @@ export type GetPayload<
  * Used to shape the returned data from database operations by specifying
  * which relations to include. Only `include` is supported; `select` is
  * accepted as `undefined` for compatibility with `queryFromInfo()` but
- * will be stripped by `GetPayload`.
+ * will be stripped by `GetResult`.
  *
  * @template TModelName - The Prisma model name
  *
  * @example
  * ```typescript
- * const query: ModelInclude<'user'> = {
+ * const query: DataQuery<'user'> = {
  *   include: { posts: true, profile: true },
  * };
  * ```
  */
-export type ModelInclude<TModelName extends ModelPropName> = {
+export type DataQuery<TModelName extends ModelPropName> = {
   select?: undefined;
 } & Pick<
   Args<(typeof prisma)[TModelName], 'findUnique'> extends { include?: infer I }
@@ -89,80 +89,3 @@ export type WhereInput<TModelName extends ModelPropName> = Args<
   (typeof prisma)[TModelName],
   'findMany'
 >['where'];
-
-/**
- * Type for Prisma unique where clauses for finding a single record.
- *
- * Used in `findUnique`, `update`, `delete`, and `upsert` operations
- * to specify which record to operate on using unique fields.
- *
- * @template TModelName - The Prisma model name
- *
- * @example
- * ```typescript
- * // By ID
- * const where1: WhereUniqueInput<'user'> = { id: 'user-123' };
- *
- * // By unique email
- * const where2: WhereUniqueInput<'user'> = { email: 'user@example.com' };
- *
- * // By compound unique constraint
- * const where3: WhereUniqueInput<'membership'> = {
- *   userId_teamId: { userId: 'user-1', teamId: 'team-1' },
- * };
- * ```
- */
-export type WhereUniqueInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'findUnique'
->['where'];
-
-/**
- * Type for Prisma create input data for a given model.
- *
- * Represents the shape of data accepted by `create` operations.
- * Includes all required fields and optional fields, with support for
- * nested creates via relation fields.
- *
- * @template TModelName - The Prisma model name
- *
- * @example
- * ```typescript
- * const createData: CreateInput<'user'> = {
- *   name: 'John Doe',
- *   email: 'john@example.com',
- *   posts: {
- *     create: [{ title: 'First post', content: '...' }],
- *   },
- * };
- * ```
- */
-export type CreateInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'create'
->['data'];
-
-/**
- * Type for Prisma update input data for a given model.
- *
- * Represents the shape of data accepted by `update` operations.
- * All fields are optional (partial updates), with support for
- * nested updates, creates, and deletes via relation fields.
- *
- * @template TModelName - The Prisma model name
- *
- * @example
- * ```typescript
- * const updateData: UpdateInput<'user'> = {
- *   name: 'Jane Doe', // Only updating name
- *   posts: {
- *     update: [{ where: { id: 'post-1' }, data: { title: 'Updated title' } }],
- *     create: [{ title: 'New post', content: '...' }],
- *   },
- * };
- * ```
- */
-export type UpdateInput<TModelName extends ModelPropName> = Args<
-  (typeof prisma)[TModelName],
-  'update'
->['data'];

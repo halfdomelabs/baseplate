@@ -60,11 +60,7 @@
       "Bash(jq *)",
       "Bash(git mv:*)"
     ],
-    "deny": [
-      "Edit(**/baseplate/generated/**)",
-      "Read(**/.env)",
-      "Read(**/.env.local)"
-    ]
+    "deny": ["Edit(**/baseplate/generated/**)"]
   },
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": ["baseplate-dev-server"],

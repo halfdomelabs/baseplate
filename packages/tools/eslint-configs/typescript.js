@@ -4,6 +4,7 @@ import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
 import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
+import { Alphabet } from 'eslint-plugin-perfectionist/alphabet';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
 import { defineConfig } from 'eslint/config';
@@ -19,6 +20,15 @@ import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependenc
  * @property {string[]} [extraDevDependencies] - Additional globs for dev dependencies
  * @property {string[]} [extraDefaultProjectFiles] - Additional default project files
  */
+
+// Generate a custom alphabet string where '.' and '/' strictly precede '_' to match oxfmt's sorting order
+const allAscii = Array.from({ length: 128 }, (_, i) =>
+  String.fromCodePoint(i),
+).join('');
+const strictPathAlphabet = Alphabet.generateFrom(allAscii)
+  .placeCharacterBefore({ characterBefore: '.', characterAfter: '_' })
+  .placeCharacterBefore({ characterBefore: '/', characterAfter: '_' })
+  .getCharacters();
 
 const KEEP_UNUSED_IMPORTS =
   process.env.BASEPLATE_KEEP_UNUSED_IMPORTS === 'true';
@@ -101,13 +111,13 @@ export function generateTypescriptEslintConfig(options = {}) {
           { allowExpressions: true, allowTypedFunctionExpressions: true },
         ],
         // Enforce the use of destructuring for objects where applicable, but not for arrays
-        '@typescript-eslint/prefer-destructuring': [
-          'error',
-          {
-            VariableDeclarator: { object: true, array: false },
-            AssignmentExpression: { object: false, array: false },
-          },
-        ],
+        // '@typescript-eslint/prefer-destructuring': [
+        //   'error',
+        //   {
+        //     VariableDeclarator: { object: true, array: false },
+        //     AssignmentExpression: { object: false, array: false },
+        //   },
+        // ],
         // Ensure consistent usage of type exports
         '@typescript-eslint/consistent-type-exports': 'error',
         // Ensure consistent usage of type imports
@@ -141,6 +151,10 @@ export function generateTypescriptEslintConfig(options = {}) {
         '@typescript-eslint/no-unused-vars': KEEP_UNUSED_IMPORTS
           ? 'error'
           : 'off',
+
+        // Overlap with OXLint rules
+        '@typescript-eslint/no-useless-default-assignment': 'off',
+        '@typescript-eslint/prefer-destructuring': 'off',
       },
     },
 
@@ -204,7 +218,7 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Unicorn Configs
-    eslintPluginUnicorn.configs['recommended'],
+    eslintPluginUnicorn.configs.recommended,
     {
       rules: {
         // Disable the rule that prevents using abbreviations in identifiers, allowing
@@ -257,6 +271,8 @@ export function generateTypescriptEslintConfig(options = {}) {
         'perfectionist/sort-imports': [
           'error',
           {
+            type: 'custom',
+            alphabet: strictPathAlphabet,
             internalPattern: ['^@src/', '^#'],
             // We use the default groups but ensure we place the side-effect imports last except for instrumentation
             groups: [

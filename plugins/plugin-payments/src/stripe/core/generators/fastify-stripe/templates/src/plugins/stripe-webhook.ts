@@ -2,10 +2,10 @@
 
 import type { Stripe } from 'stripe';
 
+import { stripe } from '$service';
 import { stripeEventHandlers } from '$serviceEventHandlers';
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
-import { stripe } from '%fastifyStripeImports';
 import { logger } from '%loggerServiceImports';
 import fp from 'fastify-plugin';
 
