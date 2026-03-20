@@ -7,7 +7,9 @@ import type {
   RefExpressionWarning,
   ResolvedExpressionSlots,
 } from '#src/references/expression-types.js';
+import type { ModelConfig } from '#src/schema/models/models.js';
 import type { modelEntityType } from '#src/schema/models/types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { RefExpressionParser } from '#src/references/expression-types.js';
 import { modelAuthorizerRoleEntityType } from '#src/schema/models/authorizer/types.js';
@@ -27,28 +29,6 @@ import {
   validateAuthorizerExpression,
 } from './authorizer-expression-validator.js';
 import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
-
-/**
- * Shape of a raw model in the project definition JSON.
- * Used for navigating the untyped definition to extract relation and authorizer info.
- */
-interface RawModelDefinition {
-  id?: string;
-  name?: string;
-  model?: {
-    fields?: { id?: string; name: string; type?: string }[];
-    relations?: {
-      id?: string;
-      name: string;
-      modelRef: string;
-      foreignRelationName?: string;
-      references?: { localRef: string; foreignRef: string }[];
-    }[];
-  };
-  authorizer?: {
-    roles?: { id?: string; name: string }[];
-  };
-}
 
 /**
  * Expression parser for model authorizer role expressions.
@@ -148,11 +128,8 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = (
-      (definition as { models?: RawModelDefinition[] }).models ?? []
-    ).filter(
-      (m): m is RawModelDefinition & { name: string } =>
-        typeof m.name === 'string',
+    const allModels = ((definition as ProjectDefinition).models ?? []).filter(
+      (m): m is ModelConfig => typeof m.name === 'string',
     );
 
     // Build lookup maps
@@ -173,7 +150,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
       }
     }
 
-    const modelById = new Map<string, RawModelDefinition & { name: string }>();
+    const modelById = new Map<string, ModelConfig>();
     for (const m of allModels) {
       if (m.id) {
         modelById.set(m.id, m);
@@ -329,7 +306,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   private getRawModel(
     definition: unknown,
     resolvedSlots: ResolvedExpressionSlots<{ model: typeof modelEntityType }>,
-  ): RawModelDefinition & { name: string } {
+  ): ModelConfig {
     const modelPath = resolvedSlots.model;
 
     // Walk progressively shorter paths to find the model object.
@@ -351,7 +328,7 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
         'name' in current &&
         typeof (current as Record<string, unknown>).name === 'string'
       ) {
-        return current as RawModelDefinition & { name: string };
+        return current as ModelConfig;
       }
     }
 
@@ -367,11 +344,8 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
   ): ModelValidationContext {
     const model = this.getRawModel(definition, resolvedSlots);
 
-    const allModels = (
-      (definition as { models?: RawModelDefinition[] }).models ?? []
-    ).filter(
-      (m): m is RawModelDefinition & { name: string } =>
-        typeof m.name === 'string',
+    const allModels = ((definition as ProjectDefinition).models ?? []).filter(
+      (m): m is ModelConfig => typeof m.name === 'string',
     );
 
     return buildModelExpressionContext(
