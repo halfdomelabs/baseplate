@@ -9,6 +9,8 @@ import { definitionFieldIssueRegistry } from '#src/schema/creator/definition-iss
 
 import { collectExpressionIssues } from './collect-expression-issues.js';
 import { checkMutationRoles } from './definition-issue-checkers/mutation-roles-checker.js';
+import { checkPluginDependencies } from './definition-issue-checkers/plugin-dependency-checker.js';
+import { checkPluginImplementations } from './definition-issue-checkers/plugin-implementation-checker.js';
 import { checkRelationTypeMismatch } from './definition-issue-checkers/relation-type-mismatch-checker.js';
 import { walkDataWithSchema } from './walk-data-with-schema.js';
 
@@ -19,6 +21,8 @@ import { walkDataWithSchema } from './walk-data-with-schema.js';
 const BUILT_IN_CHECKERS: DefinitionIssueChecker[] = [
   checkRelationTypeMismatch,
   checkMutationRoles,
+  checkPluginDependencies,
+  checkPluginImplementations,
 ];
 
 /**

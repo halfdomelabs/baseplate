@@ -1,4 +1,5 @@
 import type { SchemaParserContext } from '#src/parser/types.js';
+import type { PluginStore } from '#src/plugins/imports/types.js';
 import type { PluginMetadataWithPaths } from '#src/plugins/index.js';
 import type {
   BasePluginDefinition,
@@ -7,6 +8,7 @@ import type {
 
 import { createPluginImplementationStoreWithNewPlugins } from '#src/parser/parser.js';
 import {
+  getPluginMetadataByKey,
   getPluginMetadataByKeyOrThrow,
   pluginConfigSpec,
 } from '#src/plugins/index.js';
@@ -130,6 +132,47 @@ function disablePlugin(
   );
 }
 
+/**
+ * Finds all enabled plugins that declare a dependency on the given plugin.
+ *
+ * Useful for warning before disabling a plugin that other plugins depend on.
+ *
+ * @param projectDefinition The project definition to check
+ * @param pluginKey The key of the plugin being considered for disabling
+ * @param pluginStore The plugin store containing available plugin metadata
+ * @returns Array of metadata for plugins that depend on the given plugin
+ */
+function getDependentPlugins(
+  projectDefinition: ProjectDefinition,
+  pluginKey: string,
+  pluginStore: PluginStore,
+): PluginMetadataWithPaths[] {
+  const targetMetadata = getPluginMetadataByKey(pluginStore, pluginKey);
+  if (!targetMetadata) {
+    return [];
+  }
+
+  const enabledPlugins = projectDefinition.plugins ?? [];
+  const dependents: PluginMetadataWithPaths[] = [];
+
+  for (const plugin of enabledPlugins) {
+    const key = pluginEntityType.keyFromId(plugin.id);
+    const metadata = getPluginMetadataByKey(pluginStore, key);
+    if (!metadata?.pluginDependencies) {
+      continue;
+    }
+
+    const dependsOnTarget = metadata.pluginDependencies.some(
+      (dep) => dep.plugin === targetMetadata.fullyQualifiedName,
+    );
+    if (dependsOnTarget) {
+      dependents.push(metadata);
+    }
+  }
+
+  return dependents;
+}
+
 export const PluginUtils = {
   byKey,
   byKeyOrThrow,
@@ -137,4 +180,5 @@ export const PluginUtils = {
   setPluginConfig,
   configByKeyOrThrow,
   disablePlugin,
+  getDependentPlugins,
 };

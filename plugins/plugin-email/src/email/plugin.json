@@ -4,5 +4,6 @@
   "icon": "icon.svg",
   "description": "Email sending service for your application. Requires an implementation (Postmark, SendGrid, etc.)",
   "version": "0.1.0",
-  "moduleDirectories": ["core", "transactional-lib"]
+  "moduleDirectories": ["core", "transactional-lib"],
+  "pluginDependencies": [{ "plugin": "@baseplate-dev/plugin-queue:queue" }]
 }

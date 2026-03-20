@@ -1,13 +1,18 @@
 import type React from 'react';
 
 import {
+  buildEnabledPluginFqnSet,
   createPluginImplementationStoreWithNewPlugins,
   getPluginMetadataByKey,
+  getUnmetPluginDependencies,
   PluginUtils,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -16,9 +21,15 @@ import {
   DropdownMenuTrigger,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
-import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  useNavigate,
+} from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
+import { MdWarning } from 'react-icons/md';
 
 import { NotFoundCard } from '#src/components/index.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
@@ -85,8 +96,58 @@ function PluginConfigPage(): React.JSX.Element {
     pluginMetadata,
   ]);
 
+  // Check for unmet dependencies when plugin is not yet enabled
+  const unmetDeps = useMemo(() => {
+    if (pluginDefinition) return [];
+    const { pluginStore } = schemaParserContext;
+    const enabledPlugins = definitionContainer.definition.plugins ?? [];
+    const enabledFqns = buildEnabledPluginFqnSet(pluginStore, enabledPlugins);
+    return getUnmetPluginDependencies(pluginStore, key, enabledFqns);
+  }, [pluginDefinition, schemaParserContext, definitionContainer, key]);
+
   if (!Container) {
     return <NotFoundCard />;
+  }
+
+  if (unmetDeps.length > 0) {
+    return (
+      <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
+        <h1>{pluginMetadata.displayName} Plugin</h1>
+        <Alert variant="warning">
+          <MdWarning />
+          <AlertTitle>Missing Required Dependencies</AlertTitle>
+          <AlertDescription>
+            <p>
+              {pluginMetadata.displayName} requires the following plugins to be
+              enabled and configured first:
+            </p>
+            <ul className="list-inside list-disc">
+              {unmetDeps.map((dep) => (
+                <li key={dep.key}>
+                  <Link
+                    to="/plugins/edit/$key"
+                    params={{ key: dep.key }}
+                    className="underline"
+                  >
+                    {dep.displayName}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-2"
+              onClick={() => {
+                navigate({ to: '/plugins' }).catch(logAndFormatError);
+              }}
+            >
+              Back to Plugins
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   function onDisablePlugin(): void {
