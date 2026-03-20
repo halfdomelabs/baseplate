@@ -82,6 +82,7 @@ function NodeLibraryEditComponent({
 export const nodeLibraryWebConfig = createLibraryWebConfig({
   name: nodeLibraryDefinitionSchemaEntry.name,
   displayName: 'Node Library',
+  description: 'Shared Node.js code and utilities',
   EditComponent: NodeLibraryEditComponent,
   createDefinition: ({ id, name }) => ({
     id,
