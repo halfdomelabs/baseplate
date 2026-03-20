@@ -32,6 +32,7 @@ export interface CoreReactComponentsPaths {
   input: string;
   inputField: string;
   inputGroup: string;
+  item: string;
   label: string;
   loader: string;
   mergeRefs: string;
@@ -108,6 +109,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           input: `${componentsRoot}/ui/input.tsx`,
           inputField: `${componentsRoot}/ui/input-field.tsx`,
           inputGroup: `${componentsRoot}/ui/input-group.tsx`,
+          item: `${componentsRoot}/ui/item.tsx`,
           label: `${componentsRoot}/ui/label.tsx`,
           loader: `${componentsRoot}/ui/loader.tsx`,
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,

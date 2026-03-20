@@ -17,17 +17,11 @@ export function addSyncCommand(program: Command): void {
     .description(
       'Syncs project from project-definition.json in baseplate/ directory',
     )
-    .option(
-      '--overwrite',
-      'Force overwrite existing files and apply snapshots automatically',
-    )
     .option('--packages <packages...>', 'Only sync specific packages by name.')
     .action(
       async (
         project: string | undefined,
         options: {
-          overwrite?: boolean;
-          snapshot?: string;
           packages?: string[];
         },
       ) => {
@@ -44,7 +38,6 @@ export function addSyncCommand(program: Command): void {
           syncProjectAction,
           {
             project: projectWithDefault,
-            overwrite: options.overwrite,
             packages: options.packages,
           },
           context,

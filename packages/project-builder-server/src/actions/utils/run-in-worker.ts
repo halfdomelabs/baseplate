@@ -93,7 +93,7 @@ export async function runActionInWorker<
 
     worker.on('error', (error) => {
       clearTimeout(timeout);
-      reject(error);
+      reject(error as Error);
       worker.terminate().catch((err: unknown) => {
         context.logger.error(err);
       });

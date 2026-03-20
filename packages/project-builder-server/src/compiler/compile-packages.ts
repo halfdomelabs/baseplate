@@ -42,11 +42,11 @@ function createAppCompiler(
 /**
  * Compile all packages in a project definition
  *
- * Root package is compiled first, then backend apps, then other apps, then library packages.
+ * Root package is compiled first, then library packages, then apps (backend first, then other types).
  *
  * @param projectJson - Serialized project definition JSON
  * @param context - Schema parser context
- * @returns Array of compiled package entries with generator bundles (root first, then apps, then libraries)
+ * @returns Array of compiled package entries with generator bundles (root first, then libraries, then apps)
  */
 export function compilePackages(
   projectJson: unknown,
@@ -70,10 +70,10 @@ export function compilePackages(
   // Instantiate all package compilers
   const compilers = [
     new RootPackageCompiler(definitionContainer),
-    ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
     ...libraryConfigs.map((lib) =>
       createLibraryCompilerFromSpec(definitionContainer, lib),
     ),
+    ...appConfigs.map((app) => createAppCompiler(definitionContainer, app)),
   ];
 
   const compilerContext: PackageCompilerContext = {

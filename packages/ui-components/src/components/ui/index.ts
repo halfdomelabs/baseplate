@@ -29,6 +29,7 @@ export * from './form-item/form-item.js';
 export * from './input-field/input-field.js';
 export * from './input-group/input-group.js';
 export * from './input/input.js';
+export * from './item/item.js';
 export * from './json-diff-viewer/json-diff-viewer.js';
 export * from './label/label.js';
 export * from './loader/loader.js';

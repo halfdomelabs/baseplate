@@ -157,8 +157,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     this.directory = project.directory;
     this.id = project.id;
     this.projectJsonPath = path.join(
-      this.directory,
-      'baseplate/project-definition.json',
+      project.baseplateDirectory,
+      'project-definition.json',
     );
     this.cliVersion = cliVersion;
     this.userConfig = serviceActionContext.userConfig;
