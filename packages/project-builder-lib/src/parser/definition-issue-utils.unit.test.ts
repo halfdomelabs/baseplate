@@ -26,7 +26,7 @@ describe('createIssueFixSetter', () => {
   });
 
   it('returns applySetter directly when fix uses applySetter', () => {
-    // oxlint-disable-next-line @typescript-eslint/no-empty-function -- test stub
+    // oxlint-disable-next-line typescript/no-empty-function -- test stub
     const applySetter = (): void => {};
     const container = createTestProjectDefinitionContainer({
       features: [feature],

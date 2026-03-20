@@ -11,7 +11,7 @@ interface FormActionBarProps extends React.ComponentProps<'div'> {
   /**
    * React Hook Form instance
    */
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- need to support any form return
+  // oxlint-disable-next-line typescript/no-explicit-any -- need to support any form return
   form?: UseFormReturn<any>;
   /**
    * Whether the form actions should be disabled (if undefined, will use (form.isSubmitting || !form.isDirty))

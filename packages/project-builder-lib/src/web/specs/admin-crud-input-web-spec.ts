@@ -6,7 +6,7 @@ import type { AdminCrudInputInput, ModelConfig } from '#src/schema/index.js';
 import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js';
 
 export interface AdminCrudInputWebFormProps {
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   formProps: UseFormReturn<any>;
   name: string;
   model: ModelConfig;
@@ -36,7 +36,7 @@ export function createAdminCrudInputWebConfig<T extends AdminCrudInputInput>(
 export const adminCrudInputWebSpec = createFieldMapSpec(
   'core/admin-crud-input-web',
   (t) => ({
-    // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying input types at runtime
+    // oxlint-disable-next-line typescript/no-explicit-any -- plugins register varying input types at runtime
     inputs: t.namedArrayToMap<AdminCrudInputWebConfig<any>>(),
   }),
 );

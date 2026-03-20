@@ -59,7 +59,7 @@ export interface ServiceAction<
   ) => void;
 }
 
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any -- any is used to allow any input and output shape
+// oxlint-disable-next-line typescript/no-explicit-any -- any is used to allow any input and output shape
 export type AnyServiceAction = ServiceAction<any, any>;
 
 /**

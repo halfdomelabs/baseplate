@@ -18,7 +18,7 @@ export interface EntitySchemaMeta {
   readonly idPath: ReferencePath;
 
   readonly getNameResolver?: (
-    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     value: any,
   ) => DefinitionEntityNameResolver | string;
   readonly parentSlot?: RefContextSlot;
@@ -35,9 +35,9 @@ export interface ReferenceSchemaMeta {
 
 export interface ExpressionSchemaMeta {
   readonly kind: 'expression';
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   readonly parser: RefExpressionParser<any, any, any>;
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   readonly slots?: ExpressionSlotMap<any>;
 }
 
@@ -89,9 +89,9 @@ export interface DefinitionSlotAnnotation {
 export interface DefinitionExpressionAnnotation {
   path: ReferencePath;
   value: unknown;
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   parser: RefExpressionParser<any, any, any>;
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   slots?: ExpressionSlotMap<any>;
 }
 

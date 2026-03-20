@@ -24,7 +24,7 @@ export function useEventCallback<T extends (...args: any[]) => any>(
     if (!current) {
       return;
     }
-    // oxlint-disable-next-line @typescript-eslint/no-unsafe-return -- safe to return the function
+    // oxlint-disable-next-line typescript/no-unsafe-return -- safe to return the function
     return (...args) => current(...args);
   }, []);
 }

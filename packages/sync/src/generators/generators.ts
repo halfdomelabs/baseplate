@@ -176,7 +176,7 @@ export interface GeneratorTask<
     exports: undefined;
     outputs: undefined;
   }
-    ? // oxlint-disable-next-line @typescript-eslint/no-invalid-void-type
+    ? // oxlint-disable-next-line typescript/no-invalid-void-type
       void | GeneratorTaskResult<
         InferExportProviderMap<ExportMap>,
         InferExportProviderMap<OutputMap>
@@ -190,7 +190,7 @@ export interface GeneratorTask<
 /**
  * A type that can be used to create a generator task with any export, dependency, and output maps
  */
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the tasks from being provided generic arguments
+// oxlint-disable-next-line typescript/no-explicit-any -- needed to prevent the tasks from being provided generic arguments
 export type AnyGeneratorTask = GeneratorTask<any, any, any>;
 
 export function createGeneratorTask<
@@ -249,5 +249,5 @@ export interface GeneratorBundle<
   preRegisteredPhases?: TaskPhase[];
 }
 
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the generator bundles from being provided generic arguments
+// oxlint-disable-next-line typescript/no-explicit-any -- needed to prevent the generator bundles from being provided generic arguments
 export type AnyGeneratorBundle = GeneratorBundle<any>;

@@ -27,7 +27,7 @@ export interface AdminCrudActionCompiler<
 export const adminCrudActionCompilerSpec = createFieldMapSpec(
   'core/admin-crud-action-compiler',
   (t) => ({
-    // oxlint-disable-next-line @typescript-eslint/no-explicit-any -- plugins register varying action types at runtime
+    // oxlint-disable-next-line typescript/no-explicit-any -- plugins register varying action types at runtime
     actions: t.namedArrayToMap<AdminCrudActionCompiler<any>>(),
   }),
 );

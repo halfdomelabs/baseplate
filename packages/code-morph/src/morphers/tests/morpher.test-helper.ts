@@ -51,7 +51,7 @@ const collectTestCases = (
   return testCases;
 };
 
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any -- type doesn't really matter here
+// oxlint-disable-next-line typescript/no-explicit-any -- type doesn't really matter here
 export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
   const fullTestFolderPath = path.join(
     path.dirname(fileURLToPath(import.meta.url)),

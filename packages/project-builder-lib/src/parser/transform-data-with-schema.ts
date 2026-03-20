@@ -95,7 +95,7 @@ function transformNode(
         const result: Record<string, unknown> = { ...obj };
         for (const [key, value] of entries) {
           if (value === undefined) {
-            // oxlint-disable-next-line @typescript-eslint/no-dynamic-delete
+            // oxlint-disable-next-line typescript/no-dynamic-delete
             delete result[key];
           } else {
             result[key] = value;

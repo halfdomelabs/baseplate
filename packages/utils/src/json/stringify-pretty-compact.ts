@@ -126,7 +126,7 @@ export function stringifyPrettyCompact(
 
     const string = JSON.stringify(obj);
 
-    // oxlint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // oxlint-disable-next-line typescript/no-unnecessary-condition
     if (string === undefined) {
       return string;
     }
@@ -172,7 +172,7 @@ export function stringifyPrettyCompact(
             nextIndent,
             keyPart.length + atEndOfArray(array, index),
           );
-          // oxlint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          // oxlint-disable-next-line typescript/no-unnecessary-condition
           if (value !== undefined) {
             items.push(keyPart + value);
           }
