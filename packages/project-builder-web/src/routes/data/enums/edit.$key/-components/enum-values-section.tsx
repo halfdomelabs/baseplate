@@ -1,4 +1,4 @@
-import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
+import type { EnumConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -22,8 +22,8 @@ export function EnumValuesSection({
   control,
   setValue,
 }: {
-  control: Control<EnumConfig>;
-  setValue: UseFormSetValue<EnumConfig>;
+  control: Control<EnumConfigInput>;
+  setValue: UseFormSetValue<EnumConfigInput>;
 }): React.JSX.Element {
   const {
     fields: valueFields,

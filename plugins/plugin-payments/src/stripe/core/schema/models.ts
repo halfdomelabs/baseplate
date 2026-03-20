@@ -35,14 +35,50 @@ export function createBillingPartialDefinition(
         featureRef: featureName,
         isExposed: true,
         values: [
-          { name: 'ACTIVE', friendlyName: 'Active' },
-          { name: 'TRIALING', friendlyName: 'Trialing' },
-          { name: 'PAST_DUE', friendlyName: 'Past Due' },
-          { name: 'CANCELED', friendlyName: 'Canceled' },
-          { name: 'UNPAID', friendlyName: 'Unpaid' },
-          { name: 'INCOMPLETE', friendlyName: 'Incomplete' },
-          { name: 'INCOMPLETE_EXPIRED', friendlyName: 'Incomplete Expired' },
-          { name: 'PAUSED', friendlyName: 'Paused' },
+          {
+            name: 'ACTIVE',
+            friendlyName: 'Active',
+            description: 'Subscription is active and billing normally',
+          },
+          {
+            name: 'TRIALING',
+            friendlyName: 'Trialing',
+            description: 'Subscription is in a free trial period',
+          },
+          {
+            name: 'PAST_DUE',
+            friendlyName: 'Past Due',
+            description:
+              'Payment failed but the subscription has not been canceled yet',
+          },
+          {
+            name: 'CANCELED',
+            friendlyName: 'Canceled',
+            description: 'Subscription has been canceled',
+          },
+          {
+            name: 'UNPAID',
+            friendlyName: 'Unpaid',
+            description:
+              'Payment retries have been exhausted and the subscription remains unpaid',
+          },
+          {
+            name: 'INCOMPLETE',
+            friendlyName: 'Incomplete',
+            description:
+              'Initial payment attempt failed when creating the subscription',
+          },
+          {
+            name: 'INCOMPLETE_EXPIRED',
+            friendlyName: 'Incomplete Expired',
+            description:
+              'First invoice was not paid within the allowed time period',
+          },
+          {
+            name: 'PAUSED',
+            friendlyName: 'Paused',
+            description: 'Subscription has been temporarily paused',
+          },
         ],
       },
     ],
