@@ -1019,13 +1019,6 @@
       "version": "0.1.0"
     },
     {
-      "config": { "postmarkOptions": {} },
-      "id": "plugin:baseplate-dev_plugin-email_postmark",
-      "name": "postmark",
-      "packageName": "@baseplate-dev/plugin-email",
-      "version": "0.1.0"
-    },
-    {
       "config": { "rateLimitFeatureRef": "utilities", "rateLimitOptions": {} },
       "id": "plugin:baseplate-dev_plugin-rate-limit_rate-limit",
       "name": "rate-limit",
@@ -1037,6 +1030,13 @@
       "id": "plugin:baseplate-dev_plugin-observability_sentry",
       "name": "sentry",
       "packageName": "@baseplate-dev/plugin-observability",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
+      "packageName": "@baseplate-dev/plugin-email",
       "version": "0.1.0"
     }
   ],

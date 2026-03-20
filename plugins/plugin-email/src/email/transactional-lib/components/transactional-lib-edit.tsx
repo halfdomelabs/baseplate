@@ -124,6 +124,7 @@ function TransactionalLibEditComponent({
 export const transactionalLibWebConfig = createLibraryWebConfig({
   name: transactionalLibDefinitionSchemaEntry.name,
   displayName: 'Transactional Email Library',
+  description: 'React Email templates for transactional emails',
   EditComponent: TransactionalLibEditComponent,
   createDefinition: ({ id, name }) => ({
     id,

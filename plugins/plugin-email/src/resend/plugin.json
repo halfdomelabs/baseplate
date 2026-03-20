@@ -1,0 +1,9 @@
+{
+  "name": "resend",
+  "displayName": "Resend",
+  "icon": "icon.svg",
+  "description": "Resend email delivery implementation using the Resend API for reliable transactional email.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "managedBy": "@baseplate-dev/plugin-email:email"
+}

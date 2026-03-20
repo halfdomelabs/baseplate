@@ -77,6 +77,8 @@ export interface LibraryWebConfig<
   name: string;
   /** Display name shown in the UI (e.g., "Node Library") */
   displayName: string;
+  /** Short description explaining what this library type is for */
+  description: string;
   /** React component for editing this library type */
   EditComponent: React.ComponentType<LibraryEditComponentProps<T>>;
   /** Creates a new library definition with the given id and name */
