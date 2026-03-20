@@ -7,82 +7,74 @@
       "type": "backend"
     },
     {
-      "adminApp": { "enabled": false, "pathPrefix": "/admin" },
       "description": "",
       "devPort": 3030,
-      "enableDatadog": false,
-      "enableSubscriptions": false,
       "id": "app:UBXtvxZtQ4ap",
-      "includeAuth": false,
-      "includeUploadComponents": false,
       "name": "web",
-      "packageLocation": "",
       "title": "",
       "type": "web"
     }
   ],
-  "cliVersion": "0.7.8",
-  "features": [{ "id": "feature:EHdFHsD17AHI", "name": "blog" }],
+  "cliVersion": "0.6.4",
+  "features": [
+    { "id": "feature:EHdFHsD17AHI", "name": "blog" },
+    { "id": "feature:Hxp86n0StHww", "name": "auth" }
+  ],
   "isInitialized": true,
+  "libraries": [],
   "models": [
     {
       "featureRef": "blog",
       "graphql": {
         "objectType": {
           "enabled": true,
-          "fields": [
-            { "globalRoles": [], "instanceRoles": [], "ref": "id" },
-            { "globalRoles": [], "instanceRoles": [], "ref": "title" },
-            { "globalRoles": [], "instanceRoles": [], "ref": "content" }
-          ],
-          "foreignRelations": [],
-          "localRelations": []
+          "fields": [{ "ref": "id" }, { "ref": "title" }, { "ref": "content" }]
         },
-        "queries": {
-          "get": { "enabled": true },
-          "globalRoles": [],
-          "instanceRoles": [],
-          "list": { "count": {}, "enabled": true }
-        }
+        "queries": { "get": { "enabled": true }, "list": { "enabled": true } }
       },
       "id": "model:f114nGvsZGt9",
       "model": {
         "fields": [
           {
             "id": "model-scalar-field:fbIBoKK_DQIj",
+            "isOptional": false,
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "default": "", "genUuid": true },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:xMyexPrN92E3",
+            "isOptional": false,
             "name": "title",
             "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:cKhKDU3JESoo",
+            "isOptional": false,
             "name": "content",
             "options": { "default": "" },
             "type": "string"
           },
           {
             "id": "model-scalar-field:clW4YVGSeDyB",
+            "isOptional": false,
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
             "id": "model-scalar-field:DIlyj8ZH6CMW",
+            "isOptional": false,
             "name": "createdAt",
             "options": { "defaultToNow": true },
             "type": "dateTime"
           }
         ],
-        "primaryKeyFieldRefs": ["id"],
-        "uniqueConstraints": []
+        "primaryKeyFieldRefs": ["id"]
       },
-      "name": "BlogPost"
+      "name": "BlogPost",
+      "service": { "transformers": [] }
     }
   ],
   "plugins": [
@@ -94,10 +86,9 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 28,
   "settings": {
-    "general": { "name": "simple", "portOffset": 3000 },
+    "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }
-  },
-  "version": "0.1.0"
+  }
 }

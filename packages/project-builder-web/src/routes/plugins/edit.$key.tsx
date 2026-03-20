@@ -1,8 +1,11 @@
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
+  buildEnabledPluginFqnSet,
   createPluginImplementationStoreWithNewPlugins,
   getPluginMetadataByKey,
+  getUnmetPluginDependencies,
   PluginUtils,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
@@ -22,6 +25,10 @@ import { HiDotsVertical } from 'react-icons/hi';
 
 import { NotFoundCard } from '#src/components/index.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
+
+import type { UnmetPluginDependency } from './-components/unmet-dependency-list.js';
+
+import { UnmetDependencyList } from './-components/unmet-dependency-list.js';
 
 export const Route = createFileRoute('/plugins/edit/$key')({
   component: PluginConfigPage,
@@ -85,26 +92,90 @@ function PluginConfigPage(): React.JSX.Element {
     pluginMetadata,
   ]);
 
+  // Check for unmet dependencies when plugin is not yet enabled
+  const unmetDeps = useMemo((): UnmetPluginDependency[] => {
+    if (pluginDefinition) return [];
+    const { pluginStore } = schemaParserContext;
+    const enabledPlugins = definitionContainer.definition.plugins ?? [];
+    const enabledFqns = buildEnabledPluginFqnSet(pluginStore, enabledPlugins);
+    const deps = getUnmetPluginDependencies(pluginStore, key, enabledFqns);
+    return deps.map((dep) => {
+      const implementations = createPluginImplementationStoreWithNewPlugins(
+        pluginStore,
+        [dep],
+        definitionContainer.definition,
+      );
+      return {
+        metadata: dep,
+        hasWebConfig: implementations
+          .use(webConfigSpec)
+          .components.has(dep.key),
+      };
+    });
+  }, [pluginDefinition, schemaParserContext, definitionContainer, key]);
+
   if (!Container) {
     return <NotFoundCard />;
   }
 
-  function onDisablePlugin(): void {
-    saveDefinitionWithFeedbackSync(
-      (draft) => {
-        PluginUtils.disablePlugin(
-          draft,
-          pluginMetadata.key,
-          schemaParserContext,
-        );
-      },
-      {
-        successMessage: `Disabled ${pluginMetadata.displayName}!`,
-        onSuccess: () => {
-          navigate({ to: '/plugins' }).catch(logAndFormatError);
-        },
-      },
+  if (unmetDeps.length > 0) {
+    return (
+      <UnmetDependenciesView
+        pluginMetadata={pluginMetadata}
+        unmetDeps={unmetDeps}
+      />
     );
+  }
+
+  function onDisablePlugin(): void {
+    const { pluginStore } = schemaParserContext;
+    const dependents = PluginUtils.getDependentPlugins(
+      definitionContainer.definition,
+      pluginMetadata.key,
+      pluginStore,
+    );
+
+    const doDisable = (): void => {
+      saveDefinitionWithFeedbackSync(
+        (draft) => {
+          for (const dep of dependents) {
+            PluginUtils.disablePlugin(draft, dep.key, schemaParserContext);
+          }
+          PluginUtils.disablePlugin(
+            draft,
+            pluginMetadata.key,
+            schemaParserContext,
+          );
+        },
+        {
+          successMessage:
+            dependents.length > 0
+              ? `Disabled ${pluginMetadata.displayName} and ${dependents.map((d) => d.displayName).join(', ')}!`
+              : `Disabled ${pluginMetadata.displayName}!`,
+          onSuccess: () => {
+            navigate({ to: '/plugins' }).catch(logAndFormatError);
+          },
+        },
+      );
+    };
+
+    if (dependents.length > 0) {
+      const depNames = dependents.map((d) => d.displayName).join(', ');
+      requestConfirm({
+        title: 'Disable Plugin',
+        content: `Disabling ${pluginMetadata.displayName} will also disable ${depNames} which ${dependents.length === 1 ? 'depends' : 'depend'} on it. Continue?`,
+        buttonConfirmText: 'Disable All',
+        buttonConfirmVariant: 'destructive',
+        buttonCancelText: 'Cancel',
+        onConfirm: doDisable,
+      });
+    } else {
+      requestConfirm({
+        title: 'Disable Plugin',
+        content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,
+        onConfirm: doDisable,
+      });
+    }
   }
 
   function onSave(): void {
@@ -129,13 +200,7 @@ function PluginConfigPage(): React.JSX.Element {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     disabled={isSavingDefinition}
-                    onClick={() => {
-                      requestConfirm({
-                        title: 'Disable Plugin',
-                        content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,
-                        onConfirm: onDisablePlugin,
-                      });
-                    }}
+                    onClick={onDisablePlugin}
                   >
                     Disable Plugin
                   </DropdownMenuItem>
@@ -149,6 +214,40 @@ function PluginConfigPage(): React.JSX.Element {
           metadata={pluginMetadata}
           onSave={onSave}
         />
+      </div>
+    </div>
+  );
+}
+
+function UnmetDependenciesView({
+  pluginMetadata,
+  unmetDeps,
+}: {
+  pluginMetadata: PluginMetadataWithPaths;
+  unmetDeps: UnmetPluginDependency[];
+}): React.ReactElement {
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  return (
+    <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
+      <h1>{pluginMetadata.displayName} Plugin</h1>
+      <div className="flex max-w-lg flex-col gap-3">
+        <p className="text-sm text-muted-foreground">
+          {pluginMetadata.displayName} requires the following plugins to be
+          enabled and configured first:
+        </p>
+        <UnmetDependencyList dependencies={unmetDeps} />
+        <div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              navigate({ to: '/plugins' }).catch(logAndFormatError);
+            }}
+          >
+            Back to Plugins
+          </Button>
+        </div>
       </div>
     </div>
   );
