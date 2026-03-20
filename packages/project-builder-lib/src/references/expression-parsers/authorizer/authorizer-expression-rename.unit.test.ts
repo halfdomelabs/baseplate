@@ -79,14 +79,11 @@ function applyRenames(
   renames: Map<string, string>,
 ): string {
   const replacements = deps
-    .filter(
-      (ref) =>
-        ref.start != null && ref.end != null && renames.has(ref.entityId),
-    )
+    .filter((ref) => renames.has(ref.entityId))
     .map((ref) => ({
-      start: ref.start!,
-      end: ref.end!,
-      newValue: renames.get(ref.entityId)!,
+      start: ref.start,
+      end: ref.end,
+      newValue: renames.get(ref.entityId) ?? '',
     }))
     .toSorted((a, b) => b.start - a.start);
 

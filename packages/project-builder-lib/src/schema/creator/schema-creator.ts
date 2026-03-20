@@ -31,7 +31,7 @@ export function createDefinitionSchemaParserContext(
 
   const context: DefinitionSchemaParserContext = {
     ...options,
-    ...extendParserContextWithRefs(),
+    ...extendParserContextWithRefs(options.plugins),
     ...extendParserContextWithDefaults(),
   };
   contextCache.set(options.plugins, context);

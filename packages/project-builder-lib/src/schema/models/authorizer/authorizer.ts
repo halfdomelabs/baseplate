@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { authorizerExpressionParser } from '#src/references/expression-parsers/authorizer/authorizer-expression-parser.js';
 import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
 import { VALIDATORS } from '#src/schema/utils/validation.js';
 
 import { modelEntityType } from '../types.js';
+import { authorizerExpressionRef } from './authorizer-expression-ref.js';
 import { modelAuthorizerRoleEntityType } from './types.js';
 
 /**
@@ -40,7 +40,7 @@ export const createAuthorizerRoleSchema = definitionSchemaWithSlots(
          * @example 'hasRole("admin")'
          * @example 'model.authorId === userId || hasRole("admin")'
          */
-        expression: ctx.withExpression(authorizerExpressionParser, {
+        expression: ctx.withExpression(authorizerExpressionRef, {
           model: modelSlot,
         }),
       }),

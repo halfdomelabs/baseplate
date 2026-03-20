@@ -6,6 +6,9 @@ import type { ResolvedZodRefPayload } from './types.js';
 import { extractDefinitionRefs } from './extract-definition-refs.js';
 import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
 
+export type ParseSchemaWithTransformedReferencesOptions =
+  ResolveZodRefPayloadNamesOptions;
+
 /**
  * Parses a schema with references.
  *
@@ -20,7 +23,7 @@ import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
 export function parseSchemaWithTransformedReferences<T extends z.ZodType>(
   schema: T,
   input: unknown,
-  options?: ResolveZodRefPayloadNamesOptions,
+  options?: ParseSchemaWithTransformedReferencesOptions,
 ): ResolvedZodRefPayload<z.output<T>> {
   // Step 1: Validate with Zod
   const value = schema.parse(input);

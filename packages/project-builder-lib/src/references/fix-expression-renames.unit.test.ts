@@ -175,24 +175,6 @@ describe('applyExpressionRenames', () => {
     expect(result.value).toEqual({ expr: 'hello' });
   });
 
-  it('should skip dependencies without positions', () => {
-    const parser = new FakeParser([
-      { entityType: testEntityType, entityId: 'e:1' }, // no start/end
-    ]);
-
-    const result = applyExpressionRenames(
-      { expr: 'hello' },
-      [makeEntity('e:1', 'world')],
-      makeOldPayload(
-        { expr: 'hello' },
-        [makeEntity('e:1', 'hello')],
-        [makeExpression('hello', parser, ['expr'])],
-      ),
-    );
-
-    expect(result.modified).toBe(false);
-  });
-
   it('should skip dependencies whose entity ID was not renamed', () => {
     const parser = new FakeParser([
       { entityType: testEntityType, entityId: 'e:2', start: 0, end: 5 },

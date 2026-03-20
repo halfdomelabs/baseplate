@@ -9,6 +9,7 @@ import { ProjectDefinitionContainer } from '#src/definition/project-definition-c
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
+import { expressionParserCoreModule } from '#src/references/expression-parsers/register-core-module.js';
 import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
@@ -48,7 +49,7 @@ export function createTestProjectDefinitionContainer(
 ): ProjectDefinitionContainer {
   const pluginStore: PluginStore = {
     availablePlugins: [],
-    coreModules: [],
+    coreModules: [expressionParserCoreModule],
   };
   const pluginSpecStore = createPluginSpecStore(pluginStore, {
     plugins: [],

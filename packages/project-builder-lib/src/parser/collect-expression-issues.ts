@@ -12,7 +12,7 @@ import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types
 export interface CollectExpressionIssuesInput {
   definition: unknown;
   pluginStore: PluginSpecStore;
-  expressions: ReadonlyArray<DefinitionExpression>;
+  expressions: readonly DefinitionExpression[];
 }
 
 /**

@@ -26,7 +26,7 @@ export interface ApplyExpressionRenamesResult<T> {
  */
 export function applyExpressionRenames<T>(
   newDefinition: T,
-  newEntities: ReadonlyArray<DefinitionEntity>,
+  newEntities: readonly DefinitionEntity[],
   oldRefPayload: ResolvedZodRefPayload<unknown>,
 ): ApplyExpressionRenamesResult<T> {
   const { expressions: oldExpressions, entities: oldEntities } = oldRefPayload;
@@ -73,12 +73,9 @@ export function applyExpressionRenames<T>(
       expression.resolvedSlots,
     );
 
-    // Build replacements for renamed entities that have positions
+    // Build replacements for renamed entities
     const replacements: { start: number; end: number; newValue: string }[] = [];
     for (const ref of refs) {
-      if (ref.start == null || ref.end == null) {
-        continue;
-      }
       const newName = renames.get(ref.entityId);
       if (newName !== undefined) {
         replacements.push({
