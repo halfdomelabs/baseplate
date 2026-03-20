@@ -53,6 +53,16 @@ export const syncAllProjectsAction = createServiceAction({
     const { overwrite, skipCommands } = input;
     const { projects, logger, plugins, userConfig, cliVersion } = context;
 
+    // Prevent overwrite on sync-all since it includes user projects
+    if (overwrite) {
+      const hasUserProjects = projects.some((p) => p.type === 'user');
+      if (hasUserProjects) {
+        throw new Error(
+          'Cannot use overwrite mode when syncing all projects because it includes user projects. Overwrite is only allowed for example and test projects.',
+        );
+      }
+    }
+
     logger.info(`Starting sync for ${projects.length} projects`);
 
     const results: {

@@ -64,6 +64,13 @@ export const syncProjectAction = createServiceAction({
     // Find the project by name or ID
     const project = getProjectByNameOrId(projects, projectId);
 
+    // Prevent overwrite on user projects to protect manual changes
+    if (overwrite && project.type === 'user') {
+      throw new Error(
+        'Cannot use overwrite mode on user projects. Overwrite is only allowed for example and test projects.',
+      );
+    }
+
     logger.info(`Starting sync for project: ${project.name}`);
 
     // Resolve baseplate directory: explicit input overrides project default
