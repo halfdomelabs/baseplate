@@ -136,7 +136,7 @@ export function FieldDialog({
             {/* Render field-specific configuration */}
             {WebForm && model && (
               <WebForm
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                // oxlint-disable-next-line typescript/no-unsafe-assignment, @typescript-eslint/no-explicit-any
                 formProps={form as any}
                 name=""
                 model={model}

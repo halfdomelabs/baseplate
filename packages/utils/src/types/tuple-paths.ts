@@ -57,7 +57,7 @@ export type TuplePaths<
       ? never
       : T extends Primitive
         ? never
-        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        : // oxlint-disable-next-line typescript/no-explicit-any
           T extends readonly any[]
           ? // Check if Generic Array or Tuple
             number extends T['length']

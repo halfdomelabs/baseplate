@@ -64,7 +64,7 @@ interface DefinitionEntityInputBase<
   /** Optional function used to get the name resolver from the input data. Otherwise, the entity's name is assumed to be under the entity's path with key "name". */
   getNameResolver?: (
     value: TInput,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to allow more specific generic typed to be put in here
+    // oxlint-disable-next-line typescript/no-explicit-any -- needed to allow more specific generic typed to be put in here
   ) => DefinitionEntityNameResolver<any> | string;
   /** Optional ref context slot that this entity provides. Registers this entity's path in a shared context. */
   provides?: RefContextSlot<TEntityType>;

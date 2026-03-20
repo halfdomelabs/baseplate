@@ -1,15 +1,14 @@
 #!/usr/bin/env node
-// @ts-check
 
 /**
- * fix-versions.js
+ * fix-versions.ts
  *
  * Runs after `pnpm changeset version`. Reads scripts/published-version-skip-list.json
  * and for any @baseplate-dev/* package whose version matches a skipped version,
  * increments the patch to avoid attempting to publish an already-published version.
  *
  * Hooked into the changeset release action via root package.json:
- *   "version": "pnpm changeset version && node ./scripts/fix-versions.js"
+ *   "version": "pnpm changeset version && node ./scripts/fix-versions.ts"
  *
  * REMOVE THIS SCRIPT (and the "version" script from package.json) once all
  * packages have been published past the last mis-published version.
@@ -33,8 +32,10 @@ if (!existsSync(SKIP_LIST_PATH)) {
   process.exit(0);
 }
 
-/** @type {Record<string, string[]>} */
-const skipList = JSON.parse(readFileSync(SKIP_LIST_PATH, 'utf8'));
+const skipList = JSON.parse(readFileSync(SKIP_LIST_PATH, 'utf8')) as Record<
+  string,
+  string[]
+>;
 
 // Since all @baseplate-dev/* packages are in a unified fixed versioning group,
 // a version is skippable if it appears in ANY package's skip list.
@@ -42,17 +43,15 @@ const allSkippedVersions = new Set(Object.values(skipList).flat());
 
 /**
  * Increment the patch segment of a semver string.
- * @param {string} version
- * @returns {string}
  */
-function incrementPatch(version) {
+function incrementPatch(version: string): string {
   const parts = version.split('.');
   parts[2] = String(Number(parts[2]) + 1);
   return parts.join('.');
 }
 
 // Find all package.json files under packages/* and plugins/*
-const packageJsonPaths = [];
+const packageJsonPaths: string[] = [];
 for await (const p of glob(
   ['packages/*/package.json', 'plugins/*/package.json'],
   {
@@ -64,11 +63,13 @@ for await (const p of glob(
 
 // Sanity check: all workspace packages must be on the same version before we proceed.
 // If they're not, the fixed versioning group isn't in effect yet — bail safely.
-/** @type {Map<string, string>} */
-const packageVersions = new Map();
+const packageVersions = new Map<string, string>();
 for (const relPath of packageJsonPaths) {
   const absPath = path.join(ROOT_DIR, relPath);
-  const pkg = JSON.parse(readFileSync(absPath, 'utf8'));
+  const pkg = JSON.parse(readFileSync(absPath, 'utf8')) as {
+    name: string;
+    version: string;
+  };
   if (pkg.name && pkg.version) {
     packageVersions.set(pkg.name, pkg.version);
   }
@@ -95,7 +96,10 @@ let bumped = 0;
 
 for (const relPath of packageJsonPaths) {
   const absPath = path.join(ROOT_DIR, relPath);
-  const pkg = JSON.parse(readFileSync(absPath, 'utf8'));
+  const pkg = JSON.parse(readFileSync(absPath, 'utf8')) as {
+    name: string;
+    version: string;
+  };
   const { name, version } = pkg;
 
   if (!name || !version) continue;

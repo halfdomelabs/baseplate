@@ -110,7 +110,7 @@ export class TypedEventEmitter<T extends object> {
           pendingNext = resolve;
         }));
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- false positive since isDone is set to true in the abort handler
+      // oxlint-disable-next-line typescript/no-unnecessary-condition -- false positive since isDone is set to true in the abort handler
       if (isDone) break;
 
       yield payload;

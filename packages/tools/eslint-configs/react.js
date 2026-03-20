@@ -36,8 +36,8 @@ export function generateReactEslintConfig(options) {
         globals: { ...globals.browser },
       },
       extends: [
-        reactPlugin.configs.flat?.recommended,
-        reactPlugin.configs.flat?.['jsx-runtime'],
+        reactPlugin.configs.flat.recommended,
+        reactPlugin.configs.flat['jsx-runtime'],
         reactJsxA11yPlugin.flatConfigs.recommended,
       ],
       settings: {
@@ -89,7 +89,7 @@ export function generateReactEslintConfig(options) {
     // Only enable if tailwindEntryPoint is provided (not null/undefined)
     ...(options.tailwindEntryPoint
       ? /** @type {ESLintConfig[]} */ ([
-          eslintPluginBetterTailwindcss.configs['correctness'],
+          eslintPluginBetterTailwindcss.configs.correctness,
           {
             settings: {
               'better-tailwindcss': {

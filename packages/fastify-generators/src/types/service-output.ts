@@ -72,7 +72,7 @@ export interface ServiceOutputDtoNestedFieldWithPrisma extends ServiceOutputDtoB
  * @template TKind - The service DTO kind that defines the type and metadata
  */
 export interface ServiceOutputDtoInjectedArg<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   TKind extends ServiceDtoKind<any> = ServiceDtoKind<any>,
 > extends ServiceOutputDtoBaseField {
   type: 'injected';
@@ -81,7 +81,7 @@ export interface ServiceOutputDtoInjectedArg<
 }
 
 export function createServiceOutputDtoInjectedArg<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   TKind extends ServiceDtoKind<any>,
 >(
   arg: undefined extends InferKindMetadata<TKind>

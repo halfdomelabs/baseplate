@@ -226,7 +226,7 @@ export interface DefinitionExpression {
   /** The raw expression value */
   value: unknown;
   /** Reference to the parser that handles this expression */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   parser: RefExpressionParser<any, any, any>;
   /** Resolved slot paths (slot key → resolved path in definition) */
   resolvedSlots: Record<string, ReferencePath>;

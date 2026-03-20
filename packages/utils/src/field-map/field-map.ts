@@ -40,6 +40,7 @@ export class ScalarContainer<T> implements FieldContainer<T> {
   set(value: T, source?: string): void {
     const setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
     if (this.isSet) {
+      // oxlint-disable-next-line unicorn/prefer-type-error -- false positive
       throw new Error(
         `Value has already been set by ${this.setBySource} and cannot be overwritten by ${setBySource}`,
       );
