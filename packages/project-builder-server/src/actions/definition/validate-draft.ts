@@ -59,7 +59,7 @@ export function generateFixId(issue: DefinitionIssue): string {
   for (let i = 0; i < key.length; i++) {
     hash = (hash * 33) ^ (key.codePointAt(i) ?? 0);
   }
-  return `fix-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+  return `fix-${Math.trunc(hash).toString(16).padStart(8, '0')}`;
 }
 
 /**
