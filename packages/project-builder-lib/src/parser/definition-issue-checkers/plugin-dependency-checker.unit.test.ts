@@ -1,45 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PluginStore } from '#src/plugins/imports/types.js';
-import type { PluginMetadataWithPaths } from '#src/plugins/index.js';
-
 import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
-import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
+import {
+  createMockPluginMetadata,
+  createMockPluginStore,
+  createTestProjectDefinitionContainer,
+} from '#src/testing/index.js';
 
 import { checkPluginDependencies } from './plugin-dependency-checker.js';
-
-function createMockPluginMetadata(
-  key: string,
-  fullyQualifiedName: string,
-  pluginDependencies?: { plugin: string; optional?: boolean }[],
-): PluginMetadataWithPaths {
-  return {
-    key,
-    name: key,
-    displayName: key.charAt(0).toUpperCase() + key.slice(1),
-    description: `${key} plugin`,
-    version: '0.1.0',
-    packageName: `@test/plugin-${key}`,
-    fullyQualifiedName,
-    pluginDirectory: `/plugins/${key}`,
-    webBuildDirectory: `/plugins/${key}/web`,
-    nodeModulePaths: [],
-    webModulePaths: [],
-    pluginDependencies,
-  };
-}
-
-function createPluginStoreWithPlugins(
-  pluginMetadata: PluginMetadataWithPaths[],
-): PluginStore {
-  return {
-    availablePlugins: pluginMetadata.map((metadata) => ({
-      metadata,
-      modules: [],
-    })),
-    coreModules: [],
-  };
-}
 
 describe('checkPluginDependencies', () => {
   it('returns no issues for plugins with no dependencies', () => {
@@ -47,7 +15,7 @@ describe('checkPluginDependencies', () => {
       'auth',
       '@test/plugin-auth:auth',
     );
-    const pluginStore = createPluginStoreWithPlugins([authMetadata]);
+    const pluginStore = createMockPluginStore([authMetadata]);
 
     const container = createTestProjectDefinitionContainer({
       plugins: [
@@ -77,9 +45,9 @@ describe('checkPluginDependencies', () => {
     const rateLimitMetadata = createMockPluginMetadata(
       'rate-limit',
       '@test/plugin-rate-limit:rate-limit',
-      [{ plugin: '@test/plugin-auth:auth' }],
+      { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       rateLimitMetadata,
     ]);
@@ -119,9 +87,9 @@ describe('checkPluginDependencies', () => {
     const rateLimitMetadata = createMockPluginMetadata(
       'rate-limit',
       '@test/plugin-rate-limit:rate-limit',
-      [{ plugin: '@test/plugin-auth:auth' }],
+      { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       rateLimitMetadata,
     ]);
@@ -159,9 +127,13 @@ describe('checkPluginDependencies', () => {
     const rateLimitMetadata = createMockPluginMetadata(
       'rate-limit',
       '@test/plugin-rate-limit:rate-limit',
-      [{ plugin: '@test/plugin-auth:auth', optional: true }],
+      {
+        pluginDependencies: [
+          { plugin: '@test/plugin-auth:auth', optional: true },
+        ],
+      },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       rateLimitMetadata,
     ]);
@@ -190,9 +162,11 @@ describe('checkPluginDependencies', () => {
     const rateLimitMetadata = createMockPluginMetadata(
       'rate-limit',
       '@test/plugin-rate-limit:rate-limit',
-      [{ plugin: '@test/plugin-missing:missing' }],
+      {
+        pluginDependencies: [{ plugin: '@test/plugin-missing:missing' }],
+      },
     );
-    const pluginStore = createPluginStoreWithPlugins([rateLimitMetadata]);
+    const pluginStore = createMockPluginStore([rateLimitMetadata]);
 
     const container = createTestProjectDefinitionContainer({
       plugins: [
@@ -227,12 +201,14 @@ describe('checkPluginDependencies', () => {
     const appMetadata = createMockPluginMetadata(
       'app',
       '@test/plugin-app:app',
-      [
-        { plugin: '@test/plugin-auth:auth' },
-        { plugin: '@test/plugin-storage:storage' },
-      ],
+      {
+        pluginDependencies: [
+          { plugin: '@test/plugin-auth:auth' },
+          { plugin: '@test/plugin-storage:storage' },
+        ],
+      },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       storageMetadata,
       appMetadata,

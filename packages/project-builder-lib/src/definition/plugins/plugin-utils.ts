@@ -133,14 +133,16 @@ function disablePlugin(
 }
 
 /**
- * Finds all enabled plugins that declare a dependency on the given plugin.
+ * Finds all enabled plugins that transitively depend on the given plugin
+ * via required (non-optional) dependencies.
  *
- * Useful for warning before disabling a plugin that other plugins depend on.
+ * Uses BFS to discover the full transitive closure: if A requires B and
+ * B requires C, disabling C returns both B and A.
  *
  * @param projectDefinition The project definition to check
  * @param pluginKey The key of the plugin being considered for disabling
  * @param pluginStore The plugin store containing available plugin metadata
- * @returns Array of metadata for plugins that depend on the given plugin
+ * @returns Array of metadata for plugins that transitively depend on the given plugin
  */
 function getDependentPlugins(
   projectDefinition: ProjectDefinition,
@@ -152,21 +154,37 @@ function getDependentPlugins(
     return [];
   }
 
-  const enabledPlugins = projectDefinition.plugins ?? [];
-  const dependents: PluginMetadataWithPaths[] = [];
-
-  for (const plugin of enabledPlugins) {
+  // Build a metadata map for all enabled plugins
+  const enabledMetadataMap = new Map<string, PluginMetadataWithPaths>();
+  for (const plugin of projectDefinition.plugins ?? []) {
     const key = pluginEntityType.keyFromId(plugin.id);
     const metadata = getPluginMetadataByKey(pluginStore, key);
-    if (!metadata?.pluginDependencies) {
-      continue;
+    if (metadata) {
+      enabledMetadataMap.set(metadata.fullyQualifiedName, metadata);
     }
+  }
 
-    const dependsOnTarget = metadata.pluginDependencies.some(
-      (dep) => dep.plugin === targetMetadata.fullyQualifiedName,
-    );
-    if (dependsOnTarget) {
-      dependents.push(metadata);
+  // BFS to find transitive dependents — use index-based iteration
+  // since the queue grows during traversal
+  const visited = new Set<string>([targetMetadata.fullyQualifiedName]);
+  const queue = [targetMetadata.fullyQualifiedName];
+  const dependents: PluginMetadataWithPaths[] = [];
+
+  // oxlint-disable-next-line prefer-for-of -- queue grows during iteration
+  for (let i = 0; i < queue.length; i++) {
+    const currentFqn = queue[i];
+    for (const [fqn, metadata] of enabledMetadataMap) {
+      if (visited.has(fqn)) {
+        continue;
+      }
+      const hasRequiredDep = metadata.pluginDependencies?.some(
+        (dep) => dep.plugin === currentFqn && !dep.optional,
+      );
+      if (hasRequiredDep) {
+        visited.add(fqn);
+        dependents.push(metadata);
+        queue.push(fqn);
+      }
     }
   }
 

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PluginMetadataWithPaths } from '../metadata/types.js';
-import type { PluginStore } from './types.js';
+import {
+  createMockPluginMetadata,
+  createMockPluginStore,
+} from '#src/testing/index.js';
 
 import {
   getPluginDependencies,
@@ -9,153 +11,135 @@ import {
   validatePluginDependencyGraph,
 } from './validate-plugin-dependencies.js';
 
-function createMockPlugin(
-  name: string,
-  fullyQualifiedName: string,
-  pluginDependencies?: { plugin: string; optional?: boolean }[],
-): PluginStore['availablePlugins'][number] {
-  return {
-    metadata: {
-      key: name,
-      name,
-      displayName: name,
-      description: `${name} plugin`,
-      version: '0.1.0',
-      packageName: `@baseplate-dev/plugin-${name}`,
-      fullyQualifiedName,
-      pluginDirectory: `/plugins/${name}`,
-      webBuildDirectory: `/plugins/${name}/web`,
-      nodeModulePaths: [],
-      webModulePaths: [],
-      pluginDependencies,
-    } as PluginMetadataWithPaths,
-    modules: [],
-  };
-}
-
 describe('validatePluginDependencyGraph', () => {
   it('should pass with no dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('storage', '@test/plugin-storage:storage'),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata('storage', '@test/plugin-storage:storage'),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).not.toThrow();
   });
 
   it('should pass with valid linear dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
+      ),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).not.toThrow();
   });
 
   it('should detect a simple circular dependency', () => {
-    const plugins = [
-      createMockPlugin('a', '@test/plugin-a:a', [
-        { plugin: '@test/plugin-b:b' },
-      ]),
-      createMockPlugin('b', '@test/plugin-b:b', [
-        { plugin: '@test/plugin-a:a' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('a', '@test/plugin-a:a', {
+        pluginDependencies: [{ plugin: '@test/plugin-b:b' }],
+      }),
+      createMockPluginMetadata('b', '@test/plugin-b:b', {
+        pluginDependencies: [{ plugin: '@test/plugin-a:a' }],
+      }),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).toThrow(/Cyclical dependency detected/);
   });
 
   it('should detect a longer circular dependency chain', () => {
-    const plugins = [
-      createMockPlugin('a', '@test/plugin-a:a', [
-        { plugin: '@test/plugin-b:b' },
-      ]),
-      createMockPlugin('b', '@test/plugin-b:b', [
-        { plugin: '@test/plugin-c:c' },
-      ]),
-      createMockPlugin('c', '@test/plugin-c:c', [
-        { plugin: '@test/plugin-a:a' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('a', '@test/plugin-a:a', {
+        pluginDependencies: [{ plugin: '@test/plugin-b:b' }],
+      }),
+      createMockPluginMetadata('b', '@test/plugin-b:b', {
+        pluginDependencies: [{ plugin: '@test/plugin-c:c' }],
+      }),
+      createMockPluginMetadata('c', '@test/plugin-c:c', {
+        pluginDependencies: [{ plugin: '@test/plugin-a:a' }],
+      }),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).toThrow(/Cyclical dependency detected/);
   });
 
   it('should include optional dependencies in cycle detection', () => {
-    const plugins = [
-      createMockPlugin('a', '@test/plugin-a:a', [
-        { plugin: '@test/plugin-b:b', optional: true },
-      ]),
-      createMockPlugin('b', '@test/plugin-b:b', [
-        { plugin: '@test/plugin-a:a' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('a', '@test/plugin-a:a', {
+        pluginDependencies: [{ plugin: '@test/plugin-b:b', optional: true }],
+      }),
+      createMockPluginMetadata('b', '@test/plugin-b:b', {
+        pluginDependencies: [{ plugin: '@test/plugin-a:a' }],
+      }),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).toThrow(/Cyclical dependency detected/);
   });
 
   it('should skip dependencies referencing unavailable plugins', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth', [
-        { plugin: '@test/plugin-missing:missing' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth', {
+        pluginDependencies: [{ plugin: '@test/plugin-missing:missing' }],
+      }),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).not.toThrow();
   });
 
   it('should pass with a valid DAG (diamond dependency)', () => {
-    const plugins = [
-      createMockPlugin('base', '@test/plugin-base:base'),
-      createMockPlugin('left', '@test/plugin-left:left', [
-        { plugin: '@test/plugin-base:base' },
-      ]),
-      createMockPlugin('right', '@test/plugin-right:right', [
-        { plugin: '@test/plugin-base:base' },
-      ]),
-      createMockPlugin('top', '@test/plugin-top:top', [
-        { plugin: '@test/plugin-left:left' },
-        { plugin: '@test/plugin-right:right' },
-      ]),
-    ];
+    const store = createMockPluginStore([
+      createMockPluginMetadata('base', '@test/plugin-base:base'),
+      createMockPluginMetadata('left', '@test/plugin-left:left', {
+        pluginDependencies: [{ plugin: '@test/plugin-base:base' }],
+      }),
+      createMockPluginMetadata('right', '@test/plugin-right:right', {
+        pluginDependencies: [{ plugin: '@test/plugin-base:base' }],
+      }),
+      createMockPluginMetadata('top', '@test/plugin-top:top', {
+        pluginDependencies: [
+          { plugin: '@test/plugin-left:left' },
+          { plugin: '@test/plugin-right:right' },
+        ],
+      }),
+    ]);
 
     expect(() => {
-      validatePluginDependencyGraph(plugins);
+      validatePluginDependencyGraph(store.availablePlugins);
     }).not.toThrow();
   });
 });
 
 describe('getPluginDependencies', () => {
   it('should return empty array for plugin with no dependencies', () => {
-    const plugins = [createMockPlugin('auth', '@test/plugin-auth:auth')];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+    ]);
 
     const result = getPluginDependencies(store, 'auth');
     expect(result).toEqual([]);
   });
 
   it('should resolve plugin dependencies to metadata', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth' },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
+      ),
+    ]);
 
     const result = getPluginDependencies(store, 'rate-limit');
     expect(result).toHaveLength(1);
@@ -164,13 +148,18 @@ describe('getPluginDependencies', () => {
   });
 
   it('should mark optional dependencies correctly', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth', optional: true },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        {
+          pluginDependencies: [
+            { plugin: '@test/plugin-auth:auth', optional: true },
+          ],
+        },
+      ),
+    ]);
 
     const result = getPluginDependencies(store, 'rate-limit');
     expect(result).toHaveLength(1);
@@ -178,20 +167,20 @@ describe('getPluginDependencies', () => {
   });
 
   it('should skip unresolvable dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth', [
-        { plugin: '@test/plugin-missing:missing' },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth', {
+        pluginDependencies: [{ plugin: '@test/plugin-missing:missing' }],
+      }),
+    ]);
 
     const result = getPluginDependencies(store, 'auth');
     expect(result).toEqual([]);
   });
 
   it('should return empty array for unknown plugin key', () => {
-    const plugins = [createMockPlugin('auth', '@test/plugin-auth:auth')];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+    ]);
 
     const result = getPluginDependencies(store, 'nonexistent');
     expect(result).toEqual([]);
@@ -200,13 +189,14 @@ describe('getPluginDependencies', () => {
 
 describe('getUnmetPluginDependencies', () => {
   it('should return empty array when all deps are enabled', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth' },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
+      ),
+    ]);
     const enabledFqns = new Set(['@test/plugin-auth:auth']);
 
     const result = getUnmetPluginDependencies(store, 'rate-limit', enabledFqns);
@@ -214,13 +204,14 @@ describe('getUnmetPluginDependencies', () => {
   });
 
   it('should return unmet required dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth' },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        { pluginDependencies: [{ plugin: '@test/plugin-auth:auth' }] },
+      ),
+    ]);
     const enabledFqns = new Set<string>();
 
     const result = getUnmetPluginDependencies(store, 'rate-limit', enabledFqns);
@@ -229,13 +220,18 @@ describe('getUnmetPluginDependencies', () => {
   });
 
   it('should exclude optional dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('rate-limit', '@test/plugin-rate-limit:rate-limit', [
-        { plugin: '@test/plugin-auth:auth', optional: true },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata(
+        'rate-limit',
+        '@test/plugin-rate-limit:rate-limit',
+        {
+          pluginDependencies: [
+            { plugin: '@test/plugin-auth:auth', optional: true },
+          ],
+        },
+      ),
+    ]);
     const enabledFqns = new Set<string>();
 
     const result = getUnmetPluginDependencies(store, 'rate-limit', enabledFqns);
@@ -243,15 +239,16 @@ describe('getUnmetPluginDependencies', () => {
   });
 
   it('should return multiple unmet dependencies', () => {
-    const plugins = [
-      createMockPlugin('auth', '@test/plugin-auth:auth'),
-      createMockPlugin('storage', '@test/plugin-storage:storage'),
-      createMockPlugin('app', '@test/plugin-app:app', [
-        { plugin: '@test/plugin-auth:auth' },
-        { plugin: '@test/plugin-storage:storage' },
-      ]),
-    ];
-    const store: PluginStore = { availablePlugins: plugins, coreModules: [] };
+    const store = createMockPluginStore([
+      createMockPluginMetadata('auth', '@test/plugin-auth:auth'),
+      createMockPluginMetadata('storage', '@test/plugin-storage:storage'),
+      createMockPluginMetadata('app', '@test/plugin-app:app', {
+        pluginDependencies: [
+          { plugin: '@test/plugin-auth:auth' },
+          { plugin: '@test/plugin-storage:storage' },
+        ],
+      }),
+    ]);
     const enabledFqns = new Set<string>();
 
     const result = getUnmetPluginDependencies(store, 'app', enabledFqns);

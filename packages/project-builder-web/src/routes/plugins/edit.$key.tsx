@@ -17,30 +17,18 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
-import {
-  createFileRoute,
-  Link,
-  notFound,
-  useNavigate,
-} from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
+import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 
 import { NotFoundCard } from '#src/components/index.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
-interface UnmetDep {
-  metadata: PluginMetadataWithPaths;
-  hasWebConfig: boolean;
-}
+import type { UnmetPluginDependency } from './-components/unmet-dependency-list.js';
+
+import { UnmetDependencyList } from './-components/unmet-dependency-list.js';
 
 export const Route = createFileRoute('/plugins/edit/$key')({
   component: PluginConfigPage,
@@ -105,7 +93,7 @@ function PluginConfigPage(): React.JSX.Element {
   ]);
 
   // Check for unmet dependencies when plugin is not yet enabled
-  const unmetDeps = useMemo((): UnmetDep[] => {
+  const unmetDeps = useMemo((): UnmetPluginDependency[] => {
     if (pluginDefinition) return [];
     const { pluginStore } = schemaParserContext;
     const enabledPlugins = definitionContainer.definition.plugins ?? [];
@@ -140,21 +128,54 @@ function PluginConfigPage(): React.JSX.Element {
   }
 
   function onDisablePlugin(): void {
-    saveDefinitionWithFeedbackSync(
-      (draft) => {
-        PluginUtils.disablePlugin(
-          draft,
-          pluginMetadata.key,
-          schemaParserContext,
-        );
-      },
-      {
-        successMessage: `Disabled ${pluginMetadata.displayName}!`,
-        onSuccess: () => {
-          navigate({ to: '/plugins' }).catch(logAndFormatError);
-        },
-      },
+    const { pluginStore } = schemaParserContext;
+    const dependents = PluginUtils.getDependentPlugins(
+      definitionContainer.definition,
+      pluginMetadata.key,
+      pluginStore,
     );
+
+    const doDisable = (): void => {
+      saveDefinitionWithFeedbackSync(
+        (draft) => {
+          for (const dep of dependents) {
+            PluginUtils.disablePlugin(draft, dep.key, schemaParserContext);
+          }
+          PluginUtils.disablePlugin(
+            draft,
+            pluginMetadata.key,
+            schemaParserContext,
+          );
+        },
+        {
+          successMessage:
+            dependents.length > 0
+              ? `Disabled ${pluginMetadata.displayName} and ${dependents.map((d) => d.displayName).join(', ')}!`
+              : `Disabled ${pluginMetadata.displayName}!`,
+          onSuccess: () => {
+            navigate({ to: '/plugins' }).catch(logAndFormatError);
+          },
+        },
+      );
+    };
+
+    if (dependents.length > 0) {
+      const depNames = dependents.map((d) => d.displayName).join(', ');
+      requestConfirm({
+        title: 'Disable Plugin',
+        content: `Disabling ${pluginMetadata.displayName} will also disable ${depNames} which ${dependents.length === 1 ? 'depends' : 'depend'} on it. Continue?`,
+        buttonConfirmText: 'Disable All',
+        buttonConfirmVariant: 'destructive',
+        buttonCancelText: 'Cancel',
+        onConfirm: doDisable,
+      });
+    } else {
+      requestConfirm({
+        title: 'Disable Plugin',
+        content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,
+        onConfirm: doDisable,
+      });
+    }
   }
 
   function onSave(): void {
@@ -179,13 +200,7 @@ function PluginConfigPage(): React.JSX.Element {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     disabled={isSavingDefinition}
-                    onClick={() => {
-                      requestConfirm({
-                        title: 'Disable Plugin',
-                        content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,
-                        onConfirm: onDisablePlugin,
-                      });
-                    }}
+                    onClick={onDisablePlugin}
                   >
                     Disable Plugin
                   </DropdownMenuItem>
@@ -209,35 +224,9 @@ function UnmetDependenciesView({
   unmetDeps,
 }: {
   pluginMetadata: PluginMetadataWithPaths;
-  unmetDeps: UnmetDep[];
+  unmetDeps: UnmetPluginDependency[];
 }): React.ReactElement {
-  const {
-    saveDefinitionWithFeedbackSync,
-    definitionContainer,
-    isSavingDefinition,
-  } = useProjectDefinition();
   const navigate = useNavigate({ from: Route.fullPath });
-  const [enablingKey, setEnablingKey] = useState<string | null>(null);
-
-  function handleEnable(dep: UnmetDep): void {
-    setEnablingKey(dep.metadata.key);
-    saveDefinitionWithFeedbackSync(
-      (draft) => {
-        PluginUtils.setPluginConfig(
-          draft,
-          dep.metadata,
-          {},
-          definitionContainer,
-        );
-      },
-      {
-        successMessage: `Enabled ${dep.metadata.displayName}!`,
-        onSuccess: () => {
-          setEnablingKey(null);
-        },
-      },
-    );
-  }
 
   return (
     <div className="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-4">
@@ -247,41 +236,7 @@ function UnmetDependenciesView({
           {pluginMetadata.displayName} requires the following plugins to be
           enabled and configured first:
         </p>
-        <ItemGroup>
-          {unmetDeps.map((dep) => (
-            <Item key={dep.metadata.key} variant="outline">
-              <ItemContent>
-                <ItemTitle>{dep.metadata.displayName}</ItemTitle>
-                <ItemDescription>{dep.metadata.description}</ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                {dep.hasWebConfig ? (
-                  <Link
-                    to="/plugins/edit/$key"
-                    params={{ key: dep.metadata.key }}
-                  >
-                    <Button variant="secondary" size="sm">
-                      Configure
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={isSavingDefinition || enablingKey !== null}
-                    onClick={() => {
-                      handleEnable(dep);
-                    }}
-                  >
-                    {enablingKey === dep.metadata.key
-                      ? 'Enabling...'
-                      : 'Enable'}
-                  </Button>
-                )}
-              </ItemActions>
-            </Item>
-          ))}
-        </ItemGroup>
+        <UnmetDependencyList dependencies={unmetDeps} />
         <div>
           <Button
             variant="secondary"

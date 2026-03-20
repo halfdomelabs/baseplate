@@ -1,45 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PluginStore } from '#src/plugins/imports/types.js';
-import type { PluginMetadataWithPaths } from '#src/plugins/index.js';
-
 import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
-import { createTestProjectDefinitionContainer } from '#src/testing/project-definition-container.test-helper.js';
+import {
+  createMockPluginMetadata,
+  createMockPluginStore,
+  createTestProjectDefinitionContainer,
+} from '#src/testing/index.js';
 
 import { checkPluginImplementations } from './plugin-implementation-checker.js';
-
-function createMockPluginMetadata(
-  key: string,
-  fullyQualifiedName: string,
-  overrides: Partial<PluginMetadataWithPaths> = {},
-): PluginMetadataWithPaths {
-  return {
-    key,
-    name: key,
-    displayName: key.charAt(0).toUpperCase() + key.slice(1),
-    description: `${key} plugin`,
-    version: '0.1.0',
-    packageName: `@test/plugin-${key}`,
-    fullyQualifiedName,
-    pluginDirectory: `/plugins/${key}`,
-    webBuildDirectory: `/plugins/${key}/web`,
-    nodeModulePaths: [],
-    webModulePaths: [],
-    ...overrides,
-  };
-}
-
-function createPluginStoreWithPlugins(
-  pluginMetadata: PluginMetadataWithPaths[],
-): PluginStore {
-  return {
-    availablePlugins: pluginMetadata.map((metadata) => ({
-      metadata,
-      modules: [],
-    })),
-    coreModules: [],
-  };
-}
 
 describe('checkPluginImplementations', () => {
   it('returns no issues for plugins without managed plugins', () => {
@@ -47,7 +15,7 @@ describe('checkPluginImplementations', () => {
       'storage',
       '@test/plugin-storage:storage',
     );
-    const pluginStore = createPluginStoreWithPlugins([storageMetadata]);
+    const pluginStore = createMockPluginStore([storageMetadata]);
 
     const container = createTestProjectDefinitionContainer({
       plugins: [
@@ -79,7 +47,7 @@ describe('checkPluginImplementations', () => {
       '@test/plugin-auth:local-auth',
       { managedBy: '@test/plugin-auth:auth' },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       localAuthMetadata,
     ]);
@@ -121,7 +89,7 @@ describe('checkPluginImplementations', () => {
       '@test/plugin-auth:local-auth',
       { managedBy: '@test/plugin-auth:auth' },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       localAuthMetadata,
     ]);
@@ -158,7 +126,7 @@ describe('checkPluginImplementations', () => {
       '@test/plugin-auth:local-auth',
       { managedBy: '@test/plugin-auth:auth' },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       localAuthMetadata,
     ]);
@@ -198,7 +166,7 @@ describe('checkPluginImplementations', () => {
       '@test/plugin-auth:local-auth',
       { managedBy: '@test/plugin-auth:auth' },
     );
-    const pluginStore = createPluginStoreWithPlugins([
+    const pluginStore = createMockPluginStore([
       authMetadata,
       localAuthMetadata,
     ]);

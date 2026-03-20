@@ -26,7 +26,7 @@ import { useProjects } from '#src/hooks/use-projects.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 import { getPluginStaticUrl } from '#src/services/plugins.js';
 
-import type { UnmetPluginDependency } from './plugin-dependencies-dialog.js';
+import type { UnmetPluginDependency } from './unmet-dependency-list.js';
 
 import { PluginDependenciesDialog } from './plugin-dependencies-dialog.js';
 
