@@ -36,6 +36,7 @@ export function ModelRelationsBadge({
       trigger={
         <Badge
           variant="secondary"
+          render={<button type="button" />}
           className={clsx('max-w-[100px]', className)}
           onMouseEnter={() => {
             setIsHovered(true);
