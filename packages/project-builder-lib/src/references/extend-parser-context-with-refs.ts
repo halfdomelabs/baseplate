@@ -218,11 +218,11 @@ function refContext<
 function createWithExpression(plugins?: PluginSpecStore): WithExpressionType {
   // Implementation
   function withExpression(
-    parserOrRef: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parserOrRef: // oxlint-disable-next-line typescript/no-explicit-any
       | RefExpressionParser<any, any, any>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       | ExpressionParserRef<any, any>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     slots?: ExpressionSlotMap<any>,
   ): z.ZodType {
     // oxlint-disable-next-line typescript/no-explicit-any

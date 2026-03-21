@@ -380,8 +380,3 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     );
   }
 }
-
-/**
- * Singleton instance of AuthorizerExpressionParser.
- */
-export const authorizerExpressionParser = new AuthorizerExpressionParser();

@@ -2,8 +2,8 @@ import type { PluginModuleWithKey } from '#src/plugins/imports/types.js';
 
 import { createPluginModule } from '#src/plugins/imports/types.js';
 
-import { expressionParserSpec } from '../expression-parser-spec.js';
-import { authorizerExpressionParser } from './authorizer/authorizer-expression-parser.js';
+import { expressionParserSpec } from '../references/expression-parser-spec.js';
+import { AuthorizerExpressionParser } from './authorizer/authorizer-expression-parser.js';
 
 /**
  * Core module that registers built-in expression parsers.
@@ -18,10 +18,8 @@ const registerExpressionParsersModule = createPluginModule({
     expressionParsers: expressionParserSpec,
   },
   initialize: ({ expressionParsers }) => {
-    expressionParsers.parsers.set(
-      authorizerExpressionParser.name,
-      authorizerExpressionParser,
-    );
+    const parser = new AuthorizerExpressionParser();
+    expressionParsers.parsers.set(parser.name, parser);
   },
 });
 

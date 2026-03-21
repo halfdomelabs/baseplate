@@ -6,10 +6,10 @@ import type {
 import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
 
 import { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import { expressionParserCoreModule } from '#src/expression-parsers/register-core-module.js';
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
-import { expressionParserCoreModule } from '#src/references/expression-parsers/register-core-module.js';
 import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 

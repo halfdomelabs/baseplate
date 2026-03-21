@@ -2,7 +2,7 @@ import { createFieldMapSpec } from '#src/plugins/utils/create-field-map-spec.js'
 
 import type { RefExpressionParser } from './expression-types.js';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 type AnyExpressionParser = RefExpressionParser<any, any, any>;
 
 /**
