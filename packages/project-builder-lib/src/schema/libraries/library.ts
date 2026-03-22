@@ -21,6 +21,7 @@ export const createLibrarySchema = definitionSchema((ctx) =>
       {
         type: libraryEntityType,
         provides: librarySlot,
+        sortByName: true,
       },
     );
   }),

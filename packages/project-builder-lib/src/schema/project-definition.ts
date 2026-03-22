@@ -30,6 +30,7 @@ export const createAppSchema = definitionSchema((ctx) =>
       {
         type: appEntityType,
         provides: appSlot,
+        sortByName: true,
       },
     ),
   ),

@@ -23,6 +23,8 @@ export interface EntitySchemaMeta {
   ) => DefinitionEntityNameResolver | string;
   readonly parentSlot?: RefContextSlot;
   readonly provides?: RefContextSlot;
+  /** When true, arrays of this entity type are sorted by name during serialization for deterministic output. */
+  readonly sortByName?: boolean;
 }
 
 export interface ReferenceSchemaMeta {
