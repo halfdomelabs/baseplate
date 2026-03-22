@@ -1,4 +1,4 @@
-import { set } from 'es-toolkit/compat';
+import { get, set } from 'es-toolkit/compat';
 
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
@@ -60,6 +60,14 @@ export function applyExpressionRenames<T>(
   const oldDefinition = oldRefPayload.data as ProjectDefinition;
 
   for (const expression of oldExpressions) {
+    // Verify the expression still exists at the same path in the new definition.
+    // If the expression was removed or its shape changed, skip it to avoid
+    // resurrecting deleted nodes via set().
+    const currentValue: unknown = get(newDefinition as object, expression.path);
+    if (typeof currentValue !== 'string') {
+      continue;
+    }
+
     // Parse and resolve entities against the OLD definition where old names still exist
     const parseResult = expression.parser.parse(
       expression.value,

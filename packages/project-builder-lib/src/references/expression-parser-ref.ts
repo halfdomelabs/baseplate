@@ -21,7 +21,10 @@ import type { DefinitionEntityType } from './types.js';
  * const authorizerExpressionRef = createExpressionParserRef<
  *   string,
  *   { model: typeof modelEntityType }
- * >('authorizer-expression', z.string().min(1, 'Expression is required'));
+ * >(
+ *   'authorizer-expression',
+ *   () => z.string().min(1, 'Expression is required'),
+ * );
  * ```
  */
 export interface ExpressionParserRef<

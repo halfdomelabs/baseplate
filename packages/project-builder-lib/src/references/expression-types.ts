@@ -51,9 +51,9 @@ export interface RefExpressionDependency {
   entityType: DefinitionEntityType;
   /** The ID of the entity being referenced */
   entityId: string;
-  /** Start position in the expression text to replace on rename */
+  /** Start position (inclusive) in the expression text to replace on rename */
   start: number;
-  /** End position in the expression text to replace on rename */
+  /** End position (exclusive) in the expression text to replace on rename */
   end: number;
 }
 

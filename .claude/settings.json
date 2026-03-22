@@ -58,7 +58,7 @@
       "Bash(git checkout -b *)",
       "Bash(echo $?)",
       "Bash(jq *)",
-      "Bash(git mv:*)",
+      "Bash(git mv *)",
       "WebFetch(domain:ui.shadcn.com)"
     ],
     "deny": ["Edit(**/baseplate/generated/**)"]

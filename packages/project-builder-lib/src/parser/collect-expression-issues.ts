@@ -39,16 +39,24 @@ export function collectExpressionIssues(
   const issues: DefinitionIssue[] = [];
 
   for (const expression of expressions) {
-    const warnings = expression.parser.validate(
-      expression.value,
-      definition,
-      context,
-      expression.resolvedSlots,
-    );
+    try {
+      const warnings = expression.parser.validate(
+        expression.value,
+        definition,
+        context,
+        expression.resolvedSlots,
+      );
 
-    for (const warning of warnings) {
+      for (const warning of warnings) {
+        issues.push({
+          message: warning.message,
+          path: expression.path,
+          severity: 'warning',
+        });
+      }
+    } catch (error) {
       issues.push({
-        message: warning.message,
+        message: `Expression parser "${expression.parser.name}" threw an error: ${error instanceof Error ? error.message : String(error)}`,
         path: expression.path,
         severity: 'warning',
       });
