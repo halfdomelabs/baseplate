@@ -122,12 +122,12 @@ export function collectDefinitionIssues(
     issues.push(...result);
   }
 
-  // Collect expression validation issues
-  const expressionIssues = collectExpressionIssues(
-    schema,
+  // Collect expression validation issues (uses container's pre-resolved expressions)
+  const expressionIssues = collectExpressionIssues({
     definition,
     pluginStore,
-  );
+    expressions: container.refPayload.expressions,
+  });
   issues.push(...expressionIssues);
 
   return issues;

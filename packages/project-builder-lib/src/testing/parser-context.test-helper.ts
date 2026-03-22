@@ -1,11 +1,12 @@
 import type { DefinitionSchemaParserContext } from '../schema/creator/types.js';
 
+import { expressionParserCoreModule } from '../expression-parsers/register-core-module.js';
 import { createPluginSpecStore } from '../parser/parser.js';
 import { createDefinitionSchemaParserContext } from '../schema/creator/schema-creator.js';
 
 const emptyPluginStore = {
   availablePlugins: [],
-  coreModules: [],
+  coreModules: [expressionParserCoreModule],
 };
 
 /**

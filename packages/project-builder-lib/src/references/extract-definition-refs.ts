@@ -128,7 +128,7 @@ export function extractDefinitionRefs<T>(
     },
   });
 
-  // Expression collector: records expression annotations
+  // Expression collector: records expression annotations (direct parsers)
   const expressionCollector = createRefSchemaCollector({
     kind: 'expression',
     visit(meta, data, context): void {

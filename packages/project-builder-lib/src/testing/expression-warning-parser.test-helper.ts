@@ -44,12 +44,8 @@ export class WarningParser extends RefExpressionParser<string, string> {
     return this.warningsToReturn;
   }
 
-  getDependencies(): [] {
+  getReferencedEntities(): [] {
     return [];
-  }
-
-  updateForRename(value: string): string {
-    return value;
   }
 }
 
@@ -74,11 +70,7 @@ export class FailingParser extends RefExpressionParser<string, never> {
     return [];
   }
 
-  getDependencies(): [] {
+  getReferencedEntities(): [] {
     return [];
-  }
-
-  updateForRename(value: string): string {
-    return value;
   }
 }

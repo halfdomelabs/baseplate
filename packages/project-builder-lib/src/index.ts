@@ -1,6 +1,7 @@
 export * from './compiler/index.js';
 export * from './constants/index.js';
 export * from './definition/index.js';
+export { expressionParserCoreModule } from './expression-parsers/register-core-module.js';
 export * from './feature-flags/index.js';
 export * from './migrations/index.js';
 export * from './parser/index.js';

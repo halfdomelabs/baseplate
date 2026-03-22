@@ -6,6 +6,7 @@ import type {
 import type { EntityServiceContext } from '#src/tools/entity-service/types.js';
 
 import { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import { expressionParserCoreModule } from '#src/expression-parsers/register-core-module.js';
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import { createPluginSpecStore } from '#src/parser/parser.js';
 import { deserializeSchemaWithTransformedReferences } from '#src/references/deserialize-schema.js';
@@ -48,7 +49,7 @@ export function createTestProjectDefinitionContainer(
 ): ProjectDefinitionContainer {
   const pluginStore: PluginStore = {
     availablePlugins: [],
-    coreModules: [],
+    coreModules: [expressionParserCoreModule],
   };
   const pluginSpecStore = createPluginSpecStore(pluginStore, {
     plugins: [],

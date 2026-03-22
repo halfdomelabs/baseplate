@@ -1,12 +1,13 @@
 import type {
   DefinitionIssue,
+  ResolvedZodRefPayload,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
   applyDefinitionFixes,
   collectDefinitionIssues,
-  fixRefDeletions,
+  fixDefinitionRefs,
   partitionIssuesBySeverity,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
@@ -91,16 +92,18 @@ export interface FixAndValidateResult {
 }
 
 /**
- * Applies auto-fixes, fixes dangling references, then validates the definition.
+ * Applies auto-fixes, fixes dangling references and expression renames,
+ * then validates the definition.
  *
  * Mirrors the web UI save pipeline:
  * 1. applyDefinitionFixes — clears disabled services, etc.
- * 2. fixRefDeletions — cascades reference deletions
+ * 2. fixDefinitionRefs — cascades reference deletions + updates expressions for renames
  * 3. collectDefinitionIssues — partitions into errors/warnings
  */
 export function fixAndValidateDraftDefinition(
   draftDefinition: Record<string, unknown>,
   parserContext: SchemaParserContext,
+  oldRefPayload?: ResolvedZodRefPayload<unknown>,
 ): FixAndValidateResult {
   const container = ProjectDefinitionContainer.fromSerializedConfig(
     draftDefinition,
@@ -113,8 +116,10 @@ export function fixAndValidateDraftDefinition(
     container.definition,
   );
 
-  // Step 2: Fix dangling references
-  const refResult = fixRefDeletions(container.schema, fixedDefinition);
+  // Step 2: Fix dangling references and expression renames
+  const refResult = fixDefinitionRefs(container.schema, fixedDefinition, {
+    oldRefPayload,
+  });
 
   if (refResult.type === 'failure') {
     // RESTRICT issues — report as errors
@@ -196,9 +201,10 @@ export async function validateAndSaveDraft(
   session: DraftSession,
   projectDirectory: string,
   errorPrefix = 'Staging blocked by definition errors',
+  oldRefPayload?: ResolvedZodRefPayload<unknown>,
 ): Promise<ValidateAndSaveResult> {
   const { fixedSerializedDefinition, errors, warnings } =
-    fixAndValidateDraftDefinition(definition, parserContext);
+    fixAndValidateDraftDefinition(definition, parserContext, oldRefPayload);
 
   if (errors.length > 0) {
     const messages = errors.map((e) => e.message).join('; ');

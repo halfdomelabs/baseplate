@@ -2,6 +2,7 @@ import type {
   EntityServiceContext,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
+import type { ResolvedZodRefPayload } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { hashWithSHA256, stringifyPrettyStable } from '@baseplate-dev/utils';
@@ -112,6 +113,8 @@ export async function deleteDraftSession(
 export interface DraftSessionContext {
   session: DraftSession;
   entityContext: EntityServiceContext;
+  /** Ref payload from the current draft (before the pending edit), used for rename detection. */
+  oldRefPayload: ResolvedZodRefPayload<unknown>;
   parserContext: SchemaParserContext;
   projectDirectory: string;
 }
@@ -167,6 +170,7 @@ export async function getOrCreateDraftSession(
     return {
       session: existingDraft,
       entityContext,
+      oldRefPayload: draftContainer.refPayload,
       parserContext,
       projectDirectory: project.directory,
     };
@@ -187,6 +191,7 @@ export async function getOrCreateDraftSession(
   return {
     session,
     entityContext,
+    oldRefPayload: container.refPayload,
     parserContext,
     projectDirectory: project.directory,
   };
