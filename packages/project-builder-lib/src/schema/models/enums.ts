@@ -50,6 +50,7 @@ export const createEnumSchema = definitionSchema((ctx) =>
     ctx.withEnt(createEnumBaseSchema(ctx, { enumSlot }), {
       type: modelEnumEntityType,
       provides: enumSlot,
+      sortByName: true,
     }),
   ),
 );

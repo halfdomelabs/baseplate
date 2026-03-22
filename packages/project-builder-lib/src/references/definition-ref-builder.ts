@@ -68,6 +68,8 @@ interface DefinitionEntityInputBase<
   ) => DefinitionEntityNameResolver<any> | string;
   /** Optional ref context slot that this entity provides. Registers this entity's path in a shared context. */
   provides?: RefContextSlot<TEntityType>;
+  /** When true, arrays of this entity type are sorted by name during serialization for deterministic output. */
+  sortByName?: boolean;
 }
 
 /**

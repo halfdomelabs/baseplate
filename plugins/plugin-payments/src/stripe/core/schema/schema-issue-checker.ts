@@ -18,12 +18,12 @@ export function createStripeSchemaChecker(
     pluginKey,
     pluginLabel: 'Stripe',
     buildPartialDef: (container) => {
-      const config = PluginUtils.configByKey(
+      const stripeConfig = PluginUtils.configByKey(
         container.definition,
         pluginKey,
       ) as StripePluginDefinition | undefined;
 
-      if (!config?.billing.enabled || !config.billing.featureRef) {
+      if (!stripeConfig?.billing.enabled || !stripeConfig.billing.featureRef) {
         return undefined;
       }
 
@@ -35,7 +35,7 @@ export function createStripeSchemaChecker(
 
         const featureName = FeatureUtils.getFeaturePathByIdOrThrow(
           container.definition,
-          config.billing.featureRef,
+          stripeConfig.billing.featureRef,
         );
 
         return createBillingPartialDefinition(featureName, userModelName);

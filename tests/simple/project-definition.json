@@ -17,8 +17,8 @@
   ],
   "cliVersion": "0.6.4",
   "features": [
-    { "id": "feature:EHdFHsD17AHI", "name": "blog" },
-    { "id": "feature:Hxp86n0StHww", "name": "auth" }
+    { "id": "feature:Hxp86n0StHww", "name": "auth" },
+    { "id": "feature:EHdFHsD17AHI", "name": "blog" }
   ],
   "isInitialized": true,
   "libraries": [],
@@ -86,7 +86,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 28,
+  "schemaVersion": 30,
   "settings": {
     "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }
