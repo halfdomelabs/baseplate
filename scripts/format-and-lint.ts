@@ -202,7 +202,7 @@ if (exampleFiles.length > 0) {
     if (!filesByProject.has(pkgDir)) {
       filesByProject.set(pkgDir, { pkgPath, files: [] });
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
     filesByProject.get(pkgDir)!.files.push(filePath);
   }
 
