@@ -572,6 +572,7 @@ export const createModelSchema = definitionSchema((ctx) =>
     ctx.withEnt(createModelBaseSchema(ctx, { modelSlot }), {
       type: modelEntityType,
       provides: modelSlot,
+      sortByName: true,
     }),
   ),
 );

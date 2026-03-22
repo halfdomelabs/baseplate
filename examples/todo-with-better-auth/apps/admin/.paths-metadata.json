@@ -32,15 +32,15 @@
     "pathRootName": "routes-root"
   },
   {
-    "canonicalPath": "@/src/routes/billing",
-    "pathRootName": "routes-root"
-  },
-  {
     "canonicalPath": "@/src/routes/todos",
     "pathRootName": "routes-root"
   },
   {
     "canonicalPath": "@/src/routes/storage",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/billing",
     "pathRootName": "routes-root"
   },
   {

@@ -148,6 +148,7 @@ export function withEnt<TEntityType extends DefinitionEntityType>(
       >['getNameResolver'],
       parentSlot: entity.parentSlot,
       provides: entity.provides,
+      sortByName: entity.sortByName,
     });
     return schema as unknown as ZodTypeWithOptional<TType>;
   };
