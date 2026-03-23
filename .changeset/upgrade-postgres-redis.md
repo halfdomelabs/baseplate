@@ -4,68 +4,85 @@
 
 Upgrade PostgreSQL from 17.5 to 18.3 and Redis from 8.0 to 8.6 in Docker Compose generators
 
-## Upgrading your dev database
+## Breaking: Volume mount path changed
 
-After syncing, your `docker-compose.yml` will reference `postgres:18.3-alpine`. Since PostgreSQL major version upgrades require a data directory migration, you have three options:
+PostgreSQL 18 changed its default data directory from `/var/lib/postgresql/data` to `/var/lib/postgresql/<major>/docker` and placed a symlink at the old path. Mounting a volume directly to `/var/lib/postgresql/data` on Postgres 18+ will cause a container startup error:
 
-### Option 1: Fresh start (easiest, for dev databases)
-
-If your dev database has no important data, delete the volume and re-run migrations:
-
-```bash
-cd docker
-docker compose down -v          # removes containers AND volumes
-docker compose up -d             # starts fresh with Postgres 18
-cd ../apps/backend
-pnpm db:migrate                  # re-apply all migrations
-pnpm db:seed                     # re-seed if applicable
+```
+error mounting "..." to rootfs at "/var/lib/postgresql/data": no such file or directory
 ```
 
-### Option 2: Auto-upgrade with pgautoupgrade (preserves data)
+To align with this change, the Docker Compose volume mount has been updated from `db-data:/var/lib/postgresql/data` to `db-data:/var/lib/postgresql`. This means **existing dev databases will not be found** after upgrading and you must re-create or migrate your database.
+
+## Upgrading your dev database
+
+After syncing, your `docker-compose.yml` will reference `postgres:18.3-alpine` with the new volume mount path. You have three options:
+
+### Option 1: Auto-upgrade with pgautoupgrade (in-place upgrade)
 
 Use the [`pgautoupgrade`](https://github.com/pgautoupgrade/docker-pgautoupgrade) Docker image to upgrade the data directory in-place:
 
 1. Stop your containers:
+
    ```bash
    cd docker && docker compose down
    ```
 
 2. Temporarily swap the image in `docker-compose.yml`:
+
    ```yaml
-   # Change this:
-   image: postgres:18.3-alpine
-   # To this:
    image: pgautoupgrade/pgautoupgrade:18-alpine
    ```
 
-3. Start the container and let it upgrade:
+3. Start the container and watch for the upgrade:
+
    ```bash
-   docker compose up -d
-   docker compose logs -f db     # watch for "upgrade complete" message
+   docker compose up               # wait for "Upgrade to PostgreSQL 18.3 complete." message
    ```
 
-4. Once the upgrade finishes, stop and swap back to the official image:
+4. Once complete, stop and revert the image:
    ```bash
    docker compose down
-   # Revert docker-compose.yml back to: image: postgres:18.3-alpine
-   docker compose up -d
+   ```
+   Change the image back in `docker-compose.yml`:
+   ```yaml
+   image: postgres:18.3-alpine
+   ```
+   ```bash
+   docker compose up
    ```
 
-### Option 3: Dump and restore (safest, preserves data)
+### Option 2: Fresh start (for dev databases with no important data)
+
+Delete the old volume and start fresh:
+
+```bash
+cd docker
+docker compose down -v           # removes containers AND volumes
+docker compose up                # starts fresh with Postgres 18
+cd ../apps/backend
+pnpm db:migrate                  # re-apply all migrations
+pnpm db:seed                     # re-seed if applicable
+```
+
+### Option 3: Dump and restore (preserves data)
+
+If you need to keep your data but don't want to use pgautoupgrade:
 
 ```bash
 cd docker
 
-# Dump from the old container
+# 1. While still on the OLD docker-compose.yml, dump your data
 docker compose exec db pg_dumpall -U postgres > backup.sql
 
-# Remove old volume and start fresh
+# 2. Now sync your project to get the new docker-compose.yml
+# ... run baseplate sync ...
+
+# 3. Remove old volume and start with new config
 docker compose down -v
 docker compose up -d
 
-# Restore
+# 4. Restore your data
 docker compose exec -T db psql -U postgres < backup.sql
-
-# Clean up
 rm backup.sql
 ```

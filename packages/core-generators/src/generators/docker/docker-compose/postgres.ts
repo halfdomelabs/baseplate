@@ -25,7 +25,7 @@ export function generatePostgresDockerCompose(
     ports:
       - "\${POSTGRES_PORT:-${config.port}}:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     networks:
       - backend
     logging:
