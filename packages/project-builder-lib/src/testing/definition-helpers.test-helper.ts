@@ -82,7 +82,7 @@ export function createTestModel(
           id: modelScalarFieldEntityType.generateNewId(),
           name: 'id',
           type: 'uuid',
-          options: { genUuid: true, default: '123' },
+          options: { defaultGeneration: 'uuidv7' },
           isOptional: false,
         },
       ],

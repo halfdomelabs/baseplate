@@ -39,7 +39,7 @@
             "id": "model-scalar-field:fbIBoKK_DQIj",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -86,7 +86,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 30,
+  "schemaVersion": 31,
   "settings": {
     "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

@@ -54,7 +54,7 @@ describe('listEntities', () => {
           createTestScalarField({
             name: 'id',
             type: 'uuid',
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           }),
           nameField,
         ],
@@ -136,7 +136,7 @@ describe('getEntity', () => {
           createTestScalarField({
             name: 'id',
             type: 'uuid',
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           }),
           nameField,
         ],

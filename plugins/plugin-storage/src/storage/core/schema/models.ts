@@ -19,7 +19,7 @@ export function createStoragePartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             // Core fields
             {

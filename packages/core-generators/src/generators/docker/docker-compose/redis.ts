@@ -12,7 +12,7 @@ export function generateRedisDockerCompose(
   return {
     services: [
       `  redis:
-    image: redis:8.0-alpine
+    image: redis:8.6-alpine
     container_name: \${COMPOSE_PROJECT_NAME:-${config.projectName}}-redis
     restart: on-failure
     security_opt:

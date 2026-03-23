@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:17.5-alpine
+    image: postgres:18.3-alpine
     container_name: ${COMPOSE_PROJECT_NAME:-todo-with-better-auth}-db
     restart: on-failure
     security_opt:
@@ -31,7 +31,7 @@ services:
       retries: 2
       start_period: 10s
   redis:
-    image: redis:8.0-alpine
+    image: redis:8.6-alpine
     container_name: ${COMPOSE_PROJECT_NAME:-todo-with-better-auth}-redis
     restart: on-failure
     security_opt:
