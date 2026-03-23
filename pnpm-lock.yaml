@@ -1990,6 +1990,9 @@ importers:
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@hookform/lenses':
+        specifier: 0.8.1
+        version: 0.8.1(react-hook-form@7.71.1(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.1.0))

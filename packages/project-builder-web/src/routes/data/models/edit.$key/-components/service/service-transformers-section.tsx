@@ -72,7 +72,7 @@ function ServiceTransformerRecord({
         ))}
       </RecordViewItemList>
       <RecordViewActions>
-        {transformerConfig.Form && (
+        {(transformerConfig.Form ?? transformerConfig.FormFields) && (
           <ServiceTransformerDialog
             webConfig={transformerConfig}
             transformer={field}
