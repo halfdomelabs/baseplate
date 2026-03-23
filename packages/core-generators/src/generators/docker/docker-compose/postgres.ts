@@ -13,7 +13,7 @@ export function generatePostgresDockerCompose(
   return {
     services: [
       `  db:
-    image: postgres:17.5-alpine
+    image: postgres:18.3-alpine
     container_name: \${COMPOSE_PROJECT_NAME:-${config.projectName}}-db
     restart: on-failure
     security_opt:
@@ -25,7 +25,7 @@ export function generatePostgresDockerCompose(
     ports:
       - "\${POSTGRES_PORT:-${config.port}}:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     networks:
       - backend
     logging:

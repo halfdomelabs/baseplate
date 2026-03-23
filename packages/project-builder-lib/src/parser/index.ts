@@ -14,6 +14,10 @@ export {
   previewIssueFix,
   resolveIssuePath,
 } from './definition-issue-utils.js';
+export {
+  findOrphanedUnionItems,
+  type OrphanedUnionItem,
+} from './find-orphaned-union-items.js';
 export * from './parser.js';
 export { findDiscriminatedUnionMatch } from './schema-structure.js';
 export { transformDataWithSchema } from './transform-data-with-schema.js';

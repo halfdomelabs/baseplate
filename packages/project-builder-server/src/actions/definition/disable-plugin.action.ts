@@ -1,6 +1,10 @@
 import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
 
 import {
+  createDefinitionSchemaParserContext,
+  createPluginSpecStore,
+  createProjectDefinitionSchema,
+  findOrphanedUnionItems,
   PluginUtils,
   ProjectDefinitionContainer,
   serializeSchema,
@@ -66,6 +70,30 @@ export const disablePluginAction = createServiceAction({
       container.schema,
       newDefinition,
     ) as Record<string, unknown>;
+
+    // Detect orphaned discriminated union items before parsing.
+    // When a plugin is disabled, its types are removed from the schema.
+    // Items referencing those types would cause parse failures, so we
+    // detect and report them as errors before proceeding.
+    const pluginStore = createPluginSpecStore(
+      parserContext.pluginStore,
+      serializedDef,
+    );
+    const defSchema = createProjectDefinitionSchema(
+      createDefinitionSchemaParserContext({ plugins: pluginStore }),
+    );
+    const orphanedItems = findOrphanedUnionItems(defSchema, serializedDef);
+    if (orphanedItems.length > 0) {
+      const details = orphanedItems
+        .map(
+          (item) =>
+            `"${item.discriminatorValue}" (${item.discriminator}) at ${item.path.join('.')}`,
+        )
+        .join('; ');
+      throw new Error(
+        `Cannot disable plugin "${input.pluginKey}": types still in use: ${details}`,
+      );
+    }
 
     const { warnings } = await validateAndSaveDraft(
       serializedDef,

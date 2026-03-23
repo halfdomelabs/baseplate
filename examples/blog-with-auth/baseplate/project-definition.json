@@ -149,7 +149,7 @@
             "id": "model-scalar-field:adbpe9Hhybb1",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -207,7 +207,7 @@
             "id": "model-scalar-field:x5uM_Nhnixmv",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -235,7 +235,7 @@
             "id": "model-scalar-field:h8RjTcvjiTB9",
             "isOptional": true,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -321,7 +321,7 @@
             "id": "model-scalar-field:PPNcQYjHcLJM",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -335,7 +335,7 @@
             "id": "model-scalar-field:5r4qOjWPcsk",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -423,21 +423,21 @@
             "id": "model-scalar-field:6AEaW6mjUeMi",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:dLndbykf8h2f",
             "isOptional": false,
             "name": "blogId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:PNfjIfpZjmkw",
             "isOptional": false,
             "name": "publisherId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -525,14 +525,14 @@
             "id": "model-scalar-field:EwhSjvGdsL9q",
             "isOptional": false,
             "name": "blogId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:HBbSkN0_M0TR",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -653,7 +653,7 @@
             "id": "model-scalar-field:iZSakQLjj07M",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -732,14 +732,14 @@
             "id": "model-scalar-field:z6JrpgbtlGck",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:aJSc9y1cCfDp",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -819,7 +819,7 @@
             "id": "model-scalar-field:7f865kOwXryv",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -870,7 +870,7 @@
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -884,7 +884,7 @@
             "id": "model-scalar-field:7Y3oZIHFIY2V",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1040,7 +1040,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 30,
+  "schemaVersion": 31,
   "settings": {
     "general": {
       "name": "blog-with-auth",

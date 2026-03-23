@@ -33,16 +33,19 @@ export default createPluginModule({
             pluginKey,
           ) as StoragePluginDefinition;
 
-          // add feature providers
-          appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
-            storage: storageModuleGenerator({
-              s3Adapters: storage.s3Adapters.map((a) => ({
-                name: a.name,
-                bucketConfigVar: a.bucketConfigVar,
-                hostedUrlConfigVar: a.hostedUrlConfigVar,
-              })),
-            }),
-          });
+          // add feature providers (only when file categories are configured,
+          // since nearly all storage module templates depend on categories)
+          if (storage.fileCategories.length > 0) {
+            appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
+              storage: storageModuleGenerator({
+                s3Adapters: storage.s3Adapters.map((a) => ({
+                  name: a.name,
+                  bucketConfigVar: a.bucketConfigVar,
+                  hostedUrlConfigVar: a.hostedUrlConfigVar,
+                })),
+              }),
+            });
+          }
 
           // Collect file transformers with resolved categories
           const transformers = projectDefinition.models.flatMap((m) =>
@@ -146,7 +149,16 @@ export default createPluginModule({
       pluginAppCompiler({
         pluginKey,
         appType: webAppEntryType,
-        compile: ({ appCompiler, appDefinition }) => {
+        compile: ({ appCompiler, appDefinition, projectDefinition }) => {
+          const webStorage = PluginUtils.configByKeyOrThrow(
+            projectDefinition,
+            pluginKey,
+          ) as StoragePluginDefinition;
+
+          if (webStorage.fileCategories.length === 0) {
+            return;
+          }
+
           if (
             !appDefinition.includeUploadComponents &&
             !appDefinition.adminApp.enabled

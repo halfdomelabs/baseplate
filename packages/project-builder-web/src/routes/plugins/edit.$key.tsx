@@ -187,7 +187,7 @@ function PluginConfigPage(): React.JSX.Element {
   return (
     <div className="relative flex h-full flex-1 flex-col gap-4 overflow-hidden">
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex max-w-6xl items-center justify-between">
           <h1>{pluginMetadata.displayName} Plugin</h1>
           {pluginDefinition && (
             <DropdownMenu>

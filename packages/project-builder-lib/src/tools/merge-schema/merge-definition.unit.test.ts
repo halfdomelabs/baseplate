@@ -17,7 +17,7 @@ describe('mergeDefinitionContainer', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const currentModel = createTestModel({
       name: 'User',
@@ -35,7 +35,13 @@ describe('mergeDefinitionContainer', () => {
           name: 'User',
           featureRef: testFeature.name,
           model: {
-            fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+            fields: [
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
+            ],
             primaryKeyFieldRefs: ['id'],
           },
         },
@@ -44,7 +50,11 @@ describe('mergeDefinitionContainer', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'title', type: 'string' },
             ],
             primaryKeyFieldRefs: ['id'],
@@ -65,7 +75,7 @@ describe('mergeDefinitionContainer', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const emailField = createTestScalarField({
       name: 'email',
@@ -92,7 +102,11 @@ describe('mergeDefinitionContainer', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'email', type: 'string', isOptional: true },
             ],
             primaryKeyFieldRefs: ['id'],
@@ -112,7 +126,7 @@ describe('mergeDefinitionContainer', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const currentModel = createTestModel({
       name: 'User',
@@ -131,7 +145,13 @@ describe('mergeDefinitionContainer', () => {
           name: 'User',
           featureRef: testFeature.name,
           model: {
-            fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+            fields: [
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
+            ],
             primaryKeyFieldRefs: ['id'],
           },
         },
@@ -149,12 +169,12 @@ describe('mergeDefinitionContainer', () => {
     const idField1 = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const idField2 = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const userModel = createTestModel({
       name: 'User',
@@ -199,7 +219,7 @@ describe('mergeDefinitionContainer', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const currentModel = createTestModel({
       name: 'User',
@@ -218,7 +238,11 @@ describe('mergeDefinitionContainer', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'email', type: 'string' },
             ],
             primaryKeyFieldRefs: ['id'],
