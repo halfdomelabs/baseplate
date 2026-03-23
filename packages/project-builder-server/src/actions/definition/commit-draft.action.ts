@@ -81,10 +81,6 @@ export const commitDraftAction = createServiceAction({
       };
     }
 
-    if (!container) {
-      throw new Error('Commit failed: definition container could not be built');
-    }
-
     const serializedContents = container.toSerializedContents();
 
     // Write to project-definition.json

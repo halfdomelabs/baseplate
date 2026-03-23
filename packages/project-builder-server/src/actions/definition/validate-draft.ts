@@ -83,8 +83,8 @@ export function mapIssueToOutput(
 export interface FixAndValidateResult {
   /** The fixed serialized (name-based) definition. */
   fixedSerializedDefinition: Record<string, unknown>;
-  /** The container built from the fixed definition (undefined when errors prevent parsing). */
-  container: ProjectDefinitionContainer | undefined;
+  /** The container built from the fixed definition. */
+  container: ProjectDefinitionContainer;
   /** Errors that block the operation. */
   errors: DefinitionIssue[];
   /** Warnings that don't block the operation. */
