@@ -1,5 +1,36 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.5
+
+### Patch Changes
+
+- [#854](https://github.com/halfdomelabs/baseplate/pull/854) [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e) Thanks [@kingston](https://github.com/kingston)! - Add optional description field to enum values that flows through to Pothos GraphQL enum type definitions
+
+- [#840](https://github.com/halfdomelabs/baseplate/pull/840) [`c24a24a`](https://github.com/halfdomelabs/baseplate/commit/c24a24ac9d2b66623acb0fda9c6ff2b3b80c0a6d) Thanks [@kingston](https://github.com/kingston)! - Redesign home page into a project dashboard showing navigation cards with model/plugin/package counts
+
+- [#850](https://github.com/halfdomelabs/baseplate/pull/850) [`71146cd`](https://github.com/halfdomelabs/baseplate/commit/71146cd1ab784f45e4409fef7e6e447750047e48) Thanks [@kingston](https://github.com/kingston)! - Add descriptions to app and package type options in the create new dialog so users understand what each type does before choosing
+
+- [#866](https://github.com/halfdomelabs/baseplate/pull/866) [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2) Thanks [@kingston](https://github.com/kingston)! - Detect and block disabling plugins whose types (transformers, package types, etc.) are still in use, showing a dialog listing the affected items
+
+- [#864](https://github.com/halfdomelabs/baseplate/pull/864) [`0ba6744`](https://github.com/halfdomelabs/baseplate/commit/0ba67445708689622341f3031502b3308f71f68e) Thanks [@kingston](https://github.com/kingston)! - Support inline file category creation and editing from the file transformer form, eliminating the need to navigate to the plugin config page.
+
+- [#851](https://github.com/halfdomelabs/baseplate/pull/851) [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1) Thanks [@kingston](https://github.com/kingston)! - Add plugin dependency support: plugins can declare `pluginDependencies` in plugin.json to require other plugins. Includes circular dependency detection via toposort, definition issue checking that blocks save for unmet dependencies, UI gating that prompts users to enable/configure dependencies before enabling a plugin, and implementation plugin validation. Added dependency declarations to local-auth (email, queue, rate-limit), email (queue), and storage (queue).
+
+- [#839](https://github.com/halfdomelabs/baseplate/pull/839) [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c) Thanks [@kingston](https://github.com/kingston)! - Support `exists()` and `all()` relation filter functions in authorization expressions for checking conditions on 1:many related records
+
+- [#856](https://github.com/halfdomelabs/baseplate/pull/856) [`ed5d250`](https://github.com/halfdomelabs/baseplate/commit/ed5d250146f0b48386a8208741150f9011892a35) Thanks [@kingston](https://github.com/kingston)! - Restrict certain app and library types to one instance per project by adding a singleton flag to type configurations.
+
+- [#860](https://github.com/halfdomelabs/baseplate/pull/860) [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887) Thanks [@kingston](https://github.com/kingston)! - Support renames in reference expressions: when fields, relations, or roles are renamed, authorizer expressions are automatically updated to use the new names
+
+- [#847](https://github.com/halfdomelabs/baseplate/pull/847) [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610) Thanks [@kingston](https://github.com/kingston)! - Connect theme builder UI to code generation. Theme color configuration from the project definition now drives the generated `styles.css` instead of hardcoded values. Default theme uses slate base with indigo primary. Remove explicit hover color variables (primaryHover, secondaryHover, destructiveHover) and linkVisited — hover is now computed via `color-mix` in CSS. Add palette swatch selection to theme color picker. Split preview into surface and interactive sections with input group and alert components.
+
+- [#865](https://github.com/halfdomelabs/baseplate/pull/865) [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8) Thanks [@kingston](https://github.com/kingston)! - Update UUID field default value UI to support selecting between UUID v4 and v7 generation
+
+- Updated dependencies [[`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d), [`c24a24a`](https://github.com/halfdomelabs/baseplate/commit/c24a24ac9d2b66623acb0fda9c6ff2b3b80c0a6d), [`71146cd`](https://github.com/halfdomelabs/baseplate/commit/71146cd1ab784f45e4409fef7e6e447750047e48), [`fc8f158`](https://github.com/halfdomelabs/baseplate/commit/fc8f1582f1702d2d6f6eaa60607da7bb777750b5), [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2), [`0ba6744`](https://github.com/halfdomelabs/baseplate/commit/0ba67445708689622341f3031502b3308f71f68e), [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1), [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c), [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc), [`ed5d250`](https://github.com/halfdomelabs/baseplate/commit/ed5d250146f0b48386a8208741150f9011892a35), [`efcf233`](https://github.com/halfdomelabs/baseplate/commit/efcf2338c018ad46b08e8fef3994630dea511723), [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887), [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/project-builder-lib@0.6.5
+  - @baseplate-dev/utils@0.6.5
+  - @baseplate-dev/ui-components@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes

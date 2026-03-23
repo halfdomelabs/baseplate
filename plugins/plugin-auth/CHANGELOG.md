@@ -1,5 +1,35 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.5
+
+### Patch Changes
+
+- [#834](https://github.com/halfdomelabs/baseplate/pull/834) [`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15) Thanks [@kingston](https://github.com/kingston)! - Add `accountsFeatureRef` field to auth plugin, separating user data models (User, UserAccount, UserRole, UserSession, AuthVerification) from auth infrastructure code. Defaults to a new `accounts` feature alongside the existing `auth` feature. Includes schema migration 029 to backfill existing projects.
+
+- [#863](https://github.com/halfdomelabs/baseplate/pull/863) [`eec498b`](https://github.com/halfdomelabs/baseplate/commit/eec498b152c79402b7370dda990d01602c9a5fee) Thanks [@kingston](https://github.com/kingston)! - Add authorization rules to the User model's email field in both Better Auth and Placeholder Auth plugins, restricting email visibility to admins and the user themselves (via a new "self" instance role)
+
+- [#869](https://github.com/halfdomelabs/baseplate/pull/869) [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4) Thanks [@kingston](https://github.com/kingston)! - Use UUIDv4 (gen_random_uuid) instead of UUIDv7 for AuthVerification/Verification model IDs, since these are short-lived security tokens where timestamp leakage is undesirable and sortability provides no benefit
+
+- [#844](https://github.com/halfdomelabs/baseplate/pull/844) [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d) Thanks [@kingston](https://github.com/kingston)! - Improve better-auth feature parity with local-auth by adding password/email flows, admin mutations, frontend auth pages, seed user generator, and admin role. Also updates role flags, refines admin role handling, enhances auth UI, and adds project migration.
+
+- [#851](https://github.com/halfdomelabs/baseplate/pull/851) [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1) Thanks [@kingston](https://github.com/kingston)! - Add plugin dependency support: plugins can declare `pluginDependencies` in plugin.json to require other plugins. Includes circular dependency detection via toposort, definition issue checking that blocks save for unmet dependencies, UI gating that prompts users to enable/configure dependencies before enabling a plugin, and implementation plugin validation. Added dependency declarations to local-auth (email, queue, rate-limit), email (queue), and storage (queue).
+
+- [#834](https://github.com/halfdomelabs/baseplate/pull/834) [`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15) Thanks [@kingston](https://github.com/kingston)! - Register definition issue checkers for plugin schema validation so model drift errors surface globally in the issues panel, not just on plugin settings pages
+
+- [#865](https://github.com/halfdomelabs/baseplate/pull/865) [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8) Thanks [@kingston](https://github.com/kingston)! - Update plugin model definitions to use `defaultGeneration: 'uuidv7'` for UUID primary key fields
+
+- Updated dependencies [[`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`90ef6d5`](https://github.com/halfdomelabs/baseplate/commit/90ef6d51e0076834dd437d6854f90d391ccba3fb), [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d), [`6c32220`](https://github.com/halfdomelabs/baseplate/commit/6c3222084aed198e3ab9ac2169443b3eb0e15359), [`c24a24a`](https://github.com/halfdomelabs/baseplate/commit/c24a24ac9d2b66623acb0fda9c6ff2b3b80c0a6d), [`9688ca3`](https://github.com/halfdomelabs/baseplate/commit/9688ca348fd995a228bff597069f58644d7e9459), [`71146cd`](https://github.com/halfdomelabs/baseplate/commit/71146cd1ab784f45e4409fef7e6e447750047e48), [`fc8f158`](https://github.com/halfdomelabs/baseplate/commit/fc8f1582f1702d2d6f6eaa60607da7bb777750b5), [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2), [`0ba6744`](https://github.com/halfdomelabs/baseplate/commit/0ba67445708689622341f3031502b3308f71f68e), [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1), [`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c), [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc), [`ed5d250`](https://github.com/halfdomelabs/baseplate/commit/ed5d250146f0b48386a8208741150f9011892a35), [`efcf233`](https://github.com/halfdomelabs/baseplate/commit/efcf2338c018ad46b08e8fef3994630dea511723), [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887), [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610), [`87a2218`](https://github.com/halfdomelabs/baseplate/commit/87a2218266f957bb4beacd6b13cb3d610fd15a41), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8), [`adc5f55`](https://github.com/halfdomelabs/baseplate/commit/adc5f55dbf3a1451f4402cd6bd126e15f60b8ed8), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/project-builder-lib@0.6.5
+  - @baseplate-dev/fastify-generators@0.6.5
+  - @baseplate-dev/utils@0.6.5
+  - @baseplate-dev/plugin-email@0.6.5
+  - @baseplate-dev/react-generators@0.6.5
+  - @baseplate-dev/ui-components@0.6.5
+  - @baseplate-dev/plugin-rate-limit@0.6.5
+  - @baseplate-dev/core-generators@0.6.5
+  - @baseplate-dev/plugin-queue@0.6.5
+  - @baseplate-dev/sync@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes

@@ -1,5 +1,37 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.5
+
+### Patch Changes
+
+- [#869](https://github.com/halfdomelabs/baseplate/pull/869) [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4) Thanks [@kingston](https://github.com/kingston)! - Add AI development agents plugin that generates AGENTS.md, .agents/ directory, and conditionally CLAUDE.md for Baseplate projects. Also adds `rootCompilerSpec` to enable plugins to contribute generators to the monorepo root package.
+
+- [#854](https://github.com/halfdomelabs/baseplate/pull/854) [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e) Thanks [@kingston](https://github.com/kingston)! - Add optional description field to enum values that flows through to Pothos GraphQL enum type definitions
+
+- [#868](https://github.com/halfdomelabs/baseplate/pull/868) [`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363) Thanks [@kingston](https://github.com/kingston)! - Add get-plugin-info MCP action and improve configure-plugin usability
+
+- [#862](https://github.com/halfdomelabs/baseplate/pull/862) [`5f7f3f1`](https://github.com/halfdomelabs/baseplate/commit/5f7f3f190e107d96764541a4146320badfe0186d) Thanks [@kingston](https://github.com/kingston)! - Fix sync metadata file occasionally becoming empty by using unique temp file names to prevent collisions during concurrent writes
+
+- [#866](https://github.com/halfdomelabs/baseplate/pull/866) [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2) Thanks [@kingston](https://github.com/kingston)! - Detect and block disabling plugins whose types (transformers, package types, etc.) are still in use, showing a dialog listing the affected items
+
+- [#858](https://github.com/halfdomelabs/baseplate/pull/858) [`594e5a1`](https://github.com/halfdomelabs/baseplate/commit/594e5a15cbbff303fd19388ac5ec1639460444bc) Thanks [@kingston](https://github.com/kingston)! - Order package runner to compile library packages before app packages, ensuring library dependencies are built first
+
+- [#857](https://github.com/halfdomelabs/baseplate/pull/857) [`e18f3e8`](https://github.com/halfdomelabs/baseplate/commit/e18f3e82e86c58fabead4a95bac84d18dfaf3eb6) Thanks [@kingston](https://github.com/kingston)! - Prevent overwrite mode from being used on user projects to protect manual changes
+
+- [#839](https://github.com/halfdomelabs/baseplate/pull/839) [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c) Thanks [@kingston](https://github.com/kingston)! - Support `exists()` and `all()` relation filter functions in authorization expressions for checking conditions on 1:many related records
+
+- [#860](https://github.com/halfdomelabs/baseplate/pull/860) [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887) Thanks [@kingston](https://github.com/kingston)! - Support renames in reference expressions: when fields, relations, or roles are renamed, authorizer expressions are automatically updated to use the new names
+
+- [#847](https://github.com/halfdomelabs/baseplate/pull/847) [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610) Thanks [@kingston](https://github.com/kingston)! - Connect theme builder UI to code generation. Theme color configuration from the project definition now drives the generated `styles.css` instead of hardcoded values. Default theme uses slate base with indigo primary. Remove explicit hover color variables (primaryHover, secondaryHover, destructiveHover) and linkVisited — hover is now computed via `color-mix` in CSS. Add palette swatch selection to theme color picker. Split preview into surface and interactive sections with input group and alert components.
+
+- Updated dependencies [[`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d), [`c24a24a`](https://github.com/halfdomelabs/baseplate/commit/c24a24ac9d2b66623acb0fda9c6ff2b3b80c0a6d), [`9688ca3`](https://github.com/halfdomelabs/baseplate/commit/9688ca348fd995a228bff597069f58644d7e9459), [`71146cd`](https://github.com/halfdomelabs/baseplate/commit/71146cd1ab784f45e4409fef7e6e447750047e48), [`fc8f158`](https://github.com/halfdomelabs/baseplate/commit/fc8f1582f1702d2d6f6eaa60607da7bb777750b5), [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2), [`0ba6744`](https://github.com/halfdomelabs/baseplate/commit/0ba67445708689622341f3031502b3308f71f68e), [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1), [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c), [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc), [`ed5d250`](https://github.com/halfdomelabs/baseplate/commit/ed5d250146f0b48386a8208741150f9011892a35), [`efcf233`](https://github.com/halfdomelabs/baseplate/commit/efcf2338c018ad46b08e8fef3994630dea511723), [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887), [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610), [`87a2218`](https://github.com/halfdomelabs/baseplate/commit/87a2218266f957bb4beacd6b13cb3d610fd15a41), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8), [`adc5f55`](https://github.com/halfdomelabs/baseplate/commit/adc5f55dbf3a1451f4402cd6bd126e15f60b8ed8), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/project-builder-lib@0.6.5
+  - @baseplate-dev/fastify-generators@0.6.5
+  - @baseplate-dev/utils@0.6.5
+  - @baseplate-dev/react-generators@0.6.5
+  - @baseplate-dev/core-generators@0.6.5
+  - @baseplate-dev/sync@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @baseplate-dev/project-builder-common
 
+## 0.6.5
+
+### Patch Changes
+
+- [#869](https://github.com/halfdomelabs/baseplate/pull/869) [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4) Thanks [@kingston](https://github.com/kingston)! - Add AI development agents plugin that generates AGENTS.md, .agents/ directory, and conditionally CLAUDE.md for Baseplate projects. Also adds `rootCompilerSpec` to enable plugins to contribute generators to the monorepo root package.
+
+- Updated dependencies [[`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e), [`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`90ef6d5`](https://github.com/halfdomelabs/baseplate/commit/90ef6d51e0076834dd437d6854f90d391ccba3fb), [`eec498b`](https://github.com/halfdomelabs/baseplate/commit/eec498b152c79402b7370dda990d01602c9a5fee), [`860b82d`](https://github.com/halfdomelabs/baseplate/commit/860b82da0466386ad11128c619595179ee76d0a4), [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d), [`6c32220`](https://github.com/halfdomelabs/baseplate/commit/6c3222084aed198e3ab9ac2169443b3eb0e15359), [`9688ca3`](https://github.com/halfdomelabs/baseplate/commit/9688ca348fd995a228bff597069f58644d7e9459), [`71146cd`](https://github.com/halfdomelabs/baseplate/commit/71146cd1ab784f45e4409fef7e6e447750047e48), [`5f7f3f1`](https://github.com/halfdomelabs/baseplate/commit/5f7f3f190e107d96764541a4146320badfe0186d), [`5e182c3`](https://github.com/halfdomelabs/baseplate/commit/5e182c308c51b8d6f735b213ae12ba475c34dbd2), [`0ba6744`](https://github.com/halfdomelabs/baseplate/commit/0ba67445708689622341f3031502b3308f71f68e), [`594e5a1`](https://github.com/halfdomelabs/baseplate/commit/594e5a15cbbff303fd19388ac5ec1639460444bc), [`53b8635`](https://github.com/halfdomelabs/baseplate/commit/53b86354ee6bc4b46d1966f657e3d6c942cf1eb1), [`37b6d8f`](https://github.com/halfdomelabs/baseplate/commit/37b6d8fd76086dab2953e12e48543334c5056f15), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8), [`e18f3e8`](https://github.com/halfdomelabs/baseplate/commit/e18f3e82e86c58fabead4a95bac84d18dfaf3eb6), [`85d957d`](https://github.com/halfdomelabs/baseplate/commit/85d957d4a2ab4b3a55a96c8dbba9a79d2f72511c), [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc), [`ed5d250`](https://github.com/halfdomelabs/baseplate/commit/ed5d250146f0b48386a8208741150f9011892a35), [`62fae48`](https://github.com/halfdomelabs/baseplate/commit/62fae487a4ac1f0d25d7ec40895ea330c5c8e94f), [`efcf233`](https://github.com/halfdomelabs/baseplate/commit/efcf2338c018ad46b08e8fef3994630dea511723), [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc), [`2a514a6`](https://github.com/halfdomelabs/baseplate/commit/2a514a63e741e1b16b3b1b168b84a60965141887), [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/plugin-auth@0.6.5
+  - @baseplate-dev/project-builder-lib@0.6.5
+  - @baseplate-dev/plugin-ai@0.6.5
+  - @baseplate-dev/project-builder-server@0.6.5
+  - @baseplate-dev/plugin-payments@0.6.5
+  - @baseplate-dev/plugin-email@0.6.5
+  - @baseplate-dev/plugin-storage@0.6.5
+  - @baseplate-dev/plugin-rate-limit@0.6.5
+  - @baseplate-dev/plugin-observability@0.6.5
+  - @baseplate-dev/plugin-queue@0.6.5
+  - @baseplate-dev/sync@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes

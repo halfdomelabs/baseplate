@@ -1,5 +1,26 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.5
+
+### Patch Changes
+
+- [#854](https://github.com/halfdomelabs/baseplate/pull/854) [`9708637`](https://github.com/halfdomelabs/baseplate/commit/97086370718861d2c3170ec6d83af84793fbd09e) Thanks [@kingston](https://github.com/kingston)! - Add optional description field to enum values that flows through to Pothos GraphQL enum type definitions
+
+- [#844](https://github.com/halfdomelabs/baseplate/pull/844) [`06f5173`](https://github.com/halfdomelabs/baseplate/commit/06f517371c4904482873a4e30fe9b23b4fd2e36d) Thanks [@kingston](https://github.com/kingston)! - Improve better-auth feature parity with local-auth by adding password/email flows, admin mutations, frontend auth pages, seed user generator, and admin role. Also updates role flags, refines admin role handling, enhances auth UI, and adds project migration.
+
+- [#845](https://github.com/halfdomelabs/baseplate/pull/845) [`9688ca3`](https://github.com/halfdomelabs/baseplate/commit/9688ca348fd995a228bff597069f58644d7e9459) Thanks [@kingston](https://github.com/kingston)! - Replace imperative compose/commit data service pattern with declarative transformer API and fix handling of JSON fields.
+
+- [#849](https://github.com/halfdomelabs/baseplate/pull/849) [`8d30c14`](https://github.com/halfdomelabs/baseplate/commit/8d30c145ce5d72dcfc038ff076ed0746d2d763cc) Thanks [@kingston](https://github.com/kingston)! - Change default relation onDelete from Cascade to Restrict
+
+- [#842](https://github.com/halfdomelabs/baseplate/pull/842) [`adc5f55`](https://github.com/halfdomelabs/baseplate/commit/adc5f55dbf3a1451f4402cd6bd126e15f60b8ed8) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 7.5.0 and fix flaky E2E sync test
+
+- [#865](https://github.com/halfdomelabs/baseplate/pull/865) [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8) Thanks [@kingston](https://github.com/kingston)! - Add UUID v7 support by replacing `genUuid` boolean with `defaultGeneration` enum (`none` | `uuidv4` | `uuidv7`), leveraging PostgreSQL 18's native `uuidv7()` function
+
+- Updated dependencies [[`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`87a2218`](https://github.com/halfdomelabs/baseplate/commit/87a2218266f957bb4beacd6b13cb3d610fd15a41), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/utils@0.6.5
+  - @baseplate-dev/core-generators@0.6.5
+  - @baseplate-dev/sync@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes
