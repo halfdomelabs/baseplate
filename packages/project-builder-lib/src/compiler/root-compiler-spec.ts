@@ -24,7 +24,7 @@ export interface PluginRootCompiler {
  *
  * Allows plugins to contribute generator bundles to the monorepo root package.
  * This is analogous to `appCompilerSpec` but for root-level files like
- * AGENTS.md, CLAUDE.md, .mcp.json, etc.
+ * AGENTS.md, CLAUDE.md, etc.
  */
 export const rootCompilerSpec = createFieldMapSpec(
   'core/root-compiler',

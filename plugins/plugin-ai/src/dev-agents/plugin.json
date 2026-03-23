@@ -2,7 +2,7 @@
   "name": "dev-agents",
   "displayName": "AI Development Agents",
   "icon": "icon.svg",
-  "description": "Generates AI agent configuration files (AGENTS.md, CLAUDE.md, .mcp.json) for your project.",
+  "description": "Generates AI agent configuration files (AGENTS.md, CLAUDE.md) for your project.",
   "version": "0.1.0",
   "moduleDirectories": ["core"]
 }
