@@ -229,7 +229,7 @@ export function createLocalAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { defaultGeneration: 'uuidv7' },
+              options: { defaultGeneration: 'uuidv4' },
             },
             {
               name: 'type',

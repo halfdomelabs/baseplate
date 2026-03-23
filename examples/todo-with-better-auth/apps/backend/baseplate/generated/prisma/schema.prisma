@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Account {
-  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                    String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
   accountId             String    @map("account_id")
   providerId            String    @map("provider_id")
   userId                String    @map("user_id") @db.Uuid
@@ -34,7 +34,7 @@ model Account {
 }
 
 model BillingAccount {
-  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                   String                @id @default(dbgenerated("uuidv7()")) @db.Uuid
   stripeCustomerId     String                @unique @map("stripe_customer_id")
   createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt            DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -45,7 +45,7 @@ model BillingAccount {
 }
 
 model BillingSubscription {
-  id                   String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                   String                    @id @default(dbgenerated("uuidv7()")) @db.Uuid
   billingAccountId     String                    @map("billing_account_id") @db.Uuid
   planKey              String                    @map("plan_key")
   status               BillingSubscriptionStatus
@@ -80,7 +80,7 @@ model Customer {
 }
 
 model File {
-  id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                 String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
   filename           String
   mimeType           String        @map("mime_type")
   encoding           String?
@@ -101,7 +101,7 @@ model File {
 }
 
 model Session {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
   token     String   @unique
   ipAddress String?  @map("ip_address")
@@ -189,7 +189,7 @@ enum TodoListStatus {
 }
 
 model User {
-  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               String          @id @default(dbgenerated("uuidv7()")) @db.Uuid
   name             String
   email            String          @unique
   updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)

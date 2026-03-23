@@ -88,7 +88,7 @@ model RateLimiterFlexible {
 }
 
 model User {
-  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
   email             String?            @unique
   phone             String?
   updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -107,7 +107,7 @@ model User {
 }
 
 model UserAccount {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id         String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   userId     String   @map("user_id") @db.Uuid
   providerId String   @map("provider_id")
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -132,7 +132,7 @@ model UserRole {
 }
 
 model UserSession {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   token     String   @unique
   userId    String   @map("user_id") @db.Uuid
   expiresAt DateTime @map("expires_at") @db.Timestamptz(3)

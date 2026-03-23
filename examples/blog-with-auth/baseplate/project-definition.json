@@ -653,7 +653,7 @@
             "id": "model-scalar-field:iZSakQLjj07M",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -732,7 +732,7 @@
             "id": "model-scalar-field:z6JrpgbtlGck",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -870,7 +870,7 @@
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -982,6 +982,13 @@
       "name": "auth",
       "packageName": "@baseplate-dev/plugin-auth",
       "version": "1.0.0"
+    },
+    {
+      "config": { "devAgentsOptions": {}, "enabledAgents": ["claude-code"] },
+      "id": "plugin:baseplate-dev_plugin-ai_dev-agents",
+      "name": "dev-agents",
+      "packageName": "@baseplate-dev/plugin-ai",
+      "version": "0.1.0"
     },
     {
       "config": {

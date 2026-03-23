@@ -35,6 +35,9 @@
       "path": "./packages/utils/tsconfig.build.json"
     },
     {
+      "path": "./plugins/plugin-ai/tsconfig.build.json"
+    },
+    {
       "path": "./plugins/plugin-auth/tsconfig.build.json"
     },
     {

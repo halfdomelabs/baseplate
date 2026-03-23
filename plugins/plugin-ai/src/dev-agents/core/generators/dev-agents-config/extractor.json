@@ -1,0 +1,35 @@
+{
+  "name": "dev-agents/core/dev-agents-config",
+  "templates": {
+    "agents-md": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/AGENTS.md",
+      "sourceFile": "package/AGENTS.md",
+      "variables": {
+        "TPL_PROJECT_NAME": { "description": "Name of the project" },
+        "TPL_APPS_LIST": {
+          "description": "Markdown list of applications with types and directories"
+        }
+      }
+    },
+    "baseplate-md": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/.agents/baseplate.md",
+      "sourceFile": "package/agents/baseplate.md",
+      "variables": {
+        "TPL_MCP_SETUP_INSTRUCTIONS": {
+          "description": "MCP setup commands for each enabled agent"
+        }
+      }
+    },
+    "claude-md": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/CLAUDE.md",
+      "sourceFile": "package/CLAUDE.md",
+      "variables": {}
+    }
+  }
+}

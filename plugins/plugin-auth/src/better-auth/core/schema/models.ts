@@ -228,7 +228,7 @@ export function createBetterAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { defaultGeneration: 'uuidv7' },
+              options: { defaultGeneration: 'uuidv4' },
             },
             {
               name: 'identifier',
