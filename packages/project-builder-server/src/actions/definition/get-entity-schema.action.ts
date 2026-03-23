@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { createAuxiliaryTypeStore, printNode, zodToTs } from 'zod-to-ts';
 
 import { createServiceAction } from '#src/actions/types.js';
 
 import { loadEntityServiceContext } from './load-entity-service-context.js';
+import { schemaToTypeString } from './schema-to-type-string.js';
 
 const getEntitySchemaInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
@@ -48,11 +48,7 @@ export const getEntitySchemaAction = createServiceAction({
       );
     }
 
-    const { node } = zodToTs(metadata.elementSchema, {
-      auxiliaryTypeStore: createAuxiliaryTypeStore(),
-      unrepresentable: 'any',
-    });
-    const schemaText = printNode(node);
+    const schemaText = schemaToTypeString(metadata.elementSchema);
 
     return {
       entityTypeName: input.entityTypeName,

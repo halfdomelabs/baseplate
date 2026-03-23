@@ -1,15 +1,15 @@
 import type {
   PluginMetadataWithPaths,
+  PluginSpecStore,
   ProjectDefinition,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
+  assignEntityIds,
   createDefinitionSchemaParserContext,
-  createPluginSpecStore,
-  createProjectDefinitionSchema,
-  PluginUtils,
-  ProjectDefinitionContainer,
-  serializeSchema,
+  createPluginImplementationStoreWithNewPlugins,
+  pluginConfigSpec,
+  pluginEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { produce } from 'immer';
 import { z } from 'zod';
@@ -31,7 +31,9 @@ const configurePluginInputSchema = z.object({
     .record(z.string(), z.unknown())
     .optional()
     .describe(
-      'Optional plugin configuration object. Use get-plugin-info to see the expected schema. Defaults to empty config.',
+      'Optional plugin configuration object. Use get-plugin-info to see the expected schema. ' +
+        'Reference fields accept entity names (not IDs). IDs for nested entities are auto-generated. ' +
+        'Defaults to empty config.',
     ),
 });
 
@@ -57,11 +59,40 @@ function findPluginByKey(
   return plugin;
 }
 
+/**
+ * Auto-generates IDs for nested entities in a plugin config using the
+ * plugin's config schema. Existing IDs are preserved.
+ */
+function assignConfigEntityIds(
+  pluginConfig: Record<string, unknown>,
+  pluginMetadata: PluginMetadataWithPaths,
+  pluginStore: PluginSpecStore,
+  existingIds: Set<string>,
+): Record<string, unknown> {
+  const pluginConfigService = pluginStore.use(pluginConfigSpec);
+  const schemaCreator = pluginConfigService.getSchemaCreator(
+    pluginMetadata.key,
+  );
+  if (!schemaCreator) {
+    return pluginConfig;
+  }
+
+  const defCtx = createDefinitionSchemaParserContext({ plugins: pluginStore });
+  const configSchema = schemaCreator(defCtx);
+
+  return assignEntityIds(configSchema, pluginConfig, {
+    isExistingId: (id) => existingIds.has(id),
+  });
+}
+
 export const configurePluginAction = createServiceAction({
   name: 'configure-plugin',
   title: 'Configure Plugin',
   description:
-    'Enable a plugin or update its configuration in the draft session. Use get-plugin-info first to see the config schema and current config. Changes are not persisted until commit-draft is called.',
+    'Enable a plugin or update its configuration in the draft session. ' +
+    'Use get-plugin-info first to see the config schema and current config. ' +
+    'Reference fields accept entity names (not IDs). IDs for nested entities are auto-generated. ' +
+    'Changes are not persisted until commit-draft is called.',
   inputSchema: configurePluginInputSchema,
   outputSchema: configurePluginOutputSchema,
   handler: async (input, context) => {
@@ -70,49 +101,71 @@ export const configurePluginAction = createServiceAction({
 
     const pluginMetadata = findPluginByKey(context.plugins, input.pluginKey);
 
-    const container = ProjectDefinitionContainer.fromSerializedConfig(
-      session.draftDefinition,
-      parserContext,
-    );
-
-    const pluginConfig = input.config ?? {};
-
-    const isNew =
-      PluginUtils.byKey(container.definition, input.pluginKey) == null;
-
-    // Apply setPluginConfig via produce
-    const newDefinition = produce((draft: ProjectDefinition) => {
-      PluginUtils.setPluginConfig(
-        draft,
-        pluginMetadata,
-        pluginConfig,
-        container,
-      );
-    })(container.definition);
-
-    // When a new plugin is added, rebuild the schema to include the new
-    // plugin's discriminated union variant; otherwise serialization fails
-    // because the old schema has no matching discriminator for the new ID.
-    let { schema } = container;
-    if (isNew) {
-      const newPluginStore = createPluginSpecStore(
-        parserContext.pluginStore,
-        newDefinition,
-      );
-      const defCtx = createDefinitionSchemaParserContext({
-        plugins: newPluginStore,
-      });
-      schema = createProjectDefinitionSchema(defCtx);
-    }
-
-    // Serialize back to name-based format
-    const serializedDef = serializeSchema(schema, newDefinition) as Record<
+    const pluginEntityId = pluginEntityType.idFromKey(pluginMetadata.key);
+    const serializedDef = session.draftDefinition;
+    const serializedPlugins = (serializedDef.plugins ?? []) as Record<
       string,
       unknown
-    >;
+    >[];
+
+    const isNew = !serializedPlugins.some((p) => p.id === pluginEntityId);
+
+    // Build a plugin store that includes this plugin (needed for schema
+    // creation and migration version lookup even if the plugin is new).
+    // Cast is safe: only the plugins[] array is accessed for ID matching.
+    const pluginStore = createPluginImplementationStoreWithNewPlugins(
+      parserContext.pluginStore,
+      [pluginMetadata],
+      serializedDef as unknown as ProjectDefinition,
+    );
+
+    // Auto-generate IDs for nested entities in the config
+    const rawConfig = input.config ?? {};
+    const existingIds = new Set(
+      serializedPlugins.map((p) => p.id as string).filter(Boolean),
+    );
+    const processedConfig = assignConfigEntityIds(
+      rawConfig,
+      pluginMetadata,
+      pluginStore,
+      existingIds,
+    );
+
+    // Inject the plugin config into the serialized definition.
+    // This works with entity names (not IDs) — the deserialization pipeline
+    // in validateAndSaveDraft handles name→ID resolution automatically.
+    let updatedDef: Record<string, unknown>;
+
+    if (isNew) {
+      const pluginConfigService = pluginStore.use(pluginConfigSpec);
+      const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
+        pluginMetadata.key,
+      );
+
+      updatedDef = produce(serializedDef, (draft) => {
+        const plugins = (draft.plugins ?? []) as Record<string, unknown>[];
+        plugins.push({
+          id: pluginEntityId,
+          name: pluginMetadata.name,
+          version: pluginMetadata.version,
+          packageName: pluginMetadata.packageName,
+          config: processedConfig,
+          configSchemaVersion: lastMigrationVersion,
+        });
+        draft.plugins = plugins;
+      });
+    } else {
+      updatedDef = produce(serializedDef, (draft) => {
+        const plugins = draft.plugins as Record<string, unknown>[];
+        const idx = plugins.findIndex((p) => p.id === pluginEntityId);
+        if (idx !== -1) {
+          plugins[idx] = { ...plugins[idx], config: processedConfig };
+        }
+      });
+    }
 
     const { warnings } = await validateAndSaveDraft(
-      serializedDef,
+      updatedDef,
       parserContext,
       session,
       projectDirectory,

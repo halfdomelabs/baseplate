@@ -8,11 +8,11 @@ import {
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
-import { createAuxiliaryTypeStore, printNode, zodToTs } from 'zod-to-ts';
 
 import { createServiceAction } from '#src/actions/types.js';
 
 import { loadEntityServiceContext } from './load-entity-service-context.js';
+import { schemaToTypeString } from './schema-to-type-string.js';
 
 const getPluginInfoInputSchema = z.object({
   project: z.string().describe('The name or ID of the project.'),
@@ -138,11 +138,7 @@ export const getPluginInfoAction = createServiceAction({
         plugins: pluginStore,
       });
       const zodSchema = schemaCreator(defCtx);
-      const { node } = zodToTs(zodSchema, {
-        auxiliaryTypeStore: createAuxiliaryTypeStore(),
-        unrepresentable: 'any',
-      });
-      configSchema = printNode(node);
+      configSchema = schemaToTypeString(zodSchema);
     }
 
     // Get current config from serialized definition

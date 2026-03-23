@@ -186,6 +186,11 @@ mcp__baseplate_dev_server__show_template_metadata({
 
 Get detailed information about a plugin, including its config schema and current configuration. Use this before `configure-plugin` to understand what config fields are available.
 
+The config schema output includes JSDoc annotations:
+
+- `@ref(entityType)` — indicates a reference field. Use entity names, not IDs.
+- `@entity(entityType)` — indicates a nested entity array. IDs are auto-generated; omit the `id` field.
+
 **Parameters:**
 
 - `project` (required): The name or ID of the project
@@ -196,7 +201,7 @@ Get detailed information about a plugin, including its config schema and current
 ```javascript
 mcp__baseplate_dev_server__get_plugin_info({
   project: 'my-project',
-  pluginKey: 'auth',
+  pluginKey: 'baseplate-dev_plugin-storage_storage',
 });
 ```
 
