@@ -1,5 +1,3 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-
 import {
   createDefinitionSchemaParserContext,
   createPluginImplementationStoreWithNewPlugins,
@@ -11,6 +9,7 @@ import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
 
+import { findPluginByKey } from './find-plugin-by-key.js';
 import { loadEntityServiceContext } from './load-entity-service-context.js';
 import { schemaToTypeString } from './schema-to-type-string.js';
 
@@ -58,23 +57,6 @@ const getPluginInfoOutputSchema = z.object({
       'The current config for this plugin if enabled, or null if not enabled.',
     ),
 });
-
-function findPluginByKey(
-  plugins: PluginMetadataWithPaths[],
-  pluginKey: string,
-): PluginMetadataWithPaths {
-  const plugin = plugins.find((p) => p.key === pluginKey);
-  if (!plugin) {
-    const available = plugins
-      .filter((p) => !p.hidden)
-      .map((p) => p.key)
-      .join(', ');
-    throw new Error(
-      `Plugin "${pluginKey}" not found. Available plugins: ${available}`,
-    );
-  }
-  return plugin;
-}
 
 export const getPluginInfoAction = createServiceAction({
   name: 'get-plugin-info',

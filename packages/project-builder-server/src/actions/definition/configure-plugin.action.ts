@@ -10,6 +10,7 @@ import {
   createPluginImplementationStoreWithNewPlugins,
   pluginConfigSpec,
   pluginEntityType,
+  ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { produce } from 'immer';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 
 import { getOrCreateDraftSession } from './draft-session.js';
+import { findPluginByKey } from './find-plugin-by-key.js';
 import {
   definitionIssueSchema,
   mapIssueToOutput,
@@ -44,20 +46,6 @@ const configurePluginOutputSchema = z.object({
     .optional()
     .describe('Definition issues found after staging.'),
 });
-
-function findPluginByKey(
-  plugins: PluginMetadataWithPaths[],
-  pluginKey: string,
-): PluginMetadataWithPaths {
-  const plugin = plugins.find((p) => p.key === pluginKey);
-  if (!plugin) {
-    const available = plugins.map((p) => p.key).join(', ');
-    throw new Error(
-      `Plugin "${pluginKey}" not found. Available plugins: ${available}`,
-    );
-  }
-  return plugin;
-}
 
 /**
  * Auto-generates IDs for nested entities in a plugin config using the
@@ -119,11 +107,19 @@ export const configurePluginAction = createServiceAction({
       serializedDef as unknown as ProjectDefinition,
     );
 
+    // Collect all existing entity IDs from the definition so that
+    // assignEntityIds can preserve them and avoid collisions.
+    const defContainer = ProjectDefinitionContainer.fromSerializedConfig(
+      serializedDef,
+      parserContext,
+    );
+    const existingIds = new Set([
+      ...defContainer.entities.map((e) => e.id),
+      pluginEntityId,
+    ]);
+
     // Auto-generate IDs for nested entities in the config
     const rawConfig = input.config ?? {};
-    const existingIds = new Set(
-      serializedPlugins.map((p) => p.id as string).filter(Boolean),
-    );
     const processedConfig = assignConfigEntityIds(
       rawConfig,
       pluginMetadata,
@@ -134,24 +130,28 @@ export const configurePluginAction = createServiceAction({
     // Inject the plugin config into the serialized definition.
     // This works with entity names (not IDs) — the deserialization pipeline
     // in validateAndSaveDraft handles name→ID resolution automatically.
+    const pluginConfigService = pluginStore.use(pluginConfigSpec);
+    const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
+      pluginMetadata.key,
+    );
+
     let updatedDef: Record<string, unknown>;
 
     if (isNew) {
-      const pluginConfigService = pluginStore.use(pluginConfigSpec);
-      const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
-        pluginMetadata.key,
-      );
+      const newPlugin: Record<string, unknown> = {
+        id: pluginEntityId,
+        name: pluginMetadata.name,
+        version: pluginMetadata.version,
+        packageName: pluginMetadata.packageName,
+        config: processedConfig,
+      };
+      if (lastMigrationVersion !== undefined) {
+        newPlugin.configSchemaVersion = lastMigrationVersion;
+      }
 
       updatedDef = produce(serializedDef, (draft) => {
         const plugins = (draft.plugins ?? []) as Record<string, unknown>[];
-        plugins.push({
-          id: pluginEntityId,
-          name: pluginMetadata.name,
-          version: pluginMetadata.version,
-          packageName: pluginMetadata.packageName,
-          config: processedConfig,
-          configSchemaVersion: lastMigrationVersion,
-        });
+        plugins.push(newPlugin);
         draft.plugins = plugins;
       });
     } else {
@@ -159,7 +159,16 @@ export const configurePluginAction = createServiceAction({
         const plugins = draft.plugins as Record<string, unknown>[];
         const idx = plugins.findIndex((p) => p.id === pluginEntityId);
         if (idx !== -1) {
-          plugins[idx] = { ...plugins[idx], config: processedConfig };
+          const updated: Record<string, unknown> = {
+            ...plugins[idx],
+            config: processedConfig,
+          };
+          if (lastMigrationVersion === undefined) {
+            delete updated.configSchemaVersion;
+          } else {
+            updated.configSchemaVersion = lastMigrationVersion;
+          }
+          plugins[idx] = updated;
         }
       });
     }

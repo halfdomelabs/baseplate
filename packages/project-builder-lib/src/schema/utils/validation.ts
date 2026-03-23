@@ -24,5 +24,8 @@ export const VALIDATORS = {
     .string()
     .regex(/^[A-Z][A-Z0-9_]*$/, "Should be CONSTANT_CASE, e.g. 'MY_CONSTANT'")
     .or(z.literal(''))
+    .register(validationHintRegistry, {
+      description: "CONSTANT_CASE (e.g. 'MY_CONSTANT') or empty",
+    })
     .optional(),
 };
