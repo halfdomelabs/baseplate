@@ -3,6 +3,7 @@ import {
   readJsonWithSchema,
   writeStablePrettyJson,
 } from '@baseplate-dev/utils/node';
+import { randomUUID } from 'node:crypto';
 import { mkdir, rename } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -50,7 +51,7 @@ export async function writeSyncMetadata(
   const syncMetadataPath = path.join(projectDirectory, SYNC_METADATA_PATH);
   const dir = path.dirname(syncMetadataPath);
   await mkdir(dir, { recursive: true });
-  const tmpPath = path.join(dir, `.sync_result.${Date.now()}.tmp`);
+  const tmpPath = path.join(dir, `.sync_result.${randomUUID()}.tmp`);
   await writeStablePrettyJson(tmpPath, syncMetadata);
   await rename(tmpPath, syncMetadataPath);
 }
