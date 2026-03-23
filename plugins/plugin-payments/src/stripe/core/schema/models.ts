@@ -91,7 +91,7 @@ export function createBillingPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'stripeCustomerId',
@@ -124,7 +124,7 @@ export function createBillingPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'billingAccountId',

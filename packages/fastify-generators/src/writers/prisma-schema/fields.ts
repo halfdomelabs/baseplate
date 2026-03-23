@@ -90,14 +90,19 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   uuid: createConfig({
     prismaType: 'String',
     optionsSchema: z.object({
-      genUuid: z.boolean().optional(),
+      defaultGeneration: z.enum(['none', 'uuidv4', 'uuidv7']).optional(),
     }),
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [{ name: '@db.Uuid' }];
-      if (config?.genUuid) {
+      if (config?.defaultGeneration === 'uuidv4') {
         attributes.push({
           name: '@default',
           args: ['dbgenerated("gen_random_uuid()")'],
+        });
+      } else if (config?.defaultGeneration === 'uuidv7') {
+        attributes.push({
+          name: '@default',
+          args: ['dbgenerated("uuidv7()")'],
         });
       }
       return attributes;

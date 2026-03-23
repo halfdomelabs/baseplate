@@ -16,7 +16,7 @@ export function createBetterAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'name',
@@ -86,7 +86,7 @@ export function createBetterAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'expiresAt',
@@ -147,7 +147,7 @@ export function createBetterAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'accountId',
@@ -228,7 +228,7 @@ export function createBetterAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'identifier',

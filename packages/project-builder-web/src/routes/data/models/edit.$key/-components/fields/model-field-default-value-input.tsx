@@ -132,14 +132,21 @@ function UuidDefaultValueInput({
 
   const optionsValue = rawOptions as UuidOptions | undefined;
 
-  if (optionsValue?.genUuid) {
+  if (
+    optionsValue?.defaultGeneration === 'uuidv7' ||
+    optionsValue?.defaultGeneration === 'uuidv4'
+  ) {
+    const label =
+      optionsValue.defaultGeneration === 'uuidv7'
+        ? 'Random UUID v7'
+        : 'Random UUID v4';
     return (
       <div className="flex items-center gap-1">
-        <InputField disabled value="Random UUID v4" className="flex-1" />
+        <InputField disabled value={label} className="flex-1" />
         <Button
           title="Reset"
           onClick={() => {
-            onOptionsChange({ ...optionsValue, genUuid: false });
+            onOptionsChange({ ...optionsValue, defaultGeneration: 'none' });
           }}
           variant="ghost"
           size="icon"
@@ -152,12 +159,7 @@ function UuidDefaultValueInput({
 
   return (
     <div className="flex items-center gap-1">
-      <InputFieldController
-        control={control}
-        placeholder="NULL"
-        name={`model.fields.${idx}.options.default`}
-        className="flex-1"
-      />
+      <InputField disabled placeholder="NULL" className="flex-1" />
       <DropdownMenu>
         <DropdownMenuTrigger
           render={<Button title="Options" variant="ghost" size="icon" />}
@@ -170,7 +172,17 @@ function UuidDefaultValueInput({
               onClick={() => {
                 onOptionsChange({
                   ...optionsValue,
-                  genUuid: true,
+                  defaultGeneration: 'uuidv7',
+                });
+              }}
+            >
+              Random UUID v7
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                onOptionsChange({
+                  ...optionsValue,
+                  defaultGeneration: 'uuidv4',
                 });
               }}
             >

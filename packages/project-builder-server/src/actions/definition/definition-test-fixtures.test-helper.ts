@@ -38,7 +38,7 @@ function buildTestData(): {
         createTestScalarField({
           name: 'id',
           type: 'uuid',
-          options: { genUuid: true },
+          options: { defaultGeneration: 'uuidv7' },
         }),
         createTestScalarField({ name: 'title', type: 'string' }),
         createTestScalarField({ name: 'content', type: 'string' }),

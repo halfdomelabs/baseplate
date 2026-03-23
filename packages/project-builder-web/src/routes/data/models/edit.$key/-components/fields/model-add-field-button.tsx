@@ -63,7 +63,7 @@ export function ModelAddFieldButton({
             name: 'id',
             type: 'uuid',
             options: {
-              genUuid: true,
+              defaultGeneration: 'uuidv7',
             },
             isPrimaryKey: true,
           },

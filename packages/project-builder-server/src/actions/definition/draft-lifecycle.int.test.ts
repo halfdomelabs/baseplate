@@ -123,7 +123,7 @@ describe('draft lifecycle', () => {
           createTestScalarField({
             name: 'id',
             type: 'uuid',
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           }),
         ],
         primaryKeyFieldRefs: ['id'],
@@ -137,7 +137,7 @@ describe('draft lifecycle', () => {
           createTestScalarField({
             name: 'id',
             type: 'uuid',
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           }),
           createTestScalarField({ name: 'userId', type: 'int' }),
         ],

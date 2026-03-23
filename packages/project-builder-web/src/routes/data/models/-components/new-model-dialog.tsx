@@ -61,8 +61,7 @@ function createNewModel(): ModelConfigInput {
           type: 'uuid',
           isOptional: false,
           options: {
-            default: '',
-            genUuid: true,
+            defaultGeneration: 'uuidv7',
           },
         },
       ],

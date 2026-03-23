@@ -18,7 +18,7 @@ describe('diffDefinition', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const emailField = createTestScalarField({
       name: 'email',
@@ -57,7 +57,11 @@ describe('diffDefinition', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'email', type: 'string' },
             ],
             primaryKeyFieldRefs: ['id'],
@@ -68,7 +72,11 @@ describe('diffDefinition', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'title', type: 'string' },
             ],
             primaryKeyFieldRefs: ['id'],
@@ -96,7 +104,11 @@ describe('diffDefinition', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'email', type: 'string', isOptional: true },
             ],
             primaryKeyFieldRefs: ['id'],
@@ -117,7 +129,7 @@ describe('diffDefinition', () => {
     const idField2 = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const postModel = createTestModel({
       name: 'Post',
@@ -130,7 +142,7 @@ describe('diffDefinition', () => {
     const idField = createTestScalarField({
       name: 'id',
       type: 'uuid',
-      options: { genUuid: true },
+      options: { defaultGeneration: 'uuidv7' },
     });
     const userModel = createTestModel({
       name: 'User',
@@ -152,7 +164,13 @@ describe('diffDefinition', () => {
           name: 'User',
           featureRef: testFeature.name,
           model: {
-            fields: [{ name: 'id', type: 'uuid', options: { genUuid: true } }],
+            fields: [
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
+            ],
             primaryKeyFieldRefs: ['id'],
           },
         },
@@ -174,7 +192,11 @@ describe('diffDefinition', () => {
           featureRef: testFeature.name,
           model: {
             fields: [
-              { name: 'id', type: 'uuid', options: { genUuid: true } },
+              {
+                name: 'id',
+                type: 'uuid',
+                options: { defaultGeneration: 'uuidv7' },
+              },
               { name: 'email', type: 'string', isOptional: true },
             ],
             primaryKeyFieldRefs: ['id'],
