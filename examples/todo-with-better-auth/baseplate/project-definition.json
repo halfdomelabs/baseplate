@@ -435,6 +435,152 @@
       "service": { "transformers": [] }
     },
     {
+      "featureRef": "billing",
+      "id": "model:yQ8vn0mn0sG0",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:sLwgpRj1rBQu",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:__Cd5sxmnA0J",
+            "isOptional": false,
+            "name": "stripeCustomerId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:MGYyEd8mvzn0",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:onoGYXPFAG1R",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "stripeCustomerId" }],
+            "id": "model-unique-constraint:9HIKDJ4uJBRz"
+          }
+        ]
+      },
+      "name": "BillingAccount",
+      "service": { "transformers": [] }
+    },
+    {
+      "featureRef": "billing",
+      "id": "model:rQOnZgMWGHWP",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:5SAuLT4bAV5_",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:0j9aW2_oVZi7",
+            "isOptional": false,
+            "name": "billingAccountId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:iFOTvtC8ySj_",
+            "isOptional": false,
+            "name": "planKey",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:vDEdhOpEBcgh",
+            "isOptional": false,
+            "name": "status",
+            "options": { "enumRef": "BillingSubscriptionStatus" },
+            "type": "enum"
+          },
+          {
+            "id": "model-scalar-field:jLzXegb1IqTo",
+            "isOptional": false,
+            "name": "stripeSubscriptionId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:XR_8ZVHS7aB7",
+            "isOptional": false,
+            "name": "currentPeriodStart",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:EucV0WREtHCq",
+            "isOptional": false,
+            "name": "currentPeriodEnd",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:_gldE8Uqnq4q",
+            "isOptional": false,
+            "name": "cancelAtPeriodEnd",
+            "options": { "default": "false" },
+            "type": "boolean"
+          },
+          {
+            "id": "model-scalar-field:8TD82_zwouGj",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:7CWVH5PctvBD",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:wI3FBas_VNa2",
+            "foreignRelationName": "billingSubscriptions",
+            "id": "model-local-relation:7_cnkNOxb0fZ",
+            "modelRef": "BillingAccount",
+            "name": "billingAccount",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "id", "localRef": "billingAccountId" }
+            ]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "stripeSubscriptionId" }],
+            "id": "model-unique-constraint:rVWMdLZ9W36b"
+          }
+        ]
+      },
+      "name": "BillingSubscription",
+      "service": { "transformers": [] }
+    },
+    {
       "featureRef": "accounts/users",
       "graphql": {
         "objectType": {
@@ -1236,8 +1382,8 @@
         "roles": [
           {
             "expression": "model.id === userId",
-            "id": "model-authorizer-role:e5NV7nPN9Flw",
-            "name": "owner"
+            "id": "model-authorizer-role:rlm2eb1GAtLh",
+            "name": "self"
           }
         ]
       },
@@ -1253,7 +1399,11 @@
           "fields": [
             { "ref": "id" },
             { "ref": "name" },
-            { "ref": "email" },
+            {
+              "globalRoles": ["admin"],
+              "instanceRoles": ["self"],
+              "ref": "email"
+            },
             { "ref": "updatedAt" },
             { "ref": "createdAt" }
           ],
@@ -1726,152 +1876,6 @@
         "primaryKeyFieldRefs": ["id"]
       },
       "name": "Verification",
-      "service": { "transformers": [] }
-    },
-    {
-      "featureRef": "billing",
-      "id": "model:yQ8vn0mn0sG0",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:sLwgpRj1rBQu",
-            "isOptional": false,
-            "name": "id",
-            "options": { "default": "", "genUuid": true },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:__Cd5sxmnA0J",
-            "isOptional": false,
-            "name": "stripeCustomerId",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:MGYyEd8mvzn0",
-            "isOptional": false,
-            "name": "createdAt",
-            "options": { "defaultToNow": true },
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:onoGYXPFAG1R",
-            "isOptional": false,
-            "name": "updatedAt",
-            "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime"
-          }
-        ],
-        "primaryKeyFieldRefs": ["id"],
-        "uniqueConstraints": [
-          {
-            "fields": [{ "fieldRef": "stripeCustomerId" }],
-            "id": "model-unique-constraint:9HIKDJ4uJBRz"
-          }
-        ]
-      },
-      "name": "BillingAccount",
-      "service": { "transformers": [] }
-    },
-    {
-      "featureRef": "billing",
-      "id": "model:rQOnZgMWGHWP",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:5SAuLT4bAV5_",
-            "isOptional": false,
-            "name": "id",
-            "options": { "default": "", "genUuid": true },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:0j9aW2_oVZi7",
-            "isOptional": false,
-            "name": "billingAccountId",
-            "options": { "default": "" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:iFOTvtC8ySj_",
-            "isOptional": false,
-            "name": "planKey",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:vDEdhOpEBcgh",
-            "isOptional": false,
-            "name": "status",
-            "options": { "enumRef": "BillingSubscriptionStatus" },
-            "type": "enum"
-          },
-          {
-            "id": "model-scalar-field:jLzXegb1IqTo",
-            "isOptional": false,
-            "name": "stripeSubscriptionId",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:XR_8ZVHS7aB7",
-            "isOptional": false,
-            "name": "currentPeriodStart",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:EucV0WREtHCq",
-            "isOptional": false,
-            "name": "currentPeriodEnd",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:_gldE8Uqnq4q",
-            "isOptional": false,
-            "name": "cancelAtPeriodEnd",
-            "options": { "default": "false" },
-            "type": "boolean"
-          },
-          {
-            "id": "model-scalar-field:8TD82_zwouGj",
-            "isOptional": false,
-            "name": "createdAt",
-            "options": { "defaultToNow": true },
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:7CWVH5PctvBD",
-            "isOptional": false,
-            "name": "updatedAt",
-            "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime"
-          }
-        ],
-        "primaryKeyFieldRefs": ["id"],
-        "relations": [
-          {
-            "foreignId": "model-foreign-relation:wI3FBas_VNa2",
-            "foreignRelationName": "billingSubscriptions",
-            "id": "model-local-relation:7_cnkNOxb0fZ",
-            "modelRef": "BillingAccount",
-            "name": "billingAccount",
-            "onDelete": "Cascade",
-            "onUpdate": "Restrict",
-            "references": [
-              { "foreignRef": "id", "localRef": "billingAccountId" }
-            ]
-          }
-        ],
-        "uniqueConstraints": [
-          {
-            "fields": [{ "fieldRef": "stripeSubscriptionId" }],
-            "id": "model-unique-constraint:rVWMdLZ9W36b"
-          }
-        ]
-      },
-      "name": "BillingSubscription",
       "service": { "transformers": [] }
     }
   ],

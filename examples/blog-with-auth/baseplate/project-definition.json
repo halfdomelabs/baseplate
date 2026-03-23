@@ -614,8 +614,8 @@
         "roles": [
           {
             "expression": "model.id === userId",
-            "id": "model-authorizer-role:blog-user-owner",
-            "name": "owner"
+            "id": "model-authorizer-role:BjC0i357yrgp",
+            "name": "self"
           }
         ]
       },
@@ -632,7 +632,7 @@
             { "ref": "id" },
             {
               "globalRoles": ["admin"],
-              "instanceRoles": ["owner"],
+              "instanceRoles": ["self"],
               "ref": "email"
             },
             { "ref": "name" },
