@@ -23,3 +23,7 @@ export { findDiscriminatedUnionMatch } from './schema-structure.js';
 export { transformDataWithSchema } from './transform-data-with-schema.js';
 export type * from './types.js';
 export { walkDataWithSchema } from './walk-data-with-schema.js';
+export {
+  type SchemaStructureVisitor,
+  walkSchemaStructure,
+} from './walk-schema-structure.js';

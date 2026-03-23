@@ -6,6 +6,7 @@ import {
   discardDraftAction,
   getEntityAction,
   getEntitySchemaAction,
+  getPluginInfoAction,
   listEntitiesAction,
   listEntityTypesAction,
   listPluginsAction,
@@ -61,6 +62,7 @@ export const USER_SERVICE_ACTIONS = [
   discardDraftAction,
   showDraftAction,
   listPluginsAction,
+  getPluginInfoAction,
   configurePluginAction,
   disablePluginAction,
 ];

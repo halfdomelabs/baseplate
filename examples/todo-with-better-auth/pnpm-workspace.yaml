@@ -1,6 +1,14 @@
 packages:
   - apps/*
   - libs/*
+allowBuilds:
+  '@parcel/watcher': false
+  '@prisma/engines': true
+  '@sentry-internal/node-cpu-profiler': true
+  esbuild: false
+  msgpackr-extract: false
+  prisma: true
+  unrs-resolver: false
 blockExoticSubdeps: true
 linkWorkspacePackages: true
 minimumReleaseAge: 1440

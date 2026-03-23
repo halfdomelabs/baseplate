@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { validationHintRegistry } from './validation-hint-registry.js';
+
 /**
  * Regex for validating kebab case, e.g. "my-project".
  */
@@ -24,25 +26,45 @@ export const CASE_VALIDATORS = {
   /**
    * Zod validator for validating kebab case, e.g. "my-project".
    */
-  KEBAB_CASE: z.string().regex(KEBAB_CASE_REGEX, {
-    message: 'Must be kebab case (e.g. "my-project")',
-  }),
+  KEBAB_CASE: z
+    .string()
+    .regex(KEBAB_CASE_REGEX, {
+      message: 'Must be kebab case (e.g. "my-project")',
+    })
+    .register(validationHintRegistry, {
+      description: 'kebab-case (e.g. "my-project")',
+    }),
   /**
    * Zod validator for validating pascal case, e.g. "MyProject".
    */
-  PASCAL_CASE: z.string().regex(PASCAL_CASE_REGEX, {
-    message: 'Must be pascal case (e.g. "MyProject")',
-  }),
+  PASCAL_CASE: z
+    .string()
+    .regex(PASCAL_CASE_REGEX, {
+      message: 'Must be pascal case (e.g. "MyProject")',
+    })
+    .register(validationHintRegistry, {
+      description: 'PascalCase (e.g. "MyProject")',
+    }),
   /**
    * Zod validator for validating camel case, e.g. "myProject".
    */
-  CAMEL_CASE: z.string().regex(CAMEL_CASE_REGEX, {
-    message: 'Must be camel case (e.g. "myProject")',
-  }),
+  CAMEL_CASE: z
+    .string()
+    .regex(CAMEL_CASE_REGEX, {
+      message: 'Must be camel case (e.g. "myProject")',
+    })
+    .register(validationHintRegistry, {
+      description: 'camelCase (e.g. "myProject")',
+    }),
   /**
    * Zod validator for validating constant case, e.g. "MY_PROJECT".
    */
-  CONSTANT_CASE: z.string().regex(CONSTANT_CASE_REGEX, {
-    message: 'Must be constant case (e.g. "MY_PROJECT")',
-  }),
+  CONSTANT_CASE: z
+    .string()
+    .regex(CONSTANT_CASE_REGEX, {
+      message: 'Must be constant case (e.g. "MY_PROJECT")',
+    })
+    .register(validationHintRegistry, {
+      description: 'CONSTANT_CASE (e.g. "MY_PROJECT")',
+    }),
 } as const;

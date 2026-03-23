@@ -182,6 +182,29 @@ mcp__baseplate_dev_server__show_template_metadata({
 });
 ```
 
+#### `get-plugin-info`
+
+Get detailed information about a plugin, including its config schema and current configuration. Use this before `configure-plugin` to understand what config fields are available.
+
+The config schema output includes JSDoc annotations:
+
+- `@ref(entityType)` — indicates a reference field. Use entity names, not IDs.
+- `@entity(entityType)` — indicates a nested entity array. IDs are auto-generated; omit the `id` field.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `pluginKey` (required): The unique plugin key
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__get_plugin_info({
+  project: 'my-project',
+  pluginKey: 'baseplate-dev_plugin-storage_storage',
+});
+```
+
 #### `snapshot-add`
 
 Add files to snapshot for persistent differences tracking.
