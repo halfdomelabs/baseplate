@@ -182,6 +182,24 @@ mcp__baseplate_dev_server__show_template_metadata({
 });
 ```
 
+#### `get-plugin-info`
+
+Get detailed information about a plugin, including its config schema and current configuration. Use this before `configure-plugin` to understand what config fields are available.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `pluginKey` (required): The unique plugin key
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__get_plugin_info({
+  project: 'my-project',
+  pluginKey: 'auth',
+});
+```
+
 #### `snapshot-add`
 
 Add files to snapshot for persistent differences tracking.

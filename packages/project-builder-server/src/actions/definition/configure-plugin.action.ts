@@ -4,6 +4,9 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 
 import {
+  createDefinitionSchemaParserContext,
+  createPluginSpecStore,
+  createProjectDefinitionSchema,
   PluginUtils,
   ProjectDefinitionContainer,
   serializeSchema,
@@ -27,7 +30,9 @@ const configurePluginInputSchema = z.object({
   config: z
     .record(z.string(), z.unknown())
     .optional()
-    .describe('Optional plugin configuration. Defaults to empty config.'),
+    .describe(
+      'Optional plugin configuration object. Use get-plugin-info to see the expected schema. Defaults to empty config.',
+    ),
 });
 
 const configurePluginOutputSchema = z.object({
@@ -56,7 +61,7 @@ export const configurePluginAction = createServiceAction({
   name: 'configure-plugin',
   title: 'Configure Plugin',
   description:
-    'Enable a plugin or update its configuration in the draft session. Changes are not persisted until commit-draft is called.',
+    'Enable a plugin or update its configuration in the draft session. Use get-plugin-info first to see the config schema and current config. Changes are not persisted until commit-draft is called.',
   inputSchema: configurePluginInputSchema,
   outputSchema: configurePluginOutputSchema,
   handler: async (input, context) => {
@@ -72,6 +77,9 @@ export const configurePluginAction = createServiceAction({
 
     const pluginConfig = input.config ?? {};
 
+    const isNew =
+      PluginUtils.byKey(container.definition, input.pluginKey) == null;
+
     // Apply setPluginConfig via produce
     const newDefinition = produce((draft: ProjectDefinition) => {
       PluginUtils.setPluginConfig(
@@ -82,11 +90,26 @@ export const configurePluginAction = createServiceAction({
       );
     })(container.definition);
 
+    // When a new plugin is added, rebuild the schema to include the new
+    // plugin's discriminated union variant; otherwise serialization fails
+    // because the old schema has no matching discriminator for the new ID.
+    let { schema } = container;
+    if (isNew) {
+      const newPluginStore = createPluginSpecStore(
+        parserContext.pluginStore,
+        newDefinition,
+      );
+      const defCtx = createDefinitionSchemaParserContext({
+        plugins: newPluginStore,
+      });
+      schema = createProjectDefinitionSchema(defCtx);
+    }
+
     // Serialize back to name-based format
-    const serializedDef = serializeSchema(
-      container.schema,
-      newDefinition,
-    ) as Record<string, unknown>;
+    const serializedDef = serializeSchema(schema, newDefinition) as Record<
+      string,
+      unknown
+    >;
 
     const { warnings } = await validateAndSaveDraft(
       serializedDef,
@@ -95,8 +118,6 @@ export const configurePluginAction = createServiceAction({
       projectDirectory,
     );
 
-    const isNew =
-      PluginUtils.byKey(container.definition, input.pluginKey) == null;
     const action = isNew ? 'Enabled' : 'Updated configuration for';
 
     return {
