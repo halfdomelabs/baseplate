@@ -1,7 +1,6 @@
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
 import {
   useDefinitionSchema,
   useProjectDefinition,
@@ -14,11 +13,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  InputFieldController,
-  MultiComboboxFieldController,
-  SelectFieldController,
-  SwitchFieldController,
 } from '@baseplate-dev/ui-components';
+import { useLens } from '@hookform/lenses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -29,6 +25,8 @@ import type {
 } from '../schema/plugin-definition.js';
 
 import { createFileCategorySchema } from '../schema/plugin-definition.js';
+import { FileCategoryFormFields } from './file-category-form-fields.js';
+import { getSelectableRoleOptions } from './get-selectable-role-options.js';
 
 interface FileCategoryDialogProps {
   open?: boolean;
@@ -56,6 +54,7 @@ export function FileCategoryDialog({
   });
 
   const { control, handleSubmit } = form;
+  const lens = useLens({ control });
 
   const onSubmit = handleSubmit((data) => {
     onSave(data);
@@ -64,14 +63,7 @@ export function FileCategoryDialog({
 
   const formId = useId();
 
-  // Get available auth roles
-  const roleOptions = pluginContainer
-    .use(authConfigSpec)
-    .getAuthConfigOrThrow(definition)
-    .roles.map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
+  const roleOptions = getSelectableRoleOptions(pluginContainer, definition);
 
   // Get available storage adapters from parent form
   const adapters = useWatch({ control: parentControl, name: 's3Adapters' });
@@ -100,46 +92,11 @@ export function FileCategoryDialog({
                 : 'Update the file category details below.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="storage:space-y-4 storage:py-4">
-            <InputFieldController
-              label="Category Name"
-              name="name"
-              control={control}
-              placeholder="e.g., USER_PROFILE_AVATAR"
-              description="Must be CONSTANT_CASE format"
-            />
-            <InputFieldController
-              label="Max File Size (MB)"
-              name="maxFileSizeMb"
-              control={control}
-              type="number"
-              placeholder="e.g., 10"
-              description="Maximum file size in megabytes"
-              registerOptions={{
-                valueAsNumber: true,
-              }}
-            />
-            <MultiComboboxFieldController
-              label="Upload Roles"
-              name="authorize.uploadRoles"
-              control={control}
-              options={roleOptions}
-              placeholder="Select roles that can upload..."
-              description="User roles authorized to upload files"
-            />
-            <SelectFieldController
-              label="Storage Adapter"
-              name="adapterRef"
-              control={control}
-              options={adapterOptions}
-              placeholder="Select storage adapter..."
-              description="Where files will be stored"
-            />
-            <SwitchFieldController
-              label="Disable Auto-Cleanup"
-              name="disableAutoCleanup"
-              control={control}
-              description="When enabled, files in this category will not be automatically cleaned up"
+          <div className="storage:py-4">
+            <FileCategoryFormFields
+              lens={lens}
+              roleOptions={roleOptions}
+              adapterOptions={adapterOptions}
             />
           </div>
           <DialogFooter>
