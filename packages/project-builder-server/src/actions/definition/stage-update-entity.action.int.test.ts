@@ -40,7 +40,7 @@ describe('stage-update-entity', () => {
                 name: 'id',
                 type: 'uuid',
                 isOptional: false,
-                options: { genUuid: true },
+                options: { defaultGeneration: 'uuidv7' },
               },
             ],
             primaryKeyFieldRefs: ['id'],

@@ -55,10 +55,11 @@ export const createModelScalarFieldSchema = definitionSchemaWithSlots(
         type: z.literal('uuid'),
         options: z
           .object({
-            default: z.string().default(''),
-            genUuid: z.boolean().optional(),
+            defaultGeneration: z
+              .enum(['none', 'uuidv4', 'uuidv7'])
+              .default('none'),
           })
-          .default({ default: '' }),
+          .default({ defaultGeneration: 'none' }),
       }),
       z.object({
         ...commonFields,

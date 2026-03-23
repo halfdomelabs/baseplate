@@ -46,8 +46,7 @@ test('can sync a minimal project', async ({ page, addProject }) => {
               type: 'uuid',
               isOptional: false,
               options: {
-                default: '',
-                genUuid: true,
+                defaultGeneration: 'uuidv7',
               },
             },
           ],

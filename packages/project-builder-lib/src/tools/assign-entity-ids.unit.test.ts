@@ -19,7 +19,7 @@ describe('assignEntityIds', () => {
         createTestScalarField({
           name: 'id',
           type: 'uuid',
-          options: { genUuid: true },
+          options: { defaultGeneration: 'uuidv7' },
         }),
         createTestScalarField({ name: 'email', type: 'string' }),
       ],
@@ -93,7 +93,7 @@ describe('assignEntityIds', () => {
             name: 'id',
             type: 'uuid',
             isOptional: false,
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           },
           {
             id: 'brand-new-field',
@@ -137,7 +137,7 @@ describe('assignEntityIds', () => {
             name: 'id',
             type: 'uuid',
             isOptional: false,
-            options: { genUuid: true },
+            options: { defaultGeneration: 'uuidv7' },
           },
         ],
         primaryKeyFieldRefs: ['id'],

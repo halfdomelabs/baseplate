@@ -49,7 +49,7 @@
           {
             "id": "model-scalar-field:PPNcQYjHcLJM",
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -99,7 +99,7 @@
           {
             "id": "model-scalar-field:6AEaW6mjUeMi",
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -170,7 +170,7 @@
           {
             "id": "model-scalar-field:EwhSjvGdsL9q",
             "name": "blogId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -228,7 +228,7 @@
           {
             "id": "model-scalar-field:iZSakQLjj07M",
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -278,7 +278,7 @@
           {
             "id": "model-scalar-field:gnzjScaSf6YQ",
             "name": "id",
-            "options": { "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -349,7 +349,7 @@
           {
             "id": "model-scalar-field:7f865kOwXryv",
             "name": "userId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -394,7 +394,7 @@
           {
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -457,6 +457,6 @@
   ],
   "name": "blog-with-auth",
   "portOffset": 3000,
-  "schemaVersion": 9,
+  "schemaVersion": 31,
   "version": "0.1.0"
 }

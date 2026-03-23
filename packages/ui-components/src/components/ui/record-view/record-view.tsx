@@ -68,7 +68,7 @@ function RecordViewActions({
   children,
 }: RecordViewActionsProps): React.ReactElement {
   return (
-    <div className={cn('flex items-center gap-2', className)}>{children}</div>
+    <div className={cn('flex items-center gap-4', className)}>{children}</div>
   );
 }
 

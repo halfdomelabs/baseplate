@@ -16,7 +16,7 @@ export function createLocalAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'name',
@@ -80,7 +80,7 @@ export function createLocalAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'userId',
@@ -173,7 +173,7 @@ export function createLocalAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'userId',
@@ -229,7 +229,7 @@ export function createLocalAuthPartialDefinition(
             {
               name: 'id',
               type: 'uuid',
-              options: { genUuid: true },
+              options: { defaultGeneration: 'uuidv7' },
             },
             {
               name: 'type',

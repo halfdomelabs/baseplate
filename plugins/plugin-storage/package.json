@@ -54,6 +54,7 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@hookform/lenses": "0.8.1",
     "@hookform/resolvers": "5.2.2",
     "es-toolkit": "1.44.0",
     "react": "catalog:",

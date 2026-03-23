@@ -329,7 +329,7 @@
             "id": "model-scalar-field:TO26eSVGJHKn",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -350,7 +350,7 @@
             "id": "model-scalar-field:VOV5qlIu2XTx",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -443,7 +443,7 @@
             "id": "model-scalar-field:sLwgpRj1rBQu",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -488,14 +488,14 @@
             "id": "model-scalar-field:5SAuLT4bAV5_",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:0j9aW2_oVZi7",
             "isOptional": false,
             "name": "billingAccountId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -596,7 +596,7 @@
             "id": "model-scalar-field:MukxVk8M3L7K",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -652,7 +652,7 @@
             "id": "model-scalar-field:e3Hy-g24hMzN",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -708,7 +708,7 @@
             "id": "model-scalar-field:3ma5keqv7qYQ",
             "isOptional": true,
             "name": "uploaderId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -759,7 +759,7 @@
             "id": "model-scalar-field:qfU8rq8l76z9",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -794,7 +794,7 @@
             "id": "model-scalar-field:6CP7Q_xg5aA7",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -879,14 +879,14 @@
             "id": "model-scalar-field:4xWPoMcSMuRn",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:um_I5IonEAyH",
             "isOptional": false,
             "name": "todoListId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -928,7 +928,7 @@
             "id": "model-scalar-field:cq7L3WkPSg4V",
             "isOptional": true,
             "name": "assigneeId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           }
         ],
@@ -1012,14 +1012,14 @@
             "id": "model-scalar-field:iMi94WosiiQH",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:pbp68yz8eZau",
             "isOptional": false,
             "name": "todoItemId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1094,7 +1094,7 @@
             "id": "model-scalar-field:mAiiTqTcpWTk",
             "isOptional": false,
             "name": "todoItemAttachmentId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1168,14 +1168,14 @@
             "id": "model-scalar-field:C-79Hf4LZI5-",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:GNBj_9ieyOFc",
             "isOptional": false,
             "name": "ownerId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1220,7 +1220,7 @@
             "id": "model-scalar-field:e7sP7kRUF1GT",
             "isOptional": true,
             "name": "coverPhotoId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           }
         ],
@@ -1310,14 +1310,14 @@
             "id": "model-scalar-field:YWYJp8Oqc0Mm",
             "isOptional": false,
             "name": "todoListId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:6p27da_jaUp5",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1427,7 +1427,7 @@
             "id": "model-scalar-field:qH3SeqMJqoMB",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -1476,7 +1476,7 @@
             "id": "model-scalar-field:JrsS7gxqePD5",
             "isOptional": true,
             "name": "billingAccountId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           }
         ],
@@ -1576,21 +1576,21 @@
             "id": "model-scalar-field:5Dgu6vVGYWl4",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:U2_vbz2coSuE",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:vyEmASkz_ZtS",
             "isOptional": false,
             "name": "fileId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1661,14 +1661,14 @@
             "id": "model-scalar-field:HJNidGR8K5N1",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
             "id": "model-scalar-field:X3z9DOcV9xfb",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1689,7 +1689,7 @@
             "id": "model-scalar-field:9stTi6BpANqK",
             "isOptional": true,
             "name": "avatarId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1703,7 +1703,7 @@
             "id": "model-scalar-field:xgGEeGk60qFf",
             "isOptional": true,
             "name": "favoriteTodoListId",
-            "options": { "default": "" },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           }
         ],
@@ -1783,7 +1783,7 @@
             "id": "model-scalar-field:sjB8Gmm6eih5",
             "isOptional": false,
             "name": "userId",
-            "options": { "default": "", "genUuid": false },
+            "options": { "defaultGeneration": "none" },
             "type": "uuid"
           },
           {
@@ -1834,7 +1834,7 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "default": "", "genUuid": true },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
@@ -2038,7 +2038,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 30,
+  "schemaVersion": 31,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",
