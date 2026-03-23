@@ -17,6 +17,7 @@ import {
   createProjectDefinitionSchema,
   findOrphanedUnionItems,
   fixDefinitionRefs,
+  partitionIssuesBySeverity,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { ProjectDefinitionContext } from '@baseplate-dev/project-builder-lib/web';
