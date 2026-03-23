@@ -73,7 +73,9 @@ function FileCategoryEditorForm({
         <SectionListSectionTitle>File Categories</SectionListSectionTitle>
         <SectionListSectionDescription>
           Configure file categories that define upload constraints, storage
-          adapters, and authorization rules for file uploads.
+          adapters, and authorization rules for file uploads. If no file
+          categories are specified, storage file handling code (upload services,
+          presigned URLs, and related schemas) will not be generated.
         </SectionListSectionDescription>
       </SectionListSectionHeader>
       <SectionListSectionContent className="storage:space-y-4">
