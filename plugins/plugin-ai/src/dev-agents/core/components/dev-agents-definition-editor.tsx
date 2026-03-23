@@ -106,8 +106,7 @@ export function DevAgentsDefinitionEditor({
                     Select which AI coding agents your team uses. The plugin
                     will generate appropriate configuration files (AGENTS.md,
                     .agents/ directory) for your project. Agent-specific files
-                    like CLAUDE.md and .mcp.json are generated only for selected
-                    agents.
+                    like CLAUDE.md are generated only for selected agents.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent>
