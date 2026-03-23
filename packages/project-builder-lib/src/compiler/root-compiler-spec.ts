@@ -1,5 +1,7 @@
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
+import { safeMerge } from '@baseplate-dev/utils';
+
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { ProjectDefinition } from '#src/schema/index.js';
 
@@ -29,4 +31,17 @@ export const rootCompilerSpec = createFieldMapSpec(
   (t) => ({
     compilers: t.array<PluginRootCompiler>(),
   }),
+  {
+    use: (values) => ({
+      compileAll(
+        options: PluginRootCompilerOptions,
+      ): Record<string, GeneratorBundle> {
+        let result: Record<string, GeneratorBundle> = {};
+        for (const compiler of values.compilers) {
+          result = safeMerge(result, compiler.compile(options));
+        }
+        return result;
+      },
+    }),
+  },
 );

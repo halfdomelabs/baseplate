@@ -207,7 +207,7 @@
             "id": "model-scalar-field:x5uM_Nhnixmv",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -653,7 +653,7 @@
             "id": "model-scalar-field:iZSakQLjj07M",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -732,7 +732,7 @@
             "id": "model-scalar-field:z6JrpgbtlGck",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -870,7 +870,7 @@
             "id": "model-scalar-field:CjiJr2PTCCeT",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {

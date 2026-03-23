@@ -259,8 +259,14 @@ function Index(): React.JSX.Element {
                       className="flex items-center justify-between rounded-md border bg-card px-3 py-2 text-sm hover:bg-accent/50"
                     >
                       <span>{pkg.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {pkg.type}
+                      <Badge
+                        variant="outline"
+                        className="text-xs"
+                        title={pkg.type}
+                      >
+                        {pkg.type.length > 30
+                          ? `...${pkg.type.slice(-30)}`
+                          : pkg.type}
                       </Badge>
                     </Link>
                   ))}

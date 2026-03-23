@@ -329,7 +329,7 @@
             "id": "model-scalar-field:TO26eSVGJHKn",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -443,7 +443,7 @@
             "id": "model-scalar-field:sLwgpRj1rBQu",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -488,7 +488,7 @@
             "id": "model-scalar-field:5SAuLT4bAV5_",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -652,7 +652,7 @@
             "id": "model-scalar-field:e3Hy-g24hMzN",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -759,7 +759,7 @@
             "id": "model-scalar-field:qfU8rq8l76z9",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -1427,7 +1427,7 @@
             "id": "model-scalar-field:qH3SeqMJqoMB",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {
@@ -1834,7 +1834,7 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv4" },
+            "options": { "defaultGeneration": "uuidv7" },
             "type": "uuid"
           },
           {

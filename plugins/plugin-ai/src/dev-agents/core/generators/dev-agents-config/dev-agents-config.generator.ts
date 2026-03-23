@@ -1,10 +1,13 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import type { DevAgentValue } from '../../schema/plugin-definition.js';
+
+import { DEV_AGENT_VALUES } from '../../schema/plugin-definition.js';
 import { DEV_AGENTS_CORE_DEV_AGENTS_CONFIG_GENERATED as GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
-  enabledAgents: z.array(z.string()),
+  enabledAgents: z.array(z.enum(DEV_AGENT_VALUES)),
   projectName: z.string(),
   apps: z.array(
     z.object({
@@ -21,13 +24,13 @@ type Descriptor = z.infer<typeof descriptorSchema>;
 // Variable builders
 // ---------------------------------------------------------------------------
 
-function buildAppsList(descriptor: Descriptor): string {
-  return descriptor.apps
+export function buildAppsList(apps: Descriptor['apps']): string {
+  return apps
     .map((a) => `- **${a.name}** — \`${a.type}\` app in \`${a.directory}/\``)
     .join('\n');
 }
 
-const MCP_SETUP_COMMANDS: Record<string, string> = {
+const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
   'claude-code': [
     '**Claude Code:**',
     '```bash',
@@ -77,7 +80,9 @@ const MCP_SETUP_COMMANDS: Record<string, string> = {
   ].join('\n'),
 };
 
-function buildMcpSetupInstructions(enabledAgents: string[]): string {
+export function buildMcpSetupInstructions(
+  enabledAgents: DevAgentValue[],
+): string {
   return enabledAgents
     .map((agent) => MCP_SETUP_COMMANDS[agent])
     .filter(Boolean)
@@ -108,7 +113,7 @@ export const devAgentsConfigGenerator = createGenerator({
               renderers.agentsMd.render({
                 variables: {
                   TPL_PROJECT_NAME: descriptor.projectName,
-                  TPL_APPS_LIST: buildAppsList(descriptor),
+                  TPL_APPS_LIST: buildAppsList(descriptor.apps),
                 },
               }),
             );
