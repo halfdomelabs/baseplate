@@ -5,5 +5,5 @@ export const userAuthorizer = createModelAuthorizer({
   model: 'user',
   idField: 'id',
   getModelById: (id) => prisma.user.findUnique({ where: { id } }),
-  roles: { owner: (ctx, model) => model.id === ctx.auth.userId },
+  roles: { self: (ctx, model) => model.id === ctx.auth.userId },
 });
