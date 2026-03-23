@@ -1,7 +1,7 @@
 import type { EmbeddedRelationTransformerConfig } from '@baseplate-dev/project-builder-lib';
 import type {
   ModelTransformerWebConfig,
-  ModelTransformerWebFormProps,
+  ModelTransformerWebFormFieldsProps,
 } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
@@ -26,7 +26,7 @@ import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 function ServiceEmbeddedRelationForm({
   formProps,
   name,
-}: ModelTransformerWebFormProps): React.JSX.Element {
+}: ModelTransformerWebFormFieldsProps): React.JSX.Element {
   // force type cast to avoid TS error
   const prefix = name as 'prefix';
   const formPropsTyped = formProps as unknown as UseFormReturn<{
@@ -185,6 +185,6 @@ export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<Emb
       embeddedFieldNames: [],
       modelRef: '',
     }),
-    Form: ServiceEmbeddedRelationForm,
+    FormFields: ServiceEmbeddedRelationForm,
     pluginKey: undefined,
   };

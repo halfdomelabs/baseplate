@@ -53,8 +53,23 @@ export function createLocalAuthPartialDefinition(
         graphql: {
           objectType: {
             enabled: true,
-            fields: [{ ref: 'id' }, { ref: 'email' }],
+            fields: [
+              { ref: 'id' },
+              {
+                ref: 'email',
+                globalRoles: ['admin'],
+                instanceRoles: ['self'],
+              },
+            ],
           },
+        },
+        authorizer: {
+          roles: [
+            {
+              name: 'self',
+              expression: 'model.id === userId',
+            },
+          ],
         },
       },
       {

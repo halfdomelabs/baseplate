@@ -1382,8 +1382,8 @@
         "roles": [
           {
             "expression": "model.id === userId",
-            "id": "model-authorizer-role:e5NV7nPN9Flw",
-            "name": "owner"
+            "id": "model-authorizer-role:rlm2eb1GAtLh",
+            "name": "self"
           }
         ]
       },
@@ -1399,7 +1399,11 @@
           "fields": [
             { "ref": "id" },
             { "ref": "name" },
-            { "ref": "email" },
+            {
+              "globalRoles": ["admin"],
+              "instanceRoles": ["self"],
+              "ref": "email"
+            },
             { "ref": "updatedAt" },
             { "ref": "createdAt" }
           ],

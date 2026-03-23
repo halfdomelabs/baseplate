@@ -30,12 +30,50 @@ interface ServiceTransformerFormProps {
 
 export function ServiceTransformerForm({
   className,
-  webConfig: { Form, pluginKey },
+  webConfig,
   transformer,
   onUpdate,
   isCreate,
 }: ServiceTransformerFormProps): React.JSX.Element | null {
   const originalModel = useOriginalModel();
+
+  // Full form mode: delegate entirely to the Form component
+  if (webConfig.Form) {
+    const { Form } = webConfig;
+    return (
+      <Form
+        transformer={transformer}
+        onUpdate={onUpdate}
+        isCreate={isCreate}
+        originalModel={originalModel}
+        pluginKey={webConfig.pluginKey}
+      />
+    );
+  }
+
+  // FormFields mode: wrap fields in a form with dialog footer
+  return (
+    <ServiceTransformerFormFields
+      className={className}
+      webConfig={webConfig}
+      transformer={transformer}
+      onUpdate={onUpdate}
+      isCreate={isCreate}
+      originalModel={originalModel}
+    />
+  );
+}
+
+function ServiceTransformerFormFields({
+  className,
+  webConfig: { FormFields, pluginKey },
+  transformer,
+  onUpdate,
+  isCreate,
+  originalModel,
+}: ServiceTransformerFormProps & {
+  originalModel: ReturnType<typeof useOriginalModel>;
+}): React.JSX.Element | null {
   const transformerSchema = useDefinitionSchema(createTransformerSchema);
   const schema = useMemo(
     () =>
@@ -64,7 +102,7 @@ export function ServiceTransformerForm({
 
   const formId = useId();
 
-  if (!Form) {
+  if (!FormFields) {
     return null;
   }
 
@@ -77,7 +115,7 @@ export function ServiceTransformerForm({
         return onSubmit(e);
       }}
     >
-      <Form
+      <FormFields
         formProps={formProps}
         name="transformer"
         originalModel={originalModel}

@@ -6,7 +6,7 @@ export const userObjectType = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     email: t.exposeString('email', {
-      authorize: ['admin', userAuthorizer.roles.owner],
+      authorize: ['admin', userAuthorizer.roles.self],
       nullable: true,
     }),
     name: t.exposeString('name', { nullable: true }),
