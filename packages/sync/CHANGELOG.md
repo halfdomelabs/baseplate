@@ -1,5 +1,12 @@
 # @baseplate-dev/sync
 
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies [[`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363)]:
+  - @baseplate-dev/utils@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes

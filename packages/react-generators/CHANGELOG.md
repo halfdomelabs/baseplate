@@ -1,5 +1,20 @@
 # @baseplate-dev/react-generators
 
+## 0.6.5
+
+### Patch Changes
+
+- [#840](https://github.com/halfdomelabs/baseplate/pull/840) [`c24a24a`](https://github.com/halfdomelabs/baseplate/commit/c24a24ac9d2b66623acb0fda9c6ff2b3b80c0a6d) Thanks [@kingston](https://github.com/kingston)! - Replace EmptyDisplay with composable Empty component from shadcn
+
+- [#859](https://github.com/halfdomelabs/baseplate/pull/859) [`fc8f158`](https://github.com/halfdomelabs/baseplate/commit/fc8f1582f1702d2d6f6eaa60607da7bb777750b5) Thanks [@kingston](https://github.com/kingston)! - Add hover styles for badges rendered as buttons and use semantic hover color tokens
+
+- [#847](https://github.com/halfdomelabs/baseplate/pull/847) [`497904a`](https://github.com/halfdomelabs/baseplate/commit/497904a9b5088171f95c5e16bcda542fb5e98610) Thanks [@kingston](https://github.com/kingston)! - Connect theme builder UI to code generation. Theme color configuration from the project definition now drives the generated `styles.css` instead of hardcoded values. Default theme uses slate base with indigo primary. Remove explicit hover color variables (primaryHover, secondaryHover, destructiveHover) and linkVisited — hover is now computed via `color-mix` in CSS. Add palette swatch selection to theme color picker. Split preview into surface and interactive sections with input group and alert components.
+
+- Updated dependencies [[`8dcf7b3`](https://github.com/halfdomelabs/baseplate/commit/8dcf7b3c909672487bad61b7a4465d1860092363), [`87a2218`](https://github.com/halfdomelabs/baseplate/commit/87a2218266f957bb4beacd6b13cb3d610fd15a41), [`c7131f5`](https://github.com/halfdomelabs/baseplate/commit/c7131f5caebda203ece99d30fcf2d58ead3abdb8)]:
+  - @baseplate-dev/utils@0.6.5
+  - @baseplate-dev/core-generators@0.6.5
+  - @baseplate-dev/sync@0.6.5
+
 ## 0.6.4
 
 ### Patch Changes
