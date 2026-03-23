@@ -97,10 +97,6 @@
   "cliVersion": "0.6.4",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
-    { "id": "feature:ffs0IFfakTk0", "name": "articles" },
-    { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
-    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
-    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" },
     {
       "id": "feature:RLpN26dwQNkw",
       "name": "accounts/auth",
@@ -110,7 +106,11 @@
       "id": "feature:Cus91nOEvzmO",
       "name": "accounts/users",
       "parentRef": "accounts"
-    }
+    },
+    { "id": "feature:ffs0IFfakTk0", "name": "articles" },
+    { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
+    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
   "libraries": [
@@ -943,16 +943,6 @@
   "plugins": [
     {
       "config": {
-        "additionalUserAdminRoles": ["admin"],
-        "requireNameOnRegistration": true
-      },
-      "id": "plugin:baseplate-dev_plugin-auth_local-auth",
-      "name": "local-auth",
-      "packageName": "@baseplate-dev/plugin-auth",
-      "version": "0.1.0"
-    },
-    {
-      "config": {
         "accountsFeatureRef": "accounts/users",
         "authFeatureRef": "accounts/auth",
         "implementationPluginKey": "baseplate-dev_plugin-auth_local-auth",
@@ -995,11 +985,21 @@
     },
     {
       "config": {
-        "implementationPluginKey": "baseplate-dev_plugin-queue_pg-boss"
+        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
-      "id": "plugin:baseplate-dev_plugin-queue_queue",
-      "name": "queue",
-      "packageName": "@baseplate-dev/plugin-queue",
+      "id": "plugin:baseplate-dev_plugin-email_email",
+      "name": "email",
+      "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "additionalUserAdminRoles": ["admin"],
+        "requireNameOnRegistration": true
+      },
+      "id": "plugin:baseplate-dev_plugin-auth_local-auth",
+      "name": "local-auth",
+      "packageName": "@baseplate-dev/plugin-auth",
       "version": "0.1.0"
     },
     {
@@ -1010,12 +1010,19 @@
       "version": "0.1.0"
     },
     {
-      "config": {
-        "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
-      },
-      "id": "plugin:baseplate-dev_plugin-email_email",
-      "name": "email",
+      "config": { "postmarkOptions": {} },
+      "id": "plugin:baseplate-dev_plugin-email_postmark",
+      "name": "postmark",
       "packageName": "@baseplate-dev/plugin-email",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-queue_pg-boss"
+      },
+      "id": "plugin:baseplate-dev_plugin-queue_queue",
+      "name": "queue",
+      "packageName": "@baseplate-dev/plugin-queue",
       "version": "0.1.0"
     },
     {
@@ -1030,13 +1037,6 @@
       "id": "plugin:baseplate-dev_plugin-observability_sentry",
       "name": "sentry",
       "packageName": "@baseplate-dev/plugin-observability",
-      "version": "0.1.0"
-    },
-    {
-      "config": { "postmarkOptions": {} },
-      "id": "plugin:baseplate-dev_plugin-email_postmark",
-      "name": "postmark",
-      "packageName": "@baseplate-dev/plugin-email",
       "version": "0.1.0"
     }
   ],

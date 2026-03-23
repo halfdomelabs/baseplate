@@ -29,6 +29,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) => {
       basePluginDefinitionSchema.refine(() => true),
       {
         type: pluginEntityType,
+        sortByName: true,
       },
     );
   }
@@ -52,6 +53,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) => {
     ),
     {
       type: pluginEntityType,
+      sortByName: true,
     },
   );
 });

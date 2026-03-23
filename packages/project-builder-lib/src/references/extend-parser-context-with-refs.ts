@@ -3,15 +3,14 @@ import type { TuplePaths } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import type { DefinitionEntityType } from '#src/index.js';
+import type { PluginSpecStore } from '#src/plugins/index.js';
 
 import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
 } from './definition-ref-builder.js';
-import type {
-  ExpressionSlotMap,
-  RefExpressionParser,
-} from './expression-types.js';
+import type { ExpressionParserRef } from './expression-parser-ref.js';
+import type { ExpressionSlotMap } from './expression-types.js';
 import type {
   RefContextSlot,
   RefContextSlotDefinition,
@@ -19,6 +18,8 @@ import type {
 } from './ref-context-slot.js';
 
 import { definitionRefRegistry } from './definition-ref-registry.js';
+import { expressionParserSpec } from './expression-parser-spec.js';
+import { RefExpressionParser } from './expression-types.js';
 import { createRefContextSlotMap } from './ref-context-slot.js';
 
 type ZodTypeWithOptional<T extends z.ZodType> = T extends z.ZodOptional
@@ -62,18 +63,27 @@ export type RefContextType = <
  * provided as the second argument. TypeScript enforces this at compile time.
  */
 export interface WithExpressionType {
-  // Overload for parsers with no required slots
+  // Overload for direct parser with no required slots
   <TValue, TParseResult>(
     parser: RefExpressionParser<TValue, TParseResult>,
   ): z.ZodType<TValue, TValue>;
 
-  // Overload for parsers with required slots
+  // Overload for direct parser with required slots
   <
     TValue,
     TParseResult,
     TRequiredSlots extends Record<string, DefinitionEntityType>,
   >(
     parser: RefExpressionParser<TValue, TParseResult, TRequiredSlots>,
+    slots: ExpressionSlotMap<TRequiredSlots>,
+  ): z.ZodType<TValue, TValue>;
+
+  // Overload for parser ref with no required slots
+  <TValue>(parserRef: ExpressionParserRef<TValue>): z.ZodType<TValue, TValue>;
+
+  // Overload for parser ref with required slots
+  <TValue, TRequiredSlots extends Record<string, DefinitionEntityType>>(
+    parserRef: ExpressionParserRef<TValue, TRequiredSlots>,
     slots: ExpressionSlotMap<TRequiredSlots>,
   ): z.ZodType<TValue, TValue>;
 }
@@ -138,6 +148,7 @@ export function withEnt<TEntityType extends DefinitionEntityType>(
       >['getNameResolver'],
       parentSlot: entity.parentSlot,
       provides: entity.provides,
+      sortByName: entity.sortByName,
     });
     return schema as unknown as ZodTypeWithOptional<TType>;
   };
@@ -201,28 +212,55 @@ function refContext<
  * );
  * ```
  */
-function withExpression<
-  TValue,
-  TParseResult,
-  TRequiredSlots extends Record<string, DefinitionEntityType>,
->(
-  parser: RefExpressionParser<TValue, TParseResult, TRequiredSlots>,
-  slots?: ExpressionSlotMap<TRequiredSlots>,
-): z.ZodType<TValue, TValue> {
-  // createSchema() returns a fresh instance per call, allowing per-call
-  // metadata to be registered without conflicting across call sites.
-  const schema = parser.createSchema() as z.ZodType<TValue, TValue>;
+/**
+ * Creates a `withExpression` function that resolves parser refs eagerly
+ * from the plugin spec store at schema construction time.
+ */
+function createWithExpression(plugins?: PluginSpecStore): WithExpressionType {
+  // Implementation
+  function withExpression(
+    parserOrRef: // oxlint-disable-next-line typescript/no-explicit-any
+      | RefExpressionParser<any, any, any>
+      // oxlint-disable-next-line typescript/no-explicit-any
+      | ExpressionParserRef<any, any>,
+    // oxlint-disable-next-line typescript/no-explicit-any
+    slots?: ExpressionSlotMap<any>,
+  ): z.ZodType {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    let parser: RefExpressionParser<any, any, any>;
+    if (parserOrRef instanceof RefExpressionParser) {
+      parser = parserOrRef;
+    } else {
+      // Resolve parser ref from plugin spec store
+      if (!plugins) {
+        throw new Error(
+          `PluginSpecStore is required to resolve expression parser ref "${parserOrRef.name}". ` +
+            `Ensure plugins are provided to createDefinitionSchemaParserContext.`,
+        );
+      }
+      const specUse = plugins.use(expressionParserSpec);
+      const resolved = specUse.getParser(parserOrRef.name);
+      if (!resolved) {
+        throw new Error(
+          `Expression parser "${parserOrRef.name}" not found in expressionParserSpec. ` +
+            `Ensure it is registered via a core module or plugin.`,
+        );
+      }
+      parser = resolved;
+    }
 
-  definitionRefRegistry.add(schema, {
-    kind: 'expression',
-
-    parser,
-    slots,
-  });
-  return schema;
+    const schema = parser.createSchema();
+    definitionRefRegistry.add(schema, {
+      kind: 'expression',
+      parser,
+      slots,
+    });
+    return schema;
+  }
+  return withExpression as WithExpressionType;
 }
 
-export function extendParserContextWithRefs(): {
+export function extendParserContextWithRefs(plugins?: PluginSpecStore): {
   withRef: WithRefType;
   withEnt: WithEntType;
   refContext: RefContextType;
@@ -246,6 +284,6 @@ export function extendParserContextWithRefs(): {
       );
     },
     refContext,
-    withExpression,
+    withExpression: createWithExpression(plugins),
   };
 }

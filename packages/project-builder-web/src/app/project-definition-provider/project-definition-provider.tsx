@@ -16,8 +16,7 @@ import {
   createPluginSpecStore,
   createProjectDefinitionSchema,
   findOrphanedUnionItems,
-  fixRefDeletions,
-  partitionIssuesBySeverity,
+  fixDefinitionRefs,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 import { ProjectDefinitionContext } from '@baseplate-dev/project-builder-lib/web';
@@ -101,7 +100,7 @@ export function ProjectDefinitionProvider({
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
     if (!projectDefinitionContainer || !schemaParserContext) return;
 
-    const { definition } = projectDefinitionContainer;
+    const { definition, refPayload } = projectDefinitionContainer;
     const parserContext = schemaParserContext;
 
     async function saveDefinition(
@@ -154,12 +153,15 @@ export function ProjectDefinitionProvider({
         }
 
         const parsedProjectDefinition = defSchema.parse(rawProjectDefinition);
-        const newProjectDefinition = applyDefinitionFixes(
+        const autoFixedDefinition = applyDefinitionFixes(
           defSchema,
           parsedProjectDefinition,
         );
 
-        const result = fixRefDeletions(defSchema, newProjectDefinition);
+        // Fix dangling references and update expressions for renames
+        const result = fixDefinitionRefs(defSchema, autoFixedDefinition, {
+          oldRefPayload: refPayload,
+        });
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }

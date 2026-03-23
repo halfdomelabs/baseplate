@@ -30,6 +30,7 @@ import {
   createProjectDefinitionSchema,
 } from '#src/schema/index.js';
 import { collectEntityMetadata } from '#src/tools/entity-service/entity-type-map.js';
+import { sortEntityArrays } from '#src/tools/sort-entity-arrays.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -150,7 +151,8 @@ export class ProjectDefinitionContainer {
    */
   toSerializedContents(): string {
     const serializedContents = serializeSchema(this.schema, this.definition);
-    return stringifyPrettyStable(serializedContents);
+    const sortedContents = sortEntityArrays(this.schema, serializedContents);
+    return stringifyPrettyStable(sortedContents);
   }
 
   /**

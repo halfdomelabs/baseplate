@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 
 import type { PluginSpecStore } from '#src/plugins/index.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import type { RefContextSlot } from './ref-context-slot.js';
 import type { DefinitionEntityType, ReferencePath } from './types.js';
@@ -11,8 +12,8 @@ import type { DefinitionEntityType, ReferencePath } from './types.js';
  * validating expressions against model fields, roles, etc.
  */
 export interface ExpressionValidationContext {
-  /** The raw project definition data */
-  readonly definition: unknown;
+  /** The project definition data */
+  readonly definition: ProjectDefinition;
   /** The plugin spec store for accessing plugin-registered configuration */
   readonly pluginStore: PluginSpecStore;
 }
@@ -50,9 +51,10 @@ export interface RefExpressionDependency {
   entityType: DefinitionEntityType;
   /** The ID of the entity being referenced */
   entityId: string;
-  /** Position in the expression for rename updates */
-  start?: number;
-  end?: number;
+  /** Start position (inclusive) in the expression text to replace on rename */
+  start: number;
+  /** End position (exclusive) in the expression text to replace on rename */
+  end: number;
 }
 
 /**
@@ -97,8 +99,7 @@ export type ResolvedExpressionSlots<
  *   readonly name = 'stub';
  *   parse(): undefined { return undefined; }
  *   getWarnings(): [] { return []; }
- *   getDependencies(): [] { return []; }
- *   updateForRename(value: string): string { return value; }
+ *   getReferencedEntities(): [] { return []; }
  * }
  *
  * // A parser that requires a model slot
@@ -135,12 +136,12 @@ export abstract class RefExpressionParser<
    * The result is cached on the marker for subsequent operations.
    *
    * @param value - The raw expression value
-   * @param projectDef - The project definition for context (typed as unknown to avoid circular reference)
+   * @param projectDef - The project definition for context
    * @returns Success with parsed value, or failure with error message
    */
   abstract parse(
     value: TValue,
-    projectDef: unknown,
+    projectDef: ProjectDefinition,
   ): RefExpressionParseResult<TParseResult>;
 
   /**
@@ -159,31 +160,25 @@ export abstract class RefExpressionParser<
   ): RefExpressionWarning[];
 
   /**
-   * Get entity/field dependencies from the expression.
-   * Used for tracking what the expression references for rename handling.
+   * Get entity references from the expression with their positions.
+   *
+   * Used by the generic rename system to detect and apply renames.
+   * Each returned dependency identifies an entity by ID and marks the
+   * position in the expression text that should be replaced with the
+   * entity's new name if it is renamed.
    *
    * @param value - The raw expression value
    * @param parseResult - The cached parse result
-   * @returns Array of dependencies
+   * @param definition - The project definition
+   * @param resolvedSlots - The resolved slot paths for this expression
+   * @returns Array of entity references with positions for rename
    */
-  abstract getDependencies(
+  abstract getReferencedEntities(
     value: TValue,
     parseResult: RefExpressionParseResult<TParseResult>,
+    definition: ProjectDefinition,
+    resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionDependency[];
-
-  /**
-   * Update the expression when dependencies are renamed.
-   *
-   * @param value - The raw expression value
-   * @param parseResult - The cached parse result
-   * @param renames - Map of old entity ID to new name
-   * @returns The updated expression value
-   */
-  abstract updateForRename(
-    value: TValue,
-    parseResult: RefExpressionParseResult<TParseResult>,
-    renames: Map<string, string>,
-  ): TValue;
 
   /**
    * Convenience method that combines parse() and getWarnings() into a single call.
@@ -197,7 +192,7 @@ export abstract class RefExpressionParser<
    */
   validate(
     value: TValue,
-    projectDef: unknown,
+    projectDef: ProjectDefinition,
     context: ExpressionValidationContext,
     resolvedSlots: ResolvedExpressionSlots<TRequiredSlots>,
   ): RefExpressionWarning[] {

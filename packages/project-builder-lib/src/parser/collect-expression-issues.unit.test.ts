@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import type { RefExpressionParser } from '#src/references/expression-types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import { PluginSpecStore } from '#src/plugins/index.js';
+import { extractDefinitionRefs } from '#src/references/extract-definition-refs.js';
 import {
   createDefinitionSchemaParserContext,
   definitionSchema,
@@ -13,6 +15,8 @@ import {
   FailingParser,
   WarningParser,
 } from '#src/testing/expression-warning-parser.test-helper.js';
+
+import type { CollectExpressionIssuesInput } from './collect-expression-issues.js';
 
 import { collectExpressionIssues } from './collect-expression-issues.js';
 
@@ -33,21 +37,36 @@ describe('collectExpressionIssues', () => {
     );
   }
 
+  function buildInput(
+    schema: z.ZodType,
+    data: unknown,
+  ): CollectExpressionIssuesInput {
+    const parsed = schema.parse(data);
+    const refPayload = extractDefinitionRefs(schema, parsed);
+    return {
+      // Cast: test schemas produce mock data, not real ProjectDefinition
+      definition: parsed as ProjectDefinition,
+      pluginStore,
+      expressions: refPayload.expressions,
+    };
+  }
+
   it('returns empty array when schema has no expressions', () => {
     const schema = z.object({ name: z.string() });
     const issues = collectExpressionIssues(
-      schema,
-      { name: 'test' },
-      pluginStore,
+      buildInput(schema, { name: 'test' }),
     );
     expect(issues).toEqual([]);
   });
 
   it('returns empty array when expression parser produces no warnings', () => {
     const schema = createSchemaWithExpression(stubParser);
-    const data = { name: 'test', condition: 'model.id === auth.userId' };
-
-    const issues = collectExpressionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(
+      buildInput(schema, {
+        name: 'test',
+        condition: 'model.id === auth.userId',
+      }),
+    );
     expect(issues).toEqual([]);
   });
 
@@ -57,9 +76,10 @@ describe('collectExpressionIssues', () => {
       { message: 'Role not defined', start: 10, end: 20 },
     ]);
     const schema = createSchemaWithExpression(warningParser);
-    const data = { name: 'test', condition: 'some expression' };
 
-    const issues = collectExpressionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(
+      buildInput(schema, { name: 'test', condition: 'some expression' }),
+    );
 
     expect(issues).toHaveLength(2);
     expect(issues[0]).toEqual({
@@ -89,14 +109,15 @@ describe('collectExpressionIssues', () => {
     const schema = schemaCreator(
       createDefinitionSchemaParserContext({ plugins: pluginStore }),
     );
-    const data = {
-      rules: [
-        { name: 'rule1', condition: 'expr1' },
-        { name: 'rule2', condition: 'expr2' },
-      ],
-    };
 
-    const issues = collectExpressionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(
+      buildInput(schema, {
+        rules: [
+          { name: 'rule1', condition: 'expr1' },
+          { name: 'rule2', condition: 'expr2' },
+        ],
+      }),
+    );
 
     expect(issues).toHaveLength(2);
     expect(issues[0]?.path).toEqual(['rules', 0, 'condition']);
@@ -106,9 +127,10 @@ describe('collectExpressionIssues', () => {
   it('returns parse error as warning when parse fails', () => {
     const failingParser = new FailingParser();
     const schema = createSchemaWithExpression(failingParser);
-    const data = { name: 'test', condition: 'bad expression' };
 
-    const issues = collectExpressionIssues(schema, data, pluginStore);
+    const issues = collectExpressionIssues(
+      buildInput(schema, { name: 'test', condition: 'bad expression' }),
+    );
 
     expect(issues).toHaveLength(1);
     expect(issues[0]).toEqual({
@@ -119,12 +141,11 @@ describe('collectExpressionIssues', () => {
   });
 
   it('returns empty array when schema has no expression annotations', () => {
-    const schema = z.object({ name: z.string() });
-    const issues = collectExpressionIssues(
-      schema,
-      'not an object',
+    const issues = collectExpressionIssues({
+      definition: 'not an object' as unknown as ProjectDefinition,
       pluginStore,
-    );
+      expressions: [],
+    });
     expect(issues).toEqual([]);
   });
 });

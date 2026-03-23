@@ -1,48 +1,62 @@
-import type { z } from 'zod';
-
 import type { PluginSpecStore } from '#src/plugins/index.js';
-import type { ExpressionValidationContext } from '#src/references/expression-types.js';
+import type {
+  DefinitionExpression,
+  ExpressionValidationContext,
+} from '#src/references/expression-types.js';
 import type { DefinitionIssue } from '#src/schema/creator/definition-issue-types.js';
-
-import { extractDefinitionRefs } from '#src/references/extract-definition-refs.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 /**
- * Collects validation issues from expression parsers registered on the schema.
+ * Input for expression issue collection.
+ * Satisfied by ProjectDefinitionContainer and by lightweight test fixtures.
+ */
+export interface CollectExpressionIssuesInput {
+  definition: ProjectDefinition;
+  pluginStore: PluginSpecStore;
+  expressions: readonly DefinitionExpression[];
+}
+
+/**
+ * Collects validation issues from expression parsers in the definition.
  *
- * Walks the schema+data to find expression annotations, resolves their slots,
- * then calls each parser's `validate()` method. Warnings are mapped to
- * `DefinitionIssue` objects with warning severity.
+ * Uses pre-resolved expressions to avoid redundant schema walks.
+ * Each parser's `validate()` method is called with the expression value and
+ * resolved slots. Warnings are mapped to `DefinitionIssue` objects.
  *
- * @param schema - The Zod schema to walk
- * @param data - The parsed definition data
- * @param pluginStore - The plugin spec store for validation context
+ * @param input - The definition, plugin store, and pre-resolved expressions
  * @returns Array of definition issues from expression validation
  */
 export function collectExpressionIssues(
-  schema: z.ZodType,
-  data: unknown,
-  pluginStore: PluginSpecStore,
+  input: CollectExpressionIssuesInput,
 ): DefinitionIssue[] {
-  const refPayload = extractDefinitionRefs(schema, data);
+  const { definition, pluginStore, expressions } = input;
 
   const context: ExpressionValidationContext = {
-    definition: data,
+    definition,
     pluginStore,
   };
 
   const issues: DefinitionIssue[] = [];
 
-  for (const expression of refPayload.expressions) {
-    const warnings = expression.parser.validate(
-      expression.value,
-      data,
-      context,
-      expression.resolvedSlots,
-    );
+  for (const expression of expressions) {
+    try {
+      const warnings = expression.parser.validate(
+        expression.value,
+        definition,
+        context,
+        expression.resolvedSlots,
+      );
 
-    for (const warning of warnings) {
+      for (const warning of warnings) {
+        issues.push({
+          message: warning.message,
+          path: expression.path,
+          severity: 'warning',
+        });
+      }
+    } catch (error) {
       issues.push({
-        message: warning.message,
+        message: `Expression parser "${expression.parser.name}" threw an error: ${error instanceof Error ? error.message : String(error)}`,
         path: expression.path,
         severity: 'warning',
       });

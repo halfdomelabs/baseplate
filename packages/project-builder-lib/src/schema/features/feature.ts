@@ -34,7 +34,7 @@ export const createFeatureSchema = definitionSchema((ctx) =>
         })
         .optional(),
     }),
-    { type: featureEntityType },
+    { type: featureEntityType, sortByName: true },
   ),
 );
 

@@ -1,9 +1,9 @@
 [
   { "canonicalPath": "@/src/routes", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
-  { "canonicalPath": "@/src/routes/billing", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/todos", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/storage", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/billing", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/accounts", "pathRootName": "routes-root" },
   {
     "canonicalPath": "@/src/routes/accounts/users",

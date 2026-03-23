@@ -36,14 +36,8 @@ class StubParser extends RefExpressionParser<string, undefined> {
     return [];
   }
 
-  getDependencies(): [] {
-    // No dependencies tracked by stub parser
+  getReferencedEntities(): [] {
     return [];
-  }
-
-  updateForRename(value: string): string {
-    // No rename handling - return value unchanged
-    return value;
   }
 }
 
@@ -86,11 +80,7 @@ export class StubParserWithSlots<
     return [];
   }
 
-  getDependencies(): [] {
+  getReferencedEntities(): [] {
     return [];
-  }
-
-  updateForRename(value: string): string {
-    return value;
   }
 }
