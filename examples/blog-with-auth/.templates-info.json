@@ -1,4 +1,19 @@
 {
+  "AGENTS.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": {
+      "variables": {
+        "TPL_APPS_LIST": "- **admin** — `web` app in `apps/admin/`\n- **backend** — `backend` app in `apps/backend/`",
+        "TPL_PROJECT_NAME": "blog-with-auth"
+      }
+    },
+    "template": "agents-md"
+  },
+  "CLAUDE.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": { "variables": {} },
+    "template": "claude-md"
+  },
   "README.md": {
     "generator": "@baseplate-dev/core-generators#node/root-readme",
     "instanceData": { "variables": { "TPL_PROJECT": "blog-with-auth" } },

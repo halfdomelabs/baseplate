@@ -32,6 +32,7 @@
     "prettier:write": "prettier -w -l ."
   },
   "dependencies": {
+    "@baseplate-dev/plugin-ai": "workspace:*",
     "@baseplate-dev/plugin-auth": "workspace:*",
     "@baseplate-dev/plugin-email": "workspace:*",
     "@baseplate-dev/plugin-observability": "workspace:*",

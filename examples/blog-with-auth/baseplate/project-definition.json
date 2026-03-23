@@ -984,6 +984,13 @@
       "version": "1.0.0"
     },
     {
+      "config": { "devAgentsOptions": {}, "enabledAgents": ["claude-code"] },
+      "id": "plugin:baseplate-dev_plugin-ai_dev-agents",
+      "name": "dev-agents",
+      "packageName": "@baseplate-dev/plugin-ai",
+      "version": "0.1.0"
+    },
+    {
       "config": {
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },

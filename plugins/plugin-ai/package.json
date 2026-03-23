@@ -1,0 +1,91 @@
+{
+  "name": "@baseplate-dev/plugin-ai",
+  "version": "0.0.1",
+  "description": "AI agent integration plugin for Baseplate — generates AGENTS.md, CLAUDE.md, .mcp.json, and .agents/ configuration files",
+  "keywords": [
+    "baseplate",
+    "code-generation",
+    "full-stack",
+    "plugin",
+    "ai",
+    "agents",
+    "mcp",
+    "typescript"
+  ],
+  "homepage": "https://www.baseplate.dev",
+  "repository": "https://github.com/halfdomelabs/baseplate",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo"
+  ],
+  "scripts": {
+    "build": "concurrently pnpm:build:*",
+    "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
+    "build:tsc": "tsc -p tsconfig.build.json",
+    "build:vite": "vite build",
+    "clean": "rm -rf ./dist",
+    "lint": "oxlint && eslint .",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w -l .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit",
+    "watch": "concurrently pnpm:watch:*",
+    "watch:static": "pnpm build:static --watch",
+    "watch:vite": "nodemon --watch vite.config.ts --watch src --ignore \"**/generators/**\" -e ts,tsx,css,json --exec \"vite build\""
+  },
+  "dependencies": {
+    "@baseplate-dev/core-generators": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/ui-components": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
+    "@hookform/resolvers": "5.2.2",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-hook-form": "7.71.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@baseplate-dev/tools": "workspace:*",
+    "@originjs/vite-plugin-federation": "1.3.6",
+    "@tailwindcss/vite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "concurrently": "9.2.1",
+    "cpx2": "catalog:",
+    "eslint": "catalog:",
+    "nodemon": "catalog:",
+    "oxlint": "catalog:",
+    "prettier": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

@@ -20,8 +20,9 @@ import {
   DEFAULT_APPS_FOLDER,
   DEFAULT_LIBRARIES_FOLDER,
   PackageCompiler,
+  rootCompilerSpec,
 } from '@baseplate-dev/project-builder-lib';
-import { compareStrings } from '@baseplate-dev/utils';
+import { compareStrings, safeMerge } from '@baseplate-dev/utils';
 import { uniq } from 'es-toolkit';
 
 import type { PackageEntry } from '../package-entry.js';
@@ -116,6 +117,18 @@ export class RootPackageCompiler extends PackageCompiler {
     const devTasks = mergedTasks.dev.join(' ');
     const watchTasks = mergedTasks.watch.join(' ');
 
+    // Collect root-level generator children from plugins
+    const rootCompilerStore =
+      this.definitionContainer.pluginStore.use(rootCompilerSpec);
+    let pluginChildren: Record<string, GeneratorBundle> = {};
+    for (const compiler of rootCompilerStore.compilers) {
+      const children = compiler.compile({
+        projectDefinition,
+        definitionContainer: this.definitionContainer,
+      });
+      pluginChildren = safeMerge(pluginChildren, children);
+    }
+
     const { cliVersion } = this.definitionContainer.parserContext;
 
     const packageName = buildPackageName(generalSettings, 'root');
@@ -182,6 +195,7 @@ export class RootPackageCompiler extends PackageCompiler {
         rootReadme: rootReadmeGenerator({
           projectName: generalSettings.name,
         }),
+        ...pluginChildren,
       },
     });
 
