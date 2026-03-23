@@ -1,6 +1,7 @@
 import type {
   DefinitionIssue,
   FixRefDeletionError,
+  OrphanedUnionItem,
 } from '@baseplate-dev/project-builder-lib';
 import type { ZodError } from 'zod';
 
@@ -34,6 +35,17 @@ export class DefinitionIssueError extends UserVisibleError {
     super(issues.map((i) => i.message).join('; '));
     this.issues = issues;
     this.name = 'DefinitionIssueError';
+  }
+}
+
+export class OrphanedUnionError extends UserVisibleError {
+  public items: OrphanedUnionItem[];
+
+  constructor(items: OrphanedUnionItem[]) {
+    super(
+      `Plugin types still in use: ${items.map((i) => i.discriminatorValue).join(', ')}`,
+    );
+    this.items = items;
   }
 }
 

@@ -15,6 +15,7 @@ import {
   createDefinitionSchemaParserContext,
   createPluginSpecStore,
   createProjectDefinitionSchema,
+  findOrphanedUnionItems,
   fixRefDeletions,
   partitionIssuesBySeverity,
   ProjectDefinitionContainer,
@@ -33,6 +34,7 @@ import semver from 'semver';
 import { useClientVersion } from '#src/hooks/use-client-version.js';
 import { useDefinitionWarningDialogState } from '#src/hooks/use-definition-warning-dialog.js';
 import { useDeleteReferenceDialog } from '#src/hooks/use-delete-reference-dialog.js';
+import { useOrphanedUnionDialog } from '#src/hooks/use-orphaned-union-dialog.js';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { useSyncMetadataListener } from '#src/hooks/use-sync-metadata.js';
 import { router } from '#src/router.js';
@@ -40,7 +42,11 @@ import {
   formatError,
   logAndFormatError,
 } from '#src/services/error-formatter.js';
-import { DefinitionIssueError, RefDeleteError } from '#src/utils/error.js';
+import {
+  DefinitionIssueError,
+  OrphanedUnionError,
+  RefDeleteError,
+} from '#src/utils/error.js';
 
 import { useProjectDefinitionContainer } from './hooks/use-project-definition-container.js';
 import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents.js';
@@ -71,6 +77,7 @@ export function ProjectDefinitionProvider({
   const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion } = useClientVersion();
   const { showRefIssues } = useDeleteReferenceDialog();
+  const { showOrphanedUnionIssues } = useOrphanedUnionDialog();
   const [isSavingDefinition, setIsSavingDefinition] = useState(false);
 
   // Cache the plugin spec store keyed by active plugin IDs to avoid
@@ -125,6 +132,27 @@ export function ProjectDefinitionProvider({
         const defContext =
           createDefinitionSchemaParserContext(schemaCreatorOptions);
         const defSchema = createProjectDefinitionSchema(defContext);
+
+        // When a plugin is removed, check for orphaned discriminated union
+        // items before parsing. These are items whose type was provided by the
+        // disabled plugin (e.g., transformers, library types). Only run this
+        // check when plugins were actually removed to avoid overhead on every save.
+        const newPluginIdSet = new Set(
+          rawProjectDefinition.plugins?.map((p) => p.id),
+        );
+        const pluginWasRemoved = definition.plugins?.some(
+          (p) => !newPluginIdSet.has(p.id),
+        );
+        if (pluginWasRemoved) {
+          const orphanedItems = findOrphanedUnionItems(
+            defSchema,
+            rawProjectDefinition,
+          );
+          if (orphanedItems.length > 0) {
+            throw new OrphanedUnionError(orphanedItems);
+          }
+        }
+
         const parsedProjectDefinition = defSchema.parse(rawProjectDefinition);
         const newProjectDefinition = applyDefinitionFixes(
           defSchema,
@@ -212,6 +240,8 @@ export function ProjectDefinitionProvider({
             !options.disableDeleteRefDialog
           ) {
             showRefIssues({ issues: err.issues });
+          } else if (err instanceof OrphanedUnionError) {
+            showOrphanedUnionIssues({ items: err.items });
           } else {
             toast.error(
               logAndFormatError(err, `Failed to save project definition.`),
@@ -246,6 +276,7 @@ export function ProjectDefinitionProvider({
     updatedExternally,
     uploadProjectDefinitionContents,
     showRefIssues,
+    showOrphanedUnionIssues,
     cacheProjectDefinitionContainer,
   ]);
 

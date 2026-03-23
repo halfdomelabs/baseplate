@@ -14,6 +14,7 @@ import { ErrorBoundary } from '#src/components/error-boundary/error-boundary.js'
 import { BlockerDialog } from '#src/components/index.js';
 
 import { DefinitionWarningDialog } from '../../components/definition-warning-dialog/definition-warning-dialog.js';
+import { OrphanedUnionDialog } from '../../components/orphaned-union-dialog/orphaned-union-dialog.js';
 import { RefIssueDialog } from '../../components/ref-issue-dialog/ref-issue-dialog.jsx';
 import ProjectSyncModal from '../project-sync-modal/project-sync-modal.js';
 import { AppBreadcrumbs } from './app-breadcrumbs.js';
@@ -80,6 +81,7 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
       </div>
       <BlockerDialog />
       <RefIssueDialog />
+      <OrphanedUnionDialog />
       <DefinitionWarningDialog />
     </div>
   );
