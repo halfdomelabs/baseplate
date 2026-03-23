@@ -1834,7 +1834,7 @@
             "id": "model-scalar-field:UlLmDny81tox",
             "isOptional": false,
             "name": "id",
-            "options": { "defaultGeneration": "uuidv7" },
+            "options": { "defaultGeneration": "uuidv4" },
             "type": "uuid"
           },
           {
