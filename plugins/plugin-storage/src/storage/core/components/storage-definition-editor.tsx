@@ -28,7 +28,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
+import type {
+  StoragePluginDefinition,
+  StoragePluginDefinitionInput,
+} from '../schema/plugin-definition.js';
 
 import { createStoragePartialDefinition } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
@@ -58,7 +61,8 @@ export function StorageDefinitionEditor({
         'storage',
       ),
       s3Adapters: [],
-    } satisfies StoragePluginDefinitionInput;
+      fileCategories: [],
+    } satisfies StoragePluginDefinition;
   }, [definition, pluginMetadata?.config]);
 
   const form = useResettableForm({
