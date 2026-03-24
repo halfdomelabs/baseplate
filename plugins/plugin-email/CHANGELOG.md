@@ -1,5 +1,19 @@
 # @baseplate-dev/plugin-email
 
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies [[`7cffc85`](https://github.com/halfdomelabs/baseplate/commit/7cffc85dfc2e9dc3ca6e1f243aeb874d2a1c5b13)]:
+  - @baseplate-dev/fastify-generators@0.6.6
+  - @baseplate-dev/plugin-queue@0.6.6
+  - @baseplate-dev/core-generators@0.6.6
+  - @baseplate-dev/project-builder-lib@0.6.6
+  - @baseplate-dev/react-generators@0.6.6
+  - @baseplate-dev/sync@0.6.6
+  - @baseplate-dev/ui-components@0.6.6
+  - @baseplate-dev/utils@0.6.6
+
 ## 0.6.5
 
 ### Patch Changes
