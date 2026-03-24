@@ -10,18 +10,14 @@ import { prisma } from '@src/services/prisma.js';
 import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-const todoListShareFieldSchemas = {
+const todoListShareFieldSchemas = z.object({
   todoListId: z.uuid(),
   userId: z.uuid(),
   updatedAt: z.date().optional(),
   createdAt: z.date().optional(),
-};
+});
 
-export const todoListShareCreateSchema = z.object(todoListShareFieldSchemas);
-
-export const todoListShareUpdateSchema = z
-  .object(todoListShareFieldSchemas)
-  .partial();
+export const todoListShareCreateSchema = todoListShareFieldSchemas;
 
 export async function createTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,
@@ -48,6 +44,8 @@ export async function createTodoListShare<
 
   return result as GetResult<'todoListShare', TQuery>;
 }
+
+export const todoListShareUpdateSchema = todoListShareFieldSchemas.partial();
 
 export async function updateTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,

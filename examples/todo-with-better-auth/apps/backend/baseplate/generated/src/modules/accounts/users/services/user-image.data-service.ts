@@ -13,11 +13,11 @@ import {
 } from '../../../storage/services/file-transformer.js';
 import { userImageFileFileCategory } from '../constants/file-categories.js';
 
-export const userImageFieldSchemas = {
+export const userImageFieldSchemas = z.object({
   id: z.uuid().optional(),
   caption: z.string(),
   file: fileInputSchema,
-};
+});
 
 export const userImageTransformers = {
   file: fileTransformer({ category: userImageFileFileCategory }),

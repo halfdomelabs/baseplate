@@ -64,6 +64,25 @@ export function tsPositionedHoistedFragment(
 }
 
 /**
+ * Returns a new fragment with additional hoisted fragments appended.
+ * @param fragment - The base fragment to extend.
+ * @param hoistedFragments - The hoisted fragments to append.
+ * @returns A new fragment with the hoisted fragments added.
+ */
+export function withHoistedFragments(
+  fragment: TsCodeFragment,
+  hoistedFragments: TsHoistedFragment[],
+): TsCodeFragment {
+  return {
+    ...fragment,
+    hoistedFragments: [
+      ...(fragment.hoistedFragments ?? []),
+      ...hoistedFragments,
+    ],
+  };
+}
+
+/**
  * Create a code fragment.
  * @param contents - The contents of the code fragment.
  * @param imports - The imports to add to the code fragment.

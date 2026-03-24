@@ -3,7 +3,9 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   packageScope,
   TsCodeUtils,
+  tsHoistedFragment,
   tsTemplate,
+  withHoistedFragments,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTaskWithInfo,
@@ -26,7 +28,10 @@ import { serviceFileProvider } from '#src/generators/core/index.js';
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
-import { buildFieldSchemasObject } from '../_shared/build-data-helpers/build-schema-fragments.js';
+import {
+  buildFieldSchemasObject,
+  pickZodSchemaSubset,
+} from '../_shared/build-data-helpers/build-schema-fragments.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
@@ -97,6 +102,10 @@ export interface PrismaDataServiceProvider {
   getFieldSchemasFragment(): TsCodeFragment;
   /** Register a create/update/delete method to be added to the service file */
   registerMethod(method: PrismaDataServiceMethod): void;
+  /** Register the field names used by the create schema (for subset filtering) */
+  registerCreateFieldNames(fieldNames: string[]): void;
+  /** Register the field names used by the update schema (for subset filtering) */
+  registerUpdateFieldNames(fieldNames: string[]): void;
 }
 
 export const prismaDataServiceProvider =
@@ -210,6 +219,9 @@ export const prismaDataServiceGenerator = createGenerator({
 
         const zFrag = TsCodeUtils.importFragment('z', 'zod');
         let fieldSchemasRequested = false;
+        const allFieldNames = allFields.map((f) => f.name);
+        let createFieldNames: string[] | undefined;
+        let updateFieldNames: string[] | undefined;
 
         return {
           providers: {
@@ -240,6 +252,12 @@ export const prismaDataServiceGenerator = createGenerator({
               registerMethod(method) {
                 methods.add(method);
               },
+              registerCreateFieldNames(fieldNames) {
+                createFieldNames = fieldNames;
+              },
+              registerUpdateFieldNames(fieldNames) {
+                updateFieldNames = fieldNames;
+              },
             },
           },
           build: () => {
@@ -261,22 +279,18 @@ export const prismaDataServiceGenerator = createGenerator({
                 : 'const';
               serviceFile.registerHeader({
                 name: 'schemas-1-fields',
-                fragment: tsTemplate`${fieldSchemasKeyword} ${fieldSchemasVarName} = ${fieldSchemasObject};`,
+                fragment: tsTemplate`${fieldSchemasKeyword} ${fieldSchemasVarName} = ${zFrag}.object(${fieldSchemasObject});`,
               });
-
-              if (hasCreateMethod) {
-                serviceFile.registerHeader({
-                  name: 'schemas-2-create',
-                  fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName});`,
-                });
-              }
-              if (hasUpdateMethod) {
-                serviceFile.registerHeader({
-                  name: 'schemas-3-update',
-                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName}).partial();`,
-                });
-              }
             }
+
+            // Build schema fragments to attach as hoisted fragments on methods
+            const createSchemaFragment = hasCreateMethod
+              ? tsTemplate`export const ${createSchemaVarName} = ${pickZodSchemaSubset(createFieldNames, allFieldNames, fieldSchemasVarName)};`
+              : undefined;
+
+            const updateSchemaFragment = hasUpdateMethod
+              ? tsTemplate`export const ${updateSchemaVarName} = ${pickZodSchemaSubset(updateFieldNames, allFieldNames, fieldSchemasVarName)}.partial();`
+              : undefined;
 
             // Register transformers object (only if there are transform fields)
             if (transformersVarName && transformFields.length > 0) {
@@ -306,10 +320,24 @@ export const prismaDataServiceGenerator = createGenerator({
             }
 
             for (const method of methods.getValue()) {
+              // Attach the relevant schema as a hoisted fragment so it's colocated above the method
+              const schemaFragment =
+                method.type === 'create'
+                  ? createSchemaFragment
+                  : method.type === 'update'
+                    ? updateSchemaFragment
+                    : undefined;
+
+              const methodFragment = schemaFragment
+                ? withHoistedFragments(method.fragment, [
+                    tsHoistedFragment(`schema:${method.type}`, schemaFragment),
+                  ])
+                : method.fragment;
+
               serviceFile.registerMethod({
                 name: method.name,
                 order: TYPE_TO_ORDER[method.type],
-                fragment: method.fragment,
+                fragment: methodFragment,
                 outputMethod: method.outputMethod,
               });
             }

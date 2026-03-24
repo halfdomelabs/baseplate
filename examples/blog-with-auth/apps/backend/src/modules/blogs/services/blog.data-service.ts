@@ -12,9 +12,9 @@ import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js'
 
 import { blogAuthorizer } from '../authorizers/blog.authorizer.js';
 
-const blogFieldSchemas = { name: z.string(), userId: z.uuid() };
+const blogFieldSchemas = z.object({ name: z.string(), userId: z.uuid() });
 
-export const blogUpdateSchema = z.object(blogFieldSchemas).partial();
+export const blogUpdateSchema = blogFieldSchemas.partial();
 
 export async function updateBlog<TQuery extends DataQuery<'blog'>>({
   where,
