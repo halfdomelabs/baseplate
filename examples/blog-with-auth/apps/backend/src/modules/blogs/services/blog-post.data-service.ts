@@ -24,8 +24,6 @@ const blogPostFieldSchemas = z.object({
 
 export const blogPostCreateSchema = blogPostFieldSchemas;
 
-export const blogPostUpdateSchema = blogPostFieldSchemas.partial();
-
 export async function createBlogPost<TQuery extends DataQuery<'blogPost'>>({
   data,
   query,
@@ -49,6 +47,8 @@ export async function createBlogPost<TQuery extends DataQuery<'blogPost'>>({
 
   return result as GetResult<'blogPost', TQuery>;
 }
+
+export const blogPostUpdateSchema = blogPostFieldSchemas.partial();
 
 export async function updateBlogPost<TQuery extends DataQuery<'blogPost'>>({
   where,

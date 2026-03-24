@@ -9,6 +9,7 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
 import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
+import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 import {
   fileInputSchema,
@@ -18,19 +19,12 @@ import { userProfileAvatarFileCategory } from '../constants/file-categories.js';
 
 export const userProfileFieldSchemas = z.object({
   id: z.uuid().optional(),
+  userId: z.uuid(),
   bio: z.string().nullish(),
   birthDay: z.date().nullish(),
   favoriteTodoListId: z.uuid().nullish(),
   avatar: fileInputSchema.nullish(),
 });
-
-export const userProfileCreateSchema = userProfileFieldSchemas.pick({
-  bio: true,
-});
-
-export const userProfileUpdateSchema = userProfileFieldSchemas
-  .pick({ bio: true, avatar: true })
-  .partial();
 
 export const userProfileTransformers = {
   avatar: fileTransformer({
@@ -38,6 +32,11 @@ export const userProfileTransformers = {
     optional: true,
   }),
 };
+
+export const userProfileCreateSchema = userProfileFieldSchemas.pick({
+  userId: true,
+  bio: true,
+});
 
 export async function createUserProfile<
   TQuery extends DataQuery<'userProfile'>,
@@ -48,13 +47,19 @@ export async function createUserProfile<
   data: z.infer<typeof userProfileCreateSchema>;
   query?: TQuery;
 }): Promise<GetResult<'userProfile', TQuery>> {
+  const { userId, ...rest } = data;
+
   const result = await prisma.userProfile.create({
-    data,
+    data: { ...rest, user: relationHelpers.connectCreate({ id: userId }) },
     ...query,
   });
 
   return result as GetResult<'userProfile', TQuery>;
 }
+
+export const userProfileUpdateSchema = userProfileFieldSchemas
+  .pick({ bio: true, avatar: true })
+  .partial();
 
 export async function updateUserProfile<
   TQuery extends DataQuery<'userProfile'>,

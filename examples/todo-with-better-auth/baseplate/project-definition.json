@@ -1753,7 +1753,7 @@
       "service": {
         "create": {
           "enabled": true,
-          "fields": ["bio"],
+          "fields": ["bio", "userId"],
           "transformerNames": []
         },
         "delete": { "enabled": true },

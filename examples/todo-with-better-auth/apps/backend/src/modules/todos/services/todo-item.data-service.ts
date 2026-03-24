@@ -32,10 +32,6 @@ const todoItemFieldSchemas = z.object({
   attachments: z.array(todoItemAttachmentFieldSchemas).optional(),
 });
 
-export const todoItemCreateSchema = todoItemFieldSchemas;
-
-export const todoItemUpdateSchema = todoItemFieldSchemas.partial();
-
 export const todoItemTransformers = {
   attachments: oneToManyTransformer({
     compareItem: (input, existing) => input.id === existing.id,
@@ -100,6 +96,8 @@ export const todoItemTransformers = {
   }),
 };
 
+export const todoItemCreateSchema = todoItemFieldSchemas;
+
 export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   data,
   query,
@@ -135,6 +133,8 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
 
   return result as GetResult<'todoItem', TQuery>;
 }
+
+export const todoItemUpdateSchema = todoItemFieldSchemas.partial();
 
 export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   where,

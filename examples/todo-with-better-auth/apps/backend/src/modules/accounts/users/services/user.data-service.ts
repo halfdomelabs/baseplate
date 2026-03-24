@@ -32,12 +32,16 @@ const userFieldSchemas = z.object({
   customer: z.object({ stripeCustomerId: z.string() }).nullish(),
   images: z.array(userImageFieldSchemas).optional(),
   roles: z.array(z.object({ role: z.string() })).optional(),
-  userProfile: userProfileFieldSchemas.nullish(),
+  userProfile: userProfileFieldSchemas
+    .pick({
+      id: true,
+      bio: true,
+      birthDay: true,
+      favoriteTodoListId: true,
+      avatar: true,
+    })
+    .nullish(),
 });
-
-export const userCreateSchema = userFieldSchemas;
-
-export const userUpdateSchema = userFieldSchemas.partial();
 
 export const userTransformers = {
   customer: oneToOneTransformer({
@@ -205,9 +209,17 @@ export const userTransformers = {
             }),
         });
       },
-    schema: userProfileFieldSchemas,
+    schema: userProfileFieldSchemas.pick({
+      id: true,
+      bio: true,
+      birthDay: true,
+      favoriteTodoListId: true,
+      avatar: true,
+    }),
   }),
 };
+
+export const userCreateSchema = userFieldSchemas;
 
 export async function createUser<TQuery extends DataQuery<'user'>>({
   data,
@@ -242,6 +254,8 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
 
   return result as GetResult<'user', TQuery>;
 }
+
+export const userUpdateSchema = userFieldSchemas.partial();
 
 export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,

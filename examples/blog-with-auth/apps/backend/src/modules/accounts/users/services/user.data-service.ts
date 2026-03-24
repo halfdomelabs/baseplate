@@ -22,8 +22,6 @@ export const userCreateSchema = userFieldSchemas.pick({
   emailVerified: true,
 });
 
-export const userUpdateSchema = userFieldSchemas.partial();
-
 export async function createUser<TQuery extends DataQuery<'user'>>({
   data,
   query,
@@ -42,6 +40,8 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
 
   return result as GetResult<'user', TQuery>;
 }
+
+export const userUpdateSchema = userFieldSchemas.partial();
 
 export async function updateUser<TQuery extends DataQuery<'user'>>({
   where,

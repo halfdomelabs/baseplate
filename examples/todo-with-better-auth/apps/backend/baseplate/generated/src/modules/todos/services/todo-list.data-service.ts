@@ -28,16 +28,14 @@ const todoListFieldSchemas = z.object({
   coverPhoto: fileInputSchema.nullish(),
 });
 
-export const todoListCreateSchema = todoListFieldSchemas;
-
-export const todoListUpdateSchema = todoListFieldSchemas.partial();
-
 export const todoListTransformers = {
   coverPhoto: fileTransformer({
     category: todoListCoverPhotoFileCategory,
     optional: true,
   }),
 };
+
+export const todoListCreateSchema = todoListFieldSchemas;
 
 export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   data,
@@ -73,6 +71,8 @@ export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
 
   return result as GetResult<'todoList', TQuery>;
 }
+
+export const todoListUpdateSchema = todoListFieldSchemas.partial();
 
 export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   where,

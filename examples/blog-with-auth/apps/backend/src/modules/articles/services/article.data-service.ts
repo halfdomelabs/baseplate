@@ -16,8 +16,6 @@ const articleFieldSchemas = z.object({
 
 export const articleCreateSchema = articleFieldSchemas;
 
-export const articleUpdateSchema = articleFieldSchemas.partial();
-
 export async function createArticle<TQuery extends DataQuery<'article'>>({
   data,
   query,
@@ -36,6 +34,8 @@ export async function createArticle<TQuery extends DataQuery<'article'>>({
 
   return result as GetResult<'article', TQuery>;
 }
+
+export const articleUpdateSchema = articleFieldSchemas.partial();
 
 export async function updateArticle<TQuery extends DataQuery<'article'>>({
   where,

@@ -19,8 +19,6 @@ const todoListShareFieldSchemas = z.object({
 
 export const todoListShareCreateSchema = todoListShareFieldSchemas;
 
-export const todoListShareUpdateSchema = todoListShareFieldSchemas.partial();
-
 export async function createTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,
 >({
@@ -46,6 +44,8 @@ export async function createTodoListShare<
 
   return result as GetResult<'todoListShare', TQuery>;
 }
+
+export const todoListShareUpdateSchema = todoListShareFieldSchemas.partial();
 
 export async function updateTodoListShare<
   TQuery extends DataQuery<'todoListShare'>,
