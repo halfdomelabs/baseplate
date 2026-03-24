@@ -1,5 +1,14 @@
 # @baseplate-dev/react-generators
 
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.6
+  - @baseplate-dev/sync@0.6.6
+  - @baseplate-dev/utils@0.6.6
+
 ## 0.6.5
 
 ### Patch Changes

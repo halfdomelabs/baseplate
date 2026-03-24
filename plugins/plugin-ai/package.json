@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-ai",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "AI agent integration plugin for Baseplate — generates AGENTS.md, CLAUDE.md, .mcp.json, and .agents/ configuration files",
   "keywords": [
     "baseplate",

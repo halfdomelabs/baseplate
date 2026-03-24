@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.6
+
+### Patch Changes
+
+- [#870](https://github.com/halfdomelabs/baseplate/pull/870) [`7cffc85`](https://github.com/halfdomelabs/baseplate/commit/7cffc85dfc2e9dc3ca6e1f243aeb874d2a1c5b13) Thanks [@kingston](https://github.com/kingston)! - Fix create/update input schemas to only include their respective fields using Zod `.pick()`, make fieldSchemas a `z.object()`, skip transform path when the operation has no transform fields, and omit unused `context` parameter in scalar-only methods without auth
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.6
+  - @baseplate-dev/sync@0.6.6
+  - @baseplate-dev/utils@0.6.6
+
 ## 0.6.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-observability",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Observability plugins for Baseplate (Sentry error monitoring, performance tracking)",
   "keywords": [
     "baseplate",
