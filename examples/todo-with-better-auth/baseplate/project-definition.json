@@ -216,7 +216,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.4",
+  "cliVersion": "0.6.5",
   "enums": [
     {
       "featureRef": "billing",
@@ -1751,6 +1751,11 @@
       },
       "name": "UserProfile",
       "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["bio"],
+          "transformerNames": []
+        },
         "delete": { "enabled": true },
         "transformers": [
           {
@@ -1759,7 +1764,12 @@
             "id": "model-transformer:cbjBj3IacjKA",
             "type": "file"
           }
-        ]
+        ],
+        "update": {
+          "enabled": true,
+          "fields": ["bio"],
+          "transformerNames": ["avatar"]
+        }
       }
     },
     {

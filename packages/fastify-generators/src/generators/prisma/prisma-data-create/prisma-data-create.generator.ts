@@ -82,7 +82,6 @@ export const prismaDataCreateGenerator = createGenerator({
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);
             const prismaModel = prismaOutput.getPrismaModel(modelName);
-            const hasTransformFields = prismaDataService.hasTransformFields();
             const transformersVarName =
               prismaDataService.getTransformersVariableName() ?? '';
 
@@ -94,6 +93,7 @@ export const prismaDataCreateGenerator = createGenerator({
               operationType: 'create',
               transformersVarFragment: transformersVarName,
             });
+            const { hasTransformFields } = parts;
 
             // Generate authorization
             const { fragment: authFragment } = generateAuthorizationStatements({
