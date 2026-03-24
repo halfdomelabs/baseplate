@@ -9,11 +9,14 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 
-const articleFieldSchemas = { title: z.string(), content: z.string() };
+const articleFieldSchemas = z.object({
+  title: z.string(),
+  content: z.string(),
+});
 
-export const articleCreateSchema = z.object(articleFieldSchemas);
+export const articleCreateSchema = articleFieldSchemas;
 
-export const articleUpdateSchema = z.object(articleFieldSchemas).partial();
+export const articleUpdateSchema = articleFieldSchemas.partial();
 
 export async function createArticle<TQuery extends DataQuery<'article'>>({
   data,

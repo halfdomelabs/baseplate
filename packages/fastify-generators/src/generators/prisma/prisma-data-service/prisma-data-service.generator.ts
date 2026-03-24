@@ -28,7 +28,7 @@ import type { InputFieldDefinitionOutput } from '../_shared/field-definition-gen
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import {
   buildFieldSchemasObject,
-  pickFieldSchemasSubset,
+  pickZodSchemaSubset,
 } from '../_shared/build-data-helpers/build-schema-fragments.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
@@ -277,29 +277,29 @@ export const prismaDataServiceGenerator = createGenerator({
                 : 'const';
               serviceFile.registerHeader({
                 name: 'schemas-1-fields',
-                fragment: tsTemplate`${fieldSchemasKeyword} ${fieldSchemasVarName} = ${fieldSchemasObject};`,
+                fragment: tsTemplate`${fieldSchemasKeyword} ${fieldSchemasVarName} = ${zFrag}.object(${fieldSchemasObject});`,
               });
 
               if (hasCreateMethod) {
-                const createSchemaFields = pickFieldSchemasSubset(
+                const createSchemaExpr = pickZodSchemaSubset(
                   createFieldNames,
                   allFieldNames,
                   fieldSchemasVarName,
                 );
                 serviceFile.registerHeader({
                   name: 'schemas-2-create',
-                  fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${createSchemaFields});`,
+                  fragment: tsTemplate`export const ${createSchemaVarName} = ${createSchemaExpr};`,
                 });
               }
               if (hasUpdateMethod) {
-                const updateSchemaFields = pickFieldSchemasSubset(
+                const updateSchemaExpr = pickZodSchemaSubset(
                   updateFieldNames,
                   allFieldNames,
                   fieldSchemasVarName,
                 );
                 serviceFile.registerHeader({
                   name: 'schemas-3-update',
-                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${updateSchemaFields}).partial();`,
+                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${updateSchemaExpr}.partial();`,
                 });
               }
             }

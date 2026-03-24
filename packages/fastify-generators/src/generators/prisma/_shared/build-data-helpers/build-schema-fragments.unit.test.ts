@@ -107,11 +107,10 @@ describe('buildNestedSchemaFragments', () => {
         allDataServiceFieldNames: ['caption', 'file'],
       });
 
-      expect(result.itemSchema.contents).toContain(
-        'z.object(userImageFieldSchemas)',
-      );
+      expect(result.itemSchema.contents).toContain('userImageFieldSchemas');
+      expect(result.itemSchema.contents).not.toContain('z.object');
       expect(result.schemaFragment.contents).toContain(
-        'z.array(z.object(userImageFieldSchemas)).optional()',
+        'z.array(userImageFieldSchemas).optional()',
       );
     });
 
@@ -126,17 +125,16 @@ describe('buildNestedSchemaFragments', () => {
         allDataServiceFieldNames: ['stripeCustomerId'],
       });
 
-      expect(result.itemSchema.contents).toContain(
-        'z.object(customerFieldSchemas)',
-      );
+      expect(result.itemSchema.contents).toContain('customerFieldSchemas');
+      expect(result.itemSchema.contents).not.toContain('z.object');
       expect(result.schemaFragment.contents).toContain(
-        'z.object(customerFieldSchemas).nullish()',
+        'customerFieldSchemas.nullish()',
       );
     });
   });
 
   describe('with fieldSchemas import (subset)', () => {
-    it('should use pick() for subset fields', () => {
+    it('should use .pick() for subset fields', () => {
       const fieldSchemasFragment = TsCodeUtils.frag('userProfileFieldSchemas');
 
       const result = buildNestedSchemaFragments({
@@ -148,14 +146,14 @@ describe('buildNestedSchemaFragments', () => {
       });
 
       expect(result.itemSchema.contents).toContain(
-        'pick(userProfileFieldSchemas',
+        'userProfileFieldSchemas.pick(',
       );
-      expect(result.itemSchema.contents).toContain("'bio'");
-      expect(result.itemSchema.contents).toContain("'avatar'");
+      expect(result.itemSchema.contents).toContain('bio: true');
+      expect(result.itemSchema.contents).toContain('avatar: true');
       expect(result.schemaFragment.contents).toContain('.nullish()');
     });
 
-    it('should use pick() for list subset', () => {
+    it('should use .pick() for list subset', () => {
       const fieldSchemasFragment = TsCodeUtils.frag('attachmentFieldSchemas');
 
       const result = buildNestedSchemaFragments({
@@ -167,7 +165,7 @@ describe('buildNestedSchemaFragments', () => {
       });
 
       expect(result.itemSchema.contents).toContain(
-        'pick(attachmentFieldSchemas',
+        'attachmentFieldSchemas.pick(',
       );
       expect(result.schemaFragment.contents).toContain('z.array');
       expect(result.schemaFragment.contents).toContain('.optional()');

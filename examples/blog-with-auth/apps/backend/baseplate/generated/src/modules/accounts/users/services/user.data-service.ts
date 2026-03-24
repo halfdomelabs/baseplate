@@ -1,4 +1,3 @@
-import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
@@ -10,18 +9,20 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 
-const userFieldSchemas = {
+const userFieldSchemas = z.object({
   email: z.string().nullish(),
   phone: z.string().nullish(),
   name: z.string().nullish(),
   emailVerified: z.boolean().optional(),
-};
+});
 
-export const userCreateSchema = z.object(
-  pick(userFieldSchemas, ['email', 'name', 'emailVerified']),
-);
+export const userCreateSchema = userFieldSchemas.pick({
+  email: true,
+  name: true,
+  emailVerified: true,
+});
 
-export const userUpdateSchema = z.object(userFieldSchemas).partial();
+export const userUpdateSchema = userFieldSchemas.partial();
 
 export async function createUser<TQuery extends DataQuery<'user'>>({
   data,

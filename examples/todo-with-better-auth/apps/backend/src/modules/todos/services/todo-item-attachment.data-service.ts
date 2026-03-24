@@ -3,12 +3,12 @@ import { z } from 'zod';
 
 import { oneToManyTransformer } from '@src/utils/data-operations/nested-transformers.js';
 
-export const todoItemAttachmentFieldSchemas = {
+export const todoItemAttachmentFieldSchemas = z.object({
   id: z.uuid().optional(),
   position: z.int(),
   url: z.string(),
   tags: z.array(z.object({ tag: z.string() })).optional(),
-};
+});
 
 export const todoItemAttachmentTransformers = {
   tags: oneToManyTransformer({

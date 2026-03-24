@@ -11,7 +11,7 @@ import { prisma } from '@src/services/prisma.js';
 import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-const blogPostFieldSchemas = {
+const blogPostFieldSchemas = z.object({
   blogId: z.uuid(),
   publisherId: z.uuid(),
   title: z.string(),
@@ -20,11 +20,11 @@ const blogPostFieldSchemas = {
     .json()
     .transform((val) => (val === null ? Prisma.JsonNull : val))
     .optional(),
-};
+});
 
-export const blogPostCreateSchema = z.object(blogPostFieldSchemas);
+export const blogPostCreateSchema = blogPostFieldSchemas;
 
-export const blogPostUpdateSchema = z.object(blogPostFieldSchemas).partial();
+export const blogPostUpdateSchema = blogPostFieldSchemas.partial();
 
 export async function createBlogPost<TQuery extends DataQuery<'blogPost'>>({
   data,

@@ -143,6 +143,13 @@ export const prismaDataUpdateGenerator = createGenerator({
                 ? 'data,'
                 : tsTemplate`data: ${parts.prismaDataFragment},`;
 
+            // Context is always needed for transforms; for scalar-only, only when auth is present
+            const needsContext = hasTransformFields || authFragment !== '';
+            const contextParam = needsContext ? 'context,' : '';
+            const contextType = needsContext
+              ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
+              : '';
+
             const updateFunction = hasTransformFields
               ? // Transform path: prepareTransformers + executeTransformPlan
                 tsTemplate`
@@ -150,12 +157,12 @@ export const prismaDataUpdateGenerator = createGenerator({
                   where,
                   data,
                   query,
-                  context,
+                  ${contextParam}
                 }: {
                   where: ${whereType};
                   data: z.infer<typeof ${prismaDataService.getUpdateSchemaVariableName()}>;
                   query?: TQuery;
-                  context: ${serviceContextImports.ServiceContext.typeFragment()};
+                  ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${existingItemFragment}
                   ${authFragment}
@@ -185,12 +192,12 @@ export const prismaDataUpdateGenerator = createGenerator({
                   where,
                   data,
                   query,
-                  context,
+                  ${contextParam}
                 }: {
                   where: ${whereType};
                   data: z.infer<typeof ${prismaDataService.getUpdateSchemaVariableName()}>;
                   query?: TQuery;
-                  context: ${serviceContextImports.ServiceContext.typeFragment()};
+                  ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${existingItemFragment}
                   ${authFragment}

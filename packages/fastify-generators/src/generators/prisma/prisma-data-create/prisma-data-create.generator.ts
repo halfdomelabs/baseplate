@@ -114,17 +114,24 @@ export const prismaDataCreateGenerator = createGenerator({
                 ? 'data,'
                 : tsTemplate`data: ${parts.prismaDataFragment},`;
 
+            // Context is always needed for transforms; for scalar-only, only when auth is present
+            const needsContext = hasTransformFields || authFragment !== '';
+            const contextParam = needsContext ? 'context,' : '';
+            const contextType = needsContext
+              ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
+              : '';
+
             const createFunction = hasTransformFields
               ? // Transform path: prepareTransformers + executeTransformPlan
                 tsTemplate`
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   data,
                   query,
-                  context,
+                  ${contextParam}
                 }: {
                   data: z.infer<typeof ${prismaDataService.getCreateSchemaVariableName()}>;
                   query?: TQuery;
-                  context: ${serviceContextImports.ServiceContext.typeFragment()};
+                  ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
                   ${parts.inputDestructureFragment}
@@ -151,11 +158,11 @@ export const prismaDataCreateGenerator = createGenerator({
                 export async function ${name}<TQuery extends ${dataUtilsImports.DataQuery.typeFragment()}<${quot(modelVar)}>>({
                   data,
                   query,
-                  context,
+                  ${contextParam}
                 }: {
                   data: z.infer<typeof ${prismaDataService.getCreateSchemaVariableName()}>;
                   query?: TQuery;
-                  context: ${serviceContextImports.ServiceContext.typeFragment()};
+                  ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${authFragment}
                   ${parts.inputDestructureFragment}

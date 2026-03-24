@@ -1,4 +1,3 @@
-import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
@@ -17,20 +16,20 @@ import {
 } from '../../../storage/services/file-transformer.js';
 import { userProfileAvatarFileCategory } from '../constants/file-categories.js';
 
-export const userProfileFieldSchemas = {
+export const userProfileFieldSchemas = z.object({
   id: z.uuid().optional(),
   bio: z.string().nullish(),
   birthDay: z.date().nullish(),
   favoriteTodoListId: z.uuid().nullish(),
   avatar: fileInputSchema.nullish(),
-};
+});
 
-export const userProfileCreateSchema = z.object(
-  pick(userProfileFieldSchemas, ['bio']),
-);
+export const userProfileCreateSchema = userProfileFieldSchemas.pick({
+  bio: true,
+});
 
-export const userProfileUpdateSchema = z
-  .object(pick(userProfileFieldSchemas, ['bio', 'avatar']))
+export const userProfileUpdateSchema = userProfileFieldSchemas
+  .pick({ bio: true, avatar: true })
   .partial();
 
 export const userProfileTransformers = {
@@ -45,11 +44,9 @@ export async function createUserProfile<
 >({
   data,
   query,
-  context,
 }: {
   data: z.infer<typeof userProfileCreateSchema>;
   query?: TQuery;
-  context: ServiceContext;
 }): Promise<GetResult<'userProfile', TQuery>> {
   const result = await prisma.userProfile.create({
     data,

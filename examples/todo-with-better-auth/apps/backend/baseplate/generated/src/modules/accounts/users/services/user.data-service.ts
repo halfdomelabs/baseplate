@@ -26,18 +26,18 @@ import {
   userProfileTransformers,
 } from './user-profile.data-service.js';
 
-const userFieldSchemas = {
+const userFieldSchemas = z.object({
   name: z.string(),
   email: z.string(),
   customer: z.object({ stripeCustomerId: z.string() }).nullish(),
-  images: z.array(z.object(userImageFieldSchemas)).optional(),
+  images: z.array(userImageFieldSchemas).optional(),
   roles: z.array(z.object({ role: z.string() })).optional(),
-  userProfile: z.object(userProfileFieldSchemas).nullish(),
-};
+  userProfile: userProfileFieldSchemas.nullish(),
+});
 
-export const userCreateSchema = z.object(userFieldSchemas);
+export const userCreateSchema = userFieldSchemas;
 
-export const userUpdateSchema = z.object(userFieldSchemas).partial();
+export const userUpdateSchema = userFieldSchemas.partial();
 
 export const userTransformers = {
   customer: oneToOneTransformer({
@@ -114,7 +114,7 @@ export const userTransformers = {
             }),
         });
       },
-    schema: z.object(userImageFieldSchemas),
+    schema: userImageFieldSchemas,
   }),
   roles: oneToManyTransformer({
     compareItem: (input, existing) => input.role === existing.role,
@@ -205,7 +205,7 @@ export const userTransformers = {
             }),
         });
       },
-    schema: z.object(userProfileFieldSchemas),
+    schema: userProfileFieldSchemas,
   }),
 };
 

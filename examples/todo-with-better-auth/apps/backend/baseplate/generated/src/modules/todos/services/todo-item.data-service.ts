@@ -23,18 +23,18 @@ import {
   todoItemAttachmentTransformers,
 } from './todo-item-attachment.data-service.js';
 
-const todoItemFieldSchemas = {
+const todoItemFieldSchemas = z.object({
   todoListId: z.uuid(),
   position: z.int(),
   text: z.string(),
   done: z.boolean(),
   assigneeId: z.uuid().nullish(),
-  attachments: z.array(z.object(todoItemAttachmentFieldSchemas)).optional(),
-};
+  attachments: z.array(todoItemAttachmentFieldSchemas).optional(),
+});
 
-export const todoItemCreateSchema = z.object(todoItemFieldSchemas);
+export const todoItemCreateSchema = todoItemFieldSchemas;
 
-export const todoItemUpdateSchema = z.object(todoItemFieldSchemas).partial();
+export const todoItemUpdateSchema = todoItemFieldSchemas.partial();
 
 export const todoItemTransformers = {
   attachments: oneToManyTransformer({
@@ -96,7 +96,7 @@ export const todoItemTransformers = {
             }),
         });
       },
-    schema: z.object(todoItemAttachmentFieldSchemas),
+    schema: todoItemAttachmentFieldSchemas,
   }),
 };
 

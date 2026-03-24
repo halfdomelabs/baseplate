@@ -24,6 +24,35 @@ export function buildFieldSchemasObject(
   );
 }
 
+/**
+ * Returns a fragment that picks a subset of fields from a Zod schema,
+ * or the schema directly if all fields are used.
+ *
+ * Uses Zod's native `.pick()` for type-safe subsetting.
+ *
+ * @param fieldNames - The field names to include (undefined means all)
+ * @param allFieldNames - All available field names
+ * @param zodSchemaFragment - The Zod schema variable/fragment to pick from
+ * @returns TsCodeFragment with `.pick({...})` for subsets, or the original fragment
+ */
+export function pickZodSchemaSubset(
+  fieldNames: string[] | undefined,
+  allFieldNames: string[],
+  zodSchemaFragment: TsCodeFragment | string,
+): TsCodeFragment | string {
+  const usesAllFields =
+    !fieldNames ||
+    (fieldNames.length === allFieldNames.length &&
+      fieldNames.every((n) => allFieldNames.includes(n)));
+
+  if (usesAllFields) {
+    return zodSchemaFragment;
+  }
+
+  const pickEntries = fieldNames.map((n) => `${n}: true`).join(', ');
+  return tsTemplate`${zodSchemaFragment}.pick({ ${pickEntries} })`;
+}
+
 interface BuildNestedSchemaFragmentsConfig {
   /** The field definitions used by this nested relation */
   fields: InputFieldDefinitionOutput[];
@@ -31,7 +60,7 @@ interface BuildNestedSchemaFragmentsConfig {
   fieldNames: string[];
   /** Whether this is a list relation (one-to-many) */
   isList: boolean;
-  /** Import fragment for the nested model's fieldSchemas variable (when data service exists) */
+  /** Import fragment for the nested model's fieldSchemas ZodObject (when data service exists) */
   nestedFieldSchemasFragment?: TsCodeFragment;
   /** All field names in the nested model's data service (for subset detection) */
   allDataServiceFieldNames?: string[];
@@ -45,38 +74,10 @@ interface NestedSchemaFragments {
 }
 
 /**
- * Returns a fragment that picks a subset of fields from a field schemas variable,
- * or the variable name directly if all fields are used.
- *
- * @param fieldNames - The field names to include (undefined means all)
- * @param allFieldNames - All available field names
- * @param fieldSchemasFragment - The field schemas variable/fragment to pick from
- * @returns TsCodeFragment with `pick(...)` for subsets, or the original fragment
- */
-export function pickFieldSchemasSubset(
-  fieldNames: string[] | undefined,
-  allFieldNames: string[],
-  fieldSchemasFragment: TsCodeFragment | string,
-): TsCodeFragment | string {
-  const usesAllFields =
-    !fieldNames ||
-    (fieldNames.length === allFieldNames.length &&
-      fieldNames.every((n) => allFieldNames.includes(n)));
-
-  if (usesAllFields) {
-    return fieldSchemasFragment;
-  }
-
-  const pickFrag = TsCodeUtils.importFragment('pick', 'es-toolkit');
-  const fieldNamesList = fieldNames.map((n) => `'${n}'`).join(', ');
-  return tsTemplate`${pickFrag}(${fieldSchemasFragment}, [${fieldNamesList}])`;
-}
-
-/**
  * Builds the schema fragments for a nested relation.
  *
  * Two cases:
- * 1. **Has fieldSchemas import** → `z.object(fieldSchemas)` or `z.object(pick(fieldSchemas, [...]))`
+ * 1. **Has fieldSchemas import** → `fieldSchemas` or `fieldSchemas.pick({...})`
  * 2. **No data service** → inline `z.object({ field1: z.string(), ... })`
  *
  * Returns `{ itemSchema, schemaFragment }` where `schemaFragment` is wrapped
@@ -100,13 +101,13 @@ export function buildNestedSchemaFragments(
   let itemSchema: TsCodeFragment;
 
   if (nestedFieldSchemasFragment) {
-    // Has data service — construct from imported fieldSchemas
-    const schemasExpression = pickFieldSchemasSubset(
+    // Has data service — fieldSchemas is already a ZodObject, use .pick() for subsets
+    const schemasExpression = pickZodSchemaSubset(
       fieldNames,
       allDataServiceFieldNames ?? [],
       nestedFieldSchemasFragment,
     );
-    itemSchema = tsTemplate`${zFrag}.object(${schemasExpression})`;
+    itemSchema = tsTemplate`${schemasExpression}`;
   } else {
     // No data service — build inline from field definitions
     const schemaEntries = buildFieldSchemasObject(fields);

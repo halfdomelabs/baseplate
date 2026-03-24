@@ -19,18 +19,18 @@ import {
 } from '../../storage/services/file-transformer.js';
 import { todoListCoverPhotoFileCategory } from '../constants/file-categories.js';
 
-const todoListFieldSchemas = {
+const todoListFieldSchemas = z.object({
   ownerId: z.uuid(),
   position: z.int(),
   name: z.string(),
   createdAt: z.date().optional(),
   status: z.enum($Enums.TodoListStatus).nullish(),
   coverPhoto: fileInputSchema.nullish(),
-};
+});
 
-export const todoListCreateSchema = z.object(todoListFieldSchemas);
+export const todoListCreateSchema = todoListFieldSchemas;
 
-export const todoListUpdateSchema = z.object(todoListFieldSchemas).partial();
+export const todoListUpdateSchema = todoListFieldSchemas.partial();
 
 export const todoListTransformers = {
   coverPhoto: fileTransformer({
