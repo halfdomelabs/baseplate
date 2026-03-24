@@ -86,6 +86,10 @@ export const prismaDataUpdateGenerator = createGenerator({
           );
         }
 
+        prismaDataService.registerUpdateFieldNames(
+          usedFields.map((f) => f.name),
+        );
+
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);

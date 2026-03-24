@@ -26,7 +26,10 @@ import { serviceFileProvider } from '#src/generators/core/index.js';
 import type { InputFieldDefinitionOutput } from '../_shared/field-definition-generators/types.js';
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
-import { buildFieldSchemasObject } from '../_shared/build-data-helpers/build-schema-fragments.js';
+import {
+  buildFieldSchemasObject,
+  pickFieldSchemasSubset,
+} from '../_shared/build-data-helpers/build-schema-fragments.js';
 import { generateScalarInputField } from '../_shared/field-definition-generators/generate-scalar-input-field.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
@@ -97,6 +100,10 @@ export interface PrismaDataServiceProvider {
   getFieldSchemasFragment(): TsCodeFragment;
   /** Register a create/update/delete method to be added to the service file */
   registerMethod(method: PrismaDataServiceMethod): void;
+  /** Register the field names used by the create schema (for subset filtering) */
+  registerCreateFieldNames(fieldNames: string[]): void;
+  /** Register the field names used by the update schema (for subset filtering) */
+  registerUpdateFieldNames(fieldNames: string[]): void;
 }
 
 export const prismaDataServiceProvider =
@@ -210,6 +217,9 @@ export const prismaDataServiceGenerator = createGenerator({
 
         const zFrag = TsCodeUtils.importFragment('z', 'zod');
         let fieldSchemasRequested = false;
+        const allFieldNames = allFields.map((f) => f.name);
+        let createFieldNames: string[] | undefined;
+        let updateFieldNames: string[] | undefined;
 
         return {
           providers: {
@@ -240,6 +250,12 @@ export const prismaDataServiceGenerator = createGenerator({
               registerMethod(method) {
                 methods.add(method);
               },
+              registerCreateFieldNames(fieldNames) {
+                createFieldNames = fieldNames;
+              },
+              registerUpdateFieldNames(fieldNames) {
+                updateFieldNames = fieldNames;
+              },
             },
           },
           build: () => {
@@ -265,15 +281,25 @@ export const prismaDataServiceGenerator = createGenerator({
               });
 
               if (hasCreateMethod) {
+                const createSchemaFields = pickFieldSchemasSubset(
+                  createFieldNames,
+                  allFieldNames,
+                  fieldSchemasVarName,
+                );
                 serviceFile.registerHeader({
                   name: 'schemas-2-create',
-                  fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName});`,
+                  fragment: tsTemplate`export const ${createSchemaVarName} = ${zFrag}.object(${createSchemaFields});`,
                 });
               }
               if (hasUpdateMethod) {
+                const updateSchemaFields = pickFieldSchemasSubset(
+                  updateFieldNames,
+                  allFieldNames,
+                  fieldSchemasVarName,
+                );
                 serviceFile.registerHeader({
                   name: 'schemas-3-update',
-                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${fieldSchemasVarName}).partial();`,
+                  fragment: tsTemplate`export const ${updateSchemaVarName} = ${zFrag}.object(${updateSchemaFields}).partial();`,
                 });
               }
             }

@@ -45,6 +45,34 @@ interface NestedSchemaFragments {
 }
 
 /**
+ * Returns a fragment that picks a subset of fields from a field schemas variable,
+ * or the variable name directly if all fields are used.
+ *
+ * @param fieldNames - The field names to include (undefined means all)
+ * @param allFieldNames - All available field names
+ * @param fieldSchemasFragment - The field schemas variable/fragment to pick from
+ * @returns TsCodeFragment with `pick(...)` for subsets, or the original fragment
+ */
+export function pickFieldSchemasSubset(
+  fieldNames: string[] | undefined,
+  allFieldNames: string[],
+  fieldSchemasFragment: TsCodeFragment | string,
+): TsCodeFragment | string {
+  const usesAllFields =
+    !fieldNames ||
+    (fieldNames.length === allFieldNames.length &&
+      fieldNames.every((n) => allFieldNames.includes(n)));
+
+  if (usesAllFields) {
+    return fieldSchemasFragment;
+  }
+
+  const pickFrag = TsCodeUtils.importFragment('pick', 'es-toolkit');
+  const fieldNamesList = fieldNames.map((n) => `'${n}'`).join(', ');
+  return tsTemplate`${pickFrag}(${fieldSchemasFragment}, [${fieldNamesList}])`;
+}
+
+/**
  * Builds the schema fragments for a nested relation.
  *
  * Two cases:
@@ -73,19 +101,12 @@ export function buildNestedSchemaFragments(
 
   if (nestedFieldSchemasFragment) {
     // Has data service — construct from imported fieldSchemas
-    const usesAllFields =
-      fieldNames.length === allDataServiceFieldNames?.length &&
-      fieldNames.every((n) => allDataServiceFieldNames.includes(n));
-
-    if (usesAllFields) {
-      // All fields match — use fieldSchemas directly
-      itemSchema = tsTemplate`${zFrag}.object(${nestedFieldSchemasFragment})`;
-    } else {
-      // Subset — use pick() to select needed fields
-      const pickFrag = TsCodeUtils.importFragment('pick', 'es-toolkit');
-      const fieldNamesList = fieldNames.map((n) => `'${n}'`).join(', ');
-      itemSchema = tsTemplate`${zFrag}.object(${pickFrag}(${nestedFieldSchemasFragment}, [${fieldNamesList}]))`;
-    }
+    const schemasExpression = pickFieldSchemasSubset(
+      fieldNames,
+      allDataServiceFieldNames ?? [],
+      nestedFieldSchemasFragment,
+    );
+    itemSchema = tsTemplate`${zFrag}.object(${schemasExpression})`;
   } else {
     // No data service — build inline from field definitions
     const schemaEntries = buildFieldSchemasObject(fields);

@@ -1,3 +1,4 @@
+import { pick } from 'es-toolkit';
 import { z } from 'zod';
 
 import type {
@@ -11,11 +12,14 @@ import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 
 const userFieldSchemas = {
   email: z.string().nullish(),
+  phone: z.string().nullish(),
   name: z.string().nullish(),
   emailVerified: z.boolean().optional(),
 };
 
-export const userCreateSchema = z.object(userFieldSchemas);
+export const userCreateSchema = z.object(
+  pick(userFieldSchemas, ['email', 'name', 'emailVerified']),
+);
 
 export const userUpdateSchema = z.object(userFieldSchemas).partial();
 

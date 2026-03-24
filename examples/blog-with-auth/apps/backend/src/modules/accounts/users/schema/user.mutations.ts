@@ -43,6 +43,7 @@ const updateUserDataInputType = builder
   .inputType('UpdateUserData', {
     fields: (t) => ({
       email: t.string(),
+      phone: t.string(),
       name: t.string(),
       emailVerified: t.boolean(),
     }),

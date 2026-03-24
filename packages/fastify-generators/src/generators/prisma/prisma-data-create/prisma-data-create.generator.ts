@@ -74,6 +74,10 @@ export const prismaDataCreateGenerator = createGenerator({
           );
         }
 
+        prismaDataService.registerCreateFieldNames(
+          usedFields.map((f) => f.name),
+        );
+
         return {
           build: () => {
             const modelVar = lowercaseFirstChar(modelName);

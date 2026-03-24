@@ -94,7 +94,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.4",
+  "cliVersion": "0.6.5",
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     {
@@ -718,7 +718,7 @@
         "transformers": [],
         "update": {
           "enabled": true,
-          "fields": ["name", "emailVerified", "email"],
+          "fields": ["name", "emailVerified", "email", "phone"],
           "globalRoles": ["admin"]
         }
       }
