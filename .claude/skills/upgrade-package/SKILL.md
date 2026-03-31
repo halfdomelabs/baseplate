@@ -43,10 +43,10 @@ grep -r "package-name" packages/*/src/constants/
 
 ```bash
 # Get latest version from npm
-npm view package-name version
+pnpm view package-name version
 
 # Get all available versions (helpful for major version planning)
-npm view package-name versions --json
+pnpm view package-name versions --json
 ```
 
 ### 3. Research Breaking Changes

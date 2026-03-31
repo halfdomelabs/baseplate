@@ -31,6 +31,7 @@
       "Bash(pnpm why *)",
       "Bash(pnpm dedupe)",
       "Bash(npm view *)",
+      "Bash(pnpm view *)",
       "Bash(git log *)",
       "Bash(pnpm --filter * lint*)",
       "Bash(pnpm --filter * typecheck*)",
