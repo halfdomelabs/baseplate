@@ -1,5 +1,5 @@
 ---
-name: Modify Generated Code
+name: modify-generated-code
 description: Workflow for modifying generated code in Baseplate, including template extraction, generator updates, and project synchronization.
 ---
 
