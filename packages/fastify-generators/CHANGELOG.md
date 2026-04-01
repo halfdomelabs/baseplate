@@ -1,5 +1,24 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.7
+
+### Patch Changes
+
+- [#872](https://github.com/halfdomelabs/baseplate/pull/872) [`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd) Thanks [@kingston](https://github.com/kingston)! - Upgrade fastify to 5.8.4
+  - fastify: 5.8.1 → 5.8.4
+
+- [#872](https://github.com/halfdomelabs/baseplate/pull/872) [`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma packages to 7.6.0
+  - prisma: 7.5.0 → 7.6.0
+  - @prisma/client: 7.5.0 → 7.6.0
+  - @prisma/adapter-pg: 7.5.0 → 7.6.0
+  - @prisma/internals: 7.5.0 → 7.6.0
+  - @pothos/plugin-prisma: 4.14.1 → 4.14.2
+
+- Updated dependencies [[`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd), [`c3a6719`](https://github.com/halfdomelabs/baseplate/commit/c3a67191d9a456d7440728f43f34cd02d28ffd12), [`7031c74`](https://github.com/halfdomelabs/baseplate/commit/7031c74af6a0ee74007a2b3cce30c738cff36e6a)]:
+  - @baseplate-dev/core-generators@0.6.7
+  - @baseplate-dev/sync@0.6.7
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes

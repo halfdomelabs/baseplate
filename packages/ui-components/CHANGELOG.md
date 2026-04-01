@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.6.7
+
+### Patch Changes
+
+- [#876](https://github.com/halfdomelabs/baseplate/pull/876) [`335e063`](https://github.com/halfdomelabs/baseplate/commit/335e063b85676c9a55635ade6cf9b7b38bdd431d) Thanks [@kingston](https://github.com/kingston)! - Fix iOS Safari auto-zoom on Combobox/MultiCombobox by using responsive font size (text-base on mobile, text-sm on desktop)
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes
