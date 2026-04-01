@@ -23,10 +23,7 @@ import {
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '../constants/password.constants.js';
 import { createPasswordHash } from './password-hasher.service.js';
-import {
-  getLoginConsecutiveFailsLimiter,
-  getLoginIpLimiter,
-} from './user-password.service.js';
+import { resetLoginRateLimits } from './user-password.service.js';
 
 const PROVIDER_ID = 'email-password';
 const PASSWORD_RESET_TYPE = 'password-reset';
@@ -237,11 +234,7 @@ export async function completePasswordReset({
   ]);
 
   // Reset login rate limits so the user can log in with their new password
-  const clientIp = context.reqInfo.ip;
-  await Promise.all([
-    getLoginConsecutiveFailsLimiter().delete(`${user.email}_${clientIp}`),
-    getLoginIpLimiter().delete(clientIp),
-  ]);
+  await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
   await sendEmail(

@@ -7,10 +7,7 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '$constantsPassword';
-import {
-  getLoginConsecutiveFailsLimiter,
-  getLoginIpLimiter,
-} from '$servicesUserPassword';
+import { resetLoginRateLimits } from '$servicesUserPassword';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -232,11 +229,7 @@ export async function completePasswordReset({
   ]);
 
   // Reset login rate limits so the user can log in with their new password
-  const clientIp = context.reqInfo.ip;
-  await Promise.all([
-    getLoginConsecutiveFailsLimiter().delete(`${user.email}_${clientIp}`),
-    getLoginIpLimiter().delete(clientIp),
-  ]);
+  await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
   await sendEmail(TPL_PASSWORD_CHANGED_EMAIL, {

@@ -47,13 +47,13 @@ const getRegistrationLimiter = memoizeRateLimiter('registration', {
   blockDuration: 60 * 60, // Block for 1 hour if exceeded
 });
 
-export const getLoginIpLimiter = memoizeRateLimiter('login-ip', {
+const getLoginIpLimiter = memoizeRateLimiter('login-ip', {
   points: 15,
   duration: 60 * 60, // 1 hour
   blockDuration: 60 * 60, // Block for 1 hour if exceeded
 });
 
-export const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
+const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
   'login-consecutive-fails',
   {
     points: 10,
@@ -61,6 +61,24 @@ export const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
     blockDuration: 60 * 15, // Block for 15 minutes after consecutive fails
   },
 );
+
+/**
+ * Resets login rate limits for the given email+IP combination.
+ * Intentionally scoped to the requesting IP only — a password reset should not
+ * clear rate limits accumulated from other IPs (which may be attacker traffic).
+ */
+export async function resetLoginRateLimits({
+  email,
+  ip,
+}: {
+  email: string;
+  ip: string;
+}): Promise<void> {
+  await Promise.all([
+    getLoginConsecutiveFailsLimiter().delete(`${email}_${ip}`),
+    getLoginIpLimiter().delete(ip),
+  ]);
+}
 
 export async function createUserWithEmailAndPassword({
   input,
