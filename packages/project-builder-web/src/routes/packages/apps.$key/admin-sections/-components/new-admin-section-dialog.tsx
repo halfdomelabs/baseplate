@@ -29,6 +29,8 @@ import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 
+import { ReactIconComboboxController } from './react-icon-combobox.js';
+
 interface NewAdminSectionDialogProps {
   trigger: React.ReactElement;
   appId: string;
@@ -162,12 +164,11 @@ function NewAdminSectionDialog({
             name="featureRef"
             description="The feature this section belongs to"
           />
-          <InputFieldController
+          <ReactIconComboboxController
             label="Icon"
             control={control}
             name="icon"
-            placeholder="e.g. MdPeople, MdArticle"
-            description="React icon component name (optional)"
+            description="Choose an icon to represent this section"
           />
           <SelectFieldController
             label="Type"

@@ -144,7 +144,7 @@
                 }
               ]
             },
-            "icon": "FaUserAlt",
+            "icon": "FaUser",
             "id": "admin-section:fNRQifZdC2LF",
             "modelRef": "User",
             "name": "User",
