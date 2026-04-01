@@ -29,7 +29,7 @@ function HomePage(): ReactElement {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <p>Welcome {data.viewer?.email ?? 'an anonymous user'}!</p>
     </div>
   );

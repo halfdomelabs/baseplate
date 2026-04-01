@@ -7,6 +7,7 @@ import {
   PASSWORD_MIN_LENGTH,
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '$constantsPassword';
+import { resetLoginRateLimits } from '$servicesUserPassword';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -167,9 +168,11 @@ const completePasswordResetSchema = z.object({
 export async function completePasswordReset({
   token: rawToken,
   newPassword: rawNewPassword,
+  context,
 }: {
   token: string;
   newPassword: string;
+  context: RequestServiceContext;
 }): Promise<{ success: true }> {
   const { token, newPassword } = await completePasswordResetSchema
     .parseAsync({
@@ -224,6 +227,9 @@ export async function completePasswordReset({
       where: { userId: user.id },
     }),
   ]);
+
+  // Reset login rate limits so the user can log in with their new password
+  await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
   await sendEmail(TPL_PASSWORD_CHANGED_EMAIL, {

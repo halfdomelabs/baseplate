@@ -31,7 +31,7 @@ export const Route = createFileRoute('/auth_/forgot-password')({
 
 const formSchema = z.object({
   email: z
-    .email()
+    .email('Please enter a valid email address')
     .max(PASSWORD_MAX_LENGTH)
     .transform((value) => value.toLowerCase()),
 });
