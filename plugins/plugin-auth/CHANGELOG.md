@@ -1,5 +1,23 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.7
+
+### Patch Changes
+
+- [#877](https://github.com/halfdomelabs/baseplate/pull/877) [`0527c02`](https://github.com/halfdomelabs/baseplate/commit/0527c02fc9cc08363a93ff640345680ef832cd30) Thanks [@kingston](https://github.com/kingston)! - Reduce password rate limit aggressiveness (15 attempts/hour for IP, 10 consecutive fails/hour), reset login rate limits after successful password reset, and improve error messages to suggest password reset when rate limited
+
+- Updated dependencies [[`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd), [`335e063`](https://github.com/halfdomelabs/baseplate/commit/335e063b85676c9a55635ade6cf9b7b38bdd431d), [`c3a6719`](https://github.com/halfdomelabs/baseplate/commit/c3a67191d9a456d7440728f43f34cd02d28ffd12), [`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd), [`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd), [`7031c74`](https://github.com/halfdomelabs/baseplate/commit/7031c74af6a0ee74007a2b3cce30c738cff36e6a)]:
+  - @baseplate-dev/core-generators@0.6.7
+  - @baseplate-dev/ui-components@0.6.7
+  - @baseplate-dev/fastify-generators@0.6.7
+  - @baseplate-dev/react-generators@0.6.7
+  - @baseplate-dev/plugin-email@0.6.7
+  - @baseplate-dev/plugin-queue@0.6.7
+  - @baseplate-dev/plugin-rate-limit@0.6.7
+  - @baseplate-dev/project-builder-lib@0.6.7
+  - @baseplate-dev/sync@0.6.7
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes

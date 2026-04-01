@@ -1,5 +1,14 @@
 # @baseplate-dev/react-generators
 
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [[`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd), [`c3a6719`](https://github.com/halfdomelabs/baseplate/commit/c3a67191d9a456d7440728f43f34cd02d28ffd12), [`7031c74`](https://github.com/halfdomelabs/baseplate/commit/7031c74af6a0ee74007a2b3cce30c738cff36e6a)]:
+  - @baseplate-dev/core-generators@0.6.7
+  - @baseplate-dev/sync@0.6.7
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes

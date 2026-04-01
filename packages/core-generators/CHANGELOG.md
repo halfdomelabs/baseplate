@@ -1,5 +1,19 @@
 # @baseplate-dev/core-generators
 
+## 0.6.7
+
+### Patch Changes
+
+- [#872](https://github.com/halfdomelabs/baseplate/pull/872) [`2d39358`](https://github.com/halfdomelabs/baseplate/commit/2d39358510f73073a80ac78c3c7433a3aac2f0cd) Thanks [@kingston](https://github.com/kingston)! - Update pnpm version to 10.33.0
+
+- [#875](https://github.com/halfdomelabs/baseplate/pull/875) [`c3a6719`](https://github.com/halfdomelabs/baseplate/commit/c3a67191d9a456d7440728f43f34cd02d28ffd12) Thanks [@kingston](https://github.com/kingston)! - Restrict docker compose port bindings to 127.0.0.1 to prevent exposing development services to the local network
+
+- [#874](https://github.com/halfdomelabs/baseplate/pull/874) [`7031c74`](https://github.com/halfdomelabs/baseplate/commit/7031c74af6a0ee74007a2b3cce30c738cff36e6a) Thanks [@kingston](https://github.com/kingston)! - Upgrade Turborepo from 2.5.0 to 2.9.0
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.7
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @baseplate-dev/sync
 
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes
