@@ -304,6 +304,7 @@ input UpdateUserData {
   email: String
   emailVerified: Boolean
   name: String
+  phone: String
 }
 
 """Input type for updateUser mutation"""

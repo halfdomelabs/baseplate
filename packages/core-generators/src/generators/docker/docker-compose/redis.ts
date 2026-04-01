@@ -18,7 +18,7 @@ export function generateRedisDockerCompose(
     security_opt:
       - no-new-privileges:true
     ports:
-      - "\${REDIS_PORT:-${config.port}}:6379"
+      - "127.0.0.1:\${REDIS_PORT:-${config.port}}:6379"
     command: redis-server --save 20 1 --loglevel warning --requirepass \${REDIS_PASSWORD:-${config.password}} --maxmemory 256mb --maxmemory-policy noeviction
     volumes:
       - redis-cache:/data
