@@ -13,6 +13,43 @@ import { shouldEnableOra } from './utils/ora.js';
 import { isExitingProcess, onProcessExit } from './utils/process.js';
 import { waitForHealthyUrl } from './utils/url.js';
 
+const PASSTHROUGH_ENV_VARS = [
+  // Essential for package management
+  'HOME',
+  'PATH',
+  'NODE_OPTIONS',
+  'COREPACK_HOME',
+  'TMP',
+  'TEMP',
+  'APPDATA',
+
+  // System libraries for native modules
+  'LD_LIBRARY_PATH',
+  'DYLD_FALLBACK_LIBRARY_PATH',
+  'LIBPATH',
+
+  // Windows-specific paths
+  'SYSTEMROOT',
+  'SYSTEMDRIVE',
+
+  // User context
+  'USER',
+
+  // Localization
+  'TZ',
+  'LANG',
+];
+
+function getBaseEnv(): Record<string, string> {
+  const env: Record<string, string> = { CI: 'true' };
+  for (const key of PASSTHROUGH_ENV_VARS) {
+    if (process.env[key] != null) {
+      env[key] = process.env[key];
+    }
+  }
+  return env;
+}
+
 export function createEnvironmentHelpers({
   projectDirectoryPath,
   streamCommandOutput,
@@ -65,14 +102,17 @@ export function createEnvironmentHelpers({
           streamCommandOutput
             ? {
                 ...execAOptions,
+                extendEnv: false,
+                env: getBaseEnv(),
                 stdin: 'inherit',
                 stdout: 'inherit',
                 stderr: 'inherit',
               }
             : {
                 ...execAOptions,
+                extendEnv: false,
+                env: getBaseEnv(),
                 all: true,
-                env: { CI: 'true' },
               },
         ).catch((err: unknown) => {
           if (isExitingProcess()) {
@@ -121,14 +161,16 @@ export function createEnvironmentHelpers({
         streamCommandOutput
           ? {
               ...execAOptions,
+              extendEnv: false,
+              env: getBaseEnv(),
               stdout: 'inherit',
               stderr: 'inherit',
             }
           : {
               ...execAOptions,
+              extendEnv: false,
+              env: getBaseEnv(),
               all: true,
-              extendEnv: true,
-              env: { CI: 'true' },
             },
       );
 
