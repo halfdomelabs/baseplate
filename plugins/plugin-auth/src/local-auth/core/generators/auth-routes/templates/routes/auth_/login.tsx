@@ -95,6 +95,8 @@ function LoginPage(): React.JSX.Element {
       .catch((err: unknown) => {
         const errorCode = getApolloErrorCode(err, [
           'invalid-credentials',
+          'login-ip-rate-limited',
+          'login-consecutive-fails-blocked',
         ] as const);
         switch (errorCode) {
           case 'invalid-credentials': {
@@ -104,6 +106,15 @@ function LoginPage(): React.JSX.Element {
               { message: 'Invalid email or password' },
               { shouldFocus: true },
             );
+            break;
+          }
+          case 'login-ip-rate-limited':
+          case 'login-consecutive-fails-blocked': {
+            resetField('password');
+            setFormError('password', {
+              message:
+                'Too many failed login attempts. Please reset your password or try again later.',
+            });
             break;
           }
           default: {

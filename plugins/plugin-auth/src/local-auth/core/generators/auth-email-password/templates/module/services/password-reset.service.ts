@@ -8,6 +8,10 @@ import {
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '$constantsPassword';
 import {
+  getLoginConsecutiveFailsLimiter,
+  getLoginIpLimiter,
+} from '$servicesUserPassword';
+import {
   createAuthVerification,
   validateAuthVerification,
 } from '%authModuleImports';
@@ -167,9 +171,11 @@ const completePasswordResetSchema = z.object({
 export async function completePasswordReset({
   token: rawToken,
   newPassword: rawNewPassword,
+  context,
 }: {
   token: string;
   newPassword: string;
+  context: RequestServiceContext;
 }): Promise<{ success: true }> {
   const { token, newPassword } = await completePasswordResetSchema
     .parseAsync({
@@ -223,6 +229,13 @@ export async function completePasswordReset({
     prisma.userSession.deleteMany({
       where: { userId: user.id },
     }),
+  ]);
+
+  // Reset login rate limits so the user can log in with their new password
+  const clientIp = context.reqInfo.ip;
+  await Promise.all([
+    getLoginConsecutiveFailsLimiter().delete(`${user.email}_${clientIp}`),
+    getLoginIpLimiter().delete(clientIp),
   ]);
 
   // Send password changed confirmation email

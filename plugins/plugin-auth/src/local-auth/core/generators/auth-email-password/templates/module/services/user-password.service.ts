@@ -43,18 +43,18 @@ const getRegistrationLimiter = memoizeRateLimiter('registration', {
   blockDuration: 60 * 60, // Block for 1 hour if exceeded
 });
 
-const getLoginIpLimiter = memoizeRateLimiter('login-ip', {
-  points: 10,
-  duration: 60 * 60 * 24, // 24 hours
+export const getLoginIpLimiter = memoizeRateLimiter('login-ip', {
+  points: 15,
+  duration: 60 * 60, // 1 hour
   blockDuration: 60 * 60, // Block for 1 hour if exceeded
 });
 
-const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
+export const getLoginConsecutiveFailsLimiter = memoizeRateLimiter(
   'login-consecutive-fails',
   {
-    points: 5,
-    duration: 60 * 60 * 24, // 24 hours (duration for tracking)
-    blockDuration: 60 * 15, // Block for 15 minutes after 5 consecutive fails
+    points: 10,
+    duration: 60 * 60, // 1 hour (duration for tracking)
+    blockDuration: 60 * 15, // Block for 15 minutes after consecutive fails
   },
 );
 
@@ -149,11 +149,14 @@ export async function authenticateUserWithEmailAndPassword({
   const emailIpKey = `${email}_${clientIp}`;
 
   // Check IP-based rate limit (slow brute force protection)
-  await getLoginIpLimiter().consumeOrThrow(
-    clientIp,
-    'Too many login attempts. Please try again later.',
-    'login-ip-rate-limited',
-  );
+  const ipResult = await getLoginIpLimiter().consume(clientIp);
+  if (!ipResult.allowed) {
+    throw new TooManyRequestsError(
+      'Too many login attempts. Please try again later or reset your password.',
+      'login-ip-rate-limited',
+      { retryAfterMs: ipResult.msBeforeNext },
+    );
+  }
 
   // Check consecutive failures rate limit (fast brute force protection)
   const consecutiveFailsResult =
@@ -161,7 +164,7 @@ export async function authenticateUserWithEmailAndPassword({
 
   if (consecutiveFailsResult && !consecutiveFailsResult.allowed) {
     throw new TooManyRequestsError(
-      'Account temporarily locked due to too many failed attempts. Please try again later.',
+      'Account temporarily locked due to too many failed attempts. Please reset your password or try again later.',
       'login-consecutive-fails-blocked',
       { retryAfterMs: consecutiveFailsResult.msBeforeNext },
     );
