@@ -35,6 +35,7 @@ import {
   MdCampaign,
   MdCategory,
   MdChat,
+  MdClose,
   MdCloudUpload,
   MdComment,
   MdDashboard,
@@ -185,26 +186,43 @@ function IconPickerField({
   return (
     <Field data-invalid={!!error}>
       {label ? <FieldLabel>{label}</FieldLabel> : null}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger
-            render={
-              <Button variant="outline" className="h-9 w-full justify-start" />
-            }
-          >
-            {SelectedIcon ? (
-              <span className="flex items-center gap-2">
-                <SelectedIcon className="size-4" />
+          <div className="relative w-full">
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="h-9 w-full justify-start pr-8"
+                />
+              }
+            >
+              {SelectedIcon ? (
+                <span className="flex items-center gap-2">
+                  <SelectedIcon className="size-4" />
+                  <span className="text-sm">{value}</span>
+                </span>
+              ) : value ? (
                 <span className="text-sm">{value}</span>
-              </span>
-            ) : value ? (
-              <span className="text-sm">{value}</span>
-            ) : (
-              <span className="text-sm text-muted-foreground">
-                Select an icon
-              </span>
-            )}
-          </PopoverTrigger>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  Select an icon
+                </span>
+              )}
+            </PopoverTrigger>
+            {value ? (
+              <button
+                type="button"
+                className="absolute inset-y-0 right-2 flex items-center text-muted-foreground hover:text-foreground"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange?.(null);
+                }}
+              >
+                <MdClose className="size-4" />
+              </button>
+            ) : null}
+          </div>
           <PopoverContent align="start" className="w-80 p-3">
             <Input
               placeholder="Search icons..."
@@ -291,19 +309,6 @@ function IconPickerField({
             </div>
           </PopoverContent>
         </Popover>
-        {value ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            type="button"
-            className="h-9 shrink-0 text-xs text-muted-foreground"
-            onClick={() => {
-              onChange?.(null);
-            }}
-          >
-            Clear
-          </Button>
-        ) : null}
       </div>
       <FieldDescription>{description}</FieldDescription>
       <FieldError>{error}</FieldError>
