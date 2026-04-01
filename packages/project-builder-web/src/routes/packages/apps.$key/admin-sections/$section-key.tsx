@@ -65,7 +65,7 @@ export const Route = createFileRoute(
 });
 
 function EditAdminSectionPage(): React.JSX.Element {
-  const { app, section } = Route.useLoaderData();
+  const { app } = Route.useLoaderData();
   const { key, 'section-key': sectionKey } = Route.useParams();
   const navigate = useNavigate({ from: Route.fullPath });
 
@@ -73,6 +73,14 @@ function EditAdminSectionPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
   const adminSectionSchema = useDefinitionSchema(createWebAdminSectionSchema);
+
+  // Resolve section from live definition to avoid stale route context after save
+  const sectionId = adminSectionEntityType.idFromKey(sectionKey);
+  const liveApp = definition.apps.find((a) => a.id === app.id);
+  const section =
+    liveApp?.type === 'web'
+      ? liveApp.adminApp.sections.find((s) => s.id === sectionId)
+      : undefined;
 
   const featureOptions = definition.features.map((f) => ({
     label: f.name,
@@ -87,6 +95,7 @@ function EditAdminSectionPage(): React.JSX.Element {
   const { control, handleSubmit, reset } = formProps;
 
   const onSubmit = handleSubmit((data) => {
+    if (!section) return;
     const { id: _, ...sectionData } = data;
     return saveDefinitionWithFeedback((draftConfig) => {
       const webApp = draftConfig.apps.find((a) => a.id === app.id);
@@ -106,6 +115,7 @@ function EditAdminSectionPage(): React.JSX.Element {
   });
 
   const handleDelete = (): void => {
+    if (!section) return;
     void saveDefinitionWithFeedback(
       (draftConfig) => {
         const webApp = draftConfig.apps.find((a) => a.id === app.id);
@@ -128,6 +138,10 @@ function EditAdminSectionPage(): React.JSX.Element {
   };
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
+
+  if (!section) {
+    return <div />;
+  }
 
   return (
     <div key={section.id}>
