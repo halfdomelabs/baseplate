@@ -44,10 +44,11 @@ builder.mutationField('resetPasswordWithToken', (t) =>
       token: t.input.field({ required: true, type: 'String' }),
       newPassword: t.input.field({ required: true, type: 'String' }),
     },
-    resolve: async (_root, { input }) =>
+    resolve: async (_root, { input }, context) =>
       completePasswordReset({
         token: input.token,
         newPassword: input.newPassword,
+        context,
       }),
   }),
 );

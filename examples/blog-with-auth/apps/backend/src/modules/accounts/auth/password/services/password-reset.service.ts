@@ -23,6 +23,7 @@ import {
   PASSWORD_RESET_TOKEN_EXPIRY_SEC,
 } from '../constants/password.constants.js';
 import { createPasswordHash } from './password-hasher.service.js';
+import { resetLoginRateLimits } from './user-password.service.js';
 
 const PROVIDER_ID = 'email-password';
 const PASSWORD_RESET_TYPE = 'password-reset';
@@ -172,9 +173,11 @@ const completePasswordResetSchema = z.object({
 export async function completePasswordReset({
   token: rawToken,
   newPassword: rawNewPassword,
+  context,
 }: {
   token: string;
   newPassword: string;
+  context: RequestServiceContext;
 }): Promise<{ success: true }> {
   const { token, newPassword } = await completePasswordResetSchema
     .parseAsync({
@@ -229,6 +232,9 @@ export async function completePasswordReset({
       where: { userId: user.id },
     }),
   ]);
+
+  // Reset login rate limits so the user can log in with their new password
+  await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
   await sendEmail(

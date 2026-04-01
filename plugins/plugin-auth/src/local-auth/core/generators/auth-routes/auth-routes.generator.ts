@@ -29,11 +29,11 @@ export const authRoutesGenerator = createGenerator({
       },
       run({ renderers, paths }) {
         const schemaFields: Record<string, string> = {
-          email: 'z.email().transform((value) => value.toLowerCase())',
+          email: `z.email('Please enter a valid email address').transform((value) => value.toLowerCase())`,
           ...(requireNameOnRegistration
-            ? { name: 'z.string().min(1).max(100)' }
+            ? { name: `z.string().min(1, 'Please enter your name').max(100)` }
             : {}),
-          password: `z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH)`,
+          password: `z.string().min(PASSWORD_MIN_LENGTH, \`Password must be at least \${PASSWORD_MIN_LENGTH} characters\`).max(PASSWORD_MAX_LENGTH)`,
         };
 
         const registerSchema = tsTemplateWithImports(

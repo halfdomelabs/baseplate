@@ -43,9 +43,17 @@ export const Route = createFileRoute('/auth_/register')({
 });
 
 const formSchema = /* TPL_REGISTER_SCHEMA:START */ z.object({
-  email: z.email().transform((value) => value.toLowerCase()),
-  name: z.string().min(1).max(100),
-  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
+  email: z
+    .email('Please enter a valid email address')
+    .transform((value) => value.toLowerCase()),
+  name: z.string().min(1, 'Please enter your name').max(100),
+  password: z
+    .string()
+    .min(
+      PASSWORD_MIN_LENGTH,
+      `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+    )
+    .max(PASSWORD_MAX_LENGTH),
 }); /* TPL_REGISTER_SCHEMA:END */
 
 type FormData = z.infer<typeof formSchema>;

@@ -43,10 +43,19 @@ export const Route = createFileRoute('/auth_/reset-password')({
 
 const formSchema = z
   .object({
-    newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
+    newPassword: z
+      .string()
+      .min(
+        PASSWORD_MIN_LENGTH,
+        `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+      )
+      .max(PASSWORD_MAX_LENGTH),
     confirmPassword: z
       .string()
-      .min(PASSWORD_MIN_LENGTH)
+      .min(
+        PASSWORD_MIN_LENGTH,
+        `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+      )
       .max(PASSWORD_MAX_LENGTH),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
