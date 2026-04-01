@@ -86,8 +86,8 @@ function resolveEntityNavTarget(
     }
     case 'admin-section': {
       return makeNavOptions({
-        to: '/admin-sections/$appKey/edit/$sectionKey',
-        params: { appKey: target.appKey, sectionKey: target.sectionKey },
+        to: '/packages/apps/$key/admin-sections/$section-key',
+        params: { key: target.appKey, 'section-key': target.sectionKey },
       });
     }
   }

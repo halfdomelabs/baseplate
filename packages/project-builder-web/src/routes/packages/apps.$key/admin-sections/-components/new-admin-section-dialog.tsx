@@ -112,10 +112,10 @@ function NewAdminSectionDialog({
           reset();
           // Navigate to the newly created section
           navigate({
-            to: '/admin-sections/$appKey/edit/$sectionKey',
+            to: '/packages/apps/$key/admin-sections/$section-key',
             params: {
-              appKey,
-              sectionKey: adminSectionEntityType.keyFromId(newId),
+              key: appKey,
+              'section-key': adminSectionEntityType.keyFromId(newId),
             },
           });
         },

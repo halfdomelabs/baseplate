@@ -216,7 +216,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.5",
+  "cliVersion": "0.6.6",
   "enums": [
     {
       "featureRef": "billing",

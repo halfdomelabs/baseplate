@@ -1,6 +1,9 @@
 import type React from 'react';
 
-import { createWebAppSchema } from '@baseplate-dev/project-builder-lib';
+import {
+  appEntityType,
+  createWebAppSchema,
+} from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -8,6 +11,7 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
+  Button,
   FormActionBar,
   InputFieldController,
   SectionList,
@@ -19,7 +23,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/packages/apps/$key/web/')({
   component: WebAppGeneralForm,
@@ -28,6 +32,21 @@ export const Route = createFileRoute('/packages/apps/$key/web/')({
 function WebAppGeneralForm(): React.JSX.Element {
   const { saveDefinitionWithFeedback, definition } = useProjectDefinition();
   const { webDefinition } = Route.useRouteContext();
+  const appKey = appEntityType.keyFromId(webDefinition.id);
+  const adminEnabled = webDefinition.adminApp.enabled;
+
+  const handleEnableAdmin = (): void => {
+    void saveDefinitionWithFeedback(
+      (draftConfig) => {
+        const webApp = draftConfig.apps.find((a) => a.id === webDefinition.id);
+        if (webApp?.type !== 'web') return;
+        webApp.adminApp.enabled = true;
+      },
+      {
+        successMessage: 'Admin panel enabled!',
+      },
+    );
+  };
 
   const webAppSchema = useDefinitionSchema(createWebAppSchema);
   const formProps = useResettableForm({
@@ -111,6 +130,33 @@ function WebAppGeneralForm(): React.JSX.Element {
               control={control}
               name="includeUploadComponents"
             />
+          </SectionListSectionContent>
+        </SectionListSection>
+
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>Admin Panel</SectionListSectionTitle>
+            <SectionListSectionDescription>
+              Add an administrative interface to manage your data models.
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent>
+            {adminEnabled ? (
+              <p className="text-sm text-muted-foreground">
+                Admin panel is enabled.{' '}
+                <Link
+                  to="/packages/apps/$key/web/admin"
+                  params={{ key: appKey }}
+                  className="text-foreground underline"
+                >
+                  Configure admin settings
+                </Link>
+              </p>
+            ) : (
+              <Button variant="secondary" onClick={handleEnableAdmin}>
+                Enable Admin Panel
+              </Button>
+            )}
           </SectionListSectionContent>
         </SectionListSection>
       </SectionList>
