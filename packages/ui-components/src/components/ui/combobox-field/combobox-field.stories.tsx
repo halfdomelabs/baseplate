@@ -10,6 +10,7 @@ const meta: Meta<typeof ComboboxField> = {
   tags: ['autodocs'],
   argTypes: {
     label: { control: { type: 'text' } },
+    placeholder: { control: { type: 'text' } },
     error: { control: { type: 'text' } },
     description: { control: { type: 'text' } },
     options: { control: 'object' },
@@ -46,6 +47,7 @@ export const Default: Story = {
       { label: 'Option 2', value: '2' },
       { label: 'Option 3', value: '3' },
     ],
+    placeholder: 'Select an option',
     getOptionLabel: (option) => (option as { label: string }).label,
     getOptionValue: (option) => (option as { value: string }).value,
     className: 'w-96',
@@ -60,6 +62,7 @@ export const Labelled: Story = {
       { label: 'Option 3', value: '3' },
     ],
     label: 'What option would you like to combobox?',
+    placeholder: 'Select an option',
     description: 'We will never judge you for your choice.',
     getOptionLabel: (option) => (option as { label: string }).label,
     getOptionValue: (option) => (option as { value: string }).value,
