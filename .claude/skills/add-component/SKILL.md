@@ -1,5 +1,5 @@
 ---
-name: Add Component
+name: add-component
 description: Workflow for adding a new UI component to ui-components (with Storybook + optional tests) and optionally to the react-generators template system.
 ---
 

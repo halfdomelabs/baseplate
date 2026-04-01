@@ -1,5 +1,5 @@
 ---
-name: Add Plugin
+name: add-plugin
 description: Step-by-step workflow for creating a new Baseplate plugin package, including root configuration files, source structure, and platform modules.
 ---
 

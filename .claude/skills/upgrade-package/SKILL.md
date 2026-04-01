@@ -1,11 +1,12 @@
 ---
-name: Package Upgrade
+name: upgrade-package
 description: Systematic approach for upgrading packages in the Baseplate monorepo, ensuring consistency between monorepo dependencies and generated project code.
+argument-hint: [package-name]
 ---
 
 # Package Upgrade Skill
 
-Use this skill when the user asks to upgrade packages, update dependencies, or mentions upgrading specific npm packages in the Baseplate monorepo.
+Use this skill to upgrade the following packages in the Baseplate monorepo: $ARGUMENTS
 
 ## Overview
 
@@ -42,10 +43,10 @@ grep -r "package-name" packages/*/src/constants/
 
 ```bash
 # Get latest version from npm
-npm view package-name version
+pnpm view package-name version
 
 # Get all available versions (helpful for major version planning)
-npm view package-name versions --json
+pnpm view package-name versions --json
 ```
 
 ### 3. Research Breaking Changes
