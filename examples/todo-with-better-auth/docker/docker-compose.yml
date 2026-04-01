@@ -10,7 +10,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-todo-with-better-auth}
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=en_US.utf8'
     ports:
-      - '${POSTGRES_PORT:-6432}:5432'
+      - '127.0.0.1:${POSTGRES_PORT:-6432}:5432'
     volumes:
       - db-data:/var/lib/postgresql
     networks:
@@ -37,7 +37,7 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - '${REDIS_PORT:-6379}:6379'
+      - '127.0.0.1:${REDIS_PORT:-6379}:6379'
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-todo-with-better-auth-password} --maxmemory 256mb --maxmemory-policy noeviction
     volumes:
       - redis-cache:/data

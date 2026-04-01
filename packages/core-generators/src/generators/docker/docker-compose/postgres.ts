@@ -23,7 +23,7 @@ export function generatePostgresDockerCompose(
       POSTGRES_DB: \${POSTGRES_DB:-${config.database}}
       POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=en_US.utf8'
     ports:
-      - "\${POSTGRES_PORT:-${config.port}}:5432"
+      - "127.0.0.1:\${POSTGRES_PORT:-${config.port}}:5432"
     volumes:
       - db-data:/var/lib/postgresql
     networks:
