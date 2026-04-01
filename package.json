@@ -83,7 +83,7 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "0.17.0",
     "prettier": "catalog:",
-    "turbo": "2.5.0",
+    "turbo": "2.9.0",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "workspace-meta": "0.1.4"
