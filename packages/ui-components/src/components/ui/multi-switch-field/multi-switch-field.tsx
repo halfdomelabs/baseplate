@@ -27,7 +27,6 @@ export interface MultiSwitchFieldProps<OptionType>
   value?: string[];
   onChange?: (value: string[]) => void;
   className?: string;
-  disabled?: boolean;
 }
 
 /**
@@ -59,7 +58,11 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
   }));
 
   return (
-    <Field data-invalid={!!error} className={cn('gap-3', className)}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={cn('gap-3', className)}
+    >
       <FieldLabel>{label}</FieldLabel>
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {

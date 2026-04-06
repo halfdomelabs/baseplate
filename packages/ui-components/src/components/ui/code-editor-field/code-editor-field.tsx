@@ -42,6 +42,7 @@ function CodeEditorField({
   label,
   description,
   error,
+  disabled,
   onChange,
   value = '',
   language = 'javascript',
@@ -72,7 +73,7 @@ function CodeEditorField({
   );
 
   return (
-    <Field data-invalid={!!error}>
+    <Field data-invalid={!!error} data-disabled={disabled ?? undefined}>
       {label && <FieldLabel>{label}</FieldLabel>}
       <div className={className} {...props}>
         <CodeMirror
@@ -81,7 +82,8 @@ function CodeEditorField({
           extensions={allExtensions}
           height={height}
           placeholder={placeholder}
-          readOnly={readOnly}
+          readOnly={readOnly || disabled}
+          editable={!disabled}
           basicSetup={true}
           indentWithTab={false}
           style={{

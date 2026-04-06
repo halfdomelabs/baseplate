@@ -35,6 +35,7 @@ function CheckboxField({
   label,
   description,
   error,
+  disabled,
   onChange,
   value,
   className,
@@ -46,11 +47,13 @@ function CheckboxField({
     <Field
       orientation="horizontal"
       data-invalid={!!error || undefined}
+      data-disabled={disabled ?? undefined}
       className={className}
     >
       <Checkbox
         {...props}
         id={id}
+        disabled={disabled}
         aria-invalid={!!error}
         onCheckedChange={(checked) => {
           onChange?.(checked);

@@ -30,3 +30,12 @@ export const Labelled: Story = {
     placeholder: 'foo@example.com',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    label: 'Email address',
+    description: 'We will never share your email with anyone else.',
+    value: 'foo@example.com',
+    disabled: true,
+  },
+};

@@ -24,7 +24,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover.js';
 export interface DatePickerFieldProps extends FormFieldProps {
   className?: string;
   wrapperClassName?: string;
-  disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string | undefined) => void;
   value?: string | undefined;
@@ -105,7 +104,11 @@ function DatePickerField({
 
   if (addWrapper) {
     return (
-      <Field data-invalid={!!error} className={cn('gap-2', wrapperClassName)}>
+      <Field
+        data-invalid={!!error}
+        data-disabled={disabled ?? undefined}
+        className={cn('gap-2', wrapperClassName)}
+      >
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
         {inputComponent}
         <FieldDescription>{description}</FieldDescription>

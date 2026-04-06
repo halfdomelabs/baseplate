@@ -28,7 +28,6 @@ export interface ComboboxFieldProps<OptionType>
   className?: string;
   noResultsText?: React.ReactNode;
   placeholder?: string;
-  disabled?: boolean;
   value?: string | null;
   onChange?: (value: string | null) => void;
   inputValue?: string;
@@ -62,7 +61,11 @@ function ComboboxField<OptionType>({
     options.find((o) => getOptionValue(o) === value) ?? null;
 
   return (
-    <Field data-invalid={!!error} className={className}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={className}
+    >
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Combobox
         value={selectedOption}

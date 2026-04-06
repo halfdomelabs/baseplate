@@ -34,3 +34,12 @@ export const WithError: Story = {
     error: 'You must confirm before proceeding',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    label: 'Initiate Launch?',
+    description: 'This is irreversible.',
+    value: true,
+    disabled: true,
+  },
+};

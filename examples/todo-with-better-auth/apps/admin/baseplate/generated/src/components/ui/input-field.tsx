@@ -37,6 +37,7 @@ function InputField({
   label,
   description,
   error,
+  disabled,
   onChange,
   register,
   className,
@@ -45,10 +46,15 @@ function InputField({
 }: InputFieldProps): React.ReactElement {
   const id = useId();
   return (
-    <Field data-invalid={!!error} className={cn('gap-1.5', className)}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={cn('gap-1.5', className)}
+    >
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
         id={id}
+        disabled={disabled}
         onChange={
           onChange &&
           ((e) => {

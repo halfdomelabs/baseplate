@@ -19,7 +19,6 @@ import { MdSchedule } from 'react-icons/md';
 export interface DateTimePickerFieldProps extends FormFieldProps {
   className?: string;
   wrapperClassName?: string;
-  disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string | undefined) => void;
   value?: string | undefined;
@@ -176,7 +175,11 @@ function DateTimePickerField({
 
   if (addWrapper) {
     return (
-      <Field data-invalid={!!error} className={cn('gap-2', wrapperClassName)}>
+      <Field
+        data-invalid={!!error}
+        data-disabled={disabled ?? undefined}
+        className={cn('gap-2', wrapperClassName)}
+      >
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
         {inputComponent}
         <FieldDescription>{description}</FieldDescription>
