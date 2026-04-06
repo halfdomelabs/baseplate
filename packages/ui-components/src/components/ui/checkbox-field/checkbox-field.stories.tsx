@@ -34,3 +34,12 @@ export const LabelledWithError: Story = {
     error: 'Failure to launch',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    label: 'Initiate Launch?',
+    description: 'This is irreversible.',
+    value: true,
+    disabled: true,
+  },
+};

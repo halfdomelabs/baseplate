@@ -30,3 +30,11 @@ export const Labelled: Story = {
     placeholder: 'Tell us about yourself',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    label: 'Bio',
+    value: 'This field is disabled.',
+    disabled: true,
+  },
+};

@@ -48,7 +48,6 @@ export interface AsyncComboboxFieldProps<OptionType>
   minSearchLength?: number;
   initialOptions?: OptionType[];
   placeholder?: string;
-  disabled?: boolean;
   value?: string | null;
   onChange?: (value: string | null) => void;
 }
@@ -280,7 +279,11 @@ function AsyncComboboxField<OptionType>({
   );
 
   return (
-    <Field data-invalid={!!error} className={className}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={className}
+    >
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Combobox
         value={selectedOption}

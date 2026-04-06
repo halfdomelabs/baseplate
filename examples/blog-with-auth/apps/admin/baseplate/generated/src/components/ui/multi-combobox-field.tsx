@@ -31,7 +31,6 @@ export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>, FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
-  disabled?: boolean;
 }
 
 /**
@@ -62,7 +61,11 @@ function MultiComboboxField<OptionType>({
   );
 
   return (
-    <Field data-invalid={!!error} className={className}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={className}
+    >
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Combobox
         multiple

@@ -31,6 +31,7 @@ function SelectField<OptionType>({
   label,
   description,
   error,
+  disabled,
   value,
   placeholder,
   options,
@@ -46,9 +47,18 @@ function SelectField<OptionType>({
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   return (
-    <Field data-invalid={!!error} className={className}>
+    <Field
+      data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
+      className={className}
+    >
       <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
-      <Select value={value} onValueChange={(val) => onChange?.(val)} {...props}>
+      <Select
+        value={value}
+        onValueChange={(val) => onChange?.(val)}
+        disabled={disabled}
+        {...props}
+      >
         <SelectTrigger id={triggerId} aria-invalid={!!error}>
           <SelectValue placeholder={placeholder}>
             {selectedOption ? getOptionLabel(selectedOption) : null}
