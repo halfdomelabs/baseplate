@@ -71,6 +71,15 @@ export const WithPlaceholder: Story = {
   },
 };
 
+export const Disabled: Story = {
+  args: {
+    label: 'Disabled Code',
+    description: 'This code editor is disabled.',
+    disabled: true,
+    value: 'const PI = 3.14159;',
+  },
+};
+
 export const CustomHeight: Story = {
   args: {
     label: 'Tall Editor',

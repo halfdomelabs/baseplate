@@ -2,6 +2,7 @@ export interface FormFieldProps {
   label?: React.ReactNode;
   error?: React.ReactNode;
   description?: React.ReactNode;
+  disabled?: boolean;
 }
 
 type SelectOptionLabelRenderer<OptionType> = (

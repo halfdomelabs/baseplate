@@ -34,6 +34,7 @@ function SwitchField({
   label,
   description,
   error,
+  disabled,
   onChange,
   value,
   className,
@@ -46,12 +47,14 @@ function SwitchField({
     <Field
       orientation="horizontal"
       data-invalid={!!error}
+      data-disabled={disabled ?? undefined}
       className={className}
       id={id}
     >
       <Switch
         {...props}
         id={switchId}
+        disabled={disabled}
         onCheckedChange={(checked) => onChange?.(checked)}
         checked={value}
         aria-invalid={!!error}

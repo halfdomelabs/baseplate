@@ -39,16 +39,21 @@ function TextareaField({
   label,
   description,
   error,
+  disabled,
   onChange,
   register,
   ...props
 }: TextareaFieldProps): React.ReactElement {
   const id = useId();
   return (
-    <Field data-invalid={!!error || undefined}>
+    <Field
+      data-invalid={!!error || undefined}
+      data-disabled={disabled ?? undefined}
+    >
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Textarea
         id={id}
+        disabled={disabled}
         onChange={
           onChange &&
           ((e) => {
