@@ -58,7 +58,7 @@ export type CreatePresignedUploadUrlInput = {
 /** Payload type for createPresignedUploadUrl mutation */
 export type CreatePresignedUploadUrlPayload = {
   __typename?: 'CreatePresignedUploadUrlPayload';
-  fields?: Maybe<Array<PresignedUrlField>>;
+  fields: Maybe<Array<PresignedUrlField>>;
   file: File;
   method: Scalars['String']['output'];
   url: Scalars['String']['output'];
@@ -201,9 +201,9 @@ export type File = {
   id: Scalars['ID']['output'];
   mimeType: Scalars['String']['output'];
   /** URL of the file where it is publicly hosted. Returns null if it is not publicly available. */
-  publicUrl?: Maybe<Scalars['String']['output']>;
+  publicUrl: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
-  uploader?: Maybe<User>;
+  uploader: Maybe<User>;
 };
 
 export type FileCategory =
@@ -337,7 +337,7 @@ export type Query = {
   user: User;
   users: Array<User>;
   /** The currently authenticated user */
-  viewer?: Maybe<User>;
+  viewer: Maybe<User>;
 };
 
 
@@ -347,8 +347,8 @@ export type QueryFileArgs = {
 
 
 export type QueryFilesArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -358,8 +358,8 @@ export type QueryTodoItemArgs = {
 
 
 export type QueryTodoItemsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -374,14 +374,14 @@ export type QueryTodoListShareArgs = {
 
 
 export type QueryTodoListSharesArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
 export type QueryTodoListsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -391,8 +391,8 @@ export type QueryUserArgs = {
 
 
 export type QueryUsersArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Input type for resetUserPassword mutation */
@@ -452,14 +452,14 @@ export type TodoItemAttachmentsNestedInput = {
 
 export type TodoList = {
   __typename?: 'TodoList';
-  coverPhoto?: Maybe<File>;
+  coverPhoto: Maybe<File>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: User;
   ownerId: Scalars['Uuid']['output'];
   position: Scalars['Int']['output'];
-  status?: Maybe<TodoListStatus>;
+  status: Maybe<TodoListStatus>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -579,14 +579,14 @@ export type UpdateUserRolesPayload = {
 export type User = {
   __typename?: 'User';
   createdAt: Scalars['DateTime']['output'];
-  customer?: Maybe<Customer>;
+  customer: Maybe<Customer>;
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   roles: Array<UserRole>;
   todoLists: Array<TodoList>;
   updatedAt: Scalars['DateTime']['output'];
-  userProfile?: Maybe<UserProfile>;
+  userProfile: Maybe<UserProfile>;
 };
 
 export type UserCustomerNestedInput = {
@@ -609,12 +609,12 @@ export type UserImagesNestedInput = {
 
 export type UserProfile = {
   __typename?: 'UserProfile';
-  avatar?: Maybe<File>;
-  avatarId?: Maybe<Scalars['Uuid']['output']>;
-  bio?: Maybe<Scalars['String']['output']>;
-  birthDay?: Maybe<Scalars['Date']['output']>;
+  avatar: Maybe<File>;
+  avatarId: Maybe<Scalars['Uuid']['output']>;
+  bio: Maybe<Scalars['String']['output']>;
+  birthDay: Maybe<Scalars['Date']['output']>;
   id: Scalars['ID']['output'];
-  twitterHandle?: Maybe<Scalars['String']['output']>;
+  twitterHandle: Maybe<Scalars['String']['output']>;
   user: User;
   userId: Scalars['Uuid']['output'];
 };
@@ -640,15 +640,15 @@ export type UserUserProfileNestedInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
 };
 
-export type FileInput_ValueFragment = { __typename?: 'File', id: string, filename: string, publicUrl?: string | null } & { ' $fragmentName'?: 'FileInput_ValueFragment' };
+export type FileInput_ValueFragment = { __typename?: 'File', id: string, filename: string, publicUrl: string | null } & { ' $fragmentName'?: 'FileInput_ValueFragment' };
 
 export type FileInputCreateUploadUrlMutationVariables = Exact<{
   input: CreatePresignedUploadUrlInput;
 }>;
 
 
-export type FileInputCreateUploadUrlMutation = { __typename?: 'Mutation', createPresignedUploadUrl: { __typename?: 'CreatePresignedUploadUrlPayload', url: string, method: string, fields?: Array<{ __typename?: 'PresignedUrlField', name: string, value: string }> | null, file: (
-      { __typename?: 'File', id: string, filename: string, publicUrl?: string | null }
+export type FileInputCreateUploadUrlMutation = { __typename?: 'Mutation', createPresignedUploadUrl: { __typename?: 'CreatePresignedUploadUrlPayload', url: string, method: string, fields: Array<{ __typename?: 'PresignedUrlField', name: string, value: string }> | null, file: (
+      { __typename?: 'File', id: string, filename: string, publicUrl: string | null }
       & { ' $fragmentRefs'?: { 'FileInput_ValueFragment': FileInput_ValueFragment } }
     ) } };
 
@@ -696,7 +696,7 @@ export type UpdateUserRolesMutation = { __typename?: 'Mutation', updateUserRoles
       & { ' $fragmentRefs'?: { 'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } }
     ) } };
 
-export type UserEditForm_DefaultValuesFragment = { __typename?: 'User', email: string, id: string, name: string, customer?: { __typename?: 'Customer', id: string, stripeCustomerId: string } | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
+export type UserEditForm_DefaultValuesFragment = { __typename?: 'User', email: string, id: string, name: string, customer: { __typename?: 'Customer', id: string, stripeCustomerId: string } | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
 
 export type UserListPageDeleteUserMutationVariables = Exact<{
   input: DeleteUserInput;
@@ -721,7 +721,7 @@ export type UserListPageQuery = { __typename?: 'Query', users: Array<(
 export type HomePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HomePageQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, email: string } | null };
+export type HomePageQuery = { __typename?: 'Query', viewer: { __typename?: 'User', id: string, email: string } | null };
 
 export type TodoListEditPageQueryVariables = Exact<{
   id: Scalars['Uuid']['input'];
@@ -753,7 +753,7 @@ export type TodoListEditFormOwnerOptionsQuery = { __typename?: 'Query', users: A
     & { ' $fragmentRefs'?: { 'TodoListEditForm_OwnerOptionsFragment': TodoListEditForm_OwnerOptionsFragment } }
   )> };
 
-export type TodoListEditForm_DefaultValuesFragment = { __typename?: 'TodoList', createdAt: string, id: string, name: string, ownerId: string, position: number, status?: TodoListStatus | null, coverPhoto?: { __typename?: 'File', filename: string, id: string } | null } & { ' $fragmentName'?: 'TodoListEditForm_DefaultValuesFragment' };
+export type TodoListEditForm_DefaultValuesFragment = { __typename?: 'TodoList', createdAt: string, id: string, name: string, ownerId: string, position: number, status: TodoListStatus | null, coverPhoto: { __typename?: 'File', filename: string, id: string } | null } & { ' $fragmentName'?: 'TodoListEditForm_DefaultValuesFragment' };
 
 export type TodoListListPageDeleteTodoListMutationVariables = Exact<{
   input: DeleteTodoListInput;
