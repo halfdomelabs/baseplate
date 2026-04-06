@@ -30,6 +30,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 
 import { logAndFormatError } from '#src/services/error-formatter.js';
@@ -138,6 +139,15 @@ function EditAdminSectionPage(): React.JSX.Element {
   };
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
+
+  // Redirect if section was deleted (e.g. in another tab)
+  useEffect(() => {
+    if (!section) {
+      navigate({ to: '/packages/apps/$key', params: { key } }).catch(
+        logAndFormatError,
+      );
+    }
+  }, [section, navigate, key]);
 
   if (!section) {
     return <div />;

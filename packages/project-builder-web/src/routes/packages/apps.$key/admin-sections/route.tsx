@@ -8,6 +8,8 @@ import {
   redirect,
 } from '@tanstack/react-router';
 
+import { AppContentLayout } from '../-components/app-content-layout.js';
+
 export const Route = createFileRoute('/packages/apps/$key/admin-sections')({
   component: AdminSectionsLayout,
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
@@ -38,17 +40,8 @@ export const Route = createFileRoute('/packages/apps/$key/admin-sections')({
 
 function AdminSectionsLayout(): React.JSX.Element {
   return (
-    <div className="relative flex h-full flex-1 flex-col overflow-hidden">
-      <div
-        className="mb-(--action-bar-height) flex flex-1 overflow-y-auto"
-        style={
-          {
-            '--action-bar-height': '52px',
-          } as React.CSSProperties
-        }
-      >
-        <Outlet />
-      </div>
-    </div>
+    <AppContentLayout>
+      <Outlet />
+    </AppContentLayout>
   );
 }
