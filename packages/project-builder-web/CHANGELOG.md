@@ -1,5 +1,14 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [[`335e063`](https://github.com/halfdomelabs/baseplate/commit/335e063b85676c9a55635ade6cf9b7b38bdd431d)]:
+  - @baseplate-dev/ui-components@0.6.7
+  - @baseplate-dev/project-builder-lib@0.6.7
+  - @baseplate-dev/utils@0.6.7
+
 ## 0.6.6
 
 ### Patch Changes
