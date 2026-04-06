@@ -55,7 +55,7 @@ import {
   MdVpnKey,
 } from 'react-icons/md';
 
-export interface CuratedIcon {
+interface CuratedIcon {
   name: string;
   icon: IconType;
 }
