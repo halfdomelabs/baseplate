@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.6.8
+
+### Patch Changes
+
+- [#878](https://github.com/halfdomelabs/baseplate/pull/878) [`04006df`](https://github.com/halfdomelabs/baseplate/commit/04006df7b2c9d124c83264d40aaeaa2a71558035) Thanks [@kingston](https://github.com/kingston)! - Add disabled prop to FormFieldProps and all form field components with consistent data-disabled attribute on Field wrapper for label dimming
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.8
+
 ## 0.6.7
 
 ### Patch Changes
