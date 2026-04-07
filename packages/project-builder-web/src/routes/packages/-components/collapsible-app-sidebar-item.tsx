@@ -11,8 +11,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@baseplate-dev/ui-components';
-import { Link, useRouterState } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
+import { useEffect, useState } from 'react';
 import { MdAdd, MdExpandMore } from 'react-icons/md';
 
 import NewAdminSectionDialog from '../apps.$key/admin-sections/-components/new-admin-section-dialog.js';
@@ -31,20 +32,24 @@ function CollapsibleAppSidebarItem({
   sections,
 }: CollapsibleAppSidebarItemProps): React.ReactElement {
   const appBasePath = `/packages/apps/${appKey}`;
-  const webBasePath = `${appBasePath}/web`;
 
-  const isChildActive = useRouterState({
-    select: (state) => state.location.pathname.startsWith(appBasePath),
-  });
+  const { pathname } = useLocation();
+  const isChildActive =
+    pathname === appBasePath || pathname.startsWith(`${appBasePath}/`);
 
-  const currentPath = useRouterState({
-    select: (state) => state.location.pathname,
-  });
+  const [isOpen, setIsOpen] = useState(isChildActive);
+
+  // Force open when a child route becomes active (e.g. direct URL navigation)
+  useEffect(() => {
+    if (isChildActive) {
+      setIsOpen(true);
+    }
+  }, [isChildActive]);
 
   const sortedSections = sortBy([...sections], [(s) => s.name]);
 
   return (
-    <Collapsible defaultOpen={isChildActive}>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger className="group/collapsible flex w-full items-center gap-2 rounded-md p-2 text-left text-sm font-medium hover:bg-accent hover:text-accent-foreground data-panel-open:text-accent-foreground [&>svg]:shrink-0">
         <span className="truncate">{appName}</span>
         <MdExpandMore className="ml-auto size-4 -rotate-90 transition-transform duration-200 group-data-panel-open/collapsible:rotate-0" />
@@ -61,7 +66,6 @@ function CollapsibleAppSidebarItem({
                     activeOptions={{ exact: true }}
                   />
                 }
-                isActive={currentPath === webBasePath}
               >
                 <span>General</span>
               </SidebarMenuSubButton>
@@ -75,14 +79,12 @@ function CollapsibleAppSidebarItem({
                     activeOptions={{ exact: true }}
                   />
                 }
-                isActive={currentPath === `${webBasePath}/admin`}
               >
                 <span>Admin Config</span>
               </SidebarMenuSubButton>
             </SidebarMenuSubItem>
             {sortedSections.map((section) => {
               const sectionKey = adminSectionEntityType.keyFromId(section.id);
-              const sectionPath = `${appBasePath}/admin-sections/${sectionKey}`;
               return (
                 <SidebarMenuSubItem key={section.id}>
                   <SidebarMenuSubButton
@@ -92,7 +94,6 @@ function CollapsibleAppSidebarItem({
                         params={{ key: appKey, 'section-key': sectionKey }}
                       />
                     }
-                    isActive={currentPath === sectionPath}
                   >
                     <span>{section.name}</span>
                   </SidebarMenuSubButton>

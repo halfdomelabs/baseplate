@@ -129,6 +129,7 @@ function EditAdminSectionPage(): React.JSX.Element {
       {
         successMessage: `Successfully deleted section "${section.name}"!`,
         onSuccess: () => {
+          reset();
           navigate({
             to: '/packages/apps/$key',
             params: { key },
