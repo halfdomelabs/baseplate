@@ -54,7 +54,7 @@ export type BlogPost = {
   __typename?: 'BlogPost';
   blogId: Scalars['Uuid']['output'];
   content: Scalars['String']['output'];
-  metadata?: Maybe<Scalars['JSON']['output']>;
+  metadata: Maybe<Scalars['JSON']['output']>;
   publisherId: Scalars['Uuid']['output'];
   title: Scalars['String']['output'];
 };
@@ -304,11 +304,11 @@ export type Query = {
   blogPosts: Array<BlogPost>;
   blogs: Array<Blog>;
   /** Get the current user session */
-  currentUserSession?: Maybe<UserSessionPayload>;
+  currentUserSession: Maybe<UserSessionPayload>;
   user: User;
   users: Array<User>;
   /** The currently authenticated user */
-  viewer?: Maybe<User>;
+  viewer: Maybe<User>;
 };
 
 
@@ -318,8 +318,8 @@ export type QueryArticleArgs = {
 
 
 export type QueryArticlesArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -334,14 +334,14 @@ export type QueryBlogPostArgs = {
 
 
 export type QueryBlogPostsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
 export type QueryBlogsArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -351,8 +351,8 @@ export type QueryUserArgs = {
 
 
 export type QueryUsersArgs = {
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
+  skip: InputMaybe<Scalars['Int']['input']>;
+  take: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Input type for registerWithEmailPassword mutation */
@@ -496,10 +496,10 @@ export type UpdateUserRolesPayload = {
 
 export type User = {
   __typename?: 'User';
-  email?: Maybe<Scalars['String']['output']>;
+  email: Maybe<Scalars['String']['output']>;
   emailVerified: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
   roles: Array<UserRole>;
 };
 
@@ -511,7 +511,7 @@ export type UserRole = {
 
 export type UserSessionPayload = {
   __typename?: 'UserSessionPayload';
-  expiresAt?: Maybe<Scalars['DateTime']['output']>;
+  expiresAt: Maybe<Scalars['DateTime']['output']>;
   roles: Array<AuthRole>;
   user: User;
   userId: Scalars['Uuid']['output'];
@@ -542,7 +542,7 @@ export type VerifyEmailPayload = {
 export type CurrentUserSessionQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserSessionQuery = { __typename?: 'Query', currentUserSession?: { __typename?: 'UserSessionPayload', userId: string, roles: Array<AuthRole> } | null };
+export type CurrentUserSessionQuery = { __typename?: 'Query', currentUserSession: { __typename?: 'UserSessionPayload', userId: string, roles: Array<AuthRole> } | null };
 
 export type LogOutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -555,7 +555,7 @@ export type UserEditPageQueryVariables = Exact<{
 
 
 export type UserEditPageQuery = { __typename?: 'Query', user: (
-    { __typename?: 'User', id: string, name?: string | null }
+    { __typename?: 'User', id: string, name: string | null }
     & { ' $fragmentRefs'?: { 'UserEditForm_DefaultValuesFragment': UserEditForm_DefaultValuesFragment } }
   ) };
 
@@ -565,11 +565,11 @@ export type UserEditPageUpdateMutationVariables = Exact<{
 
 
 export type UserEditPageUpdateMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UpdateUserPayload', user: (
-      { __typename?: 'User', id: string, name?: string | null }
+      { __typename?: 'User', id: string, name: string | null }
       & { ' $fragmentRefs'?: { 'UserEditForm_DefaultValuesFragment': UserEditForm_DefaultValuesFragment } }
     ) } };
 
-export type PasswordResetDialog_UserFragment = { __typename?: 'User', id: string, name?: string | null, email?: string | null } & { ' $fragmentName'?: 'PasswordResetDialog_UserFragment' };
+export type PasswordResetDialog_UserFragment = { __typename?: 'User', id: string, name: string | null, email: string | null } & { ' $fragmentName'?: 'PasswordResetDialog_UserFragment' };
 
 export type ResetUserPasswordMutationVariables = Exact<{
   input: ResetUserPasswordInput;
@@ -581,7 +581,7 @@ export type ResetUserPasswordMutation = { __typename?: 'Mutation', resetUserPass
       & { ' $fragmentRefs'?: { 'PasswordResetDialog_UserFragment': PasswordResetDialog_UserFragment } }
     ) } };
 
-export type RoleManagerDialog_UserFragment = { __typename?: 'User', id: string, name?: string | null, email?: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> } & { ' $fragmentName'?: 'RoleManagerDialog_UserFragment' };
+export type RoleManagerDialog_UserFragment = { __typename?: 'User', id: string, name: string | null, email: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> } & { ' $fragmentName'?: 'RoleManagerDialog_UserFragment' };
 
 export type UpdateUserRolesMutationVariables = Exact<{
   input: UpdateUserRolesInput;
@@ -593,17 +593,17 @@ export type UpdateUserRolesMutation = { __typename?: 'Mutation', updateUserRoles
       & { ' $fragmentRefs'?: { 'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } }
     ) } };
 
-export type UserEditForm_DefaultValuesFragment = { __typename?: 'User', email?: string | null, id: string, name?: string | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
+export type UserEditForm_DefaultValuesFragment = { __typename?: 'User', email: string | null, id: string, name: string | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
 
 export type UserListPageDeleteUserMutationVariables = Exact<{
   input: DeleteUserInput;
 }>;
 
 
-export type UserListPageDeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'DeleteUserPayload', user: { __typename?: 'User', id: string, name?: string | null } } };
+export type UserListPageDeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'DeleteUserPayload', user: { __typename?: 'User', id: string, name: string | null } } };
 
 export type UserTable_ItemsFragment = (
-  { __typename?: 'User', email?: string | null, id: string, name?: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> }
+  { __typename?: 'User', email: string | null, id: string, name: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> }
   & { ' $fragmentRefs'?: { 'PasswordResetDialog_UserFragment': PasswordResetDialog_UserFragment;'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } }
 ) & { ' $fragmentName'?: 'UserTable_ItemsFragment' };
 
@@ -625,7 +625,7 @@ export type UserCreatePageCreateMutation = { __typename?: 'Mutation', createUser
 export type HomePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HomePageQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', id: string, email?: string | null } | null };
+export type HomePageQuery = { __typename?: 'Query', viewer: { __typename?: 'User', id: string, email: string | null } | null };
 
 export type RequestPasswordResetMutationVariables = Exact<{
   input: RequestPasswordResetInput;
