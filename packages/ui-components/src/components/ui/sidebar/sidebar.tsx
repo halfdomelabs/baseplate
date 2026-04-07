@@ -34,6 +34,7 @@ import { cn } from '#src/utils/cn.js';
  * https://ui.shadcn.com/docs/components/sidebar
  *
  * - Added functionality to dismiss when button is clicked (https://github.com/shadcn-ui/ui/issues/5561)
+ * - Added aria-[current=page] support alongside data-[active=true] for active state styling
  */
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
@@ -526,7 +527,6 @@ function SidebarMenuItem({
 }
 
 const sidebarMenuButtonVariants = cva(
-  // Note: active state is supported via both data-[active=true] and aria-[current=page]
   'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 active:bg-accent active:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-accent data-[active=true]:font-medium data-[active=true]:text-accent-foreground aria-[current=page]:bg-accent aria-[current=page]:font-medium aria-[current=page]:text-accent-foreground data-[state=open]:hover:bg-accent data-[state=open]:hover:text-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
@@ -755,7 +755,6 @@ function SidebarMenuSubButton({
       {
         className: cn(
           'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-card-foreground ring-ring outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 active:bg-accent active:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-accent-foreground',
-          // Note: active state is supported via both data-[active=true] and aria-[current=page]
           'data-[active=true]:bg-accent data-[active=true]:text-accent-foreground',
           'aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground',
           size === 'sm' && 'text-xs',
