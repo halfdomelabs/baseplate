@@ -7,17 +7,18 @@ import {
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
-  NavigationMenu,
-  NavigationMenuItemWithLink,
-  NavigationMenuList,
   SidebarLayout,
   SidebarLayoutContent,
   SidebarLayoutSidebar,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSubButton,
 } from '@baseplate-dev/ui-components';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdAdd } from 'react-icons/md';
 
+import { CollapsibleAppSidebarItem } from './-components/collapsible-app-sidebar-item.js';
 import { NewDialog } from './-components/new-dialog.js';
 
 export const Route = createFileRoute('/packages')({
@@ -52,23 +53,36 @@ function PackagesLayout(): React.JSX.Element {
             <h4 className="px-2 text-sm font-medium text-muted-foreground">
               Apps
             </h4>
-            <NavigationMenu orientation="vertical">
-              <NavigationMenuList>
-                {sortedApps.map((app) => (
-                  <NavigationMenuItemWithLink
-                    key={app.id}
-                    render={
-                      <Link
-                        to="/packages/apps/$key"
-                        params={{ key: appEntityType.keyFromId(app.id) }}
-                      />
-                    }
-                  >
-                    {app.name}
-                  </NavigationMenuItemWithLink>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+            <SidebarMenu>
+              {sortedApps.map((app) => {
+                const appKey = appEntityType.keyFromId(app.id);
+                if (app.type === 'web' && app.adminApp.enabled) {
+                  return (
+                    <CollapsibleAppSidebarItem
+                      key={app.id}
+                      appId={app.id}
+                      appName={app.name}
+                      appKey={appKey}
+                      sections={app.adminApp.sections}
+                    />
+                  );
+                }
+                return (
+                  <SidebarMenuItem key={app.id}>
+                    <SidebarMenuSubButton
+                      render={
+                        <Link
+                          to="/packages/apps/$key"
+                          params={{ key: appKey }}
+                        />
+                      }
+                    >
+                      <span>{app.name}</span>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
           </>
         )}
 
@@ -78,11 +92,10 @@ function PackagesLayout(): React.JSX.Element {
             <h4 className="mt-2 px-2 text-sm font-medium text-muted-foreground">
               Libraries
             </h4>
-            <NavigationMenu orientation="vertical">
-              <NavigationMenuList>
-                {sortedLibraries.map((lib) => (
-                  <NavigationMenuItemWithLink
-                    key={lib.id}
+            <SidebarMenu>
+              {sortedLibraries.map((lib) => (
+                <SidebarMenuItem key={lib.id}>
+                  <SidebarMenuSubButton
                     render={
                       <Link
                         to="/packages/libs/$key"
@@ -90,11 +103,11 @@ function PackagesLayout(): React.JSX.Element {
                       />
                     }
                   >
-                    {lib.name}
-                  </NavigationMenuItemWithLink>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+                    <span>{lib.name}</span>
+                  </SidebarMenuSubButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
           </>
         )}
       </SidebarLayoutSidebar>

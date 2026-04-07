@@ -1,15 +1,9 @@
 import type React from 'react';
 
-import {
-  NavigationTabs,
-  NavigationTabsItem,
-} from '@baseplate-dev/ui-components';
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  redirect,
-} from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+
+import { AppContentLayout } from '../-components/app-content-layout.js';
+import { AppHeaderBar } from '../-components/app-header-bar.js';
 
 export const Route = createFileRoute('/packages/apps/$key/web')({
   component: WebAppLayout,
@@ -19,37 +13,19 @@ export const Route = createFileRoute('/packages/apps/$key/web')({
     }
 
     return {
+      app,
       webDefinition: app,
     };
   },
+  loader: ({ context: { app } }) => ({ app }),
 });
 
 function WebAppLayout(): React.JSX.Element {
-  const { key } = Route.useParams();
-  return (
-    <div className="p-4">
-      <NavigationTabs>
-        <NavigationTabsItem
-          render={
-            <Link
-              to="/packages/apps/$key/web"
-              params={{ key }}
-              activeOptions={{ exact: true }}
-            />
-          }
-        >
-          General
-        </NavigationTabsItem>
-        <NavigationTabsItem
-          render={<Link to="/packages/apps/$key/web/admin" params={{ key }} />}
-        >
-          Admin
-        </NavigationTabsItem>
-      </NavigationTabs>
+  const { app } = Route.useLoaderData();
 
-      <div className="mt-4 border-t">
-        <Outlet />
-      </div>
-    </div>
+  return (
+    <AppContentLayout header={<AppHeaderBar app={app} />}>
+      <Outlet />
+    </AppContentLayout>
   );
 }

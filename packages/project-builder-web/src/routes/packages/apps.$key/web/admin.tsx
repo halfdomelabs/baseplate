@@ -1,7 +1,6 @@
 import type React from 'react';
 
 import {
-  appEntityType,
   authConfigSpec,
   createWebAppSchema,
 } from '@baseplate-dev/project-builder-lib';
@@ -12,7 +11,6 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Button,
   FormActionBar,
   InputFieldController,
   MultiComboboxFieldController,
@@ -25,8 +23,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { MdSettings } from 'react-icons/md';
+import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/packages/apps/$key/web/admin')({
   component: WebAdminPage,
@@ -64,9 +61,6 @@ function WebAdminPage(): React.JSX.Element {
     }));
 
   const adminEnabled = watch('adminApp.enabled');
-
-  // Get the app key for navigation
-  const appKey = appEntityType.keyFromId(webDefinition.id);
 
   return (
     <form className="w-full max-w-7xl space-y-4 p-4" onSubmit={onSubmit}>
@@ -111,28 +105,6 @@ function WebAdminPage(): React.JSX.Element {
             )}
           </SectionListSectionContent>
         </SectionListSection>
-
-        {adminEnabled && (
-          <SectionListSection>
-            <SectionListSectionHeader>
-              <SectionListSectionTitle>Admin Sections</SectionListSectionTitle>
-              <SectionListSectionDescription>
-                Manage CRUD interfaces for your data models.
-              </SectionListSectionDescription>
-            </SectionListSectionHeader>
-            <SectionListSectionContent>
-              <Button
-                variant="secondary"
-                render={
-                  <Link to="/admin-sections/$appKey" params={{ appKey }} />
-                }
-              >
-                <MdSettings />
-                Manage Admin Sections
-              </Button>
-            </SectionListSectionContent>
-          </SectionListSection>
-        )}
       </SectionList>
       <FormActionBar form={formProps} />
     </form>

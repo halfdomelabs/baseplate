@@ -21,6 +21,9 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
+import { AppContentLayout } from './-components/app-content-layout.js';
+import { AppHeaderBar } from './-components/app-header-bar.js';
+
 export const Route = createFileRoute('/packages/apps/$key/backend')({
   component: BackendAppEditPage,
   loader: ({ context: { app }, params: { key } }) => {
@@ -29,6 +32,7 @@ export const Route = createFileRoute('/packages/apps/$key/backend')({
       throw redirect({ to: '/packages/apps/$key', params: { key } });
     }
     return {
+      app,
       backendDefinition: app,
     };
   },
@@ -36,7 +40,7 @@ export const Route = createFileRoute('/packages/apps/$key/backend')({
 
 function BackendAppEditPage(): React.JSX.Element {
   const { saveDefinitionWithFeedback, definition } = useProjectDefinition();
-  const { backendDefinition } = Route.useLoaderData();
+  const { app, backendDefinition } = Route.useLoaderData();
 
   const backendAppSchema = useDefinitionSchema(createBackendAppSchema);
   const formProps = useResettableForm({
@@ -71,49 +75,55 @@ function BackendAppEditPage(): React.JSX.Element {
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form className="w-full max-w-7xl space-y-4 px-4" onSubmit={onSubmit}>
-      <SectionList>
-        <SectionListSection>
-          <SectionListSectionHeader>
-            <SectionListSectionTitle>General</SectionListSectionTitle>
-            <SectionListSectionDescription>
-              Basic configuration for your backend application.
-            </SectionListSectionDescription>
-          </SectionListSectionHeader>
-          <SectionListSectionContent className="space-y-6">
-            <InputFieldController label="Name" control={control} name="name" />
-            <InputFieldController
-              label="Development Port"
-              control={control}
-              name="devPort"
-              type="number"
-              registerOptions={{ valueAsNumber: true }}
-              description="Port number for the development server (e.g., 5001)"
-            />
-          </SectionListSectionContent>
-        </SectionListSection>
-
-        <SectionListSection>
-          <SectionListSectionHeader>
-            <SectionListSectionTitle>Configuration</SectionListSectionTitle>
-            <SectionListSectionDescription>
-              Enable or disable external services and features for your backend
-              application.
-            </SectionListSectionDescription>
-          </SectionListSectionHeader>
-          <SectionListSectionContent>
-            <div className="space-y-4">
-              <SwitchFieldController
+    <AppContentLayout header={<AppHeaderBar app={app} />}>
+      <form className="w-full max-w-7xl space-y-4 px-4" onSubmit={onSubmit}>
+        <SectionList>
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>General</SectionListSectionTitle>
+              <SectionListSectionDescription>
+                Basic configuration for your backend application.
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent className="space-y-6">
+              <InputFieldController
+                label="Name"
                 control={control}
-                name="enableAxios"
-                label="Axios"
-                description="Enable Axios for HTTP requests"
+                name="name"
               />
-            </div>
-          </SectionListSectionContent>
-        </SectionListSection>
-      </SectionList>
-      <FormActionBar form={formProps} />
-    </form>
+              <InputFieldController
+                label="Development Port"
+                control={control}
+                name="devPort"
+                type="number"
+                registerOptions={{ valueAsNumber: true }}
+                description="Port number for the development server (e.g., 5001)"
+              />
+            </SectionListSectionContent>
+          </SectionListSection>
+
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>Configuration</SectionListSectionTitle>
+              <SectionListSectionDescription>
+                Enable or disable external services and features for your
+                backend application.
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent>
+              <div className="space-y-4">
+                <SwitchFieldController
+                  control={control}
+                  name="enableAxios"
+                  label="Axios"
+                  description="Enable Axios for HTTP requests"
+                />
+              </div>
+            </SectionListSectionContent>
+          </SectionListSection>
+        </SectionList>
+        <FormActionBar form={formProps} />
+      </form>
+    </AppContentLayout>
   );
 }

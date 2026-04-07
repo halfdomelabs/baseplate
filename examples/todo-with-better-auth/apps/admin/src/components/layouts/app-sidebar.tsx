@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { BsCardChecklist } from 'react-icons/bs';
-import { FaUserAlt } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import { MdHome, MdLogout } from 'react-icons/md';
 
 import { useLogOut } from '@src/hooks/use-log-out';
@@ -42,7 +42,7 @@ export function AppSidebar(): React.ReactElement {
                 <SidebarMenuButton
                   render={<Link to="/admin/accounts/users/user" />}
                 >
-                  <FaUserAlt />
+                  <FaUser />
                   <span>User</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
