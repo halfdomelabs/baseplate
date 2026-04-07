@@ -1,5 +1,20 @@
 # @baseplate-dev/react-generators
 
+## 0.6.8
+
+### Patch Changes
+
+- [#878](https://github.com/halfdomelabs/baseplate/pull/878) [`04006df`](https://github.com/halfdomelabs/baseplate/commit/04006df7b2c9d124c83264d40aaeaa2a71558035) Thanks [@kingston](https://github.com/kingston)! - Add disabled prop to form field component templates with consistent data-disabled attribute on Field wrapper
+
+- [#881](https://github.com/halfdomelabs/baseplate/pull/881) [`f9cecc1`](https://github.com/halfdomelabs/baseplate/commit/f9cecc1c72d455aa5952c03c94182cb935b3b3dc) Thanks [@kingston](https://github.com/kingston)! - Enable `avoidOptionals` in GraphQL Code Generator config to better conform to the GraphQL spec, where nullable fields are always present in the response but may be `null` (`field: T | null` instead of `field?: T | null`)
+
+- [#883](https://github.com/halfdomelabs/baseplate/pull/883) [`b231bca`](https://github.com/halfdomelabs/baseplate/commit/b231bcace5bd8395fe1cc92b2cb319302023342b) Thanks [@kingston](https://github.com/kingston)! - Upgrade vite version from 7.1.12 to 7.3.2
+
+- Updated dependencies [[`b231bca`](https://github.com/halfdomelabs/baseplate/commit/b231bcace5bd8395fe1cc92b2cb319302023342b)]:
+  - @baseplate-dev/core-generators@0.6.8
+  - @baseplate-dev/sync@0.6.8
+  - @baseplate-dev/utils@0.6.8
+
 ## 0.6.7
 
 ### Patch Changes

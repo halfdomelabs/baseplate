@@ -1,5 +1,15 @@
 # @baseplate-dev/core-generators
 
+## 0.6.8
+
+### Patch Changes
+
+- [#883](https://github.com/halfdomelabs/baseplate/pull/883) [`b231bca`](https://github.com/halfdomelabs/baseplate/commit/b231bcace5bd8395fe1cc92b2cb319302023342b) Thanks [@kingston](https://github.com/kingston)! - Upgrade vite version from 7.1.12 to 7.3.2
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.8
+  - @baseplate-dev/utils@0.6.8
+
 ## 0.6.7
 
 ### Patch Changes
