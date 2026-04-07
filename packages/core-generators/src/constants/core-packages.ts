@@ -24,7 +24,7 @@ export const CORE_PACKAGES = {
   'prettier-plugin-packagejson': '3.0.0',
 
   // Testing
-  vite: '7.3.1',
+  vite: '7.3.2',
   vitest: '4.0.16',
   'vite-tsconfig-paths': '5.1.4',
 

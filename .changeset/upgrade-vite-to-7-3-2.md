@@ -3,4 +3,4 @@
 '@baseplate-dev/react-generators': patch
 ---
 
-Upgrade vite version from 7.1.12 to 7.3.1
+Upgrade vite version from 7.1.12 to 7.3.2
