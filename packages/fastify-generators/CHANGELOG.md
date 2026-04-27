@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.9
+
+### Patch Changes
+
+- [#884](https://github.com/halfdomelabs/baseplate/pull/884) [`7677630`](https://github.com/halfdomelabs/baseplate/commit/7677630f1e445e2c8c8c56b70435d12b0242affb) Thanks [@kingston](https://github.com/kingston)! - Upgrade fastify to 5.8.5, @fastify/static to 9.1.3, and axios to 1.15.2
+
+- Updated dependencies [[`7677630`](https://github.com/halfdomelabs/baseplate/commit/7677630f1e445e2c8c8c56b70435d12b0242affb)]:
+  - @baseplate-dev/core-generators@0.6.9
+  - @baseplate-dev/sync@0.6.9
+  - @baseplate-dev/utils@0.6.9
+
 ## 0.6.8
 
 ### Patch Changes

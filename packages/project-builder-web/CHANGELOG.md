@@ -1,5 +1,14 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-lib@0.6.9
+  - @baseplate-dev/ui-components@0.6.9
+  - @baseplate-dev/utils@0.6.9
+
 ## 0.6.8
 
 ### Patch Changes
