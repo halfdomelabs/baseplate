@@ -18,9 +18,6 @@
       "path": "../sync/tsconfig.build.json"
     },
     {
-      "path": "../ui-components/tsconfig.build.json"
-    },
-    {
       "path": "../utils/tsconfig.build.json"
     }
   ]
