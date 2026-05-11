@@ -12,13 +12,13 @@ export default defineConfig(async (): Promise<UserConfig> => {
     overridePluginGlobs: ['src/*/plugin.json'],
   });
   return {
+    base: './',
     build: {
       outDir: 'dist/web',
       sourcemap: true,
       modulePreload: false,
       target: 'esnext',
       minify: false,
-      cssCodeSplit: false,
     },
     plugins: [
       srcSubpathImportPlugin(import.meta.dirname),
