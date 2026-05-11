@@ -2,7 +2,7 @@ import type { UserConfig } from 'vite';
 
 import { getModuleFederationTargets } from '@baseplate-dev/project-builder-lib/plugin-tools';
 import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
-import federation from '@originjs/vite-plugin-federation';
+import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -19,9 +19,6 @@ export default defineConfig(async (): Promise<UserConfig> => {
       target: 'esnext',
       minify: false,
       cssCodeSplit: false,
-      rollupOptions: {
-        external: ['@baseplate-dev/project-builder-lib'],
-      },
     },
     plugins: [
       srcSubpathImportPlugin(import.meta.dirname),
@@ -29,17 +26,14 @@ export default defineConfig(async (): Promise<UserConfig> => {
         name: 'plugin-observability',
         filename: 'remoteEntry.js',
         exposes: viteTargets,
+        dts: false,
         shared: {
-          react: {},
-          'react-dom': {},
-          zod: {},
-          '@baseplate-dev/project-builder-lib': {
-            version: '*',
-          },
-          '@baseplate-dev/project-builder-lib/web': {
-            version: '*',
-          },
-          '@baseplate-dev/ui-components': { version: '*' },
+          react: { singleton: true },
+          'react-dom': { singleton: true },
+          zod: { singleton: true },
+          '@baseplate-dev/project-builder-lib': { singleton: true },
+          '@baseplate-dev/project-builder-lib/web': { singleton: true },
+          '@baseplate-dev/ui-components': { singleton: true },
         },
       }),
       react(),

@@ -333,6 +333,6 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Global Ignores
-    { ignores: ['dist', 'node_modules', 'oxlint.config.ts'] },
+    { ignores: ['dist', 'node_modules', 'oxlint.config.ts', '.__mf__temp'] },
   );
 }

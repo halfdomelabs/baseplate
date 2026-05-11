@@ -330,7 +330,7 @@ async function getModuleFederationTargetsForPlugin(
         entrypoint.path,
       );
       return {
-        [entrypointImport]: relativePath,
+        [`./${entrypointImport}`]: `./${relativePath}`,
       };
     });
 

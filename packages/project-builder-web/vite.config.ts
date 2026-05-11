@@ -1,7 +1,7 @@
 import type { ClientRequest } from 'node:http';
 
 import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
-import federation from '@originjs/vite-plugin-federation';
+import { federation } from '@module-federation/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
@@ -52,20 +52,18 @@ export default defineConfig(({ mode }) => {
       svgrPlugin(),
       federation({
         name: 'project-builder-web',
-        remotes: {
-          placeholder: 'http://localhost:3001/remoteEntry.js',
-        },
+        // Remotes are registered at runtime per project via registerRemotes()
+        // in src/services/module-federation.ts.
+        remotes: {},
+        dts: false,
         shared: {
-          react: {},
-          'react-dom': {},
-          zod: {},
-          '@baseplate-dev/project-builder-lib': { version: '*' },
-          '@baseplate-dev/project-builder-lib/web': {
-            version: '*',
-          },
-          '@baseplate-dev/ui-components': { version: '*' },
-          '@baseplate-dev/utils': { version: '*' },
-          '@tanstack/react-router': { version: '*' },
+          react: { singleton: true },
+          'react-dom': { singleton: true },
+          zod: { singleton: true },
+          '@baseplate-dev/project-builder-lib': { singleton: true },
+          '@baseplate-dev/project-builder-lib/web': { singleton: true },
+          '@baseplate-dev/ui-components': { singleton: true },
+          '@tanstack/react-router': { singleton: true },
         },
       }),
       pluginDevServerPlugin(),

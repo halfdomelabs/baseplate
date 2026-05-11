@@ -5,12 +5,12 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 
 import {
-  __federation_method_getRemote,
-  __federation_method_setRemote,
-  __federation_method_unwrapDefault,
-} from 'virtual:__federation__';
+  loadRemote,
+  registerRemotes,
+} from '@module-federation/enhanced/runtime';
 
 let randomSeed = Math.random();
+const registeredEntries = new Map<string, string>();
 
 /**
  * Reset the seed used to load plugin modules. This is useful during development
@@ -18,37 +18,49 @@ let randomSeed = Math.random();
  */
 export function resetPluginModuleSeed(): void {
   randomSeed = Math.random();
+  registeredEntries.clear();
+}
+
+/**
+ * Sanitize a plugin key for use as a Module Federation remote name.
+ *
+ * The runtime uses `${remoteName}/${exposeKey}` to look up modules, so a slash
+ * inside the remote name confuses lookup. We use double-underscores instead.
+ */
+function getRemoteName(projectId: string, pluginKey: string): string {
+  return `${projectId}__${pluginKey}`.replaceAll(/[^a-zA-Z0-9_]/g, '_');
 }
 
 export async function loadPluginModule(
   projectId: string,
   pluginMetadata: PluginMetadataWithPaths,
 ): Promise<PluginModuleWithDirectory[]> {
-  const pluginKey = `${projectId}/${pluginMetadata.key}`;
-  // use random entry to bust cache
-  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.key}/web/assets/remoteEntry.js?rnd=${randomSeed}`;
+  const remoteName = getRemoteName(projectId, pluginMetadata.key);
+  // use random seed to bust cache
+  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.key}/web/remoteEntry.js?rnd=${randomSeed}`;
 
-  __federation_method_setRemote(pluginKey, {
-    url: remoteEntry,
-    externalType: 'url',
-    format: 'esm',
-    from: 'vite',
-  });
+  if (registeredEntries.get(remoteName) !== remoteEntry) {
+    registerRemotes(
+      [{ name: remoteName, entry: remoteEntry, type: 'module' }],
+      { force: true },
+    );
+    registeredEntries.set(remoteName, remoteEntry);
+  }
 
-  // load module
   const wrappedModules = await Promise.all(
     pluginMetadata.webModulePaths.map((path) =>
-      __federation_method_getRemote(pluginKey, path),
+      loadRemote<{ default?: PluginModule } | PluginModule>(
+        `${remoteName}/${path}`,
+      ),
     ),
   );
-  const modules = wrappedModules.map(
-    (module) => __federation_method_unwrapDefault(module) as PluginModule,
-  );
 
-  const pluginModules = modules.map((module, index) => ({
-    directory: pluginMetadata.webModulePaths[index],
-    module,
-  }));
-
-  return pluginModules;
+  return wrappedModules.map((mod, index) => {
+    const unwrapped = ((mod as { default?: PluginModule } | null)?.default ??
+      mod) as PluginModule;
+    return {
+      directory: pluginMetadata.webModulePaths[index],
+      module: unwrapped,
+    };
+  });
 }

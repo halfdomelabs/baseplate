@@ -22,7 +22,6 @@ export class SchemaParserContextManager {
 
   async loadSchemaParserContext(): Promise<SchemaParserContext> {
     this._pluginsMetadata ??= await getPluginsMetadata(this.project.id);
-    resetPluginModuleSeed();
     this._schemaParserContext = await createWebSchemaParserContext(
       this.project,
       this.cliVersion,
@@ -38,6 +37,7 @@ export class SchemaParserContextManager {
     onError: (error: unknown) => void,
   ): () => void {
     return subscribeToViteHotReloadEvent('plugin-assets-changed', () => {
+      resetPluginModuleSeed();
       this.loadSchemaParserContext()
         .then((schemaParserContext) => {
           onSchemaParserContextUpdated(schemaParserContext);

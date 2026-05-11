@@ -241,8 +241,8 @@ describe('plugin-loader', () => {
 
       // Assert
       expect(result).toEqual({
-        'federation-plugin/web': 'dist/federation-plugin/web.ts',
-        'federation-plugin/common': 'dist/federation-plugin/common.ts',
+        './federation-plugin/web': './dist/federation-plugin/web.ts',
+        './federation-plugin/common': './dist/federation-plugin/common.ts',
       });
     });
 
