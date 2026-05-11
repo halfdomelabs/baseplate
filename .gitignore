@@ -116,3 +116,8 @@ tests/*/.output/
 .pnpm-store
 /.devcontainer/mounts
 /.devcontainer/.env
+
+# @module-federation/vite virtual-module artifacts
+.__mf__temp/
+
+.playwright-mcp/

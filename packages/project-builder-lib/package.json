@@ -27,7 +27,8 @@
     ".": "./dist/index.js",
     "./web": "./dist/web/index.js",
     "./plugin-tools": "./dist/plugin-tools/index.js",
-    "./testing": "./dist/testing/index.js"
+    "./testing": "./dist/testing/index.js",
+    "./package.json": "./package.json"
   },
   "main": "dist/index.js",
   "files": [
@@ -51,7 +52,6 @@
   },
   "dependencies": {
     "@baseplate-dev/sync": "workspace:*",
-    "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "acorn": "^8.15.0",
     "culori": "^4.0.1",
@@ -59,9 +59,7 @@
     "globby": "^14.0.2",
     "immer": "~11.1.4",
     "inflection": "3.0.0",
-    "react": "catalog:",
     "react-hook-form": "7.71.1",
-    "zod": "catalog:",
     "zustand": "5.0.3"
   },
   "devDependencies": {
@@ -78,6 +76,11 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@baseplate-dev/ui-components": "workspace:*",
+    "react": "catalog:",
+    "zod": "catalog:"
   },
   "engines": {
     "node": "^24.0.0"
