@@ -119,3 +119,5 @@ tests/*/.output/
 
 # @module-federation/vite virtual-module artifacts
 .__mf__temp/
+
+.playwright-mcp/
