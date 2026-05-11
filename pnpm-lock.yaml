@@ -13,9 +13,6 @@ catalogs:
     '@module-federation/enhanced':
       specifier: 2.3.3
       version: 2.3.3
-    '@module-federation/runtime':
-      specifier: 2.3.3
-      version: 2.3.3
     '@module-federation/vite':
       specifier: 1.15.4
       version: 1.15.4
@@ -857,9 +854,6 @@ importers:
       '@module-federation/enhanced':
         specifier: 'catalog:'
         version: 2.3.3(@rspack/core@2.0.1)(react-dom@19.1.0)(react@19.1.0)(typescript@5.9.3)
-      '@module-federation/runtime':
-        specifier: 'catalog:'
-        version: 2.3.3
       '@tanstack/react-router':
         specifier: 1.159.5
         version: 1.159.5(react-dom@19.1.0)(react@19.1.0)

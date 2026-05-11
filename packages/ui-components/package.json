@@ -24,7 +24,8 @@
     ".": "./dist/index.js",
     "./base-styles.css": "./dist/base-styles.css",
     "./theme.css": "./dist/theme.css",
-    "./utilities.css": "./dist/utilities.css"
+    "./utilities.css": "./dist/utilities.css",
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
   "files": [

@@ -7,7 +7,6 @@ blockExoticSubdeps: true
 catalog:
   '@eslint/js': 9.39.2
   '@module-federation/enhanced': 2.3.3
-  '@module-federation/runtime': 2.3.3
   '@module-federation/vite': 1.15.4
   '@tailwindcss/vite': 4.1.18
   '@types/node': ^24.12.0

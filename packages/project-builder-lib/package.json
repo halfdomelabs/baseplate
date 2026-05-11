@@ -27,7 +27,8 @@
     ".": "./dist/index.js",
     "./web": "./dist/web/index.js",
     "./plugin-tools": "./dist/plugin-tools/index.js",
-    "./testing": "./dist/testing/index.js"
+    "./testing": "./dist/testing/index.js",
+    "./package.json": "./package.json"
   },
   "main": "dist/index.js",
   "files": [
