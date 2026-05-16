@@ -38,6 +38,7 @@ export * from './multi-switch-field/multi-switch-field.js';
 export * from './navigation-menu/navigation-menu.js';
 export * from './navigation-tabs/navigation-tabs.js';
 export * from './popover/popover.js';
+export * from './radio-group/radio-group.js';
 export * from './record-view/record-view.js';
 export * from './scroll-area/scroll-area.js';
 export * from './section-list/section-list.js';
