@@ -21,6 +21,7 @@ import type {
   SetupWizardInput,
 } from './setup-wizard-schema.js';
 
+import { AppsSection } from './sections/apps-section.js';
 import { BasicsSection } from './sections/basics-section.js';
 import { StackList } from './sections/stack-list.js';
 import { setupWizardSchema } from './setup-wizard-schema.js';
@@ -38,6 +39,7 @@ const DEFAULT_VALUES: SetupWizardInput = {
   name: '',
   packageScope: '',
   portOffset: 3000,
+  enabledApps: { backend: true, web: true, admin: true },
   enableAuth: true,
   authMethod: 'local-auth',
   enableEmail: true,
@@ -99,6 +101,13 @@ export function SetupWizard({
     resolver: zodResolver(setupWizardSchema),
   });
 
+  const rawEnabledApps = watch('enabledApps');
+  const enabledApps = {
+    backend: rawEnabledApps?.backend ?? false,
+    web: rawEnabledApps?.web ?? false,
+    admin: rawEnabledApps?.admin ?? false,
+  };
+  const portOffset = watch('portOffset');
   const values = {
     enableAuth: watch('enableAuth') ?? false,
     authMethod: watch('authMethod') ?? 'local-auth',
@@ -174,6 +183,12 @@ export function SetupWizard({
           </div>
 
           <BasicsSection control={control} />
+
+          <AppsSection
+            setValue={setValue}
+            enabledApps={enabledApps}
+            portOffset={portOffset}
+          />
 
           {hasPlugins ? (
             <StackList setValue={setValue} plugins={plugins} values={values} />

@@ -1,16 +1,18 @@
 import type {
+  AppConfig,
   PluginMetadataWithPaths,
   ProjectDefinition,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
+  appEntityType,
   authRoleEntityType,
   FeatureUtils,
   libraryEntityType,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
-import { sortBy } from 'es-toolkit';
+import { sortBy, startCase } from 'es-toolkit';
 import { useCallback } from 'react';
 
 import type { SetupWizardData } from './setup-wizard-schema.js';
@@ -62,6 +64,59 @@ function findPlugin(
   return plugins.find((p) => p.fullyQualifiedName === fqn);
 }
 
+/**
+ * Builds the initial apps array for a brand-new project based on the wizard's
+ * `enabledApps` selection. Mirrors the port-assignment logic in
+ * `migration-023-assign-app-ports.ts` and `new-dialog.tsx`:
+ * - backend → portOffset + 1
+ * - web/admin (both `type: 'web'`) → portOffset + 30 + alphabeticalIndex
+ *
+ * The `admin` preset is a web app with `adminApp.enabled = true`.
+ */
+function buildInitialApps(
+  enabledApps: SetupWizardData['enabledApps'],
+  portOffset: number,
+): AppConfig[] {
+  const webNames: string[] = [];
+  if (enabledApps.admin) webNames.push('admin');
+  if (enabledApps.web) webNames.push('web');
+  webNames.sort();
+
+  const apps: AppConfig[] = [];
+
+  if (enabledApps.backend) {
+    apps.push({
+      id: appEntityType.generateNewId(),
+      name: 'backend',
+      type: 'backend',
+      devPort: portOffset + 1,
+    } as AppConfig);
+  }
+
+  for (const webName of webNames) {
+    const isAdmin = webName === 'admin';
+    apps.push({
+      id: appEntityType.generateNewId(),
+      name: webName,
+      type: 'web',
+      devPort: portOffset + 30 + webNames.indexOf(webName),
+      title: startCase(webName),
+      description: isAdmin ? 'Admin panel' : 'Web application',
+      includeAuth: false,
+      includeUploadComponents: false,
+      enableSubscriptions: false,
+      adminApp: {
+        enabled: isAdmin,
+        pathPrefix: '/admin',
+        allowedRoles: [],
+        sections: [],
+      },
+    });
+  }
+
+  return sortBy(apps, [(app) => app.name]);
+}
+
 function enablePluginIfAvailable(
   draft: ProjectDefinition,
   plugins: PluginMetadataWithPaths[],
@@ -101,6 +156,7 @@ export function useWizardSave({
           portOffset: data.portOffset,
           packageScope: '',
         };
+        draft.apps = buildInitialApps(data.enabledApps, data.portOffset);
         draft.isInitialized = true;
       });
     },
@@ -116,6 +172,7 @@ export function useWizardSave({
           portOffset: data.portOffset,
           packageScope: '',
         };
+        draft.apps = buildInitialApps(data.enabledApps, data.portOffset);
         draft.isInitialized = true;
 
         // Track which dependency plugins we need
