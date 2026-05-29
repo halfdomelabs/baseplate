@@ -8,6 +8,7 @@ import {
   createNodeTask,
   eslintConfigProvider,
   extractPackageVersions,
+  nodeGitIgnoreProvider,
   packageScope,
   prettierProvider,
   tsCodeFragment,
@@ -202,6 +203,24 @@ export const reactApolloGenerator = createGenerator({
     }),
     prettier: createProviderTask(prettierProvider, (prettier) => {
       prettier.addPrettierIgnore('src/gql');
+    }),
+    gitIgnore: createGeneratorTask({
+      dependencies: {
+        nodeGitIgnore: nodeGitIgnoreProvider,
+      },
+      run({ nodeGitIgnore }) {
+        return {
+          build: (builder) => {
+            nodeGitIgnore.exclusions.set('graphql-codegen', [
+              '# GraphQL Code Generator',
+              'src/gql/*',
+              ...(builder.metadataOptions.includeTemplateMetadata
+                ? ['!src/gql/.templates-info.json']
+                : []),
+            ]);
+          },
+        };
+      },
     }),
     reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
       if (enableSubscriptions) {

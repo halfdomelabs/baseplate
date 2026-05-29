@@ -27,6 +27,10 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Baseplate build artifacts
 baseplate/.build
 
+# GraphQL Code Generator
+src/gql/*
+!src/gql/.templates-info.json
+
 # production
 /build
 

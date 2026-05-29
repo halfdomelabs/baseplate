@@ -214,7 +214,26 @@ export class WebPackageCompiler extends AppCompiler<WebAppConfig> {
   }
 
   getTasks(): PackageTasks {
+    const { definition } = this.definitionContainer;
+    const backendApp = AppUtils.getBackendApp(definition);
+    const backendDirectory = AppUtils.getAppDirectory(
+      backendApp,
+      definition.settings.monorepo,
+    );
+
     return {
+      prebuild: [
+        {
+          name: 'gql:generate',
+          inputs: [
+            'src/**/*.ts',
+            'src/**/*.tsx',
+            'codegen.ts',
+            `$TURBO_ROOT$/${backendDirectory}/schema.graphql`,
+          ],
+          outputs: ['src/gql/**'],
+        },
+      ],
       build: ['build'],
       check: ['lint', 'typecheck', 'test', 'prettier:check'],
       dev: ['dev', 'gql:watch'],
