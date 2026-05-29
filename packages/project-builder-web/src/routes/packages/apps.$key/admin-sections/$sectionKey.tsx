@@ -39,13 +39,10 @@ import AdminCrudSectionForm from './-components/admin-crud-section-form.js';
 import { ReactIconComboboxController } from './-components/react-icon-combobox.js';
 
 export const Route = createFileRoute(
-  '/packages/apps/$key/admin-sections/$section-key',
+  '/packages/apps/$key/admin-sections/$sectionKey',
 )({
   component: EditAdminSectionPage,
-  beforeLoad: ({
-    params: { 'section-key': sectionKey },
-    context: { adminApp },
-  }) => {
+  beforeLoad: ({ params: { sectionKey }, context: { adminApp } }) => {
     if (!adminApp) return {};
 
     const section = adminApp.sections.find(
@@ -67,7 +64,7 @@ export const Route = createFileRoute(
 
 function EditAdminSectionPage(): React.JSX.Element {
   const { app } = Route.useLoaderData();
-  const { key, 'section-key': sectionKey } = Route.useParams();
+  const { key, sectionKey } = Route.useParams();
   const navigate = useNavigate({ from: Route.fullPath });
 
   const { requestConfirm } = useConfirmDialog();
