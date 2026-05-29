@@ -32,5 +32,5 @@ export const CORE_PACKAGES = {
   axios: '1.15.2',
 
   // Monorepo
-  turbo: '2.9.0',
+  turbo: '2.9.15',
 } as const;
