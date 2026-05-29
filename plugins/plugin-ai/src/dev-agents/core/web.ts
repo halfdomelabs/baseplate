@@ -1,5 +1,6 @@
 import {
   createPluginModule,
+  pluginDefaultsSpec,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -11,8 +12,13 @@ export default createPluginModule({
   name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
+    pluginDefaults: pluginDefaultsSpec,
   },
-  initialize: ({ webConfig }, { pluginKey }) => {
+  initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, DevAgentsDefinitionEditor);
+    pluginDefaults.builders.set(pluginKey, () => ({
+      enabledAgents: ['claude-code'],
+      devAgentsOptions: {},
+    }));
   },
 });

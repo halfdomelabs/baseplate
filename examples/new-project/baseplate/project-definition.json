@@ -1,0 +1,14 @@
+{
+  "apps": [],
+  "cliVersion": "0.6.9",
+  "features": [],
+  "isInitialized": false,
+  "libraries": [],
+  "models": [],
+  "plugins": [],
+  "schemaVersion": 31,
+  "settings": {
+    "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
+    "infrastructure": { "redis": { "enabled": false } }
+  }
+}

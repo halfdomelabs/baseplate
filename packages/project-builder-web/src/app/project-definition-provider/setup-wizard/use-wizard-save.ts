@@ -10,6 +10,7 @@ import {
   authRoleEntityType,
   FeatureUtils,
   libraryEntityType,
+  pluginDefaultsSpec,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { sortBy, startCase } from 'es-toolkit';
@@ -117,17 +118,27 @@ function buildInitialApps(
   return sortBy(apps, [(app) => app.name]);
 }
 
-function enablePluginIfAvailable(
+/**
+ * Enables `fqn` with the config produced by its registered defaults builder.
+ * Falls back to `{}` if the plugin doesn't register a builder — works for
+ * plugins whose schema parses an empty object.
+ */
+function enablePluginWithDefaults(
   draft: ProjectDefinition,
   plugins: PluginMetadataWithPaths[],
   fqn: string,
-  config: unknown,
   definitionContainer: ProjectDefinitionContainer,
+  enabledPluginFqns: ReadonlySet<string>,
 ): void {
   const plugin = findPlugin(plugins, fqn);
-  if (plugin) {
-    PluginUtils.setPluginConfig(draft, plugin, config, definitionContainer);
-  }
+  if (!plugin) return;
+  const builder = definitionContainer.pluginStore
+    .use(pluginDefaultsSpec)
+    .builders.get(plugin.key);
+  const config = builder
+    ? builder({ draft, definitionContainer, enabledPluginFqns })
+    : {};
+  PluginUtils.setPluginConfig(draft, plugin, config, definitionContainer);
 }
 
 interface UseWizardSaveOptions {
@@ -178,6 +189,43 @@ export function useWizardSave({
         // Track which dependency plugins we need
         let needsQueue = false;
         let needsRateLimit = false;
+
+        // Precompute the FQNs we intend to enable so plugin defaults builders
+        // can branch on what else is being turned on (e.g. payments deciding
+        // whether to enable billing).
+        const enabledPluginFqns = new Set<string>();
+        if (data.enableAuth) {
+          enabledPluginFqns.add(AUTH_PLUGIN_FQN);
+          enabledPluginFqns.add(
+            `@baseplate-dev/plugin-auth:${data.authMethod}`,
+          );
+          if (data.authMethod === 'local-auth') {
+            enabledPluginFqns.add(RATE_LIMIT_PLUGIN_FQN);
+          }
+        }
+        if (data.enableEmail) {
+          enabledPluginFqns.add(EMAIL_PLUGIN_FQN);
+          enabledPluginFqns.add(
+            `@baseplate-dev/plugin-email:${data.emailProvider}`,
+          );
+        }
+        if (
+          data.enableAuth ||
+          data.enableEmail ||
+          data.enableStorage ||
+          data.enableQueue
+        ) {
+          enabledPluginFqns.add(QUEUE_PLUGIN_FQN);
+          enabledPluginFqns.add(
+            data.queueImplementation === 'bullmq'
+              ? BULLMQ_PLUGIN_FQN
+              : PG_BOSS_PLUGIN_FQN,
+          );
+        }
+        if (data.enableStorage) enabledPluginFqns.add(STORAGE_PLUGIN_FQN);
+        if (data.enableObservability) enabledPluginFqns.add(SENTRY_PLUGIN_FQN);
+        if (data.enablePayments) enabledPluginFqns.add(STRIPE_PLUGIN_FQN);
+        if (data.enableAi) enabledPluginFqns.add(DEV_AGENTS_PLUGIN_FQN);
 
         // 2. Configure auth if enabled
         if (data.enableAuth) {
@@ -318,53 +366,53 @@ export function useWizardSave({
         }
 
         if (needsRateLimit) {
-          enablePluginIfAvailable(
+          enablePluginWithDefaults(
             draft,
             plugins,
             RATE_LIMIT_PLUGIN_FQN,
-            {},
             definitionContainer,
+            enabledPluginFqns,
           );
         }
 
         // 5. Enable additional plugins
         if (data.enableStorage) {
-          enablePluginIfAvailable(
+          enablePluginWithDefaults(
             draft,
             plugins,
             STORAGE_PLUGIN_FQN,
-            {},
             definitionContainer,
+            enabledPluginFqns,
           );
         }
 
         if (data.enableObservability) {
-          enablePluginIfAvailable(
+          enablePluginWithDefaults(
             draft,
             plugins,
             SENTRY_PLUGIN_FQN,
-            {},
             definitionContainer,
+            enabledPluginFqns,
           );
         }
 
         if (data.enablePayments) {
-          enablePluginIfAvailable(
+          enablePluginWithDefaults(
             draft,
             plugins,
             STRIPE_PLUGIN_FQN,
-            {},
             definitionContainer,
+            enabledPluginFqns,
           );
         }
 
         if (data.enableAi) {
-          enablePluginIfAvailable(
+          enablePluginWithDefaults(
             draft,
             plugins,
             DEV_AGENTS_PLUGIN_FQN,
-            {},
             definitionContainer,
+            enabledPluginFqns,
           );
         }
       });

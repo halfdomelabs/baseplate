@@ -1,5 +1,7 @@
 import {
   createPluginModule,
+  FeatureUtils,
+  pluginDefaultsSpec,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -11,8 +13,20 @@ export default createPluginModule({
   name: 'web',
   dependencies: {
     webConfig: webConfigSpec,
+    pluginDefaults: pluginDefaultsSpec,
   },
-  initialize: ({ webConfig }, { pluginKey }) => {
+  initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, StorageDefinitionEditor);
+    pluginDefaults.builders.set(pluginKey, ({ draft }) => {
+      const storageFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
+        draft,
+        'storage',
+      );
+      return {
+        storageFeatureRef,
+        s3Adapters: [],
+        fileCategories: [],
+      };
+    });
   },
 });
