@@ -1,38 +1,9 @@
 /* eslint-disable */
-import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = T | null | undefined;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  Date: { input: string; output: string; }
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: { input: string; output: string; }
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: { input: unknown; output: unknown; }
-  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSONObject: { input: Record<string, unknown>; output: Record<string, unknown>; }
-  /** A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier. */
-  Uuid: { input: string; output: string; }
-};
-
-export type Article = {
-  __typename?: 'Article';
-  content: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  title: Scalars['String']['output'];
-};
-
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type AuthRole =
   /** Administrator role */
   | 'admin'
@@ -43,73 +14,10 @@ export type AuthRole =
   /** All authenticated users */
   | 'user';
 
-export type Blog = {
-  __typename?: 'Blog';
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  userId: Scalars['Uuid']['output'];
-};
-
-export type BlogPost = {
-  __typename?: 'BlogPost';
-  blogId: Scalars['Uuid']['output'];
-  content: Scalars['String']['output'];
-  metadata: Maybe<Scalars['JSON']['output']>;
-  publisherId: Scalars['Uuid']['output'];
-  title: Scalars['String']['output'];
-};
-
-/** Input type for changePassword mutation */
-export type ChangePasswordInput = {
-  currentPassword: Scalars['String']['input'];
-  newPassword: Scalars['String']['input'];
-};
-
-/** Payload type for changePassword mutation */
-export type ChangePasswordPayload = {
-  __typename?: 'ChangePasswordPayload';
-  user: User;
-};
-
-export type CreateArticleData = {
-  content: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
-/** Input type for createArticle mutation */
-export type CreateArticleInput = {
-  data: CreateArticleData;
-};
-
-/** Payload type for createArticle mutation */
-export type CreateArticlePayload = {
-  __typename?: 'CreateArticlePayload';
-  article: Article;
-};
-
-export type CreateBlogPostData = {
-  blogId: Scalars['Uuid']['input'];
-  content: Scalars['String']['input'];
-  metadata?: InputMaybe<Scalars['JSON']['input']>;
-  publisherId: Scalars['Uuid']['input'];
-  title: Scalars['String']['input'];
-};
-
-/** Input type for createBlogPost mutation */
-export type CreateBlogPostInput = {
-  data: CreateBlogPostData;
-};
-
-/** Payload type for createBlogPost mutation */
-export type CreateBlogPostPayload = {
-  __typename?: 'CreateBlogPostPayload';
-  blogPost: BlogPost;
-};
-
 export type CreateUserData = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+  email?: string | null | undefined;
+  emailVerified?: boolean | null | undefined;
+  name?: string | null | undefined;
 };
 
 /** Input type for createUser mutation */
@@ -117,445 +25,87 @@ export type CreateUserInput = {
   data: CreateUserData;
 };
 
-/** Payload type for createUser mutation */
-export type CreateUserPayload = {
-  __typename?: 'CreateUserPayload';
-  user: User;
-};
-
-/** Input type for deleteBlog mutation */
-export type DeleteBlogInput = {
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for deleteBlog mutation */
-export type DeleteBlogPayload = {
-  __typename?: 'DeleteBlogPayload';
-  blog: Blog;
-};
-
-/** Input type for deleteBlogPost mutation */
-export type DeleteBlogPostInput = {
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for deleteBlogPost mutation */
-export type DeleteBlogPostPayload = {
-  __typename?: 'DeleteBlogPostPayload';
-  blogPost: BlogPost;
-};
-
 /** Input type for deleteUser mutation */
 export type DeleteUserInput = {
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for deleteUser mutation */
-export type DeleteUserPayload = {
-  __typename?: 'DeleteUserPayload';
-  user: User;
-};
-
-/** Payload type for logOut mutation */
-export type LogOutPayload = {
-  __typename?: 'LogOutPayload';
-  /** Whether the logout was successful. */
-  success: Scalars['Boolean']['output'];
+  id: string;
 };
 
 /** Input type for loginWithEmailPassword mutation */
 export type LoginWithEmailPasswordInput = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-};
-
-/** Payload type for loginWithEmailPassword mutation */
-export type LoginWithEmailPasswordPayload = {
-  __typename?: 'LoginWithEmailPasswordPayload';
-  session: UserSessionPayload;
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  changePassword: ChangePasswordPayload;
-  createArticle: CreateArticlePayload;
-  createBlogPost: CreateBlogPostPayload;
-  createUser: CreateUserPayload;
-  deleteBlog: DeleteBlogPayload;
-  deleteBlogPost: DeleteBlogPostPayload;
-  deleteUser: DeleteUserPayload;
-  logOut: LogOutPayload;
-  loginWithEmailPassword: LoginWithEmailPasswordPayload;
-  registerWithEmailPassword: RegisterWithEmailPasswordPayload;
-  requestEmailVerification: RequestEmailVerificationPayload;
-  requestPasswordReset: RequestPasswordResetPayload;
-  resetPasswordWithToken: ResetPasswordWithTokenPayload;
-  resetUserPassword: ResetUserPasswordPayload;
-  updateArticle: UpdateArticlePayload;
-  updateBlog: UpdateBlogPayload;
-  updateBlogPost: UpdateBlogPostPayload;
-  updateUser: UpdateUserPayload;
-  updateUserRoles: UpdateUserRolesPayload;
-  validatePasswordResetToken: ValidatePasswordResetTokenPayload;
-  verifyEmail: VerifyEmailPayload;
-};
-
-
-export type MutationChangePasswordArgs = {
-  input: ChangePasswordInput;
-};
-
-
-export type MutationCreateArticleArgs = {
-  input: CreateArticleInput;
-};
-
-
-export type MutationCreateBlogPostArgs = {
-  input: CreateBlogPostInput;
-};
-
-
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
-};
-
-
-export type MutationDeleteBlogArgs = {
-  input: DeleteBlogInput;
-};
-
-
-export type MutationDeleteBlogPostArgs = {
-  input: DeleteBlogPostInput;
-};
-
-
-export type MutationDeleteUserArgs = {
-  input: DeleteUserInput;
-};
-
-
-export type MutationLoginWithEmailPasswordArgs = {
-  input: LoginWithEmailPasswordInput;
-};
-
-
-export type MutationRegisterWithEmailPasswordArgs = {
-  input: RegisterWithEmailPasswordInput;
-};
-
-
-export type MutationRequestPasswordResetArgs = {
-  input: RequestPasswordResetInput;
-};
-
-
-export type MutationResetPasswordWithTokenArgs = {
-  input: ResetPasswordWithTokenInput;
-};
-
-
-export type MutationResetUserPasswordArgs = {
-  input: ResetUserPasswordInput;
-};
-
-
-export type MutationUpdateArticleArgs = {
-  input: UpdateArticleInput;
-};
-
-
-export type MutationUpdateBlogArgs = {
-  input: UpdateBlogInput;
-};
-
-
-export type MutationUpdateBlogPostArgs = {
-  input: UpdateBlogPostInput;
-};
-
-
-export type MutationUpdateUserArgs = {
-  input: UpdateUserInput;
-};
-
-
-export type MutationUpdateUserRolesArgs = {
-  input: UpdateUserRolesInput;
-};
-
-
-export type MutationValidatePasswordResetTokenArgs = {
-  input: ValidatePasswordResetTokenInput;
-};
-
-
-export type MutationVerifyEmailArgs = {
-  input: VerifyEmailInput;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  article: Article;
-  articles: Array<Article>;
-  blog: Blog;
-  blogPost: BlogPost;
-  blogPosts: Array<BlogPost>;
-  blogs: Array<Blog>;
-  /** Get the current user session */
-  currentUserSession: Maybe<UserSessionPayload>;
-  user: User;
-  users: Array<User>;
-  /** The currently authenticated user */
-  viewer: Maybe<User>;
-};
-
-
-export type QueryArticleArgs = {
-  id: Scalars['Uuid']['input'];
-};
-
-
-export type QueryArticlesArgs = {
-  skip: InputMaybe<Scalars['Int']['input']>;
-  take: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryBlogArgs = {
-  id: Scalars['Uuid']['input'];
-};
-
-
-export type QueryBlogPostArgs = {
-  id: Scalars['Uuid']['input'];
-};
-
-
-export type QueryBlogPostsArgs = {
-  skip: InputMaybe<Scalars['Int']['input']>;
-  take: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryBlogsArgs = {
-  skip: InputMaybe<Scalars['Int']['input']>;
-  take: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['Uuid']['input'];
-};
-
-
-export type QueryUsersArgs = {
-  skip: InputMaybe<Scalars['Int']['input']>;
-  take: InputMaybe<Scalars['Int']['input']>;
+  email: string;
+  password: string;
 };
 
 /** Input type for registerWithEmailPassword mutation */
 export type RegisterWithEmailPasswordInput = {
-  email: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  password: Scalars['String']['input'];
-};
-
-/** Payload type for registerWithEmailPassword mutation */
-export type RegisterWithEmailPasswordPayload = {
-  __typename?: 'RegisterWithEmailPasswordPayload';
-  session: UserSessionPayload;
-};
-
-/** Payload type for requestEmailVerification mutation */
-export type RequestEmailVerificationPayload = {
-  __typename?: 'RequestEmailVerificationPayload';
-  success: Scalars['Boolean']['output'];
+  email: string;
+  name?: string | null | undefined;
+  password: string;
 };
 
 /** Input type for requestPasswordReset mutation */
 export type RequestPasswordResetInput = {
-  email: Scalars['String']['input'];
-};
-
-/** Payload type for requestPasswordReset mutation */
-export type RequestPasswordResetPayload = {
-  __typename?: 'RequestPasswordResetPayload';
-  success: Scalars['Boolean']['output'];
+  email: string;
 };
 
 /** Input type for resetPasswordWithToken mutation */
 export type ResetPasswordWithTokenInput = {
-  newPassword: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
-/** Payload type for resetPasswordWithToken mutation */
-export type ResetPasswordWithTokenPayload = {
-  __typename?: 'ResetPasswordWithTokenPayload';
-  success: Scalars['Boolean']['output'];
+  newPassword: string;
+  token: string;
 };
 
 /** Input type for resetUserPassword mutation */
 export type ResetUserPasswordInput = {
-  newPassword: Scalars['String']['input'];
-  userId: Scalars['Uuid']['input'];
-};
-
-/** Payload type for resetUserPassword mutation */
-export type ResetUserPasswordPayload = {
-  __typename?: 'ResetUserPasswordPayload';
-  user: User;
-};
-
-export type UpdateArticleData = {
-  content?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Input type for updateArticle mutation */
-export type UpdateArticleInput = {
-  data: UpdateArticleData;
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for updateArticle mutation */
-export type UpdateArticlePayload = {
-  __typename?: 'UpdateArticlePayload';
-  article: Article;
-};
-
-export type UpdateBlogData = {
-  name?: InputMaybe<Scalars['String']['input']>;
-  userId?: InputMaybe<Scalars['Uuid']['input']>;
-};
-
-/** Input type for updateBlog mutation */
-export type UpdateBlogInput = {
-  data: UpdateBlogData;
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for updateBlog mutation */
-export type UpdateBlogPayload = {
-  __typename?: 'UpdateBlogPayload';
-  blog: Blog;
-};
-
-export type UpdateBlogPostData = {
-  blogId?: InputMaybe<Scalars['Uuid']['input']>;
-  content?: InputMaybe<Scalars['String']['input']>;
-  metadata?: InputMaybe<Scalars['JSON']['input']>;
-  publisherId?: InputMaybe<Scalars['Uuid']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** Input type for updateBlogPost mutation */
-export type UpdateBlogPostInput = {
-  data: UpdateBlogPostData;
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for updateBlogPost mutation */
-export type UpdateBlogPostPayload = {
-  __typename?: 'UpdateBlogPostPayload';
-  blogPost: BlogPost;
+  newPassword: string;
+  userId: string;
 };
 
 export type UpdateUserData = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  phone?: InputMaybe<Scalars['String']['input']>;
+  email?: string | null | undefined;
+  emailVerified?: boolean | null | undefined;
+  name?: string | null | undefined;
+  phone?: string | null | undefined;
 };
 
 /** Input type for updateUser mutation */
 export type UpdateUserInput = {
   data: UpdateUserData;
-  id: Scalars['Uuid']['input'];
-};
-
-/** Payload type for updateUser mutation */
-export type UpdateUserPayload = {
-  __typename?: 'UpdateUserPayload';
-  user: User;
+  id: string;
 };
 
 /** Input type for updateUserRoles mutation */
 export type UpdateUserRolesInput = {
-  roles: Array<Scalars['String']['input']>;
-  userId: Scalars['Uuid']['input'];
-};
-
-/** Payload type for updateUserRoles mutation */
-export type UpdateUserRolesPayload = {
-  __typename?: 'UpdateUserRolesPayload';
-  user: User;
-};
-
-export type User = {
-  __typename?: 'User';
-  email: Maybe<Scalars['String']['output']>;
-  emailVerified: Scalars['Boolean']['output'];
-  id: Scalars['ID']['output'];
-  name: Maybe<Scalars['String']['output']>;
-  roles: Array<UserRole>;
-};
-
-export type UserRole = {
-  __typename?: 'UserRole';
-  role: Scalars['String']['output'];
-  userId: Scalars['Uuid']['output'];
-};
-
-export type UserSessionPayload = {
-  __typename?: 'UserSessionPayload';
-  expiresAt: Maybe<Scalars['DateTime']['output']>;
-  roles: Array<AuthRole>;
-  user: User;
-  userId: Scalars['Uuid']['output'];
+  roles: Array<string>;
+  userId: string;
 };
 
 /** Input type for validatePasswordResetToken mutation */
 export type ValidatePasswordResetTokenInput = {
-  token: Scalars['String']['input'];
-};
-
-/** Payload type for validatePasswordResetToken mutation */
-export type ValidatePasswordResetTokenPayload = {
-  __typename?: 'ValidatePasswordResetTokenPayload';
-  success: Scalars['Boolean']['output'];
+  token: string;
 };
 
 /** Input type for verifyEmail mutation */
 export type VerifyEmailInput = {
-  token: Scalars['String']['input'];
-};
-
-/** Payload type for verifyEmail mutation */
-export type VerifyEmailPayload = {
-  __typename?: 'VerifyEmailPayload';
-  success: Scalars['Boolean']['output'];
+  token: string;
 };
 
 export type CurrentUserSessionQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserSessionQuery = { __typename?: 'Query', currentUserSession: { __typename?: 'UserSessionPayload', userId: string, roles: Array<AuthRole> } | null };
+export type CurrentUserSessionQuery = { currentUserSession: { userId: string, roles: Array<AuthRole> } | null };
 
 export type LogOutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LogOutMutation = { __typename?: 'Mutation', logOut: { __typename?: 'LogOutPayload', success: boolean } };
+export type LogOutMutation = { logOut: { success: boolean } };
 
 export type UserEditPageQueryVariables = Exact<{
-  id: Scalars['Uuid']['input'];
+  id: string;
 }>;
 
 
-export type UserEditPageQuery = { __typename?: 'Query', user: (
-    { __typename?: 'User', id: string, name: string | null }
+export type UserEditPageQuery = { user: (
+    { id: string, name: string | null }
     & { ' $fragmentRefs'?: { 'UserEditForm_DefaultValuesFragment': UserEditForm_DefaultValuesFragment } }
   ) };
 
@@ -564,115 +114,106 @@ export type UserEditPageUpdateMutationVariables = Exact<{
 }>;
 
 
-export type UserEditPageUpdateMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UpdateUserPayload', user: (
-      { __typename?: 'User', id: string, name: string | null }
+export type UserEditPageUpdateMutation = { updateUser: { user: (
+      { id: string, name: string | null }
       & { ' $fragmentRefs'?: { 'UserEditForm_DefaultValuesFragment': UserEditForm_DefaultValuesFragment } }
     ) } };
 
-export type PasswordResetDialog_UserFragment = { __typename?: 'User', id: string, name: string | null, email: string | null } & { ' $fragmentName'?: 'PasswordResetDialog_UserFragment' };
+export type PasswordResetDialog_UserFragment = { id: string, name: string | null, email: string | null } & { ' $fragmentName'?: 'PasswordResetDialog_UserFragment' };
 
 export type ResetUserPasswordMutationVariables = Exact<{
   input: ResetUserPasswordInput;
 }>;
 
 
-export type ResetUserPasswordMutation = { __typename?: 'Mutation', resetUserPassword: { __typename?: 'ResetUserPasswordPayload', user: (
-      { __typename?: 'User' }
-      & { ' $fragmentRefs'?: { 'PasswordResetDialog_UserFragment': PasswordResetDialog_UserFragment } }
-    ) } };
+export type ResetUserPasswordMutation = { resetUserPassword: { user: { ' $fragmentRefs'?: { 'PasswordResetDialog_UserFragment': PasswordResetDialog_UserFragment } } } };
 
-export type RoleManagerDialog_UserFragment = { __typename?: 'User', id: string, name: string | null, email: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> } & { ' $fragmentName'?: 'RoleManagerDialog_UserFragment' };
+export type RoleManagerDialog_UserFragment = { id: string, name: string | null, email: string | null, roles: Array<{ role: string }> } & { ' $fragmentName'?: 'RoleManagerDialog_UserFragment' };
 
 export type UpdateUserRolesMutationVariables = Exact<{
   input: UpdateUserRolesInput;
 }>;
 
 
-export type UpdateUserRolesMutation = { __typename?: 'Mutation', updateUserRoles: { __typename?: 'UpdateUserRolesPayload', user: (
-      { __typename?: 'User' }
-      & { ' $fragmentRefs'?: { 'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } }
-    ) } };
+export type UpdateUserRolesMutation = { updateUserRoles: { user: { ' $fragmentRefs'?: { 'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } } } };
 
-export type UserEditForm_DefaultValuesFragment = { __typename?: 'User', email: string | null, id: string, name: string | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
+export type UserEditForm_DefaultValuesFragment = { email: string | null, id: string, name: string | null } & { ' $fragmentName'?: 'UserEditForm_DefaultValuesFragment' };
 
 export type UserListPageDeleteUserMutationVariables = Exact<{
   input: DeleteUserInput;
 }>;
 
 
-export type UserListPageDeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'DeleteUserPayload', user: { __typename?: 'User', id: string, name: string | null } } };
+export type UserListPageDeleteUserMutation = { deleteUser: { user: { id: string, name: string | null } } };
 
 export type UserTable_ItemsFragment = (
-  { __typename?: 'User', email: string | null, id: string, name: string | null, roles: Array<{ __typename?: 'UserRole', role: string }> }
+  { email: string | null, id: string, name: string | null, roles: Array<{ role: string }> }
   & { ' $fragmentRefs'?: { 'PasswordResetDialog_UserFragment': PasswordResetDialog_UserFragment;'RoleManagerDialog_UserFragment': RoleManagerDialog_UserFragment } }
 ) & { ' $fragmentName'?: 'UserTable_ItemsFragment' };
 
 export type UserListPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UserListPageQuery = { __typename?: 'Query', users: Array<(
-    { __typename?: 'User' }
-    & { ' $fragmentRefs'?: { 'UserTable_ItemsFragment': UserTable_ItemsFragment } }
-  )> };
+export type UserListPageQuery = { users: Array<{ ' $fragmentRefs'?: { 'UserTable_ItemsFragment': UserTable_ItemsFragment } }> };
 
 export type UserCreatePageCreateMutationVariables = Exact<{
   input: CreateUserInput;
 }>;
 
 
-export type UserCreatePageCreateMutation = { __typename?: 'Mutation', createUser: { __typename?: 'CreateUserPayload', user: { __typename?: 'User', id: string } } };
+export type UserCreatePageCreateMutation = { createUser: { user: { id: string } } };
 
 export type HomePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HomePageQuery = { __typename?: 'Query', viewer: { __typename?: 'User', id: string, email: string | null } | null };
+export type HomePageQuery = { viewer: { id: string, email: string | null } | null };
 
 export type RequestPasswordResetMutationVariables = Exact<{
   input: RequestPasswordResetInput;
 }>;
 
 
-export type RequestPasswordResetMutation = { __typename?: 'Mutation', requestPasswordReset: { __typename?: 'RequestPasswordResetPayload', success: boolean } };
+export type RequestPasswordResetMutation = { requestPasswordReset: { success: boolean } };
 
 export type LoginWithEmailPasswordMutationVariables = Exact<{
   input: LoginWithEmailPasswordInput;
 }>;
 
 
-export type LoginWithEmailPasswordMutation = { __typename?: 'Mutation', loginWithEmailPassword: { __typename?: 'LoginWithEmailPasswordPayload', session: { __typename?: 'UserSessionPayload', userId: string } } };
+export type LoginWithEmailPasswordMutation = { loginWithEmailPassword: { session: { userId: string } } };
 
 export type RegisterWithEmailPasswordMutationVariables = Exact<{
   input: RegisterWithEmailPasswordInput;
 }>;
 
 
-export type RegisterWithEmailPasswordMutation = { __typename?: 'Mutation', registerWithEmailPassword: { __typename?: 'RegisterWithEmailPasswordPayload', session: { __typename?: 'UserSessionPayload', userId: string } } };
+export type RegisterWithEmailPasswordMutation = { registerWithEmailPassword: { session: { userId: string } } };
 
 export type ValidatePasswordResetTokenMutationVariables = Exact<{
   input: ValidatePasswordResetTokenInput;
 }>;
 
 
-export type ValidatePasswordResetTokenMutation = { __typename?: 'Mutation', validatePasswordResetToken: { __typename?: 'ValidatePasswordResetTokenPayload', success: boolean } };
+export type ValidatePasswordResetTokenMutation = { validatePasswordResetToken: { success: boolean } };
 
 export type ResetPasswordWithTokenMutationVariables = Exact<{
   input: ResetPasswordWithTokenInput;
 }>;
 
 
-export type ResetPasswordWithTokenMutation = { __typename?: 'Mutation', resetPasswordWithToken: { __typename?: 'ResetPasswordWithTokenPayload', success: boolean } };
+export type ResetPasswordWithTokenMutation = { resetPasswordWithToken: { success: boolean } };
 
 export type VerifyEmailMutationVariables = Exact<{
   input: VerifyEmailInput;
 }>;
 
 
-export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'VerifyEmailPayload', success: boolean } };
+export type VerifyEmailMutation = { verifyEmail: { success: boolean } };
 
 export type RequestEmailVerificationMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RequestEmailVerificationMutation = { __typename?: 'Mutation', requestEmailVerification: { __typename?: 'RequestEmailVerificationPayload', success: boolean } };
+export type RequestEmailVerificationMutation = { requestEmailVerification: { success: boolean } };
 
 export const UserEditForm_DefaultValuesFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserEditForm_defaultValues"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<UserEditForm_DefaultValuesFragment, unknown>;
 export const PasswordResetDialog_UserFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PasswordResetDialog_user"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PasswordResetDialog_UserFragment, unknown>;

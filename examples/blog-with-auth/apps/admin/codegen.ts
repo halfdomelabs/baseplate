@@ -13,14 +13,7 @@ const config: CodegenConfig = {
       },
       config: {
         useTypeImports: true,
-        enumsAsTypes: true,
         strictScalars: true,
-        avoidOptionals: {
-          field: true,
-          object: true,
-          inputValue: false,
-          defaultValue: false,
-        },
         scalars: /* TPL_SCALARS:START */ {
           DateTime: 'string',
           Date: 'string',
@@ -30,14 +23,6 @@ const config: CodegenConfig = {
         } /* TPL_SCALARS:END */,
       },
     },
-  },
-  hooks: {
-    // Workaround for https://github.com/dotansimha/graphql-code-generator/issues/4900
-    // graphql-codegen emits `import * as types` in gql.ts even when there are no documents,
-    // causing a TypeScript error with noUnusedLocals.
-    afterAllFileWrite: [
-      String.raw`grep -q '_Unused' src/gql/gql.ts || printf '\n// @ts-ignore\ntype _Unused = typeof types;\n' >> src/gql/gql.ts`,
-    ],
   },
 };
 
