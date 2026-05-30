@@ -79,20 +79,31 @@ export class RootPackageCompiler extends PackageCompiler {
     const tasks = context.compilers.map((compiler) => compiler.getTasks());
     const sortedUniq = (items: string[]): string[] =>
       uniq(items).sort(compareStrings);
+    const allPrebuildTasks = tasks.flatMap((task) => task.prebuild);
+    const uniquePrebuildTasks = [
+      ...new Map(allPrebuildTasks.map((t) => [t.name, t])).values(),
+    ];
     const mergedTasks = {
+      prebuild: uniquePrebuildTasks,
       build: sortedUniq(tasks.flatMap((task) => task.build)),
       check: sortedUniq(tasks.flatMap((task) => task.check)),
       dev: sortedUniq(tasks.flatMap((task) => task.dev)),
       watch: sortedUniq(tasks.flatMap((task) => task.watch)),
     };
+    const prebuildTaskNames = mergedTasks.prebuild.map((t) => t.name);
     const turboTasks = [
       ...mergedTasks.dev.map((task) => ({
         name: task,
         persistent: true,
         cache: false,
       })),
+      ...mergedTasks.prebuild.map((task) => ({
+        name: task.name,
+        inputs: task.inputs,
+        outputs: task.outputs,
+      })),
       ...mergedTasks.build.map((task) => ({
-        dependsOn: ['^build'],
+        dependsOn: ['^build', ...prebuildTaskNames],
         inputs: ['$TURBO_DEFAULT$', '!README.md', '!**/*.test.ts'],
         outputs: ['build/**', 'dist/**', '.next/**', '!.next/cache/**'],
         name: task,
@@ -103,9 +114,20 @@ export class RootPackageCompiler extends PackageCompiler {
         persistent: true,
         cache: false,
       })),
-      { name: 'typecheck' },
-      { name: 'lint', dependsOn: ['^build'], outputLogs: 'new-only' },
-      { name: 'test', dependsOn: ['^build'], outputLogs: 'errors-only' },
+      {
+        name: 'typecheck',
+        ...(prebuildTaskNames.length > 0
+          ? { dependsOn: prebuildTaskNames }
+          : {}),
+      },
+      {
+        name: 'lint',
+        dependsOn: ['^build', ...prebuildTaskNames],
+      },
+      {
+        name: 'test',
+        dependsOn: ['^build', ...prebuildTaskNames],
+      },
       { name: 'prettier:check' },
       { name: 'prettier:check:root' },
       { name: 'prettier:write', cache: false },
