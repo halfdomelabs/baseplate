@@ -201,7 +201,14 @@ export const oxlintConfigBase = {
     'unicorn/error-message': 'error',
     'unicorn/escape-case': 'error',
     'unicorn/explicit-length-check': 'error',
-    'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+    // Support kebab case with - prefix to support ignored files in routes and $ prefix for Tanstack camelCase files.
+    'unicorn/filename-case': [
+      'error',
+      {
+        case: 'kebabCase',
+        ignore: String.raw`^(-[a-z0-9\-\.]+|\$[a-zA-Z0-9\.]+)$`,
+      },
+    ],
     'unicorn/new-for-builtins': 'error',
     'unicorn/no-abusive-eslint-disable': 'error',
     'unicorn/no-anonymous-default-export': 'error',
