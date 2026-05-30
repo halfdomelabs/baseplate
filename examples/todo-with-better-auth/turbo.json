@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "gql:generate"],
+      "dependsOn": ["^build", "prisma:generate", "gql:generate"],
       "inputs": ["$TURBO_DEFAULT$", "!README.md", "!**/*.test.ts"],
       "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
       "persistent": false
@@ -16,7 +16,7 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "prisma:generate", "gql:generate"]
     },
     "prettier:check": {},
     "prettier:check:root": {},
@@ -27,9 +27,11 @@
       "cache": false
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "prisma:generate", "gql:generate"]
     },
-    "typecheck": {},
+    "typecheck": {
+      "dependsOn": ["prisma:generate", "gql:generate"]
+    },
     "watch": {
       "cache": false,
       "persistent": true
@@ -42,6 +44,10 @@
         "$TURBO_ROOT$/apps/backend/schema.graphql"
       ],
       "outputs": ["src/gql/**"]
+    },
+    "prisma:generate": {
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["src/generated/prisma/**"]
     }
   }
 }

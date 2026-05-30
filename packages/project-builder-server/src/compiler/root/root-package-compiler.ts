@@ -1,5 +1,6 @@
 import type {
   PackageCompilerContext,
+  PrebuildTask,
   ProjectDefinition,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -80,9 +81,17 @@ export class RootPackageCompiler extends PackageCompiler {
     const sortedUniq = (items: string[]): string[] =>
       uniq(items).sort(compareStrings);
     const allPrebuildTasks = tasks.flatMap((task) => task.prebuild);
-    const uniquePrebuildTasks = [
-      ...new Map(allPrebuildTasks.map((t) => [t.name, t])).values(),
-    ];
+    const prebuildTaskMap = new Map<string, PrebuildTask>();
+    for (const task of allPrebuildTasks) {
+      const existing = prebuildTaskMap.get(task.name);
+      if (existing) {
+        throw new Error(
+          `Duplicate prebuild task "${task.name}" defined by multiple compilers`,
+        );
+      }
+      prebuildTaskMap.set(task.name, task);
+    }
+    const uniquePrebuildTasks = [...prebuildTaskMap.values()];
     const mergedTasks = {
       prebuild: uniquePrebuildTasks,
       build: sortedUniq(tasks.flatMap((task) => task.build)),
