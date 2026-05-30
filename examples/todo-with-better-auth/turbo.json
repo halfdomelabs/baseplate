@@ -7,35 +7,7 @@
       "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
       "persistent": false
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "gql:watch": {
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^build", "prisma:generate", "gql:generate"]
-    },
-    "prettier:check": {},
-    "prettier:check:root": {},
-    "prettier:write": {
-      "cache": false
-    },
-    "prettier:write:root": {
-      "cache": false
-    },
-    "test": {
-      "dependsOn": ["^build", "prisma:generate", "gql:generate"]
-    },
-    "typecheck": {
-      "dependsOn": ["prisma:generate", "gql:generate"]
-    },
-    "watch": {
-      "cache": false,
-      "persistent": true
-    },
+    "dev": { "cache": false, "persistent": true },
     "gql:generate": {
       "inputs": [
         "src/**/*.ts",
@@ -45,9 +17,18 @@
       ],
       "outputs": ["src/gql/**"]
     },
+    "gql:watch": { "cache": false, "persistent": true },
+    "lint": { "dependsOn": ["^build", "prisma:generate", "gql:generate"] },
+    "prettier:check": {},
+    "prettier:check:root": {},
+    "prettier:write": { "cache": false },
+    "prettier:write:root": { "cache": false },
     "prisma:generate": {
       "inputs": ["prisma/schema.prisma"],
       "outputs": ["src/generated/prisma/**"]
-    }
+    },
+    "test": { "dependsOn": ["^build", "prisma:generate", "gql:generate"] },
+    "typecheck": { "dependsOn": ["prisma:generate", "gql:generate"] },
+    "watch": { "cache": false, "persistent": true }
   }
 }
