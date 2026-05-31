@@ -27,13 +27,21 @@ export type Scalars = {
 };
 
 export type BillingSubscriptionStatus =
+  /** Subscription is active and billing normally */
   | 'ACTIVE'
+  /** Subscription has been canceled */
   | 'CANCELED'
+  /** Initial payment attempt failed when creating the subscription */
   | 'INCOMPLETE'
+  /** First invoice was not paid within the allowed time period */
   | 'INCOMPLETE_EXPIRED'
+  /** Payment failed but the subscription has not been canceled yet */
   | 'PAST_DUE'
+  /** Subscription has been temporarily paused */
   | 'PAUSED'
+  /** Subscription is in a free trial period */
   | 'TRIALING'
+  /** Payment retries have been exhausted and the subscription remains unpaid */
   | 'UNPAID';
 
 /** Input type for createPresignedDownloadUrl mutation */
