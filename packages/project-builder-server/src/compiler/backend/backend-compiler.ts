@@ -55,6 +55,13 @@ export class BackendPackageCompiler extends AppCompiler<BackendAppConfig> {
 
   getTasks(): PackageTasks {
     return {
+      prebuild: [
+        {
+          name: 'prisma:generate',
+          inputs: ['prisma/schema.prisma'],
+          outputs: ['src/generated/prisma/**'],
+        },
+      ],
       build: ['build'],
       check: ['lint', 'typecheck', 'test', 'prettier:check'],
       dev: ['dev'],

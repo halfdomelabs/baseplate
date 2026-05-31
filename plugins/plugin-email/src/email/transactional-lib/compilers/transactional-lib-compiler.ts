@@ -62,6 +62,7 @@ class TransactionalLibPackageCompiler extends LibraryCompiler<BaseLibraryDefinit
 
   getTasks(): PackageTasks {
     return {
+      prebuild: [],
       build: ['build'],
       check: ['lint', 'typecheck', 'test', 'prettier:check'],
       dev: ['watch'],
