@@ -1,6 +1,7 @@
 {
   "extends": "@baseplate-dev/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "noEmit": true,
     "sourceMap": false,
     "declaration": false,
