@@ -38,11 +38,11 @@ export const REACT_PACKAGES = {
 
   // GraphQL
   '@apollo/client': '4.0.11',
-  graphql: '16.11.0',
+  graphql: '16.14.0',
   'graphql-ws': '5.16.0',
   rxjs: '7.8.2',
-  '@graphql-codegen/cli': '6.1.3',
-  '@graphql-codegen/client-preset': '5.2.4',
+  '@graphql-codegen/cli': '7.1.0',
+  '@graphql-codegen/client-preset': '6.0.1',
   '@graphql-typed-document-node/core': '3.2.0',
   '@graphql-eslint/eslint-plugin': '4.4.0',
   '@parcel/watcher': '2.5.6',
