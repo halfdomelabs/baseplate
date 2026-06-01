@@ -50,7 +50,7 @@ export const FASTIFY_PACKAGES = {
 
   // Compilation
   'tsc-alias': '1.8.10',
-  tsx: '4.20.6',
+  tsx: '4.22.3',
   '@types/node': `^22.0.0`,
 
   // Redis
