@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "@playwright/test": "1.56.1",
+    "@playwright/test": "1.60.0",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "fastify": "^5.8.5",

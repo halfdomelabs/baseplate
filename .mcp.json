@@ -1,5 +1,20 @@
 {
   "mcpServers": {
+    "playwright-test": {
+      "command": "mise",
+      "args": [
+        "exec",
+        "-C",
+        "packages/project-builder-cli",
+        "--",
+        "pnpm",
+        "--silent",
+        "playwright",
+        "run-test-mcp-server",
+        "-c",
+        "playwright.config.ts"
+      ]
+    },
     "baseplate-dev-server": {
       "command": "mise",
       "args": ["exec", "--", "pnpm", "--silent", "start", "mcp"]
