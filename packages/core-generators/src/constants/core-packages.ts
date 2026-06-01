@@ -29,7 +29,7 @@ export const CORE_PACKAGES = {
   'vite-tsconfig-paths': '5.1.4',
 
   // Utils
-  axios: '1.15.2',
+  axios: '1.16.1',
 
   // Monorepo
   turbo: '2.9.15',
