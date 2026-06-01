@@ -40,6 +40,7 @@ export interface CoreReactComponentsPaths {
   navigationMenu: string;
   notFoundCard: string;
   popover: string;
+  radioGroup: string;
   scrollArea: string;
   select: string;
   selectField: string;
@@ -117,6 +118,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           navigationMenu: `${componentsRoot}/ui/navigation-menu.tsx`,
           notFoundCard: `${componentsRoot}/ui/not-found-card.tsx`,
           popover: `${componentsRoot}/ui/popover.tsx`,
+          radioGroup: `${componentsRoot}/ui/radio-group.tsx`,
           scrollArea: `${componentsRoot}/ui/scroll-area.tsx`,
           select: `${componentsRoot}/ui/select.tsx`,
           selectField: `${componentsRoot}/ui/select-field.tsx`,

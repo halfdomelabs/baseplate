@@ -641,6 +641,15 @@
       "sourceFile": "components/ui/popover.tsx",
       "variables": {}
     },
+    "radio-group": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/radio-group.tsx",
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/radio-group.tsx",
+      "variables": {}
+    },
     "scroll-area": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

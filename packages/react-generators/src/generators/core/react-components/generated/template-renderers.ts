@@ -1,4 +1,7 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -25,6 +28,16 @@ export interface CoreReactComponentsRenderers {
           typeof CORE_REACT_COMPONENTS_TEMPLATES.hooksGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  radioGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_REACT_COMPONENTS_TEMPLATES.radioGroup
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -81,6 +94,15 @@ const coreReactComponentsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_REACT_COMPONENTS_TEMPLATES.hooksGroup,
                 paths,
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          radioGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_COMPONENTS_TEMPLATES.radioGroup,
+                destination: paths.radioGroup,
                 generatorPaths: paths,
                 ...options,
               }),

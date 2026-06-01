@@ -1122,6 +1122,20 @@ export const hooksGroup = {
   useMobile,
 };
 
+const radioGroup = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'radio-group',
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/radio-group.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const stylesButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'styles',
@@ -1210,6 +1224,7 @@ export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
+  radioGroup,
   stylesGroup,
   utilsGroup,
 };
