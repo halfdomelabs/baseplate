@@ -47,6 +47,7 @@ import {
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
 import { PRISMA_PRISMA_GENERATED } from './generated/index.js';
 import { prismaImportsProvider } from './generated/ts-import-providers.js';
+import { prismaMergeAlgorithm } from './prisma-merge-algorithm.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),
@@ -325,6 +326,9 @@ export const prismaGenerator = createGenerator({
               id: 'prisma-schema',
               destination: 'prisma/schema.prisma',
               contents: `${formattedSchemaText.trimEnd()}\n`,
+              options: {
+                mergeAlgorithms: [prismaMergeAlgorithm],
+              },
             });
 
             builder.addPostWriteCommand('pnpm prisma generate', {

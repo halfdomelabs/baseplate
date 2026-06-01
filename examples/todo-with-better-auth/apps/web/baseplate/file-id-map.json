@@ -66,6 +66,7 @@
   "@baseplate-dev/react-generators#core/react-components:navigation-menu": "src/components/ui/navigation-menu.tsx",
   "@baseplate-dev/react-generators#core/react-components:not-found-card": "src/components/ui/not-found-card.tsx",
   "@baseplate-dev/react-generators#core/react-components:popover": "src/components/ui/popover.tsx",
+  "@baseplate-dev/react-generators#core/react-components:radio-group": "src/components/ui/radio-group.tsx",
   "@baseplate-dev/react-generators#core/react-components:scroll-area": "src/components/ui/scroll-area.tsx",
   "@baseplate-dev/react-generators#core/react-components:select": "src/components/ui/select.tsx",
   "@baseplate-dev/react-generators#core/react-components:select-field": "src/components/ui/select-field.tsx",

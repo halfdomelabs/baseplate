@@ -1,30 +1,31 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 // oxlint-disable typescript/no-explicit-any
 
-type FunctionType<T extends (...args: any[]) => any> = (
-  ...args: Parameters<T>
-) => ReturnType<T>;
+export function useEventCallback<Args extends any[], R>(
+  fn: (...args: Args) => R,
+): (...args: Args) => R;
+export function useEventCallback<Args extends any[], R>(
+  fn: ((...args: Args) => R) | undefined,
+): ((...args: Args) => R) | undefined;
+export function useEventCallback<Args extends any[], R>(
+  fn: ((...args: Args) => R) | undefined,
+): ((...args: Args) => R) | undefined {
+  const ref = useRef<((...args: Args) => R) | undefined>(() => {
+    throw new Error('Cannot call an event handler while rendering.');
+  });
 
-export function useEventCallback<T extends (...args: any[]) => any>(fn: T): T;
-export function useEventCallback<T extends (...args: any[]) => any>(
-  fn: T | undefined,
-): T | undefined;
-export function useEventCallback<T extends (...args: any[]) => any>(
-  fn: FunctionType<T> | undefined,
-): FunctionType<T> | undefined {
-  const ref = useRef<FunctionType<T> | undefined>(fn);
-
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so the ref is updated synchronously before
+  // the browser paints — closing the stale-closure window that useEffect leaves
+  // open between render commit and the async effect flush.
+  useLayoutEffect(() => {
     ref.current = fn;
   }, [fn]);
 
-  return useMemo(() => {
-    const { current } = ref;
-    if (!current) {
-      return;
-    }
-    // oxlint-disable-next-line typescript/no-unsafe-return -- safe to return the function
-    return (...args) => current(...args);
-  }, []);
+  const callback = useCallback(
+    (...args: Args) => ref.current?.(...args) as R,
+    [ref],
+  );
+
+  return fn ? callback : undefined;
 }
