@@ -158,6 +158,8 @@ export default {
     'tailwindcss',
     // Needed for correct typings
     '@baseplate-dev/utils',
+    // Used for agentic testing
+    '@playwright/cli',
   ],
   // Enable parsing of CSS
   compilers: {
