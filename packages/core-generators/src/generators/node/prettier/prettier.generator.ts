@@ -6,6 +6,7 @@ import {
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
 import { notEmpty } from '@baseplate-dev/utils';
 import {
@@ -167,6 +168,7 @@ export const prettierGenerator = createGenerator({
           },
           build: (builder) => {
             let prettierModulePromise: Promise<PrettierModule> | undefined;
+            let hasLoggedFormatError = false;
             let prettierConfigPromise:
               | Promise<
                   Omit<PrettierConfig, 'plugins'> & {
@@ -192,7 +194,7 @@ export const prettierGenerator = createGenerator({
                 );
                 if (!result) {
                   logger.info(
-                    'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
+                    'Could not find prettier library. Falling back to in-built version. Files will be re-formatted after dependencies are installed.',
                   );
                   // use the in-built version of prettier
                   return prettier;
@@ -221,7 +223,7 @@ export const prettierGenerator = createGenerator({
 
                     if (!resolvedModule) {
                       logger.info(
-                        `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
+                        `Could not resolve prettier plugin ${plugin.name}. Files will be re-formatted after dependencies are installed.`,
                       );
                       return plugin.default;
                     }
@@ -251,9 +253,12 @@ export const prettierGenerator = createGenerator({
                   filepath: fullPath,
                 });
               } catch (err) {
-                logger.error(
-                  `Prettier formatting failed: ${err instanceof Error ? err.message : String(err)}. Falling back to base config without plugins. Run again once dependencies have been installed.`,
-                );
+                if (!hasLoggedFormatError) {
+                  hasLoggedFormatError = true;
+                  logger.info(
+                    `Prettier formatting failed: ${err instanceof Error ? err.message : String(err)}. Falling back to base config without plugins. Files will be re-formatted after dependencies are installed.`,
+                  );
+                }
                 return prettierModule.format(input, {
                   tabWidth: descriptor.tabWidth,
                   singleQuote: descriptor.singleQuote,
@@ -269,6 +274,11 @@ export const prettierGenerator = createGenerator({
               format: formatFunction,
               fileExtensions: [...PARSEABLE_EXTENSIONS],
               fileNames: [...PARSEABLE_FILE_NAMES],
+            });
+
+            builder.addPostWriteCommand('prettier --write .', {
+              priority: POST_WRITE_COMMAND_PRIORITY.FORMATTING,
+              onlyIfChanged: ['.prettierrc'],
             });
 
             node.packages.addDevPackages({

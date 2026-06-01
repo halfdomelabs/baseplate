@@ -16,6 +16,10 @@ export const POST_WRITE_COMMAND_PRIORITY = {
    * Default phase
    */
   DEFAULT: 300,
+  /**
+   * Formatting e.g. prettier --write
+   */
+  FORMATTING: 400,
 };
 
 /**
