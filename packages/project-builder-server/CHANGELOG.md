@@ -1,5 +1,27 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.10
+
+### Patch Changes
+
+- [#891](https://github.com/halfdomelabs/baseplate/pull/891) [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e) Thanks [@kingston](https://github.com/kingston)! - - Add generated GraphQL files (`src/gql/*`) to `.gitignore` in generated projects
+  - Replace Prisma's `postinstall` hook with a cacheable `prisma:generate` Turbo prebuild task
+  - Make `lint`, `typecheck`, and `test` depend on prebuild tasks (`gql:generate`, `prisma:generate`) in Turbo so generated types are available in CI
+
+  **Migration:** After syncing, remove previously tracked generated GraphQL files from git:
+
+  ```sh
+  git rm -r --cached apps/*/src/gql
+  ```
+
+- Updated dependencies [[`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10), [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e), [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`58d7c6b`](https://github.com/halfdomelabs/baseplate/commit/58d7c6bc433021e543e65817bf75582654ad4d42), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`e8da347`](https://github.com/halfdomelabs/baseplate/commit/e8da347b3bd799b31c5d04d1317dedaa8c14e412), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`0c44597`](https://github.com/halfdomelabs/baseplate/commit/0c445971b18d50300c50c8bfb414967df9170c83), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23)]:
+  - @baseplate-dev/sync@0.6.10
+  - @baseplate-dev/core-generators@0.6.10
+  - @baseplate-dev/react-generators@0.6.10
+  - @baseplate-dev/project-builder-lib@0.6.10
+  - @baseplate-dev/fastify-generators@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

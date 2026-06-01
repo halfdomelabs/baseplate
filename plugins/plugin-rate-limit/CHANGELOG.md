@@ -1,5 +1,21 @@
 # @baseplate-dev/plugin-rate-limit
 
+## 0.6.10
+
+### Patch Changes
+
+- [#886](https://github.com/halfdomelabs/baseplate/pull/886) [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759) Thanks [@kingston](https://github.com/kingston)! - Migrate from @originjs/vite-plugin-federation to @module-federation/vite for active maintenance and Vite 7+ peer-range support. As part of this, `@baseplate-dev/project-builder-lib` and `@baseplate-dev/ui-components` now declare `react`, `react-dom`, `zod` (and `@baseplate-dev/ui-components` from project-builder-lib) as peer dependencies — these were already required by consumers but are now explicit, so the federation runtime can dedupe them across host and remotes.
+
+- [#894](https://github.com/halfdomelabs/baseplate/pull/894) [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d) Thanks [@kingston](https://github.com/kingston)! - Add `pluginDefaultsSpec` — a new platform spec that lets a plugin declare how to enable itself with sensible defaults. The setup wizard now invokes each plugin's registered builder instead of trying to enable with `{}`, which previously crashed Zod validation for plugins that require feature refs (rate-limit, storage). Rate-limit auto-scaffolds a `system/rate-limit` feature; storage auto-scaffolds a `storage` feature. Sentry, Stripe, and AI dev-agents register matching builders so the wizard treats every plugin uniformly.
+
+- Updated dependencies [[`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10), [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e), [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`58d7c6b`](https://github.com/halfdomelabs/baseplate/commit/58d7c6bc433021e543e65817bf75582654ad4d42), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`e8da347`](https://github.com/halfdomelabs/baseplate/commit/e8da347b3bd799b31c5d04d1317dedaa8c14e412), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23)]:
+  - @baseplate-dev/sync@0.6.10
+  - @baseplate-dev/core-generators@0.6.10
+  - @baseplate-dev/project-builder-lib@0.6.10
+  - @baseplate-dev/fastify-generators@0.6.10
+  - @baseplate-dev/ui-components@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes
