@@ -37,7 +37,7 @@ describe('safeMergeMap', () => {
     const map1 = new Map([['a', 1]]);
     const map2 = new Map([['a', 2]]);
 
-    expect(() => safeMergeMap(map1, map2)).toThrowError(
+    expect(() => safeMergeMap(map1, map2)).toThrow(
       'Duplicate key found during merge: a',
     );
   });

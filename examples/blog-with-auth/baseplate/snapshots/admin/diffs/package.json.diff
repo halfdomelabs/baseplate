@@ -11,4 +11,4 @@ Index: package.json
      "prettier": "3.8.1",
      "prettier-plugin-packagejson": "3.0.0",
      "prettier-plugin-tailwindcss": "0.7.2",
-     "tailwindcss": "4.1.18",
+     "tailwindcss": "4.3.0",

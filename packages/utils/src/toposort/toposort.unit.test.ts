@@ -168,10 +168,10 @@ describe('toposort', () => {
       ['a', 'a'],
       ['a', 'b'],
     ];
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposort(nodes, edges)).toThrow(
       ToposortCyclicalDependencyError,
     );
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposort(nodes, edges)).toThrow(
       /Cyclical dependency detected: "a" -> "a"/,
     );
 
@@ -189,8 +189,8 @@ describe('toposort', () => {
   it('should throw ToposortUnknownNodeError if edge source is not in nodes', () => {
     const nodes = ['a', 'b'];
     const edges: [string, string][] = [['c', 'a']]; // 'c' is unknown
-    expect(() => toposort(nodes, edges)).toThrowError(ToposortUnknownNodeError);
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposort(nodes, edges)).toThrow(ToposortUnknownNodeError);
+    expect(() => toposort(nodes, edges)).toThrow(
       /Unknown node referenced in edges: "c"/,
     );
 
@@ -208,8 +208,8 @@ describe('toposort', () => {
   it('should throw ToposortUnknownNodeError if edge target is not in nodes', () => {
     const nodes = ['a', 'b'];
     const edges: [string, string][] = [['a', 'c']]; // 'c' is unknown
-    expect(() => toposort(nodes, edges)).toThrowError(ToposortUnknownNodeError);
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposort(nodes, edges)).toThrow(ToposortUnknownNodeError);
+    expect(() => toposort(nodes, edges)).toThrow(
       /Unknown node referenced in edges: "c"/,
     );
 
