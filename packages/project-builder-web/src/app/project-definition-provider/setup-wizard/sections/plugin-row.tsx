@@ -70,7 +70,7 @@ export function PluginRow({
         {icon}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1 text-left">
-        <span className="text-sm font-medium leading-none">{title}</span>
+        <span className="text-sm leading-none font-medium">{title}</span>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       <div

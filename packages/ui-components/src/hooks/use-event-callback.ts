@@ -15,6 +15,9 @@ export function useEventCallback<Args extends any[], R>(
     throw new Error('Cannot call an event handler while rendering.');
   });
 
+  // useLayoutEffect (not useEffect) so the ref is updated synchronously before
+  // the browser paints — closing the stale-closure window that useEffect leaves
+  // open between render commit and the async effect flush.
   useLayoutEffect(() => {
     ref.current = fn;
   }, [fn]);

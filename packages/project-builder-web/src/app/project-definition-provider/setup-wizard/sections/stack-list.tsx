@@ -23,15 +23,16 @@ import {
 
 import type { SetupWizardInput } from '../setup-wizard-schema.js';
 
+import {
+  AUTH_PLUGIN_FQN,
+  DEV_AGENTS_PLUGIN_FQN,
+  EMAIL_PLUGIN_FQN,
+  QUEUE_PLUGIN_FQN,
+  SENTRY_PLUGIN_FQN,
+  STORAGE_PLUGIN_FQN,
+  STRIPE_PLUGIN_FQN,
+} from '../plugin-fqns.js';
 import { PluginRow } from './plugin-row.js';
-
-const AUTH_PLUGIN_FQN = '@baseplate-dev/plugin-auth:auth';
-const EMAIL_PLUGIN_FQN = '@baseplate-dev/plugin-email:email';
-const QUEUE_PLUGIN_FQN = '@baseplate-dev/plugin-queue:queue';
-const STORAGE_PLUGIN_FQN = '@baseplate-dev/plugin-storage:storage';
-const PAYMENTS_PLUGIN_FQN = '@baseplate-dev/plugin-payments:stripe';
-const OBSERVABILITY_PLUGIN_FQN = '@baseplate-dev/plugin-observability:sentry';
-const AI_PLUGIN_FQN = '@baseplate-dev/plugin-ai:dev-agents';
 
 interface ProviderOption<V extends string> {
   value: V;
@@ -183,9 +184,9 @@ export function StackList({
       email: hasPlugin(plugins, EMAIL_PLUGIN_FQN),
       queue: hasPlugin(plugins, QUEUE_PLUGIN_FQN),
       storage: hasPlugin(plugins, STORAGE_PLUGIN_FQN),
-      payments: hasPlugin(plugins, PAYMENTS_PLUGIN_FQN),
-      observability: hasPlugin(plugins, OBSERVABILITY_PLUGIN_FQN),
-      ai: hasPlugin(plugins, AI_PLUGIN_FQN),
+      payments: hasPlugin(plugins, STRIPE_PLUGIN_FQN),
+      observability: hasPlugin(plugins, SENTRY_PLUGIN_FQN),
+      ai: hasPlugin(plugins, DEV_AGENTS_PLUGIN_FQN),
     }),
     [plugins],
   );

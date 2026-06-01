@@ -142,7 +142,7 @@ export function SetupWizard({
     () => {
       const name = watch('name');
       const portOffset = watch('portOffset');
-      void saveBasicsOnly({
+      const fallbackData = setupWizardSchema.parse({
         ...DEFAULT_VALUES,
         name,
         portOffset,
@@ -150,7 +150,8 @@ export function SetupWizard({
         enableEmail: false,
         enableObservability: false,
         enableAi: false,
-      } as SetupWizardData).catch((err: unknown) => {
+      });
+      void saveBasicsOnly(fallbackData).catch((err: unknown) => {
         toast.error(logAndFormatError(err, 'Failed to create project'));
       });
     },

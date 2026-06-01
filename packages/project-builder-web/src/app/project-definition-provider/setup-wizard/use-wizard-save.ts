@@ -22,16 +22,18 @@ import { useCallback } from 'react';
 
 import type { SetupWizardData } from './setup-wizard-schema.js';
 
-const AUTH_PLUGIN_FQN = '@baseplate-dev/plugin-auth:auth';
-const EMAIL_PLUGIN_FQN = '@baseplate-dev/plugin-email:email';
-const QUEUE_PLUGIN_FQN = '@baseplate-dev/plugin-queue:queue';
-const BULLMQ_PLUGIN_FQN = '@baseplate-dev/plugin-queue:bullmq';
-const PG_BOSS_PLUGIN_FQN = '@baseplate-dev/plugin-queue:pg-boss';
-const RATE_LIMIT_PLUGIN_FQN = '@baseplate-dev/plugin-rate-limit:rate-limit';
-const STORAGE_PLUGIN_FQN = '@baseplate-dev/plugin-storage:storage';
-const SENTRY_PLUGIN_FQN = '@baseplate-dev/plugin-observability:sentry';
-const STRIPE_PLUGIN_FQN = '@baseplate-dev/plugin-payments:stripe';
-const DEV_AGENTS_PLUGIN_FQN = '@baseplate-dev/plugin-ai:dev-agents';
+import {
+  AUTH_PLUGIN_FQN,
+  BULLMQ_PLUGIN_FQN,
+  DEV_AGENTS_PLUGIN_FQN,
+  EMAIL_PLUGIN_FQN,
+  PG_BOSS_PLUGIN_FQN,
+  QUEUE_PLUGIN_FQN,
+  RATE_LIMIT_PLUGIN_FQN,
+  SENTRY_PLUGIN_FQN,
+  STORAGE_PLUGIN_FQN,
+  STRIPE_PLUGIN_FQN,
+} from './plugin-fqns.js';
 
 const TRANSACTIONAL_LIB_TYPE = '@baseplate-dev/plugin-email/transactional-lib';
 
@@ -85,7 +87,7 @@ function rebuildContainerWithFreshSchema(
  *
  * The `admin` preset is a web app with `adminApp.enabled = true`.
  */
-function buildInitialApps(
+export function buildInitialApps(
   enabledApps: SetupWizardData['enabledApps'],
   portOffset: number,
 ): AppConfig[] {
@@ -100,9 +102,9 @@ function buildInitialApps(
     apps.push({
       id: appEntityType.generateNewId(),
       name: 'backend',
-      type: 'backend',
+      type: 'backend' as const,
       devPort: portOffset + 1,
-    } as AppConfig);
+    });
   }
 
   for (const webName of webNames) {
@@ -268,6 +270,14 @@ export function useWizardSave({
       // Compute the FQNs we intend to enable so plugin defaults builders can
       // branch on what else is being turned on (e.g. payments deciding whether
       // to enable billing).
+      // Determine queue requirement before building enabledPluginFqns so that
+      // both the FQN set and the inline config block use the same rule.
+      const needsQueue =
+        (data.enableAuth && data.authMethod === 'local-auth') ||
+        data.enableEmail ||
+        data.enableStorage ||
+        data.enableQueue;
+
       const enabledPluginFqns = new Set<string>();
       if (data.enableAuth) {
         enabledPluginFqns.add(AUTH_PLUGIN_FQN);
@@ -282,12 +292,7 @@ export function useWizardSave({
           `@baseplate-dev/plugin-email:${data.emailProvider}`,
         );
       }
-      if (
-        data.enableAuth ||
-        data.enableEmail ||
-        data.enableStorage ||
-        data.enableQueue
-      ) {
+      if (needsQueue) {
         enabledPluginFqns.add(QUEUE_PLUGIN_FQN);
         enabledPluginFqns.add(
           data.queueImplementation === 'bullmq'
@@ -352,8 +357,6 @@ export function useWizardSave({
         // pass). Email and queue still need wizard-form input
         // (`implementationPluginKey`, library auto-create, Redis flag) so they
         // stay inline below.
-        let needsQueue = data.enableAuth && data.authMethod === 'local-auth';
-
         // 3. Configure email if enabled
         if (data.enableEmail) {
           const emailPlugin = findPlugin(plugins, EMAIL_PLUGIN_FQN);
@@ -403,14 +406,12 @@ export function useWizardSave({
                 [(lib) => lib.name],
               );
             }
-
-            needsQueue = true;
           }
         }
 
         // 4. Enable queue with chosen implementation if any feature needs it
         //    or the user explicitly toggled it on.
-        if (needsQueue || data.enableStorage || data.enableQueue) {
+        if (needsQueue) {
           const queueImplFqn =
             data.queueImplementation === 'bullmq'
               ? BULLMQ_PLUGIN_FQN

@@ -141,7 +141,7 @@ export function AppsSection({
               </span>
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium leading-none">
+                  <span className="text-sm leading-none font-medium">
                     {preset.name}
                   </span>
                 </div>
