@@ -16,8 +16,12 @@ function createState(code: string): EditorState {
     doc: code,
     extensions: [javascript()],
   });
-  // Force synchronous parse so the syntax tree is available
-  ensureSyntaxTree(state, code.length, 5000);
+  // Force synchronous parse so the syntax tree is available. ensureSyntaxTree
+  // returns null if the parse exceeds its time budget, which would leave a
+  // partial tree and cause flaky context-resolution failures under load.
+  if (!ensureSyntaxTree(state, code.length, 30_000)) {
+    throw new Error('Syntax tree parse did not complete within budget');
+  }
   return state;
 }
 
