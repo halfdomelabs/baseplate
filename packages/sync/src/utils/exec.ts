@@ -62,6 +62,12 @@ export async function executeCommand(
     all: true,
     cwd: options.cwd,
     env: {
+      // Disable pnpm 10.3+ strictDepBuilds (default true) so `pnpm install` does
+      // not exit non-zero when a freshly generated project has not yet approved
+      // dependency build/postinstall scripts. Only pnpm_config_strict_dep_builds
+      // works (npm_config_* does not); build scripts still stay unrun unless
+      // explicitly approved.
+      pnpm_config_strict_dep_builds: 'false',
       ...pick(process.env, PASSTHROUGH_ENV_VARS),
       ...options.env,
     },
