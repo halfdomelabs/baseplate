@@ -90,8 +90,8 @@ function CollapsibleAppSidebarItem({
                   <SidebarMenuSubButton
                     render={
                       <Link
-                        to="/packages/apps/$key/admin-sections/$section-key"
-                        params={{ key: appKey, 'section-key': sectionKey }}
+                        to="/packages/apps/$key/admin-sections/$sectionKey"
+                        params={{ key: appKey, sectionKey }}
                       />
                     }
                   >

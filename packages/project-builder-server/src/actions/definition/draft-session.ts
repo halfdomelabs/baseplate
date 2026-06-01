@@ -1,8 +1,8 @@
 import type {
   EntityServiceContext,
+  ResolvedZodRefPayload,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
-import type { ResolvedZodRefPayload } from '@baseplate-dev/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { hashWithSHA256, stringifyPrettyStable } from '@baseplate-dev/utils';

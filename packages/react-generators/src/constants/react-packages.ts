@@ -7,16 +7,16 @@ export const REACT_PACKAGES = {
   '@types/node': `^22.0.0`,
   '@types/react': '19.1.3',
   '@types/react-dom': '19.1.3',
-  '@vitejs/plugin-react': '5.0.2',
-  vite: '7.3.2',
+  '@vitejs/plugin-react': '6.0.2',
+  vite: '8.0.14',
   'vite-plugin-svgr': '4.5.0',
   'vite-tsconfig-paths': '5.1.4',
 
   loglevel: '1.9.1',
 
   // Tailwind
-  '@tailwindcss/vite': '4.1.18',
-  tailwindcss: '4.1.18',
+  '@tailwindcss/vite': '4.3.0',
+  tailwindcss: '4.3.0',
   'prettier-plugin-tailwindcss': '0.7.2',
   'tw-animate-css': '1.2.9',
   'tailwind-merge': '3.3.1',
@@ -28,7 +28,7 @@ export const REACT_PACKAGES = {
   'react-icons': '5.5.0',
   zustand: '5.0.3',
   'react-error-boundary': '6.0.0',
-  '@base-ui/react': '1.2.0',
+  '@base-ui/react': '1.4.1',
   'class-variance-authority': '0.7.1',
   sonner: '2.0.3',
 
@@ -38,11 +38,11 @@ export const REACT_PACKAGES = {
 
   // GraphQL
   '@apollo/client': '4.0.11',
-  graphql: '16.11.0',
+  graphql: '16.14.0',
   'graphql-ws': '5.16.0',
   rxjs: '7.8.2',
-  '@graphql-codegen/cli': '6.1.3',
-  '@graphql-codegen/client-preset': '5.2.4',
+  '@graphql-codegen/cli': '7.1.0',
+  '@graphql-codegen/client-preset': '6.0.1',
   '@graphql-typed-document-node/core': '3.2.0',
   '@graphql-eslint/eslint-plugin': '4.4.0',
   '@parcel/watcher': '2.5.6',

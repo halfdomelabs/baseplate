@@ -21,10 +21,17 @@ export interface PackageEntry {
   generatorBundle: GeneratorBundle;
 }
 
+export interface PrebuildTask {
+  name: string;
+  inputs?: string[];
+  outputs?: string[];
+}
+
 /**
  * Tasks for a package used in turbo configuration
  */
 export interface PackageTasks {
+  prebuild: PrebuildTask[];
   build: string[];
   check: string[];
   dev: string[];
@@ -32,6 +39,7 @@ export interface PackageTasks {
 }
 
 export interface PackageCompilerTasks {
+  prebuild: PrebuildTask[];
   build: string[];
   check: string[];
   dev: string[];
@@ -85,6 +93,7 @@ export abstract class PackageCompiler {
    */
   getTasks(): PackageTasks {
     return {
+      prebuild: [],
       build: [],
       check: [],
       dev: [],

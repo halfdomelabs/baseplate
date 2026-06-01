@@ -13,14 +13,7 @@ const config: CodegenConfig = {
       },
       config: {
         useTypeImports: true,
-        enumsAsTypes: true,
         strictScalars: true,
-        avoidOptionals: {
-          field: true,
-          object: true,
-          inputValue: false,
-          defaultValue: false,
-        },
         scalars: /* TPL_SCALARS:START */ {
           DateTime: 'string',
           Date: 'string',
