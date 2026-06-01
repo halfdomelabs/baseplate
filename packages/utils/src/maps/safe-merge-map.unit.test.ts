@@ -35,7 +35,7 @@ describe('safeMergeMap', () => {
       ['c', 4],
     ]);
 
-    expect(() => safeMergeMap(map1, map2)).toThrowError(
+    expect(() => safeMergeMap(map1, map2)).toThrow(
       'Cannot merge key b because it already exists.',
     );
   });
@@ -94,7 +94,7 @@ describe('safeMergeMaps', () => {
       new Map([['b', 2]]),
       new Map([['b', 3]]),
     ];
-    expect(() => safeMergeMaps(...maps)).toThrowError(
+    expect(() => safeMergeMaps(...maps)).toThrow(
       'Cannot merge key b because it already exists.',
     );
   });

@@ -16,7 +16,7 @@ describe('safeMerge', () => {
     const obj1 = { a: 1, b: 2 };
     const obj2 = { b: 3, c: 4 };
 
-    expect(() => safeMerge(obj1, obj2)).toThrowError(
+    expect(() => safeMerge(obj1, obj2)).toThrow(
       'Cannot merge key b because it already exists.',
     );
   });
@@ -40,7 +40,7 @@ describe('safeMergeAll', () => {
 
   it('throws an error when keys overlap', () => {
     const items = [{ a: 1 }, { b: 2 }, { b: 3 }];
-    expect(() => safeMergeAll(items)).toThrowError(
+    expect(() => safeMergeAll(items)).toThrow(
       'Cannot merge key b because it already exists.',
     );
   });

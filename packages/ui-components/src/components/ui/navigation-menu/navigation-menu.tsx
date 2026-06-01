@@ -20,15 +20,18 @@ function NavigationMenu({
   className,
   children,
   align = 'start',
+  orientation,
   ...props
 }: NavigationMenuPrimitive.Root.Props &
   Pick<NavigationMenuPrimitive.Positioner.Props, 'align'>): React.ReactElement {
   return (
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
+      data-orientation={orientation}
+      orientation={orientation}
       className={cn(
         'group/navigation-menu relative flex max-w-max flex-1 items-center justify-center',
-        'aria-[orientation=vertical]:max-w-none aria-[orientation=vertical]:items-start aria-[orientation=vertical]:justify-start [&[aria-orientation="vertical"]>*]:w-full',
+        'data-[orientation=vertical]:max-w-none data-[orientation=vertical]:items-start data-[orientation=vertical]:justify-start [&[data-orientation=vertical]>*]:w-full',
         className,
       )}
       {...props}
@@ -50,7 +53,7 @@ function NavigationMenuList({
       data-slot="navigation-menu-list"
       className={cn(
         'group flex flex-1 list-none items-center justify-center gap-1',
-        'aria-[orientation=vertical]:flex-col aria-[orientation=vertical]:items-stretch',
+        'group-data-[orientation=vertical]/navigation-menu:flex-col group-data-[orientation=vertical]/navigation-menu:items-stretch',
         className,
       )}
       {...props}

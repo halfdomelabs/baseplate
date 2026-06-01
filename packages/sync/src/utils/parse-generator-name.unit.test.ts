@@ -55,7 +55,7 @@ describe('parseGeneratorName', () => {
     const input = '@baseplate-dev/core-generators';
 
     // Act / Assert
-    expect(() => parseGeneratorName(input)).toThrowError(
+    expect(() => parseGeneratorName(input)).toThrow(
       'Invalid generator name: @baseplate-dev/core-generators. Should be of form "package#group/name"',
     );
   });

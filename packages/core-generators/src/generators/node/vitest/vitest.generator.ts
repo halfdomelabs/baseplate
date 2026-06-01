@@ -91,19 +91,18 @@ export const vitestGenerator = createGenerator({
               ),
             });
 
-            const plugins = TsCodeUtils.mergeFragmentsAsArray({
-              tsconfigPaths: tsCodeFragment('tsconfigPaths()', [
-                tsImportBuilder()
-                  .default('tsconfigPaths')
-                  .from('vite-tsconfig-paths'),
-              ]),
-            });
-
             await builder.apply(
               renderers.vitestConfig.render({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
-                    plugins,
+                    plugins: TsCodeUtils.mergeFragmentsAsArray({
+                      tsconfigPaths: tsCodeFragment(
+                        'tsconfigPaths()',
+                        tsImportBuilder()
+                          .default('tsconfigPaths')
+                          .from('vite-tsconfig-paths'),
+                      ),
+                    }),
                     test: configValues,
                   }),
                 },
