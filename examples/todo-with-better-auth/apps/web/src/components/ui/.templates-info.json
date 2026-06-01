@@ -169,6 +169,11 @@
     "instanceData": {},
     "template": "popover"
   },
+  "radio-group.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "radio-group"
+  },
   "scroll-area.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},

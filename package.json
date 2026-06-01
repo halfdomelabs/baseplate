@@ -72,6 +72,7 @@
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
     "@changesets/changelog-github": "0.5.1",
+    "@playwright/cli": "^0.1.13",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
     "es-toolkit": "1.44.0",

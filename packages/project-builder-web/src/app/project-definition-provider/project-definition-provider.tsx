@@ -51,7 +51,7 @@ import {
 import { useProjectDefinitionContainer } from './hooks/use-project-definition-container.js';
 import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents.js';
 import { useSchemaParserContext } from './hooks/use-schema-parser-context.js';
-import { NewProjectCard } from './new-project-card.js';
+import { SetupWizard } from './setup-wizard/setup-wizard.js';
 
 interface ProjectDefinitionProviderProps {
   children?: React.ReactNode;
@@ -98,8 +98,8 @@ export function ProjectDefinitionProvider({
     return partitionIssuesBySeverity(allIssues).warnings;
   }, [projectDefinitionContainer]);
 
-  const result: UseProjectDefinitionResult | undefined = useMemo(() => {
-    if (!projectDefinitionContainer || !schemaParserContext) return;
+  const result: UseProjectDefinitionResult | null = useMemo(() => {
+    if (!projectDefinitionContainer || !schemaParserContext) return null;
 
     const { definition, refPayload } = projectDefinitionContainer;
     const parserContext = schemaParserContext;
@@ -310,20 +310,11 @@ export function ProjectDefinitionProvider({
 
   if (!result.definition.isInitialized) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <NewProjectCard
-          existingProject={result.definition}
-          saveProject={async (data) => {
-            await result.saveDefinition((definition) => {
-              definition.settings.general = {
-                ...data,
-                packageScope: '',
-              };
-              definition.isInitialized = true;
-            });
-          }}
-        />
-      </div>
+      <SetupWizard
+        existingProject={result.definition}
+        definitionContainer={result.definitionContainer}
+        saveDefinition={result.saveDefinition}
+      />
     );
   }
 
