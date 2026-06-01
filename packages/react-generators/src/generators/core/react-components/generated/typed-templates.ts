@@ -675,6 +675,21 @@ const popover = createTsTemplateFile({
   variables: {},
 });
 
+const radioGroup = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'radio-group',
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/radio-group.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const scrollArea = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -1031,6 +1046,7 @@ export const componentsGroup = {
   navigationMenu,
   notFoundCard,
   popover,
+  radioGroup,
   scrollArea,
   select,
   selectField,
@@ -1122,20 +1138,6 @@ export const hooksGroup = {
   useMobile,
 };
 
-const radioGroup = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'radio-group',
-  referencedGeneratorTemplates: { cn: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/components/ui/radio-group.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const stylesButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'styles',
@@ -1224,7 +1226,6 @@ export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
-  radioGroup,
   stylesGroup,
   utilsGroup,
 };

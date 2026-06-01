@@ -644,6 +644,7 @@
     "radio-group": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
+      "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/radio-group.tsx",
       "referencedGeneratorTemplates": ["cn"],

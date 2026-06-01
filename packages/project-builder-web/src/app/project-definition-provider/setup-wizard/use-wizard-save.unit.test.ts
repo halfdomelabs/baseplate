@@ -46,9 +46,7 @@ describe('buildInitialApps', () => {
       );
       const web = apps.find((a) => a.name === 'web');
       expect(web?.type).toBe('web');
-      if (web?.type === 'web') {
-        expect(web.adminApp.enabled).toBe(false);
-      }
+      expect(web?.type === 'web' && web.adminApp.enabled).toBe(false);
     });
   });
 
@@ -68,9 +66,7 @@ describe('buildInitialApps', () => {
       );
       const admin = apps.find((a) => a.name === 'admin');
       expect(admin?.type).toBe('web');
-      if (admin?.type === 'web') {
-        expect(admin.adminApp.enabled).toBe(true);
-      }
+      expect(admin?.type === 'web' && admin.adminApp.enabled).toBe(true);
     });
   });
 
