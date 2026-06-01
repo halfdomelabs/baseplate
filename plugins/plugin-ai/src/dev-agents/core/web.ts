@@ -17,8 +17,10 @@ export default createPluginModule({
   initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, DevAgentsDefinitionEditor);
     pluginDefaults.builders.set(pluginKey, () => ({
-      enabledAgents: ['claude-code'],
-      devAgentsOptions: {},
+      config: {
+        enabledAgents: ['claude-code'],
+        devAgentsOptions: {},
+      },
     }));
   },
 });

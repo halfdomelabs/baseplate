@@ -6,8 +6,11 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { RateLimitDefinitionEditor } from './components/rate-limit-definition-editor.js';
+import { createRateLimitPartialDefinition } from './schema/models.js';
 
 import '../../styles.css';
+
+const RATE_LIMIT_FEATURE_NAME = 'system/rate-limit';
 
 export default createPluginModule({
   name: 'web',
@@ -20,11 +23,14 @@ export default createPluginModule({
     pluginDefaults.builders.set(pluginKey, ({ draft }) => {
       const rateLimitFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
         draft,
-        'system/rate-limit',
+        RATE_LIMIT_FEATURE_NAME,
       );
       return {
-        rateLimitFeatureRef,
-        rateLimitOptions: {},
+        config: {
+          rateLimitFeatureRef,
+          rateLimitOptions: {},
+        },
+        partialDef: createRateLimitPartialDefinition(RATE_LIMIT_FEATURE_NAME),
       };
     });
   },

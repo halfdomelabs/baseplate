@@ -2,16 +2,20 @@ import type {
   AppConfig,
   PluginMetadataWithPaths,
   ProjectDefinition,
-  ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
 import {
   appEntityType,
-  authRoleEntityType,
-  FeatureUtils,
+  createDefinitionSchemaParserContext,
+  createPluginImplementationStoreWithNewPlugins,
+  createPluginSpecStore,
+  createProjectDefinitionSchema,
   libraryEntityType,
+  mergeDefinitionContainer,
   pluginDefaultsSpec,
   PluginUtils,
+  ProjectDefinitionContainer,
+  serializeSchema,
 } from '@baseplate-dev/project-builder-lib';
 import { sortBy, startCase } from 'es-toolkit';
 import { useCallback } from 'react';
@@ -31,38 +35,45 @@ const DEV_AGENTS_PLUGIN_FQN = '@baseplate-dev/plugin-ai:dev-agents';
 
 const TRANSACTIONAL_LIB_TYPE = '@baseplate-dev/plugin-email/transactional-lib';
 
-const AUTH_DEFAULT_ROLES = [
-  {
-    name: 'public',
-    comment: 'All users (including unauthenticated and authenticated users)',
-    builtIn: true,
-    autoAssigned: true,
-  },
-  {
-    name: 'user',
-    comment: 'All authenticated users',
-    builtIn: true,
-    autoAssigned: true,
-  },
-  {
-    name: 'system',
-    comment: 'System processes without a user context, e.g. background jobs',
-    builtIn: true,
-    autoAssigned: true,
-  },
-  {
-    name: 'admin',
-    comment: 'Administrator with full access',
-    builtIn: true,
-    autoAssigned: false,
-  },
-] as const;
-
 function findPlugin(
   plugins: PluginMetadataWithPaths[],
   fqn: string,
 ): PluginMetadataWithPaths | undefined {
   return plugins.find((p) => p.fullyQualifiedName === fqn);
+}
+
+/**
+ * Returns a fresh `ProjectDefinitionContainer` whose `schema` reflects the
+ * plugins currently in `staleContainer.definition.plugins`.
+ *
+ * `mergeDefinitionContainer` reuses `staleContainer.schema` for its serialize
+ * step. When the wizard adds a plugin via `setPluginConfig` mid-flow, the
+ * stale schema doesn't know about the new plugin's config schema — ref fields
+ * (e.g. `authFeatureRef`) aren't recognised and end up as raw ID strings in
+ * the serialized output, which then fail to deserialize as names. Rebuilding
+ * with a fresh schema fixes that.
+ *
+ * Builds the schema the same way `ProjectDefinitionContainer.fromSerializedConfig`
+ * does internally, but starts from a parsed definition so we can keep the
+ * mutations we just made.
+ */
+function rebuildContainerWithFreshSchema(
+  staleContainer: ProjectDefinitionContainer,
+  originalContainer: ProjectDefinitionContainer,
+): ProjectDefinitionContainer {
+  const { parserContext } = originalContainer;
+  const freshPluginStore = createPluginSpecStore(
+    parserContext.pluginStore,
+    staleContainer.definition,
+  );
+  const freshSchema = createProjectDefinitionSchema(
+    createDefinitionSchemaParserContext({ plugins: freshPluginStore }),
+  );
+  const serialized = serializeSchema(freshSchema, staleContainer.definition);
+  return ProjectDefinitionContainer.fromSerializedConfig(
+    serialized,
+    parserContext,
+  );
 }
 
 /**
@@ -119,26 +130,104 @@ function buildInitialApps(
 }
 
 /**
- * Enables `fqn` with the config produced by its registered defaults builder.
- * Falls back to `{}` if the plugin doesn't register a builder — works for
- * plugins whose schema parses an empty object.
+ * Result of running plugin defaults builders in the pre-save phase.
+ *
+ * `seededDefinition` is a fully-merged project definition that already contains
+ * every plugin entry, feature, and model the builders produced. The wizard
+ * plants this into the draft via `Object.assign` *before* applying its other
+ * mutations (apps, general settings, email/queue configs) so the rate-limit
+ * and storage tables land alongside the plugin configs in a single save — no
+ * follow-up "Apply fix" warning.
+ *
+ * `undefined` when no builder was invoked.
  */
-function enablePluginWithDefaults(
-  draft: ProjectDefinition,
+interface PluginDefaultsResults {
+  seededDefinition: ProjectDefinition | undefined;
+}
+
+/**
+ * Runs each registered plugin defaults builder once. Composes their
+ * `partialDef` returns sequentially via `mergeDefinitionContainer` so later
+ * builders see earlier merges (e.g. storage's File model can reference the
+ * already-seeded User model).
+ *
+ * Builders may also mutate the working container's `definition.features`
+ * directly via `FeatureUtils.ensureFeatureByNameRecursively` so they can embed
+ * the new feature's ID in their config payload. That mutation is included in
+ * the next merge because `mergeDefinitionContainer` serializes the current
+ * definition.
+ */
+function runPluginDefaultsBuilders(
   plugins: PluginMetadataWithPaths[],
-  fqn: string,
+  fqns: readonly string[],
   definitionContainer: ProjectDefinitionContainer,
   enabledPluginFqns: ReadonlySet<string>,
-): void {
-  const plugin = findPlugin(plugins, fqn);
-  if (!plugin) return;
-  const builder = definitionContainer.pluginStore
-    .use(pluginDefaultsSpec)
-    .builders.get(plugin.key);
-  const config = builder
-    ? builder({ draft, definitionContainer, enabledPluginFqns })
-    : {};
-  PluginUtils.setPluginConfig(draft, plugin, config, definitionContainer);
+): PluginDefaultsResults {
+  const allEnabledMetadatas = [...enabledPluginFqns]
+    .map((fqn) => findPlugin(plugins, fqn))
+    .filter((p): p is PluginMetadataWithPaths => !!p);
+
+  // Build a transient spec store that includes every about-to-be-enabled
+  // plugin's modules so cross-plugin specs (e.g. `authModelsSpec`) resolve
+  // even before those plugins are in `draft.plugins`.
+  const pluginSpecStore = createPluginImplementationStoreWithNewPlugins(
+    definitionContainer.parserContext.pluginStore,
+    allEnabledMetadatas,
+    definitionContainer.definition,
+  );
+  const buildersByKey = pluginSpecStore.use(pluginDefaultsSpec).builders;
+
+  let workingContainer = definitionContainer;
+  let anyMutation = false;
+
+  for (const fqn of fqns) {
+    const plugin = findPlugin(plugins, fqn);
+    if (!plugin) continue;
+    const builder = buildersByKey.get(plugin.key);
+    const result = builder
+      ? builder({
+          draft: workingContainer.definition,
+          pluginStore: pluginSpecStore,
+          enabledPluginFqns,
+          findPluginMetadataByFqn: (lookupFqn) =>
+            findPlugin(plugins, lookupFqn),
+        })
+      : { config: {} as unknown };
+
+    // Attach the plugin config to `workingContainer.definition.plugins`
+    // *before* merging the partial def below. The partial def's models may
+    // reference role names defined on the plugin's config (e.g. auth's
+    // `admin`) and the merge resolves those names to IDs by walking the
+    // current definition.
+    PluginUtils.setPluginConfig(
+      workingContainer.definition,
+      plugin,
+      result.config,
+      workingContainer,
+    );
+    anyMutation = true;
+
+    // Rebuild the container so its `schema` reflects the just-added plugin's
+    // config schema. Without this, the next `mergeDefinitionContainer` call
+    // would serialize the new plugin's config with a stale schema that doesn't
+    // recognise its ref fields (like `authFeatureRef`) — leaving raw IDs in
+    // the serialized form that fail to deserialize back.
+    workingContainer = rebuildContainerWithFreshSchema(
+      workingContainer,
+      definitionContainer,
+    );
+
+    if (result.partialDef) {
+      workingContainer = mergeDefinitionContainer(
+        workingContainer,
+        result.partialDef,
+      );
+    }
+  }
+
+  return {
+    seededDefinition: anyMutation ? workingContainer.definition : undefined,
+  };
 }
 
 interface UseWizardSaveOptions {
@@ -176,7 +265,78 @@ export function useWizardSave({
 
   const saveWithPlugins = useCallback(
     async (data: SetupWizardData) => {
+      // Compute the FQNs we intend to enable so plugin defaults builders can
+      // branch on what else is being turned on (e.g. payments deciding whether
+      // to enable billing).
+      const enabledPluginFqns = new Set<string>();
+      if (data.enableAuth) {
+        enabledPluginFqns.add(AUTH_PLUGIN_FQN);
+        enabledPluginFqns.add(`@baseplate-dev/plugin-auth:${data.authMethod}`);
+        if (data.authMethod === 'local-auth') {
+          enabledPluginFqns.add(RATE_LIMIT_PLUGIN_FQN);
+        }
+      }
+      if (data.enableEmail) {
+        enabledPluginFqns.add(EMAIL_PLUGIN_FQN);
+        enabledPluginFqns.add(
+          `@baseplate-dev/plugin-email:${data.emailProvider}`,
+        );
+      }
+      if (
+        data.enableAuth ||
+        data.enableEmail ||
+        data.enableStorage ||
+        data.enableQueue
+      ) {
+        enabledPluginFqns.add(QUEUE_PLUGIN_FQN);
+        enabledPluginFqns.add(
+          data.queueImplementation === 'bullmq'
+            ? BULLMQ_PLUGIN_FQN
+            : PG_BOSS_PLUGIN_FQN,
+        );
+      }
+      if (data.enableStorage) enabledPluginFqns.add(STORAGE_PLUGIN_FQN);
+      if (data.enableObservability) enabledPluginFqns.add(SENTRY_PLUGIN_FQN);
+      if (data.enablePayments) enabledPluginFqns.add(STRIPE_PLUGIN_FQN);
+      if (data.enableAi) enabledPluginFqns.add(DEV_AGENTS_PLUGIN_FQN);
+
+      // Pre-save: run each plugin's defaults builder to collect both the config
+      // payload and any `partialDef` that scaffolds the plugin's required
+      // models. We compose partial defs sequentially so later builders see
+      // earlier merges (e.g. storage needs the auth User model to land its
+      // File relation). Order matters here: parent auth runs first so the
+      // accounts features exist before its impl's partial def references them,
+      // and auth's impl runs before storage so the User model lands first.
+      const authImplFqn = data.enableAuth
+        ? `@baseplate-dev/plugin-auth:${data.authMethod}`
+        : undefined;
+      const builderFqnsInOrder = [
+        AUTH_PLUGIN_FQN,
+        authImplFqn,
+        RATE_LIMIT_PLUGIN_FQN,
+        STORAGE_PLUGIN_FQN,
+        SENTRY_PLUGIN_FQN,
+        STRIPE_PLUGIN_FQN,
+        DEV_AGENTS_PLUGIN_FQN,
+      ].filter(
+        (fqn): fqn is string => fqn !== undefined && enabledPluginFqns.has(fqn),
+      );
+      const defaults = runPluginDefaultsBuilders(
+        plugins,
+        builderFqnsInOrder,
+        definitionContainer,
+        enabledPluginFqns,
+      );
+
       await saveDefinition((draft) => {
+        // Plant the merged features + models first. Object.assign only
+        // overwrites keys present on `seededDefinition` (apps/general/plugins
+        // are all empty for a brand-new project) so subsequent mutations
+        // below are not clobbered.
+        if (defaults.seededDefinition) {
+          Object.assign(draft, defaults.seededDefinition);
+        }
+
         // 1. Set general settings
         draft.settings.general = {
           name: data.name,
@@ -186,95 +346,13 @@ export function useWizardSave({
         draft.apps = buildInitialApps(data.enabledApps, data.portOffset);
         draft.isInitialized = true;
 
-        // Track which dependency plugins we need
-        let needsQueue = false;
-        let needsRateLimit = false;
-
-        // Precompute the FQNs we intend to enable so plugin defaults builders
-        // can branch on what else is being turned on (e.g. payments deciding
-        // whether to enable billing).
-        const enabledPluginFqns = new Set<string>();
-        if (data.enableAuth) {
-          enabledPluginFqns.add(AUTH_PLUGIN_FQN);
-          enabledPluginFqns.add(
-            `@baseplate-dev/plugin-auth:${data.authMethod}`,
-          );
-          if (data.authMethod === 'local-auth') {
-            enabledPluginFqns.add(RATE_LIMIT_PLUGIN_FQN);
-          }
-        }
-        if (data.enableEmail) {
-          enabledPluginFqns.add(EMAIL_PLUGIN_FQN);
-          enabledPluginFqns.add(
-            `@baseplate-dev/plugin-email:${data.emailProvider}`,
-          );
-        }
-        if (
-          data.enableAuth ||
-          data.enableEmail ||
-          data.enableStorage ||
-          data.enableQueue
-        ) {
-          enabledPluginFqns.add(QUEUE_PLUGIN_FQN);
-          enabledPluginFqns.add(
-            data.queueImplementation === 'bullmq'
-              ? BULLMQ_PLUGIN_FQN
-              : PG_BOSS_PLUGIN_FQN,
-          );
-        }
-        if (data.enableStorage) enabledPluginFqns.add(STORAGE_PLUGIN_FQN);
-        if (data.enableObservability) enabledPluginFqns.add(SENTRY_PLUGIN_FQN);
-        if (data.enablePayments) enabledPluginFqns.add(STRIPE_PLUGIN_FQN);
-        if (data.enableAi) enabledPluginFqns.add(DEV_AGENTS_PLUGIN_FQN);
-
-        // 2. Configure auth if enabled
-        if (data.enableAuth) {
-          const authPlugin = findPlugin(plugins, AUTH_PLUGIN_FQN);
-          const implFqn = `@baseplate-dev/plugin-auth:${data.authMethod}`;
-          const implPlugin = findPlugin(plugins, implFqn);
-
-          if (authPlugin && implPlugin) {
-            const authFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
-              draft,
-              'accounts/auth',
-            );
-            const accountsFeatureRef =
-              FeatureUtils.ensureFeatureByNameRecursively(
-                draft,
-                'accounts/users',
-              );
-
-            const roles = AUTH_DEFAULT_ROLES.map((role) => ({
-              ...role,
-              id: authRoleEntityType.generateNewId(),
-            }));
-
-            PluginUtils.setPluginConfig(
-              draft,
-              authPlugin,
-              {
-                implementationPluginKey: implPlugin.key,
-                authFeatureRef,
-                accountsFeatureRef,
-                roles,
-              },
-              definitionContainer,
-            );
-
-            // Enable the implementation plugin
-            PluginUtils.setPluginConfig(
-              draft,
-              implPlugin,
-              {},
-              definitionContainer,
-            );
-
-            if (data.authMethod === 'local-auth') {
-              needsQueue = true;
-              needsRateLimit = true;
-            }
-          }
-        }
+        // Plugin entries for auth + rate-limit + storage + sentry + stripe +
+        // dev-agents already landed on `draft.plugins` via `seededDefinition`
+        // above (their configs are attached during the pre-save defaults
+        // pass). Email and queue still need wizard-form input
+        // (`implementationPluginKey`, library auto-create, Redis flag) so they
+        // stay inline below.
+        let needsQueue = data.enableAuth && data.authMethod === 'local-auth';
 
         // 3. Configure email if enabled
         if (data.enableEmail) {
@@ -363,57 +441,6 @@ export function useWizardSave({
               redis: { enabled: true },
             };
           }
-        }
-
-        if (needsRateLimit) {
-          enablePluginWithDefaults(
-            draft,
-            plugins,
-            RATE_LIMIT_PLUGIN_FQN,
-            definitionContainer,
-            enabledPluginFqns,
-          );
-        }
-
-        // 5. Enable additional plugins
-        if (data.enableStorage) {
-          enablePluginWithDefaults(
-            draft,
-            plugins,
-            STORAGE_PLUGIN_FQN,
-            definitionContainer,
-            enabledPluginFqns,
-          );
-        }
-
-        if (data.enableObservability) {
-          enablePluginWithDefaults(
-            draft,
-            plugins,
-            SENTRY_PLUGIN_FQN,
-            definitionContainer,
-            enabledPluginFqns,
-          );
-        }
-
-        if (data.enablePayments) {
-          enablePluginWithDefaults(
-            draft,
-            plugins,
-            STRIPE_PLUGIN_FQN,
-            definitionContainer,
-            enabledPluginFqns,
-          );
-        }
-
-        if (data.enableAi) {
-          enablePluginWithDefaults(
-            draft,
-            plugins,
-            DEV_AGENTS_PLUGIN_FQN,
-            definitionContainer,
-            enabledPluginFqns,
-          );
         }
       });
     },

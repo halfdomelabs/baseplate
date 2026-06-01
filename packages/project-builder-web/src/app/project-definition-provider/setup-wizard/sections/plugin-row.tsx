@@ -107,12 +107,7 @@ export function PluginRow({
 
   if (!expandable) {
     return (
-      <div
-        className={cn(
-          'flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors',
-          !enabled && 'opacity-60',
-        )}
-      >
+      <div className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-colors">
         {headerContent}
       </div>
     );
@@ -130,7 +125,7 @@ export function PluginRow({
         render={<div role="button" tabIndex={enabled ? 0 : -1} />}
         className={cn(
           'flex w-full items-center gap-3 p-4 text-left outline-none',
-          enabled ? 'cursor-pointer' : 'cursor-default opacity-60',
+          enabled ? 'cursor-pointer' : 'cursor-default',
         )}
       >
         {headerContent}

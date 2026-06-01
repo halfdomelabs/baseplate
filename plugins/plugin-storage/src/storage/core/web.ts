@@ -1,4 +1,5 @@
 import {
+  authModelsSpec,
   createPluginModule,
   FeatureUtils,
   pluginDefaultsSpec,
@@ -6,8 +7,11 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { StorageDefinitionEditor } from './components/storage-definition-editor.js';
+import { createStoragePartialDefinition } from './schema/models.js';
 
 import '../../styles.css';
+
+const STORAGE_FEATURE_NAME = 'storage';
 
 export default createPluginModule({
   name: 'web',
@@ -17,15 +21,24 @@ export default createPluginModule({
   },
   initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, StorageDefinitionEditor);
-    pluginDefaults.builders.set(pluginKey, ({ draft }) => {
+    pluginDefaults.builders.set(pluginKey, ({ draft, pluginStore }) => {
       const storageFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
         draft,
-        'storage',
+        STORAGE_FEATURE_NAME,
       );
+      const authModels = pluginStore
+        .use(authModelsSpec)
+        .getAuthModelsOrThrow(draft);
       return {
-        storageFeatureRef,
-        s3Adapters: [],
-        fileCategories: [],
+        config: {
+          storageFeatureRef,
+          s3Adapters: [],
+          fileCategories: [],
+        },
+        partialDef: createStoragePartialDefinition(
+          STORAGE_FEATURE_NAME,
+          authModels.user,
+        ),
       };
     });
   },

@@ -17,8 +17,10 @@ export default createPluginModule({
   initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, StripeDefinitionEditor);
     pluginDefaults.builders.set(pluginKey, () => ({
-      stripeOptions: {},
-      billing: { enabled: false },
+      config: {
+        stripeOptions: {},
+        billing: { enabled: false },
+      },
     }));
   },
 });

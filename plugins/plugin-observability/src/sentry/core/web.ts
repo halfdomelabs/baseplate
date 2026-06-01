@@ -17,7 +17,9 @@ export default createPluginModule({
   initialize: ({ webConfig, pluginDefaults }, { pluginKey }) => {
     webConfig.components.set(pluginKey, SentryDefinitionEditor);
     pluginDefaults.builders.set(pluginKey, () => ({
-      sentryOptions: {},
+      config: {
+        sentryOptions: {},
+      },
     }));
   },
 });
