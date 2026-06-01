@@ -62,6 +62,7 @@ export function SetupWizard({
     null,
   );
   useEffect(() => {
+    let cancelled = false;
     setPlugins(null);
     if (!currentProjectId || IS_PREVIEW) {
       setPlugins([]);
@@ -69,8 +70,12 @@ export function SetupWizard({
     }
     trpc.plugins.getAvailablePlugins
       .mutate({ projectId: currentProjectId })
-      .then(setPlugins)
+      .then((result) => {
+        if (cancelled) return;
+        setPlugins(result);
+      })
       .catch((err: unknown) => {
+        if (cancelled) return;
         setPlugins([]);
         toast.error(
           logAndFormatError(
@@ -79,6 +84,9 @@ export function SetupWizard({
           ),
         );
       });
+    return () => {
+      cancelled = true;
+    };
   }, [currentProjectId]);
 
   const {
@@ -139,19 +147,28 @@ export function SetupWizard({
         toast.error(logAndFormatError(err, 'Failed to create project'));
       }),
     // On validation error for plugin fields, still allow basics-only save.
+    // Read live form values so the user's app/scope selections aren't dropped,
+    // and use safeParse so an invalid `name` surfaces as a toast instead of an
+    // unhandled throw.
     () => {
-      const name = watch('name');
-      const portOffset = watch('portOffset');
-      const fallbackData = setupWizardSchema.parse({
+      const parsed = setupWizardSchema.safeParse({
         ...DEFAULT_VALUES,
-        name,
-        portOffset,
+        name: watch('name'),
+        packageScope: watch('packageScope'),
+        portOffset: watch('portOffset'),
+        enabledApps,
         enableAuth: false,
         enableEmail: false,
         enableObservability: false,
         enableAi: false,
       });
-      void saveBasicsOnly(fallbackData).catch((err: unknown) => {
+      if (!parsed.success) {
+        toast.error(
+          logAndFormatError(parsed.error, 'Failed to create project'),
+        );
+        return;
+      }
+      void saveBasicsOnly(parsed.data).catch((err: unknown) => {
         toast.error(logAndFormatError(err, 'Failed to create project'));
       });
     },

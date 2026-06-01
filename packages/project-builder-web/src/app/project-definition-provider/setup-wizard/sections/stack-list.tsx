@@ -21,7 +21,10 @@ import {
   MdWorkOutline,
 } from 'react-icons/md';
 
-import type { SetupWizardInput } from '../setup-wizard-schema.js';
+import type {
+  SetupWizardData,
+  SetupWizardInput,
+} from '../setup-wizard-schema.js';
 
 import {
   AUTH_PLUGIN_FQN,
@@ -159,18 +162,19 @@ function hasPlugin(plugins: PluginMetadataWithPaths[], fqn: string): boolean {
 interface StackListProps {
   setValue: UseFormSetValue<SetupWizardInput>;
   plugins: PluginMetadataWithPaths[];
-  values: {
-    enableAuth: boolean;
-    authMethod: 'local-auth' | 'better-auth';
-    enableEmail: boolean;
-    emailProvider: 'postmark' | 'resend' | 'stub';
-    enableQueue: boolean;
-    queueImplementation: 'pg-boss' | 'bullmq';
-    enableStorage: boolean;
-    enableObservability: boolean;
-    enablePayments: boolean;
-    enableAi: boolean;
-  };
+  values: Pick<
+    SetupWizardData,
+    | 'enableAuth'
+    | 'authMethod'
+    | 'enableEmail'
+    | 'emailProvider'
+    | 'enableQueue'
+    | 'queueImplementation'
+    | 'enableStorage'
+    | 'enableObservability'
+    | 'enablePayments'
+    | 'enableAi'
+  >;
 }
 
 export function StackList({

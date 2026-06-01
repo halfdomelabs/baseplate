@@ -116,7 +116,6 @@ export function PluginRow({
   return (
     <Collapsible
       defaultOpen={defaultOpen && enabled}
-      open={enabled ? undefined : false}
       className="group/row overflow-hidden rounded-lg border bg-card transition-colors data-panel-open:border-primary/30"
     >
       <CollapsibleTrigger
