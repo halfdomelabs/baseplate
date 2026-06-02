@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "graphql-plugin"
   },
+  "pubsub.ts": {
+    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+    "instanceData": {},
+    "template": "pubsub"
+  },
   "strip-query-mutation-plugin.ts": {
     "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
     "instanceData": {},
@@ -23,5 +28,10 @@
     "generator": "@baseplate-dev/plugin-observability#pothos/pothos-sentry",
     "instanceData": {},
     "template": "use-sentry"
+  },
+  "websocket.ts": {
+    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+    "instanceData": {},
+    "template": "websocket"
   }
 }

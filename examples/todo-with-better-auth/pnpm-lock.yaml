@@ -234,6 +234,9 @@ importers:
       '@fastify/request-context':
         specifier: 6.2.1
         version: 6.2.1
+      '@graphql-yoga/redis-event-target':
+        specifier: 2.0.0
+        version: 2.0.0(ioredis@5.8.1)
       '@pothos/core':
         specifier: 4.10.0
         version: 4.10.0(graphql@16.11.0)
@@ -337,9 +340,6 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.1
-      '@types/ws':
-        specifier: 8.5.13
-        version: 8.5.13
       '@vitest/eslint-plugin':
         specifier: 1.6.9
         version: 1.6.9(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.7(@opentelemetry/api@1.9.0)(@types/node@22.19.1)(vite@8.0.14(@types/node@22.19.1)(esbuild@0.28.0)(jiti@2.6.1)(tsx@4.22.3)(yaml@2.8.3)))
@@ -413,8 +413,8 @@ importers:
   apps/web:
     dependencies:
       '@apollo/client':
-        specifier: 4.0.11
-        version: 4.0.11(graphql-ws@6.0.7(graphql@16.14.0)(ws@8.21.0))(graphql@16.14.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+        specifier: 4.2.0
+        version: 4.2.0(graphql-ws@6.0.7(graphql@16.14.0)(ws@8.21.0))(graphql@16.14.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
       '@base-ui/react':
         specifier: 1.4.1
         version: 1.4.1(@date-fns/tz@1.2.0)(@types/react@19.1.3)(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -445,6 +445,9 @@ importers:
       graphql:
         specifier: 16.14.0
         version: 16.14.0
+      graphql-sse:
+        specifier: 2.6.0
+        version: 2.6.0(graphql@16.14.0)
       loglevel:
         specifier: 1.9.1
         version: 1.9.1
@@ -656,6 +659,25 @@ packages:
 
   '@apollo/client@4.0.11':
     resolution: {integrity: sha512-jyW5j3DEYnFlYA1Lk9Szd7O/od1DptnbZnj03DQXxuQb+Gnop0w/uQxVRKaU7bPhvVuBnlAtZYPOykArX+xWdg==}
+    peerDependencies:
+      graphql: ^16.0.0
+      graphql-ws: ^5.5.5 || ^6.0.3
+      react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react-dom: ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      rxjs: ^7.3.0
+      subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+    peerDependenciesMeta:
+      graphql-ws:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      subscriptions-transport-ws:
+        optional: true
+
+  '@apollo/client@4.2.0':
+    resolution: {integrity: sha512-uZAiXwIRidDqQKZRcL88O01IVZjY6IhLio6g+XzX4N4++Ue9pVK9WCoZvBm1dvx+x2mH0oGfVUZvTvacCW4WcQ==}
     peerDependencies:
       graphql: ^16.0.0
       graphql-ws: ^5.5.5 || ^6.0.3
@@ -1758,9 +1780,19 @@ packages:
     resolution: {integrity: sha512-Nv0BoDGLMg9QBKy9cIswQ3/6aKaKjlTh87x3GiBg2Z4RrjyrM48DvOOK0pJh1C1At+b0mUIM67cwZcFTDLN4sA==}
     engines: {node: '>=18.0.0'}
 
+  '@graphql-yoga/redis-event-target@2.0.0':
+    resolution: {integrity: sha512-JH/UCeQjaXM+qFqZyBG5kjlSrS/hRlqm0RiAnA4LK1W/kGk3Ns/8yMENmlxlQuU9ySdPz9mkgmzgN4MemR+ZqQ==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      ioredis: ^5.0.6
+
   '@graphql-yoga/subscription@5.0.5':
     resolution: {integrity: sha512-oCMWOqFs6QV96/NZRt/ZhTQvzjkGB4YohBOpKM4jH/lDT4qb7Lex/aGCxpi/JD9njw3zBBtMqxbaC22+tFHVvw==}
     engines: {node: '>=18.0.0'}
+
+  '@graphql-yoga/typed-event-target@2.0.0':
+    resolution: {integrity: sha512-oA/VGxGmaSDym1glOHrltw43qZsFwLLjBwvh57B79UKX/vo3+UQcRgOyE44c5RP7DCYjkrC2tuArZmb6jCzysw==}
+    engines: {node: '>=16.0.0'}
 
   '@graphql-yoga/typed-event-target@3.0.2':
     resolution: {integrity: sha512-ZpJxMqB+Qfe3rp6uszCQoag4nSw42icURnBRfFYSOmTgEeOe4rD0vYlbA8spvCu2TlCesNTlEN9BLWtQqLxabA==}
@@ -4842,6 +4874,12 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
+  graphql-sse@2.6.0:
+    resolution: {integrity: sha512-BXT5Rjv9UFunjQsmN9WWEIq+TFNhgYibgwo1xkXLxzguQVyOd6paJ4v5DlL9K5QplS0w74bhF+aUiqaGXZBaug==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      graphql: '>=0.11 <=16'
+
   graphql-tag@2.12.6:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
     engines: {node: '>=10'}
@@ -6841,6 +6879,22 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
+  '@apollo/client@4.2.0(graphql-ws@6.0.7(graphql@16.14.0)(ws@8.21.0))(graphql@16.14.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
+    dependencies:
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.14.0)
+      '@wry/caches': 1.0.1
+      '@wry/equality': 0.5.6
+      '@wry/trie': 0.5.0
+      graphql: 16.14.0
+      graphql-tag: 2.12.6(graphql@16.14.0)
+      optimism: 0.18.0
+      rxjs: 7.8.2
+      tslib: 2.8.1
+    optionalDependencies:
+      graphql-ws: 6.0.7(graphql@16.14.0)(ws@8.21.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
   '@ardatan/relay-compiler@13.0.0(graphql@16.14.0)':
     dependencies:
       '@babel/runtime': 7.29.7
@@ -8335,11 +8389,22 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@graphql-yoga/redis-event-target@2.0.0(ioredis@5.8.1)':
+    dependencies:
+      '@graphql-yoga/typed-event-target': 2.0.0
+      '@whatwg-node/events': 0.1.1
+      ioredis: 5.8.1
+
   '@graphql-yoga/subscription@5.0.5':
     dependencies:
       '@graphql-yoga/typed-event-target': 3.0.2
       '@repeaterjs/repeater': 3.0.6
       '@whatwg-node/events': 0.1.1
+      tslib: 2.8.1
+
+  '@graphql-yoga/typed-event-target@2.0.0':
+    dependencies:
+      '@repeaterjs/repeater': 3.0.6
       tslib: 2.8.1
 
   '@graphql-yoga/typed-event-target@3.0.2':
@@ -11643,6 +11708,10 @@ snapshots:
     dependencies:
       graphql: 16.11.0
       tslib: 2.8.1
+
+  graphql-sse@2.6.0(graphql@16.14.0):
+    dependencies:
+      graphql: 16.14.0
 
   graphql-tag@2.12.6(graphql@16.14.0):
     dependencies:

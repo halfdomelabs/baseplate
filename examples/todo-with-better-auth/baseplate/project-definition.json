@@ -201,7 +201,7 @@
     {
       "devPort": 6001,
       "enableAxios": true,
-      "enableSubscriptions": false,
+      "enableSubscriptions": true,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
       "type": "backend"
@@ -209,6 +209,7 @@
     {
       "description": "An app for cool todoers",
       "devPort": 6031,
+      "enableSubscriptions": true,
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",

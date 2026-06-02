@@ -272,6 +272,8 @@ type ResetUserPasswordPayload {
   user: User!
 }
 
+type Subscription
+
 type TodoItem {
   attachments: [TodoItemAttachment!]!
   createdAt: DateTime!
