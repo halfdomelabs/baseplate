@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.3",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",

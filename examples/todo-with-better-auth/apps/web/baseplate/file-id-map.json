@@ -21,6 +21,7 @@
   "@baseplate-dev/plugin-observability#apollo/apollo-sentry:apollo-sentry-link": "src/services/apollo/apollo-sentry-link.ts",
   "@baseplate-dev/plugin-observability#core/react-sentry:sentry": "src/services/sentry.ts",
   "@baseplate-dev/react-generators#apollo/apollo-error:apollo-error": "src/utils/apollo-error.ts",
+  "@baseplate-dev/react-generators#apollo/react-apollo:apollo-sse-link": "src/services/apollo/apollo-sse-link.ts",
   "@baseplate-dev/react-generators#apollo/react-apollo:app-apollo-provider": "src/app/app-apollo-provider.tsx",
   "@baseplate-dev/react-generators#apollo/react-apollo:cache": "src/services/apollo/cache.ts",
   "@baseplate-dev/react-generators#apollo/react-apollo:codegen": "codegen.ts",

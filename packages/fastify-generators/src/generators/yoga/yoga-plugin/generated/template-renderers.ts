@@ -1,7 +1,4 @@
-import type {
-  RenderTsTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -27,13 +24,13 @@ export interface YogaYogaPluginRenderers {
       >,
     ) => BuilderAction;
   };
-  subscriptionsGroup: {
+  pubsub: {
     render: (
       options: Omit<
-        RenderTsTemplateGroupActionInput<
-          typeof YOGA_YOGA_PLUGIN_TEMPLATES.subscriptionsGroup
+        RenderTsTemplateFileActionInput<
+          typeof YOGA_YOGA_PLUGIN_TEMPLATES.pubsub
         >,
-        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -90,16 +87,13 @@ const yogaYogaPluginRenderersTask = createGeneratorTask({
                 ...options,
               }),
           },
-          subscriptionsGroup: {
+          pubsub: {
             render: (options) =>
-              typescriptFile.renderTemplateGroup({
-                group: YOGA_YOGA_PLUGIN_TEMPLATES.subscriptionsGroup,
-                paths,
+              typescriptFile.renderTemplateFile({
+                template: YOGA_YOGA_PLUGIN_TEMPLATES.pubsub,
+                destination: paths.pubsub,
                 importMapProviders: {
-                  errorHandlerServiceImports,
                   fastifyRedisImports,
-                  loggerServiceImports,
-                  requestServiceContextImports,
                 },
                 ...options,
               }),

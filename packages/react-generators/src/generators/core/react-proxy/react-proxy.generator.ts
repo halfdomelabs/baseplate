@@ -14,7 +14,13 @@ const descriptorSchema = z.object({
 });
 
 export interface ReactProxyProvider {
-  enableWebSocket(): void;
+  /**
+   * Forward upstream (backend) connection closes to the browser for streaming
+   * responses. Vite's dev proxy does not do this by default, so server-sent
+   * event streams (e.g. GraphQL subscriptions over SSE) hang on a backend
+   * restart instead of reconnecting. See https://github.com/vitejs/vite/issues/20712
+   */
+  enableStreamingReconnect(): void;
 }
 
 export const reactProxyProvider =
@@ -38,16 +44,30 @@ export const reactProxyGenerator = createGenerator({
           'DEV_BACKEND_HOST',
           devBackendHost,
         );
-        let enableWebsocket = false;
+        let enableStreamingReconnect = false;
         return {
           providers: {
             reactProxy: {
-              enableWebSocket: () => {
-                enableWebsocket = true;
+              enableStreamingReconnect: () => {
+                enableStreamingReconnect = true;
               },
             },
           },
           build: () => {
+            const streamingReconnectConfigure = String.raw`configure: (proxy) => {
+                  // Vite's dev proxy does not forward an upstream connection
+                  // close to the browser for streaming responses (SSE), so a
+                  // backend restart leaves the client hanging instead of
+                  // reconnecting. Destroy the client response when the upstream
+                  // response ends. See https://github.com/vitejs/vite/issues/20712
+                  proxy.on('proxyRes', (proxyRes, _req, res) => {
+                    proxyRes.on('close', () => {
+                      if (!res.writableEnded) {
+                        res.destroy();
+                      }
+                    });
+                  });
+                },`;
             reactBaseConfig.viteServerOptions.set(
               'proxy',
               tsCodeFragment(
@@ -56,7 +76,7 @@ export const reactProxyGenerator = createGenerator({
               '/api': {
                 target: envVars.DEV_BACKEND_HOST,
                 rewrite: (path) => path.replace(/^\/api/, ''),
-                ${enableWebsocket ? 'ws: true,' : ''}
+                ${enableStreamingReconnect ? streamingReconnectConfigure : ''}
               },
             }
           : undefined`,

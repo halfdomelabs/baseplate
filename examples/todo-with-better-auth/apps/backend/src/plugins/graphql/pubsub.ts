@@ -1,10 +1,9 @@
-// @ts-nocheck
-
 import type { PubSub } from 'graphql-yoga';
 
-import { createRedisClient } from '%fastifyRedisImports';
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
 import { createPubSub } from 'graphql-yoga';
+
+import { createRedisClient } from '@src/services/redis.js';
 
 /**
  * Map of subscription channel name to the arguments accepted by `pubSub.publish`.
@@ -17,7 +16,10 @@ import { createPubSub } from 'graphql-yoga';
  */
 // must be a type to be used in the PubSub type
 
-type PubSubPublishArgs = TPL_PUBLISH_ARGS;
+type PubSubPublishArgs = /* TPL_PUBLISH_ARGS:START */ Record<
+  string,
+  never
+> /* TPL_PUBLISH_ARGS:END */;
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
 
