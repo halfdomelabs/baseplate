@@ -43,7 +43,7 @@ export const FASTIFY_PACKAGES = {
 
   // Environment
   'cross-env': '7.0.3',
-  concurrently: '9.2.1',
+  concurrently: '10.0.3',
 
   // Compilation
   'tsc-alias': '1.8.10',
