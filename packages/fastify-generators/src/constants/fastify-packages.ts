@@ -14,9 +14,7 @@ export const FASTIFY_PACKAGES = {
   'graphql-yoga': '5.15.1',
 
   '@envelop/types': '5.2.1',
-  '@types/ws': '8.5.13',
 
-  '@fastify/websocket': '11.2.0',
   '@fastify/request-context': '6.2.1',
   '@fastify/formbody': '8.0.2',
   '@fastify/cookie': '11.0.2',
@@ -31,7 +29,6 @@ export const FASTIFY_PACKAGES = {
   'graphql-scalars': '1.23.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',
-  'graphql-ws': '5.16.0',
 
   // Prisma
   '@prisma/client': '7.8.0',

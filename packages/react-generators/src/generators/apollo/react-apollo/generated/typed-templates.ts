@@ -1,6 +1,22 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { reactConfigImportsProvider } from '#src/generators/core/react-config/generated/ts-import-providers.js';
+
+const apolloSseLink = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { reactConfigImports: reactConfigImportsProvider },
+  name: 'apollo-sse-link',
+  projectExports: { apolloSseLink: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/services/apollo/apollo-sse-link.ts',
+    ),
+  },
+  variables: {},
+});
+
 const appApolloProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -112,4 +128,4 @@ export const mainGroup = {
   service,
 };
 
-export const APOLLO_REACT_APOLLO_TEMPLATES = { mainGroup };
+export const APOLLO_REACT_APOLLO_TEMPLATES = { apolloSseLink, mainGroup };

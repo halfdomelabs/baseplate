@@ -1,15 +1,14 @@
 import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
 import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
 import { ErrorLink } from '@apollo/client/link/error';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind, OperationTypeNode } from 'graphql';
-import { createClient } from 'graphql-ws';
 
 import { config } from '../config';
 import { logError } from '../error-logger';
 import { logger } from '../logger';
 import { apolloSentryLink } from './apollo-sentry-link';
+import { apolloSseLink } from './apollo-sse-link';
 import { createApolloCache } from './cache';
 
 /* HOISTED:error-extensions:START */
@@ -20,25 +19,6 @@ export interface ErrorExtensions {
   reqId?: string;
 }
 /* HOISTED:error-extensions:END */
-
-/* HOISTED:get-ws-url:START */
-function getWsUrl(): string {
-  if (config.VITE_GRAPH_WS_API_ENDPOINT) {
-    return config.VITE_GRAPH_WS_API_ENDPOINT;
-  }
-  // handle case where API endpoint includes domain, e.g. http://localhost/api/graphql
-  if (config.VITE_GRAPH_API_ENDPOINT.includes('http')) {
-    return config.VITE_GRAPH_API_ENDPOINT.replace('https://', 'wss://').replace(
-      'http://',
-      'ws://',
-    );
-  }
-  // handle relative API endpoint, e.g. /api/graphql
-  const { protocol, host } = globalThis.location;
-  const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${wsProtocol}//${host}${config.VITE_GRAPH_API_ENDPOINT}`;
-}
-/* HOISTED:get-ws-url:END */
 
 export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
   /* TPL_LINK_BODIES:START */
@@ -81,33 +61,6 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
     uri: config.VITE_GRAPH_API_ENDPOINT,
   });
 
-  const wsLink = new GraphQLWsLink(
-    createClient({
-      connectionParams: async () => {
-        const accessToken = await getAccessToken();
-        if (!accessToken) {
-          return {};
-        }
-        return { authorization: `Bearer ${accessToken}` };
-      },
-      retryAttempts: 86_400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */,
-      retryWait: async (retries) => {
-        await new Promise((resolve) => {
-          // use exponential backoff strategy capped at 30 seconds
-          const cappedExponentialBackoff = Math.min(
-            2 ** retries * 1000,
-            30 * 1000,
-          );
-          // insert a bit of randomness to prevent thundering herd problem
-          const randomDelay = Math.random() * 3000;
-          setTimeout(resolve, cappedExponentialBackoff + randomDelay);
-        });
-      },
-      shouldRetry: () => true,
-      url: getWsUrl(),
-    }),
-  );
-
   const splitLink = ApolloLink.split(
     ({ query }) => {
       const definition = getMainDefinition(query);
@@ -116,7 +69,7 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
         definition.operation === OperationTypeNode.SUBSCRIPTION
       );
     },
-    wsLink,
+    apolloSseLink,
     httpLink,
   );
   /* TPL_LINK_BODIES:END */

@@ -6,8 +6,6 @@ const configSchema = z.object(
     VITE_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
     // URL for the GraphQL API endpoint
     VITE_GRAPH_API_ENDPOINT: z.string().min(1),
-    // URL for the GraphQL web socket API endpoint (optional)
-    VITE_GRAPH_WS_API_ENDPOINT: z.string(),
     // DSN for Sentry (optional)
     VITE_SENTRY_DSN: z.string().optional(),
   } /* TPL_CONFIG_SCHEMA:END */,

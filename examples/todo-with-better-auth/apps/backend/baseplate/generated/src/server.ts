@@ -2,7 +2,6 @@ import type { FastifyInstance, FastifyServerOptions } from 'fastify';
 
 import fastifyCookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
-import websocketPlugin from '@fastify/websocket';
 import * as Sentry from '@sentry/node';
 import Fastify from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
@@ -38,7 +37,6 @@ export async function buildServer(
   /* TPL_PLUGINS:START */
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
-  await fastify.register(websocketPlugin);
   await fastify.register(bullMQPlugin);
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);

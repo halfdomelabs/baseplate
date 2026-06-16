@@ -2,6 +2,7 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ApolloReactApolloPaths {
+  apolloSseLink: string;
   appApolloProvider: string;
   cache: string;
   codegen: string;
@@ -25,6 +26,7 @@ const apolloReactApolloPathsTask = createGeneratorTask({
     return {
       providers: {
         apolloReactApolloPaths: {
+          apolloSseLink: `${srcRoot}/services/apollo/apollo-sse-link.ts`,
           appApolloProvider: `${srcRoot}/app/app-apollo-provider.tsx`,
           cache: `${srcRoot}/services/apollo/cache.ts`,
           codegen: `${packageRoot}/codegen.ts`,

@@ -16,7 +16,6 @@ import { createContextFromRequest } from '@src/utils/request-service-context.js'
 import { builder } from './builder.js';
 import { useGraphLogger } from './use-graph-logger.js';
 import { useSentry } from './use-sentry.js';
-import { getGraphqlWsHandler } from './websocket.js';
 
 /* TPL_SIDE_EFFECT_IMPORTS:START */
 import '@src/modules/index.js';
@@ -144,17 +143,14 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
   /* TPL_GRAPHQL_HANDLER:START */
   fastify.route({
     url: '/graphql',
-    method: 'GET',
-    handler: httpHandler,
-    wsHandler: getGraphqlWsHandler(graphQLServer),
-  });
-
-  fastify.route({
-    url: '/graphql',
-    method: ['POST', 'OPTIONS'],
+    method: ['GET', 'POST', 'OPTIONS'],
     handler: httpHandler,
   });
   /* TPL_GRAPHQL_HANDLER:END */
+
+  // End active subscription (SSE) streams on shutdown so `fastify.close()`
+  // resolves promptly instead of waiting for long-lived connections to time out.
+  fastify.addHook('onClose', () => graphQLServer.dispose());
 
   done();
 });

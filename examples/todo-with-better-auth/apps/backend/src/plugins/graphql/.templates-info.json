@@ -28,10 +28,5 @@
     "generator": "@baseplate-dev/plugin-observability#pothos/pothos-sentry",
     "instanceData": {},
     "template": "use-sentry"
-  },
-  "websocket.ts": {
-    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
-    "instanceData": {},
-    "template": "websocket"
   }
 }

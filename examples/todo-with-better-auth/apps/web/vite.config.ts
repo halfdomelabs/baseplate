@@ -30,13 +30,12 @@ export default defineConfig(({ mode }) => {
             '/api': {
               target: envVars.DEV_BACKEND_HOST,
               rewrite: (path) => path.replace(/^\/api/, ''),
-              // Vite's dev proxy does not forward an upstream connection close
-              // to the browser for streaming responses (SSE), so when the
-              // backend restarts mid-stream the client hangs forever instead of
-              // reconnecting. Destroy the client response when the upstream
-              // response ends so GraphQL subscriptions over SSE reconnect in
-              // dev. See https://github.com/vitejs/vite/issues/20712
               configure: (proxy) => {
+                // Vite's dev proxy does not forward an upstream connection
+                // close to the browser for streaming responses (SSE), so a
+                // backend restart leaves the client hanging instead of
+                // reconnecting. Destroy the client response when the upstream
+                // response ends. See https://github.com/vitejs/vite/issues/20712
                 proxy.on('proxyRes', (proxyRes, _req, res) => {
                   proxyRes.on('close', () => {
                     if (!res.writableEnded) {

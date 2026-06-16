@@ -148,5 +148,9 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
   });
   /* TPL_GRAPHQL_HANDLER:END */
 
+  // End active subscription (SSE) streams on shutdown so `fastify.close()`
+  // resolves promptly instead of waiting for long-lived connections to time out.
+  fastify.addHook('onClose', () => graphQLServer.dispose());
+
   done();
 });

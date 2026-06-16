@@ -130,6 +130,11 @@ function WebAppGeneralForm(): React.JSX.Element {
               control={control}
               name="includeUploadComponents"
             />
+            <SwitchFieldController
+              label="Enable GraphQL Subscriptions?"
+              control={control}
+              name="enableSubscriptions"
+            />
           </SectionListSectionContent>
         </SectionListSection>
 
