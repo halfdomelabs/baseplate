@@ -1,5 +1,49 @@
 # @baseplate-dev/react-generators
 
+## 0.6.10
+
+### Patch Changes
+
+- [#891](https://github.com/halfdomelabs/baseplate/pull/891) [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e) Thanks [@kingston](https://github.com/kingston)! - - Add generated GraphQL files (`src/gql/*`) to `.gitignore` in generated projects
+  - Replace Prisma's `postinstall` hook with a cacheable `prisma:generate` Turbo prebuild task
+  - Make `lint`, `typecheck`, and `test` depend on prebuild tasks (`gql:generate`, `prisma:generate`) in Turbo so generated types are available in CI
+
+  **Migration:** After syncing, remove previously tracked generated GraphQL files from git:
+
+  ```sh
+  git rm -r --cached apps/*/src/gql
+  ```
+
+- [#894](https://github.com/halfdomelabs/baseplate/pull/894) [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d) Thanks [@kingston](https://github.com/kingston)! - Add RadioGroup component
+
+- [#898](https://github.com/halfdomelabs/baseplate/pull/898) [`0afcb97`](https://github.com/halfdomelabs/baseplate/commit/0afcb979943a6f4f571c56af5e73936ed9d40370) Thanks [@kingston](https://github.com/kingston)! - Re-introduce GraphQL subscriptions support, now transported over Server-Sent
+  Events (SSE) instead of WebSockets (ENG-1088).
+
+- [#889](https://github.com/halfdomelabs/baseplate/pull/889) [`e8da347`](https://github.com/halfdomelabs/baseplate/commit/e8da347b3bd799b31c5d04d1317dedaa8c14e412) Thanks [@kingston](https://github.com/kingston)! - Upgrade @base-ui/react from 1.2.0 to 1.4.1 to fix iOS + Safari combobox issues
+  - @base-ui/react: 1.2.0 → 1.4.1
+
+  The 1.4.0 release includes combobox fixes for iOS viewport settling (#4351),
+  preventing item taps from blurring the input (#4578), and scroll lock handling
+  for touch input on full-width anchored modal popups (#3100), which address the
+  iOS + Safari combobox issues (ENG-1161).
+
+- [#892](https://github.com/halfdomelabs/baseplate/pull/892) [`0c44597`](https://github.com/halfdomelabs/baseplate/commit/0c445971b18d50300c50c8bfb414967df9170c83) Thanks [@kingston](https://github.com/kingston)! - Upgrade GraphQL code generator packages to latest
+  - `@graphql-codegen/cli`: 6.1.3 → 7.1.0
+  - `@graphql-codegen/client-preset`: 5.2.4 → 6.0.1
+  - `graphql`: 16.11.0 → 16.14.0
+
+- [#893](https://github.com/halfdomelabs/baseplate/pull/893) [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to v8, vitest to 4.1.7, @vitejs/plugin-react to 6.x, @tailwindcss/vite to 4.3.0, and Storybook to 10.4.1. Keep `vite-tsconfig-paths` in generated projects as Vite 8's native `resolve.tsconfigPaths` does not follow tsconfig project references (vitejs/vite#21889).
+
+- [#900](https://github.com/halfdomelabs/baseplate/pull/900) [`c1e8765`](https://github.com/halfdomelabs/baseplate/commit/c1e8765fb3b59f56db4bc393e7469a54332c94b8) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 8.0.16, Node to 24.17.0, and pnpm to 11.7.0
+  - vite: 8.0.14 → 8.0.16
+  - Node.js: 24.16.0 → 24.17.0
+  - pnpm: 11.5.0 → 11.7.0
+
+- Updated dependencies [[`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`c1e8765`](https://github.com/halfdomelabs/baseplate/commit/c1e8765fb3b59f56db4bc393e7469a54332c94b8)]:
+  - @baseplate-dev/sync@0.6.10
+  - @baseplate-dev/core-generators@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

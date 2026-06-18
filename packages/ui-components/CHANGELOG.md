@@ -1,5 +1,26 @@
 # @baseplate-dev/ui-components
 
+## 0.6.10
+
+### Patch Changes
+
+- [#886](https://github.com/halfdomelabs/baseplate/pull/886) [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759) Thanks [@kingston](https://github.com/kingston)! - Migrate from @originjs/vite-plugin-federation to @module-federation/vite for active maintenance and Vite 7+ peer-range support. As part of this, `@baseplate-dev/project-builder-lib` and `@baseplate-dev/ui-components` now declare `react`, `react-dom`, `zod` (and `@baseplate-dev/ui-components` from project-builder-lib) as peer dependencies — these were already required by consumers but are now explicit, so the federation runtime can dedupe them across host and remotes.
+
+- [#894](https://github.com/halfdomelabs/baseplate/pull/894) [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d) Thanks [@kingston](https://github.com/kingston)! - Add RadioGroup component
+
+- [#889](https://github.com/halfdomelabs/baseplate/pull/889) [`e8da347`](https://github.com/halfdomelabs/baseplate/commit/e8da347b3bd799b31c5d04d1317dedaa8c14e412) Thanks [@kingston](https://github.com/kingston)! - Upgrade @base-ui/react from 1.2.0 to 1.4.1 to fix iOS + Safari combobox issues
+  - @base-ui/react: 1.2.0 → 1.4.1
+
+  The 1.4.0 release includes combobox fixes for iOS viewport settling (#4351),
+  preventing item taps from blurring the input (#4578), and scroll lock handling
+  for touch input on full-width anchored modal popups (#3100), which address the
+  iOS + Safari combobox issues (ENG-1161).
+
+- [#893](https://github.com/halfdomelabs/baseplate/pull/893) [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to v8, vitest to 4.1.7, @vitejs/plugin-react to 6.x, @tailwindcss/vite to 4.3.0, and Storybook to 10.4.1. Keep `vite-tsconfig-paths` in generated projects as Vite 8's native `resolve.tsconfigPaths` does not follow tsconfig project references (vitejs/vite#21889).
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

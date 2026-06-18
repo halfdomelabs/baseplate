@@ -1,5 +1,31 @@
 # @baseplate-dev/core-generators
 
+## 0.6.10
+
+### Patch Changes
+
+- [#897](https://github.com/halfdomelabs/baseplate/pull/897) [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10) Thanks [@kingston](https://github.com/kingston)! - Fix Prettier formatting issues on first code generation by adding a post-write command that re-formats files after dependencies are installed
+
+- [#893](https://github.com/halfdomelabs/baseplate/pull/893) [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23) Thanks [@kingston](https://github.com/kingston)! - Upgrade axios to 1.16.1
+  - axios: 1.15.2 → 1.16.1
+
+- [#888](https://github.com/halfdomelabs/baseplate/pull/888) [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e) Thanks [@kingston](https://github.com/kingston)! - Upgrade better-auth and turbo to their latest versions
+  - better-auth: 1.4.19 → 1.6.11 (injected into generated projects)
+  - turbo: 2.9.0 → 2.9.15 (monorepo dev dependency and generated project version)
+
+- [#896](https://github.com/halfdomelabs/baseplate/pull/896) [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node.js from 24.14.0 to 24.16.0 and pnpm from 10.33.0 to 11.5.0
+
+- [#893](https://github.com/halfdomelabs/baseplate/pull/893) [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to v8, vitest to 4.1.7, @vitejs/plugin-react to 6.x, @tailwindcss/vite to 4.3.0, and Storybook to 10.4.1. Keep `vite-tsconfig-paths` in generated projects as Vite 8's native `resolve.tsconfigPaths` does not follow tsconfig project references (vitejs/vite#21889).
+
+- [#900](https://github.com/halfdomelabs/baseplate/pull/900) [`c1e8765`](https://github.com/halfdomelabs/baseplate/commit/c1e8765fb3b59f56db4bc393e7469a54332c94b8) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 8.0.16, Node to 24.17.0, and pnpm to 11.7.0
+  - vite: 8.0.14 → 8.0.16
+  - Node.js: 24.16.0 → 24.17.0
+  - pnpm: 11.5.0 → 11.7.0
+
+- Updated dependencies [[`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10)]:
+  - @baseplate-dev/sync@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes
