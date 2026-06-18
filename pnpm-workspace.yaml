@@ -41,9 +41,6 @@ linkWorkspacePackages: true
 
 minimumReleaseAge: 1440
 
-minimumReleaseAgeExclude:
-  - vite
-
 publishBranch: main
 
 saveWorkspaceProtocol: rolling
