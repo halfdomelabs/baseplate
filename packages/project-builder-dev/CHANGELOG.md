@@ -1,5 +1,20 @@
 # @baseplate-dev/project-builder-dev
 
+## 0.6.10
+
+### Patch Changes
+
+- [#900](https://github.com/halfdomelabs/baseplate/pull/900) [`c1e8765`](https://github.com/halfdomelabs/baseplate/commit/c1e8765fb3b59f56db4bc393e7469a54332c94b8) Thanks [@kingston](https://github.com/kingston)! - Upgrade testcontainers to 12.0.2
+
+- [#896](https://github.com/halfdomelabs/baseplate/pull/896) [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5) Thanks [@kingston](https://github.com/kingston)! - Disable pnpm strictDepBuilds for Baseplate-run installs so generation and e2e
+  `pnpm install` do not fail on unreviewed dependency build scripts in freshly
+  generated projects
+- Updated dependencies [[`192efea`](https://github.com/halfdomelabs/baseplate/commit/192efeac591e3193740da901fb42d0d077063368), [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`0afcb97`](https://github.com/halfdomelabs/baseplate/commit/0afcb979943a6f4f571c56af5e73936ed9d40370)]:
+  - @baseplate-dev/project-builder-web@0.6.10
+  - @baseplate-dev/project-builder-lib@0.6.10
+  - @baseplate-dev/project-builder-server@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

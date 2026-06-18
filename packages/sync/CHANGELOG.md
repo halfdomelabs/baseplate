@@ -1,5 +1,18 @@
 # @baseplate-dev/sync
 
+## 0.6.10
+
+### Patch Changes
+
+- [#896](https://github.com/halfdomelabs/baseplate/pull/896) [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5) Thanks [@kingston](https://github.com/kingston)! - Disable pnpm strictDepBuilds for Baseplate-run installs so generation and e2e
+  `pnpm install` do not fail on unreviewed dependency build scripts in freshly
+  generated projects
+
+- [#897](https://github.com/halfdomelabs/baseplate/pull/897) [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10) Thanks [@kingston](https://github.com/kingston)! - Fix Prettier formatting issues on first code generation by adding a post-write command that re-formats files after dependencies are installed
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes
