@@ -3,7 +3,6 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -21,8 +20,8 @@ export default defineConfig(({ mode }) => {
       }),
       react(),
       svgrPlugin(),
-      viteTsconfigPaths(),
     ],
+    resolve: { tsconfigPaths: true },
     server: {
       port: envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000,
       proxy: envVars.DEV_BACKEND_HOST
