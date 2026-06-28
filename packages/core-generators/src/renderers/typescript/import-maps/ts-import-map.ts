@@ -64,8 +64,9 @@ export function createTsImportMap<
           name,
           moduleSpecifier,
           isTypeOnly: value.isTypeOnly,
-          declaration: (alias) => makeDeclaration(alias),
-          typeDeclaration: (alias) => makeDeclaration(alias, true),
+          declaration: (alias: string | undefined) => makeDeclaration(alias),
+          typeDeclaration: (alias: string | undefined) =>
+            makeDeclaration(alias, true),
           fragment: () => tsCodeFragment(fragmentName, makeDeclaration()),
           typeFragment: () =>
             tsCodeFragment(fragmentName, makeDeclaration(undefined, true)),

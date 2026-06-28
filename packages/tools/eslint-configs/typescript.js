@@ -68,16 +68,10 @@ export function generateTypescriptEslintConfig(options = {}) {
       rules: {
         // disallow console.log since that is typically used for debugging
         'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info'] }],
-        // Enforce object shorthand syntax to keep object properties concise.
-        'object-shorthand': ['error', 'always'],
         // Enforce the use of template literals instead of string concatenation.
         'prefer-template': 'error',
         // Enforce using concise arrow function syntax when possible.
         'arrow-body-style': ['error', 'as-needed'],
-        // Encourage the use of arrow functions for callbacks to avoid `this` binding issues.
-        // Allow named functions to be used in arrow functions to support generic functions being passed in
-        // e.g. generic components using forwardRef
-        'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
         // Disallow renaming imports, exports, or destructured variables to the same name.
         'no-useless-rename': 'error',
         // Allow empty patterns in function parameters which are used in test fixtures
@@ -203,12 +197,6 @@ export function generateTypescriptEslintConfig(options = {}) {
 
         // Disallow import relative packages (e.g., `import '../other-package/foo'`)
         'import-x/no-relative-packages': 'error',
-
-        // Use top-level type imports
-        'import-x/consistent-type-specifier-style': [
-          'error',
-          'prefer-top-level',
-        ],
       },
       languageOptions: {
         ecmaVersion: 2022,
