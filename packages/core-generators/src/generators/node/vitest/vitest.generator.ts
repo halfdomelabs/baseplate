@@ -45,11 +45,7 @@ export const vitestGenerator = createGenerator({
     paths: NODE_VITEST_GENERATED.paths.task,
     renderers: NODE_VITEST_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
-      dev: extractPackageVersions(CORE_PACKAGES, [
-        'vitest',
-        'vite',
-        'vite-tsconfig-paths',
-      ]),
+      dev: extractPackageVersions(CORE_PACKAGES, ['vitest', 'vite']),
     }),
     setup: setupTask,
     node: createNodeTask((node) => {
@@ -95,13 +91,8 @@ export const vitestGenerator = createGenerator({
               renderers.vitestConfig.render({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
-                    plugins: TsCodeUtils.mergeFragmentsAsArray({
-                      tsconfigPaths: tsCodeFragment(
-                        'tsconfigPaths()',
-                        tsImportBuilder()
-                          .default('tsconfigPaths')
-                          .from('vite-tsconfig-paths'),
-                      ),
+                    resolve: JSON.stringify({
+                      tsconfigPaths: true,
                     }),
                     test: configValues,
                   }),

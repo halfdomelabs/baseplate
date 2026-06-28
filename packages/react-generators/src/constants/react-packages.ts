@@ -7,16 +7,15 @@ export const REACT_PACKAGES = {
   '@types/node': `^22.0.0`,
   '@types/react': '19.1.3',
   '@types/react-dom': '19.1.3',
-  '@vitejs/plugin-react': '6.0.2',
-  vite: '8.0.16',
-  'vite-plugin-svgr': '4.5.0',
-  'vite-tsconfig-paths': '5.1.4',
+  '@vitejs/plugin-react': '6.0.3',
+  vite: '8.1.0',
+  'vite-plugin-svgr': '5.2.0',
 
   loglevel: '1.9.1',
 
   // Tailwind
-  '@tailwindcss/vite': '4.3.0',
-  tailwindcss: '4.3.0',
+  '@tailwindcss/vite': '4.3.1',
+  tailwindcss: '4.3.1',
   'prettier-plugin-tailwindcss': '0.7.2',
   'tw-animate-css': '1.2.9',
   'tailwind-merge': '3.3.1',
