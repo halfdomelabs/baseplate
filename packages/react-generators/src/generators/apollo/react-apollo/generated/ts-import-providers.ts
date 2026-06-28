@@ -18,6 +18,7 @@ import {
 import { APOLLO_REACT_APOLLO_PATHS } from './template-paths.js';
 
 export const reactApolloImportsSchema = createTsImportMapSchema({
+  apolloSseLink: {},
   createApolloCache: {},
   createApolloClient: {},
 });
@@ -49,6 +50,7 @@ const apolloReactApolloImportsTask = createGeneratorTask({
           readFragment: paths.gqlIndex,
         }),
         reactApolloImports: createTsImportMap(reactApolloImportsSchema, {
+          apolloSseLink: paths.apolloSseLink,
           createApolloCache: paths.cache,
           createApolloClient: paths.service,
         }),

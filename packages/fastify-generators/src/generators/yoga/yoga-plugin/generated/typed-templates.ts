@@ -33,7 +33,6 @@ const graphqlPlugin = createTsTemplateFile({
 
 const pubsub = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'subscriptions',
   importMapProviders: { fastifyRedisImports: fastifyRedisImportsProvider },
   name: 'pubsub',
   source: {
@@ -44,26 +43,6 @@ const pubsub = createTsTemplateFile({
   },
   variables: { TPL_PUBLISH_ARGS: {} },
 });
-
-const websocket = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'subscriptions',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    loggerServiceImports: loggerServiceImportsProvider,
-    requestServiceContextImports: requestServiceContextImportsProvider,
-  },
-  name: 'websocket',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/plugins/graphql/websocket.ts',
-    ),
-  },
-  variables: { TPL_ON_CONNECT: {} },
-});
-
-export const subscriptionsGroup = { pubsub, websocket };
 
 const useGraphLogger = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -83,6 +62,6 @@ const useGraphLogger = createTsTemplateFile({
 
 export const YOGA_YOGA_PLUGIN_TEMPLATES = {
   graphqlPlugin,
-  subscriptionsGroup,
+  pubsub,
   useGraphLogger,
 };

@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.10
+
+### Patch Changes
+
+- [#890](https://github.com/halfdomelabs/baseplate/pull/890) [`192efea`](https://github.com/halfdomelabs/baseplate/commit/192efeac591e3193740da901fb42d0d077063368) Thanks [@kingston](https://github.com/kingston)! - Fix invalid TanStack Router param name in the admin section route
+
 ## 0.6.9
 
 ## 0.6.8

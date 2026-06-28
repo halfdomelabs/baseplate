@@ -1,10 +1,9 @@
 import { loadEnv } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig(
   /* TPL_CONFIG:START */ {
-    plugins: [tsconfigPaths()],
+    resolve: { tsconfigPaths: true },
     test: {
       clearMocks: true,
       dir: 'src',

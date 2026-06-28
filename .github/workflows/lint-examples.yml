@@ -92,6 +92,16 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: examples/${{ matrix.example }}
 
+      # Examples are nested inside the Baseplate monorepo only in CI; a real
+      # generated project is standalone. Vite 8's
+      # resolve.tsconfigPaths walks up the directory tree and picks up the repo
+      # root tsconfig.json, whose extends chain references @baseplate-dev/tools
+      # (not installed in the example's isolated node_modules), breaking the
+      # build. Removing the root tsconfig here makes CI match a standalone
+      # project. See vitejs/vite#21856 and rolldown/rolldown#8732.
+      - name: Remove root tsconfig.json (examples are standalone projects)
+        run: rm -f tsconfig.json
+
       - name: Run Docker setup
         run: docker compose up -d
         working-directory: examples/${{ matrix.example }}/docker

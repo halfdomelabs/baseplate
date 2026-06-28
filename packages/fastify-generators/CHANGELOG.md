@@ -1,5 +1,37 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.10
+
+### Patch Changes
+
+- [#891](https://github.com/halfdomelabs/baseplate/pull/891) [`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e) Thanks [@kingston](https://github.com/kingston)! - - Add generated GraphQL files (`src/gql/*`) to `.gitignore` in generated projects
+  - Replace Prisma's `postinstall` hook with a cacheable `prisma:generate` Turbo prebuild task
+  - Make `lint`, `typecheck`, and `test` depend on prebuild tasks (`gql:generate`, `prisma:generate`) in Turbo so generated types are available in CI
+
+  **Migration:** After syncing, remove previously tracked generated GraphQL files from git:
+
+  ```sh
+  git rm -r --cached apps/*/src/gql
+  ```
+
+- [#895](https://github.com/halfdomelabs/baseplate/pull/895) [`58d7c6b`](https://github.com/halfdomelabs/baseplate/commit/58d7c6bc433021e543e65817bf75582654ad4d42) Thanks [@kingston](https://github.com/kingston)! - Improve Prisma schema merge by normalizing whitespace before diff3 to reduce false conflicts caused by Prisma's column-aligning formatter.
+
+- [#898](https://github.com/halfdomelabs/baseplate/pull/898) [`0afcb97`](https://github.com/halfdomelabs/baseplate/commit/0afcb979943a6f4f571c56af5e73936ed9d40370) Thanks [@kingston](https://github.com/kingston)! - Re-introduce GraphQL subscriptions support, now transported over Server-Sent
+  Events (SSE) instead of WebSockets (ENG-1088).
+
+- [#888](https://github.com/halfdomelabs/baseplate/pull/888) [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e) Thanks [@kingston](https://github.com/kingston)! - Upgrade prisma to 7.8.0
+  - prisma: 7.6.0 → 7.8.0
+  - @prisma/client: 7.6.0 → 7.8.0
+  - @prisma/adapter-pg: 7.6.0 → 7.8.0
+
+- [#896](https://github.com/halfdomelabs/baseplate/pull/896) [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5) Thanks [@kingston](https://github.com/kingston)! - Upgrade tsx to 4.22.3
+  - tsx: 4.20.6 → 4.22.3
+
+- Updated dependencies [[`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`db93095`](https://github.com/halfdomelabs/baseplate/commit/db93095c6a9846d1e583832b70b85898ae785b10), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`f9fe0c2`](https://github.com/halfdomelabs/baseplate/commit/f9fe0c20f16bf3495129aa859340dd689500cc1e), [`f5ad6d2`](https://github.com/halfdomelabs/baseplate/commit/f5ad6d2ff994ecdd03f790b7e5c0915ddc7660c5), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23), [`c1e8765`](https://github.com/halfdomelabs/baseplate/commit/c1e8765fb3b59f56db4bc393e7469a54332c94b8)]:
+  - @baseplate-dev/sync@0.6.10
+  - @baseplate-dev/core-generators@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

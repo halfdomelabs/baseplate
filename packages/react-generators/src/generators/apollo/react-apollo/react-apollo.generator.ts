@@ -145,7 +145,6 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
     (t) => ({
       createApolloClientArguments: t.namedArray<ApolloCreateArgument>(),
       apolloLinks: t.namedArray<ApolloLink>(),
-      websocketOptions: t.map<string, TsCodeFragment | string>(),
     }),
     {
       prefix: 'react-apollo',
@@ -187,9 +186,9 @@ export const reactApolloGenerator = createGenerator({
         reactTypescript.addNodeTsFile('codegen.ts');
       },
     ),
-    websocketPackages: enableSubscriptions
+    subscriptionPackages: enableSubscriptions
       ? createNodePackagesTask({
-          prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
+          prod: extractPackageVersions(REACT_PACKAGES, ['graphql-sse']),
         })
       : undefined,
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
@@ -224,7 +223,7 @@ export const reactApolloGenerator = createGenerator({
     }),
     reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
       if (enableSubscriptions) {
-        reactProxy.enableWebSocket();
+        reactProxy.enableStreamingReconnect();
       }
     }),
     reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
@@ -233,14 +232,6 @@ export const reactApolloGenerator = createGenerator({
         validator: 'z.string().min(1)',
         devDefaultValue: devApiEndpoint,
       });
-
-      if (enableSubscriptions) {
-        reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
-          comment: 'URL for the GraphQL web socket API endpoint (optional)',
-          validator: 'z.string()',
-          devDefaultValue: '',
-        });
-      }
     }),
     reactAppConfig: createGeneratorTask({
       dependencies: {
@@ -309,15 +300,13 @@ const preloadQuery = useMemo(
         reactConfigImports: reactConfigImportsProvider,
         reactApolloConfigValues: reactApolloConfigValuesProvider,
         renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.provider,
+        paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
       },
       run({
         reactConfigImports,
-        reactApolloConfigValues: {
-          createApolloClientArguments,
-          apolloLinks,
-          websocketOptions,
-        },
+        reactApolloConfigValues: { createApolloClientArguments, apolloLinks },
         renderers,
+        paths,
       }) {
         return {
           build: async (builder) => {
@@ -359,61 +348,21 @@ const preloadQuery = useMemo(
             });
 
             if (enableSubscriptions) {
-              const websocketTemplate =
-                await builder.readTemplate('websocket-links.ts');
-              const getWsUrlTemplate = TsCodeUtils.extractTemplateSnippet(
-                websocketTemplate,
-                'GET_WS_URL',
-              );
-              const retryWaitTemplate = TsCodeUtils.extractTemplateSnippet(
-                websocketTemplate,
-                'RETRY_WAIT',
-              ).replace(/;$/, '');
-
-              // TODO: This should not live here but in auth service
-              // TODO: This should live in the defaults not set afterwards to prevent them from being overridden
-              websocketOptions.set(
-                'connectionParams',
-                tsCodeFragment(`async () => {
-                  const accessToken = await getAccessToken();
-                  if (!accessToken) {
-                    return {};
-                  }
-                  return { authorization: \`Bearer \${accessToken}\` };
-                }`),
-              );
-
-              websocketOptions.set(
-                'url',
-                tsCodeFragment(`getWsUrl()`, [], {
-                  hoistedFragments: [
-                    tsHoistedFragment('get-ws-url', getWsUrlTemplate),
-                  ],
-                }),
-              );
-              websocketOptions.set(
-                'retryAttempts',
-                "86_400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
-              );
-              websocketOptions.set('retryWait', retryWaitTemplate);
-              websocketOptions.set('shouldRetry', '() => true');
-
-              const wsOptionsFragment =
-                TsCodeUtils.mergeFragmentsAsObject(websocketOptions);
-
+              // Subscriptions are transported over SSE by a standalone link
+              // file (apollo-sse-link.ts); it has no body fragment, just an
+              // import that the split link below routes subscriptions to.
               sortedLinks.push({
-                name: 'wsLink',
+                name: 'apolloSseLink',
                 transport: 'ws',
                 priority: 'network',
-                bodyFragment: TsCodeUtils.templateWithImports([
-                  tsImportBuilder(['GraphQLWsLink']).from(
-                    '@apollo/client/link/subscriptions',
-                  ),
-                  tsImportBuilder(['createClient']).from('graphql-ws'),
-                ])`const wsLink = new GraphQLWsLink(createClient(${wsOptionsFragment}));`,
+                nameImport: tsImportBuilder(['apolloSseLink']).from(
+                  paths.apolloSseLink,
+                ),
               });
 
-              const wsLinks = sortedLinks.filter((l) => l.transport === 'ws');
+              const subscriptionLinks = sortedLinks.filter(
+                (l) => l.transport === 'ws',
+              );
               const httpLinks = sortedLinks.filter(
                 (l) => l.transport === 'http',
               );
@@ -421,13 +370,15 @@ const preloadQuery = useMemo(
               const formatLinks = (
                 linksToFormat: ApolloLink[],
               ): TsCodeFragment | string => {
-                const linkNames = linksToFormat.map((link) => link.name);
-                if (linkNames.length === 1) {
-                  return linkNames[0];
+                const linkFragments = linksToFormat.map((link) =>
+                  tsCodeFragment(link.name, link.nameImport),
+                );
+                if (linkFragments.length === 1) {
+                  return linkFragments[0];
                 }
                 return TsCodeUtils.templateWithImports([
                   tsImportBuilder(['ApolloLink']).from('@apollo/client'),
-                ])`ApolloLink.from(${TsCodeUtils.mergeFragmentsPresorted(linkNames)})`;
+                ])`ApolloLink.from(${TsCodeUtils.mergeFragmentsPresorted(linkFragments)})`;
               };
 
               sortedLinks.push({
@@ -450,7 +401,7 @@ const preloadQuery = useMemo(
       definition.operation === OperationTypeNode.SUBSCRIPTION
     );
   },
-  ${formatLinks(wsLinks)},
+  ${formatLinks(subscriptionLinks)},
   ${formatLinks(httpLinks)},
 );`,
               });
@@ -551,6 +502,20 @@ const preloadQuery = useMemo(
         };
       },
     }),
+    apolloSseLinkFile: enableSubscriptions
+      ? createGeneratorTask({
+          dependencies: {
+            renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.provider,
+          },
+          run({ renderers }) {
+            return {
+              build: async (builder) => {
+                await builder.apply(renderers.apolloSseLink.render({}));
+              },
+            };
+          },
+        })
+      : undefined,
     graphqlErrorContext: createGeneratorTask({
       dependencies: {
         reactErrorConfig: reactErrorConfigProvider,

@@ -249,10 +249,6 @@ export const pothosGenerator = createGenerator({
                 variables: {
                   TPL_SCHEMA_TYPE_OPTIONS: schemaTypeOptionsFragment,
                   TPL_SCHEMA_BUILDER_OPTIONS: schemaOptionsFragment,
-                  TPL_SUBSCRIPTION_TYPE:
-                    yogaPluginConfig.isSubscriptionEnabled()
-                      ? `builder.subscriptionType();`
-                      : '',
                 },
               }),
             );

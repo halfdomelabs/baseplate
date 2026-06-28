@@ -37,7 +37,6 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
-      "group": "subscriptions",
       "importMapProviders": {
         "fastifyRedisImportsProvider": {
           "importName": "fastifyRedisImportsProvider",
@@ -65,33 +64,6 @@
       "pathRootRelativePath": "{src-root}/plugins/graphql/use-graph-logger.ts",
       "sourceFile": "src/plugins/graphql/use-graph-logger.ts",
       "variables": {}
-    },
-    "websocket": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
-      "group": "subscriptions",
-      "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
-        "loggerServiceImportsProvider": {
-          "importName": "loggerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
-        },
-        "requestServiceContextImportsProvider": {
-          "importName": "requestServiceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/plugins/graphql/websocket.ts",
-      "sourceFile": "src/plugins/graphql/websocket.ts",
-      "variables": { "TPL_ON_CONNECT": {} }
-    },
-    "websocket-fragments": {
-      "type": "ts-snippets",
-      "sourceFile": "websocket-fragments.ts"
     }
   }
 }

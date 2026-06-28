@@ -17,16 +17,15 @@ export const CORE_PACKAGES = {
   'eslint-plugin-unicorn': '62.0.0',
   'typescript-eslint': '8.54.0',
   globals: '17.3.0',
-  tailwindcss: '4.3.0',
+  tailwindcss: '4.3.1',
 
   // Formatting
   prettier: '3.8.1',
   'prettier-plugin-packagejson': '3.0.0',
 
   // Testing
-  vite: '8.0.14',
+  vite: '8.1.0',
   vitest: '4.1.7',
-  'vite-tsconfig-paths': '5.1.4',
 
   // Utils
   axios: '1.16.1',

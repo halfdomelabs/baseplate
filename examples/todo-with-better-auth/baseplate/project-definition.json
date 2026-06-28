@@ -201,7 +201,7 @@
     {
       "devPort": 6001,
       "enableAxios": true,
-      "enableSubscriptions": false,
+      "enableSubscriptions": true,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
       "type": "backend"
@@ -209,6 +209,7 @@
     {
       "description": "An app for cool todoers",
       "devPort": 6031,
+      "enableSubscriptions": true,
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
@@ -2092,7 +2093,7 @@
         },
         "light": {
           "accent": "oklch(0.968 0.007 247.896)",
-          "accentForeground": "oklch(0.208 0.040 265.755)",
+          "accentForeground": "oklch(0.208 0.04 265.755)",
           "background": "oklch(1 0 0)",
           "border": "oklch(0.929 0.013 255.508)",
           "card": "oklch(1 0 0)",
@@ -2112,7 +2113,7 @@
           "primaryForeground": "oklch(0.984 0.003 247.858)",
           "ring": "oklch(0.714 0.143 254.624)",
           "secondary": "oklch(0.968 0.007 247.896)",
-          "secondaryForeground": "oklch(0.208 0.040 265.755)",
+          "secondaryForeground": "oklch(0.208 0.04 265.755)",
           "success": "oklch(0.979 0.021 166.113)",
           "successForeground": "oklch(0.262 0.051 172.552)",
           "warning": "oklch(0.987 0.022 95.277)",
@@ -2132,7 +2133,7 @@
             "600": "oklch(0.446 0.037 257.281)",
             "700": "oklch(0.372 0.039 257.287)",
             "800": "oklch(0.279 0.037 260.031)",
-            "900": "oklch(0.208 0.040 265.755)",
+            "900": "oklch(0.208 0.04 265.755)",
             "950": "oklch(0.129 0.041 264.695)"
           }
         },

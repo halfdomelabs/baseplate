@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/fastify-generators",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "description": "Fastify generators for Baseplate",
   "keywords": [
     "backend",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.3",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",

@@ -103,12 +103,6 @@ export const reactGenerator = createGenerator({
             `react()`,
             tsImportBuilder().default('react').from('@vitejs/plugin-react'),
           ),
-          'tsconfig-paths': tsCodeFragment(
-            `viteTsconfigPaths()`,
-            tsImportBuilder()
-              .default('viteTsconfigPaths')
-              .from('vite-tsconfig-paths'),
-          ),
           svgr: tsCodeFragment(
             `svgrPlugin()`,
             tsImportBuilder().default('svgrPlugin').from('vite-plugin-svgr'),
@@ -193,6 +187,9 @@ export const reactGenerator = createGenerator({
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
                     plugins: TsCodeUtils.mergeFragmentsAsArray(vitePlugins),
+                    resolve: JSON.stringify({
+                      tsconfigPaths: true,
+                    }),
                     server:
                       TsCodeUtils.mergeFragmentsAsObject(viteServerOptions),
                     build: JSON.stringify({

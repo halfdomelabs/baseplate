@@ -41,7 +41,13 @@ const PASSTHROUGH_ENV_VARS = [
 ];
 
 function getBaseEnv(): Record<string, string> {
-  const env: Record<string, string> = { CI: 'true' };
+  const env: Record<string, string> = {
+    CI: 'true',
+    // Disable pnpm 10.3+ strictDepBuilds (default true) so e2e `pnpm install`
+    // does not fail on unreviewed dependency build scripts in freshly generated
+    // projects. Only pnpm_config_strict_dep_builds works (not npm_config_*).
+    pnpm_config_strict_dep_builds: 'false',
+  };
   for (const key of PASSTHROUGH_ENV_VARS) {
     if (process.env[key] != null) {
       env[key] = process.env[key];

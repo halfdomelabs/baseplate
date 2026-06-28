@@ -76,4 +76,3 @@ export const builder = new SchemaBuilder<{
 
 builder.queryType();
 builder.mutationType();
-/* TPL_SUBSCRIPTION_TYPE:BLOCK */

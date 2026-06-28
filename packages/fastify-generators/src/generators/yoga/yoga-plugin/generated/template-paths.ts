@@ -5,7 +5,6 @@ export interface YogaYogaPluginPaths {
   graphqlPlugin: string;
   pubsub: string;
   useGraphLogger: string;
-  websocket: string;
 }
 
 const yogaYogaPluginPaths = createProviderType<YogaYogaPluginPaths>(
@@ -24,7 +23,6 @@ const yogaYogaPluginPathsTask = createGeneratorTask({
           graphqlPlugin: `${srcRoot}/plugins/graphql/index.ts`,
           pubsub: `${srcRoot}/plugins/graphql/pubsub.ts`,
           useGraphLogger: `${srcRoot}/plugins/graphql/use-graph-logger.ts`,
-          websocket: `${srcRoot}/plugins/graphql/websocket.ts`,
         },
       },
     };
