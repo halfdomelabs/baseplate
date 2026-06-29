@@ -113,6 +113,8 @@ export async function deleteDraftSession(
 export interface DraftSessionContext {
   session: DraftSession;
   entityContext: EntityServiceContext;
+  /** The container built from the current draft definition (resolved, ID-based refs). */
+  container: ProjectDefinitionContainer;
   /** Ref payload from the current draft (before the pending edit), used for rename detection. */
   oldRefPayload: ResolvedZodRefPayload<unknown>;
   parserContext: SchemaParserContext;
@@ -170,6 +172,7 @@ export async function getOrCreateDraftSession(
     return {
       session: existingDraft,
       entityContext,
+      container: draftContainer,
       oldRefPayload: draftContainer.refPayload,
       parserContext,
       projectDirectory: project.directory,
@@ -191,6 +194,7 @@ export async function getOrCreateDraftSession(
   return {
     session,
     entityContext,
+    container,
     oldRefPayload: container.refPayload,
     parserContext,
     projectDirectory: project.directory,
