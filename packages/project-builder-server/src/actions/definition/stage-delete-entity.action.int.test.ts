@@ -140,6 +140,18 @@ describe('stage-delete-entity', () => {
           }),
         ],
       },
+      // Expose the relation (and User's inverse foreign relation `author`) in
+      // GraphQL. These hold DELETE_PARENT refs to the relation entities, so the
+      // cascade must clean them up when the relations are deleted — exercising
+      // the regression where strict deserialization would otherwise choke on the
+      // dangling refs.
+      graphql: {
+        objectType: {
+          enabled: true,
+          localRelations: [{ ref: 'user' }],
+          foreignRelations: [{ ref: 'author' }],
+        },
+      },
     });
 
     const testEntityServiceContext = createTestEntityServiceContext({
