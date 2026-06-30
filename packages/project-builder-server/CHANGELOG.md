@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.11
+
+### Patch Changes
+
+- [#903](https://github.com/halfdomelabs/baseplate/pull/903) [`bca540b`](https://github.com/halfdomelabs/baseplate/commit/bca540b67711a956a0c0872bfcb7343d81275f9b) Thanks [@kingston](https://github.com/kingston)! - Cascade model→model relation deletions when staging a model delete via MCP, so deleting a model auto-removes the relations on other models that referenced it.
+
+- Updated dependencies [[`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b), [`05e7b98`](https://github.com/halfdomelabs/baseplate/commit/05e7b98c84069284976b33dfc3426a71a5b9bc64)]:
+  - @baseplate-dev/core-generators@0.6.11
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/react-generators@0.6.11
+  - @baseplate-dev/fastify-generators@0.6.11
+  - @baseplate-dev/sync@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes
