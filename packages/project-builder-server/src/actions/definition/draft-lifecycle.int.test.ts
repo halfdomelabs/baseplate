@@ -164,6 +164,7 @@ describe('draft lifecycle', () => {
         draftDefinition: mismatchContext.entityContext.serializedDefinition,
       },
       entityContext: mismatchContext.entityContext,
+      container: mismatchContext.container,
       oldRefPayload: mismatchContext.container.refPayload,
       parserContext: mismatchContext.parserContext,
       projectDirectory: '/test-project',
