@@ -1,5 +1,16 @@
 # @baseplate-dev/create-project
 
+## 0.6.11
+
+### Patch Changes
+
+- Updated dependencies [[`bca540b`](https://github.com/halfdomelabs/baseplate/commit/bca540b67711a956a0c0872bfcb7343d81275f9b), [`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b)]:
+  - @baseplate-dev/project-builder-server@0.6.11
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/project-builder-cli@0.6.11
+  - @baseplate-dev/sync@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes
