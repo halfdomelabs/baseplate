@@ -215,4 +215,22 @@ describe('stage-delete-entity', () => {
     expect(post).toBeDefined();
     expect(post?.model.relations ?? []).toHaveLength(0);
   });
+
+  test('should throw when the model to delete does not exist', async ({
+    context,
+  }) => {
+    // The model branch bypasses deleteEntity, so a missing id must fail fast
+    // rather than silently persisting an unchanged draft.
+    await expect(
+      invokeServiceActionForTest(
+        stageDeleteEntityAction,
+        {
+          project: 'test-project',
+          entityTypeName: 'model',
+          entityId: 'model:does-not-exist',
+        },
+        context,
+      ),
+    ).rejects.toThrow('not found');
+  });
 });

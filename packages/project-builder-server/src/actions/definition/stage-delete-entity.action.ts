@@ -63,6 +63,15 @@ export const stageDeleteEntityAction = createServiceAction({
     // (onDelete: DELETE_PARENT) cascade away inside the tolerant fixer. Each
     // cascaded relation is reported as a warning.
     if (input.entityTypeName === modelEntityType.name) {
+      // Fail fast for a missing model: this branch bypasses `deleteEntity` (which
+      // would throw on an unknown id), so without this guard an unknown entityId
+      // would be a silent no-op that still reports a successful delete.
+      if (!ModelUtils.byId(container.definition, input.entityId)) {
+        throw new Error(
+          `Entity "${input.entityId}" of type "${input.entityTypeName}" not found`,
+        );
+      }
+
       const incomingRelations = ModelUtils.getRelationsToModel(
         container.definition,
         input.entityId,
