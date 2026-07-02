@@ -1,6 +1,13 @@
 packages:
   - apps/*
   - libs/*
+allowBuilds:
+  '@parcel/watcher': false
+  '@prisma/engines': true
+  esbuild: false
+  prisma: true
+  unrs-resolver: false
+strictDepBuilds: false
 blockExoticSubdeps: true
 linkWorkspacePackages: true
 minimumReleaseAge: 1440

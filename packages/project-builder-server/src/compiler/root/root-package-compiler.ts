@@ -205,6 +205,24 @@ export class RootPackageCompiler extends PackageCompiler {
         }),
         workspacePackages: pnpmWorkspaceGenerator({
           packages: workspacePackages,
+          // Approve/acknowledge the build-script dependencies a generated
+          // project pulls in, so `pnpm install` runs cleanly with no prompt and
+          // no warning:
+          //   - Prisma's engine is approved (`true`) so it builds.
+          //   - The remaining known build-script deps are transitive tooling
+          //     that ship prebuilt binaries (esbuild, unrs-resolver,
+          //     @parcel/watcher); we acknowledge them as `false` so pnpm skips
+          //     their builds silently instead of warning.
+          // `strictDepBuilds: false` (set in the generator) remains the safety
+          // net: any build-script dep NOT listed here still installs and only
+          // emits a warning rather than failing.
+          allowBuilds: {
+            '@prisma/engines': true,
+            prisma: true,
+            esbuild: false,
+            'unrs-resolver': false,
+            '@parcel/watcher': false,
+          },
         }),
         pathRoots: pathRootsGenerator({}),
         turbo: turboGenerator({

@@ -1,5 +1,4 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-import type { formatSchema } from '@prisma/internals';
 
 import {
   eslintConfigProvider,
@@ -23,7 +22,6 @@ import {
 } from '@baseplate-dev/sync';
 import { doubleQuot, quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
-import { createRequire } from 'node:module';
 import { z } from 'zod';
 
 import type {
@@ -45,6 +43,7 @@ import {
 } from '#src/writers/prisma-schema/schema.js';
 
 import { prismaGeneratedImportsProvider } from '../_providers/prisma-generated-imports.js';
+import { formatPrismaSchema } from './format-prisma-schema.js';
 import { PRISMA_PRISMA_GENERATED } from './generated/index.js';
 import { prismaImportsProvider } from './generated/ts-import-providers.js';
 import { prismaMergeAlgorithm } from './prisma-merge-algorithm.js';
@@ -87,8 +86,6 @@ export interface PrismaSeedProvider {
 
 export const prismaSeedProvider =
   createProviderType<PrismaSeedProvider>('prisma-seed');
-
-const internalRequire = createRequire(import.meta.url);
 
 export const prismaGenerator = createGenerator({
   name: 'prisma/prisma',
@@ -314,14 +311,11 @@ export const prismaGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
+          build: (builder) => {
             const schemaText = schemaFile.toText();
-            const { formatSchema: format } = internalRequire(
-              '@prisma/internals',
-            ) as { formatSchema: typeof formatSchema };
-            const [[, formattedSchemaText]] = await format({
-              schemas: [['prisma/schema.prisma', schemaText]],
-            });
+            const [[, formattedSchemaText]] = formatPrismaSchema([
+              ['prisma/schema.prisma', schemaText],
+            ]);
             builder.writeFile({
               id: 'prisma-schema',
               destination: 'prisma/schema.prisma',

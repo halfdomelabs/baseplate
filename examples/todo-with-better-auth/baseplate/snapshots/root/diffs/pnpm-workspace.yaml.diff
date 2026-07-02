@@ -2,19 +2,15 @@ Index: pnpm-workspace.yaml
 ===================================================================
 --- pnpm-workspace.yaml
 +++ pnpm-workspace.yaml
-@@ -1,7 +1,15 @@
- packages:
-   - apps/*
+@@ -3,9 +3,11 @@
    - libs/*
-+allowBuilds:
-+  '@parcel/watcher': false
-+  '@prisma/engines': true
+ allowBuilds:
+   '@parcel/watcher': false
+   '@prisma/engines': true
 +  '@sentry-internal/node-cpu-profiler': true
-+  esbuild: false
+   esbuild: false
 +  msgpackr-extract: false
-+  prisma: true
-+  unrs-resolver: false
+   prisma: true
+   unrs-resolver: false
+ strictDepBuilds: false
  blockExoticSubdeps: true
- linkWorkspacePackages: true
- minimumReleaseAge: 1440
- publishBranch: main
