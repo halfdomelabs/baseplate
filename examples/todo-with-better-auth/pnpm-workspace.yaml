@@ -9,6 +9,7 @@ allowBuilds:
   msgpackr-extract: false
   prisma: true
   unrs-resolver: false
+strictDepBuilds: false
 blockExoticSubdeps: true
 linkWorkspacePackages: true
 minimumReleaseAge: 1440
