@@ -55,5 +55,5 @@ export const REACT_PACKAGES = {
   zod: '4.3.6',
 
   // Sentry
-  '@sentry/react': '10.39.0',
+  '@sentry/react': '10.63.0',
 } as const;

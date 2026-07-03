@@ -54,9 +54,9 @@ export const FASTIFY_PACKAGES = {
   ioredis: '5.8.1',
 
   // Sentry
-  '@sentry/core': '10.39.0',
-  '@sentry/node': '10.39.0',
-  '@sentry/profiling-node': '10.39.0',
+  '@sentry/core': '10.63.0',
+  '@sentry/node': '10.63.0',
+  '@sentry/profiling-node': '10.63.0',
   '@pothos/plugin-tracing': '1.1.0',
   '@pothos/tracing-sentry': '1.1.4',
 

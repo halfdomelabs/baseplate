@@ -7,7 +7,7 @@ Index: pnpm-workspace.yaml
  allowBuilds:
    '@parcel/watcher': false
    '@prisma/engines': true
-+  '@sentry-internal/node-cpu-profiler': true
++  '@sentry/node-cpu-profiler': true
    esbuild: false
 +  msw: false
    prisma: true
