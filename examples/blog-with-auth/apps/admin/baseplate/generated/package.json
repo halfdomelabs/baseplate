@@ -39,7 +39,7 @@
     "@base-ui/react": "1.4.1",
     "@graphql-typed-document-node/core": "3.2.0",
     "@hookform/resolvers": "5.2.2",
-    "@sentry/react": "10.39.0",
+    "@sentry/react": "10.63.0",
     "@tanstack/react-router": "1.159.5",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
