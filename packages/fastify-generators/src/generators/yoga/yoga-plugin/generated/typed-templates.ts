@@ -13,7 +13,6 @@ const graphqlPlugin = createTsTemplateFile({
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
-    requestServiceContextImports: requestServiceContextImportsProvider,
   },
   name: 'graphql-plugin',
   source: {

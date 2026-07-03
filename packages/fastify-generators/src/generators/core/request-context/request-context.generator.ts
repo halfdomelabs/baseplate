@@ -1,11 +1,19 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import {
   createNodePackagesTask,
   extractPackageVersions,
+  packageScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import {
+  createConfigProviderTask,
+  createGenerator,
+  createGeneratorTask,
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
@@ -16,6 +24,33 @@ import { CORE_REQUEST_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
+const [
+  setupTask,
+  requestContextConfigProvider,
+  requestContextConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    /**
+     * Additional properties to add to the FastifyRequest interface augmentation.
+     */
+    fastifyRequestAugmentations: t.map<string, TsCodeFragment>(),
+    /**
+     * Additional fastify.decorateRequest() calls.
+     */
+    decoratorRegistrations: t.map<string, TsCodeFragment>(),
+    /**
+     * Additional hooks to register on the fastify instance.
+     */
+    extraHooks: t.map<string, TsCodeFragment>(),
+  }),
+  {
+    prefix: 'request-context',
+    configScope: packageScope,
+  },
+);
+
+export { requestContextConfigProvider };
+
 export const requestContextGenerator = createGenerator({
   name: 'core/request-context',
   generatorFileUrl: import.meta.url,
@@ -23,6 +58,7 @@ export const requestContextGenerator = createGenerator({
   buildTasks: () => ({
     paths: CORE_REQUEST_CONTEXT_GENERATED.paths.task,
     imports: CORE_REQUEST_CONTEXT_GENERATED.imports.task,
+    setup: setupTask,
     loggerRequestContext: createGeneratorTask({
       dependencies: { loggerServiceConfig: loggerServiceConfigProvider },
       run({ loggerServiceConfig }) {
@@ -64,8 +100,15 @@ export const requestContextGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         paths: CORE_REQUEST_CONTEXT_GENERATED.paths.provider,
+        requestContextConfigValues: requestContextConfigValuesProvider,
       },
-      run({ typescriptFile, paths }) {
+      run({ typescriptFile, paths, requestContextConfigValues }) {
+        const {
+          fastifyRequestAugmentations,
+          decoratorRegistrations,
+          extraHooks,
+        } = requestContextConfigValues;
+
         return {
           build: async (builder) => {
             await builder.apply(
@@ -73,6 +116,19 @@ export const requestContextGenerator = createGenerator({
                 template:
                   CORE_REQUEST_CONTEXT_GENERATED.templates.requestContext,
                 destination: paths.requestContext,
+                variables: {
+                  TPL_FASTIFY_REQUEST_AUGMENTATIONS:
+                    TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                      fastifyRequestAugmentations,
+                    ),
+                  TPL_DECORATOR_REGISTRATIONS: TsCodeUtils.mergeFragments(
+                    decoratorRegistrations,
+                  ),
+                  TPL_EXTRA_HOOKS: TsCodeUtils.mergeFragments(
+                    extraHooks,
+                    '\n\n',
+                  ),
+                },
               }),
             );
           },

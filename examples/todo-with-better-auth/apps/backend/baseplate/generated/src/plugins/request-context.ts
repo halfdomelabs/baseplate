@@ -6,6 +6,10 @@ import {
 } from '@fastify/request-context';
 import fp from 'fastify-plugin';
 
+import type { RequestServiceContext } from '../utils/request-service-context.js';
+
+import { createContextFromRequest } from '../utils/request-service-context.js';
+
 export interface RequestInfo {
   id: string;
   url: string;
@@ -23,6 +27,9 @@ declare module '@fastify/request-context' {
 declare module 'fastify' {
   interface FastifyRequest {
     reqInfo: RequestInfo;
+    /* TPL_FASTIFY_REQUEST_AUGMENTATIONS:START */
+    serviceContext: RequestServiceContext;
+    /* TPL_FASTIFY_REQUEST_AUGMENTATIONS:END */
   }
 }
 
@@ -30,8 +37,11 @@ export const requestContextPlugin = fp(async (fastify) => {
   await fastify.register(fastifyRequestContext);
 
   fastify.decorateRequest('reqInfo');
+  /* TPL_DECORATOR_REGISTRATIONS:START */
+  fastify.decorateRequest('serviceContext');
+  /* TPL_DECORATOR_REGISTRATIONS:END */
 
-  fastify.addHook('onRequest', (req, reply, done) => {
+  fastify.addHook('onRequest', (req, _reply, done) => {
     const reqInfo = {
       id: req.id,
       url: req.url,
@@ -45,4 +55,11 @@ export const requestContextPlugin = fp(async (fastify) => {
 
     done();
   });
+
+  /* TPL_EXTRA_HOOKS:START */
+  fastify.addHook('preHandler', (req, reply, done) => {
+    req.serviceContext = createContextFromRequest(req, reply);
+    done();
+  });
+  /* TPL_EXTRA_HOOKS:END */
 });

@@ -9,7 +9,11 @@
       "pathRootRelativePath": "{src-root}/plugins/request-context.ts",
       "projectExports": { "RequestInfo": { "isTypeOnly": true } },
       "sourceFile": "src/plugins/request-context.ts",
-      "variables": {}
+      "variables": {
+        "TPL_FASTIFY_REQUEST_AUGMENTATIONS": {},
+        "TPL_DECORATOR_REGISTRATIONS": {},
+        "TPL_EXTRA_HOOKS": {}
+      }
     }
   }
 }

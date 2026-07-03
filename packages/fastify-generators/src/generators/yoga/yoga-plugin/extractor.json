@@ -17,10 +17,6 @@
         "loggerServiceImportsProvider": {
           "importName": "loggerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
-        },
-        "requestServiceContextImportsProvider": {
-          "importName": "requestServiceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/index.ts",

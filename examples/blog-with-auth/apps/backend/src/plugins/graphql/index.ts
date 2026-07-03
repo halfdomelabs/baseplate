@@ -11,7 +11,6 @@ import fs from 'node:fs/promises';
 import { config } from '@src/services/config.js';
 import { logger } from '@src/services/logger.js';
 import { HttpError } from '@src/utils/http-errors.js';
-import { createContextFromRequest } from '@src/utils/request-service-context.js';
 
 import { builder } from './builder.js';
 import { useGraphLogger } from './use-graph-logger.js';
@@ -56,7 +55,7 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
     reply: FastifyReply;
   }>({
     logging: logger,
-    context: ({ req, reply }) => createContextFromRequest(req, reply),
+    context: ({ req }) => req.serviceContext,
     schema,
     graphiql: IS_DEVELOPMENT,
     maskedErrors: {

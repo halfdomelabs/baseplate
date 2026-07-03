@@ -6,7 +6,6 @@ import type { GraphQLErrorOptions } from 'graphql';
 import { config } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { createContextFromRequest } from '%requestServiceContextImports';
 import { requestContext } from '@fastify/request-context';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
@@ -26,7 +25,7 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
     reply: FastifyReply;
   }>({
     logging: logger,
-    context: ({ req, reply }) => createContextFromRequest(req, reply),
+    context: ({ req }) => req.serviceContext,
     schema,
     graphiql: IS_DEVELOPMENT,
     maskedErrors: {
