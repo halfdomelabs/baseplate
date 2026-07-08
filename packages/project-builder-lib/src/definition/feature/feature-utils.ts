@@ -73,10 +73,13 @@ function ensureFeatureByNameRecursively(
   let lastName = '';
   let parentRef: string | undefined = undefined;
   for (const part of nameParts) {
-    const feature = projectDefinition.features.find(
-      (f) => f.name === part && f.parentRef === parentRef,
-    );
     const name = [lastName, part].filter(Boolean).join('/');
+    // Features store their full path as `name` (e.g. "accounts/auth"), so match
+    // on the accumulated path scoped to the current parent — not the bare
+    // segment, which would never match a nested feature and would duplicate it.
+    const feature = projectDefinition.features.find(
+      (f) => f.name === name && f.parentRef === parentRef,
+    );
     if (feature) {
       parentRef = feature.id;
     } else {
