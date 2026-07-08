@@ -112,7 +112,7 @@ export function useEnumForm({
           id: enumDefinition?.id ?? modelEnumEntityType.generateNewId(),
         });
         // check for enums with the same name
-        const existingEnum = definition.enums?.find(
+        const existingEnum = definition.enums.find(
           (e) =>
             e.id !== updatedDefinition.id &&
             e.name.toLowerCase() === updatedDefinition.name.toLowerCase(),
@@ -134,9 +134,9 @@ export function useEnumForm({
               );
             draftConfig.enums = sortBy(
               [
-                ...(draftConfig.enums?.filter(
+                ...draftConfig.enums.filter(
                   (e) => e.id !== updatedDefinition.id,
-                ) ?? []),
+                ),
                 updatedDefinition,
               ],
               [(e) => e.name],

@@ -57,6 +57,7 @@ export function createInitialProjectDefinition(
     apps: [],
     libraries: [],
     models: [],
+    enums: [],
     isInitialized: false,
     schemaVersion: getLatestMigrationVersion(),
   };

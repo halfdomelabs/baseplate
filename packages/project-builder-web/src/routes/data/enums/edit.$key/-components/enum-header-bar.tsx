@@ -32,7 +32,7 @@ export function EnumHeaderBar({
   const handleDelete = (id: string): void => {
     saveDefinitionWithFeedbackSync(
       (draftConfig) => {
-        draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
+        draftConfig.enums = draftConfig.enums.filter((m) => m.id !== id);
       },
       {
         onSuccess: () => {

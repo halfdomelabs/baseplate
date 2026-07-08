@@ -348,7 +348,7 @@ export function buildGraphqlForFeature(
     featureId,
   );
 
-  const enums = (appBuilder.projectDefinition.enums ?? []).filter(
+  const enums = appBuilder.projectDefinition.enums.filter(
     (e) => e.featureRef === featureId && e.isExposed,
   );
 
