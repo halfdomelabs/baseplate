@@ -1,5 +1,18 @@
 # @baseplate-dev/react-generators
 
+## 0.6.12
+
+### Patch Changes
+
+- [#907](https://github.com/halfdomelabs/baseplate/pull/907) [`164e4ea`](https://github.com/halfdomelabs/baseplate/commit/164e4eab3745e94c088bbba20ad4d8e7ff4ce74b) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to the latest 10.x release to resolve a memory leak:
+  - `@sentry/core`, `@sentry/node`, `@sentry/profiling-node`: 10.39.0 → 10.63.0
+  - `@sentry/react`: 10.39.0 → 10.63.0
+
+- Updated dependencies [[`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306)]:
+  - @baseplate-dev/core-generators@0.6.12
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
 ## 0.6.11
 
 ### Patch Changes
