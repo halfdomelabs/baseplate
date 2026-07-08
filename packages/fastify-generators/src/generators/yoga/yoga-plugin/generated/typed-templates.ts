@@ -5,7 +5,6 @@ import { configServiceImportsProvider } from '#src/generators/core/config-servic
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
-import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/generated/ts-import-providers.js';
 
 const graphqlPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -13,7 +12,6 @@ const graphqlPlugin = createTsTemplateFile({
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
-    requestServiceContextImports: requestServiceContextImportsProvider,
   },
   name: 'graphql-plugin',
   source: {

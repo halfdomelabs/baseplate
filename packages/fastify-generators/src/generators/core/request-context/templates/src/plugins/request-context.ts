@@ -25,6 +25,7 @@ declare module '@fastify/request-context' {
 declare module 'fastify' {
   interface FastifyRequest {
     reqInfo: RequestInfo;
+    TPL_FASTIFY_REQUEST_AUGMENTATIONS;
   }
 }
 
@@ -32,8 +33,9 @@ export const requestContextPlugin = fp(async (fastify) => {
   await fastify.register(fastifyRequestContext);
 
   fastify.decorateRequest('reqInfo');
+  TPL_DECORATOR_REGISTRATIONS;
 
-  fastify.addHook('onRequest', (req, reply, done) => {
+  fastify.addHook('onRequest', (req, _reply, done) => {
     const reqInfo = {
       id: req.id,
       url: req.url,
@@ -47,4 +49,6 @@ export const requestContextPlugin = fp(async (fastify) => {
 
     done();
   });
+
+  TPL_EXTRA_HOOKS;
 });

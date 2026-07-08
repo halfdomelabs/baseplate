@@ -160,7 +160,10 @@
           "name": "validatePasswordResetToken"
         }
       },
-      "referencedGeneratorTemplates": ["constants-password"],
+      "referencedGeneratorTemplates": [
+        "constants-password",
+        "services-user-password"
+      ],
       "sourceFile": "module/services/password-reset.service.ts",
       "variables": {
         "TPL_PASSWORD_CHANGED_EMAIL": {},

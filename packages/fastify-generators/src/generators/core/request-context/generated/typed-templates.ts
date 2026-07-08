@@ -12,7 +12,11 @@ const requestContext = createTsTemplateFile({
       '../templates/src/plugins/request-context.ts',
     ),
   },
-  variables: {},
+  variables: {
+    TPL_DECORATOR_REGISTRATIONS: {},
+    TPL_EXTRA_HOOKS: {},
+    TPL_FASTIFY_REQUEST_AUGMENTATIONS: {},
+  },
 });
 
 export const CORE_REQUEST_CONTEXT_TEMPLATES = { requestContext };

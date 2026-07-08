@@ -88,7 +88,10 @@ const servicesPasswordReset = createTsTemplateFile({
     requestPasswordReset: { isTypeOnly: false },
     validatePasswordResetToken: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: { constantsPassword: {} },
+  referencedGeneratorTemplates: {
+    constantsPassword: {},
+    servicesUserPassword: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
