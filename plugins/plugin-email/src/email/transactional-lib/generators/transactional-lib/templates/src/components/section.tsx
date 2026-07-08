@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { Section as ReactEmailSection } from '@react-email/components';
 import * as React from 'react';
+import { Section as ReactEmailSection } from 'react-email';
 
 type SectionAlign = 'left' | 'center' | 'right';
 type SectionSpacing = 'none' | 'sm' | 'md' | 'lg';

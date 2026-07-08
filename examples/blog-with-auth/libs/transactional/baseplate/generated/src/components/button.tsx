@@ -1,5 +1,5 @@
-import { Button as ReactEmailButton } from '@react-email/components';
 import * as React from 'react';
+import { Button as ReactEmailButton } from 'react-email';
 
 import { theme } from '../constants/theme.js';
 

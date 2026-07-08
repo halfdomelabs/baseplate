@@ -1,5 +1,5 @@
-import { Link as ReactEmailLink } from '@react-email/components';
 import * as React from 'react';
+import { Link as ReactEmailLink } from 'react-email';
 
 import { theme } from '../constants/theme.js';
 

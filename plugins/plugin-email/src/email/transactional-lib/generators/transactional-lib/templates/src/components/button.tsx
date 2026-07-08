@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { theme } from '$constantsTheme';
-import { Button as ReactEmailButton } from '@react-email/components';
 import * as React from 'react';
+import { Button as ReactEmailButton } from 'react-email';
 
 type ButtonVariant = 'primary' | 'secondary';
 

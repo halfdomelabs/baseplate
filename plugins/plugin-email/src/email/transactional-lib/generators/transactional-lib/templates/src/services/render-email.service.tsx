@@ -2,7 +2,7 @@
 
 import type { EmailComponent } from '$typesEmailComponent';
 
-import { render, toPlainText } from '@react-email/components';
+import { render, toPlainText } from 'react-email';
 
 /**
  * Renders an email component to HTML and plain text.
