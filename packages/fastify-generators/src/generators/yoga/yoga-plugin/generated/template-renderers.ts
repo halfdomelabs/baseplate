@@ -8,7 +8,6 @@ import { configServiceImportsProvider } from '#src/generators/core/config-servic
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
-import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/generated/ts-import-providers.js';
 
 import { YOGA_YOGA_PLUGIN_PATHS } from './template-paths.js';
 import { YOGA_YOGA_PLUGIN_TEMPLATES } from './typed-templates.js';
@@ -57,7 +56,6 @@ const yogaYogaPluginRenderersTask = createGeneratorTask({
     fastifyRedisImports: fastifyRedisImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: YOGA_YOGA_PLUGIN_PATHS.provider,
-    requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { yogaYogaPluginRenderers: yogaYogaPluginRenderers.export() },
@@ -67,7 +65,6 @@ const yogaYogaPluginRenderersTask = createGeneratorTask({
     fastifyRedisImports,
     loggerServiceImports,
     paths,
-    requestServiceContextImports,
     typescriptFile,
   }) {
     return {
