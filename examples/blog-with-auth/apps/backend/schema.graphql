@@ -183,6 +183,18 @@ type Mutation {
   verifyEmail(input: VerifyEmailInput!): VerifyEmailPayload!
 }
 
+type Notification {
+  actionUrl: String
+  createdAt: DateTime!
+  entityId: String
+  entityType: String
+  fallbackText: String!
+  id: ID!
+  readAt: DateTime
+  seenAt: DateTime
+  type: String!
+}
+
 type Query {
   article(id: Uuid!): Article!
   articles(skip: Int, take: Int): [Article!]!

@@ -1,0 +1,13 @@
+{
+  "name": "notifications",
+  "displayName": "Notifications",
+  "icon": "icon.svg",
+  "description": "Native notification engine providing in-app and email notifications with a real-time feed, built on your application's database, queue, and SSE infrastructure.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "pluginDependencies": [
+    { "plugin": "@baseplate-dev/plugin-auth:auth" },
+    { "plugin": "@baseplate-dev/plugin-email:email", "optional": true },
+    { "plugin": "@baseplate-dev/plugin-queue:queue", "optional": true }
+  ]
+}

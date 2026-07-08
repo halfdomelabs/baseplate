@@ -110,6 +110,7 @@
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:7IVyDOEOsuGy", "name": "notifications" },
     { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
@@ -578,6 +579,174 @@
       "service": { "transformers": [] }
     },
     {
+      "featureRef": "notifications",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "id" },
+            { "ref": "type" },
+            { "ref": "fallbackText" },
+            { "ref": "actionUrl" },
+            { "ref": "entityType" },
+            { "ref": "entityId" },
+            { "ref": "seenAt" },
+            { "ref": "readAt" },
+            { "ref": "createdAt" }
+          ]
+        }
+      },
+      "id": "model:qhVkyfEziZkq",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:t_QNMKAT5kOp",
+            "isOptional": false,
+            "name": "id",
+            "options": { "defaultGeneration": "uuidv7" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:uVQSGg64hosc",
+            "isOptional": false,
+            "name": "type",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:DKrntJdRvSl3",
+            "isOptional": false,
+            "name": "recipientId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:S_BfVQVXYRuq",
+            "isOptional": false,
+            "name": "segments",
+            "options": {},
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:M0zZ7pFeS_fi",
+            "isOptional": false,
+            "name": "fallbackText",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:F8JVqgjCoeV7",
+            "isOptional": false,
+            "name": "actorKind",
+            "options": { "default": "none" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:14vvK_IQu7k8",
+            "isOptional": true,
+            "name": "actorId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:75JQEWLoGaHM",
+            "isOptional": true,
+            "name": "actorLabel",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:XupFs7hOlbCz",
+            "isOptional": true,
+            "name": "systemActorKey",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:Wm_DRDIt3TNl",
+            "isOptional": true,
+            "name": "entityType",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5w3f6V_IQiwx",
+            "isOptional": true,
+            "name": "entityId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:VlG4w4E5SYOp",
+            "isOptional": true,
+            "name": "actionUrl",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:veOdnbMxbKOp",
+            "isOptional": true,
+            "name": "seenAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:fHw7UhwrFxfZ",
+            "isOptional": true,
+            "name": "readAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:XK7_Rijjc4da",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:ZihqipiLMpsO",
+            "isOptional": true,
+            "name": "messageId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:fIiLPZqUBErK",
+            "isOptional": true,
+            "name": "params",
+            "options": {},
+            "type": "json"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:LdlLip_CfsVa",
+            "foreignRelationName": "notifications",
+            "id": "model-local-relation:v759gR8qZX7s",
+            "modelRef": "User",
+            "name": "recipient",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:q80ennosziDx",
+            "foreignRelationName": "actorNotifications",
+            "id": "model-local-relation:2UiRNkBKiXxm",
+            "modelRef": "User",
+            "name": "actor",
+            "onDelete": "SetNull",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
+          }
+        ]
+      },
+      "name": "Notification",
+      "service": { "transformers": [] }
+    },
+    {
       "featureRef": "utilities",
       "id": "model:TO3fGEXsMhzX",
       "model": {
@@ -1007,6 +1176,13 @@
       "id": "plugin:baseplate-dev_plugin-auth_local-auth",
       "name": "local-auth",
       "packageName": "@baseplate-dev/plugin-auth",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "notificationsFeatureRef": "notifications" },
+      "id": "plugin:baseplate-dev_plugin-notifications_notifications",
+      "name": "notifications",
+      "packageName": "@baseplate-dev/plugin-notifications",
       "version": "0.1.0"
     },
     {
