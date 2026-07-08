@@ -162,11 +162,27 @@ export async function getOrCreateDraftSession(
       );
     }
 
-    // Rebuild EntityServiceContext from the draft definition
-    const draftContainer = ProjectDefinitionContainer.fromSerializedConfig(
-      existingDraft.draftDefinition,
-      parserContext,
-    );
+    // Rebuild EntityServiceContext from the draft definition.
+    //
+    // A draft persisted by an older/buggy CLI can be structurally invalid (e.g.
+    // missing entity `id` fields), in which case parsing throws a cryptic error
+    // on every staging call and the draft cannot be advanced. Surface an
+    // actionable message pointing at discard-draft (which clears the draft
+    // without parsing it) so the session can be reset.
+    let draftContainer: ProjectDefinitionContainer;
+    try {
+      draftContainer = ProjectDefinitionContainer.fromSerializedConfig(
+        existingDraft.draftDefinition,
+        parserContext,
+      );
+    } catch (error) {
+      throw new Error(
+        'The existing draft session is corrupt and could not be parsed ' +
+          `(${error instanceof Error ? error.message : String(error)}). ` +
+          'Discard it with discard-draft and start over.',
+        { cause: error },
+      );
+    }
     const entityContext = draftContainer.toEntityServiceContext();
 
     return {

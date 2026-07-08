@@ -4,7 +4,7 @@ function byId(
   projectDefinition: ProjectDefinition,
   id: string,
 ): EnumConfig | undefined {
-  return projectDefinition.enums?.find((e) => e.id === id);
+  return projectDefinition.enums.find((e) => e.id === id);
 }
 
 function byIdOrThrow(

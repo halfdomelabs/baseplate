@@ -30,7 +30,7 @@ export function ModelFieldTypeInput({
 }: ModelFieldTypeInputProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  const enumOptions: ScalarFieldTypeOption[] = (definition.enums ?? []).map(
+  const enumOptions: ScalarFieldTypeOption[] = definition.enums.map(
     (config) => ({
       label: config.name,
       value: `enum-${config.id}`,

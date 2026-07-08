@@ -29,6 +29,7 @@ export function createTestProjectDefinition(
     apps: [],
     libraries: [],
     models: [],
+    enums: [],
     isInitialized: true,
     schemaVersion: getLatestMigrationVersion(),
     ...input,

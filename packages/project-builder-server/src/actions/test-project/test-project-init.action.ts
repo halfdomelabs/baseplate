@@ -82,6 +82,7 @@ export const initProjectAction = createServiceAction({
         apps: [],
         libraries: [],
         models: [],
+        enums: [],
         isInitialized: false,
         schemaVersion: getLatestMigrationVersion(),
       } satisfies ProjectDefinition;
