@@ -34,7 +34,7 @@ const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
   'claude-code': [
     '**Claude Code:**',
     '```bash',
-    'claude mcp add baseplate -- pnpm run baseplate mcp',
+    'claude mcp add baseplate -- pnpm baseplate mcp',
     '```',
   ].join('\n'),
   cursor: [
@@ -57,7 +57,7 @@ const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
   gemini: [
     '**Gemini CLI:**',
     '```bash',
-    'gemini mcp add baseplate -- pnpm run baseplate mcp',
+    'gemini mcp add baseplate -- pnpm baseplate mcp',
     '```',
   ].join('\n'),
   copilot: [
@@ -69,7 +69,7 @@ const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
           baseplate: {
             type: 'stdio',
             command: 'pnpm',
-            args: ['run', 'baseplate', 'mcp'],
+            args: ['baseplate', 'mcp'],
           },
         },
       },
