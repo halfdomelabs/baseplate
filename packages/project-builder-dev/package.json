@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-dev",
-  "version": "0.6.9",
+  "version": "0.6.11",
   "description": "Developer tooling CLI for Baseplate plugin authors",
   "keywords": [
     "baseplate",
@@ -77,7 +77,7 @@
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
     "pkg-dir": "^8.0.0",
-    "testcontainers": "11.14.0",
+    "testcontainers": "12.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {

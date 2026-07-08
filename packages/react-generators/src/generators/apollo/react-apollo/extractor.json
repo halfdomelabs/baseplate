@@ -8,6 +8,23 @@
     }
   },
   "templates": {
+    "apollo-sse-link": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {
+        "reactConfigImportsProvider": {
+          "importName": "reactConfigImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-config/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/apollo/apollo-sse-link.ts",
+      "projectExports": {
+        "apolloSseLink": { "isTypeOnly": false, "name": "apolloSseLink" }
+      },
+      "sourceFile": "src/services/apollo/apollo-sse-link.ts",
+      "variables": {}
+    },
     "app-apollo-provider": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -94,10 +111,6 @@
         "TPL_LINK_BODIES": {},
         "TPL_LINKS": {}
       }
-    },
-    "websocket-links": {
-      "type": "ts-snippet",
-      "sourceFile": "websocket-links.ts"
     }
   }
 }

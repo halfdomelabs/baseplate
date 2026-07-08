@@ -23,6 +23,9 @@ export const oxlintConfigBase = {
     'no-console': ['error', { allow: ['debug', 'info', 'warn', 'error'] }],
     // Not necessary for React 17+
     'react/react-in-jsx-scope': 'off',
+    // Allow components passed as props (e.g. react-day-picker `components={{}}`)
+    // which are a safe, intentional pattern
+    'react/no-unstable-nested-components': ['error', { allowAsProps: true }],
     // Allow unassigned imports for CSS and Vitest
     'no-unassigned-import': [
       'error',
@@ -41,11 +44,22 @@ export const oxlintConfigBase = {
     // Allow named default members without flagging them as errors
     'import/no-named-as-default-member': 'off',
 
+    // Use top-level type imports (e.g. `import type { Foo } from '...'`)
+    'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+
     // False positives without type information
     'unicorn/require-post-message-target-origin': 'off',
 
     // In the future we can but right now too many fixes
     'no-shadow': 'off',
+
+    // We use a leading underscore convention for private/internal fields
+    // (e.g. `_rhfId`, `_definitionFileContentsHash`)
+    'no-underscore-dangle': 'off',
+
+    // Not previously enforced and would require too many fixes right now.
+    // Candidate for a future stricter pass.
+    'typescript/consistent-return': 'off',
 
     // Style rules from ESLint
 
@@ -74,6 +88,11 @@ export const oxlintConfigBase = {
     'prefer-rest-params': 'error',
     'prefer-spread': 'error',
     'no-empty-function': 'error',
+    // Enforce object shorthand syntax to keep object properties concise
+    'object-shorthand': ['error', 'always'],
+    // Prefer arrow functions for callbacks but allow named functions to support
+    // generic functions being passed in (e.g. generic components using forwardRef)
+    'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
     'prefer-destructuring': [
       'error',
       {

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/tools",
-  "version": "0.6.9",
+  "version": "0.6.11",
   "description": "Shared dev configurations for linting, formatting, and testing Baseplate projects",
   "keywords": [
     "baseplate",
@@ -65,7 +65,7 @@
     "eslint-plugin-better-tailwindcss": "4.3.2",
     "eslint-plugin-import-x": "4.16.2",
     "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-oxlint": "1.56.0",
+    "eslint-plugin-oxlint": "1.67.0",
     "eslint-plugin-perfectionist": "5.4.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",

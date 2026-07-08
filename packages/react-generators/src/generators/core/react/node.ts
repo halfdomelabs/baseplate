@@ -15,7 +15,6 @@ export const viteNodeTask = createNodeTask((node) => {
       '@vitejs/plugin-react',
       'vite',
       'vite-plugin-svgr',
-      'vite-tsconfig-paths',
     ]),
   });
   node.scripts.mergeObj(

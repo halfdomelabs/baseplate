@@ -25,10 +25,6 @@ import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/index.js';
-import {
-  authContextImportsProvider,
-  userSessionServiceImportsProvider,
-} from '#src/generators/auth/index.js';
 import { configServiceImportsProvider } from '#src/generators/core/config-service/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
@@ -144,11 +140,7 @@ export const yogaPluginGenerator = createGenerator({
         '@envelop/disable-introspection',
         'graphql-yoga',
       ]),
-      dev: extractPackageVersions(FASTIFY_PACKAGES, [
-        '@envelop/types',
-        // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
-        '@types/ws',
-      ]),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['@envelop/types']),
     }),
     main: createGeneratorTask({
       dependencies: {
@@ -169,28 +161,13 @@ export const yogaPluginGenerator = createGenerator({
       }) {
         return {
           async build(builder) {
-            const graphqlHandler = enableSubscriptions
-              ? tsCodeFragment(
-                  `fastify.route({
+            // GraphQL Yoga serves queries, mutations, and subscriptions (over
+            // SSE) from a single HTTP route. Subscriptions stream when the
+            // client sends `Accept: text/event-stream`.
+            const graphqlHandler = `fastify.route({
   url: '/graphql',
-  method: 'GET',
+  method: ['GET', 'POST', 'OPTIONS'],
   handler: httpHandler,
-  wsHandler: getGraphqlWsHandler(graphQLServer),
-});
-
-fastify.route({
-  url: '/graphql',
-  method: ['POST', 'OPTIONS'],
-  handler: httpHandler,
-});`,
-                  tsImportBuilder(['getGraphqlWsHandler']).from(
-                    './websocket.js',
-                  ),
-                )
-              : `fastify.route({
-url: '/graphql',
-method: ['GET', 'POST', 'OPTIONS'],
-handler: httpHandler,
 });`;
 
             await builder.apply(
@@ -236,116 +213,32 @@ handler: httpHandler,
     }),
     ...(enableSubscriptions
       ? {
-          serverWebsocket: createGeneratorTask({
-            dependencies: {
-              node: nodeProvider,
-              fastifyServerConfig: fastifyServerConfigProvider,
-            },
-            run({ node, fastifyServerConfig }) {
-              node.packages.addPackages({
-                prod: extractPackageVersions(FASTIFY_PACKAGES, [
-                  '@fastify/websocket',
-                ]),
-              });
-
-              fastifyServerConfig.plugins.set('websocketPlugin', {
-                plugin: tsCodeFragment(
-                  'websocketPlugin',
-                  tsImportBuilder()
-                    .default('websocketPlugin')
-                    .from('@fastify/websocket'),
-                ),
-                orderPriority: 'EARLY',
-              });
-
-              return {};
-            },
-          }),
           subscription: createGeneratorTask({
             dependencies: {
               node: nodeProvider,
               typescriptFile: typescriptFileProvider,
               paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
               fastifyRedisImports: fastifyRedisImportsProvider,
-              authContextImports: authContextImportsProvider
-                .dependency()
-                .optional(),
-              errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-              loggerServiceImports: loggerServiceImportsProvider,
-              requestServiceContextImports:
-                requestServiceContextImportsProvider,
-              userSessionServiceImports: userSessionServiceImportsProvider
-                .dependency()
-                .optional(),
             },
-            run({
-              node,
-              typescriptFile,
-              paths,
-              fastifyRedisImports,
-              authContextImports,
-              errorHandlerServiceImports,
-              loggerServiceImports,
-              requestServiceContextImports,
-              userSessionServiceImports,
-            }) {
+            run({ node, typescriptFile, paths, fastifyRedisImports }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
                   '@graphql-yoga/redis-event-target',
-                  'graphql-ws',
                 ]),
               });
 
               return {
                 async build(builder) {
-                  const websocketOnConnect = await builder.readTemplate(
-                    'websocket-fragments.ts',
-                  );
-                  const websocketOnConnectFragment =
-                    authContextImports && userSessionServiceImports
-                      ? TsCodeUtils.formatFragment(
-                          TsCodeUtils.extractTemplateSnippet(
-                            websocketOnConnect,
-                            'ON_CONNECT',
-                          ).replace(/;$/, ''),
-                          {
-                            TPL_SESSION_INFO_CREATOR: tsCodeFragment(
-                              `await userSessionService.getSessionInfoFromToken(
-              ctx.extra.request,
-              typeof authorizationHeader === 'string'
-                ? authorizationHeader
-                : undefined,
-            )`,
-                              userSessionServiceImports.userSessionService.declaration(),
-                            ),
-                          },
-                          [
-                            authContextImports.createAuthContextFromSessionInfo.declaration(),
-                            errorHandlerServiceImports.HttpError.declaration(),
-                          ],
-                        )
-                      : undefined;
-
                   await builder.apply(
-                    typescriptFile.renderTemplateGroup({
-                      group:
-                        YOGA_YOGA_PLUGIN_GENERATED.templates.subscriptionsGroup,
-                      paths,
+                    typescriptFile.renderTemplateFile({
+                      template: YOGA_YOGA_PLUGIN_GENERATED.templates.pubsub,
+                      destination: paths.pubsub,
                       variables: {
-                        pubsub: {
-                          // Placeholder args for now
-                          TPL_PUBLISH_ARGS: `{}`,
-                        },
-                        websocket: {
-                          TPL_ON_CONNECT: websocketOnConnectFragment ?? '',
-                        },
+                        // Projects add their own channels here, e.g.
+                        // `{ myChannel: [payload: MyPayload] }`.
+                        TPL_PUBLISH_ARGS: 'Record<string, never>',
                       },
-                      importMapProviders: {
-                        errorHandlerServiceImports,
-                        loggerServiceImports,
-                        requestServiceContextImports,
-                        fastifyRedisImports,
-                      },
+                      importMapProviders: { fastifyRedisImports },
                     }),
                   );
                 },

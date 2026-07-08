@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "apollo-sentry-link"
   },
+  "apollo-sse-link.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "apollo-sse-link"
+  },
   "cache.ts": {
     "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
     "instanceData": {},

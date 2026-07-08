@@ -66,7 +66,7 @@ export const createProjectDefinitionSchema = definitionSchema((ctx) =>
     enums: z
       .array(createEnumSchema(ctx))
       .apply(withIssueChecker(checkUniqueField('name', { label: 'enum name' })))
-      .optional(),
+      .default([]),
     isInitialized: z.boolean().default(false),
     schemaVersion: z.number(),
     plugins: createPluginsSchema(ctx).optional(),

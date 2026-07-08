@@ -118,6 +118,12 @@ function BackendAppEditPage(): React.JSX.Element {
                   label="Axios"
                   description="Enable Axios for HTTP requests"
                 />
+                <SwitchFieldController
+                  control={control}
+                  name="enableSubscriptions"
+                  label="GraphQL Subscriptions"
+                  description="Enable GraphQL Subscriptions (over SSE) for real-time updates"
+                />
               </div>
             </SectionListSectionContent>
           </SectionListSection>

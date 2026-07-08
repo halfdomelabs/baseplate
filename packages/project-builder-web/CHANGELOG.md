@@ -1,5 +1,50 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.11
+
+### Patch Changes
+
+- [#901](https://github.com/halfdomelabs/baseplate/pull/901) [`05e7b98`](https://github.com/halfdomelabs/baseplate/commit/05e7b98c84069284976b33dfc3426a71a5b9bc64) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite and Module Federation packages
+
+  Monorepo catalog and generator constants:
+  - vite: 8.0.16 → 8.1.0
+  - @vitejs/plugin-react: 6.0.2 → 6.0.3
+  - vite-plugin-svgr: 4.5.0 → 5.2.0
+  - @tailwindcss/vite: 4.3.0 → 4.3.1
+  - tailwindcss: 4.3.0 → 4.3.1
+
+  Module Federation (Baseplate web app only):
+  - @module-federation/enhanced: 2.3.3 → 2.6.0
+  - @module-federation/vite: 1.15.4 → 1.16.11
+
+  Generated projects now resolve the `@src/*` path alias via Vite's built-in
+  `resolve.tsconfigPaths` option (in both the Vite and Vitest configs) instead of
+  the `vite-tsconfig-paths` plugin, which has been dropped as a dependency.
+
+- Updated dependencies [[`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b)]:
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/ui-components@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
+## 0.6.10
+
+### Patch Changes
+
+- [#890](https://github.com/halfdomelabs/baseplate/pull/890) [`192efea`](https://github.com/halfdomelabs/baseplate/commit/192efeac591e3193740da901fb42d0d077063368) Thanks [@kingston](https://github.com/kingston)! - Fix invalid TanStack Router param name in the admin section route
+
+- [#894](https://github.com/halfdomelabs/baseplate/pull/894) [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d) Thanks [@kingston](https://github.com/kingston)! - Redesign the new-project setup wizard as a single "Create a new project" panel with an opinionated stack list — Authentication, Email, Background jobs, File storage, Payments, Error tracking, and AI dev agents are each a row with inline provider selection.
+
+- [#886](https://github.com/halfdomelabs/baseplate/pull/886) [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759) Thanks [@kingston](https://github.com/kingston)! - Migrate from @originjs/vite-plugin-federation to @module-federation/vite for active maintenance and Vite 7+ peer-range support. As part of this, `@baseplate-dev/project-builder-lib` and `@baseplate-dev/ui-components` now declare `react`, `react-dom`, `zod` (and `@baseplate-dev/ui-components` from project-builder-lib) as peer dependencies — these were already required by consumers but are now explicit, so the federation runtime can dedupe them across host and remotes.
+
+- [#894](https://github.com/halfdomelabs/baseplate/pull/894) [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d) Thanks [@kingston](https://github.com/kingston)! - Add `pluginDefaultsSpec` — a new platform spec that lets a plugin declare how to enable itself with sensible defaults. The setup wizard now invokes each plugin's registered builder instead of trying to enable with `{}`, which previously crashed Zod validation for plugins that require feature refs (rate-limit, storage). Rate-limit auto-scaffolds a `system/rate-limit` feature; storage auto-scaffolds a `storage` feature. Sentry, Stripe, and AI dev-agents register matching builders so the wizard treats every plugin uniformly.
+
+- [#898](https://github.com/halfdomelabs/baseplate/pull/898) [`0afcb97`](https://github.com/halfdomelabs/baseplate/commit/0afcb979943a6f4f571c56af5e73936ed9d40370) Thanks [@kingston](https://github.com/kingston)! - Re-introduce GraphQL subscriptions support, now transported over Server-Sent
+  Events (SSE) instead of WebSockets (ENG-1088).
+- Updated dependencies [[`ffe0818`](https://github.com/halfdomelabs/baseplate/commit/ffe081872b7c99124243e3bb04e73c7b5ddd0f7e), [`30765f0`](https://github.com/halfdomelabs/baseplate/commit/30765f079c46019d9c91fb96f1b3c399b4dc8759), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`4b38b79`](https://github.com/halfdomelabs/baseplate/commit/4b38b79282a32414c688b1f6212b88c0c75d413d), [`e8da347`](https://github.com/halfdomelabs/baseplate/commit/e8da347b3bd799b31c5d04d1317dedaa8c14e412), [`62df439`](https://github.com/halfdomelabs/baseplate/commit/62df43917263034e621f29fb261d2b93ca9edf23)]:
+  - @baseplate-dev/project-builder-lib@0.6.10
+  - @baseplate-dev/ui-components@0.6.10
+  - @baseplate-dev/utils@0.6.10
+
 ## 0.6.9
 
 ### Patch Changes

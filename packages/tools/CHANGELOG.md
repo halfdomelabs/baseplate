@@ -1,5 +1,17 @@
 # @baseplate-dev/tools
 
+## 0.6.11
+
+### Patch Changes
+
+- [#902](https://github.com/halfdomelabs/baseplate/pull/902) [`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b) Thanks [@kingston](https://github.com/kingston)! - Upgrade oxc tooling to latest and clean up lint rules (ENG-1164)
+
+## 0.6.10
+
+### Patch Changes
+
+- [#890](https://github.com/halfdomelabs/baseplate/pull/890) [`192efea`](https://github.com/halfdomelabs/baseplate/commit/192efeac591e3193740da901fb42d0d077063368) Thanks [@kingston](https://github.com/kingston)! - Fix invalid TanStack Router param name in the admin section route
+
 ## 0.6.9
 
 ## 0.6.8

@@ -115,6 +115,7 @@
   "@baseplate-dev/fastify-generators#vitest/prisma-vitest:global-setup-prisma": "src/tests/scripts/global-setup-prisma.ts",
   "@baseplate-dev/fastify-generators#vitest/prisma-vitest:prisma-test-helper": "src/tests/helpers/prisma.test-helper.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:graphql-plugin": "src/plugins/graphql/index.ts",
+  "@baseplate-dev/fastify-generators#yoga/yoga-plugin:pubsub": "src/plugins/graphql/pubsub.ts",
   "@baseplate-dev/fastify-generators#yoga/yoga-plugin:use-graph-logger": "src/plugins/graphql/use-graph-logger.ts",
   "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module:admin-auth-mutations": "src/modules/accounts/auth/schema/admin-auth.mutations.ts",
   "@baseplate-dev/plugin-auth#better-auth/better-auth-admin-module:admin-auth-service": "src/modules/accounts/auth/services/admin-auth.service.ts",

@@ -196,17 +196,17 @@ describe('PluginUtils.setPluginConfig', () => {
   });
 });
 
-describe('PluginUtils.getDependentPlugins', () => {
-  function pluginDef(key: string): BasePluginDefinition {
-    return {
-      id: pluginEntityType.idFromKey(key),
-      name: key,
-      packageName: `@test/plugin-${key}`,
-      version: '0.1.0',
-      config: {},
-    };
-  }
+function pluginDef(key: string): BasePluginDefinition {
+  return {
+    id: pluginEntityType.idFromKey(key),
+    name: key,
+    packageName: `@test/plugin-${key}`,
+    version: '0.1.0',
+    config: {},
+  };
+}
 
+describe('PluginUtils.getDependentPlugins', () => {
   it('returns direct dependents', () => {
     const authMetadata = createMockPluginMetadata(
       'auth',

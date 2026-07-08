@@ -4,11 +4,12 @@ packages:
 allowBuilds:
   '@parcel/watcher': false
   '@prisma/engines': true
-  '@sentry-internal/node-cpu-profiler': true
+  '@sentry/node-cpu-profiler': true
   esbuild: false
   msw: false
   prisma: true
   unrs-resolver: false
+strictDepBuilds: false
 blockExoticSubdeps: true
 linkWorkspacePackages: true
 minimumReleaseAge: 1440

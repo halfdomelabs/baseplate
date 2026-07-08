@@ -14,9 +14,7 @@ export const FASTIFY_PACKAGES = {
   'graphql-yoga': '5.15.1',
 
   '@envelop/types': '5.2.1',
-  '@types/ws': '8.5.13',
 
-  '@fastify/websocket': '11.2.0',
   '@fastify/request-context': '6.2.1',
   '@fastify/formbody': '8.0.2',
   '@fastify/cookie': '11.0.2',
@@ -31,7 +29,6 @@ export const FASTIFY_PACKAGES = {
   'graphql-scalars': '1.23.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',
-  'graphql-ws': '5.16.0',
 
   // Prisma
   '@prisma/client': '7.8.0',
@@ -46,20 +43,20 @@ export const FASTIFY_PACKAGES = {
 
   // Environment
   'cross-env': '7.0.3',
-  concurrently: '9.2.1',
+  concurrently: '10.0.3',
 
   // Compilation
   'tsc-alias': '1.8.10',
-  tsx: '4.20.6',
+  tsx: '4.22.3',
   '@types/node': `^22.0.0`,
 
   // Redis
   ioredis: '5.8.1',
 
   // Sentry
-  '@sentry/core': '10.39.0',
-  '@sentry/node': '10.39.0',
-  '@sentry/profiling-node': '10.39.0',
+  '@sentry/core': '10.63.0',
+  '@sentry/node': '10.63.0',
+  '@sentry/profiling-node': '10.63.0',
   '@pothos/plugin-tracing': '1.1.0',
   '@pothos/tracing-sentry': '1.1.4',
 

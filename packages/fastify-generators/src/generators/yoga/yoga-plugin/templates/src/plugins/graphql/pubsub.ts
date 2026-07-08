@@ -6,8 +6,17 @@ import { createRedisClient } from '%fastifyRedisImports';
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
 import { createPubSub } from 'graphql-yoga';
 
+/**
+ * Map of subscription channel name to the arguments accepted by `pubSub.publish`.
+ *
+ * Add a channel as `channelName: [payload: PayloadType]` (or
+ * `[topicId, payload]` for dynamic topics), then publish to it from your
+ * mutations and subscribe to it from a `builder.subscriptionField`.
+ *
+ * @see https://the-guild.dev/graphql/yoga-server/docs/features/subscriptions
+ */
 // must be a type to be used in the PubSub type
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+
 type PubSubPublishArgs = TPL_PUBLISH_ARGS;
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;

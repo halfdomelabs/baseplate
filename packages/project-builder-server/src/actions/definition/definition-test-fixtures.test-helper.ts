@@ -102,6 +102,7 @@ export const test = baseTest.extend<{
           testEntityServiceContext.entityContext.serializedDefinition,
       },
       entityContext: testEntityServiceContext.entityContext,
+      container: testEntityServiceContext.container,
       oldRefPayload: testEntityServiceContext.container.refPayload,
       parserContext: testEntityServiceContext.parserContext,
       projectDirectory: '/test-project',

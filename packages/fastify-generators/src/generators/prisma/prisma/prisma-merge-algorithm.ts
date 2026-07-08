@@ -1,10 +1,8 @@
 import type { StringMergeAlgorithm } from '@baseplate-dev/sync';
-import type { formatSchema } from '@prisma/internals';
 
 import { diff3MergeAlgorithm } from '@baseplate-dev/sync';
-import { createRequire } from 'node:module';
 
-const internalRequire = createRequire(import.meta.url);
+import { formatPrismaSchema } from './format-prisma-schema.js';
 
 /**
  * Normalize Prisma whitespace by collapsing alignment spaces/tabs while
@@ -122,10 +120,6 @@ export function normalizePrismaWhitespace(text: string): string {
  */
 export const prismaMergeAlgorithm: StringMergeAlgorithm = async (input) => {
   try {
-    const { formatSchema: format } = internalRequire('@prisma/internals') as {
-      formatSchema: typeof formatSchema;
-    };
-
     const normalizedInput = {
       ...input,
       previousWorkingText: normalizePrismaWhitespace(input.previousWorkingText),
@@ -147,9 +141,9 @@ export const prismaMergeAlgorithm: StringMergeAlgorithm = async (input) => {
     }
 
     // Re-format the merged result to restore canonical Prisma alignment
-    const [[, formattedText]] = await format({
-      schemas: [[input.filePath, diff3Result.mergedText]],
-    });
+    const [[, formattedText]] = formatPrismaSchema([
+      [input.filePath, diff3Result.mergedText],
+    ]);
 
     return {
       mergedText: `${formattedText.trimEnd()}\n`,
