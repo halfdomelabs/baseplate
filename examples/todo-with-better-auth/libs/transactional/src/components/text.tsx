@@ -1,5 +1,5 @@
-import { Text as ReactEmailText } from '@react-email/components';
 import * as React from 'react';
+import { Text as ReactEmailText } from 'react-email';
 
 import { theme } from '../constants/theme.js';
 

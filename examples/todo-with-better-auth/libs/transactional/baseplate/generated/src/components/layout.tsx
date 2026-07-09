@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Body,
   Column,
@@ -10,8 +11,7 @@ import {
   Text as ReactEmailText,
   Row,
   Section,
-} from '@react-email/components';
-import * as React from 'react';
+} from 'react-email';
 
 import { theme } from '../constants/theme.js';
 import { Divider } from './divider.js';
