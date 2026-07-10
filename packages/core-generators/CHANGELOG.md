@@ -1,5 +1,17 @@
 # @baseplate-dev/core-generators
 
+## 0.6.12
+
+### Patch Changes
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fix create-project being blocked by pnpm 11 approve-builds by removing @prisma/engines from generator dependencies and setting strictDepBuilds/allowBuilds in generated pnpm-workspace.yaml.
+
+- [#914](https://github.com/halfdomelabs/baseplate/pull/914) [`65a1b96`](https://github.com/halfdomelabs/baseplate/commit/65a1b969e7900b935800d111c23b3af70a660514) Thanks [@kingston](https://github.com/kingston)! - Upgrade the Node version pinned in generated projects from 24.17.0 to 24.18.0.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
 ## 0.6.11
 
 ### Patch Changes

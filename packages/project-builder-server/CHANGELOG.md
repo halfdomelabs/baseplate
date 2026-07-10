@@ -1,5 +1,21 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.12
+
+### Patch Changes
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fix create-project being blocked by pnpm 11 approve-builds by removing @prisma/engines from generator dependencies and setting strictDepBuilds/allowBuilds in generated pnpm-workspace.yaml.
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fixes for MCP staging: always default `enums` to `[]` to prevent runtime errors and make corrupt drafts recoverable.
+
+- Updated dependencies [[`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`65a1b96`](https://github.com/halfdomelabs/baseplate/commit/65a1b969e7900b935800d111c23b3af70a660514)]:
+  - @baseplate-dev/fastify-generators@0.6.12
+  - @baseplate-dev/core-generators@0.6.12
+  - @baseplate-dev/react-generators@0.6.12
+  - @baseplate-dev/project-builder-lib@0.6.12
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
 ## 0.6.11
 
 ### Patch Changes
