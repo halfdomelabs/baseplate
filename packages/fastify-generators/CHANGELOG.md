@@ -1,29 +1,5 @@
 # @baseplate-dev/fastify-generators
 
-## 0.6.12
-
-### Patch Changes
-
-- [#905](https://github.com/halfdomelabs/baseplate/pull/905) [`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306) Thanks [@kingston](https://github.com/kingston)! - Fix the create-project experience being blocked by pnpm 11's approve-builds gate:
-  - `fastify-generators` now formats Prisma schemas with `@prisma/prisma-schema-wasm`
-    directly instead of `@prisma/internals`, removing `@prisma/engines` (and its
-    install prompt) from the generator tooling closure.
-  - Generated projects now set `strictDepBuilds: false` in `pnpm-workspace.yaml` so an
-    unapproved dependency build script downgrades from an install failure to a warning,
-    and pre-populate `allowBuilds` with the build-script dependencies a generated project
-    pulls in.
-
-- [#907](https://github.com/halfdomelabs/baseplate/pull/907) [`164e4ea`](https://github.com/halfdomelabs/baseplate/commit/164e4eab3745e94c088bbba20ad4d8e7ff4ce74b) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to the latest 10.x release to resolve a memory leak:
-  - `@sentry/core`, `@sentry/node`, `@sentry/profiling-node`: 10.39.0 → 10.63.0
-  - `@sentry/react`: 10.39.0 → 10.63.0
-
-- [#906](https://github.com/halfdomelabs/baseplate/pull/906) [`cf61081`](https://github.com/halfdomelabs/baseplate/commit/cf610810cfdb692ffe86bc6e603ca3f68c3062cc) Thanks [@kingston](https://github.com/kingston)! - Make RequestServiceContext available on the Fastify request object as `req.serviceContext`
-
-- Updated dependencies [[`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306)]:
-  - @baseplate-dev/core-generators@0.6.12
-  - @baseplate-dev/sync@0.6.12
-  - @baseplate-dev/utils@0.6.12
-
 ## 0.6.11
 
 ### Patch Changes

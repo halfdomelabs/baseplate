@@ -1,42 +1,5 @@
 # @baseplate-dev/project-builder-server
 
-## 0.6.12
-
-### Patch Changes
-
-- [#905](https://github.com/halfdomelabs/baseplate/pull/905) [`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306) Thanks [@kingston](https://github.com/kingston)! - Fix the create-project experience being blocked by pnpm 11's approve-builds gate:
-  - `fastify-generators` now formats Prisma schemas with `@prisma/prisma-schema-wasm`
-    directly instead of `@prisma/internals`, removing `@prisma/engines` (and its
-    install prompt) from the generator tooling closure.
-  - Generated projects now set `strictDepBuilds: false` in `pnpm-workspace.yaml` so an
-    unapproved dependency build script downgrades from an install failure to a warning,
-    and pre-populate `allowBuilds` with the build-script dependencies a generated project
-    pulls in.
-
-- [#909](https://github.com/halfdomelabs/baseplate/pull/909) [`a165d11`](https://github.com/halfdomelabs/baseplate/commit/a165d115faed35cbe93766cd1fb6b021e3afcbe3) Thanks [@kingston](https://github.com/kingston)! - Fix two issues with staging entities through the MCP server (ENG-1174):
-  - **Enums array default:** the top-level `enums` field was declared `.optional()` while
-    its sibling arrays (`apps`, `libraries`, `models`) all default to `[]`. A definition
-    written without an `enums` key parsed to `undefined`, causing a runtime `TypeError` when
-    staging an enum. `enums` now defaults to `[]` like the others. `cleanDefaultValues`
-    strips the empty default on serialize, so on-disk definitions stay unchanged.
-  - **Corrupt draft recovery:** a draft session persisted by an older CLI could be
-    structurally invalid (e.g. missing entity `id` fields). `getOrCreateDraftSession` then
-    rethrew a cryptic error on every staging call and the draft could not be advanced. It now
-    detects an unparseable persisted draft and surfaces an actionable error pointing at
-    `discard-draft` (which clears the draft without parsing it), so the session can be reset.
-
-  Initializers now emit `enums: []`, and the redundant `enums ?? []` / `enums?.` guards
-  across `project-builder-server`, `project-builder-web`, and `create-project` are dropped
-  now that `enums` is always an array.
-
-- Updated dependencies [[`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306), [`164e4ea`](https://github.com/halfdomelabs/baseplate/commit/164e4eab3745e94c088bbba20ad4d8e7ff4ce74b), [`a165d11`](https://github.com/halfdomelabs/baseplate/commit/a165d115faed35cbe93766cd1fb6b021e3afcbe3), [`a165d11`](https://github.com/halfdomelabs/baseplate/commit/a165d115faed35cbe93766cd1fb6b021e3afcbe3), [`cf61081`](https://github.com/halfdomelabs/baseplate/commit/cf610810cfdb692ffe86bc6e603ca3f68c3062cc)]:
-  - @baseplate-dev/fastify-generators@0.6.12
-  - @baseplate-dev/core-generators@0.6.12
-  - @baseplate-dev/react-generators@0.6.12
-  - @baseplate-dev/project-builder-lib@0.6.12
-  - @baseplate-dev/sync@0.6.12
-  - @baseplate-dev/utils@0.6.12
-
 ## 0.6.11
 
 ### Patch Changes
