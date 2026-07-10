@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/fastify-generators",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "description": "Fastify generators for Baseplate",
   "keywords": [
     "backend",

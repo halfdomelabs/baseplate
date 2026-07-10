@@ -1,5 +1,22 @@
 # @baseplate-dev/core-generators
 
+## 0.6.12
+
+### Patch Changes
+
+- [#905](https://github.com/halfdomelabs/baseplate/pull/905) [`a52f722`](https://github.com/halfdomelabs/baseplate/commit/a52f722225b37dc1545264012ce599a53aee5306) Thanks [@kingston](https://github.com/kingston)! - Fix the create-project experience being blocked by pnpm 11's approve-builds gate:
+  - `fastify-generators` now formats Prisma schemas with `@prisma/prisma-schema-wasm`
+    directly instead of `@prisma/internals`, removing `@prisma/engines` (and its
+    install prompt) from the generator tooling closure.
+  - Generated projects now set `strictDepBuilds: false` in `pnpm-workspace.yaml` so an
+    unapproved dependency build script downgrades from an install failure to a warning,
+    and pre-populate `allowBuilds` with the build-script dependencies a generated project
+    pulls in.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
 ## 0.6.11
 
 ### Patch Changes
