@@ -282,16 +282,12 @@ export class BullMQQueue<T> implements Queue<T> {
 
           return result;
         } catch (error: unknown) {
-          logger.error(
-            {
-              queueName: this.name,
-              jobId: job.id,
-              attemptNumber: queueJob.attemptNumber,
-              err: error,
-              event: 'job-processing-failed',
-            },
-            `Job ${job.id} for queue ${this.name} failed`,
-          );
+          logError(error, {
+            queueName: this.name,
+            jobId: job.id,
+            attemptNumber: queueJob.attemptNumber,
+            event: 'job-processing-failed',
+          });
 
           throw error;
         }
