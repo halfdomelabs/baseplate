@@ -1,32 +1,5 @@
 # @baseplate-dev/project-builder-lib
 
-## 0.6.12
-
-### Patch Changes
-
-- [#909](https://github.com/halfdomelabs/baseplate/pull/909) [`a165d11`](https://github.com/halfdomelabs/baseplate/commit/a165d115faed35cbe93766cd1fb6b021e3afcbe3) Thanks [@kingston](https://github.com/kingston)! - Fix two issues with staging entities through the MCP server (ENG-1174):
-  - **Enums array default:** the top-level `enums` field was declared `.optional()` while
-    its sibling arrays (`apps`, `libraries`, `models`) all default to `[]`. A definition
-    written without an `enums` key parsed to `undefined`, causing a runtime `TypeError` when
-    staging an enum. `enums` now defaults to `[]` like the others. `cleanDefaultValues`
-    strips the empty default on serialize, so on-disk definitions stay unchanged.
-  - **Corrupt draft recovery:** a draft session persisted by an older CLI could be
-    structurally invalid (e.g. missing entity `id` fields). `getOrCreateDraftSession` then
-    rethrew a cryptic error on every staging call and the draft could not be advanced. It now
-    detects an unparseable persisted draft and surfaces an actionable error pointing at
-    `discard-draft` (which clears the draft without parsing it), so the session can be reset.
-
-  Initializers now emit `enums: []`, and the redundant `enums ?? []` / `enums?.` guards
-  across `project-builder-server`, `project-builder-web`, and `create-project` are dropped
-  now that `enums` is always an array.
-
-- [#909](https://github.com/halfdomelabs/baseplate/pull/909) [`a165d11`](https://github.com/halfdomelabs/baseplate/commit/a165d115faed35cbe93766cd1fb6b021e3afcbe3) Thanks [@kingston](https://github.com/kingston)! - Fix `FeatureUtils.ensureFeatureByNameRecursively` creating duplicate nested features.
-
-- Updated dependencies []:
-  - @baseplate-dev/sync@0.6.12
-  - @baseplate-dev/ui-components@0.6.12
-  - @baseplate-dev/utils@0.6.12
-
 ## 0.6.11
 
 ### Patch Changes
