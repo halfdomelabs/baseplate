@@ -1,5 +1,23 @@
 # @baseplate-dev/plugin-email
 
+## 0.6.12
+
+### Patch Changes
+
+- [#911](https://github.com/halfdomelabs/baseplate/pull/911) [`3f925ff`](https://github.com/halfdomelabs/baseplate/commit/3f925ff4e22fde6c76f7c8b471fac044ed0a82b3) Thanks [@kingston](https://github.com/kingston)! - Upgrade the generated transactional email library to React Email 6.0.0
+
+  The transactional library now uses the consolidated `react-email` package instead of the deprecated `@react-email/components`. See the [React Email 6.0 migration guide](https://react.email/docs/getting-started/updating-react-email) for details.
+
+- Updated dependencies [[`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`65a1b96`](https://github.com/halfdomelabs/baseplate/commit/65a1b969e7900b935800d111c23b3af70a660514)]:
+  - @baseplate-dev/fastify-generators@0.6.12
+  - @baseplate-dev/core-generators@0.6.12
+  - @baseplate-dev/react-generators@0.6.12
+  - @baseplate-dev/project-builder-lib@0.6.12
+  - @baseplate-dev/plugin-queue@0.6.12
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/ui-components@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
 ## 0.6.11
 
 ### Patch Changes
