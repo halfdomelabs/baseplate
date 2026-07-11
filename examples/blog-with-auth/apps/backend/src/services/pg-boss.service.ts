@@ -255,16 +255,12 @@ export class PgBossQueue<T> implements Queue<T> {
 
           await boss.complete(this.name, job.id, result as object);
         } catch (error: unknown) {
-          logger.error(
-            {
-              queueName: this.name,
-              jobId: job.id,
-              attemptNumber: queueJob.attemptNumber,
-              err: error,
-              event: 'job-processing-failed',
-            },
-            `Job ${job.id} for queue ${this.name} failed`,
-          );
+          logError(error, {
+            queueName: this.name,
+            jobId: job.id,
+            attemptNumber: queueJob.attemptNumber,
+            event: 'job-processing-failed',
+          });
 
           await boss.fail(this.name, job.id, { err: String(error) });
         }
