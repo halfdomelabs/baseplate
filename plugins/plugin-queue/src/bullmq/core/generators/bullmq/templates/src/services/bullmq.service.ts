@@ -82,6 +82,29 @@ function getBullMQRedis(): ReturnType<typeof createRedisClient> {
  * @param options The enqueue options from our interface.
  * @returns BullMQ job options.
  */
+/**
+ * Ensure a deduplicated queue is never enqueued to without a singleton key.
+ *
+ * Enqueueing without a key on a deduplicated queue is almost always a mistake:
+ * the job silently bypasses deduplication entirely, so callers relying on
+ * idempotency would get duplicate jobs.
+ *
+ * @param queueName The name of the queue.
+ * @param definition The queue definition.
+ * @param singletonKey The resolved singleton key for this job, if any.
+ */
+function assertSingletonKeyIfDeduplicated<T>(
+  queueName: string,
+  definition: QueueDefinition<T>,
+  singletonKey: string | undefined,
+): void {
+  if (definition.options?.deduplication && singletonKey === undefined) {
+    throw new Error(
+      `Queue "${queueName}" has deduplication enabled, so every job must be enqueued with a singletonKey.`,
+    );
+  }
+}
+
 function mapEnqueueOptions(options?: EnqueueOptions): JobsOptions {
   const bullMQOptions: JobsOptions = {
     // Keep completed jobs for specified days
@@ -92,6 +115,14 @@ function mapEnqueueOptions(options?: EnqueueOptions): JobsOptions {
     // Keep failed jobs for manual inspection
     removeOnFail: false,
   };
+
+  if (options?.singletonKey !== undefined) {
+    // No ttl: BullMQ holds the deduplication key until the job moves to
+    // completed or failed, so jobs are deduplicated while pending or active.
+    // Setting a ttl would instead keep the key alive past completion, turning
+    // this into time-window throttling.
+    bullMQOptions.deduplication = { id: options.singletonKey };
+  }
 
   if (options?.delaySeconds) {
     bullMQOptions.delay = options.delaySeconds * 1000; // Convert to milliseconds
@@ -219,7 +250,17 @@ export class BullMQQueue<T> implements Queue<T> {
       ...options,
     };
 
+    assertSingletonKeyIfDeduplicated(
+      this.name,
+      this.definition,
+      mergedOptions.singletonKey,
+    );
+
     const bullMQOptions = mapEnqueueOptions(mergedOptions);
+    // When a job is deduplicated, BullMQ does not store it and instead returns
+    // the id of the job that is already in flight, so the id below may belong to
+    // that existing job rather than a newly created one. Callers must not treat
+    // the returned id as proof that a new job was created.
     const job = await this.getBullQueue().add(this.name, data, bullMQOptions);
 
     return job.id;
