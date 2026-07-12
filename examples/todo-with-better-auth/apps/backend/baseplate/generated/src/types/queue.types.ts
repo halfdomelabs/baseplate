@@ -30,6 +30,16 @@ export interface Queue<T> {
  */
 export interface EnqueueOptions {
   /**
+   * Deduplication key, making enqueueing idempotent when a caller may retry.
+   * While a job with this key is pending or active, further enqueues with the
+   * same key are dropped; the key is released once the job completes or fails.
+   *
+   * Requires `deduplication: true` on the queue, which then requires a key on
+   * every enqueue. The return value of `enqueue` cannot be used to detect a
+   * dropped job, as it differs by backend.
+   */
+  singletonKey?: string;
+  /**
    * The amount of time in seconds to delay before the job can be processed.
    */
   delaySeconds?: number;
@@ -85,11 +95,24 @@ export interface QueueDefinition<T> {
    */
   options?: {
     /**
+     * Deduplicate jobs in this queue by `singletonKey`, which every enqueue must
+     * then supply. See `EnqueueOptions.singletonKey`.
+     *
+     * Must be set before the queue is first created: pg-boss fixes a queue's
+     * deduplication behavior at creation time, so enabling this on an
+     * already-deployed queue has no effect until that queue is recreated.
+     */
+    deduplication?: boolean;
+
+    /**
      * Default options to apply to all jobs in this queue.
      * These can be overridden by the options passed to `enqueue`.
-     * Note: `delaySeconds` is not included as it's typically job-specific.
+     * Note: `delaySeconds` is not included as it's typically job-specific, and
+     * `singletonKey` is not included as a deduplication key is inherently
+     * per-job — sharing one across every job would collapse the queue to a
+     * single job at a time.
      */
-    defaultJobOptions?: Omit<EnqueueOptions, 'delaySeconds'>;
+    defaultJobOptions?: Omit<EnqueueOptions, 'delaySeconds' | 'singletonKey'>;
   };
 }
 
