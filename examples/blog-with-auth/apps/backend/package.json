@@ -48,9 +48,9 @@
     "@pothos/tracing-sentry": "1.1.4",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
-    "@sentry/core": "10.39.0",
-    "@sentry/node": "10.39.0",
-    "@sentry/profiling-node": "10.39.0",
+    "@sentry/core": "10.63.0",
+    "@sentry/node": "10.63.0",
+    "@sentry/profiling-node": "10.63.0",
     "es-toolkit": "1.44.0",
     "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
@@ -92,10 +92,10 @@
     "vitest-mock-extended": "3.1.0"
   },
   "engines": {
-    "node": "^24.17.0",
+    "node": "^24.18.0",
     "pnpm": "^11.7.0"
   },
   "volta": {
-    "node": "24.17.0"
+    "node": "24.18.0"
   }
 }

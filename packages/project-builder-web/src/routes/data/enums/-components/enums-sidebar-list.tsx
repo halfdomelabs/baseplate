@@ -26,7 +26,7 @@ export function EnumsSidebarList({
   className,
 }: EnumsSidebarListProps): React.JSX.Element {
   const {
-    definition: { enums = [] },
+    definition: { enums },
   } = useProjectDefinition();
 
   const [filterQuery, setFilterQuery] = useState('');

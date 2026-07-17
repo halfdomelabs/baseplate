@@ -30,7 +30,6 @@ import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-h
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
-import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/index.js';
 
 import { YOGA_YOGA_PLUGIN_GENERATED } from './generated/index.js';
 
@@ -148,7 +147,6 @@ export const yogaPluginGenerator = createGenerator({
         paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
         configServiceImports: configServiceImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        requestServiceContextImports: requestServiceContextImportsProvider,
         loggerServiceImports: loggerServiceImportsProvider,
         yogaPluginSetup: yogaPluginSetupProvider,
       },
@@ -156,7 +154,6 @@ export const yogaPluginGenerator = createGenerator({
         typescriptFile,
         paths,
         configServiceImports,
-        requestServiceContextImports,
         loggerServiceImports,
         errorHandlerServiceImports,
         yogaPluginSetup: config,
@@ -193,7 +190,6 @@ export const yogaPluginGenerator = createGenerator({
                 },
                 importMapProviders: {
                   configServiceImports,
-                  requestServiceContextImports,
                   loggerServiceImports,
                   errorHandlerServiceImports,
                 },

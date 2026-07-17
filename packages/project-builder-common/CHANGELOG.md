@@ -1,5 +1,39 @@
 # @baseplate-dev/project-builder-common
 
+## 0.6.12
+
+### Patch Changes
+
+- Updated dependencies [[`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`3f925ff`](https://github.com/halfdomelabs/baseplate/commit/3f925ff4e22fde6c76f7c8b471fac044ed0a82b3), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b)]:
+  - @baseplate-dev/project-builder-server@0.6.12
+  - @baseplate-dev/project-builder-lib@0.6.12
+  - @baseplate-dev/plugin-email@0.6.12
+  - @baseplate-dev/plugin-storage@0.6.12
+  - @baseplate-dev/plugin-auth@0.6.12
+  - @baseplate-dev/plugin-observability@0.6.12
+  - @baseplate-dev/plugin-payments@0.6.12
+  - @baseplate-dev/plugin-queue@0.6.12
+  - @baseplate-dev/plugin-rate-limit@0.6.12
+  - @baseplate-dev/plugin-ai@0.6.12
+  - @baseplate-dev/sync@0.6.12
+
+## 0.6.11
+
+### Patch Changes
+
+- Updated dependencies [[`bca540b`](https://github.com/halfdomelabs/baseplate/commit/bca540b67711a956a0c0872bfcb7343d81275f9b), [`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b)]:
+  - @baseplate-dev/project-builder-server@0.6.11
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/sync@0.6.11
+  - @baseplate-dev/plugin-ai@0.6.11
+  - @baseplate-dev/plugin-auth@0.6.11
+  - @baseplate-dev/plugin-email@0.6.11
+  - @baseplate-dev/plugin-observability@0.6.11
+  - @baseplate-dev/plugin-payments@0.6.11
+  - @baseplate-dev/plugin-queue@0.6.11
+  - @baseplate-dev/plugin-rate-limit@0.6.11
+  - @baseplate-dev/plugin-storage@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes

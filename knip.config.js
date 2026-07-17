@@ -36,6 +36,11 @@ export default {
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // resolved at runtime via createRequire (CJS wasm module) in
+        // src/generators/prisma/prisma/format-prisma-schema.ts
+        '@prisma/prisma-schema-wasm',
+      ],
       paths: {
         '#src/*': ['./src/*'],
       },

@@ -2,6 +2,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   packageScope,
+  tsCodeFragment,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -13,9 +14,13 @@ import {
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { requestContextImportsProvider } from '../request-context/index.js';
+import {
+  requestContextConfigProvider,
+  requestContextImportsProvider,
+} from '../request-context/index.js';
 import { serviceContextImportsProvider } from '../service-context/index.js';
 import { CORE_REQUEST_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
+import { requestServiceContextImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -58,6 +63,35 @@ export const requestServiceContextGenerator = createGenerator({
     paths: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.paths.task,
     imports: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.imports.task,
     setup: setupTask,
+    requestContextConfig: createGeneratorTask({
+      dependencies: {
+        requestContextConfig: requestContextConfigProvider,
+        requestServiceContextImports: requestServiceContextImportsProvider,
+      },
+      run({ requestContextConfig, requestServiceContextImports }) {
+        requestContextConfig.fastifyRequestAugmentations.set(
+          'serviceContext',
+          requestServiceContextImports.RequestServiceContext.typeFragment(),
+        );
+
+        requestContextConfig.decoratorRegistrations.set(
+          'serviceContext',
+          tsCodeFragment(`fastify.decorateRequest('serviceContext');`),
+        );
+
+        requestContextConfig.extraHooks.set(
+          'serviceContext',
+          TsCodeUtils.templateWithImports(
+            requestServiceContextImports.createContextFromRequest.declaration(),
+          )`fastify.addHook('preHandler', (req, reply, done) => {
+  req.serviceContext = createContextFromRequest(req, reply);
+  done();
+});`,
+        );
+
+        return {};
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,

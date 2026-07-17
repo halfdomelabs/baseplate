@@ -9,7 +9,7 @@ If the Baseplate MCP server is not already configured, ask the user to set it up
 **Claude Code:**
 
 ```bash
-claude mcp add baseplate -- pnpm run baseplate mcp
+claude mcp add baseplate -- pnpm baseplate mcp
 ```
 
 ## Common MCP Actions

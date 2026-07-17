@@ -1,5 +1,29 @@
 # @baseplate-dev/plugin-queue
 
+## 0.6.12
+
+### Patch Changes
+
+- Updated dependencies [[`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`65a1b96`](https://github.com/halfdomelabs/baseplate/commit/65a1b969e7900b935800d111c23b3af70a660514)]:
+  - @baseplate-dev/fastify-generators@0.6.12
+  - @baseplate-dev/core-generators@0.6.12
+  - @baseplate-dev/project-builder-lib@0.6.12
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/ui-components@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
+## 0.6.11
+
+### Patch Changes
+
+- Updated dependencies [[`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b), [`05e7b98`](https://github.com/halfdomelabs/baseplate/commit/05e7b98c84069284976b33dfc3426a71a5b9bc64)]:
+  - @baseplate-dev/core-generators@0.6.11
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/fastify-generators@0.6.11
+  - @baseplate-dev/sync@0.6.11
+  - @baseplate-dev/ui-components@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes

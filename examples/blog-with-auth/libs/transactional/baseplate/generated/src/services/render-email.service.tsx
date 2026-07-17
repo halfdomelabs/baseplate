@@ -1,4 +1,4 @@
-import { render, toPlainText } from '@react-email/components';
+import { render, toPlainText } from 'react-email';
 
 import type { EmailComponent } from '../types/email-component.types.js';
 

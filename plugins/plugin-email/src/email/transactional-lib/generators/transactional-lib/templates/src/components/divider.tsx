@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { theme } from '$constantsTheme';
-import { Hr } from '@react-email/components';
 import * as React from 'react';
+import { Hr } from 'react-email';
 
 type DividerSpacing = 'sm' | 'md' | 'lg';
 

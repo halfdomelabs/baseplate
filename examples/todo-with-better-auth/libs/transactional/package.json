@@ -29,9 +29,9 @@
     "watch": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
   },
   "dependencies": {
-    "@react-email/components": "1.0.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-email": "6.6.8"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
@@ -52,10 +52,10 @@
     "vitest": "4.1.7"
   },
   "engines": {
-    "node": "^24.17.0",
+    "node": "^24.18.0",
     "pnpm": "^11.7.0"
   },
   "volta": {
-    "node": "24.17.0"
+    "node": "24.18.0"
   }
 }

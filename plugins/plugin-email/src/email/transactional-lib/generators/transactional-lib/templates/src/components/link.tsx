@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { theme } from '$constantsTheme';
-import { Link as ReactEmailLink } from '@react-email/components';
 import * as React from 'react';
+import { Link as ReactEmailLink } from 'react-email';
 
 export interface LinkProps {
   href: string;

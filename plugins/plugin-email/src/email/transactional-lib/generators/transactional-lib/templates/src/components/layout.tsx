@@ -2,6 +2,7 @@
 
 import { Divider } from '$componentsDivider';
 import { theme } from '$constantsTheme';
+import * as React from 'react';
 import {
   Body,
   Column,
@@ -14,8 +15,7 @@ import {
   Text as ReactEmailText,
   Row,
   Section,
-} from '@react-email/components';
-import * as React from 'react';
+} from 'react-email';
 
 interface EmailLayoutProps {
   children: React.ReactNode;

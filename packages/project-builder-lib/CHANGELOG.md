@@ -1,5 +1,29 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.6.12
+
+### Patch Changes
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fixes for MCP staging: always default `enums` to `[]` to prevent runtime errors and make corrupt drafts recoverable.
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fix `FeatureUtils.ensureFeatureByNameRecursively` creating duplicate nested features.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.12
+  - @baseplate-dev/ui-components@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
+## 0.6.11
+
+### Patch Changes
+
+- [#902](https://github.com/halfdomelabs/baseplate/pull/902) [`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b) Thanks [@kingston](https://github.com/kingston)! - Upgrade oxc tooling to latest and clean up lint rules (ENG-1164)
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.11
+  - @baseplate-dev/ui-components@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes

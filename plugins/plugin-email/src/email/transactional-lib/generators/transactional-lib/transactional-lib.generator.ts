@@ -24,9 +24,9 @@ const descriptorSchema = z.object({});
  */
 const TRANSACTIONAL_LIB_PACKAGES = {
   prod: {
-    '@react-email/components': '1.0.3',
     react: REACT_PACKAGES.react,
     'react-dom': REACT_PACKAGES['react-dom'],
+    'react-email': '6.6.8',
   },
   dev: {
     '@types/react': REACT_PACKAGES['@types/react'],

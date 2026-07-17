@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { theme } from '$constantsTheme';
-import { Text as ReactEmailText } from '@react-email/components';
 import * as React from 'react';
+import { Text as ReactEmailText } from 'react-email';
 
 type TextVariant = 'default' | 'lead' | 'large' | 'small' | 'muted';
 

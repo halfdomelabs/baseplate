@@ -1,5 +1,42 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.12
+
+### Patch Changes
+
+- [#912](https://github.com/halfdomelabs/baseplate/pull/912) [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b) Thanks [@kingston](https://github.com/kingston)! - Fixes for MCP staging: always default `enums` to `[]` to prevent runtime errors and make corrupt drafts recoverable.
+
+- Updated dependencies [[`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b), [`0620a2b`](https://github.com/halfdomelabs/baseplate/commit/0620a2b2a59a4b401a9d9268f596776f4da09a9b)]:
+  - @baseplate-dev/project-builder-lib@0.6.12
+  - @baseplate-dev/ui-components@0.6.12
+  - @baseplate-dev/utils@0.6.12
+
+## 0.6.11
+
+### Patch Changes
+
+- [#901](https://github.com/halfdomelabs/baseplate/pull/901) [`05e7b98`](https://github.com/halfdomelabs/baseplate/commit/05e7b98c84069284976b33dfc3426a71a5b9bc64) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite and Module Federation packages
+
+  Monorepo catalog and generator constants:
+  - vite: 8.0.16 → 8.1.0
+  - @vitejs/plugin-react: 6.0.2 → 6.0.3
+  - vite-plugin-svgr: 4.5.0 → 5.2.0
+  - @tailwindcss/vite: 4.3.0 → 4.3.1
+  - tailwindcss: 4.3.0 → 4.3.1
+
+  Module Federation (Baseplate web app only):
+  - @module-federation/enhanced: 2.3.3 → 2.6.0
+  - @module-federation/vite: 1.15.4 → 1.16.11
+
+  Generated projects now resolve the `@src/*` path alias via Vite's built-in
+  `resolve.tsconfigPaths` option (in both the Vite and Vitest configs) instead of
+  the `vite-tsconfig-paths` plugin, which has been dropped as a dependency.
+
+- Updated dependencies [[`cc296f4`](https://github.com/halfdomelabs/baseplate/commit/cc296f4737d0462f3536dda27ae9eb297f799b8b)]:
+  - @baseplate-dev/project-builder-lib@0.6.11
+  - @baseplate-dev/ui-components@0.6.11
+  - @baseplate-dev/utils@0.6.11
+
 ## 0.6.10
 
 ### Patch Changes

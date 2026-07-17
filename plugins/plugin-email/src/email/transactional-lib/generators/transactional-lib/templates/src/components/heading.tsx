@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { theme } from '$constantsTheme';
-import { Heading as ReactEmailHeading } from '@react-email/components';
 import * as React from 'react';
+import { Heading as ReactEmailHeading } from 'react-email';
 
 type HeadingLevel = 'h1' | 'h2' | 'h3';
 

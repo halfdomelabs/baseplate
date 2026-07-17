@@ -82,12 +82,39 @@ function getPgBoss(): PgBoss {
 }
 
 /**
+ * Ensure a deduplicated queue is never enqueued to without a singleton key.
+ *
+ * pg-boss deduplicates on `COALESCE(singleton_key, '')`, so jobs enqueued
+ * without a key would all share the empty key and collide with each other,
+ * silently limiting the queue to a single pending job.
+ *
+ * @param queueName The name of the queue.
+ * @param definition The queue definition.
+ * @param singletonKey The resolved singleton key for this job, if any.
+ */
+function assertSingletonKeyIfDeduplicated<T>(
+  queueName: string,
+  definition: QueueDefinition<T>,
+  singletonKey: string | undefined,
+): void {
+  if (definition.options?.deduplication && singletonKey === undefined) {
+    throw new Error(
+      `Queue "${queueName}" has deduplication enabled, so every job must be enqueued with a singletonKey.`,
+    );
+  }
+}
+
+/**
  * Convert our EnqueueOptions to pg-boss send options.
  * @param options The enqueue options from our interface.
  * @returns pg-boss send options.
  */
 function mapEnqueueOptions(options?: EnqueueOptions): PgBoss.SendOptions {
   const pgBossOptions: PgBoss.SendOptions = {};
+
+  if (options?.singletonKey !== undefined) {
+    pgBossOptions.singletonKey = options.singletonKey;
+  }
 
   if (options?.delaySeconds) {
     pgBossOptions.startAfter = new Date(
@@ -175,6 +202,11 @@ export class PgBossQueue<T> implements Queue<T> {
     const boss = getPgBoss();
     await boss.createQueue(this.name, {
       deleteAfterSeconds: DELETE_AFTER_DAYS * 24 * 60 * 60,
+      // pg-boss only deduplicates by singletonKey when the queue uses a policy
+      // that enforces it. `exclusive` rejects a job whose singletonKey matches
+      // one that is already pending or active; the default `standard` policy
+      // ignores singletonKey entirely. The policy is fixed at creation time.
+      ...(this.definition.options?.deduplication && { policy: 'exclusive' }),
     });
     this.hasCreatedQueue = true;
   }
@@ -193,7 +225,15 @@ export class PgBossQueue<T> implements Queue<T> {
       ...options,
     };
 
+    assertSingletonKeyIfDeduplicated(
+      this.name,
+      this.definition,
+      mergedOptions.singletonKey,
+    );
+
     const pgBossOptions = mapEnqueueOptions(mergedOptions);
+    // Returns null when a job with the same singletonKey is already pending or
+    // active on a deduplicated queue, i.e. the job was intentionally dropped.
     const jobId = await boss.send(this.name, data as object, pgBossOptions);
 
     return jobId ?? undefined;
@@ -255,16 +295,12 @@ export class PgBossQueue<T> implements Queue<T> {
 
           await boss.complete(this.name, job.id, result as object);
         } catch (error: unknown) {
-          logger.error(
-            {
-              queueName: this.name,
-              jobId: job.id,
-              attemptNumber: queueJob.attemptNumber,
-              err: error,
-              event: 'job-processing-failed',
-            },
-            `Job ${job.id} for queue ${this.name} failed`,
-          );
+          logError(error, {
+            queueName: this.name,
+            jobId: job.id,
+            attemptNumber: queueJob.attemptNumber,
+            event: 'job-processing-failed',
+          });
 
           await boss.fail(this.name, job.id, { err: String(error) });
         }
