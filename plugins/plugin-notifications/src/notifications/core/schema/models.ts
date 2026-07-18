@@ -7,21 +7,11 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
 /**
  * Builds the partial project definition contributed by the notifications plugin.
  *
- * Content model: the notification stores normalized rendered `segments` (the
- * content IR) plus a plain `fallbackText` flattening, rendered/frozen at notify()
- * time. The `messageId` + `params` columns are the backend-i18n seam — locale
- * independent facts kept so content can be re-rendered later without a migration.
- *
- * Actor is discriminated (`actorKind`: user | system | none). For human actors we
- * keep a live relation (`actorUserId` -> User) plus a frozen `actorLabel` as a
- * deletion fallback (name only — the avatar comes live from the relation, or
- * falls back to initials once the user is gone). System actor assets are NOT
- * stored per row — only `systemActorKey` (resolved against a config dictionary).
- *
- * The only hard FK to a domain table is `recipientId` (and the optional
- * `actorId`); `entityType`/`entityId` are plain columns so a notification can
- * reference any entity type without a strict relation. Digest/aggregation
- * grouping columns are deferred to the digest engine (see note below).
+ * Render-at-read content model: `params` (render inputs) are the source of truth,
+ * re-rendered per request; frozen `segments` + `fallbackText` are the fallback
+ * for retired types / param drift. Actor is discriminated via `actorKind`.
+ * `recipientId`/`actorId` are the only FKs; `entityType`/`entityId` are FK-less
+ * polymorphic refs. Digest grouping columns are deferred (see note below).
  */
 export function createNotificationsPartialDefinition(
   notificationsFeatureName: string,
@@ -40,24 +30,26 @@ export function createNotificationsPartialDefinition(
               type: 'uuid',
               options: { defaultGeneration: 'uuidv7' },
             },
-            // The notification-type key (e.g. "post.liked"). Resolved against the
-            // generated app's defineNotificationType() registry.
+            // Renderer key: (type, templateVersion) pins each row to the renderer
+            // that produced it, so a copy/param refactor bumps the version rather
+            // than silently rewriting history. Resolved against the app's
+            // defineNotificationType() registry.
             {
               name: 'type',
               type: 'string',
             },
-            // Recipient relation (the one stable foreign key).
+            {
+              name: 'templateVersion',
+              type: 'int',
+              options: { default: '1' },
+            },
             {
               name: 'recipientId',
               type: 'uuid',
             },
 
-            // --- Content (frozen rendered output = source of truth) ---
-            // Content is rendered to segments at notify() time and FROZEN. The
-            // frozen `segments` + `fallbackText` are what the feed DISPLAYS, and
-            // they never rot: evolving a message's wording or param shape only
-            // affects future notifications, never history (the Novu/Courier freeze
-            // model). Normalized Segment[] rendered and frozen at notify() time.
+            // Frozen fallback snapshot (see header): the feed renders from
+            // `params`; these are used only on retired type / param drift.
             {
               name: 'segments',
               type: 'json',
@@ -68,25 +60,14 @@ export function createNotificationsPartialDefinition(
               type: 'string',
             },
 
-            // --- Provenance (metadata, NOT the render path) ---
-            // messageId + params are stored ALONGSIDE the frozen content as
-            // provenance: useful for analytics/grouping now, and the seam for
-            // opt-in live i18n later (validate params against the current template
-            // at read time → render live, else fall back to the frozen segments).
-            // Because the frozen content is the display source of truth, evolving
-            // the param shape can never break historical rows.
-            {
-              name: 'messageId',
-              type: 'string',
-              isOptional: true,
-            },
+            // Render source of truth: must be JSON-serializable + snapshot-complete.
             {
               name: 'params',
               type: 'json',
               isOptional: true,
             },
 
-            // --- Actor (discriminated; snapshot cols are human fallback only) ---
+            // Actor (discriminated by actorKind: user | system | none).
             {
               name: 'actorKind',
               type: 'string',
@@ -97,9 +78,7 @@ export function createNotificationsPartialDefinition(
               type: 'uuid',
               isOptional: true,
             },
-            // Frozen name fallback for a DELETED human actor only (avatar is not
-            // frozen — a live user's avatar comes from the relation, a deleted
-            // user renders initials from this label).
+            // Frozen name fallback for a deleted human actor.
             {
               name: 'actorLabel',
               type: 'string',
@@ -112,7 +91,7 @@ export function createNotificationsPartialDefinition(
               isOptional: true,
             },
 
-            // --- Polymorphic subject reference (no FK) ---
+            // Polymorphic subject reference (no FK).
             {
               name: 'entityType',
               type: 'string',
@@ -124,12 +103,8 @@ export function createNotificationsPartialDefinition(
               isOptional: true,
             },
 
-            // NOTE: digest/aggregation grouping columns (e.g. a dedup key and an
-            // event count, or a separate NotificationEvent table) are
-            // intentionally deferred to the digest engine, when their shape can be
-            // designed correctly. Adding model fields later is cheap in this
-            // codebase (models.ts edit + sync migration), so we avoid shipping
-            // speculative columns whose shape we'd be guessing now.
+            // NOTE: digest/aggregation grouping columns are deferred to the digest
+            // engine, when their shape can be designed correctly.
 
             // --- State ---
             {
@@ -154,6 +129,14 @@ export function createNotificationsPartialDefinition(
             },
           ],
           primaryKeyFieldRefs: ['id'],
+          // The two hot access paths: the feed (recipient + newest-first) and
+          // the unread count (recipient + unread). Without these both seq-scan.
+          indexes: [
+            {
+              fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'createdAt' }],
+            },
+            { fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'readAt' }] },
+          ],
           relations: [
             {
               name: 'recipient',
@@ -177,16 +160,16 @@ export function createNotificationsPartialDefinition(
         graphql: {
           objectType: {
             enabled: true,
-            // NOTE: `segments`/`params` (json) are intentionally NOT auto-exposed
-            // here. The model's auto GraphQL exposure maps `json` fields to
-            // `exposeString` (see writers/pothos/scalars.ts), which is wrong for a
-            // JSON column. The notification-graphql generator exposes `segments`
-            // via a dedicated `JSON` scalar field instead.
+            // Only stable, non-content columns are auto-exposed. Content
+            // (segments/fallbackText/actionUrl) is served ATOMICALLY from a
+            // single read-time render via the `content(locale:)` field — exposing
+            // the frozen `fallbackText`/`actionUrl` columns here would let one
+            // notification serve content from two renderer versions. The `json`
+            // columns are excluded regardless: auto-exposure maps them to
+            // `exposeString` (see writers/pothos/scalars.ts), which is wrong.
             fields: [
               { ref: 'id' },
               { ref: 'type' },
-              { ref: 'fallbackText' },
-              { ref: 'actionUrl' },
               { ref: 'entityType' },
               { ref: 'entityId' },
               { ref: 'seenAt' },

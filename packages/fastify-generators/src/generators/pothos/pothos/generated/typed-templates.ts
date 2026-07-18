@@ -15,7 +15,11 @@ const builder = createTsTemplateFile({
       '../templates/src/plugins/graphql/builder.ts',
     ),
   },
-  variables: { TPL_SCHEMA_BUILDER_OPTIONS: {}, TPL_SCHEMA_TYPE_OPTIONS: {} },
+  variables: {
+    TPL_ROOT_TYPES: {},
+    TPL_SCHEMA_BUILDER_OPTIONS: {},
+    TPL_SCHEMA_TYPE_OPTIONS: {},
+  },
 });
 
 const fieldWithInputGlobalTypes = createTsTemplateFile({

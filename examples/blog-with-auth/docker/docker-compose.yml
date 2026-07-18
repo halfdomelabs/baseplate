@@ -30,8 +30,33 @@ services:
       timeout: 2s
       retries: 2
       start_period: 10s
+  redis:
+    image: redis:8.6-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-blog-with-auth}-redis
+    restart: on-failure
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - '127.0.0.1:${REDIS_PORT:-5379}:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-blog-with-auth-password} --maxmemory 256mb --maxmemory-policy noeviction
+    volumes:
+      - redis-cache:/data
+    networks:
+      - backend
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 2s
+      retries: 2
+      start_period: 10s
 volumes:
   db-data:
+  redis-cache:
 networks:
   backend:
     driver: bridge

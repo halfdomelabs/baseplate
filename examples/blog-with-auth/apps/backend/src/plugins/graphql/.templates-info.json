@@ -9,6 +9,11 @@
     "instanceData": {},
     "template": "graphql-plugin"
   },
+  "pubsub.ts": {
+    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+    "instanceData": {},
+    "template": "pubsub"
+  },
   "strip-query-mutation-plugin.ts": {
     "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
     "instanceData": {},

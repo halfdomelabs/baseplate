@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
     "instanceData": {},
     "template": "global-setup-prisma"
+  },
+  "global-setup-redis.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
+    "instanceData": {},
+    "template": "global-setup-redis"
   }
 }

@@ -80,26 +80,28 @@ model BlogUser {
 }
 
 model Notification {
-  id             String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  type           String
-  recipientId    String    @map("recipient_id") @db.Uuid
-  segments       Json
-  fallbackText   String    @map("fallback_text")
-  actorKind      String    @default("none") @map("actor_kind")
-  actorId        String?   @map("actor_id") @db.Uuid
-  actorLabel     String?   @map("actor_label")
-  systemActorKey String?   @map("system_actor_key")
-  entityType     String?   @map("entity_type")
-  entityId       String?   @map("entity_id")
-  actionUrl      String?   @map("action_url")
-  seenAt         DateTime? @map("seen_at") @db.Timestamptz(3)
-  readAt         DateTime? @map("read_at") @db.Timestamptz(3)
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  messageId      String?   @map("message_id")
-  params         Json?
-  actor          User?     @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
-  recipient      User      @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  id              String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  type            String
+  templateVersion Int       @default(1) @map("template_version")
+  recipientId     String    @map("recipient_id") @db.Uuid
+  segments        Json
+  fallbackText    String    @map("fallback_text")
+  params          Json?
+  actorKind       String    @default("none") @map("actor_kind")
+  actorId         String?   @map("actor_id") @db.Uuid
+  actorLabel      String?   @map("actor_label")
+  systemActorKey  String?   @map("system_actor_key")
+  entityType      String?   @map("entity_type")
+  entityId        String?   @map("entity_id")
+  actionUrl       String?   @map("action_url")
+  seenAt          DateTime? @map("seen_at") @db.Timestamptz(3)
+  readAt          DateTime? @map("read_at") @db.Timestamptz(3)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  actor           User?     @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  recipient       User      @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
+  @@index([recipientId, readAt])
+  @@index([recipientId, createdAt])
   @@map("notification")
 }
 
