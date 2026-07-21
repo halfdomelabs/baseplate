@@ -28,7 +28,7 @@ export const CORE_PACKAGES = {
   vitest: '4.1.7',
 
   // Utils
-  axios: '1.16.1',
+  axios: '1.18.1',
 
   // Monorepo
   turbo: '2.9.15',
