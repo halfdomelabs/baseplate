@@ -1,7 +1,8 @@
 // @ts-nocheck
 
+import type { z } from 'zod';
+
 import { CombinedGraphQLErrors } from '@apollo/client/errors';
-import { z } from 'zod';
 
 /**
  * Returns the code and untrusted structured data for an error matching one of

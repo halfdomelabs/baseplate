@@ -1,38 +1,15 @@
+import type { z } from 'zod';
+
 import { CombinedGraphQLErrors } from '@apollo/client/errors';
 
-export function getApolloErrorCode<T extends readonly string[]>(
-  error: unknown,
-  allowedCodes: T,
-): T[number] | null {
-  // get error code from CombinedGraphQLErrors
-  if (!CombinedGraphQLErrors.is(error)) {
-    return null;
-  }
-  const gqlError = error.errors.find(
-    (err) =>
-      err.extensions?.code &&
-      allowedCodes.includes(err.extensions.code as string),
-  );
-  return (gqlError?.extensions?.code as T[number] | undefined) ?? null;
-}
-
 /**
- * Gets the error code and its structured data for an error matching one of the
- * allowed codes.
- *
- * The server sends the details behind an error (e.g. which file types a category
- * accepts) as structured data rather than only in the message, so the client can
- * word the message itself. Prefer this over showing the server's message
- * verbatim, which cannot be translated.
- *
- * @param error The error thrown by Apollo.
- * @param allowedCodes The error codes to match against.
- * @returns The matched code and its data, or null if no allowed code matched.
+ * Returns the code and untrusted structured data for an error matching one of
+ * the allowed codes, or null if none match.
  */
 export function getApolloErrorDetails<T extends readonly string[]>(
   error: unknown,
   allowedCodes: T,
-): { code: T[number]; data: Record<string, unknown> } | null {
+): { code: T[number]; data: unknown } | null {
   if (!CombinedGraphQLErrors.is(error)) {
     return null;
   }
@@ -46,6 +23,44 @@ export function getApolloErrorDetails<T extends readonly string[]>(
   }
   return {
     code: gqlError.extensions.code as T[number],
-    data: (gqlError.extensions.extraData ?? {}) as Record<string, unknown>,
+    data: gqlError.extensions.extraData,
+  };
+}
+
+/**
+ * Returns the code for an error matching one of the allowed codes, or null if
+ * none match.
+ */
+export function getApolloErrorCode<T extends readonly string[]>(
+  error: unknown,
+  allowedCodes: T,
+): T[number] | null {
+  return getApolloErrorDetails(error, allowedCodes)?.code ?? null;
+}
+
+/**
+ * Matches an Apollo error against a `{ code: schema }` map and returns the
+ * matched code with its data parsed by that code's schema.
+ *
+ * Returns null if no code matches. `data` is undefined if the payload fails its
+ * schema. Give schemas optional fields so an absent payload still parses.
+ */
+export function getApolloErrorData<T extends Record<string, z.ZodType>>(
+  error: unknown,
+  schemas: T,
+):
+  | { [K in keyof T]: { code: K; data: z.output<T[K]> | undefined } }[keyof T]
+  | null {
+  const details = getApolloErrorDetails(
+    error,
+    Object.keys(schemas) as (keyof T & string)[],
+  );
+  if (!details) {
+    return null;
+  }
+  const parsed = schemas[details.code].safeParse(details.data ?? {});
+  return {
+    code: details.code,
+    data: parsed.success ? parsed.data : undefined,
   };
 }

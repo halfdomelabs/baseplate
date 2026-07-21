@@ -22,7 +22,9 @@ const PREFERRED_EXTENSIONS: Record<string, string> = {
  * for presenting a category's allowed types to the user. Unknown types are
  * dropped. Returns a sorted, de-duplicated list.
  */
-export function getExtensionsForMimeTypes(mimeTypes: string[]): string[] {
+export function getExtensionsForMimeTypes(
+  mimeTypes: readonly string[],
+): string[] {
   const extensions = new Set<string>();
   for (const mimeType of mimeTypes) {
     const extension =
@@ -31,7 +33,7 @@ export function getExtensionsForMimeTypes(mimeTypes: string[]): string[] {
       extensions.add(extension);
     }
   }
-  return [...extensions].sort();
+  return [...extensions].toSorted();
 }
 
 export function getEncodingFromContentType(
@@ -111,8 +113,8 @@ export function validateFileExtensionWithMimeType(
   if (!extension) return;
 
   // Nothing to conflict with if the database cannot correlate the type.
+  if (!(mimeType in mime.extensions)) return;
   const expectedExtensions = mime.extensions[mimeType];
-  if (!expectedExtensions?.length) return;
 
   // An unrecognized extension is a database gap, not a conflict (e.g. `.jfif`).
   if (!mime.lookup(extension)) return;
