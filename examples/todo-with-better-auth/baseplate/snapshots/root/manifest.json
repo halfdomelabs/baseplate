@@ -6,7 +6,9 @@
       { "path": "Dockerfile" }
     ],
     "deleted": [],
-    "modified": []
+    "modified": [
+      { "diffFile": "pnpm-workspace.yaml.diff", "path": "pnpm-workspace.yaml" }
+    ]
   },
   "version": "1"
 }

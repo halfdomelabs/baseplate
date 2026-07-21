@@ -4,7 +4,9 @@ packages:
 allowBuilds:
   '@parcel/watcher': false
   '@prisma/engines': true
+  '@sentry/node-cpu-profiler': false
   esbuild: false
+  msgpackr-extract: false
   prisma: true
   unrs-resolver: false
 strictDepBuilds: false
