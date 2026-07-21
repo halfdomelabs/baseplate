@@ -28,6 +28,7 @@ const descriptorSchema = z.object({
     z.object({
       name: CASE_VALIDATORS.CONSTANT_CASE,
       maxFileSizeMb: z.int().positive(),
+      allowedMimeTypes: z.array(z.string()).optional(),
       adapter: z.string(),
       authorize: z.object({
         uploadRoles: z.array(z.string()),
@@ -107,6 +108,13 @@ export const fileCategoriesGenerator = createGenerator({
                 {
                   name: quot(category.name),
                   maxFileSize: tsTemplate`${storageModuleImports.FileSize.fragment()}.MB(${category.maxFileSizeMb.toString()})`,
+                  // Omitted when empty: an empty array is truthy and would
+                  // reject every upload, whereas undefined allows all types.
+                  allowedMimeTypes: category.allowedMimeTypes?.length
+                    ? TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                        category.allowedMimeTypes.map(quot).toSorted(),
+                      )
+                    : undefined,
                   authorize:
                     category.authorize.uploadRoles.length > 0
                       ? tsTemplate`{

@@ -7,6 +7,14 @@
 - **Explicit Returns:** Always include return types on top-level functions, including React components (e.g., `: React.ReactElement`).
 - **Ordering (Definition-Before-Use):** Define variables and helper functions **above** the code that consumes them.
 
+## Comments
+
+Keep comments precise and minimal. Explain what is non-obvious; do not restate the code or justify a decision the reader does not need.
+
+- **Do** note a non-obvious constraint, an external API quirk, or a subtle edge case (e.g. "react-dropzone keys `accept` by MIME type; the empty array matches any extension").
+- **Don't** narrate what the code plainly does, argue why an approach is better than an alternative, or repeat the same rationale in more than one place.
+- **JSDoc:** State what a function does, its params, and its return in as few lines as possible. Omit background prose and "prefer this over X" commentary — that belongs in a PR or design doc, not the source.
+
 ## Naming Conventions
 
 - **Files:** Use `kebab-case` (e.g., `user-profile.ts`).

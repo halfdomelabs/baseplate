@@ -5,6 +5,7 @@ import {
 
 export const todoListCoverPhotoFileCategory = createFileCategory({
   adapter: 'uploads',
+  allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
   authorize: {
     upload: ({ auth }) => auth.hasSomeRole(['user']),
   },

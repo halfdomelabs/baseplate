@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  assertValidMimeType,
   getEncodingFromContentType,
+  getExtensionsForMimeTypes,
   getMimeTypeFromContentType,
   validateFileExtensionWithMimeType,
 } from './mime.js';
@@ -29,6 +31,54 @@ describe('getMimeTypeFromContentType', () => {
   it('should handle content type with multiple parameters', () => {
     const contentType = 'text/html; charset=UTF-8; version=1.0';
     expect(getMimeTypeFromContentType(contentType)).toBe('text/html');
+  });
+
+  it.each([
+    { contentType: 'IMAGE/PNG', expected: 'image/png' },
+    { contentType: 'Image/Jpeg', expected: 'image/jpeg' },
+    {
+      contentType: 'APPLICATION/PDF; charset=UTF-8',
+      expected: 'application/pdf',
+    },
+  ])(
+    'should normalize casing, extracting "$expected" from "$contentType"',
+    ({ contentType, expected }) => {
+      expect(getMimeTypeFromContentType(contentType)).toBe(expected);
+    },
+  );
+});
+
+describe('getExtensionsForMimeTypes', () => {
+  it('resolves MIME types to their canonical extensions', () => {
+    expect(
+      getExtensionsForMimeTypes(['image/jpeg', 'image/png', 'image/webp']),
+    ).toEqual(['jpeg', 'png', 'webp']);
+  });
+
+  it('uses a single canonical extension per type', () => {
+    // image/jpeg permits jpe/jpg/jpeg, but only the canonical one is shown.
+    expect(getExtensionsForMimeTypes(['image/jpeg'])).toEqual(['jpeg']);
+  });
+
+  it('prefers the familiar extension over an obscure canonical one', () => {
+    // The mime-types canonical for QuickTime is "qt", but users expect "mov".
+    expect(getExtensionsForMimeTypes(['video/quicktime'])).toEqual(['mov']);
+  });
+
+  it('de-duplicates and sorts the result', () => {
+    expect(getExtensionsForMimeTypes(['image/png', 'image/png'])).toEqual([
+      'png',
+    ]);
+  });
+
+  it('ignores unknown MIME types', () => {
+    expect(getExtensionsForMimeTypes(['image/png', 'not/real'])).toEqual([
+      'png',
+    ]);
+  });
+
+  it('returns an empty array for an empty input', () => {
+    expect(getExtensionsForMimeTypes([])).toEqual([]);
   });
 });
 
@@ -78,64 +128,71 @@ describe('getEncodingFromContentType', () => {
   });
 });
 
+describe('assertValidMimeType', () => {
+  it.each([
+    'image/png',
+    'application/pdf',
+    'application/octet-stream',
+    // Vendor / structured-suffix types unknown to the mime database are valid.
+    'application/vnd.acme+json',
+    'application/x-zip-compressed',
+  ])('accepts the well-formed mime type "%s"', (mimeType) => {
+    expect(() => {
+      assertValidMimeType(mimeType);
+    }).not.toThrow();
+  });
+
+  it.each([
+    { mimeType: '', label: 'empty' },
+    { mimeType: 'image', label: 'no subtype' },
+    { mimeType: 'not a mime type', label: 'spaces' },
+    { mimeType: null as unknown as string, label: 'null' },
+  ])(
+    'throws UNRECOGNIZED_FILE_TYPE for a malformed mime type ($label)',
+    ({ mimeType }) => {
+      expect(() => {
+        assertValidMimeType(mimeType);
+      }).toThrow(
+        expect.objectContaining({
+          name: 'InvalidMimeTypeError',
+          code: 'UNRECOGNIZED_FILE_TYPE',
+        }) as Error,
+      );
+    },
+  );
+});
+
 describe('validateFileExtensionWithMimeType', () => {
   it.each([
-    { mimeType: 'text/html', filename: 'test.html' },
+    // Consistent extension/type pairs.
     { mimeType: 'image/jpeg', filename: 'image.jpg' },
     { mimeType: 'image/jpeg', filename: 'image.jpeg' },
-    { mimeType: 'application/json', filename: 'data.json' },
     { mimeType: 'text/plain', filename: 'readme.txt' },
-  ])('should match $filename as $mimeType', ({ mimeType, filename }) => {
+    // Generic binary is always allowed regardless of extension.
+    { mimeType: 'application/octet-stream', filename: 'archive.zip' },
+    // No extension is allowed.
+    { mimeType: 'text/plain', filename: 'filename' },
+    // Extensions the mime database does not recognize are treated as a gap,
+    // not a conflict (e.g. .jfif is a real JPEG extension mime-types omits).
+    { mimeType: 'image/jpeg', filename: 'image.jfif' },
+    // Types the mime database cannot correlate are allowed.
+    { mimeType: 'application/vnd.acme+json', filename: 'data.acme' },
+  ])('allows $filename declared as $mimeType', ({ mimeType, filename }) => {
     expect(() => {
       validateFileExtensionWithMimeType(mimeType, filename);
     }).not.toThrow();
   });
 
-  it.each([
-    { mimeType: 'text/html', filename: 'test.html5' },
-    { mimeType: 'image/jpeg', filename: 'image.exe' },
-    { mimeType: 'application/json', filename: 'data.xml' },
-  ])('should not match $filename as $mimeType', ({ mimeType, filename }) => {
+  it('rejects an extension that clearly contradicts the declared type', () => {
+    // .jpg is a recognized extension mapping to image/jpeg, not image/png.
     expect(() => {
-      validateFileExtensionWithMimeType(mimeType, filename);
-    }).toThrow();
-  });
-
-  it('should throw InvalidExtensionError with expected extensions', () => {
-    expect(() => {
-      validateFileExtensionWithMimeType('image/jpeg', 'image.png');
+      validateFileExtensionWithMimeType('image/png', 'photo.jpg');
     }).toThrow(
       expect.objectContaining({
         name: 'InvalidMimeTypeError',
-        expectedFileExtensions: expect.arrayContaining([
-          'jpg',
-          'jpeg',
-        ]) as string[],
+        code: 'INVALID_FILE_EXTENSION',
+        expectedFileExtensions: expect.arrayContaining(['png']) as string[],
       }) as Error,
     );
-  });
-
-  it('should throw error for invalid mime type', () => {
-    expect(() => {
-      validateFileExtensionWithMimeType('invalid/mime', 'test.txt');
-    }).toThrow('Unsupported mime type: invalid/mime');
-  });
-
-  it('should throw error for empty mime type', () => {
-    expect(() => {
-      validateFileExtensionWithMimeType('', 'test.txt');
-    }).toThrow('Invalid mime type: ');
-  });
-
-  it('should throw error for non-string mime type', () => {
-    expect(() => {
-      validateFileExtensionWithMimeType(null as unknown as string, 'test.txt');
-    }).toThrow('Invalid mime type: null');
-  });
-
-  it('should throw error for file without extension', () => {
-    expect(() => {
-      validateFileExtensionWithMimeType('text/plain', 'filename');
-    }).toThrow('File "filename" must have a file extension.');
   });
 });

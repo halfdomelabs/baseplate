@@ -4,14 +4,18 @@ import {
   adminCrudInputCompilerSpec,
   createPluginModule,
   ModelFieldUtils,
+  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
 import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/index.js';
 
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
 import type { FileTransformerDefinition } from '../transformers/schema/file-transformer.schema.js';
 import type { AdminCrudFileInputDefinition } from './types.js';
 
-function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInputDefinition> {
+function buildFileTransformerCompiler(
+  pluginKey: string,
+): AdminCrudInputCompiler<AdminCrudFileInputDefinition> {
   return {
     name: 'file',
     compileInput(definition, { order, definitionContainer, model }) {
@@ -42,11 +46,20 @@ function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInp
         definition.modelRelationRef,
       );
 
+      const storage = PluginUtils.configByKeyOrThrow(
+        definitionContainer.definition,
+        pluginKey,
+      ) as StoragePluginDefinition;
+      const category = storage.fileCategories.find(
+        (c) => c.id === transformer.categoryRef,
+      );
+
       return adminCrudFileInputGenerator({
         order,
         label: definition.label,
         isOptional,
         category: categoryName,
+        allowedMimeTypes: category?.allowedMimeTypes,
         modelRelation: relationName,
       });
     },
@@ -58,7 +71,7 @@ export default createPluginModule({
   dependencies: {
     adminCrudInputCompiler: adminCrudInputCompilerSpec,
   },
-  initialize: ({ adminCrudInputCompiler }) => {
-    adminCrudInputCompiler.inputs.add(buildFileTransformerCompiler());
+  initialize: ({ adminCrudInputCompiler }, { pluginKey }) => {
+    adminCrudInputCompiler.inputs.add(buildFileTransformerCompiler(pluginKey));
   },
 });
