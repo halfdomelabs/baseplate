@@ -2100,6 +2100,9 @@ importers:
       es-toolkit:
         specifier: 1.44.0
         version: 1.44.0
+      mime-types:
+        specifier: 2.1.35
+        version: 2.1.35
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -2122,6 +2125,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.3.1(vite@8.1.0)
+      '@types/mime-types':
+        specifier: 2.1.1
+        version: 2.1.1
       '@types/node':
         specifier: 'catalog:'
         version: 24.12.0
@@ -4586,6 +4592,9 @@ packages:
 
   '@types/micromatch@4.0.9':
     resolution: {integrity: sha512-7V+8ncr22h4UoYRLnLXSpTxjQrNUXtWHGeMPRJt1nULXI57G9bIcpyrHlmrQ7QK24EyyuXvYcSSWAM8GA9nqCg==}
+
+  '@types/mime-types@2.1.1':
+    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
@@ -11092,6 +11101,8 @@ snapshots:
   '@types/micromatch@4.0.9':
     dependencies:
       '@types/braces': 3.0.5
+
+  '@types/mime-types@2.1.1': {}
 
   '@types/ms@0.7.34': {}
 

@@ -98,6 +98,7 @@ export default createPluginModule({
               .map((t) => ({
                 name: t.category.name,
                 maxFileSizeMb: t.category.maxFileSizeMb,
+                allowedMimeTypes: t.category.allowedMimeTypes,
                 adapter: definitionContainer.nameFromId(t.category.adapterRef),
                 authorize: {
                   uploadRoles: t.category.authorize.uploadRoles.map((r) =>
@@ -131,6 +132,7 @@ export default createPluginModule({
                 fileCategories: standaloneCategories.map((c) => ({
                   name: c.name,
                   maxFileSizeMb: c.maxFileSizeMb,
+                  allowedMimeTypes: c.allowedMimeTypes,
                   adapter: definitionContainer.nameFromId(c.adapterRef),
                   authorize: {
                     uploadRoles: c.authorize.uploadRoles.map((r) =>

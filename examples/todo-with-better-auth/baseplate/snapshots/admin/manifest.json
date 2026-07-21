@@ -1,1 +1,8 @@
-{ "files": { "added": [], "deleted": [], "modified": [] }, "version": "1" }
+{
+  "files": {
+    "added": [{ "path": "src/utils/apollo-error.unit.test.ts" }],
+    "deleted": [],
+    "modified": []
+  },
+  "version": "1"
+}

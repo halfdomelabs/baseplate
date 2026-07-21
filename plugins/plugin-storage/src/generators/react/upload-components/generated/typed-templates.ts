@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  apolloErrorImportsProvider,
   graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
@@ -9,6 +10,7 @@ import path from 'node:path';
 const fileInputComponent = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    apolloErrorImports: apolloErrorImportsProvider,
     graphqlImports: graphqlImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,

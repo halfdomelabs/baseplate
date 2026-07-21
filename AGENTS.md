@@ -76,7 +76,7 @@ Baseplate consists of two main tiers:
 
 - Run `pnpm check` during development to validate affected packages (formatting, linting, type checking, testing)
 - Only run `pnpm check:full` as a final pass when completely done — it runs everything including knip and metadata sync and is much slower
-- For new or modified features, generate a patch changeset in the .changeset/ directory. Focus the description entirely on user-facing changes rather than internal refactors. The text can be a full paragraph but must be written as a single, continuous line/block with no internal newlines. Do not reference Linear tickets.
+- For new or modified features, generate a patch changeset in the .changeset/ directory. Focus the description entirely on user-facing changes rather than internal refactors. The text can be a short paragraph but must be written as a single, continuous line/block with no internal newlines (with a few sentences maximum). Do not reference Linear tickets.
 
   ```markdown
   ---
