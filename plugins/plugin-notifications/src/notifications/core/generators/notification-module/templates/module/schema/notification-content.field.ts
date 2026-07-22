@@ -1,11 +1,11 @@
-import { builder } from '@src/plugins/graphql/builder.js';
+// @ts-nocheck
 
+import { notificationContentType } from '$schemaNotificationContentObjectTypes';
 import {
   RENDER_SOURCE_SELECT,
   renderContent,
-} from '../services/notification.service.js';
-import { notificationContentType } from './notification-content.object-types.js';
-import { notificationObjectType } from './notification.object-type.js';
+} from '$servicesNotificationService';
+import { builder } from '%pothosImports';
 
 /**
  * The render-at-read site: `renderContent` re-renders from the stored source
@@ -20,15 +20,12 @@ import { notificationObjectType } from './notification.object-type.js';
  * `prismaObjectFields` (not `objectField`) because only the Prisma field builder
  * supports `select`, which loads the render-source columns in the same query.
  */
-builder.prismaObjectFields(
-  /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
-  (t) => ({
-    content: t.field({
-      type: notificationContentType,
-      args: { locale: t.arg.string({ required: true, defaultValue: 'en' }) },
-      select: RENDER_SOURCE_SELECT,
-      resolve: (notification, { locale }) =>
-        renderContent(notification, { locale }),
-    }),
+builder.prismaObjectFields(TPL_NOTIFICATION_OBJECT_TYPE, (t) => ({
+  content: t.field({
+    type: notificationContentType,
+    args: { locale: t.arg.string({ required: true, defaultValue: 'en' }) },
+    select: RENDER_SOURCE_SELECT,
+    resolve: (notification, { locale }) =>
+      renderContent(notification, { locale }),
   }),
-);
+}));

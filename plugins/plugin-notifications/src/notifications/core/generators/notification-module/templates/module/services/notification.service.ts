@@ -1,32 +1,32 @@
-import type { Notification, Prisma } from '@src/generated/prisma/client.js';
-
-import { getPubSub } from '@src/plugins/graphql/pubsub.js';
-import { logError } from '@src/services/error-logger.js';
-import { prisma } from '@src/services/prisma.js';
+// @ts-nocheck
 
 import type {
   NotificationChannelKey,
   ResolvedNotification,
-} from './notification-channel.js';
+} from '$servicesNotificationChannel';
 import type {
   NotificationParams,
   RenderContext,
   RenderedContent,
-} from './notification-content.js';
+} from '$servicesNotificationContent';
 import type {
   NotificationEvent,
   NotificationTypeDefinition,
-} from './notification-registry.js';
+} from '$servicesNotificationRegistry';
+import type { Notification, Prisma } from '%prismaGeneratedImports';
 
-import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import { getChannel } from './notification-channel.js';
+import { GENERIC_NOTIFICATION_TYPE } from '$servicesGenericType';
+import { getChannel } from '$servicesNotificationChannel';
 import {
   isSafeUrl,
   notificationSegmentsSchema,
   segmentsToText,
   toSegments,
-} from './notification-content.js';
-import { getNotificationType } from './notification-registry.js';
+} from '$servicesNotificationContent';
+import { getNotificationType } from '$servicesNotificationRegistry';
+import { logError } from '%errorHandlerServiceImports';
+import { prisma } from '%prismaImports';
+import { getPubSub } from '%yogaPluginImports';
 
 /** Default render locale until i18n lands. */
 const DEFAULT_LOCALE = 'en';

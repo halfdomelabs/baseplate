@@ -1,11 +1,12 @@
-import type { z } from 'zod';
+// @ts-nocheck
 
-import type { NotificationChannelKey } from './notification-channel.js';
+import type { NotificationChannelKey } from '$servicesNotificationChannel';
 import type {
   NotificationContent,
   NotificationParams,
   RenderContext,
-} from './notification-content.js';
+} from '$servicesNotificationContent';
+import type { z } from 'zod';
 
 /**
  * A single event feeding a render. Array-shaped so the future digest engine can

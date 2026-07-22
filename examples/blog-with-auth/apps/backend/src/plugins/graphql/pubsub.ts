@@ -23,10 +23,13 @@ import { createRedisClient } from '@src/services/redis.js';
 type PubSubPublishArgs = Record<
   string,
   [] | [unknown] | [number | string, unknown]
-> & /* TPL_PUBLISH_ARGS:START */ {
-  notificationReceived: [userId: string, payload: { notificationId: string }];
-  unreadCountChanged: [userId: string, payload: { count: number }];
-} /* TPL_PUBLISH_ARGS:END */;
+> &
+  /* TPL_PUBLISH_ARGS:START */
+  {
+    notificationReceived: [userId: string, payload: { notificationId: string }];
+    unreadCountChanged: [userId: string, payload: { count: number }];
+  };
+/* TPL_PUBLISH_ARGS:END */
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
 

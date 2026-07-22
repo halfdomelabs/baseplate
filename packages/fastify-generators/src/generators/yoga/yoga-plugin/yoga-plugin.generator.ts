@@ -102,6 +102,7 @@ export const yogaPluginGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ enableSubscriptions }) => ({
     paths: YOGA_YOGA_PLUGIN_GENERATED.paths.task,
+    imports: YOGA_YOGA_PLUGIN_GENERATED.imports.task,
     setup: createGeneratorTask({
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(packageScope),

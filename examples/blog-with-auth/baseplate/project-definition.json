@@ -95,6 +95,7 @@
     }
   ],
   "cliVersion": "0.6.5",
+  "enums": [],
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     {
@@ -591,7 +592,8 @@
             { "ref": "seenAt" },
             { "ref": "readAt" },
             { "ref": "createdAt" }
-          ]
+          ],
+          "localRelations": [{ "ref": "actor" }]
         }
       },
       "id": "model:Mt6G8hOGtKtI",

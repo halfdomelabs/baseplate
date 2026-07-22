@@ -1,6 +1,8 @@
-import type { RenderedContent } from './notification-content.js';
+// @ts-nocheck
 
-import { inAppChannel } from './in-app-channel.js';
+import type { RenderedContent } from '$servicesNotificationContent';
+
+import { inAppChannel } from '$servicesInAppChannel';
 
 /** A resolved notification handed to a channel for delivery. */
 export interface ResolvedNotification extends RenderedContent {

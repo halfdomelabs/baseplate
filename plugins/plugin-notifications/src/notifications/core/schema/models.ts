@@ -176,6 +176,11 @@ export function createNotificationsPartialDefinition(
               { ref: 'readAt' },
               { ref: 'createdAt' },
             ],
+            // Live actor resolution: expose the `actor` relation so the object
+            // type carries `actor: t.relation('actor')` (fresh name/avatar for
+            // human actors), matching what `notification-content.field.ts` and
+            // the mutations reference.
+            localRelations: [{ ref: 'actor' }],
           },
         },
       },

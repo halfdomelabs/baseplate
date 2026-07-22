@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { z } from 'zod';
 
 /** URL schemes permitted in rendered links (open-redirect boundary). */

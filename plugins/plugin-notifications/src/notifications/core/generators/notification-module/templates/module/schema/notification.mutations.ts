@@ -1,13 +1,13 @@
-import { builder } from '@src/plugins/graphql/builder.js';
-import { prisma } from '@src/services/prisma.js';
+// @ts-nocheck
 
 import {
   deleteNotification,
   markAllAsRead,
   markAsRead,
   markAsSeen,
-} from '../services/notification.service.js';
-import { notificationObjectType } from './notification.object-type.js';
+} from '$servicesNotificationService';
+import { builder } from '%pothosImports';
+import { prisma } from '%prismaImports';
 
 /**
  * Mark a notification read. Returns the updated notification and the new unread
@@ -21,7 +21,7 @@ builder.mutationField('markNotificationRead', (t) =>
     payload: {
       changed: t.payload.field({ type: 'Boolean' }),
       notification: t.payload.field({
-        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
+        type: TPL_NOTIFICATION_OBJECT_TYPE,
         nullable: true,
       }),
       unreadCount: t.payload.field({ type: 'Int' }),
@@ -45,7 +45,7 @@ builder.mutationField('markNotificationSeen', (t) =>
     payload: {
       changed: t.payload.field({ type: 'Boolean' }),
       notification: t.payload.field({
-        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
+        type: TPL_NOTIFICATION_OBJECT_TYPE,
         nullable: true,
       }),
     },

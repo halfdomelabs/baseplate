@@ -6,7 +6,6 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 import type { NotificationSegment } from './notification-content.js';
 import type { RenderSource } from './notification.service.js';
 
-import { registerEntityRoute } from './notification-action-router.js';
 import { defineNotificationType } from './notification-registry.js';
 import { renderContent } from './notification.service.js';
 
@@ -78,7 +77,6 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 
   it('renders content ATOMICALLY (segments, text and actionUrl from one render)', () => {
-    registerEntityRoute('testPost', (id) => `/posts/${id}`);
     defineNotificationType({
       key: 'test.atomic',
       version: 1,
@@ -86,13 +84,13 @@ describe('renderContent (versioned render-at-read)', () => {
       channels: ['inApp'],
       render: ([event]) => ({
         body: 'commented on your post',
-        action: { kind: 'entity', type: 'testPost', id: event.params.postId },
+        actionUrl: `/posts/${event.params.postId}`,
       }),
     });
 
     const content = renderContent(makeRow('test.atomic', 1, { postId: 'p9' }));
 
-    // The action URL is routed live — NOT the frozen '/frozen' column.
+    // The action URL is re-derived at read — NOT the frozen '/frozen' column.
     expect(content.actionUrl).toBe('/posts/p9');
     expect(content.fallbackText).toBe('commented on your post');
   });
@@ -121,7 +119,7 @@ describe('renderContent (versioned render-at-read)', () => {
     expect(current.segments).toEqual([{ type: 'text', value: 'Hi' }]);
   });
 
-  it('rejects unsafe URLs in a frozen `url` action', () => {
+  it('rejects unsafe actionUrl schemes', () => {
     defineNotificationType({
       key: 'test.unsafe-url',
       version: 1,
@@ -129,7 +127,7 @@ describe('renderContent (versioned render-at-read)', () => {
       channels: ['inApp'],
       render: () => ({
         body: 'hi',
-        action: { kind: 'url', url: 'javascript:alert(1)' },
+        actionUrl: 'javascript:alert(1)',
       }),
     });
 

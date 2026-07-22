@@ -10,9 +10,9 @@
       "projectExports": { "builder": {} },
       "sourceFile": "src/plugins/graphql/builder.ts",
       "variables": {
+        "TPL_ROOT_TYPES": {},
         "TPL_SCHEMA_BUILDER_OPTIONS": {},
-        "TPL_SCHEMA_TYPE_OPTIONS": {},
-        "TPL_ROOT_TYPES": {}
+        "TPL_SCHEMA_TYPE_OPTIONS": {}
       }
     },
     "field-with-input-global-types": {

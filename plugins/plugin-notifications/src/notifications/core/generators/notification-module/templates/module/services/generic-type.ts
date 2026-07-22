@@ -1,6 +1,7 @@
-import { z } from 'zod';
+// @ts-nocheck
 
-import { defineNotificationType } from './notification-registry.js';
+import { defineNotificationType } from '$servicesNotificationRegistry';
+import { z } from 'zod';
 
 const genericParamsSchema = z.object({
   text: z.string(),

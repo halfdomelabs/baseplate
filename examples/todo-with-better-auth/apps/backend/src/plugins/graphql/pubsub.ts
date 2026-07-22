@@ -20,9 +20,13 @@ import { createRedisClient } from '@src/services/redis.js';
  */
 // must be a type to be used in the PubSub type
 
-type PubSubPublishArgs = {
-  [key: string]: [] | [unknown] | [number | string, unknown];
-} & /* TPL_PUBLISH_ARGS:START */ {} /* TPL_PUBLISH_ARGS:END */;
+type PubSubPublishArgs = Record<
+  string,
+  [] | [unknown] | [number | string, unknown]
+> &
+  /* TPL_PUBLISH_ARGS:START */
+  {};
+/* TPL_PUBLISH_ARGS:END */
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
 

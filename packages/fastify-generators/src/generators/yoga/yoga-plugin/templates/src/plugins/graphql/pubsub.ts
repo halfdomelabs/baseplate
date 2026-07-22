@@ -21,9 +21,11 @@ import { createPubSub } from 'graphql-yoga';
  */
 // must be a type to be used in the PubSub type
 
-type PubSubPublishArgs = {
-  [key: string]: [] | [unknown] | [number | string, unknown];
-} & TPL_PUBLISH_ARGS;
+type PubSubPublishArgs = Record<
+  string,
+  [] | [unknown] | [number | string, unknown]
+> &
+  TPL_PUBLISH_ARGS;
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
 

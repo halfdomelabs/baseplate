@@ -1,7 +1,9 @@
-import { getPubSub } from '@src/plugins/graphql/pubsub.js';
-import { prisma } from '@src/services/prisma.js';
+// @ts-nocheck
 
-import type { NotificationChannel } from './notification-channel.js';
+import type { NotificationChannel } from '$servicesNotificationChannel';
+
+import { prisma } from '%prismaImports';
+import { getPubSub } from '%yogaPluginImports';
 
 /**
  * The in-app channel: publishes the new-notification and unread-count events.

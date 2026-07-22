@@ -1,0 +1,194 @@
+{
+  "name": "notifications/core/notification-module",
+  "templates": {
+    "schema-notification-content-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification-content.field.ts",
+      "referencedGeneratorTemplates": [
+        "schema-notification-content-object-types",
+        "services-notification-service"
+      ],
+      "sourceFile": "module/schema/notification-content.field.ts",
+      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+    },
+    "schema-notification-content-object-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification-content.object-types.ts",
+      "referencedGeneratorTemplates": ["services-notification-content"],
+      "sourceFile": "module/schema/notification-content.object-types.ts",
+      "variables": {}
+    },
+    "schema-notification-mutations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification.mutations.ts",
+      "referencedGeneratorTemplates": ["services-notification-service"],
+      "sourceFile": "module/schema/notification.mutations.ts",
+      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+    },
+    "schema-notification-queries": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification.queries.ts",
+      "referencedGeneratorTemplates": ["services-notification-service"],
+      "sourceFile": "module/schema/notification.queries.ts",
+      "variables": {}
+    },
+    "schema-notification-subscriptions": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "yogaPluginImportsProvider": {
+          "importName": "yogaPluginImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/notification.subscriptions.ts",
+      "sourceFile": "module/schema/notification.subscriptions.ts",
+      "variables": {}
+    },
+    "services-generic-type": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/generic-type.ts",
+      "referencedGeneratorTemplates": ["services-notification-registry"],
+      "sourceFile": "module/services/generic-type.ts",
+      "variables": {}
+    },
+    "services-in-app-channel": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "yogaPluginImportsProvider": {
+          "importName": "yogaPluginImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/in-app-channel.ts",
+      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "sourceFile": "module/services/in-app-channel.ts",
+      "variables": {}
+    },
+    "services-notification-channel": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
+      "referencedGeneratorTemplates": [
+        "services-in-app-channel",
+        "services-notification-content"
+      ],
+      "sourceFile": "module/services/notification-channel.ts",
+      "variables": {}
+    },
+    "services-notification-content": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/notification-content.ts",
+      "sourceFile": "module/services/notification-content.ts",
+      "variables": {}
+    },
+    "services-notification-registry": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/notification-registry.ts",
+      "referencedGeneratorTemplates": [
+        "services-notification-channel",
+        "services-notification-content"
+      ],
+      "sourceFile": "module/services/notification-registry.ts",
+      "variables": {}
+    },
+    "services-notification-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "yogaPluginImportsProvider": {
+          "importName": "yogaPluginImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/notification.service.ts",
+      "referencedGeneratorTemplates": [
+        "services-generic-type",
+        "services-notification-channel",
+        "services-notification-content",
+        "services-notification-registry"
+      ],
+      "sourceFile": "module/services/notification.service.ts",
+      "variables": {}
+    }
+  }
+}
