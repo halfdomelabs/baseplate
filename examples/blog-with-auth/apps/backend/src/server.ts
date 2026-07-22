@@ -6,6 +6,8 @@ import * as Sentry from '@sentry/node';
 import Fastify from 'fastify';
 import { nanoid } from 'nanoid';
 
+import type { AppRuntime } from './utils/app-runtime.js';
+
 import { rootModule } from './modules/index.js';
 import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
@@ -14,17 +16,23 @@ import { healthCheckPlugin } from './plugins/health-check.js';
 import { pgBossPlugin } from './plugins/pg-boss.plugin.js';
 import { requestContextPlugin } from './plugins/request-context.js';
 import { registerSentryEventProcessor } from './services/sentry.js';
+import { flattenAppModule } from './utils/app-modules.js';
 
 export async function buildServer(
-  options: FastifyServerOptions = {},
+  options: FastifyServerOptions & { runtime: AppRuntime },
 ): Promise<FastifyInstance> {
+  const { runtime, ...fastifyOptions } = options;
   const fastify = Fastify({
     genReqId: () => nanoid(),
     forceCloseConnections: 'idle',
     // it is possible to spoof the IP address of the client but it's better than nothing
     // There's no notion of trusted IPs or hops since we use a rewrite rule for FE
     trustProxy: true,
-    ...options,
+    ...fastifyOptions,
+  });
+
+  fastify.addHook('onClose', async () => {
+    await runtime.dispose();
   });
 
   /* TPL_PRE_PLUGIN_FRAGMENTS:START */
@@ -40,13 +48,13 @@ export async function buildServer(
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);
   await fastify.register(pgBossPlugin);
-  await fastify.register(requestContextPlugin);
+  await fastify.register(requestContextPlugin, { runtime });
   /* TPL_PLUGINS:END */
 
   // register app plugins
-  const plugins =
-    /* TPL_ROOT_MODULE:START */ rootModule /* TPL_ROOT_MODULE:END */.plugins ??
-    [];
+  const { plugins = [] } = flattenAppModule(
+    /* TPL_ROOT_MODULE:START */ rootModule /* TPL_ROOT_MODULE:END */,
+  );
   for (const plugin of plugins) {
     await fastify.register(plugin);
   }

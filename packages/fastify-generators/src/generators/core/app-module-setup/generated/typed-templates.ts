@@ -5,7 +5,7 @@ const appModules = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'app-modules',
-  projectExports: { flattenAppModule: {} },
+  projectExports: { defineAppModule: {}, flattenAppModule: {} },
   source: {
     path: path.join(
       import.meta.dirname,

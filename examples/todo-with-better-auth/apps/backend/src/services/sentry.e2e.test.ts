@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as configModule from '@src/services/config.js';
 
 import { buildServer } from '@src/server.js';
+import { createAppRuntime } from '@src/utils/app-runtime.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
 import { logErrorToSentry } from './sentry.js';
@@ -33,8 +34,10 @@ beforeEach(() => {
 });
 
 it('should handle fastify request errors', async () => {
+  const runtime = await createAppRuntime();
   const server = await buildServer({
     logger: false,
+    runtime,
   });
 
   try {

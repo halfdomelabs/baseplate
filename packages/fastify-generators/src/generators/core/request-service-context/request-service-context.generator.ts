@@ -14,6 +14,7 @@ import {
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { appRuntimeImportsProvider } from '../app-runtime/index.js';
 import {
   requestContextConfigProvider,
   requestContextImportsProvider,
@@ -84,7 +85,7 @@ export const requestServiceContextGenerator = createGenerator({
           TsCodeUtils.templateWithImports(
             requestServiceContextImports.createContextFromRequest.declaration(),
           )`fastify.addHook('preHandler', (req, reply, done) => {
-  req.serviceContext = createContextFromRequest(req, reply);
+  req.serviceContext = createContextFromRequest(req, opts.runtime, reply);
   done();
 });`,
         );
@@ -97,6 +98,7 @@ export const requestServiceContextGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         requestContextImports: requestContextImportsProvider,
         serviceContextImports: serviceContextImportsProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
         requestServiceContextSetupValues:
           requestServiceContextConfigValuesProvider,
         paths: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.paths.provider,
@@ -105,6 +107,7 @@ export const requestServiceContextGenerator = createGenerator({
         typescriptFile,
         requestContextImports,
         serviceContextImports,
+        appRuntimeImports,
         requestServiceContextSetupValues: {
           contextFields,
           contextPassthroughs,
@@ -125,13 +128,13 @@ export const requestServiceContextGenerator = createGenerator({
                 )`
               createServiceContext(${
                 contextPassthroughs.size === 0
-                  ? ''
+                  ? '{}'
                   : TsCodeUtils.mergeFragmentsAsObject(
                       mapValuesOfMap(contextPassthroughs, (field) =>
                         field.creator('request', 'reply'),
                       ),
                     )
-              })`,
+              }, runtime.services)`,
                 ...Object.fromEntries(
                   mapValuesOfMap(contextFields, (field) =>
                     field.creator('request', 'reply'),
@@ -163,6 +166,7 @@ export const requestServiceContextGenerator = createGenerator({
                 },
                 importMapProviders: {
                   serviceContextImports,
+                  appRuntimeImports,
                 },
               }),
             );

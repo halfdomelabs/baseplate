@@ -1,0 +1,29 @@
+{
+  "name": "core/app-runtime",
+  "templates": {
+    "app-runtime": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/app-runtime.ts",
+      "projectExports": {
+        "AppRuntime": { "isTypeOnly": true },
+        "createAppRuntime": {}
+      },
+      "referencedGeneratorTemplates": ["runtime-services"],
+      "sourceFile": "src/utils/app-runtime.ts",
+      "variables": {}
+    },
+    "runtime-services": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/runtime-services.ts",
+      "projectExports": { "RuntimeServices": { "isTypeOnly": true } },
+      "sourceFile": "src/utils/runtime-services.ts",
+      "variables": {}
+    }
+  }
+}

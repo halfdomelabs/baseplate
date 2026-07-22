@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { AppRuntime } from '%appRuntimeImports';
 import type { ServiceContext } from '%serviceContextImports';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -9,6 +10,7 @@ export interface RequestServiceContext extends ServiceContext {
 
 export function createContextFromRequest(
   request: FastifyRequest,
+  runtime: AppRuntime,
   reply?: FastifyReply,
 ): RequestServiceContext {
   TPL_CONTEXT_BODY;

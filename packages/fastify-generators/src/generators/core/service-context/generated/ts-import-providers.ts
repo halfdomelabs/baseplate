@@ -16,7 +16,10 @@ export const serviceContextImportsSchema = createTsImportMapSchema({
   createServiceContext: {},
   createSystemServiceContext: {},
   createTestServiceContext: {},
+  ExecutionContext: { isTypeOnly: true },
   ServiceContext: { isTypeOnly: true },
+  ServiceContextWith: { isTypeOnly: true },
+  withScriptContext: {},
 });
 
 export type ServiceContextImportsProvider = TsImportMapProviderFromSchema<
@@ -42,7 +45,10 @@ const coreServiceContextImportsTask = createGeneratorTask({
           createServiceContext: paths.serviceContext,
           createSystemServiceContext: paths.serviceContext,
           createTestServiceContext: paths.testHelper,
+          ExecutionContext: paths.serviceContext,
           ServiceContext: paths.serviceContext,
+          ServiceContextWith: paths.serviceContext,
+          withScriptContext: paths.serviceContext,
         }),
       },
     };

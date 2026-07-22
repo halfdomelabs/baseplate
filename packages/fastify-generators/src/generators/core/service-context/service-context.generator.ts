@@ -115,13 +115,16 @@ export const serviceContextGenerator = createGenerator({
                 }`;
             }
 
-            const contextObject = TsCodeUtils.mergeFragmentsAsObject(
-              mapValuesOfMap(contextFields, (field) => field.setter),
-            );
+            const contextObject = TsCodeUtils.mergeFragmentsAsObject({
+              ...Object.fromEntries(
+                mapValuesOfMap(contextFields, (field) => field.setter),
+              ),
+              services: 'services',
+            });
 
             const systemContextObject =
               orderedContextArgs.length === 0
-                ? ''
+                ? '{}'
                 : TsCodeUtils.mergeFragmentsAsObject(
                     Object.fromEntries(
                       orderedContextArgs.map((arg) => [
@@ -136,7 +139,10 @@ export const serviceContextGenerator = createGenerator({
                 variables: {
                   TPL_CONTEXT_INTERFACE: contextInterface,
                   TPL_CONTEXT_OBJECT: contextObject,
-                  TPL_CREATE_CONTEXT_ARGS: createContextArgs(false),
+                  TPL_CREATE_CONTEXT_ARGS:
+                    orderedContextArgs.length === 0
+                      ? '_args: Record<string, never>'
+                      : createContextArgs(false),
                   TPL_SYSTEM_CONTEXT_OBJECT: systemContextObject,
                 },
               }),

@@ -13,6 +13,7 @@ import {
 import { CORE_APP_MODULE_SETUP_PATHS } from './template-paths.js';
 
 export const appModuleSetupImportsSchema = createTsImportMapSchema({
+  defineAppModule: {},
   flattenAppModule: {},
 });
 
@@ -36,6 +37,7 @@ const coreAppModuleSetupImportsTask = createGeneratorTask({
     return {
       providers: {
         appModuleSetupImports: createTsImportMap(appModuleSetupImportsSchema, {
+          defineAppModule: paths.appModules,
           flattenAppModule: paths.appModules,
         }),
       },

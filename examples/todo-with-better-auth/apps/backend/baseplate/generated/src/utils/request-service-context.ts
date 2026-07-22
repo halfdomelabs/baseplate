@@ -2,6 +2,7 @@ import type { CookieSerializeOptions } from '@fastify/cookie';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import type { RequestInfo } from '../plugins/request-context.js';
+import type { AppRuntime } from './app-runtime.js';
 import type { ServiceContext } from './service-context.js';
 
 import { createServiceContext } from './service-context.js';
@@ -24,6 +25,7 @@ export interface RequestServiceContext extends ServiceContext {
 
 export function createContextFromRequest(
   request: FastifyRequest,
+  runtime: AppRuntime,
   reply?: FastifyReply,
 ): RequestServiceContext {
   /* TPL_CONTEXT_BODY:START */
@@ -39,7 +41,7 @@ export function createContextFromRequest(
   /* TPL_CONTEXT_BODY:END */
 
   return /* TPL_CONTEXT_CREATOR:START */ {
-    ...createServiceContext({ auth: request.auth }),
+    ...createServiceContext({ auth: request.auth }, runtime.services),
     cookieStore: {
       get: (name) => request.cookies[name],
       set: (name, value, options) =>

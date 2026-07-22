@@ -5,14 +5,19 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/request-context",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/plugins/request-context.ts",
       "projectExports": { "RequestInfo": { "isTypeOnly": true } },
       "sourceFile": "src/plugins/request-context.ts",
       "variables": {
-        "TPL_FASTIFY_REQUEST_AUGMENTATIONS": {},
         "TPL_DECORATOR_REGISTRATIONS": {},
-        "TPL_EXTRA_HOOKS": {}
+        "TPL_EXTRA_HOOKS": {},
+        "TPL_FASTIFY_REQUEST_AUGMENTATIONS": {}
       }
     }
   }
