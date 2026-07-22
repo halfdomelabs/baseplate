@@ -5,15 +5,16 @@ import type {
   RenderedContent,
 } from '../services/notification-content.js';
 
+type TextSegment = Extract<NotificationSegment, { type: 'text' }>;
+type LinkSegment = Extract<NotificationSegment, { type: 'link' }>;
+
 /**
  * Typed content contract. Segments are a real GraphQL union — NOT a `JSON`
  * scalar — so generated React types are exhaustive rather than `unknown`, and
  * malformed stored JSON can't reach rendering code.
  */
 const textSegment = builder
-  .objectRef<
-    Extract<NotificationSegment, { type: 'text' }>
-  >('NotificationTextSegment')
+  .objectRef<TextSegment>('NotificationTextSegment')
   .implement({
     fields: (t) => ({
       value: t.exposeString('value'),
@@ -22,9 +23,7 @@ const textSegment = builder
   });
 
 const linkSegment = builder
-  .objectRef<
-    Extract<NotificationSegment, { type: 'link' }>
-  >('NotificationLinkSegment')
+  .objectRef<LinkSegment>('NotificationLinkSegment')
   .implement({
     fields: (t) => ({
       value: t.exposeString('value'),
