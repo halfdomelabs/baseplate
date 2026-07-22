@@ -5,8 +5,9 @@ import { quot } from '@baseplate-dev/utils';
 
 import type { AuthorizerUtilsImportsProvider } from '../../../auth/_providers/authorizer-utils-imports.js';
 
-interface ModelAuthorizerLike {
-  getRoleFragment(roleName: string): TsCodeFragment;
+interface ModelPolicyLike {
+  /** Returns a role's instance-check member (`policy.roles.owner.check`). */
+  getRoleCheckFragment(roleName: string): TsCodeFragment;
 }
 
 interface GenerateAuthorizationStatementsConfig {
@@ -18,8 +19,8 @@ interface GenerateAuthorizationStatementsConfig {
   globalRoles?: string[];
   /** Instance roles (e.g., ['owner']) — assumes `existingItem` is in scope */
   instanceRoles?: string[];
-  /** Model authorizer provider (required if instanceRoles is set) */
-  modelAuthorizer: ModelAuthorizerLike | undefined;
+  /** Model policy provider (required if instanceRoles is set) */
+  modelPolicy: ModelPolicyLike | undefined;
   /** Authorizer imports provider */
   authorizerImports: AuthorizerUtilsImportsProvider;
 }
@@ -57,7 +58,7 @@ export function generateAuthorizationStatements(
     methodType,
     globalRoles,
     instanceRoles,
-    modelAuthorizer,
+    modelPolicy,
     authorizerImports,
   } = config;
 
@@ -71,12 +72,12 @@ export function generateAuthorizationStatements(
   // Build role items array
   const globalRoleItems = (globalRoles ?? []).map((r) => quot(r));
   const instanceRoleFragments = (instanceRoles ?? []).map((roleName) => {
-    if (!modelAuthorizer) {
+    if (!modelPolicy) {
       throw new Error(
-        `${methodType} method on model '${modelName}' references instance role '${roleName}' but no authorizer is configured for this model.`,
+        `${methodType} method on model '${modelName}' references instance role '${roleName}' but no policy is configured for this model.`,
       );
     }
-    return modelAuthorizer.getRoleFragment(roleName);
+    return modelPolicy.getRoleCheckFragment(roleName);
   });
 
   if (hasInstanceRoles) {

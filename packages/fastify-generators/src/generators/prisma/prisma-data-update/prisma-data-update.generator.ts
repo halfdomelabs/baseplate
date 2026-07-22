@@ -25,7 +25,7 @@ import { generateAuthorizationStatements } from '../_shared/build-data-helpers/g
 import { generateWhereType } from '../_shared/build-data-helpers/generate-where-type.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
+import { prismaModelPolicyProvider } from '../prisma-model-authorizer/index.js';
 import {
   prismaImportsProvider,
   prismaOutputProvider,
@@ -62,7 +62,7 @@ export const prismaDataUpdateGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
         serviceContextImports: serviceContextImportsProvider,
-        modelAuthorizer: prismaModelAuthorizerProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(modelName),
       },
@@ -74,7 +74,7 @@ export const prismaDataUpdateGenerator = createGenerator({
         prismaImports,
         authorizerImports,
         serviceContextImports,
-        modelAuthorizer,
+        modelPolicy,
       }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
@@ -115,7 +115,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                 methodType: 'Update',
                 globalRoles,
                 instanceRoles,
-                modelAuthorizer,
+                modelPolicy,
                 authorizerImports,
               });
 

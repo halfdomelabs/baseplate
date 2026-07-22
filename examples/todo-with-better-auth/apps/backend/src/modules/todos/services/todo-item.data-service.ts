@@ -17,7 +17,7 @@ import { oneToManyTransformer } from '@src/utils/data-operations/nested-transfor
 import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-import { todoItemAuthorizer } from '../authorizers/todo-item.authorizer.js';
+import { todoItemPolicy } from '../authorizers/todo-item.policy.js';
 import {
   todoItemAttachmentFieldSchemas,
   todoItemAttachmentTransformers,
@@ -150,7 +150,7 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   const existingItem = await prisma.todoItem.findUniqueOrThrow({ where });
   await checkInstanceAuthorization(context, existingItem, [
     'admin',
-    todoItemAuthorizer.roles.owner,
+    todoItemPolicy.roles.owner.check,
   ]);
   const { attachments, assigneeId, todoListId, ...rest } = data;
 
@@ -196,7 +196,7 @@ export async function deleteTodoItem<TQuery extends DataQuery<'todoItem'>>({
   const existingItem = await prisma.todoItem.findUniqueOrThrow({ where });
   await checkInstanceAuthorization(context, existingItem, [
     'admin',
-    todoItemAuthorizer.roles.owner,
+    todoItemPolicy.roles.owner.check,
   ]);
 
   const result = await prisma.todoItem.delete({

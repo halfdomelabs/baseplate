@@ -49,6 +49,7 @@
         "HttpError": {},
         "InternalServerError": {},
         "NotFoundError": {},
+        "throwIfPrismaNotFound": {},
         "TooManyRequestsError": {},
         "UnauthorizedError": {}
       },

@@ -10,7 +10,7 @@ import { prisma } from '@src/services/prisma.js';
 import { checkInstanceAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
-import { blogAuthorizer } from '../authorizers/blog.authorizer.js';
+import { blogPolicy } from '../authorizers/blog.policy.js';
 
 const blogFieldSchemas = z.object({ name: z.string(), userId: z.uuid() });
 
@@ -30,7 +30,7 @@ export async function updateBlog<TQuery extends DataQuery<'blog'>>({
   const existingItem = await prisma.blog.findUniqueOrThrow({ where });
   await checkInstanceAuthorization(context, existingItem, [
     'admin',
-    blogAuthorizer.roles.owner,
+    blogPolicy.roles.owner.check,
   ]);
   const { userId, ...rest } = data;
 
@@ -55,7 +55,7 @@ export async function deleteBlog<TQuery extends DataQuery<'blog'>>({
   const existingItem = await prisma.blog.findUniqueOrThrow({ where });
   await checkInstanceAuthorization(context, existingItem, [
     'admin',
-    blogAuthorizer.roles.owner,
+    blogPolicy.roles.owner.check,
   ]);
 
   const result = await prisma.blog.delete({

@@ -1,12 +1,12 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
-import { userAuthorizer } from '../authorizers/user.authorizer.js';
+import { userPolicy } from '../authorizers/user.policy.js';
 
 export const userObjectType = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     email: t.exposeString('email', {
-      authorize: ['admin', userAuthorizer.roles.self],
+      authorize: ['admin', userPolicy.roles.self.check],
       nullable: true,
     }),
     name: t.exposeString('name', { nullable: true }),

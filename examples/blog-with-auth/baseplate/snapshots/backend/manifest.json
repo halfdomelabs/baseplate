@@ -6,6 +6,7 @@
         "path": "src/modules/accounts/auth/services/auth-verification.service.int.test.ts"
       },
       { "path": "src/modules/accounts/auth/utils/cookie-signer.unit.test.ts" },
+      { "path": "src/modules/blogs/authorizers/policy.unit.test.ts" },
       { "path": "src/services/pg-boss.service.int.test.ts" }
     ],
     "deleted": [],

@@ -7,14 +7,6 @@ import type { ModelPropName, WhereInput } from '%dataUtilsImports';
  * - `true` means "match everything" (no filter needed)
  * - `false` means "match nothing"
  * - `WhereInput` is a Prisma where clause
- *
- * `NonNullable` is deliberate and load-bearing for authorization: a role's
- * `r.where` returns this type, and `undefined` must NOT be assignable. Otherwise
- * `r.where(ctx => cond ? {...} : undefined)` would compile, and since
- * `rolesToWhere` reads `undefined` as UNRESTRICTED, a role meant to deny would
- * silently become allow-all. Authors must write `false` (deny), never
- * `undefined`. (`WhereInput` itself stays nullable — it's extracted from
- * Prisma's optional `.where` and used at call sites where "no filter" is valid.)
  */
 export type WhereResult<TModelName extends ModelPropName> =
   | NonNullable<WhereInput<TModelName>>

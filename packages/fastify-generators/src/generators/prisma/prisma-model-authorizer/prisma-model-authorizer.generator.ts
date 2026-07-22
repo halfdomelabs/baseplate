@@ -22,69 +22,75 @@ import { prismaAuthorizerUtilsImportsProvider } from '../prisma-authorizer-utils
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const roleSchema = z.object({
-  /** camelCase role name (e.g., 'owner') */
+  /** camelCase role name (e.g., 'owner'). */
   name: z.string().min(1),
-  /** Pre-generated role function code (e.g., '(ctx, model) => model.id === ctx.auth.userId') */
-  roleCode: z.string().min(1),
-  /** Foreign model names referenced by nested role expressions (e.g., ['TodoList']) */
-  foreignAuthorizerRefs: z.array(z.string()).default([]),
+  /** The role-tree builder call body (e.g., `r.via(blogPolicy, 'owner', {...})`). */
+  roleTreeCode: z.string().min(1),
+  /** Foreign policy model names this role delegates to (for imports). */
+  foreignPolicyModelNames: z.array(z.string()).default([]),
+});
+
+const actionGrantSchema = z.object({
+  /** Instance role names (reference this policy's own roles). */
+  roles: z.array(z.string()).default([]),
+  /** Global/principal role names. */
+  globalRoles: z.array(z.string()).default([]),
 });
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
   idFieldName: z.string().min(1),
   roles: z.array(roleSchema).min(1),
-  /** Model names of foreign authorizers referenced by nested role expressions */
-  foreignAuthorizerModelNames: z.array(z.string().min(1)).default([]),
+  /** `read` is required; create/update/delete + custom verbs alongside. */
+  actions: z.record(z.string(), actionGrantSchema),
+  /** Model names of foreign policies referenced by delegation. */
+  foreignPolicyModelNames: z.array(z.string().min(1)).default([]),
 });
 
 /**
- * Provider interface for the model authorizer.
- * Allows other generators (e.g., GraphQL resolvers) to reference
- * the authorizer and its individual role check functions.
+ * Provider for a model policy — lets other generators (GraphQL field gates,
+ * data services) reference the policy and its members.
  */
-export interface PrismaModelAuthorizerProvider {
+export interface PrismaModelPolicyProvider {
+  /** The policy variable name (e.g., 'blogPolicy'). */
+  getPolicyName(): string;
+  /** A fragment importing the policy from its module path. */
+  getPolicyFragment(): TsCodeFragment;
+  /** A fragment referencing a role's instance-check member (`policy.roles.owner.check`). */
+  getRoleCheckFragment(roleName: string): TsCodeFragment;
   /**
-   * Get the variable name of the authorizer (e.g., 'userAuthorizer').
+   * A fragment referencing an action's `.where` member (`policy.read.where`),
+   * consumed by list/count read surfaces: `policy.read.where(ctx, callerWhere?)`.
    */
-  getAuthorizerName(): string;
+  getActionWhereFragment(action: string): TsCodeFragment;
   /**
-   * Get a fragment that imports the authorizer from its module path.
+   * A fragment referencing an action's `.whereUnique` member
+   * (`policy.read.whereUnique`), for get-by-id: `policy.read.whereUnique(ctx, { id })`.
    */
-  getAuthorizerFragment(): TsCodeFragment;
-  /**
-   * Get a fragment referencing a specific role check function.
-   * E.g., `userAuthorizer.roles.owner`
-   */
-  getRoleFragment(roleName: string): TsCodeFragment;
+  getActionWhereUniqueFragment(action: string): TsCodeFragment;
 }
 
-export const prismaModelAuthorizerProvider =
-  createReadOnlyProviderType<PrismaModelAuthorizerProvider>(
-    'prisma-model-authorizer',
-  );
-
-// ----- Generator -----
+export const prismaModelPolicyProvider =
+  createReadOnlyProviderType<PrismaModelPolicyProvider>('prisma-model-policy');
 
 /**
- * Generator for prisma/prisma-model-authorizer
- *
- * Generates `{moduleFolder}/authorizers/{kebab-model}.authorizer.ts` files
- * that create a model authorizer with role check functions.
+ * Generates `{moduleFolder}/authorizers/{kebab-model}.policy.ts` — a
+ * `createModelPolicy(...)` declaration whose roles derive both `check` and
+ * `where`, with a consolidated `actions` grant map.
  */
-export const prismaModelAuthorizerGenerator = createGenerator({
-  name: 'prisma/prisma-model-authorizer',
+export const prismaModelPolicyGenerator = createGenerator({
+  name: 'prisma/prisma-model-policy',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getInstanceName: (descriptor) => `${descriptor.modelName}Authorizer`,
+  getInstanceName: (descriptor) => `${descriptor.modelName}Policy`,
   buildTasks: (descriptor) => {
-    const { foreignAuthorizerModelNames } = descriptor;
+    const { foreignPolicyModelNames } = descriptor;
 
-    // Build dynamic dependencies for foreign authorizers referenced by nested expressions
-    const foreignAuthorizerDeps = Object.fromEntries(
-      foreignAuthorizerModelNames.map((name) => [
-        `foreignAuthorizer_${name}`,
-        prismaModelAuthorizerProvider.dependency().reference(name),
+    // Dynamic deps for foreign policies referenced by delegation (r.via).
+    const foreignPolicyDeps = Object.fromEntries(
+      foreignPolicyModelNames.map((name) => [
+        `foreignPolicy_${name}`,
+        prismaModelPolicyProvider.dependency().reference(name),
       ]),
     );
 
@@ -95,10 +101,10 @@ export const prismaModelAuthorizerGenerator = createGenerator({
           typescriptFile: typescriptFileProvider,
           prismaOutput: prismaOutputProvider,
           prismaAuthorizerUtilsImports: prismaAuthorizerUtilsImportsProvider,
-          ...(foreignAuthorizerDeps as Record<string, never>),
+          ...(foreignPolicyDeps as Record<string, never>),
         },
         outputs: {
-          prismaModelAuthorizer: prismaModelAuthorizerProvider.export(
+          prismaModelPolicy: prismaModelPolicyProvider.export(
             packageScope,
             descriptor.modelName,
           ),
@@ -110,103 +116,127 @@ export const prismaModelAuthorizerGenerator = createGenerator({
           prismaAuthorizerUtilsImports,
           ...dynamicDeps
         }) {
-          const { modelName, idFieldName, roles } = descriptor;
+          const { modelName, idFieldName, roles, actions } = descriptor;
           const modelVarName = lowercaseFirstChar(modelName);
-          const authorizerName = `${modelVarName}Authorizer`;
+          const policyName = `${modelVarName}Policy`;
 
-          // Build a map of foreign model name → authorizer provider
-          const foreignAuthorizerProviders = new Map<
+          // Resolve foreign policy providers by model name.
+          const foreignPolicyProviders = new Map<
             string,
-            PrismaModelAuthorizerProvider
+            PrismaModelPolicyProvider
           >();
-          for (const name of foreignAuthorizerModelNames) {
-            const provider = (dynamicDeps as Record<string, unknown>)[
-              `foreignAuthorizer_${name}`
-            ] as PrismaModelAuthorizerProvider;
-            foreignAuthorizerProviders.set(name, provider);
+          for (const name of foreignPolicyModelNames) {
+            foreignPolicyProviders.set(
+              name,
+              (dynamicDeps as Record<string, unknown>)[
+                `foreignPolicy_${name}`
+              ] as PrismaModelPolicyProvider,
+            );
           }
 
-          const authorizerFolder = posixJoin(
+          const policyFolder = posixJoin(
             appModule.getModuleFolder(),
             'authorizers',
           );
-          const authorizerPath = posixJoin(
-            authorizerFolder,
-            `${kebabCase(modelName)}.authorizer.ts`,
+          const policyPath = posixJoin(
+            policyFolder,
+            `${kebabCase(modelName)}.policy.ts`,
           );
 
           return {
             build: async (builder) => {
+              // Roles object — each value is the role-tree code, carrying the
+              // import fragments of any foreign policies it delegates to.
               const rolesObject: Record<string, string | TsCodeFragment> = {};
-
               for (const role of roles) {
-                // Look up foreign authorizer providers by the metadata refs
-                const referencedProviders = role.foreignAuthorizerRefs
-                  .map((name) => foreignAuthorizerProviders.get(name))
-                  .filter((p): p is PrismaModelAuthorizerProvider => p != null);
-
-                if (referencedProviders.length > 0) {
-                  // Collect all imports from referenced foreign authorizers
-                  const allImports = referencedProviders.flatMap(
-                    (provider) =>
-                      provider.getAuthorizerFragment().imports ?? [],
-                  );
-                  rolesObject[role.name] = {
-                    contents: role.roleCode,
-                    imports: allImports,
-                  };
-                } else {
-                  rolesObject[role.name] = role.roleCode;
-                }
+                const imports = role.foreignPolicyModelNames
+                  .map((name) => foreignPolicyProviders.get(name))
+                  .filter((p): p is PrismaModelPolicyProvider => p != null)
+                  .flatMap((p) => p.getPolicyFragment().imports ?? []);
+                rolesObject[role.name] =
+                  imports.length > 0
+                    ? { contents: role.roleTreeCode, imports }
+                    : role.roleTreeCode;
               }
-
               const rolesFragment = TsCodeUtils.mergeFragmentsAsObject(
                 rolesObject,
+                { disableSort: true },
+              );
+
+              // Actions map.
+              const actionsObject: Record<string, string> = {};
+              for (const [action, grant] of Object.entries(actions)) {
+                const parts: string[] = [];
+                if (grant.roles.length > 0) {
+                  parts.push(
+                    `roles: [${grant.roles.map((r) => `'${r}'`).join(', ')}]`,
+                  );
+                }
+                if (grant.globalRoles.length > 0) {
+                  parts.push(
+                    `globalRoles: [${grant.globalRoles.map((r) => `'${r}'`).join(', ')}]`,
+                  );
+                }
+                actionsObject[action] = `{ ${parts.join(', ')} }`;
+              }
+              const actionsFragment = TsCodeUtils.mergeFragmentsAsObject(
+                actionsObject,
                 { disableSort: true },
               );
 
               const prismaModelFragment =
                 prismaOutput.getPrismaModelFragment(modelName);
 
-              const idWhere =
-                idFieldName === 'id' ? 'id' : `${idFieldName}: id`;
-
               const fileFragment = tsTemplate`
-              export const ${authorizerName} = ${prismaAuthorizerUtilsImports.createModelAuthorizer.fragment()}({
-                model: '${modelVarName}',
-                idField: '${idFieldName}',
-                getModelById: (id) => ${prismaModelFragment}.findUnique({ where: { ${idWhere} } }),
-                roles: ${rolesFragment},
-              });
-            `;
+                export const ${policyName} = ${prismaAuthorizerUtilsImports.createModelPolicy.fragment()}({
+                  model: '${modelVarName}',
+                  idField: '${idFieldName}',
+                  delegate: ${prismaModelFragment},
+                  roles: (r) => (${rolesFragment}),
+                  actions: ${actionsFragment},
+                });
+              `;
 
               await builder.apply(
                 typescriptFile.renderTemplateFragment({
-                  id: `prisma-model-authorizer:${modelName}`,
-                  destination: authorizerPath,
+                  id: `prisma-model-policy:${modelName}`,
+                  destination: policyPath,
                   fragment: fileFragment,
                 }),
               );
 
               return {
-                prismaModelAuthorizer: {
-                  getAuthorizerName() {
-                    return authorizerName;
+                prismaModelPolicy: {
+                  getPolicyName() {
+                    return policyName;
                   },
-                  getAuthorizerFragment() {
-                    return TsCodeUtils.importFragment(
-                      authorizerName,
-                      authorizerPath,
-                    );
+                  getPolicyFragment() {
+                    return TsCodeUtils.importFragment(policyName, policyPath);
                   },
-                  getRoleFragment(roleName: string) {
+                  getRoleCheckFragment(roleName: string) {
                     const validRoles = roles.map((r) => r.name);
                     if (!validRoles.includes(roleName)) {
                       throw new Error(
-                        `Role '${roleName}' not found on ${modelName} authorizer. Available: ${validRoles.join(', ')}`,
+                        `Role '${roleName}' not found on ${modelName} policy. Available: ${validRoles.join(', ')}`,
                       );
                     }
-                    return tsTemplate`${TsCodeUtils.importFragment(authorizerName, authorizerPath)}.roles.${roleName}`;
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.roles.${roleName}.check`;
+                  },
+                  getActionWhereFragment(action: string) {
+                    if (!(action in actions)) {
+                      throw new Error(
+                        `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
+                      );
+                    }
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.where`;
+                  },
+                  getActionWhereUniqueFragment(action: string) {
+                    if (!(action in actions)) {
+                      throw new Error(
+                        `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
+                      );
+                    }
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.whereUnique`;
                   },
                 },
               };

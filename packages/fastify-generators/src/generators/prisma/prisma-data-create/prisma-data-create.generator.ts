@@ -100,7 +100,7 @@ export const prismaDataCreateGenerator = createGenerator({
               modelName,
               methodType: 'Create',
               globalRoles,
-              modelAuthorizer: undefined,
+              modelPolicy: undefined,
               authorizerImports,
             });
 

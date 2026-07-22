@@ -46,6 +46,7 @@ const httpErrors = createTsTemplateFile({
     HttpError: {},
     InternalServerError: {},
     NotFoundError: {},
+    throwIfPrismaNotFound: {},
     TooManyRequestsError: {},
     UnauthorizedError: {},
   },
