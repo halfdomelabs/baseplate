@@ -6,6 +6,10 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
       "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        },
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
@@ -24,7 +28,16 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appModuleSetupImportsProvider": {
+          "importName": "appModuleSetupImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
+        },
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/server.ts",
       "sourceFile": "src/server.ts",
       "variables": {

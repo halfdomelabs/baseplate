@@ -9,7 +9,12 @@ import { createTestEntityServiceContext } from '#src/testing/project-definition-
 import type { EntityServiceContext } from './types.js';
 
 import { listEntities } from './entity-read.js';
-import { createEntity, deleteEntity, updateEntity } from './entity-write.js';
+import {
+  createEntity,
+  deleteEntity,
+  patchEntity,
+  updateEntity,
+} from './entity-write.js';
 
 describe('createEntity', () => {
   it('should create a top-level entity and return a new definition', () => {
@@ -136,6 +141,133 @@ describe('updateEntity', () => {
 
     expect(() =>
       updateEntity(
+        {
+          entityTypeName: 'nonexistent',
+          entityId: 'nonexistent:123',
+          entityData: { name: 'test' },
+        },
+        context,
+      ),
+    ).toThrow('Unknown entity type: nonexistent');
+  });
+});
+
+describe('patchEntity', () => {
+  it('should patch provided root fields and preserve the rest', () => {
+    const feature = createTestFeature({ name: 'blog' });
+    const model = createTestModel({
+      name: 'BlogPost',
+      featureRef: feature.name,
+    });
+    const context = createTestEntityServiceContext({
+      features: [feature],
+      models: [model],
+    });
+
+    const newDef = patchEntity(
+      {
+        entityTypeName: 'model',
+        entityId: model.id,
+        entityData: { name: 'Article' },
+      },
+      context,
+    );
+
+    // Original should be unchanged
+    const origModels = context.serializedDefinition.models as Record<
+      string,
+      unknown
+    >[];
+    expect(origModels[0].name).toBe('BlogPost');
+
+    const newModels = newDef.models as Record<string, unknown>[];
+    expect(newModels[0].name).toBe('Article');
+    expect(newModels[0].id).toBe(model.id);
+    // Omitted root fields should be preserved
+    expect(newModels[0].featureRef).toBe(feature.name);
+    expect(newModels[0].model).toEqual(origModels[0].model);
+  });
+
+  it('should preserve the entity ID even if the patch supplies one', () => {
+    const feature = createTestFeature({ name: 'billing' });
+    const context = createTestEntityServiceContext({ features: [feature] });
+
+    const newDef = patchEntity(
+      {
+        entityTypeName: 'feature',
+        entityId: feature.id,
+        entityData: { id: 'feature:other', name: 'payments' },
+      },
+      context,
+    );
+
+    const newFeatures = newDef.features as Record<string, unknown>[];
+    expect(newFeatures[0].id).toBe(feature.id);
+    expect(newFeatures[0].name).toBe('payments');
+  });
+
+  it('should replace nested fields wholesale rather than deep-merging', () => {
+    const feature = createTestFeature({ name: 'blog' });
+    const model = createTestModel({
+      name: 'BlogPost',
+      featureRef: feature.name,
+    });
+    const context = createTestEntityServiceContext({
+      features: [feature],
+      models: [model],
+    });
+
+    const newDef = patchEntity(
+      {
+        entityTypeName: 'model',
+        entityId: model.id,
+        entityData: {
+          model: {
+            fields: [
+              {
+                name: 'id',
+                type: 'uuid',
+                isOptional: false,
+                options: { defaultGeneration: 'uuidv7' },
+              },
+            ],
+            primaryKeyFieldRefs: ['id'],
+          },
+        },
+      },
+      context,
+    );
+
+    const newModels = newDef.models as {
+      model: { fields: Record<string, unknown>[] };
+    }[];
+    expect(newModels[0].model.fields).toHaveLength(1);
+    // Newly supplied nested entities should get IDs assigned
+    expect(newModels[0].model.fields[0].id).toEqual(
+      expect.stringContaining('model-scalar-field:'),
+    );
+  });
+
+  it('should throw for nonexistent entity ID', () => {
+    const context = createTestEntityServiceContext();
+
+    expect(() =>
+      patchEntity(
+        {
+          entityTypeName: 'feature',
+          entityId: 'feature:nonexistent',
+          entityData: { name: 'test' },
+        },
+        context,
+      ),
+    ).toThrow(/not found/);
+  });
+
+  it('should throw for unknown entity type', () => {
+    const context = createTestEntityServiceContext();
+
+    expect(() =>
+      patchEntity(
         {
           entityTypeName: 'nonexistent',
           entityId: 'nonexistent:123',

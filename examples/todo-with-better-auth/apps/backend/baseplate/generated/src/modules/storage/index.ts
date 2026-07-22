@@ -1,4 +1,4 @@
-import { flattenAppModule } from '@src/utils/app-modules.js';
+import { defineAppModule } from '@src/utils/app-modules.js';
 
 /* TPL_IMPORTS:START */
 import './schema/file-category.enum.js';
@@ -10,6 +10,6 @@ import './schema/public-url.field.js';
 /* TPL_IMPORTS:END */
 
 export const /* TPL_MODULE_NAME:START */ storageModule /* TPL_MODULE_NAME:END */ =
-    flattenAppModule(
+    defineAppModule(
       /* TPL_MODULE_CONTENTS:START */ {} /* TPL_MODULE_CONTENTS:END */,
     );

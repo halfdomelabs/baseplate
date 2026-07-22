@@ -31,9 +31,9 @@ export const FASTIFY_PACKAGES = {
   '@graphql-yoga/redis-event-target': '2.0.0',
 
   // Prisma
-  '@prisma/client': '7.8.0',
-  prisma: '7.8.0',
-  '@prisma/adapter-pg': '7.8.0',
+  '@prisma/client': '7.9.0',
+  prisma: '7.9.0',
+  '@prisma/adapter-pg': '7.9.0',
 
   // Utils
   ms: '2.1.3',

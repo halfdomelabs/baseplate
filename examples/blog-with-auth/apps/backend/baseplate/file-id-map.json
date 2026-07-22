@@ -28,6 +28,8 @@
   "@baseplate-dev/fastify-generators#core/app-module:module-feature:XM8fb3xFc7ve": "src/modules/auth/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-graphql": "src/modules/graphql/index.ts",
   "@baseplate-dev/fastify-generators#core/app-module:module-root": "src/modules/index.ts",
+  "@baseplate-dev/fastify-generators#core/app-runtime:app-runtime": "src/utils/app-runtime.ts",
+  "@baseplate-dev/fastify-generators#core/app-runtime:runtime-services": "src/utils/runtime-services.ts",
   "@baseplate-dev/fastify-generators#core/config-service:config": "src/services/config.ts",
   "@baseplate-dev/fastify-generators#core/config-service:env": ".env",
   "@baseplate-dev/fastify-generators#core/config-service:env-example": ".env.example",

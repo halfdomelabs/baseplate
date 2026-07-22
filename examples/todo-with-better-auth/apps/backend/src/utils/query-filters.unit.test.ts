@@ -17,18 +17,21 @@ function createCtx(
   userId: string | undefined,
   roles: AuthRole[] = [],
 ): ServiceContext {
-  return createServiceContext({
-    auth: createAuthContextFromSessionInfo(
-      userId != null
-        ? {
-            id: 'sess-1',
-            type: 'user',
-            userId,
-            roles: ['public', 'user', ...roles],
-          }
-        : undefined,
-    ),
-  });
+  return createServiceContext(
+    {
+      auth: createAuthContextFromSessionInfo(
+        userId != null
+          ? {
+              id: 'sess-1',
+              type: 'user',
+              userId,
+              roles: ['public', 'user', ...roles],
+            }
+          : undefined,
+      ),
+    },
+    {},
+  );
 }
 
 // ---------------------------------------------------------------------------
