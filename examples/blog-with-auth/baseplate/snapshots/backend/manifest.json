@@ -9,6 +9,7 @@
       {
         "path": "src/modules/notifications/services/notification.service.unit.test.ts"
       },
+      { "path": "src/scripts/send-test-notification.ts" },
       { "path": "src/services/pg-boss.service.int.test.ts" }
     ],
     "deleted": [],

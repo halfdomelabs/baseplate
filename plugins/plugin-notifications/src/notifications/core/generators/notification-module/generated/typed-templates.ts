@@ -199,7 +199,6 @@ const schemaNotificationSubscriptions = createTsTemplateFile({
   group: 'schema',
   importMapProviders: {
     pothosImports: pothosImportsProvider,
-    prismaImports: prismaImportsProvider,
     yogaPluginImports: yogaPluginImportsProvider,
   },
   name: 'schema-notification-subscriptions',

@@ -3,16 +3,16 @@
 import {
   deleteNotification,
   markAllAsRead,
+  markAllAsSeen,
   markAsRead,
-  markAsSeen,
 } from '$servicesNotificationService';
 import { builder } from '%pothosImports';
 import { prisma } from '%prismaImports';
 
 /**
- * Mark a notification read. Returns the updated notification and the new unread
- * count so Apollo can normalize the change without a refetch; `changed` is false
- * when the id didn't exist or was already read (a no-op is not a success).
+ * Mark a notification read (and therefore seen). Returns the updated notification
+ * and the new unseen count so Apollo can normalize without a refetch; `changed`
+ * is false when the id didn't exist or was already read.
  */
 builder.mutationField('markNotificationRead', (t) =>
   t.fieldWithInputPayload({
@@ -24,49 +24,39 @@ builder.mutationField('markNotificationRead', (t) =>
         type: TPL_NOTIFICATION_OBJECT_TYPE,
         nullable: true,
       }),
-      unreadCount: t.payload.field({ type: 'Int' }),
+      unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();
-      const { changed, unreadCount } = await markAsRead(userId, input.id);
+      const { changed, unseenCount } = await markAsRead(userId, input.id);
       const notification = await prisma.notification.findFirst({
         where: { id: input.id, recipientId: userId },
       });
-      return { changed, notification, unreadCount };
+      return { changed, notification, unseenCount };
     },
   }),
 );
 
-/** Mark a notification seen (clears the bell badge without opening it). */
-builder.mutationField('markNotificationSeen', (t) =>
+/** Mark all of the current user's notifications seen (opening the bell badge). */
+builder.mutationField('markAllNotificationsSeen', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
-    input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: {
-      changed: t.payload.field({ type: 'Boolean' }),
-      notification: t.payload.field({
-        type: TPL_NOTIFICATION_OBJECT_TYPE,
-        nullable: true,
-      }),
+      changedCount: t.payload.field({ type: 'Int' }),
+      unseenCount: t.payload.field({ type: 'Int' }),
     },
-    resolve: async (_root, { input }, context) => {
-      const userId = context.auth.userIdOrThrow();
-      const changed = await markAsSeen(userId, input.id);
-      const notification = await prisma.notification.findFirst({
-        where: { id: input.id, recipientId: userId },
-      });
-      return { changed, notification };
-    },
+    resolve: async (_root, _args, context) =>
+      markAllAsSeen(context.auth.userIdOrThrow()),
   }),
 );
 
-/** Mark all of the current user's notifications read. */
+/** Mark all of the current user's notifications read (and therefore seen). */
 builder.mutationField('markAllNotificationsRead', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
     payload: {
       changedCount: t.payload.field({ type: 'Int' }),
-      unreadCount: t.payload.field({ type: 'Int' }),
+      unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, _args, context) =>
       markAllAsRead(context.auth.userIdOrThrow()),
@@ -80,14 +70,14 @@ builder.mutationField('deleteNotification', (t) =>
     input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: {
       deletedId: t.payload.field({ type: 'Uuid', nullable: true }),
-      unreadCount: t.payload.field({ type: 'Int' }),
+      unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, { input }, context) => {
-      const { changed, unreadCount } = await deleteNotification(
+      const { changed, unseenCount } = await deleteNotification(
         context.auth.userIdOrThrow(),
         input.id,
       );
-      return { deletedId: changed ? input.id : null, unreadCount };
+      return { deletedId: changed ? input.id : null, unseenCount };
     },
   }),
 );

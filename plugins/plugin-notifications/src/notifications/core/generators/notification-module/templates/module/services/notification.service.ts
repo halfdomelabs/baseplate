@@ -256,64 +256,82 @@ async function dispatchToChannels(
   }
 }
 
-/** Count of unread notifications for a user. */
-export async function getUnreadCount(userId: string): Promise<number> {
+/**
+ * Count of UNSEEN notifications — the bell badge. Seen (opening the panel) clears
+ * the badge; read (clicking one) clears its highlight. `readAt` always implies
+ * `seenAt` (see the read mutations), so this never counts a row already read.
+ */
+export async function getUnseenCount(userId: string): Promise<number> {
   return prisma.notification.count({
-    where: { recipientId: userId, readAt: null },
+    where: { recipientId: userId, seenAt: null },
   });
 }
 
-/** Result of a mutation that can change the unread count. */
-export interface UnreadCountResult {
+/** Result of a mutation that can change the unseen (badge) count. */
+export interface UnseenCountResult {
   changed: boolean;
-  /** The unread count AFTER the change — the same value broadcast over pubsub. */
-  unreadCount: number;
+  /** The unseen count AFTER the change — the same value broadcast over pubsub. */
+  unseenCount: number;
 }
 
-/** Mark a notification read. `changed` is false if it didn't exist or was read. */
+/**
+ * Mark a notification read. Reading also marks it seen (a read row is never
+ * unseen), so the badge can't count something already opened.
+ */
 export async function markAsRead(
   userId: string,
   notificationId: string,
-): Promise<UnreadCountResult> {
+): Promise<UnseenCountResult> {
+  const now = new Date();
   const { count } = await prisma.notification.updateMany({
     where: { id: notificationId, recipientId: userId, readAt: null },
-    data: { readAt: new Date() },
+    data: { readAt: now },
+  });
+  // Read implies seen: clear an unseen row's badge state in the same stroke.
+  await prisma.notification.updateMany({
+    where: { id: notificationId, recipientId: userId, seenAt: null },
+    data: { seenAt: now },
   });
   return {
     changed: count > 0,
-    unreadCount:
-      count > 0
-        ? await publishUnreadCount(userId)
-        : await getUnreadCount(userId),
+    unseenCount: await publishUnseenCount(userId),
   };
 }
 
-/** Mark a notification seen (clears the bell badge without opening it). */
-export async function markAsSeen(
+/** Mark all of a user's unseen notifications seen (opening the bell). */
+export async function markAllAsSeen(
   userId: string,
-  notificationId: string,
-): Promise<boolean> {
+): Promise<{ changedCount: number; unseenCount: number }> {
   const { count } = await prisma.notification.updateMany({
-    where: { id: notificationId, recipientId: userId, seenAt: null },
+    where: { recipientId: userId, seenAt: null },
     data: { seenAt: new Date() },
-  });
-  return count > 0;
-}
-
-/** Mark all of a user's notifications read. Returns how many changed + new count. */
-export async function markAllAsRead(
-  userId: string,
-): Promise<{ changedCount: number; unreadCount: number }> {
-  const { count } = await prisma.notification.updateMany({
-    where: { recipientId: userId, readAt: null },
-    data: { readAt: new Date() },
   });
   return {
     changedCount: count,
-    unreadCount:
+    unseenCount:
       count > 0
-        ? await publishUnreadCount(userId)
-        : await getUnreadCount(userId),
+        ? await publishUnseenCount(userId)
+        : await getUnseenCount(userId),
+  };
+}
+
+/** Mark all of a user's notifications read (and therefore seen). */
+export async function markAllAsRead(
+  userId: string,
+): Promise<{ changedCount: number; unseenCount: number }> {
+  const now = new Date();
+  const { count } = await prisma.notification.updateMany({
+    where: { recipientId: userId, readAt: null },
+    data: { readAt: now },
+  });
+  // Read implies seen.
+  await prisma.notification.updateMany({
+    where: { recipientId: userId, seenAt: null },
+    data: { seenAt: now },
+  });
+  return {
+    changedCount: count,
+    unseenCount: await publishUnseenCount(userId),
   };
 }
 
@@ -321,22 +339,22 @@ export async function markAllAsRead(
 export async function deleteNotification(
   userId: string,
   notificationId: string,
-): Promise<UnreadCountResult> {
+): Promise<UnseenCountResult> {
   const { count } = await prisma.notification.deleteMany({
     where: { id: notificationId, recipientId: userId },
   });
   return {
     changed: count > 0,
-    unreadCount:
+    unseenCount:
       count > 0
-        ? await publishUnreadCount(userId)
-        : await getUnreadCount(userId),
+        ? await publishUnseenCount(userId)
+        : await getUnseenCount(userId),
   };
 }
 
-/** Recompute, broadcast, and return the unread count for a user. */
-async function publishUnreadCount(userId: string): Promise<number> {
-  const count = await getUnreadCount(userId);
-  getPubSub().publish('unreadCountChanged', userId, { count });
+/** Recompute, broadcast the change, and return the unseen count for a user. */
+async function publishUnseenCount(userId: string): Promise<number> {
+  const count = await getUnseenCount(userId);
+  getPubSub().publish('notificationsChanged', userId, { count });
   return count;
 }

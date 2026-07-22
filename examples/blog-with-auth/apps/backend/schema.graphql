@@ -130,7 +130,7 @@ input DeleteNotificationInput {
 """Payload type for deleteNotification mutation"""
 type DeleteNotificationPayload {
   deletedId: Uuid
-  unreadCount: Int!
+  unseenCount: Int!
 }
 
 """Input type for deleteUser mutation"""
@@ -173,7 +173,13 @@ type LoginWithEmailPasswordPayload {
 """Payload type for markAllNotificationsRead mutation"""
 type MarkAllNotificationsReadPayload {
   changedCount: Int!
-  unreadCount: Int!
+  unseenCount: Int!
+}
+
+"""Payload type for markAllNotificationsSeen mutation"""
+type MarkAllNotificationsSeenPayload {
+  changedCount: Int!
+  unseenCount: Int!
 }
 
 """Input type for markNotificationRead mutation"""
@@ -185,18 +191,7 @@ input MarkNotificationReadInput {
 type MarkNotificationReadPayload {
   changed: Boolean!
   notification: Notification
-  unreadCount: Int!
-}
-
-"""Input type for markNotificationSeen mutation"""
-input MarkNotificationSeenInput {
-  id: Uuid!
-}
-
-"""Payload type for markNotificationSeen mutation"""
-type MarkNotificationSeenPayload {
-  changed: Boolean!
-  notification: Notification
+  unseenCount: Int!
 }
 
 type Mutation {
@@ -211,8 +206,8 @@ type Mutation {
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
   markAllNotificationsRead: MarkAllNotificationsReadPayload!
+  markAllNotificationsSeen: MarkAllNotificationsSeenPayload!
   markNotificationRead(input: MarkNotificationReadInput!): MarkNotificationReadPayload!
-  markNotificationSeen(input: MarkNotificationSeenInput!): MarkNotificationSeenPayload!
   registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
   requestEmailVerification: RequestEmailVerificationPayload!
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
@@ -268,7 +263,7 @@ type Query {
   """Get the current user session"""
   currentUserSession: UserSessionPayload
   notifications(skip: Int, take: Int): [Notification!]!
-  unreadNotificationCount: Int!
+  unseenNotificationCount: Int!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!
 
@@ -326,8 +321,7 @@ type ResetUserPasswordPayload {
 }
 
 type Subscription {
-  notificationReceived: Notification!
-  unreadCountChanged: Int!
+  notificationsChanged: Int!
 }
 
 input UpdateArticleData {

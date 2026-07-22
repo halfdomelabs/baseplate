@@ -81,10 +81,6 @@
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
         },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
         "yogaPluginImportsProvider": {
           "importName": "yogaPluginImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"

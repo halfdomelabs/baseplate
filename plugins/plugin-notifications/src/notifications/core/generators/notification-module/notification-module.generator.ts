@@ -59,15 +59,9 @@ export const notificationModuleGenerator = createGenerator({
         // itself on load, backing `notifyText`).
         appModule.moduleImports.push(paths.servicesGenericType);
 
-        // Contribute the real-time channels to the pubsub type map.
+        // Contribute the real-time channel to the pubsub type map.
         yogaPluginConfig.publishArgs.set(
-          'notificationReceived',
-          tsCodeFragment(
-            '[userId: string, payload: { notificationId: string }]',
-          ),
-        );
-        yogaPluginConfig.publishArgs.set(
-          'unreadCountChanged',
+          'notificationsChanged',
           tsCodeFragment('[userId: string, payload: { count: number }]'),
         );
 

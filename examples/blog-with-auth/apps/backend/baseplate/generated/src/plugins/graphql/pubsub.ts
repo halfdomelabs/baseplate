@@ -25,10 +25,7 @@ type PubSubPublishArgs = Record<
   [] | [unknown] | [number | string, unknown]
 > &
   /* TPL_PUBLISH_ARGS:START */
-  {
-    notificationReceived: [userId: string, payload: { notificationId: string }];
-    unreadCountChanged: [userId: string, payload: { count: number }];
-  };
+  { notificationsChanged: [userId: string, payload: { count: number }] };
 /* TPL_PUBLISH_ARGS:END */
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;

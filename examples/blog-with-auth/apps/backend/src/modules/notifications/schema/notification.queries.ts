@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
-import { getUnreadCount } from '../services/notification.service.js';
+import { getUnseenCount } from '../services/notification.service.js';
 
 /** Upper bound on the feed page size (each row does per-row render work). */
 const MAX_PAGE_SIZE = 100;
@@ -28,11 +28,11 @@ builder.queryField('notifications', (t) =>
   }),
 );
 
-/** Count of the current user's unread notifications (the bell badge). */
-builder.queryField('unreadNotificationCount', (t) =>
+/** Count of the current user's unseen notifications (the bell badge). */
+builder.queryField('unseenNotificationCount', (t) =>
   t.int({
     authorize: ['user'],
     resolve: (_root, _args, context) =>
-      getUnreadCount(context.auth.userIdOrThrow()),
+      getUnseenCount(context.auth.userIdOrThrow()),
   }),
 );

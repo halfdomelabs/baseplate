@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { getUnreadCount } from '$servicesNotificationService';
+import { getUnseenCount } from '$servicesNotificationService';
 import { builder } from '%pothosImports';
 import { prisma } from '%prismaImports';
 import { z } from 'zod';
@@ -28,11 +28,11 @@ builder.queryField('notifications', (t) =>
   }),
 );
 
-/** Count of the current user's unread notifications (the bell badge). */
-builder.queryField('unreadNotificationCount', (t) =>
+/** Count of the current user's unseen notifications (the bell badge). */
+builder.queryField('unseenNotificationCount', (t) =>
   t.int({
     authorize: ['user'],
     resolve: (_root, _args, context) =>
-      getUnreadCount(context.auth.userIdOrThrow()),
+      getUnseenCount(context.auth.userIdOrThrow()),
   }),
 );
