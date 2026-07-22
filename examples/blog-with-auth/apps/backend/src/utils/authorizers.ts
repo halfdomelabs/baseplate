@@ -309,39 +309,45 @@ export interface ActionGrant<TRoleName extends string> {
 }
 
 /**
- * Members of an action. All derive from the same `{ roles, globalRoles }` grant:
- *
- * - `check(ctx, row)` — instance authz against a loaded row; throws on denial.
- * - `where(ctx, callerWhere?)` — the grant as a Prisma filter, AND-composed with
- *   an optional caller filter (`{ AND: [callerWhere, authWhere] }`, never a
- *   spread). `read`'s primary form; also bulk mutations / editable-rows lists.
- *   Unrestricted + no caller filter → `undefined`.
- * - `whereUnique(ctx, unique)` — the grant composed into a unique selector for
- *   ATOMIC authorized `update`/`delete`: one query, returns the row, no TOCTOU.
- *   No match (unauthorized OR absent) → Prisma `P2025` → 404 via
- *   `throwIfPrismaNotFound`. Unconditional deny → throws before the query.
- * - `assertGate(ctx)` — throwing principal-only fast-fail (a row-less `create`).
- * - `hasGlobalGrant(ctx)` — non-throwing form, for the create guarded block.
+ * Members of an action, all derived from the same `{ roles, globalRoles }` grant.
  *
  * Convention: `read` is the fan-out grant — consume its `.where` at read
  * surfaces; don't attach a per-row read `.check` to a field ("filter a list,
  * don't 403 it").
  */
 export interface ActionMembers<TModelName extends ModelPropName> {
+  /** Instance authz against a loaded row; throws on denial. */
   check: (
     ctx: ServiceContext,
     instance: GetResult<TModelName> | (() => Promise<GetResult<TModelName>>),
   ) => Promise<GetResult<TModelName>>;
+  /**
+   * The grant as a Prisma filter, AND-composed with an optional caller filter
+   * (`{ AND: [callerWhere, authWhere] }`, never a spread). `read`'s primary form;
+   * also bulk mutations / editable-rows lists. Unrestricted + no caller filter →
+   * `undefined`.
+   */
   where: (
     ctx: ServiceContext,
     callerWhere?: WhereInput<TModelName>,
   ) => WhereInput<TModelName> | undefined;
+  /**
+   * The grant composed into a unique selector for ATOMIC authorized
+   * `update`/`delete`: one query, returns the row, no TOCTOU. No match
+   * (unauthorized OR absent) → Prisma `P2025` → 404 via `throwIfPrismaNotFound`.
+   * Unconditional deny → throws before the query.
+   */
   whereUnique: (
     ctx: ServiceContext,
     unique: WhereUniqueInput<TModelName>,
   ) => WhereUniqueInput<TModelName>;
-  assertGate: (ctx: ServiceContext) => void;
-  hasGlobalGrant: (ctx: ServiceContext) => boolean;
+  /**
+   * Throws unless the caller holds one of the action's global roles — a row-less
+   * principal check for a `create` (or a global-only mutation). Valid ONLY on a
+   * grant with no instance roles; throws if the action has any (checking globals
+   * alone would skip the per-row check).
+   */
+  checkGlobalRoles: (ctx: ServiceContext) => void;
 }
 
 export interface PolicyRoleMembers<TModelName extends ModelPropName> {
@@ -864,14 +870,21 @@ export function createModelPolicy<
           AND: [...priorAnd, authWhere],
         } as WhereUniqueInput<TModelName>;
       },
-      assertGate: (ctx) => {
+      checkGlobalRoles: (ctx) => {
+        // A principal-only check is sound ONLY when the grant has no instance
+        // roles. If it did, checking globals alone would silently skip the
+        // per-row check the instance role exists to enforce — fail loud instead.
+        if (roleNames.length > 0) {
+          throw new Error(
+            `checkGlobalRoles is not valid on an action with instance roles [${roleNames.join(', ')}] — use whereUnique (atomic) or check (per-row) instead.`,
+          );
+        }
         if (!hasGlobalRole(ctx, globalRoles)) {
           throw new ForbiddenError(
             `Forbidden: requires one of [${globalRoles.join(', ')}].`,
           );
         }
       },
-      hasGlobalGrant: (ctx) => hasGlobalRole(ctx, globalRoles),
     };
   }
 

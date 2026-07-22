@@ -127,19 +127,32 @@ export const prismaDataUpdateGenerator = createGenerator({
             );
 
             const hasPolicy = modelPolicy != null;
+            const hasAnyGrant =
+              hasInstanceAuth ||
+              (globalRoles != null && globalRoles.length > 0);
 
-            // Instance auth composes the grant into a unique selector via
-            // `policy.update.whereUnique` (unauthorized/absent → P2025 → 404),
-            // replacing the separate `checkInstanceAuthorization` on both paths:
-            // - Scalar path: fold it directly into the `update` call — one query
-            //   both authorizes and mutates, no TOCTOU.
-            // - Transform path: the row must be fetched anyway (for file cleanup),
-            //   so fold it into that `findUniqueOrThrow` fetch. One query authorizes
-            //   and loads; the subsequent tx update runs on the same `where`.
+            const hasGlobalGrant =
+              globalRoles != null && globalRoles.length > 0;
+
+            // A policy-backed update routes authorization through the policy:
+            // - Scalar path (any grant): fold the grant into the `update` call via
+            //   `policy.update.whereUnique` — one query both authorizes and mutates.
+            //   Instance grants filter per row (→ 404 on miss); global-only grants
+            //   pass admins untouched and throw 403 for others, before the query.
+            // - Transform + INSTANCE grant: the row must be fetched anyway, so fold
+            //   the grant into that `findUniqueOrThrow`.
+            // - Transform + GLOBAL-ONLY grant: a row-less principal check —
+            //   `policy.update.checkGlobalRoles` (zero-query; routing it through a
+            //   fetch would add a query purely to check a principal).
             const usesAtomicAuth =
-              hasInstanceAuth && !hasTransformFields && hasPolicy;
+              hasAnyGrant && !hasTransformFields && hasPolicy;
             const usesAuthedFetch =
               hasInstanceAuth && hasTransformFields && hasPolicy;
+            const usesTransformGate =
+              hasGlobalGrant &&
+              !hasInstanceAuth &&
+              hasTransformFields &&
+              hasPolicy;
 
             // Fetch the row when the transform needs it, or when the transform
             // path authorizes through a fetch. The auth-fetch variant composes
@@ -163,11 +176,18 @@ export const prismaDataUpdateGenerator = createGenerator({
               ? tsTemplate`${fetchPrefix}await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ ${fetchWhereEntry} })${fetchCatchFragment};`
               : '';
 
-            // The separate `checkInstanceAuthorization` statement is emitted only
-            // when neither atomic form carries the grant (i.e. no policy, or a
-            // path that still uses the two-step form).
+            // Auth statement for the transform path: `checkGlobalRoles` when a
+            // policy exists for a global-only grant; otherwise the helper's
+            // fragment (`checkGlobalAuthorization` for a policy-less model, or the
+            // instance `checkInstanceAuthorization` — though instance transform
+            // grants are carried by `usesAuthedFetch` and emit nothing here). The
+            // scalar/authed-fetch atomic forms carry the grant themselves → empty.
             const authStatementFragment =
-              usesAtomicAuth || usesAuthedFetch ? '' : authFragment;
+              usesAtomicAuth || usesAuthedFetch
+                ? ''
+                : usesTransformGate
+                  ? tsTemplate`${modelPolicy.getActionCheckGlobalRolesFragment('update')}(context);`
+                  : authFragment;
 
             const whereType = generateWhereType(prismaModel);
 

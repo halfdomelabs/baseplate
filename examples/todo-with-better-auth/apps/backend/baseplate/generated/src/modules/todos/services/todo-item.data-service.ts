@@ -8,7 +8,6 @@ import type {
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
 import { oneToManyTransformer } from '@src/utils/data-operations/nested-transformers.js';
 import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
@@ -105,7 +104,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
-  checkGlobalAuthorization(context, ['user']);
+  todoItemPolicy.create.checkGlobalRoles(context);
   const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({

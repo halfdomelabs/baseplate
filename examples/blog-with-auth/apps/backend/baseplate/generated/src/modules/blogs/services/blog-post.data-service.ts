@@ -8,8 +8,10 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { Prisma } from '@src/generated/prisma/client.js';
 import { prisma } from '@src/services/prisma.js';
-import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
+
+import { blogPostPolicy } from '../authorizers/blog-post.policy.js';
 
 const blogPostFieldSchemas = z.object({
   blogId: z.uuid(),
@@ -33,7 +35,7 @@ export async function createBlogPost<TQuery extends DataQuery<'blogPost'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blogPost', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
+  blogPostPolicy.create.checkGlobalRoles(context);
   const { blogId, publisherId, ...rest } = data;
 
   const result = await prisma.blogPost.create({
@@ -61,18 +63,19 @@ export async function updateBlogPost<TQuery extends DataQuery<'blogPost'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blogPost', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
   const { blogId, publisherId, ...rest } = data;
 
-  const result = await prisma.blogPost.update({
-    where,
-    data: {
-      ...rest,
-      blog: relationHelpers.connectUpdate({ id: blogId }),
-      publisher: relationHelpers.connectUpdate({ id: publisherId }),
-    },
-    ...query,
-  });
+  const result = await prisma.blogPost
+    .update({
+      where: blogPostPolicy.update.whereUnique(context, where),
+      data: {
+        ...rest,
+        blog: relationHelpers.connectUpdate({ id: blogId }),
+        publisher: relationHelpers.connectUpdate({ id: publisherId }),
+      },
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('BlogPost not found'));
 
   return result as GetResult<'blogPost', TQuery>;
 }
@@ -86,12 +89,12 @@ export async function deleteBlogPost<TQuery extends DataQuery<'blogPost'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blogPost', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
-
-  const result = await prisma.blogPost.delete({
-    where,
-    ...query,
-  });
+  const result = await prisma.blogPost
+    .delete({
+      where: blogPostPolicy.delete.whereUnique(context, where),
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('BlogPost not found'));
 
   return result as GetResult<'blogPost', TQuery>;
 }

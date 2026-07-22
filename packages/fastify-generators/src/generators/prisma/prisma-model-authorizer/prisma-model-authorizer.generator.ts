@@ -68,6 +68,12 @@ export interface PrismaModelPolicyProvider {
    * (`policy.read.whereUnique`), for get-by-id: `policy.read.whereUnique(ctx, { id })`.
    */
   getActionWhereUniqueFragment(action: string): TsCodeFragment;
+  /**
+   * A fragment referencing an action's `.checkGlobalRoles` member
+   * (`policy.create.checkGlobalRoles`), a throwing principal-only global-role
+   * check for row-less mutations: `policy.create.checkGlobalRoles(context)`.
+   */
+  getActionCheckGlobalRolesFragment(action: string): TsCodeFragment;
 }
 
 export const prismaModelPolicyProvider =
@@ -237,6 +243,14 @@ export const prismaModelPolicyGenerator = createGenerator({
                       );
                     }
                     return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.whereUnique`;
+                  },
+                  getActionCheckGlobalRolesFragment(action: string) {
+                    if (!(action in actions)) {
+                      throw new Error(
+                        `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
+                      );
+                    }
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.checkGlobalRoles`;
                   },
                 },
               };

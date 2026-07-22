@@ -90,11 +90,17 @@ export const prismaDataDeleteGenerator = createGenerator({
 
             const whereType = generateWhereType(prismaModel);
 
-            // Instance auth on a delete is atomic: compose the grant into the
-            // unique selector via `policy.delete.whereUnique` and let Prisma's
-            // P2025 (no row matched the auth-filtered selector) surface as a 404.
-            // One query, no TOCTOU window, no separate row fetch + check.
-            const usesAtomicAuth = hasInstanceAuth && modelPolicy != null;
+            // A policy-backed delete is atomic: compose the grant into the unique
+            // selector via `policy.delete.whereUnique`, whether the grant is
+            // instance-level (per-row filter → P2025 → 404 hides existence) or
+            // global-only (admin passes untouched; non-admin throws 403 before
+            // the query). One query, no separate fetch + check. Applies whenever a
+            // policy exists and the action has any grant; global-only models with
+            // no policy keep the plain `checkGlobalAuthorization` fallback.
+            const hasAnyGrant =
+              hasInstanceAuth ||
+              (globalRoles != null && globalRoles.length > 0);
+            const usesAtomicAuth = hasAnyGrant && modelPolicy != null;
 
             // Context is needed whenever any auth runs (atomic whereUnique reads
             // `context`, and the non-atomic path calls checkGlobalAuthorization).
