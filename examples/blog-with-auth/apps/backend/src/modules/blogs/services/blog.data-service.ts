@@ -7,8 +7,8 @@ import type {
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import { checkInstanceAuthorization } from '@src/utils/authorizers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
 
 import { blogPolicy } from '../authorizers/blog.policy.js';
 
@@ -27,18 +27,15 @@ export async function updateBlog<TQuery extends DataQuery<'blog'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blog', TQuery>> {
-  const existingItem = await prisma.blog.findUniqueOrThrow({ where });
-  await checkInstanceAuthorization(context, existingItem, [
-    'admin',
-    blogPolicy.roles.owner.check,
-  ]);
   const { userId, ...rest } = data;
 
-  const result = await prisma.blog.update({
-    where,
-    data: { ...rest, user: relationHelpers.connectUpdate({ id: userId }) },
-    ...query,
-  });
+  const result = await prisma.blog
+    .update({
+      where: blogPolicy.update.whereUnique(context, where),
+      data: { ...rest, user: relationHelpers.connectUpdate({ id: userId }) },
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('Blog not found'));
 
   return result as GetResult<'blog', TQuery>;
 }
@@ -52,16 +49,12 @@ export async function deleteBlog<TQuery extends DataQuery<'blog'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blog', TQuery>> {
-  const existingItem = await prisma.blog.findUniqueOrThrow({ where });
-  await checkInstanceAuthorization(context, existingItem, [
-    'admin',
-    blogPolicy.roles.owner.check,
-  ]);
-
-  const result = await prisma.blog.delete({
-    where,
-    ...query,
-  });
+  const result = await prisma.blog
+    .delete({
+      where: blogPolicy.delete.whereUnique(context, where),
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('Blog not found'));
 
   return result as GetResult<'blog', TQuery>;
 }
