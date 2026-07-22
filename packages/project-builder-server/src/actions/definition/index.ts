@@ -13,4 +13,5 @@ export { searchEntitiesAction } from './search-entities.action.js';
 export { showDraftAction } from './show-draft.action.js';
 export { stageCreateEntityAction } from './stage-create-entity.action.js';
 export { stageDeleteEntityAction } from './stage-delete-entity.action.js';
+export { stagePatchEntityAction } from './stage-patch-entity.action.js';
 export { stageUpdateEntityAction } from './stage-update-entity.action.js';

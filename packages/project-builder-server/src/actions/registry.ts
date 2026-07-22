@@ -14,6 +14,7 @@ import {
   showDraftAction,
   stageCreateEntityAction,
   stageDeleteEntityAction,
+  stagePatchEntityAction,
   stageUpdateEntityAction,
 } from './definition/index.js';
 import { diffProjectAction } from './diff/diff-project.action.js';
@@ -56,6 +57,7 @@ export const USER_SERVICE_ACTIONS = [
   getEntitySchemaAction,
   stageCreateEntityAction,
   stageUpdateEntityAction,
+  stagePatchEntityAction,
   stageDeleteEntityAction,
   applyFixAction,
   commitDraftAction,

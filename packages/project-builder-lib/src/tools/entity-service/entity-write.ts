@@ -109,6 +109,79 @@ export function updateEntity(
   });
 }
 
+export interface PatchEntityInput {
+  entityTypeName: string;
+  entityId: string;
+  entityData: Record<string, unknown>;
+}
+
+/**
+ * Partially updates an existing entity by ID.
+ *
+ * Shallow-merges the provided root-level fields into the existing entity data.
+ * Provided fields replace the existing values wholesale (nested objects and
+ * arrays are not deep-merged). The entity's ID is always preserved.
+ *
+ * @returns A new definition with the entity patched (original is not modified)
+ */
+export function patchEntity(
+  { entityTypeName, entityId, entityData }: PatchEntityInput,
+  context: EntityServiceContext,
+): Record<string, unknown> {
+  const metadata = context.entityTypeMap.get(entityTypeName);
+  if (!metadata) {
+    throw new Error(`Unknown entity type: ${entityTypeName}`);
+  }
+
+  // Verify the entity exists and get its path
+  const entity = context.lookupEntity(entityId);
+  if (!entity) {
+    throw new Error(
+      `Entity "${entityId}" of type "${entityTypeName}" not found`,
+    );
+  }
+
+  const currentEntity = get(
+    context.serializedDefinition,
+    entity.path,
+  ) as unknown;
+  if (!isPlainObject(currentEntity)) {
+    throw new TypeError(
+      `Expected plain object at path "${entity.path.join('.')}" but got ${typeof currentEntity}`,
+    );
+  }
+
+  const mergedEntity = {
+    ...currentEntity,
+    ...entityData,
+    id: currentEntity.id as unknown,
+  };
+
+  // Populate any children entities with new IDs if they don't have an ID yet.
+  const patchedEntity = assignEntityIds(metadata.elementSchema, mergedEntity, {
+    isExistingId: (id) => !!context.lookupEntity(id),
+  });
+
+  return produce(context.serializedDefinition, (draft) => {
+    // Find the parent array and the entity's index within it
+    const parentPath = entity.path.slice(0, -1);
+    const entityIndex = entity.path.at(-1);
+    if (typeof entityIndex !== 'number') {
+      throw new TypeError(
+        `Expected numeric index at end of entity path "${entity.path.join('.')}"`,
+      );
+    }
+    const parentArray = get(draft, parentPath) as unknown;
+    if (!Array.isArray(parentArray)) {
+      throw new TypeError(
+        `Expected array at path "${parentPath.join('.')}" but got ${typeof parentArray}`,
+      );
+    }
+
+    parentArray[entityIndex] = patchedEntity;
+  });
+}
+
 export interface DeleteEntityInput {
   entityTypeName: string;
   entityId: string;
