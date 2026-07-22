@@ -41,7 +41,6 @@
     "@fastify/cookie": "11.0.2",
     "@fastify/helmet": "13.0.2",
     "@fastify/request-context": "6.2.1",
-    "@graphql-yoga/redis-event-target": "2.0.0",
     "@pothos/core": "4.10.0",
     "@pothos/plugin-prisma": "4.14.2",
     "@pothos/plugin-relay": "4.6.2",

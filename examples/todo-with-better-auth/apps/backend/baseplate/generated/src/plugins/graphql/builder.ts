@@ -77,5 +77,4 @@ export const builder = new SchemaBuilder<{
 /* TPL_ROOT_TYPES:START */
 builder.queryType();
 builder.mutationType();
-builder.subscriptionType();
 /* TPL_ROOT_TYPES:END */
