@@ -150,7 +150,7 @@ export const serviceContextGenerator = createGenerator({
 
             const testObject =
               orderedContextArgs.length === 0
-                ? ''
+                ? '{}'
                 : TsCodeUtils.mergeFragmentsAsObject(
                     Object.fromEntries(
                       orderedContextArgs.map((arg) => [

@@ -13,7 +13,7 @@ import type { RuntimeServices } from '$runtimeServices';
  */
 
 export interface AppRuntime {
-  services: Readonly<RuntimeServices>;
+  readonly services: Readonly<RuntimeServices>;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -24,7 +24,7 @@ export interface AppRuntime {
 
 export async function createAppRuntime(): Promise<AppRuntime> {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
-  let disposed = false;
+  let disposePromise: Promise<void> | undefined;
 
   // No plugins registered yet - delete this await once the first one adds a
   // real one.
@@ -32,12 +32,7 @@ export async function createAppRuntime(): Promise<AppRuntime> {
 
   const services: RuntimeServices = {};
 
-  async function dispose(): Promise<void> {
-    if (disposed) {
-      return;
-    }
-    disposed = true;
-
+  async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
     for (const { dispose: disposeOne } of disposers.toReversed()) {
       try {
@@ -50,6 +45,11 @@ export async function createAppRuntime(): Promise<AppRuntime> {
     if (errors.length > 0) {
       throw new AggregateError(errors, 'Failed to dispose app runtime');
     }
+  }
+
+  function dispose(): Promise<void> {
+    disposePromise ??= disposeOnce();
+    return disposePromise;
   }
 
   return {

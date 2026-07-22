@@ -7,17 +7,22 @@ import { logger } from '%loggerServiceImports';
 
 async function startServer(): Promise<void> {
   const runtime = await createAppRuntime();
+  const fastify = await buildServer({
+    loggerInstance: logger,
+    runtime,
+  }).catch(async (err: unknown) => {
+    await runtime.dispose();
+    throw err;
+  });
+
   try {
-    const fastify = await buildServer({
-      loggerInstance: logger,
-      runtime,
-    });
     await fastify.listen({
       port: config.SERVER_PORT,
       host: config.SERVER_HOST,
     });
   } catch (err: unknown) {
-    await runtime.dispose();
+    // fastify.close() triggers the onClose hook, which disposes the runtime.
+    await fastify.close();
     throw err;
   }
 }
