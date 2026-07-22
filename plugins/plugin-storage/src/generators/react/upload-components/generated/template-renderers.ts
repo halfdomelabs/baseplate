@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  apolloErrorImportsProvider,
   graphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
@@ -52,6 +53,7 @@ const reactUploadComponentsRenderers =
 
 const reactUploadComponentsRenderersTask = createGeneratorTask({
   dependencies: {
+    apolloErrorImports: apolloErrorImportsProvider,
     graphqlImports: graphqlImportsProvider,
     paths: REACT_UPLOAD_COMPONENTS_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
@@ -62,6 +64,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
     reactUploadComponentsRenderers: reactUploadComponentsRenderers.export(),
   },
   run({
+    apolloErrorImports,
     graphqlImports,
     paths,
     reactComponentsImports,
@@ -77,6 +80,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                 template: REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputComponent,
                 destination: paths.fileInputComponent,
                 importMapProviders: {
+                  apolloErrorImports,
                   graphqlImports,
                   reactComponentsImports,
                   reactErrorImports,

@@ -24,6 +24,7 @@ export const createFileCategorySchema = definitionSchema((ctx) =>
       id: z.string(),
       name: CASE_VALIDATORS.CONSTANT_CASE,
       maxFileSizeMb: z.int().positive(),
+      allowedMimeTypes: z.array(z.string()).optional(),
       authorize: z.object({
         uploadRoles: z.array(
           ctx.withRef({

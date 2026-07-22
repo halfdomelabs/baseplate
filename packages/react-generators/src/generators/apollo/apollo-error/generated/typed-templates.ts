@@ -5,7 +5,11 @@ const apolloError = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'apollo-error',
-  projectExports: { getApolloErrorCode: {} },
+  projectExports: {
+    getApolloErrorCode: {},
+    getApolloErrorData: {},
+    getApolloErrorDetails: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,

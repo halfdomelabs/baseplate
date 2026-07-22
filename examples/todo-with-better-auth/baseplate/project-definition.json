@@ -217,7 +217,7 @@
       "type": "web"
     }
   ],
-  "cliVersion": "0.6.6",
+  "cliVersion": "0.6.12",
   "enums": [
     {
       "featureRef": "billing",
@@ -1991,6 +1991,7 @@
         "fileCategories": [
           {
             "adapterRef": "uploads",
+            "allowedMimeTypes": ["image/jpeg", "image/png", "image/webp"],
             "authorize": { "uploadRoles": ["user"] },
             "id": "file-category:v1kFZCasEzf3",
             "maxFileSizeMb": 10,
@@ -1998,6 +1999,7 @@
           },
           {
             "adapterRef": "uploads",
+            "allowedMimeTypes": [],
             "authorize": { "uploadRoles": ["user"] },
             "id": "file-category:n07NDlZNz8u3",
             "maxFileSizeMb": 10,

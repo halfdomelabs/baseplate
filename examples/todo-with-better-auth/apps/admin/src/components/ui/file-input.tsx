@@ -2,9 +2,10 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
+import { z } from 'zod';
 
 import type { FragmentType } from '@src/gql';
 import type { FileCategory } from '@src/gql/graphql';
@@ -13,11 +14,84 @@ import { graphql, readFragment } from '@src/gql';
 import { useUpload } from '@src/hooks/use-upload';
 import { formatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
+import { getApolloErrorData } from '@src/utils/apollo-error';
 import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 import { CircularProgress } from './circular-progress';
 import { FieldError } from './field';
+
+function formatFileSize(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${Math.round(bytes / (1024 * 1024))} MB`;
+  if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${bytes} bytes`;
+}
+
+function formatExtensions(extensions: string[]): string {
+  return extensions.map((extension) => `.${extension}`).join(', ');
+}
+
+const optionalStrings = z.array(z.string()).optional();
+const optionalSize = z.number().optional();
+
+/**
+ * Schemas for the data each upload validation error carries. Fields are optional
+ * so an absent payload still parses and the message falls back to base wording.
+ */
+const UPLOAD_ERROR_SCHEMAS = {
+  INVALID_FILE_TYPE: z.object({
+    allowedFileExtensions: optionalStrings,
+    allowedMimeTypes: optionalStrings,
+  }),
+  UNRECOGNIZED_FILE_TYPE: z.object({}),
+  INVALID_FILE_EXTENSION: z.object({ expectedFileExtensions: optionalStrings }),
+  FILE_SIZE_TOO_LARGE: z.object({ maxFileSize: optionalSize }),
+  FILE_SIZE_TOO_SMALL: z.object({ minFileSize: optionalSize }),
+};
+
+/** Builds a message for an upload validation error, or null if not one. */
+function formatUploadError(error: unknown): string | null {
+  const result = getApolloErrorData(error, UPLOAD_ERROR_SCHEMAS);
+  if (!result) return null;
+
+  switch (result.code) {
+    case 'INVALID_FILE_TYPE': {
+      const { data } = result;
+      if (data?.allowedFileExtensions?.length) {
+        // Extensions read more clearly than MIME types.
+        return `This file type is not allowed. Accepted types: ${formatExtensions(
+          data.allowedFileExtensions,
+        )}.`;
+      }
+      return data?.allowedMimeTypes?.length
+        ? `This file type is not allowed. Accepted types: ${data.allowedMimeTypes.join(', ')}.`
+        : 'This file type is not allowed.';
+    }
+    case 'UNRECOGNIZED_FILE_TYPE': {
+      return 'This file type could not be recognized. Please try a different file.';
+    }
+    case 'INVALID_FILE_EXTENSION': {
+      const { data } = result;
+      return data?.expectedFileExtensions?.length
+        ? `This file's extension does not match its declared file type. Expected: ${formatExtensions(
+            data.expectedFileExtensions,
+          )}.`
+        : `This file's extension does not match its declared file type.`;
+    }
+    case 'FILE_SIZE_TOO_LARGE': {
+      const { data } = result;
+      return data?.maxFileSize
+        ? `This file is too large. The maximum size is ${formatFileSize(data.maxFileSize)}.`
+        : 'This file is too large.';
+    }
+    case 'FILE_SIZE_TOO_SMALL': {
+      const { data } = result;
+      return data?.minFileSize
+        ? `This file is too small. The minimum size is ${formatFileSize(data.minFileSize)}.`
+        : 'This file is too small.';
+    }
+  }
+}
 
 export const fileInputValueFragment = graphql(`
   fragment FileInput_value on File {
@@ -57,7 +131,13 @@ export interface FileInputProps {
   placeholder?: string;
   category: FileCategory;
   imagePreview?: boolean;
-  accept?: Record<string, string[]>;
+  /** MIME types this input accepts. Undefined accepts any type. */
+  allowedMimeTypes?: string[];
+  /**
+   * Extensions the accepted MIME types map to (e.g. `jpg`), shown to the user in
+   * place of MIME types. Falls back to MIME types when omitted.
+   */
+  allowedFileExtensions?: string[];
 }
 
 function truncateFilenameWithExtension(filename: string, length = 20): string {
@@ -80,9 +160,21 @@ export function FileInput({
   category,
   placeholder,
   imagePreview,
-  accept,
+  allowedMimeTypes,
+  allowedFileExtensions,
 }: FileInputProps): ReactElement {
   const [createUploadUrl] = useMutation(fileInputCreateUploadUrlMutation);
+
+  // react-dropzone keys `accept` by MIME type; the empty array matches any extension.
+  const accept = useMemo(
+    () =>
+      allowedMimeTypes?.length
+        ? Object.fromEntries(
+            allowedMimeTypes.map((mimeType) => [mimeType, [] as string[]]),
+          )
+        : undefined,
+    [allowedMimeTypes],
+  );
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
@@ -122,13 +214,30 @@ export function FileInput({
       trackProgress: true,
     });
 
+  // A picker/drop rejection never reaches the upload flow, so track it separately.
+  const [dropzoneError, setDropzoneError] = useState<string | undefined>();
+
   const onDropAccepted = useCallback(
     (acceptedFiles: File[]) => {
+      setDropzoneError(undefined);
       const file = acceptedFiles[0];
       uploadFile(file);
     },
     [uploadFile],
   );
+
+  const onDropRejected = useCallback(() => {
+    const acceptedTypes = allowedFileExtensions?.length
+      ? allowedFileExtensions.map((extension) => `.${extension}`)
+      : allowedMimeTypes;
+    setDropzoneError(
+      acceptedTypes?.length
+        ? `This file type is not allowed. Accepted types: ${acceptedTypes.join(
+            ', ',
+          )}.`
+        : 'This file cannot be uploaded.',
+    );
+  }, [allowedFileExtensions, allowedMimeTypes]);
 
   const isDraggable = !isUploading && !error && !disabled;
 
@@ -136,6 +245,7 @@ export function FileInput({
     useDropzone({
       accept,
       onDropAccepted,
+      onDropRejected,
       multiple: false,
       maxFiles: 1,
       disabled: !isDraggable,
@@ -144,6 +254,7 @@ export function FileInput({
   const handleRemove = (): void => {
     if (onChange) onChange(null);
     cancelUpload();
+    setDropzoneError(undefined);
     if (inputRef.current as HTMLInputElement | undefined) {
       inputRef.current.value = '';
     }
@@ -160,6 +271,14 @@ export function FileInput({
     fileInputValueFragment,
     value as FragmentType<typeof fileInputValueFragment> | undefined,
   );
+
+  // A file rejected before upload takes precedence over any prior upload error.
+  const displayError =
+    dropzoneError ??
+    (error
+      ? (formatUploadError(error) ??
+        formatError(error, 'Sorry, we could not upload the file.'))
+      : undefined);
 
   return (
     <div className={cn('max-w-md', className)}>
@@ -287,11 +406,7 @@ export function FileInput({
           </div>
         );
       })()}
-      {!!error && (
-        <FieldError>
-          {formatError(error, 'Sorry, we could not upload the file.')}
-        </FieldError>
-      )}
+      {!!displayError && <FieldError>{displayError}</FieldError>}
     </div>
   );
 }

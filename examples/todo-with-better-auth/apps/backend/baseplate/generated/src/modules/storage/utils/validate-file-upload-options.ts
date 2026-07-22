@@ -12,7 +12,9 @@ import type { FileCategory } from '../types/file-category.js';
 import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 import { getAdapterOrThrow } from './get-adapter.js';
 import {
+  assertValidMimeType,
   getEncodingFromContentType,
+  getExtensionsForMimeTypes,
   getMimeTypeFromContentType,
   InvalidMimeTypeError,
   validateFileExtensionWithMimeType,
@@ -94,12 +96,13 @@ function validateMimeType(
 ): string {
   const mimeType = getMimeTypeFromContentType(contentType);
 
-  // Validate file extension matches mime type
+  // Reject only broken metadata; the category allow-list below is the real gate.
   try {
+    assertValidMimeType(mimeType);
     validateFileExtensionWithMimeType(mimeType, filename);
   } catch (error) {
     if (error instanceof InvalidMimeTypeError) {
-      throw new BadRequestError(error.message, 'INVALID_FILE_EXTENSION', {
+      throw new BadRequestError(error.message, error.code, {
         expectedFileExtensions: error.expectedFileExtensions,
       });
     }
@@ -114,7 +117,12 @@ function validateMimeType(
     throw new BadRequestError(
       `File type ${mimeType} is not allowed for category ${fileCategory.name}. Allowed types: ${fileCategory.allowedMimeTypes.join(', ')}`,
       'INVALID_FILE_TYPE',
-      { allowedMimeTypes: fileCategory.allowedMimeTypes },
+      {
+        allowedMimeTypes: fileCategory.allowedMimeTypes,
+        allowedFileExtensions: getExtensionsForMimeTypes(
+          fileCategory.allowedMimeTypes,
+        ),
+      },
     );
   }
 

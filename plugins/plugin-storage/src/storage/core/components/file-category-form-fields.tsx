@@ -9,6 +9,8 @@ import {
 
 import type { FileCategoryInput } from '../schema/plugin-definition.js';
 
+import { AllowedMimeTypesField } from './allowed-mime-types-field.js';
+
 interface FileCategoryFormFieldsProps {
   lens: Lens<FileCategoryInput>;
   roleOptions: { label: string; value: string }[];
@@ -38,6 +40,7 @@ export function FileCategoryFormFields({
           valueAsNumber: true,
         }}
       />
+      <AllowedMimeTypesField {...lens.focus('allowedMimeTypes').interop()} />
       <MultiComboboxFieldController
         {...lens.focus('authorize.uploadRoles').interop()}
         label="Upload Roles"
