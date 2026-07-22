@@ -122,6 +122,17 @@ type DeleteBlogPostPayload {
   blogPost: BlogPost!
 }
 
+"""Input type for deleteNotification mutation"""
+input DeleteNotificationInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteNotification mutation"""
+type DeleteNotificationPayload {
+  deletedId: Uuid
+  unseenCount: Int!
+}
+
 """Input type for deleteUser mutation"""
 input DeleteUserInput {
   id: Uuid!
@@ -159,6 +170,30 @@ type LoginWithEmailPasswordPayload {
   session: UserSessionPayload!
 }
 
+"""Payload type for markAllNotificationsRead mutation"""
+type MarkAllNotificationsReadPayload {
+  changedCount: Int!
+  unseenCount: Int!
+}
+
+"""Payload type for markAllNotificationsSeen mutation"""
+type MarkAllNotificationsSeenPayload {
+  changedCount: Int!
+  unseenCount: Int!
+}
+
+"""Input type for markNotificationRead mutation"""
+input MarkNotificationReadInput {
+  id: Uuid!
+}
+
+"""Payload type for markNotificationRead mutation"""
+type MarkNotificationReadPayload {
+  changed: Boolean!
+  notification: Notification
+  unseenCount: Int!
+}
+
 type Mutation {
   changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
   createArticle(input: CreateArticleInput!): CreateArticlePayload!
@@ -166,9 +201,13 @@ type Mutation {
   createUser(input: CreateUserInput!): CreateUserPayload!
   deleteBlog(input: DeleteBlogInput!): DeleteBlogPayload!
   deleteBlogPost(input: DeleteBlogPostInput!): DeleteBlogPostPayload!
+  deleteNotification(input: DeleteNotificationInput!): DeleteNotificationPayload!
   deleteUser(input: DeleteUserInput!): DeleteUserPayload!
   logOut: LogOutPayload!
   loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
+  markAllNotificationsRead: MarkAllNotificationsReadPayload!
+  markAllNotificationsSeen: MarkAllNotificationsSeenPayload!
+  markNotificationRead(input: MarkNotificationReadInput!): MarkNotificationReadPayload!
   registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
   requestEmailVerification: RequestEmailVerificationPayload!
   requestPasswordReset(input: RequestPasswordResetInput!): RequestPasswordResetPayload!
@@ -183,6 +222,36 @@ type Mutation {
   verifyEmail(input: VerifyEmailInput!): VerifyEmailPayload!
 }
 
+type Notification {
+  actor: User
+  content(locale: String! = "en"): NotificationContent!
+  createdAt: DateTime!
+  entityId: String
+  entityType: String
+  id: ID!
+  readAt: DateTime
+  seenAt: DateTime
+  type: String!
+}
+
+type NotificationContent {
+  actionUrl: String
+  fallbackText: String!
+  segments: [NotificationSegment!]!
+}
+
+type NotificationLinkSegment {
+  href: String!
+  value: String!
+}
+
+union NotificationSegment = NotificationLinkSegment | NotificationTextSegment
+
+type NotificationTextSegment {
+  bold: Boolean!
+  value: String!
+}
+
 type Query {
   article(id: Uuid!): Article!
   articles(skip: Int, take: Int): [Article!]!
@@ -193,6 +262,8 @@ type Query {
 
   """Get the current user session"""
   currentUserSession: UserSessionPayload
+  notifications(skip: Int, take: Int): [Notification!]!
+  unseenNotificationCount: Int!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!
 
@@ -247,6 +318,10 @@ input ResetUserPasswordInput {
 """Payload type for resetUserPassword mutation"""
 type ResetUserPasswordPayload {
   user: User!
+}
+
+type Subscription {
+  notificationsChanged: Int!
 }
 
 input UpdateArticleData {

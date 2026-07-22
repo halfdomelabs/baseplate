@@ -4,6 +4,7 @@ import { articlesModule } from './articles/index.js';
 import { authModule } from './auth/index.js';
 import { blogsModule } from './blogs/index.js';
 import { graphqlModule } from './graphql/index.js';
+import { notificationsModule } from './notifications/index.js';
 import { utilitiesModule } from './utilities/index.js';
 
 /* TPL_IMPORTS:BLOCK */
@@ -17,6 +18,7 @@ export const /* TPL_MODULE_NAME:START */ rootModule /* TPL_MODULE_NAME:END */ =
           authModule,
           blogsModule,
           graphqlModule,
+          notificationsModule,
           utilitiesModule,
         ],
       } /* TPL_MODULE_CONTENTS:END */,

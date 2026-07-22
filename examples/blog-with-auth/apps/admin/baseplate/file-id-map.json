@@ -42,6 +42,7 @@
   "@baseplate-dev/react-generators#admin/admin-layout:app-breadcrumbs": "src/components/layouts/app-breadcrumbs.tsx",
   "@baseplate-dev/react-generators#admin/admin-layout:app-sidebar": "src/components/layouts/app-sidebar.tsx",
   "@baseplate-dev/react-generators#apollo/apollo-error:apollo-error": "src/utils/apollo-error.ts",
+  "@baseplate-dev/react-generators#apollo/react-apollo:apollo-sse-link": "src/services/apollo/apollo-sse-link.ts",
   "@baseplate-dev/react-generators#apollo/react-apollo:app-apollo-provider": "src/app/app-apollo-provider.tsx",
   "@baseplate-dev/react-generators#apollo/react-apollo:cache": "src/services/apollo/cache.ts",
   "@baseplate-dev/react-generators#apollo/react-apollo:codegen": "codegen.ts",

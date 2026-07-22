@@ -17,9 +17,11 @@ function isObjectTypeEmpty(
 }
 
 /**
- * Strips Query and Mutation types from the schema if they have no fields
+ * Strips empty Query, Mutation, and Subscription root types from the schema.
  *
- * Otherwise, GraphQL code generator will throw an error with an empty type.
+ * A root type can end up with no fields when a feature registers the type (e.g.
+ * `builder.subscriptionType()`) but no fields are actually added — GraphQL code
+ * generation and linting throw on an empty object type, so we remove it here.
  */
 export class PothosStripQueryMutationPlugin<
   Types extends SchemaTypes,
@@ -27,8 +29,11 @@ export class PothosStripQueryMutationPlugin<
   afterBuild(schema: GraphQLSchema): GraphQLSchema {
     const isQueryEmpty = isObjectTypeEmpty(schema.getQueryType());
     const isMutationEmpty = isObjectTypeEmpty(schema.getMutationType());
+    const isSubscriptionEmpty = isObjectTypeEmpty(schema.getSubscriptionType());
 
-    if (!isQueryEmpty && !isMutationEmpty) return schema;
+    if (!isQueryEmpty && !isMutationEmpty && !isSubscriptionEmpty) {
+      return schema;
+    }
 
     const schemaConfig = schema.toConfig();
 
@@ -36,9 +41,11 @@ export class PothosStripQueryMutationPlugin<
       ...schemaConfig,
       query: isQueryEmpty ? undefined : schemaConfig.query,
       mutation: isMutationEmpty ? undefined : schemaConfig.mutation,
+      subscription: isSubscriptionEmpty ? undefined : schemaConfig.subscription,
       types: schemaConfig.types.filter((t) => {
         if (t.name === 'Query' && isQueryEmpty) return false;
         if (t.name === 'Mutation' && isMutationEmpty) return false;
+        if (t.name === 'Subscription' && isSubscriptionEmpty) return false;
         return true;
       }),
     });

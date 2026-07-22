@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 
 import { Outlet } from '@tanstack/react-router';
 
+import { NotificationBell } from '../notifications/notification-bell';
 import { AsyncBoundary } from '../ui/async-boundary';
 import { Separator } from '../ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
@@ -34,6 +35,9 @@ export function AdminLayout({ className }: Props): ReactElement {
               className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
             />
             <AppBreadcrumbs />
+            <div className="ml-auto">
+              <NotificationBell />
+            </div>
           </div>
         </header>
         <div className="flex flex-1 flex-col">

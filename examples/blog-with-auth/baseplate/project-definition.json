@@ -80,6 +80,7 @@
       },
       "description": "admin",
       "devPort": 5030,
+      "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
       "title": "Blog Admin",
@@ -88,13 +89,14 @@
     {
       "devPort": 5001,
       "enableAxios": false,
-      "enableSubscriptions": false,
+      "enableSubscriptions": true,
       "id": "app:acqRWBqOc6tx",
       "name": "backend",
       "type": "backend"
     }
   ],
   "cliVersion": "0.6.5",
+  "enums": [],
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
     {
@@ -110,6 +112,7 @@
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:7IVyDOEOsuGy", "name": "notifications" },
     { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
@@ -578,6 +581,186 @@
       "service": { "transformers": [] }
     },
     {
+      "featureRef": "notifications",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "id" },
+            { "ref": "type" },
+            { "ref": "entityType" },
+            { "ref": "entityId" },
+            { "ref": "seenAt" },
+            { "ref": "readAt" },
+            { "ref": "createdAt" }
+          ],
+          "localRelations": [{ "ref": "actor" }]
+        }
+      },
+      "id": "model:Mt6G8hOGtKtI",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:FFqZ587oRwUz",
+            "isOptional": false,
+            "name": "id",
+            "options": { "defaultGeneration": "uuidv7" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:tUOX1U7ihwKa",
+            "isOptional": false,
+            "name": "type",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:zhOucs7NBnUu",
+            "isOptional": false,
+            "name": "templateVersion",
+            "options": { "default": "1" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:cAw2xO0ddxEB",
+            "isOptional": false,
+            "name": "recipientId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:RPTqqcJyjH3R",
+            "isOptional": false,
+            "name": "segments",
+            "options": {},
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:MclRPZDlTV1j",
+            "isOptional": false,
+            "name": "fallbackText",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:UwDBgm0pjK2j",
+            "isOptional": true,
+            "name": "params",
+            "options": {},
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:c8CI41FusH_T",
+            "isOptional": false,
+            "name": "actorKind",
+            "options": { "default": "none" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:xIy6nr_4W09Z",
+            "isOptional": true,
+            "name": "actorId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:RMfdOJ4RbIWm",
+            "isOptional": true,
+            "name": "actorLabel",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:bldGg33anvEz",
+            "isOptional": true,
+            "name": "systemActorKey",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:CUVjfrfkJZPG",
+            "isOptional": true,
+            "name": "entityType",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:Jb91EXIfFLu7",
+            "isOptional": true,
+            "name": "entityId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:QTEt1fDi_Smy",
+            "isOptional": true,
+            "name": "actionUrl",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:mAo3jHiQkNbG",
+            "isOptional": true,
+            "name": "seenAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:2G56OQmwh71k",
+            "isOptional": true,
+            "name": "readAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:JFmdLQ354ozs",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "createdAt" }
+            ],
+            "id": "model-index:Yms_8me0zuSq"
+          },
+          {
+            "fields": [{ "fieldRef": "recipientId" }, { "fieldRef": "readAt" }],
+            "id": "model-index:YP6V79HeWfzM"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:BkxJHEa0347n",
+            "foreignRelationName": "notifications",
+            "id": "model-local-relation:sipKVL3MdS37",
+            "modelRef": "User",
+            "name": "recipient",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:jPB_sFUdgAA8",
+            "foreignRelationName": "actorNotifications",
+            "id": "model-local-relation:airsmk6Wc0tV",
+            "modelRef": "User",
+            "name": "actor",
+            "onDelete": "SetNull",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
+          }
+        ]
+      },
+      "name": "Notification",
+      "service": { "transformers": [] }
+    },
+    {
       "featureRef": "utilities",
       "id": "model:TO3fGEXsMhzX",
       "model": {
@@ -1010,6 +1193,13 @@
       "version": "0.1.0"
     },
     {
+      "config": { "notificationsFeatureRef": "notifications" },
+      "id": "plugin:baseplate-dev_plugin-notifications_notifications",
+      "name": "notifications",
+      "packageName": "@baseplate-dev/plugin-notifications",
+      "version": "0.1.0"
+    },
+    {
       "config": { "pgBossOptions": { "deleteAfterDays": 7 } },
       "id": "plugin:baseplate-dev_plugin-queue_pg-boss",
       "name": "pg-boss",
@@ -1054,7 +1244,7 @@
       "packageScope": "",
       "portOffset": 5000
     },
-    "infrastructure": { "redis": { "enabled": false } },
+    "infrastructure": { "redis": { "enabled": true } },
     "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }
   }
 }

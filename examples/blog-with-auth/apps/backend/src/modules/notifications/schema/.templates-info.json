@@ -1,0 +1,27 @@
+{
+  "notification-content.field.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-content-field"
+  },
+  "notification-content.object-types.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-content-object-types"
+  },
+  "notification.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-mutations"
+  },
+  "notification.queries.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-queries"
+  },
+  "notification.subscriptions.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-subscriptions"
+  }
+}
