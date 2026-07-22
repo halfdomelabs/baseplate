@@ -18,6 +18,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
+import { appRuntimeImportsProvider } from '../app-runtime/index.js';
 import { fastifyServerConfigProvider } from '../fastify-server/index.js';
 import { loggerServiceConfigProvider } from '../logger-service/index.js';
 import { CORE_REQUEST_CONTEXT_GENERATED } from './generated/index.js';
@@ -93,6 +94,7 @@ export const requestContextGenerator = createGenerator({
               paths.requestContext,
             ),
           ),
+          options: tsCodeFragment('{ runtime }'),
         });
       },
     }),
@@ -101,8 +103,14 @@ export const requestContextGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         paths: CORE_REQUEST_CONTEXT_GENERATED.paths.provider,
         requestContextConfigValues: requestContextConfigValuesProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
       },
-      run({ typescriptFile, paths, requestContextConfigValues }) {
+      run({
+        typescriptFile,
+        paths,
+        requestContextConfigValues,
+        appRuntimeImports,
+      }) {
         const {
           fastifyRequestAugmentations,
           decoratorRegistrations,
@@ -116,6 +124,9 @@ export const requestContextGenerator = createGenerator({
                 template:
                   CORE_REQUEST_CONTEXT_GENERATED.templates.requestContext,
                 destination: paths.requestContext,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 variables: {
                   TPL_FASTIFY_REQUEST_AUGMENTATIONS:
                     TsCodeUtils.mergeFragmentsAsInterfaceContent(

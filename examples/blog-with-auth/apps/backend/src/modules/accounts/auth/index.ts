@@ -1,4 +1,4 @@
-import { flattenAppModule } from '@src/utils/app-modules.js';
+import { defineAppModule } from '@src/utils/app-modules.js';
 
 import { passwordModule } from './password/index.js';
 import { authPlugin } from './plugins/auth.plugin.js';
@@ -12,7 +12,7 @@ import './schema/user-session.queries.js';
 /* TPL_IMPORTS:END */
 
 export const /* TPL_MODULE_NAME:START */ authModule /* TPL_MODULE_NAME:END */ =
-    flattenAppModule(
+    defineAppModule(
       /* TPL_MODULE_CONTENTS:START */ {
         children: [passwordModule],
         plugins: [authPlugin],

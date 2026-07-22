@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 
 import { CORE_REQUEST_SERVICE_CONTEXT_PATHS } from './template-paths.js';
@@ -29,6 +30,7 @@ const coreRequestServiceContextRenderers =
 
 const coreRequestServiceContextRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     paths: CORE_REQUEST_SERVICE_CONTEXT_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -37,7 +39,7 @@ const coreRequestServiceContextRenderersTask = createGeneratorTask({
     coreRequestServiceContextRenderers:
       coreRequestServiceContextRenderers.export(),
   },
-  run({ paths, serviceContextImports, typescriptFile }) {
+  run({ appRuntimeImports, paths, serviceContextImports, typescriptFile }) {
     return {
       providers: {
         coreRequestServiceContextRenderers: {
@@ -48,6 +50,7 @@ const coreRequestServiceContextRenderersTask = createGeneratorTask({
                   CORE_REQUEST_SERVICE_CONTEXT_TEMPLATES.requestServiceContext,
                 destination: paths.requestServiceContext,
                 importMapProviders: {
+                  appRuntimeImports,
                   serviceContextImports,
                 },
                 ...options,

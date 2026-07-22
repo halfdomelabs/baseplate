@@ -1,12 +1,15 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/generated/ts-import-providers.js';
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
 import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
 
 const index = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
   },
@@ -20,7 +23,10 @@ const index = createTsTemplateFile({
 
 const server = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: {
+    appModuleSetupImports: appModuleSetupImportsProvider,
+    appRuntimeImports: appRuntimeImportsProvider,
+  },
   name: 'server',
   source: {
     path: path.join(import.meta.dirname, '../templates/src/server.ts'),

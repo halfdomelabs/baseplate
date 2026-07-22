@@ -6,6 +6,7 @@ import {
 } from '@fastify/request-context';
 import fp from 'fastify-plugin';
 
+import type { AppRuntime } from '../utils/app-runtime.js';
 import type { RequestServiceContext } from '../utils/request-service-context.js';
 
 import { createContextFromRequest } from '../utils/request-service-context.js';
@@ -33,33 +34,35 @@ declare module 'fastify' {
   }
 }
 
-export const requestContextPlugin = fp(async (fastify) => {
-  await fastify.register(fastifyRequestContext);
+export const requestContextPlugin = fp<{ runtime: AppRuntime }>(
+  async (fastify, opts) => {
+    await fastify.register(fastifyRequestContext);
 
-  fastify.decorateRequest('reqInfo');
-  /* TPL_DECORATOR_REGISTRATIONS:START */
-  fastify.decorateRequest('serviceContext');
-  /* TPL_DECORATOR_REGISTRATIONS:END */
+    fastify.decorateRequest('reqInfo');
+    /* TPL_DECORATOR_REGISTRATIONS:START */
+    fastify.decorateRequest('serviceContext');
+    /* TPL_DECORATOR_REGISTRATIONS:END */
 
-  fastify.addHook('onRequest', (req, _reply, done) => {
-    const reqInfo = {
-      id: req.id,
-      url: req.url,
-      method: req.method,
-      headers: req.headers,
-      ip: req.ip,
-    };
+    fastify.addHook('onRequest', (req, _reply, done) => {
+      const reqInfo = {
+        id: req.id,
+        url: req.url,
+        method: req.method,
+        headers: req.headers,
+        ip: req.ip,
+      };
 
-    requestContext.set('reqInfo', reqInfo);
-    req.reqInfo = reqInfo;
+      requestContext.set('reqInfo', reqInfo);
+      req.reqInfo = reqInfo;
 
-    done();
-  });
+      done();
+    });
 
-  /* TPL_EXTRA_HOOKS:START */
-  fastify.addHook('preHandler', (req, reply, done) => {
-    req.serviceContext = createContextFromRequest(req, reply);
-    done();
-  });
-  /* TPL_EXTRA_HOOKS:END */
-});
+    /* TPL_EXTRA_HOOKS:START */
+    fastify.addHook('preHandler', (req, reply, done) => {
+      req.serviceContext = createContextFromRequest(req, opts.runtime, reply);
+      done();
+    });
+    /* TPL_EXTRA_HOOKS:END */
+  },
+);

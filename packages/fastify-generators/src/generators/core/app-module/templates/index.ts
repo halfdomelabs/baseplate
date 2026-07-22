@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { flattenAppModule } from '%appModuleSetupImports';
+import { defineAppModule } from '%appModuleSetupImports';
 
 TPL_IMPORTS;
 
-export const TPL_MODULE_NAME = flattenAppModule(TPL_MODULE_CONTENTS);
+export const TPL_MODULE_NAME = defineAppModule(TPL_MODULE_CONTENTS);
