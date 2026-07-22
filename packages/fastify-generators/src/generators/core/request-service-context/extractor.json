@@ -6,6 +6,10 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
       "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        },
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"

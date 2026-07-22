@@ -75,7 +75,7 @@
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "3.0.0",
     "resolve-from": "5.0.0",
-    "semver": "^7.7.4",
+    "semver": "^7.8.5",
     "sort-package-json": "2.10.1",
     "ts-morph": "27.0.2",
     "yaml": "2.8.3",

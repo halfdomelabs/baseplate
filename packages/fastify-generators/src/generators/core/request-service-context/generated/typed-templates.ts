@@ -1,11 +1,15 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
 
 const requestServiceContext = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
   name: 'request-service-context',
   projectExports: {
     createContextFromRequest: {},

@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "app-modules"
   },
+  "app-runtime.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
+    "instanceData": {},
+    "template": "app-runtime"
+  },
   "authorizers.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
     "instanceData": {},
@@ -23,6 +28,11 @@
     "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
     "instanceData": {},
     "template": "request-service-context"
+  },
+  "runtime-services.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
+    "instanceData": {},
+    "template": "runtime-services"
   },
   "service-context.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/service-context",
