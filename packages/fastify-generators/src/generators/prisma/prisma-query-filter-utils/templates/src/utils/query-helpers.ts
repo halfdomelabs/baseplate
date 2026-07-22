@@ -7,9 +7,17 @@ import type { ModelPropName, WhereInput } from '%dataUtilsImports';
  * - `true` means "match everything" (no filter needed)
  * - `false` means "match nothing"
  * - `WhereInput` is a Prisma where clause
+ *
+ * `NonNullable` is deliberate and load-bearing for authorization: a role's
+ * `r.where` returns this type, and `undefined` must NOT be assignable. Otherwise
+ * `r.where(ctx => cond ? {...} : undefined)` would compile, and since
+ * `rolesToWhere` reads `undefined` as UNRESTRICTED, a role meant to deny would
+ * silently become allow-all. Authors must write `false` (deny), never
+ * `undefined`. (`WhereInput` itself stays nullable — it's extracted from
+ * Prisma's optional `.where` and used at call sites where "no filter" is valid.)
  */
 export type WhereResult<TModelName extends ModelPropName> =
-  | WhereInput<TModelName>
+  | NonNullable<WhereInput<TModelName>>
   | boolean;
 
 /**
@@ -37,12 +45,12 @@ export const queryHelpers = {
     if (clauses.includes(true)) return true;
 
     const filtered = clauses.filter(
-      (c): c is WhereInput<TModelName> => c !== false,
+      (c): c is NonNullable<WhereInput<TModelName>> => c !== false,
     );
 
     if (filtered.length === 0) return false;
     if (filtered.length === 1) return filtered[0];
-    return { OR: filtered } as WhereInput<TModelName>;
+    return { OR: filtered } as NonNullable<WhereInput<TModelName>>;
   },
 
   /**
@@ -60,11 +68,11 @@ export const queryHelpers = {
     if (clauses.includes(false)) return false;
 
     const filtered = clauses.filter(
-      (c): c is WhereInput<TModelName> => c !== true,
+      (c): c is NonNullable<WhereInput<TModelName>> => c !== true,
     );
 
     if (filtered.length === 0) return true;
     if (filtered.length === 1) return filtered[0];
-    return { AND: filtered } as WhereInput<TModelName>;
+    return { AND: filtered } as NonNullable<WhereInput<TModelName>>;
   },
 };

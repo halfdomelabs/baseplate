@@ -10,9 +10,9 @@
       "projectExports": { "RequestInfo": { "isTypeOnly": true } },
       "sourceFile": "src/plugins/request-context.ts",
       "variables": {
-        "TPL_FASTIFY_REQUEST_AUGMENTATIONS": {},
         "TPL_DECORATOR_REGISTRATIONS": {},
-        "TPL_EXTRA_HOOKS": {}
+        "TPL_EXTRA_HOOKS": {},
+        "TPL_FASTIFY_REQUEST_AUGMENTATIONS": {}
       }
     }
   }
