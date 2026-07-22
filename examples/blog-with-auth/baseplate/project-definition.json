@@ -80,6 +80,7 @@
       },
       "description": "admin",
       "devPort": 5030,
+      "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
       "title": "Blog Admin",

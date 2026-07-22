@@ -53,6 +53,9 @@ importers:
       graphql:
         specifier: 16.14.0
         version: 16.14.0
+      graphql-sse:
+        specifier: 2.6.0
+        version: 2.6.0(graphql@16.14.0)
       loglevel:
         specifier: 1.9.1
         version: 1.9.1
@@ -3771,6 +3774,12 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+
+  graphql-sse@2.6.0:
+    resolution: {integrity: sha512-BXT5Rjv9UFunjQsmN9WWEIq+TFNhgYibgwo1xkXLxzguQVyOd6paJ4v5DlL9K5QplS0w74bhF+aUiqaGXZBaug==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      graphql: '>=0.11 <=16'
 
   graphql-tag@2.12.6:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
@@ -9455,6 +9464,10 @@ snapshots:
     dependencies:
       graphql: 16.11.0
       tslib: 2.8.1
+
+  graphql-sse@2.6.0(graphql@16.14.0):
+    dependencies:
+      graphql: 16.14.0
 
   graphql-tag@2.12.6(graphql@16.14.0):
     dependencies:

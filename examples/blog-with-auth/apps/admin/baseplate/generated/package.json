@@ -45,6 +45,7 @@
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "graphql": "16.14.0",
+    "graphql-sse": "2.6.0",
     "loglevel": "1.9.1",
     "nanoid": "5.1.6",
     "react": "19.1.0",
