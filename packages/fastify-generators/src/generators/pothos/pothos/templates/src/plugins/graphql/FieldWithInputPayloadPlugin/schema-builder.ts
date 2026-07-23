@@ -42,6 +42,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     return payload;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- required depending on which Pothos plugins are enabled
   const fieldRef = this.field({
     args: {
       ...args,
