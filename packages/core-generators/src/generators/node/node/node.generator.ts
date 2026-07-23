@@ -54,9 +54,7 @@ const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
   /**
    * The scripts for the project
    */
-  scripts: t.mapFromObj<string>({
-    preinstall: 'npx only-allow pnpm',
-  }),
+  scripts: t.mapFromObj<string>({}),
   /**
    * The files that the package.json will have
    */

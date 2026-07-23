@@ -157,7 +157,6 @@ export default {
     '**/string-merge-algorithms/tests/**',
     '**/generated/**',
   ],
-  ignoreBinaries: ['only-allow'],
   ignoreDependencies: [
     // we're not using vitest coverage
     '@vitest/coverage-v8',
