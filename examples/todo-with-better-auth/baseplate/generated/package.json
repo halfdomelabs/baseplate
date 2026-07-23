@@ -12,7 +12,6 @@
     "build:affected": "turbo run build --affected",
     "check": "turbo run lint prettier:check test typecheck --affected --continue",
     "dev": "turbo run dev gql:watch watch",
-    "preinstall": "npx only-allow pnpm",
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
