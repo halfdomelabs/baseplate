@@ -78,13 +78,9 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
-            let resolveFunction: TsCodeFragment;
-
-            if (modelPolicy) {
-              resolveFunction = tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`;
-            } else {
-              resolveFunction = tsTemplate`async () => ${prismaModelFragment}.count()`;
-            }
+            const resolveFunction: TsCodeFragment = modelPolicy
+              ? tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
+              : tsTemplate`async () => ${prismaModelFragment}.count()`;
 
             const options = {
               ...sortObjectKeys(customFields.value()),

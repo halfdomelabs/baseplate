@@ -80,13 +80,9 @@ export const pothosPrismaListQueryGenerator = createGenerator({
 
             const zFragment = TsCodeUtils.importFragment('z', 'zod');
 
-            let resolveFunction: TsCodeFragment;
-
-            if (modelPolicy) {
-              resolveFunction = tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx), skip: skip ?? undefined, take: take ?? undefined })`;
-            } else {
-              resolveFunction = tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
-            }
+            const resolveFunction: TsCodeFragment = modelPolicy
+              ? tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx), skip: skip ?? undefined, take: take ?? undefined })`
+              : tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
 
             const options = {
               type: `[${quot(modelName)}]`,

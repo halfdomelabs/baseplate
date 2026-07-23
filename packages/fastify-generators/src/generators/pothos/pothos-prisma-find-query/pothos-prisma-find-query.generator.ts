@@ -126,44 +126,40 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
 
             const primaryKeyFieldName = getModelIdFieldName(modelOutput);
 
-            let resolveFunction: TsCodeFragment;
-
             const idPart =
               primaryKeyFieldName === primaryKeyDefinition.name
                 ? primaryKeyFieldName
                 : `${primaryKeyFieldName}: ${primaryKeyDefinition.name}`;
 
-            if (modelPolicy) {
-              // Policy-gated read: compose the read filter INTO the unique
-              // selector via `read.whereUnique`, so `findUniqueOrThrow` still
-              // takes a unique input and an unreadable/absent row → P2025 → 404
-              // (existence hidden). `.catch(throwIfPrismaNotFound(...))` maps it.
-              resolveFunction = TsCodeUtils.formatFragment(
-                `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: READ_WHERE_UNIQUE(ctx, { ID_PART })}).catch(THROW_NOT_FOUND(NOT_FOUND_MSG))`,
-                {
-                  ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
-                  MODEL: prismaOutput.getPrismaModelFragment(modelName),
-                  ID_PART: idPart,
-                  READ_WHERE_UNIQUE:
-                    modelPolicy.getActionWhereUniqueFragment('read'),
-                  THROW_NOT_FOUND:
-                    errorHandlerImports.throwIfPrismaNotFound.fragment(),
-                  NOT_FOUND_MSG: quot(`${modelName} not found`),
-                },
-              );
-            } else {
-              resolveFunction = TsCodeUtils.formatFragment(
-                `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
-                {
-                  ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
-                  MODEL: prismaOutput.getPrismaModelFragment(modelName),
-                  WHERE_CLAUSE:
-                    primaryKeyFieldName === primaryKeyDefinition.name
-                      ? `{ ${primaryKeyFieldName} }`
-                      : `{ ${primaryKeyFieldName}: ${primaryKeyDefinition.name} }`,
-                },
-              );
-            }
+            // Policy-gated read: compose the read filter INTO the unique selector
+            // via `read.whereUnique`, so `findUniqueOrThrow` still takes a unique
+            // input and an unreadable/absent row → P2025 → 404 (existence hidden).
+            // `.catch(throwIfPrismaNotFound(...))` maps it. No policy → plain find.
+            const resolveFunction: TsCodeFragment = modelPolicy
+              ? TsCodeUtils.formatFragment(
+                  `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: READ_WHERE_UNIQUE(ctx, { ID_PART })}).catch(THROW_NOT_FOUND(NOT_FOUND_MSG))`,
+                  {
+                    ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
+                    MODEL: prismaOutput.getPrismaModelFragment(modelName),
+                    ID_PART: idPart,
+                    READ_WHERE_UNIQUE:
+                      modelPolicy.getActionWhereUniqueFragment('read'),
+                    THROW_NOT_FOUND:
+                      errorHandlerImports.throwIfPrismaNotFound.fragment(),
+                    NOT_FOUND_MSG: quot(`${modelName} not found`),
+                  },
+                )
+              : TsCodeUtils.formatFragment(
+                  `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
+                  {
+                    ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
+                    MODEL: prismaOutput.getPrismaModelFragment(modelName),
+                    WHERE_CLAUSE:
+                      primaryKeyFieldName === primaryKeyDefinition.name
+                        ? `{ ${primaryKeyFieldName} }`
+                        : `{ ${primaryKeyFieldName}: ${primaryKeyDefinition.name} }`,
+                  },
+                );
 
             const options = {
               type: quot(modelName),

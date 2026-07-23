@@ -110,16 +110,14 @@ export const prismaDataDeleteGenerator = createGenerator({
               ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
               : '';
 
-            let bodyFragment;
-            if (usesAtomicAuth) {
-              bodyFragment = tsTemplate`
+            const bodyFragment = usesAtomicAuth
+              ? tsTemplate`
                 const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
                   where: ${modelPolicy.getActionWhereUniqueFragment('delete')}(context, where),
                   ...query,
                 }).catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}));
-              `;
-            } else {
-              bodyFragment = tsTemplate`
+              `
+              : tsTemplate`
                 ${authFragment}
 
                 const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
@@ -127,7 +125,6 @@ export const prismaDataDeleteGenerator = createGenerator({
                   ...query,
                 });
               `;
-            }
 
             // Generate the delete function
             const deleteFunction = tsTemplate`
