@@ -8,6 +8,7 @@ export const fastifyTypescriptTask = createGeneratorTask({
   run({ typescriptSetup }) {
     typescriptSetup.compilerOptions.set({
       outDir: 'dist',
+      rootDir: 'src',
       declaration: true,
       paths: {
         '@src/*': ['./src/*'],
@@ -23,6 +24,7 @@ export const fastifyTypescriptTask = createGeneratorTask({
       resolveJsonModule: true,
       sourceMap: true,
       skipLibCheck: true,
+      types: ['node'],
     });
   },
 });

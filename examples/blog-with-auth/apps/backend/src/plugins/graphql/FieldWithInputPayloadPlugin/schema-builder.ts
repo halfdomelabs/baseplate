@@ -34,8 +34,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     for (const key of Object.keys(payload)) {
       payload[key].onFirstUse((cfg) => {
         if (cfg.kind === 'Object' && !cfg.resolve) {
-          cfg.resolve = (parent) =>
-            (parent as Record<string, unknown>)[key] as Readonly<unknown>;
+          cfg.resolve = (parent) => (parent as Record<string, unknown>)[key];
         }
       });
     }
@@ -43,6 +42,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     return payload;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- required depending on which Pothos plugins are enabled
   const fieldRef = this.field({
     args: {
       ...args,

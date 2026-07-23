@@ -73,16 +73,9 @@ export function EmbeddedListFieldController<
       {...rest}
       error={error?.message}
       onChange={(value) => {
-        field.onChange(value as FieldPathValue<TFieldValues, TName>);
+        field.onChange(value);
       }}
-      value={
-        field.value as (FieldPathValue<
-          TFieldValues,
-          TName
-        > extends (infer InputType)[]
-          ? InputType
-          : never)[]
-      }
+      value={field.value}
     />
   );
 }

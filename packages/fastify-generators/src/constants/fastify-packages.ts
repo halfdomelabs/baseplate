@@ -64,7 +64,7 @@ export const FASTIFY_PACKAGES = {
   zod: '4.3.6',
 
   // Testing
-  'vitest-mock-extended': '3.1.0',
+  'vitest-mock-extended': '3.1.1',
   'pg-connection-string': '2.6.4',
 
   // Auth

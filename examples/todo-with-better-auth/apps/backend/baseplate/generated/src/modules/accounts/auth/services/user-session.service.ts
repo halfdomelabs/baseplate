@@ -1,4 +1,4 @@
-import type { FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import type { AuthUserSessionInfo } from '../types/auth-session.types.js';
 import type { UserSessionService } from '../types/user-session.types.js';
@@ -23,10 +23,13 @@ export class BetterAuthUserSessionService implements UserSessionService {
    * Retrieves the user session information from the request.
    *
    * @param req - The Fastify request object containing the cookies.
+   * @param _reply - Unused for Better Auth cookie-based sessions.
    * @returns A promise that resolves to the authenticated user session information or undefined if no session.
    */
   async getSessionInfoFromRequest(
     req: FastifyRequest,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- must be accepted to satisfy UserSessionService but is unused for Better Auth cookie-based sessions
+    _reply?: FastifyReply,
   ): Promise<AuthUserSessionInfo | undefined> {
     const session = await auth.api.getSession({
       headers: toWebHeaders(req.headers),
