@@ -120,27 +120,14 @@ function buildQueriesFileForModel(
 
   const authorize = deriveQueryAuthorize(appBuilder, queries, isAuthEnabled);
 
-  // Query filter config: pass model name reference + role names when instance roles are present
-  const hasQueryFilter = queries.instanceRoles.length > 0;
-  const queryFilterRoles = hasQueryFilter
-    ? queries.instanceRoles.map((roleRef) => {
-        const authRole = model.authorizer.roles.find(
-          (r) => r.id === roleRef || r.name === roleRef,
-        );
-        if (!authRole) {
-          throw new Error(
-            `Instance role '${roleRef}' not found in model '${model.name}' authorizer roles.`,
-          );
-        }
-        return authRole.name;
-      })
-    : [];
-
-  // Global roles that bypass the query filter entirely (e.g., admin sees all records)
-  const queryFilterBypassRoles =
-    isAuthEnabled && hasQueryFilter
-      ? queries.globalRoles.map((r) => appBuilder.nameFromId(r))
-      : [];
+  // The policy encodes the whole read grant (global + instance roles); reads
+  // filter through `policy.read.where`. A policy exists whenever the model
+  // declares authorizer roles. For a global-only read the filter is a no-op
+  // (`read.where` returns unrestricted when the global grant is satisfied), so
+  // referencing the policy uniformly is correct and simpler than the old
+  // instance-roles-only query filter.
+  const policyRef =
+    isAuthEnabled && model.authorizer.roles.length > 0 ? model.name : undefined;
 
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
@@ -152,9 +139,7 @@ function buildQueriesFileForModel(
             modelName: model.name,
             hasPrimaryKeyInputType:
               ModelUtils.getModelIdFields(model).length > 1,
-            queryFilterRef: hasQueryFilter ? model.name : undefined,
-            queryFilterRoles,
-            queryFilterBypassRoles,
+            policyRef,
             children: {
               authorize,
             },
@@ -164,9 +149,7 @@ function buildQueriesFileForModel(
         ? pothosPrismaListQueryGenerator({
             order: 1,
             modelName: model.name,
-            queryFilterRef: hasQueryFilter ? model.name : undefined,
-            queryFilterRoles,
-            queryFilterBypassRoles,
+            policyRef,
             children: {
               authorize,
             },
@@ -177,9 +160,7 @@ function buildQueriesFileForModel(
           ? pothosPrismaCountQueryGenerator({
               order: 2,
               modelName: model.name,
-              queryFilterRef: hasQueryFilter ? model.name : undefined,
-              queryFilterRoles,
-              queryFilterBypassRoles,
+              policyRef,
               children: {
                 authorize,
               },

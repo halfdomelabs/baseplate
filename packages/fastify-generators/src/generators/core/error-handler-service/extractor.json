@@ -36,7 +36,12 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
       "group": "utils",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/utils/http-errors.ts",
       "projectExports": {
         "BadRequestError": {},
@@ -44,6 +49,7 @@
         "HttpError": {},
         "InternalServerError": {},
         "NotFoundError": {},
+        "throwIfPrismaNotFound": {},
         "TooManyRequestsError": {},
         "UnauthorizedError": {}
       },

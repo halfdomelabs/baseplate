@@ -7,7 +7,9 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/generated/ts-import-providers.js';
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
+import { prismaQueryFilterUtilsImportsProvider } from '#src/generators/prisma/prisma-query-filter-utils/generated/ts-import-providers.js';
 
 import { PRISMA_PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
 import { PRISMA_PRISMA_AUTHORIZER_UTILS_TEMPLATES } from './typed-templates.js';
@@ -36,6 +38,8 @@ const prismaPrismaAuthorizerUtilsRenderersTask = createGeneratorTask({
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: PRISMA_PRISMA_AUTHORIZER_UTILS_PATHS.provider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaQueryFilterUtilsImports: prismaQueryFilterUtilsImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
@@ -48,6 +52,8 @@ const prismaPrismaAuthorizerUtilsRenderersTask = createGeneratorTask({
     dataUtilsImports,
     errorHandlerServiceImports,
     paths,
+    prismaGeneratedImports,
+    prismaQueryFilterUtilsImports,
     serviceContextImports,
     typescriptFile,
   }) {
@@ -63,6 +69,8 @@ const prismaPrismaAuthorizerUtilsRenderersTask = createGeneratorTask({
                   authRolesImports,
                   dataUtilsImports,
                   errorHandlerServiceImports,
+                  prismaGeneratedImports,
+                  prismaQueryFilterUtilsImports,
                   serviceContextImports,
                 },
                 ...options,

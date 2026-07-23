@@ -14,7 +14,7 @@ import {
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { prismaModelAuthorizerProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
+import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
@@ -77,7 +77,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
         pothosTypeFile: pothosTypesFileProvider,
         pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
         pothosAuth: pothosAuthProvider.dependency().optional(),
-        modelAuthorizer: prismaModelAuthorizerProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(modelName),
       },
@@ -93,7 +93,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
         pothosTypeFile,
         pothosSchemaBaseTypes,
         pothosAuth,
-        modelAuthorizer,
+        modelPolicy,
       }) {
         const model = prismaOutput.getPrismaModel(modelName);
 
@@ -128,12 +128,12 @@ export const pothosPrismaObjectGenerator = createGenerator({
 
           const instanceRoleFragments = fieldAuth.instanceRoles.map(
             (roleName) => {
-              if (!modelAuthorizer) {
+              if (!modelPolicy) {
                 throw new Error(
-                  `Field '${fieldName}' on model '${modelName}' references instance role '${roleName}' but no authorizer is configured for this model.`,
+                  `Field '${fieldName}' on model '${modelName}' references instance role '${roleName}' but no policy is configured for this model.`,
                 );
               }
-              return modelAuthorizer.getRoleFragment(roleName);
+              return modelPolicy.getRoleCheckFragment(roleName);
             },
           );
 

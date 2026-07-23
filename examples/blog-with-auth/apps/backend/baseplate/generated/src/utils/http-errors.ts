@@ -1,3 +1,5 @@
+import { Prisma } from '../generated/prisma/client.js';
+
 export class HttpError extends Error {
   constructor(
     message: string,
@@ -73,4 +75,22 @@ export class InternalServerError extends HttpError {
   ) {
     super(message, code, extraData, 500);
   }
+}
+
+/**
+ * A `.catch` handler that maps Prisma's "record not found" (`P2025`) to a
+ * `NotFoundError`, re-throwing everything else untouched.
+ */
+export function throwIfPrismaNotFound(
+  message: string,
+): (error: unknown) => never {
+  return (error: unknown): never => {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      throw new NotFoundError(message);
+    }
+    throw error;
+  };
 }

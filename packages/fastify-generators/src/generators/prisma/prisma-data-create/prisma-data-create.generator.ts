@@ -20,6 +20,7 @@ import { buildTransformOperationParts } from '../_shared/build-data-helpers/buil
 import { generateAuthorizationStatements } from '../_shared/build-data-helpers/generate-authorization-statements.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
+import { prismaModelPolicyProvider } from '../prisma-model-authorizer/index.js';
 import {
   prismaImportsProvider,
   prismaOutputProvider,
@@ -54,6 +55,9 @@ export const prismaDataCreateGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
         serviceContextImports: serviceContextImportsProvider,
+        modelPolicy: prismaModelPolicyProvider
+          .dependency()
+          .optionalReference(modelName),
       },
       run({
         serviceFile,
@@ -63,6 +67,7 @@ export const prismaDataCreateGenerator = createGenerator({
         prismaImports,
         authorizerImports,
         serviceContextImports,
+        modelPolicy,
       }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
@@ -95,14 +100,22 @@ export const prismaDataCreateGenerator = createGenerator({
             });
             const { hasTransformFields } = parts;
 
-            // Generate authorization
-            const { fragment: authFragment } = generateAuthorizationStatements({
-              modelName,
-              methodType: 'Create',
-              globalRoles,
-              modelAuthorizer: undefined,
-              authorizerImports,
-            });
+            // Generate authorization. `create` is a row-less principal check:
+            // when a policy exists it routes through `policy.create.checkGlobalRoles`
+            // (single source of truth — the role list lives in the policy);
+            // otherwise it falls back to a bare `checkGlobalAuthorization`.
+            const hasGlobalGrant =
+              globalRoles != null && globalRoles.length > 0;
+            const authFragment =
+              modelPolicy != null && hasGlobalGrant
+                ? tsTemplate`${modelPolicy.getActionCheckGlobalRolesFragment('create')}(context);`
+                : generateAuthorizationStatements({
+                    modelName,
+                    methodType: 'Create',
+                    globalRoles,
+                    modelPolicy: undefined,
+                    authorizerImports,
+                  }).fragment;
 
             // Extract transformer entries (guaranteed defined when hasTransformFields is true)
             const transformersObject =
@@ -114,8 +127,10 @@ export const prismaDataCreateGenerator = createGenerator({
                 ? 'data,'
                 : tsTemplate`data: ${parts.prismaDataFragment},`;
 
-            // Context is always needed for transforms; for scalar-only, only when auth is present
-            const needsContext = hasTransformFields || authFragment !== '';
+            // Context is always needed for transforms; for scalar-only, only when
+            // auth is present (a non-empty fragment or the checkGlobalRoles call).
+            const hasAuth = authFragment !== '';
+            const needsContext = hasTransformFields || hasAuth;
             const contextParam = needsContext ? 'context,' : '';
             const contextType = needsContext
               ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`

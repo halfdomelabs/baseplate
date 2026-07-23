@@ -7,7 +7,9 @@ import type {
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
+
+import { userPolicy } from '../authorizers/user.policy.js';
 
 const userFieldSchemas = z.object({
   email: z.string().nullish(),
@@ -31,7 +33,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
+  userPolicy.create.checkGlobalRoles(context);
 
   const result = await prisma.user.create({
     data,
@@ -54,13 +56,13 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
-
-  const result = await prisma.user.update({
-    where,
-    data,
-    ...query,
-  });
+  const result = await prisma.user
+    .update({
+      where: userPolicy.update.whereUnique(context, where),
+      data,
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('User not found'));
 
   return result as GetResult<'user', TQuery>;
 }
@@ -74,12 +76,12 @@ export async function deleteUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  checkGlobalAuthorization(context, ['admin']);
-
-  const result = await prisma.user.delete({
-    where,
-    ...query,
-  });
+  const result = await prisma.user
+    .delete({
+      where: userPolicy.delete.whereUnique(context, where),
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('User not found'));
 
   return result as GetResult<'user', TQuery>;
 }

@@ -3,6 +3,7 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { lowercaseFirstChar, quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { serviceFileProvider } from '#src/generators/core/index.js';
 import {
   contextKind,
@@ -20,7 +21,7 @@ import { generateAuthorizationStatements } from '../_shared/build-data-helpers/g
 import { generateWhereType } from '../_shared/build-data-helpers/generate-where-type.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
+import { prismaModelPolicyProvider } from '../prisma-model-authorizer/index.js';
 import {
   prismaImportsProvider,
   prismaOutputProvider,
@@ -54,8 +55,9 @@ export const prismaDataDeleteGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
+        errorHandlerImports: errorHandlerServiceImportsProvider,
         serviceContextImports: serviceContextImportsProvider,
-        modelAuthorizer: prismaModelAuthorizerProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(modelName),
       },
@@ -66,8 +68,9 @@ export const prismaDataDeleteGenerator = createGenerator({
         prismaOutput,
         prismaImports,
         authorizerImports,
+        errorHandlerImports,
         serviceContextImports,
-        modelAuthorizer,
+        modelPolicy,
       }) {
         return {
           build: () => {
@@ -81,23 +84,47 @@ export const prismaDataDeleteGenerator = createGenerator({
                 methodType: 'Delete',
                 globalRoles,
                 instanceRoles,
-                modelAuthorizer,
+                modelPolicy,
                 authorizerImports,
               });
 
-            // Fetch existing item if needed for instance auth
-            const existingItemFragment = hasInstanceAuth
-              ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
-              : '';
-
             const whereType = generateWhereType(prismaModel);
 
-            // Only include context parameter when authorization is needed
-            const hasAuth = authFragment !== '';
+            // A policy-backed delete is atomic: compose the grant into the unique
+            // selector via `policy.delete.whereUnique`, whether the grant is
+            // instance-level (per-row filter → P2025 → 404 hides existence) or
+            // global-only (admin passes untouched; non-admin throws 403 before
+            // the query). One query, no separate fetch + check. Applies whenever a
+            // policy exists and the action has any grant; global-only models with
+            // no policy keep the plain `checkGlobalAuthorization` fallback.
+            const hasAnyGrant =
+              hasInstanceAuth ||
+              (globalRoles != null && globalRoles.length > 0);
+            const usesAtomicAuth = hasAnyGrant && modelPolicy != null;
+
+            // Context is needed whenever any auth runs (atomic whereUnique reads
+            // `context`, and the non-atomic path calls checkGlobalAuthorization).
+            const hasAuth = authFragment !== '' || usesAtomicAuth;
             const contextParam = hasAuth ? 'context,' : '';
             const contextType = hasAuth
               ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
               : '';
+
+            const bodyFragment = usesAtomicAuth
+              ? tsTemplate`
+                const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
+                  where: ${modelPolicy.getActionWhereUniqueFragment('delete')}(context, where),
+                  ...query,
+                }).catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}));
+              `
+              : tsTemplate`
+                ${authFragment}
+
+                const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
+                  where,
+                  ...query,
+                });
+              `;
 
             // Generate the delete function
             const deleteFunction = tsTemplate`
@@ -110,13 +137,7 @@ export const prismaDataDeleteGenerator = createGenerator({
                 query?: TQuery;
                 ${contextType}
               }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
-                ${existingItemFragment}
-                ${authFragment}
-
-                const result = await ${prismaImports.prisma.fragment()}.${modelVar}.delete({
-                  where,
-                  ...query,
-                });
+                ${bodyFragment}
 
                 return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
               }

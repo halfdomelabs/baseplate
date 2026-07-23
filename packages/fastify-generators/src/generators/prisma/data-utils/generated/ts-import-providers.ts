@@ -32,6 +32,7 @@ export const dataUtilsImportsSchema = createTsImportMapSchema({
   TransformerResult: { isTypeOnly: true },
   TransformPlan: { isTypeOnly: true },
   WhereInput: { isTypeOnly: true },
+  WhereUniqueInput: { isTypeOnly: true },
 });
 
 export type DataUtilsImportsProvider = TsImportMapProviderFromSchema<
@@ -69,6 +70,7 @@ const prismaDataUtilsImportsTask = createGeneratorTask({
           TransformerResult: paths.transformerTypes,
           TransformPlan: paths.transformerTypes,
           WhereInput: paths.prismaTypes,
+          WhereUniqueInput: paths.prismaTypes,
         }),
       },
     };

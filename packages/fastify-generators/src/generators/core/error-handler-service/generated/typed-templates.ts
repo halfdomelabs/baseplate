@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 
 const errorHandlerPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -35,7 +36,9 @@ const errorLogger = createTsTemplateFile({
 const httpErrors = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'utils',
-  importMapProviders: {},
+  importMapProviders: {
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
   name: 'http-errors',
   projectExports: {
     BadRequestError: {},
@@ -43,6 +46,7 @@ const httpErrors = createTsTemplateFile({
     HttpError: {},
     InternalServerError: {},
     NotFoundError: {},
+    throwIfPrismaNotFound: {},
     TooManyRequestsError: {},
     UnauthorizedError: {},
   },

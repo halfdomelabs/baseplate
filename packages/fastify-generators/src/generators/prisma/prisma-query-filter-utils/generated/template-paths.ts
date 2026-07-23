@@ -2,7 +2,6 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PrismaPrismaQueryFilterUtilsPaths {
-  utilsQueryFilters: string;
   utilsQueryHelpers: string;
 }
 
@@ -23,7 +22,6 @@ const prismaPrismaQueryFilterUtilsPathsTask = createGeneratorTask({
     return {
       providers: {
         prismaPrismaQueryFilterUtilsPaths: {
-          utilsQueryFilters: `${srcRoot}/utils/query-filters.ts`,
           utilsQueryHelpers: `${srcRoot}/utils/query-helpers.ts`,
         },
       },

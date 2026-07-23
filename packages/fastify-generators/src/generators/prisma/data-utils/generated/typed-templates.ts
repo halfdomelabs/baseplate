@@ -91,6 +91,7 @@ const prismaTypes = createTsTemplateFile({
     GetResult: { isTypeOnly: true },
     ModelPropName: { isTypeOnly: true },
     WhereInput: { isTypeOnly: true },
+    WhereUniqueInput: { isTypeOnly: true },
   },
   source: {
     path: path.join(
