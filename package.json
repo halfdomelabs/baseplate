@@ -14,7 +14,6 @@
     "check:full": "pnpm oxfmt:fix && turbo run lint prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-dev --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
-    "preinstall": "npx only-allow pnpm",
     "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",

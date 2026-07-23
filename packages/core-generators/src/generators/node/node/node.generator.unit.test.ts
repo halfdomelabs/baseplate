@@ -50,9 +50,7 @@ describe('nodeGenerator', () => {
           node: `^${NODE_VERSION}`,
           pnpm: `^${PNPM_VERSION.split('.').slice(0, 2).join('.')}.0`,
         },
-        scripts: {
-          preinstall: 'npx only-allow pnpm',
-        },
+        scripts: {},
       });
     });
 
