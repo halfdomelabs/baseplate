@@ -1,7 +1,7 @@
 import type {
   ServiceContext,
   ServiceContextWith,
-} from '@src/utils/service-context.js';
+} from '../utils/service-context.js';
 
 /**
  * An inert reference to a queue, carrying only its name and payload type.

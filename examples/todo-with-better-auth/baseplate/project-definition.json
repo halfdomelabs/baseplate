@@ -1957,7 +1957,7 @@
     },
     {
       "config": {
-        "emailFeatureRef": "feature:VhK6dxNqTz9m",
+        "emailFeatureRef": "emails",
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
       "id": "plugin:baseplate-dev_plugin-email_email",

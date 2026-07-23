@@ -110,6 +110,7 @@
     { "id": "feature:ffs0IFfakTk0", "name": "articles" },
     { "id": "feature:XM8fb3xFc7ve", "name": "auth" },
     { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:n85yd6FGQOeu", "name": "emails" },
     { "id": "feature:IFU3VXMq1CM7", "name": "utilities" }
   ],
   "isInitialized": true,
@@ -992,6 +993,7 @@
     },
     {
       "config": {
+        "emailFeatureRef": "emails",
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
       "id": "plugin:baseplate-dev_plugin-email_email",

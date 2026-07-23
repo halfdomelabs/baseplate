@@ -16,6 +16,10 @@
     "pathRootName": "routes-root"
   },
   {
+    "canonicalPath": "@/src/routes/emails",
+    "pathRootName": "routes-root"
+  },
+  {
     "canonicalPath": "@/src/routes/billing",
     "pathRootName": "routes-root"
   },

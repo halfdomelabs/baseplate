@@ -1,12 +1,5 @@
 {
   "name": "local-auth/core/auth-module",
-  "extractors": {
-    "ts": {
-      "importProviders": [
-        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
-      ]
-    }
-  },
   "templates": {
     "auth-role-enum": {
       "type": "ts",
@@ -41,14 +34,42 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
-        "queueServiceImportsProvider": {
-          "importName": "queueServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/queues/cleanup-auth-verification.queue.ts",
-      "referencedGeneratorTemplates": ["services-auth-verification"],
+      "projectExports": {
+        "cleanupAuthVerificationQueue": {
+          "isTypeOnly": false,
+          "name": "cleanupAuthVerificationQueue"
+        }
+      },
       "sourceFile": "module/queues/cleanup-auth-verification.queue.ts",
+      "variables": {}
+    },
+    "queues-cleanup-auth-verification-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/cleanup-auth-verification.worker.ts",
+      "projectExports": {
+        "cleanupAuthVerificationWorker": {
+          "isTypeOnly": false,
+          "name": "cleanupAuthVerificationWorker"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "queues-cleanup-auth-verification",
+        "services-auth-verification"
+      ],
+      "sourceFile": "module/queues/cleanup-auth-verification.worker.ts",
       "variables": {}
     },
     "schema-user-session-mutations": {
@@ -63,7 +84,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.mutations.ts",
-      "referencedGeneratorTemplates": ["user-session-service"],
       "sourceFile": "module/schema/user-session.mutations.ts",
       "variables": {}
     },
@@ -240,7 +260,12 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "projectExports": { "userSessionService": {} },
+      "projectExports": {
+        "CookieUserSessionService": {
+          "isTypeOnly": false,
+          "name": "CookieUserSessionService"
+        }
+      },
       "referencedGeneratorTemplates": [
         "cookie-signer",
         "session-cookie",

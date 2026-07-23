@@ -1,13 +1,12 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import {
-  packageScope,
   tsCodeFragment,
-  TsCodeUtils,
+  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
-import { configServiceProvider } from '@baseplate-dev/fastify-generators';
 import {
-  createConfigProviderTask,
+  appModuleConfigProvider,
+  configServiceProvider,
+} from '@baseplate-dev/fastify-generators';
+import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
@@ -17,19 +16,6 @@ import { z } from 'zod';
 import { QUEUE_CORE_QUEUES_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
-
-const [configTask, queueConfigProvider, queueConfigValuesProvider] =
-  createConfigProviderTask(
-    (t) => ({
-      queues: t.map<string, TsCodeFragment>(),
-    }),
-    {
-      prefix: 'queue',
-      configScope: packageScope,
-    },
-  );
-
-export { queueConfigProvider };
 
 /**
  * Generator for queue/core/queues
@@ -42,7 +28,6 @@ export const queuesGenerator = createGenerator({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     imports: GENERATED_TEMPLATES.imports.task,
-    config: configTask,
     configService: createProviderTask(
       configServiceProvider,
       (configService) => {
@@ -54,21 +39,28 @@ export const queuesGenerator = createGenerator({
         });
       },
     ),
+    appModuleConfig: createGeneratorTask({
+      dependencies: {
+        appModuleConfig: appModuleConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ appModuleConfig, paths }) {
+        appModuleConfig.moduleFields.set(
+          'queues',
+          tsCodeFragment(
+            'QueueHandlerBinding',
+            tsTypeImportBuilder(['QueueHandlerBinding']).from(paths.queueTypes),
+          ),
+        );
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
-        configValues: queueConfigValuesProvider,
       },
-      run({ renderers, configValues: { queues } }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              renderers.queueRegistry.render({
-                variables: {
-                  TPL_QUEUE_LIST: TsCodeUtils.mergeFragmentsAsArray(queues),
-                },
-              }),
-            );
             await builder.apply(
               renderers.queueTypes.render({
                 variables: {},

@@ -10,6 +10,7 @@ import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import { appRuntimeTestUtilsProvider } from '../app-runtime/index.js';
 import { CORE_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -77,8 +78,13 @@ export const serviceContextGenerator = createGenerator({
       dependencies: {
         serviceContextConfigValues: serviceContextConfigValuesProvider,
         renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.provider,
+        appRuntimeTestUtils: appRuntimeTestUtilsProvider,
       },
-      run({ serviceContextConfigValues: { contextFields }, renderers }) {
+      run({
+        serviceContextConfigValues: { contextFields },
+        renderers,
+        appRuntimeTestUtils,
+      }) {
         return {
           build: async (builder) => {
             const orderedContextArgs = sortBy(
@@ -170,6 +176,8 @@ export const serviceContextGenerator = createGenerator({
                       ? ''
                       : TsCodeUtils.template`${createContextArgs(true)} = {}`,
                   TPL_CREATE_TEST_OBJECT: testObject,
+                  TPL_TEST_RUNTIME_SERVICES:
+                    appRuntimeTestUtils.getTestRuntimeServicesFragment(),
                 },
               }),
             );

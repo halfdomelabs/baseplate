@@ -10,7 +10,7 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const userSessionConstants = createTsTemplateFile({
@@ -52,7 +52,6 @@ const schemaUserSessionMutations = createTsTemplateFile({
   group: 'module',
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-user-session-mutations',
-  referencedGeneratorTemplates: { userSessionService: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -143,13 +142,31 @@ export const moduleGroup = {
 
 const queuesCleanupAuthVerification = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { queueServiceImports: queueServiceImportsProvider },
+  importMapProviders: { queuesImports: queuesImportsProvider },
   name: 'queues-cleanup-auth-verification',
-  referencedGeneratorTemplates: { servicesAuthVerification: {} },
+  projectExports: { cleanupAuthVerificationQueue: { isTypeOnly: false } },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/module/queues/cleanup-auth-verification.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesCleanupAuthVerificationWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-cleanup-auth-verification-worker',
+  projectExports: { cleanupAuthVerificationWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: {
+    queuesCleanupAuthVerification: {},
+    servicesAuthVerification: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/cleanup-auth-verification.worker.ts',
     ),
   },
   variables: {},
@@ -188,7 +205,7 @@ const userSessionService = createTsTemplateFile({
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   name: 'user-session-service',
-  projectExports: { userSessionService: {} },
+  projectExports: { CookieUserSessionService: { isTypeOnly: false } },
   referencedGeneratorTemplates: {
     cookieSigner: {},
     sessionCookie: {},
@@ -252,6 +269,7 @@ export const LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   constantsGroup,
   moduleGroup,
   queuesCleanupAuthVerification,
+  queuesCleanupAuthVerificationWorker,
   servicesAuthVerification,
   userSessionService,
   utilsGroup,

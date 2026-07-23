@@ -43,9 +43,9 @@ export async function buildServer(
   /* TPL_PRE_PLUGIN_FRAGMENTS:END */
 
   /* TPL_PLUGINS:START */
-  await fastify.register(requestContextPlugin, { runtime });
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
+  await fastify.register(requestContextPlugin, { runtime });
   await fastify.register(bullMQPlugin, { runtime });
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);

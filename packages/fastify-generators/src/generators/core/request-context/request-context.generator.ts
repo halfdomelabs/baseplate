@@ -95,6 +95,7 @@ export const requestContextGenerator = createGenerator({
             ),
           ),
           options: tsCodeFragment('{ runtime }'),
+          orderPriority: 'EARLY',
         });
       },
     }),

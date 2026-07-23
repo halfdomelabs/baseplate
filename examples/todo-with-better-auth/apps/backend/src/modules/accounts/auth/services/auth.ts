@@ -28,11 +28,11 @@ export const cookiePrefix =
 
 /**
  * Dependencies `auth` needs at construction time, narrowed to exactly what it
- * uses - not the full {@link AppRuntime} - so this file only ever imports the
- * leaf `queue.types.ts` module, never `app-runtime.ts` itself. Pulling in
- * `AppRuntime` here would create a cycle: `RuntimeServices` would need to know
- * about `auth`'s type to expose it, while `auth`'s construction needs
- * `RuntimeServices`/`queues` to send email.
+ * uses - not the full AppRuntime - so this file only ever imports the leaf
+ * queue types module, never app-runtime.ts itself. Pulling in AppRuntime here
+ * would create a cycle: RuntimeServices would need to know about `auth`'s
+ * type to expose it, while `auth`'s construction needs RuntimeServices/queues
+ * to send email.
  */
 export interface AuthServiceDeps {
   queues: QueueService;
@@ -42,7 +42,7 @@ export type Auth = ReturnType<typeof buildAuth>;
 
 /**
  * Constructs a fresh {@link Auth} instance from the given deps. Called once
- * per {@link AppRuntime}, inside `createAppRuntime()`, and exposed as
+ * per AppRuntime, inside `createAppRuntime()`, and exposed as
  * `services.betterAuth` - not memoized here, since a runtime's services are
  * only ever built once for the runtime's lifetime.
  */

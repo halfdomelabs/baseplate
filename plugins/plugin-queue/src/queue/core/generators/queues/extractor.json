@@ -1,29 +1,33 @@
 {
   "name": "queue/core/queues",
   "templates": {
-    "queue-registry": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/constants/queues.constants.ts",
-      "projectExports": {
-        "QUEUE_REGISTRY": { "isTypeOnly": false, "name": "QUEUE_REGISTRY" }
-      },
-      "referencedGeneratorTemplates": ["queue-types"],
-      "sourceFile": "src/constants/queues.constants.ts",
-      "variables": { "TPL_QUEUE_LIST": {} }
-    },
     "queue-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/types/queue.types.ts",
       "projectExports": {
+        "bindQueueHandler": {},
+        "defineQueue": {},
         "EnqueueOptions": { "isTypeOnly": true },
-        "Queue": { "isTypeOnly": true },
-        "QueueDefinition": { "isTypeOnly": true },
+        "QueueHandlerBinding": { "isTypeOnly": true },
+        "QueueHandlerBindingConfig": { "isTypeOnly": true },
+        "QueueHandlerBindingInput": { "isTypeOnly": true },
+        "QueueInfo": { "isTypeOnly": true },
+        "QueueIntrospection": { "isTypeOnly": true },
         "QueueJob": { "isTypeOnly": true },
-        "RepeatableConfig": { "isTypeOnly": true }
+        "QueueJobHandler": { "isTypeOnly": true },
+        "QueueRuntime": { "isTypeOnly": true },
+        "QueueService": { "isTypeOnly": true },
+        "QueueToken": { "isTypeOnly": true },
+        "QueueWorkers": { "isTypeOnly": true },
+        "RepeatableConfig": { "isTypeOnly": true },
+        "ScheduledJob": { "isTypeOnly": true }
       },
       "sourceFile": "src/types/queue.types.ts",
       "variables": {}

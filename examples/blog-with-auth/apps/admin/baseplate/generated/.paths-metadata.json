@@ -10,6 +10,7 @@
     "pathRootName": "routes-root"
   },
   { "canonicalPath": "@/src/routes/utilities", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/emails", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/blogs", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
   { "canonicalPath": "@/src/routes/articles", "pathRootName": "routes-root" },

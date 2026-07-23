@@ -7,7 +7,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -57,6 +56,11 @@ const [
      * Fragments to be inserted before the plugins.
      */
     prePluginFragments: t.map<string, TsCodeFragment>(),
+    /**
+     * Options argument passed to `createAppRuntime()` at startup, e.g. for
+     * backend-specific runtime construction flags.
+     */
+    runtimeConstructionOptions: t.scalar<TsCodeFragment>(),
   }),
   {
     prefix: 'fastify-server',
@@ -79,15 +83,13 @@ export const fastifyServerGenerator = createGenerator({
         appModuleConfig: appModuleConfigProvider,
       },
       run({ appModuleConfig }) {
+        // `AppPlugin` is defined directly in app-modules.ts (the destination
+        // file this renders into), so a bare identifier is used instead of
+        // an import-carrying fragment - importing it from itself would be a
+        // self-import.
         appModuleConfig.moduleFields.set(
           'plugins',
-          tsCodeFragment(
-            '(FastifyPluginCallback | FastifyPluginAsync)',
-            tsTypeImportBuilder([
-              'FastifyPluginAsync',
-              'FastifyPluginCallback',
-            ]).from('fastify'),
-          ),
+          tsCodeFragment('AppPlugin'),
         );
       },
     }),
@@ -125,6 +127,7 @@ export const fastifyServerGenerator = createGenerator({
           prePluginFragments,
           initializerFragments,
           errorHandlerFunction = 'console.error',
+          runtimeConstructionOptions = tsCodeFragment(''),
         } = fastifyServerConfigValues;
 
         plugins.set('helmet', {
@@ -141,6 +144,7 @@ export const fastifyServerGenerator = createGenerator({
               renderers.index.render({
                 variables: {
                   TPL_LOG_ERROR: TsCodeUtils.template`${errorHandlerFunction}(err)`,
+                  TPL_RUNTIME_OPTIONS: runtimeConstructionOptions,
                 },
                 positionedHoistedFragments: [
                   ...initializerFragments.entries(),

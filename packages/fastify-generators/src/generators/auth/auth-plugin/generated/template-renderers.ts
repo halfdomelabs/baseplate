@@ -4,9 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { userSessionServiceImportsProvider } from '#src/generators/auth/_providers/user-session.js';
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
-import { userSessionTypesImportsProvider } from '#src/generators/auth/user-session-types/generated/ts-import-providers.js';
+import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/generated/ts-import-providers.js';
 
 import { AUTH_AUTH_PLUGIN_PATHS } from './template-paths.js';
 import { AUTH_AUTH_PLUGIN_TEMPLATES } from './typed-templates.js';
@@ -30,20 +29,13 @@ const authAuthPluginRenderers = createProviderType<AuthAuthPluginRenderers>(
 
 const authAuthPluginRenderersTask = createGeneratorTask({
   dependencies: {
+    appModuleSetupImports: appModuleSetupImportsProvider,
     authContextImports: authContextImportsProvider,
     paths: AUTH_AUTH_PLUGIN_PATHS.provider,
     typescriptFile: typescriptFileProvider,
-    userSessionServiceImports: userSessionServiceImportsProvider,
-    userSessionTypesImports: userSessionTypesImportsProvider,
   },
   exports: { authAuthPluginRenderers: authAuthPluginRenderers.export() },
-  run({
-    authContextImports,
-    paths,
-    typescriptFile,
-    userSessionServiceImports,
-    userSessionTypesImports,
-  }) {
+  run({ appModuleSetupImports, authContextImports, paths, typescriptFile }) {
     return {
       providers: {
         authAuthPluginRenderers: {
@@ -53,9 +45,8 @@ const authAuthPluginRenderersTask = createGeneratorTask({
                 template: AUTH_AUTH_PLUGIN_TEMPLATES.authPlugin,
                 destination: paths.authPlugin,
                 importMapProviders: {
+                  appModuleSetupImports,
                   authContextImports,
-                  userSessionServiceImports,
-                  userSessionTypesImports,
                 },
                 ...options,
               }),

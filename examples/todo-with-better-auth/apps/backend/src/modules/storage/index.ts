@@ -8,8 +8,8 @@ import './schema/file-input.input-type.js';
 import './schema/file.object-type.js';
 import './schema/file.queries.js';
 import './schema/presigned.mutations.js';
-/* TPL_IMPORTS:END */
 import './schema/public-url.field.js';
+/* TPL_IMPORTS:END */
 
 export const /* TPL_MODULE_NAME:START */ storageModule /* TPL_MODULE_NAME:END */ =
     defineAppModule(

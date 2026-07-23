@@ -6,10 +6,6 @@ import {
   packageScope,
 } from '@baseplate-dev/core-generators';
 import {
-  userSessionServiceImportsProvider,
-  userSessionServiceImportsSchema,
-} from '@baseplate-dev/fastify-generators';
-import {
   createGeneratorTask,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
@@ -17,9 +13,12 @@ import {
 import { BETTER_AUTH_BETTER_AUTH_MODULE_PATHS } from './template-paths.js';
 
 export const betterAuthModuleImportsSchema = createTsImportMapSchema({
-  auth: {},
+  Auth: { isTypeOnly: true },
+  AuthServiceDeps: { isTypeOnly: true },
   betterAuthPlugin: {},
+  buildAuth: {},
   cookiePrefix: {},
+  createBetterAuthUserSessionService: {},
   toWebHeaders: {},
 });
 
@@ -39,8 +38,6 @@ const betterAuthBetterAuthModuleImportsTask = createGeneratorTask({
   exports: {
     betterAuthModuleImports:
       betterAuthModuleImportsProvider.export(packageScope),
-    userSessionServiceImports:
-      userSessionServiceImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {
@@ -48,15 +45,14 @@ const betterAuthBetterAuthModuleImportsTask = createGeneratorTask({
         betterAuthModuleImports: createTsImportMap(
           betterAuthModuleImportsSchema,
           {
-            auth: paths.auth,
+            Auth: paths.auth,
+            AuthServiceDeps: paths.auth,
             betterAuthPlugin: paths.betterAuthPlugin,
+            buildAuth: paths.auth,
             cookiePrefix: paths.auth,
+            createBetterAuthUserSessionService: paths.userSessionService,
             toWebHeaders: paths.headersUtils,
           },
-        ),
-        userSessionServiceImports: createTsImportMap(
-          userSessionServiceImportsSchema,
-          { userSessionService: paths.userSessionService },
         ),
       },
     };

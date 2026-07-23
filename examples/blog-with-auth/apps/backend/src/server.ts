@@ -43,12 +43,12 @@ export async function buildServer(
   /* TPL_PLUGINS:START */
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
+  await fastify.register(requestContextPlugin, { runtime });
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);
   await fastify.register(pgBossPlugin, { runtime });
-  await fastify.register(requestContextPlugin, { runtime });
   /* TPL_PLUGINS:END */
 
   // register app plugins

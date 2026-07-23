@@ -7,7 +7,6 @@ import {
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
   requestServiceContextImportsProvider,
-  userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
@@ -111,7 +110,6 @@ const servicesUserPassword = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
     rateLimitImports: rateLimitImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
-    userSessionServiceImports: userSessionServiceImportsProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   name: 'services-user-password',

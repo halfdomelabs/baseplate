@@ -10,7 +10,7 @@ import { createSystemServiceContext } from '../utils/service-context.js';
 /**
  * Worker script for running queue workers standalone (outside the API
  * process). Constructs its own {@link AppRuntime} and disposes it on
- * shutdown, mirroring how {@link buildServer} manages the runtime for the API.
+ * shutdown, mirroring how `buildServer` manages the runtime for the API.
  */
 
 let runtime: AppRuntime | undefined;

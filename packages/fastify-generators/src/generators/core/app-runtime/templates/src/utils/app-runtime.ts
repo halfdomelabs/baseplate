@@ -11,9 +11,9 @@ import type { RuntimeServices } from '$runtimeServices';
  * enough for every execution path, including prisma-only seeds, to afford a
  * full service context.
  */
-
 export interface AppRuntime {
   readonly services: Readonly<RuntimeServices>;
+  TPL_RUNTIME_FIELDS;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -22,15 +22,13 @@ export interface AppRuntime {
   dispose(): Promise<void>;
 }
 
-export async function createAppRuntime(): Promise<AppRuntime> {
+export function createAppRuntime(TPL_OPTIONS_PARAM): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
 
-  // No plugins registered yet - delete this await once the first one adds a
-  // real one.
-  await Promise.resolve();
+  TPL_SERVICE_CONSTRUCTION;
 
-  const services: RuntimeServices = {};
+  const services: RuntimeServices = TPL_SERVICES_OBJECT;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -52,8 +50,7 @@ export async function createAppRuntime(): Promise<AppRuntime> {
     return disposePromise;
   }
 
-  return {
-    services,
-    dispose,
-  };
+  const runtime = TPL_RUNTIME_FIELD_VALUES;
+
+  return { ...runtime, services, dispose };
 }

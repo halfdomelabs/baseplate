@@ -9,15 +9,19 @@
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/emails/services/emails.service.ts",
+      "pathRootRelativePath": "{module-root}/services/emails.service.ts",
       "projectExports": {
         "sendEmail": { "isTypeOnly": false, "name": "sendEmail" },
         "sendRawEmail": { "isTypeOnly": false, "name": "sendRawEmail" }
       },
       "referencedGeneratorTemplates": ["emails-types", "send-email-queue"],
-      "sourceFile": "module/emails/services/emails.service.ts",
+      "sourceFile": "module/services/emails.service.ts",
       "variables": { "TPL_EMAIL_COMPONENT": {}, "TPL_RENDER_EMAIL": {} }
     },
     "emails-types": {
@@ -30,7 +34,7 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/emails/emails.types.ts",
+      "pathRootRelativePath": "{module-root}/emails.types.ts",
       "projectExports": {
         "EmailAdapter": { "isTypeOnly": true, "name": "EmailAdapter" },
         "EmailAttachment": { "isTypeOnly": true, "name": "EmailAttachment" },
@@ -41,10 +45,28 @@
           "name": "TransformedEmailMessage"
         }
       },
-      "sourceFile": "module/emails/emails.types.ts",
+      "sourceFile": "module/emails.types.ts",
       "variables": {}
     },
     "send-email-queue": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/send-email.queue.ts",
+      "projectExports": {
+        "sendEmailQueue": { "isTypeOnly": false, "name": "sendEmailQueue" }
+      },
+      "referencedGeneratorTemplates": ["emails-types"],
+      "sourceFile": "module/queues/send-email.queue.ts",
+      "variables": {}
+    },
+    "send-email-worker": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
@@ -53,17 +75,17 @@
           "importName": "loggerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
         },
-        "queueServiceImportsProvider": {
-          "importName": "queueServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/emails/queues/send-email.queue.ts",
+      "pathRootRelativePath": "{module-root}/queues/send-email.worker.ts",
       "projectExports": {
-        "sendEmailQueue": { "isTypeOnly": false, "name": "sendEmailQueue" }
+        "sendEmailWorker": { "isTypeOnly": false, "name": "sendEmailWorker" }
       },
-      "referencedGeneratorTemplates": ["emails-types"],
-      "sourceFile": "module/emails/queues/send-email.queue.ts",
+      "referencedGeneratorTemplates": ["send-email-queue"],
+      "sourceFile": "module/queues/send-email.worker.ts",
       "variables": { "TPL_EMAIL_ADAPTER": {} }
     }
   }

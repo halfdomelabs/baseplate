@@ -1,5 +1,37 @@
 // @ts-nocheck
 
+import type { RuntimeServices } from '%appRuntimeImports';
+import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
+
+/**
+ * The narrow view of `AppRuntime` module-contributed plugins receive as the
+ * `runtime` option - services only, never lifecycle (`dispose`) or any
+ * backend-specific control surface. `AppRuntime` structurally satisfies
+ * this, so the server passes it directly; no adapter is needed.
+ */
+export interface PluginRuntime {
+  readonly services: Readonly<RuntimeServices>;
+}
+
+/**
+ * A {@link PluginRuntime} narrowed to only the named services, for plugins
+ * that want an honest signature instead of accepting every service.
+ */
+export type PluginRuntimeWithServices<K extends keyof RuntimeServices> = Omit<
+  PluginRuntime,
+  'services'
+> & { readonly services: Readonly<Pick<RuntimeServices, K>> };
+
+/**
+ * A Fastify plugin registered through `AppModule.plugins`, receiving the
+ * {@link PluginRuntime} as its options. Plugins that don't need any services
+ * can ignore the option; plugins that do should narrow it with
+ * {@link PluginRuntimeWithServices} rather than accepting the full runtime.
+ */
+export type AppPlugin =
+  | FastifyPluginCallback<{ runtime: PluginRuntime }>
+  | FastifyPluginAsync<{ runtime: PluginRuntime }>;
+
 /**
  * A raw, unflattened module declaration. Feature modules declare this via
  * {@link defineAppModule} - only the root calls {@link flattenAppModule}.

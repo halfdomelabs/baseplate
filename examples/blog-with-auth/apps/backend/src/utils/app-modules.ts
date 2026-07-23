@@ -1,14 +1,13 @@
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
-import type { QueueHandlerBinding } from '@src/types/queue.types.js';
-
+import type { QueueHandlerBinding } from '../types/queue.types.js';
 import type { RuntimeServices } from './runtime-services.js';
 
 /**
- * The narrow view of {@link AppRuntime} module-contributed plugins receive as
- * the `runtime` option - services only, never lifecycle (`dispose`) or the
- * full queue-control surface. {@link AppRuntime} structurally satisfies this,
- * so the server passes it directly; no adapter is needed.
+ * The narrow view of `AppRuntime` module-contributed plugins receive as the
+ * `runtime` option - services only, never lifecycle (`dispose`) or any
+ * backend-specific control surface. `AppRuntime` structurally satisfies
+ * this, so the server passes it directly; no adapter is needed.
  */
 export interface PluginRuntime {
   readonly services: Readonly<RuntimeServices>;

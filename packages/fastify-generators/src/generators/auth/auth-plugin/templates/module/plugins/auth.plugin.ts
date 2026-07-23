@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import type { PluginRuntimeWithServices } from '%appModuleSetupImports';
 import type { AuthContext } from '%authContextImports';
-import type { UserSessionService } from '%userSessionTypesImports';
 
 import { createAuthContextFromSessionInfo } from '%authContextImports';
-import { userSessionService } from '%userSessionServiceImports';
 import { requestContext } from '@fastify/request-context';
 import fp from 'fastify-plugin';
 
@@ -20,20 +19,26 @@ declare module '@fastify/request-context' {
   }
 }
 
-export const authPlugin = fp((fastify, opts, done) => {
-  fastify.decorateRequest('auth');
+export const authPlugin = fp<{
+  runtime: PluginRuntimeWithServices<'userSession'>;
+}>(
+  (fastify, { runtime }, done) => {
+    const { userSession: userSessionService } = runtime.services;
 
-  fastify.addHook('onRequest', async (req, res) => {
-    const userSessionInfo = await (
-      userSessionService as UserSessionService
-    ).getSessionInfoFromRequest(req, res);
+    fastify.decorateRequest('auth');
 
-    const authContext = createAuthContextFromSessionInfo(userSessionInfo);
+    fastify.addHook('onRequest', async (req) => {
+      const userSessionInfo =
+        await userSessionService.getSessionInfoFromRequest(req);
 
-    req.auth = authContext;
+      const authContext = createAuthContextFromSessionInfo(userSessionInfo);
 
-    requestContext.set('userId', userSessionInfo?.userId);
-  });
+      req.auth = authContext;
 
-  done();
-});
+      requestContext.set('userId', userSessionInfo?.userId);
+    });
+
+    done();
+  },
+  { name: 'auth' },
+);

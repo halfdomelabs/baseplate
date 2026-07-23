@@ -31,7 +31,7 @@ export async function buildServer(
   // register app plugins
   const { plugins = [] } = flattenAppModule(TPL_ROOT_MODULE);
   for (const plugin of plugins) {
-    await fastify.register(plugin);
+    await fastify.register(plugin, { runtime });
   }
 
   return fastify;

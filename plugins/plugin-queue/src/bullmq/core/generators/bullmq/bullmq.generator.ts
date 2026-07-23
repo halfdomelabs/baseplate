@@ -1,15 +1,21 @@
 import {
   nodeProvider,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  appModuleImportsProvider,
+  appModuleSetupImportsProvider,
+  appRuntimeConfigProvider,
   fastifyOutputProvider,
   fastifyProvider,
   fastifyServerConfigProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import { queuesImportsProvider } from '#src/queue/core/generators/queues/index.js';
 
 import { BULLMQ_CORE_BULLMQ_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
@@ -39,6 +45,40 @@ export const bullmqGenerator = createGenerator({
             'bullMQPlugin',
             tsImportBuilder(['bullMQPlugin']).from(paths.bullmqPlugin),
           ),
+          options: tsCodeFragment('{ runtime }'),
+        });
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        appModuleImports: appModuleImportsProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
+        queuesImports: queuesImportsProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({
+        appRuntimeConfig,
+        appModuleImports,
+        appModuleSetupImports,
+        queuesImports,
+        paths,
+      }) {
+        appRuntimeConfig.services.set(
+          'queues',
+          queuesImports.QueueService.typeFragment(),
+        );
+        appRuntimeConfig.runtimeFields.set(
+          'queues',
+          queuesImports.QueueRuntime.typeFragment(),
+        );
+        appRuntimeConfig.construction.set('queues', {
+          orderPriority: 'EARLY',
+          fragment: TsCodeUtils.template`
+            const { queues: queueBindings = [] } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});
+            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.bullmqService)}(queueBindings);
+            disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
+          `,
         });
       },
     }),

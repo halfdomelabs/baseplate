@@ -19,6 +19,7 @@ export const emailModuleImportsSchema = createTsImportMapSchema({
   EmailSendOptions: { isTypeOnly: true },
   sendEmail: {},
   sendEmailQueue: {},
+  sendEmailWorker: {},
   sendRawEmail: {},
   TransformedEmailMessage: { isTypeOnly: true },
 });
@@ -49,6 +50,7 @@ const emailCoreEmailModuleImportsTask = createGeneratorTask({
           EmailSendOptions: paths.emailsTypes,
           sendEmail: paths.emailsService,
           sendEmailQueue: paths.sendEmailQueue,
+          sendEmailWorker: paths.sendEmailWorker,
           sendRawEmail: paths.emailsService,
           TransformedEmailMessage: paths.emailsTypes,
         }),

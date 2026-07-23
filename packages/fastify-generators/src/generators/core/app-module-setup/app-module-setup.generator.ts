@@ -13,6 +13,7 @@ import {
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { appRuntimeImportsProvider } from '../app-runtime/index.js';
 import { CORE_APP_MODULE_SETUP_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -47,9 +48,15 @@ export const appModuleSetupGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         appModuleConfigValues: appModuleConfigValuesProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
         paths: CORE_APP_MODULE_SETUP_GENERATED.paths.provider,
       },
-      run({ typescriptFile, appModuleConfigValues: { moduleFields }, paths }) {
+      run({
+        typescriptFile,
+        appModuleConfigValues: { moduleFields },
+        appRuntimeImports,
+        paths,
+      }) {
         return {
           build: async (builder) => {
             const moduleFieldsInterface = TsCodeUtils.mergeFragments(
@@ -78,6 +85,9 @@ export const appModuleSetupGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 template: CORE_APP_MODULE_SETUP_GENERATED.templates.appModules,
                 destination: paths.appModules,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 variables: {
                   TPL_MODULE_FIELDS: moduleFieldsInterface,
                   TPL_MODULE_INITIALIZER: moduleInitializer,

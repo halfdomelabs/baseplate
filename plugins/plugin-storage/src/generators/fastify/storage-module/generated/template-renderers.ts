@@ -14,7 +14,7 @@ import {
   prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
@@ -56,6 +56,16 @@ export interface FastifyStorageModuleRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFiles
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  queuesCleanUnusedFilesWorker: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFilesWorker
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -127,7 +137,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
-    queueServiceImports: queueServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
@@ -142,7 +152,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
-    queueServiceImports,
+    queuesImports,
     serviceContextImports,
     typescriptFile,
   }) {
@@ -188,7 +198,19 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFiles,
                 destination: paths.queuesCleanUnusedFiles,
                 importMapProviders: {
-                  queueServiceImports,
+                  queuesImports,
+                },
+                ...options,
+              }),
+          },
+          queuesCleanUnusedFilesWorker: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  FASTIFY_STORAGE_MODULE_TEMPLATES.queuesCleanUnusedFilesWorker,
+                destination: paths.queuesCleanUnusedFilesWorker,
+                importMapProviders: {
+                  queuesImports,
                 },
                 generatorPaths: paths,
                 ...options,

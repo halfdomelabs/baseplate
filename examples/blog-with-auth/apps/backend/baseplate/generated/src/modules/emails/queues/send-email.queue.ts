@@ -1,26 +1,10 @@
-import { logger } from '@src/services/logger.js';
-import { createQueue } from '@src/services/pg-boss.service.js';
+import { defineQueue } from '@src/types/queue.types.js';
 
 import type { TransformedEmailMessage } from '../emails.types.js';
 
-import { postmarkEmailAdapter } from '../services/postmark.service.js';
-
-interface SendEmailJobData {
+export interface SendEmailJobData {
   message: TransformedEmailMessage;
   template?: string;
 }
 
-export const sendEmailQueue = createQueue<SendEmailJobData>('send-email', {
-  handler: async (job) => {
-    const messageId =
-      await /* TPL_EMAIL_ADAPTER:START */ postmarkEmailAdapter /* TPL_EMAIL_ADAPTER:END */
-        .sendMail(job.data.message);
-    logger.info(
-      {
-        template: job.data.template,
-        messageId,
-      },
-      `Email sent successfully using ${/* TPL_EMAIL_ADAPTER:START */ postmarkEmailAdapter /* TPL_EMAIL_ADAPTER:END */.name}`,
-    );
-  },
-});
+export const sendEmailQueue = defineQueue<SendEmailJobData>('send-email');

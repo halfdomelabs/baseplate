@@ -2,11 +2,13 @@ import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
+  FeatureUtils,
   getManagedPluginsForPlugin,
   libraryEntityType,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  FeatureComboboxFieldController,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
@@ -88,9 +90,14 @@ export function EmailDefinitionEditor({
         : '';
 
     return {
+      emailFeatureRef: FeatureUtils.getFeatureIdByNameOrDefault(
+        definition,
+        'emails',
+      ),
       implementationPluginKey: implementationKey,
     } satisfies EmailPluginDefinitionInput;
   }, [
+    definition,
     pluginMetadata?.config,
     postmarkImplementation,
     availableImplementations,
@@ -123,10 +130,20 @@ export function EmailDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
+        const featureName = FeatureUtils.resolveFeatureName(
+          draftConfig,
+          data.emailFeatureRef,
+        );
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
-          data,
+          {
+            ...data,
+            emailFeatureRef: FeatureUtils.getFeatureIdByNameOrThrow(
+              draftConfig,
+              featureName,
+            ),
+          },
           definitionContainer,
         );
 
@@ -218,6 +235,13 @@ export function EmailDefinitionEditor({
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="email:space-y-6">
+                  <FeatureComboboxFieldController
+                    label="Email Feature Path"
+                    name="emailFeatureRef"
+                    control={control}
+                    canCreate
+                    description="Specify the feature path where email endpoints will be generated"
+                  />
                   <SelectFieldController
                     label="Email Provider"
                     name="implementationPluginKey"
