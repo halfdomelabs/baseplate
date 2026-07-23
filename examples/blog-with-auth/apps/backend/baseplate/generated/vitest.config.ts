@@ -8,7 +8,10 @@ export default defineConfig(
       clearMocks: true,
       dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
-      globalSetup: ['src/tests/scripts/global-setup-prisma.ts'],
+      globalSetup: [
+        'src/tests/scripts/global-setup-prisma.ts',
+        'src/tests/scripts/global-setup-redis.ts',
+      ],
       maxWorkers: 1,
       passWithNoTests: true,
     },

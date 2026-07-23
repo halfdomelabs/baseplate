@@ -1,0 +1,6 @@
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme) prefix(notifications);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(notifications);
+
+@import '@baseplate-dev/ui-components/theme.css';

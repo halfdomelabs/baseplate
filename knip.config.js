@@ -31,6 +31,9 @@ export default {
         // react-dom and @types/react-dom are required for the vite/react build
         'react-dom',
         '@types/react-dom',
+        // shared as a module-federation singleton in vite.config.ts; a plugin
+        // may declare it before it ships any route templates that import it
+        '@tanstack/react-router',
       ],
     },
     'packages/fastify-generators': {

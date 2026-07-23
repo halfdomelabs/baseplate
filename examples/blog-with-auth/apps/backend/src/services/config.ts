@@ -20,6 +20,10 @@ const configSchema = /* TPL_CONFIG_SCHEMA:START */ z.object({
   ENABLE_EMBEDDED_WORKERS: z.stringbool().optional(),
   // Postmark API server token for sending emails
   POSTMARK_SERVER_TOKEN: z.string().min(1),
+  // Redis key prefix for namespace isolation (optional)
+  REDIS_KEY_PREFIX: z.string().default(''),
+  // Connection URL of Redis
+  REDIS_URL: z.string().min(1),
   // Sentry DSN
   SENTRY_DSN: z.string().optional(),
   // Hostname to bind the server to

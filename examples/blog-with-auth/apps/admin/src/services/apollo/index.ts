@@ -2,13 +2,14 @@ import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
 import { CombinedGraphQLErrors, ServerError } from '@apollo/client/errors';
 import { ErrorLink } from '@apollo/client/link/error';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { GraphQLError, Kind } from 'graphql';
+import { GraphQLError, Kind, OperationTypeNode } from 'graphql';
 
 import { config } from '../config';
 import { logError } from '../error-logger';
 import { logger } from '../logger';
 import { userSessionClient } from '../user-session-client';
 import { apolloSentryLink } from './apollo-sentry-link';
+import { apolloSseLink } from './apollo-sse-link';
 import { createApolloCache } from './cache';
 
 /* HOISTED:error-extensions:START */
@@ -75,6 +76,18 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
   const httpLink = new HttpLink({
     uri: config.VITE_GRAPH_API_ENDPOINT,
   });
+
+  const splitLink = ApolloLink.split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === Kind.OPERATION_DEFINITION &&
+        definition.operation === OperationTypeNode.SUBSCRIPTION
+      );
+    },
+    apolloSseLink,
+    httpLink,
+  );
   /* TPL_LINK_BODIES:END */
   const client = new ApolloClient({
     link: ApolloLink.from(
@@ -82,7 +95,7 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
         errorLink,
         apolloSentryLink,
         sessionErrorLink,
-        httpLink,
+        splitLink,
       ] /* TPL_LINKS:END */,
     ),
     cache: createApolloCache(),

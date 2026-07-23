@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 
 import { prisma } from '../services/prisma.js';
+import { getRedisClient } from '../services/redis.js';
 
 export const healthCheckPlugin = fp(
   (fastify, opts, done) => {
@@ -10,6 +11,10 @@ export const healthCheckPlugin = fp(
       /* TPL_HEALTH_CHECKS:START */ async () => {
         // check Prisma is operating
         await prisma.$queryRaw`SELECT 1;`;
+
+        // check Redis is operating
+        const redisClient = getRedisClient();
+        await redisClient.ping();
         return { success: true };
       } /* TPL_HEALTH_CHECKS:END */,
     );

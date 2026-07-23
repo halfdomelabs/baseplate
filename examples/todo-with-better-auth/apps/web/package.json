@@ -46,7 +46,6 @@
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
     "graphql": "16.14.0",
-    "graphql-sse": "2.6.0",
     "loglevel": "1.9.1",
     "react": "19.1.0",
     "react-day-picker": "9.7.0",

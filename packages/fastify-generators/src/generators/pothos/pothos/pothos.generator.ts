@@ -244,11 +244,23 @@ export const pothosGenerator = createGenerator({
               ...Object.fromEntries(schemaBuilderOptions),
             });
 
+            // Register the GraphQL root types. The Subscription type is added
+            // when subscriptions are enabled; if no subscription fields end up
+            // registered, the strip-query-mutation plugin removes the empty type.
+            const rootTypes = [
+              'builder.queryType();',
+              'builder.mutationType();',
+              ...(yogaPluginConfig.isSubscriptionEnabled()
+                ? ['builder.subscriptionType();']
+                : []),
+            ].join('\n');
+
             await builder.apply(
               renderers.builder.render({
                 variables: {
                   TPL_SCHEMA_TYPE_OPTIONS: schemaTypeOptionsFragment,
                   TPL_SCHEMA_BUILDER_OPTIONS: schemaOptionsFragment,
+                  TPL_ROOT_TYPES: tsCodeFragment(rootTypes),
                 },
               }),
             );
