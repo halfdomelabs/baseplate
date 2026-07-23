@@ -19,9 +19,9 @@ function hasStatusCode(
     typeof error === 'object' &&
     error !== null &&
     'statusCode' in error &&
-    typeof (error as { statusCode: unknown }).statusCode === 'number' &&
+    typeof error.statusCode === 'number' &&
     'code' in error &&
-    typeof (error as { code: unknown }).code === 'string'
+    typeof error.code === 'string'
   );
 }
 

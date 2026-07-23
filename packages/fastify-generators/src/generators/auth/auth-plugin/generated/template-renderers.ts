@@ -6,7 +6,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { userSessionServiceImportsProvider } from '#src/generators/auth/_providers/user-session.js';
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
-import { userSessionTypesImportsProvider } from '#src/generators/auth/user-session-types/generated/ts-import-providers.js';
 
 import { AUTH_AUTH_PLUGIN_PATHS } from './template-paths.js';
 import { AUTH_AUTH_PLUGIN_TEMPLATES } from './typed-templates.js';
@@ -34,7 +33,6 @@ const authAuthPluginRenderersTask = createGeneratorTask({
     paths: AUTH_AUTH_PLUGIN_PATHS.provider,
     typescriptFile: typescriptFileProvider,
     userSessionServiceImports: userSessionServiceImportsProvider,
-    userSessionTypesImports: userSessionTypesImportsProvider,
   },
   exports: { authAuthPluginRenderers: authAuthPluginRenderers.export() },
   run({
@@ -42,7 +40,6 @@ const authAuthPluginRenderersTask = createGeneratorTask({
     paths,
     typescriptFile,
     userSessionServiceImports,
-    userSessionTypesImports,
   }) {
     return {
       providers: {
@@ -55,7 +52,6 @@ const authAuthPluginRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authContextImports,
                   userSessionServiceImports,
-                  userSessionTypesImports,
                 },
                 ...options,
               }),

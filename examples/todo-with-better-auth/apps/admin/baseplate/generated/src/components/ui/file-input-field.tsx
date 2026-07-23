@@ -1,10 +1,5 @@
 import type React from 'react';
-import type {
-  Control,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-} from 'react-hook-form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { useController } from 'react-hook-form';
 
@@ -74,7 +69,7 @@ export function FileInputFieldController<
   return (
     <FileInputField
       onChange={(newValue) => {
-        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>);
+        onChange(newValue);
       }}
       value={validatedValue}
       error={error?.message}

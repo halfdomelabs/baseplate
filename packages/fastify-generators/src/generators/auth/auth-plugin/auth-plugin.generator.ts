@@ -13,7 +13,6 @@ import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
 import { userSessionServiceImportsProvider } from '../_providers/index.js';
 import { authContextImportsProvider } from '../auth-context/index.js';
-import { userSessionTypesImportsProvider } from '../user-session-types/index.js';
 import { AUTH_AUTH_PLUGIN_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -35,7 +34,6 @@ export const authPluginGenerator = createGenerator({
         appModule: appModuleProvider,
         authContextImports: authContextImportsProvider,
         userSessionServiceImports: userSessionServiceImportsProvider,
-        userSessionTypesImports: userSessionTypesImportsProvider,
         paths: AUTH_AUTH_PLUGIN_GENERATED.paths.provider,
       },
       run({
@@ -43,7 +41,6 @@ export const authPluginGenerator = createGenerator({
         appModule,
         authContextImports,
         userSessionServiceImports,
-        userSessionTypesImports,
         paths,
       }) {
         appModule.moduleFields.set(
@@ -64,7 +61,6 @@ export const authPluginGenerator = createGenerator({
                 importMapProviders: {
                   authContextImports,
                   userSessionServiceImports,
-                  userSessionTypesImports,
                 },
               }),
             );

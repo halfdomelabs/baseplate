@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import type { AuthContext } from '%authContextImports';
-import type { UserSessionService } from '%userSessionTypesImports';
 
 import { createAuthContextFromSessionInfo } from '%authContextImports';
 import { userSessionService } from '%userSessionServiceImports';
@@ -24,9 +23,10 @@ export const authPlugin = fp((fastify, opts, done) => {
   fastify.decorateRequest('auth');
 
   fastify.addHook('onRequest', async (req, res) => {
-    const userSessionInfo = await (
-      userSessionService as UserSessionService
-    ).getSessionInfoFromRequest(req, res);
+    const userSessionInfo = await userSessionService.getSessionInfoFromRequest(
+      req,
+      res,
+    );
 
     const authContext = createAuthContextFromSessionInfo(userSessionInfo);
 

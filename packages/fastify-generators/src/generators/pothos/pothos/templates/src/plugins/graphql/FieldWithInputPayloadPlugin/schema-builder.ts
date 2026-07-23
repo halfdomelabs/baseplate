@@ -34,8 +34,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     for (const key of Object.keys(payload)) {
       payload[key].onFirstUse((cfg) => {
         if (cfg.kind === 'Object' && !cfg.resolve) {
-          cfg.resolve = (parent) =>
-            (parent as Record<string, unknown>)[key] as Readonly<unknown>;
+          cfg.resolve = (parent) => (parent as Record<string, unknown>)[key];
         }
       });
     }
