@@ -59,6 +59,10 @@ const blogPostPolicyExtended = createModelPolicy({
 
 const USER_ID = 'user-1';
 
+// These tests exercise policy authorization only and mock the prisma module
+// directly, so `services` is never read — an empty stub satisfies the type.
+const emptyServices = {} as ServiceContext['services'];
+
 function makeCtx(userId: string | undefined): ServiceContext {
   return {
     auth: createAuthContextFromSessionInfo(
@@ -66,6 +70,7 @@ function makeCtx(userId: string | undefined): ServiceContext {
         ? { id: 's', type: 'user', userId, roles: ['user'] }
         : undefined,
     ),
+    services: emptyServices,
     authorizerCache: new Map(),
     authorizerModelCache: new Map(),
   };
@@ -80,6 +85,7 @@ function ctxWithRoles(
     auth: createAuthContextFromSessionInfo(
       userId != null ? { id: 's', type: 'user', userId, roles } : undefined,
     ),
+    services: emptyServices,
     authorizerCache: new Map(),
     authorizerModelCache: new Map(),
   };
@@ -295,6 +301,7 @@ describe('whereUnique: composes the grant into a unique selector (atomic mutatio
         userId: USER_ID,
         roles: ['admin'],
       }),
+      services: emptyServices,
       authorizerCache: new Map(),
       authorizerModelCache: new Map(),
     };

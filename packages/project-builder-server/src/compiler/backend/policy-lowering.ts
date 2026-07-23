@@ -65,12 +65,15 @@ export interface PolicyLoweringContext {
 function isMatchable(node: AuthorizerExpressionNode): boolean {
   if (node.type !== 'fieldComparison') return false;
   if (node.operator !== '===') return false;
-  // Exactly one side must be a model field; the other a literal or auth field.
+  // EXACTLY one side must be a model field; the other a literal or auth field.
+  // A model-vs-model comparison (`model.a === model.b`) is not matchable — it
+  // falls through to the where fallback, where `generateFieldComparisonWhereCode`
+  // throws. `r.match` can only bind ONE model field to a scalar value.
   const sides = [node.left, node.right];
-  const modelSide = sides.find(
+  const modelSides = sides.filter(
     (s): s is FieldRefNode => s.type === 'fieldRef' && s.source === 'model',
   );
-  return modelSide != null;
+  return modelSides.length === 1;
 }
 
 /**

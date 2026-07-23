@@ -167,15 +167,17 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
 
   const result = await executeTransformPlan(plan, {
     execute: async ({ tx, transformed }) =>
-      tx.todoItem.update({
-        where,
-        data: {
-          ...rest,
-          ...transformed,
-          assignee: relationHelpers.connectUpdate({ id: assigneeId }),
-          todoList: relationHelpers.connectUpdate({ id: todoListId }),
-        },
-      }),
+      tx.todoItem
+        .update({
+          where: todoItemPolicy.update.whereUnique(context, where),
+          data: {
+            ...rest,
+            ...transformed,
+            assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+            todoList: relationHelpers.connectUpdate({ id: todoListId }),
+          },
+        })
+        .catch(throwIfPrismaNotFound('TodoItem not found')),
     refetch: (item) =>
       prisma.todoItem.findUniqueOrThrow({ where: { id: item.id }, ...query }),
   });

@@ -47,6 +47,15 @@ describe('lowerExpressionToRoleTree', () => {
         'r.match(() => ({ isPublished: true }))',
       );
     });
+
+    it('model-vs-model comparison is NOT matchable → throws (never emits an out-of-scope `model` ref)', () => {
+      // Both sides are model fields, so `r.match` can't bind one to a scalar.
+      // It falls through to the where fallback, which rejects the comparison
+      // rather than emitting `() => ({ a: model.b })` (a runtime ReferenceError).
+      expect(() => lower('model.publisherId === model.authorId')).toThrow(
+        /model field/i,
+      );
+    });
   });
 
   describe('r.where — fallback for non-matchable comparisons', () => {

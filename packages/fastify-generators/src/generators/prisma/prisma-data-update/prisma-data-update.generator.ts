@@ -221,6 +221,19 @@ export const prismaDataUpdateGenerator = createGenerator({
               ? tsTemplate`.catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}))`
               : '';
 
+            // Transform-path inner `tx.update`: for an instance grant, compose the
+            // grant into the mutating call too (not just the earlier auth fetch),
+            // so authorization and the write are atomic — no TOCTOU window between
+            // the fetch and the transaction. `whereUnique` builds the filter
+            // in-memory (no extra probe); the nested relation filter is evaluated
+            // inside the single `update`. `P2025` → 404, aborting the transaction.
+            const txWhereEntry = usesAuthedFetch
+              ? tsTemplate`where: ${modelPolicy.getActionWhereUniqueFragment('update')}(context, where),`
+              : 'where,';
+            const txCatchFragment = usesAuthedFetch
+              ? tsTemplate`.catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}))`
+              : '';
+
             const updateFunction = hasTransformFields
               ? // Transform path: prepareTransformers + executeTransformPlan
                 tsTemplate`
@@ -247,9 +260,9 @@ export const prismaDataUpdateGenerator = createGenerator({
                   const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
                     execute: async ({ tx, transformed }) =>
                       tx.${modelVar}.update({
-                        where,
+                        ${txWhereEntry}
                         ${prismaDataEntry}
-                      }),
+                      })${txCatchFragment},
                     refetch: (item) =>
                       ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
                   });

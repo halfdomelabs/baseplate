@@ -572,19 +572,19 @@ export function createModelPolicy<
   // Existence check derived from the delegate. The cast narrows Prisma's `count`
   // overload to the single no-`select` form we use — the one boundary cast, in
   // shared infra, so no policy author writes it.
-  const countFn = (
-    config.delegate as unknown as {
-      count: (args: {
-        where: NonNullable<WhereInput<TModelName>>;
-      }) => Promise<number>;
-    }
-  ).count;
+  const delegate = config.delegate as unknown as {
+    count: (args: {
+      where: NonNullable<WhereInput<TModelName>>;
+    }) => Promise<number>;
+  };
   const exists: Exists<TModelName> = (_ctx, id, where) =>
-    countFn({
-      where: {
-        AND: [{ [config.idField]: id }, where],
-      } as NonNullable<WhereInput<TModelName>>,
-    }).then((n) => n > 0);
+    delegate
+      .count({
+        where: {
+          AND: [{ [config.idField]: id }, where],
+        } as NonNullable<WhereInput<TModelName>>,
+      })
+      .then((n) => n > 0);
 
   function roleCacheKey(id: string | number, role: string): string {
     return `authz:${config.model}:role:${role}:${String(id)}`;
