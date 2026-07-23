@@ -38,3 +38,22 @@ builder.queryField('todoLists', (t) =>
       }),
   }),
 );
+
+builder.queryField('todoListsConnection', (t) =>
+  t.prismaConnection(
+    {
+      type: 'TodoList',
+      cursor: 'id',
+      authorize: ['admin'],
+      totalCount: (_connection, _args, ctx) =>
+        prisma.todoList.count({ where: todoListPolicy.read.where(ctx) }),
+      resolve: async (query, _root, _args, ctx) =>
+        prisma.todoList.findMany({
+          ...query,
+          where: todoListPolicy.read.where(ctx),
+        }),
+    },
+    { name: 'TodoListConnection' },
+    { name: 'TodoListEdge' },
+  ),
+);
