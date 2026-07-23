@@ -1,30 +1,22 @@
-import {
-  afterAll,
-  assert,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 
-import type { QueueJob } from '@src/types/queue.types.js';
+import type { QueueJob, QueueRuntime } from '@src/types/queue.types.js';
 
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
+import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
+import { bindQueueHandler, defineQueue } from '@src/types/queue.types.js';
 
-import {
-  cleanupOrphanedSchedules,
-  createQueue,
-  getScheduledJobs,
-  initializePgBoss,
-  shutdownPgBoss,
-} from './pg-boss.service.js';
+import { createQueueRuntime } from './pg-boss.service.js';
 
 // Mock the logger module to avoid log output during tests
 vi.mock('@src/services/logger.js', () => ({
   logger: createMockLogger(),
 }));
+
+/**
+ * Note: These integration tests require a real Postgres instance to run
+ * properly, since pg-boss is backed by Postgres tables.
+ */
 
 // Helper to create promise that can be resolved externally
 function createDeferred<T = void>(): {
@@ -46,18 +38,11 @@ const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('pg-boss service integration tests', () => {
-  beforeAll(async () => {
-    // Initialize pg-boss in test mode with maintenance enabled
-    await initializePgBoss();
-  });
+  let runtime: QueueRuntime | undefined;
 
-  afterAll(async () => {
-    await shutdownPgBoss();
-  });
-
-  beforeEach(async () => {
-    // Clean up any orphaned schedules from previous tests
-    await cleanupOrphanedSchedules([]);
+  afterEach(async () => {
+    await runtime?.stopWorkers();
+    runtime = undefined;
   });
 
   describe('basic job processing', () => {
@@ -73,7 +58,8 @@ describe('pg-boss service integration tests', () => {
         value: number;
       }
 
-      const queue = createQueue<TestData>(queueName, {
+      const token = defineQueue<TestData>(queueName);
+      const binding = bindQueueHandler(token, {
         handler: (job) => {
           processedJob = job;
           deferred.resolve(undefined);
@@ -81,11 +67,13 @@ describe('pg-boss service integration tests', () => {
         },
       });
 
-      // Start the worker
-      await queue.work();
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({
+        createContext: createTestServiceContext,
+      });
 
       // Enqueue a job
-      const jobId = await queue.enqueue({
+      const jobId = await runtime.enqueue(token, {
         message: 'Hello, pg-boss!',
         value: 42,
       });
@@ -110,19 +98,22 @@ describe('pg-boss service integration tests', () => {
       const deferred = createDeferred();
       let processedJob: QueueJob<{ id: number }> | undefined;
 
-      const queue = createQueue<{ id: number }>(queueName, {
+      const token = defineQueue<{ id: number }>(queueName);
+      const binding = bindQueueHandler(token, {
         handler: (job) => {
           processedJob = job;
           deferred.resolve(undefined);
         },
       });
 
+      runtime = createQueueRuntime([binding]);
+
       // Enqueue BEFORE starting worker
-      const jobId = await queue.enqueue({ id: 123 });
+      const jobId = await runtime.enqueue(token, { id: 123 });
       expect(jobId).toBeDefined();
 
       // Now start the worker
-      await queue.work();
+      await runtime.startWorkers({ createContext: createTestServiceContext });
 
       // Job should still be processed
       await deferred.promise;
@@ -139,7 +130,8 @@ describe('pg-boss service integration tests', () => {
       const deferred = createDeferred();
       const attempts: QueueJob<unknown>[] = [];
 
-      const queue = createQueue<unknown>(queueName, {
+      const token = defineQueue<unknown>(queueName);
+      const binding = bindQueueHandler(token, {
         handler: (job) => {
           attemptCount++;
           attempts.push(job);
@@ -164,10 +156,11 @@ describe('pg-boss service integration tests', () => {
         },
       });
 
-      await queue.work();
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
 
       // Enqueue a job
-      await queue.enqueue({});
+      await runtime.enqueue(token, {});
 
       // Wait for retry and successful processing
       await deferred.promise;
@@ -188,17 +181,20 @@ describe('pg-boss service integration tests', () => {
       const deferred = createDeferred();
       let processedAt: number | undefined;
 
-      const queue = createQueue<{ value: string }>(queueName, {
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
         handler: () => {
           processedAt = Date.now();
           deferred.resolve(undefined);
         },
       });
 
-      await queue.work();
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
 
       const enqueuedAt = Date.now();
-      await queue.enqueue(
+      await runtime.enqueue(
+        token,
         { value: 'delayed' },
         { delaySeconds: 1 }, // 1 second delay
       );
@@ -221,8 +217,8 @@ describe('pg-boss service integration tests', () => {
     it('should clean up orphaned schedules', async () => {
       const orphanedQueue = 'orphaned-repeatable-queue';
 
-      // Create a queue with repeatable job
-      const queue = createQueue<Record<string, never>>(orphanedQueue, {
+      const token = defineQueue<Record<string, never>>(orphanedQueue);
+      const binding = bindQueueHandler(token, {
         handler: async () => {
           // Do nothing
         },
@@ -231,15 +227,23 @@ describe('pg-boss service integration tests', () => {
         },
       });
 
-      await queue.work();
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
 
-      const schedules = await getScheduledJobs();
+      const schedules = await runtime.getScheduledJobs();
       expect(schedules).toHaveLength(1);
 
-      // Now clean up orphaned schedules (not including our queue)
-      await cleanupOrphanedSchedules(['some-other-queue']);
+      // Stop this runtime's workers, then verify a fresh runtime with no
+      // bindings treats the previous runtime's schedule as orphaned.
+      await runtime.stopWorkers();
 
-      const schedulesAfterCleanup = await getScheduledJobs();
+      const emptyRuntime = createQueueRuntime([]);
+      await emptyRuntime.startWorkers({
+        createContext: createTestServiceContext,
+      });
+      runtime = emptyRuntime;
+
+      const schedulesAfterCleanup = await runtime.getScheduledJobs();
       expect(schedulesAfterCleanup).toHaveLength(0);
     });
   });

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AuthRole } from '@src/modules/accounts/auth/constants/auth-roles.constants.js';
+import type { Auth } from '@src/modules/accounts/auth/services/auth.js';
+import type { UserSessionService } from '@src/modules/accounts/auth/types/user-session.types.js';
+import type { RuntimeServices } from '@src/utils/runtime-services.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
@@ -12,6 +15,30 @@ import { createModelQueryFilter } from './query-filters.js';
 // ---------------------------------------------------------------------------
 // Test helpers
 // ---------------------------------------------------------------------------
+
+const testRuntimeServices: RuntimeServices = {
+  queues: {
+    enqueue: () => {
+      throw new Error('Queues are not available in this test context.');
+    },
+  },
+  betterAuth: new Proxy(
+    {},
+    {
+      get() {
+        throw new Error('better-auth is not available in this test context.');
+      },
+    },
+  ) as Auth,
+  userSession: new Proxy(
+    {},
+    {
+      get() {
+        throw new Error('userSession is not available in this test context.');
+      },
+    },
+  ) as UserSessionService,
+};
 
 function createCtx(
   userId: string | undefined,
@@ -30,7 +57,7 @@ function createCtx(
           : undefined,
       ),
     },
-    {},
+    testRuntimeServices,
   );
 }
 

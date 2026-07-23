@@ -1,21 +1,19 @@
 #!/usr/bin/env node
 
-import { QUEUE_REGISTRY } from '../constants/queues.constants.js';
+import type { AppRuntime } from '../utils/app-runtime.js';
+
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
-import {
-  initializePgBoss,
-  shutdownPgBoss,
-  startWorkers,
-} from '../services/pg-boss.service.js';
+import { createAppRuntime } from '../utils/app-runtime.js';
+import { createSystemServiceContext } from '../utils/service-context.js';
 
 /**
- * Worker script for running pg-boss queue workers.
- * This script:
- * 1. Initializes pg-boss
- * 2. Starts all queue workers
- * 3. Handles graceful shutdown
+ * Worker script for running queue workers standalone (outside the API
+ * process). Constructs its own {@link AppRuntime} and disposes it on
+ * shutdown, mirroring how {@link buildServer} manages the runtime for the API.
  */
+
+let runtime: AppRuntime | undefined;
 
 /**
  * Main entry point for the worker script.
@@ -23,12 +21,13 @@ import {
 async function main(): Promise<void> {
   logger.info('Starting queue worker process...');
 
-  // Initialize pg-boss
-  await initializePgBoss();
+  const appRuntime = createAppRuntime();
+  runtime = appRuntime;
 
-  const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
+  const activeQueueNames = appRuntime.queues
+    .listQueues()
+    .map((queue) => queue.name);
 
-  // Get active queue names from registry
   logger.info(
     {
       queues: activeQueueNames,
@@ -38,8 +37,9 @@ async function main(): Promise<void> {
     'Active queues from registry',
   );
 
-  // Start all workers (also cleans up orphaned schedules)
-  await startWorkers(QUEUE_REGISTRY);
+  await appRuntime.queues.startWorkers({
+    createContext: () => createSystemServiceContext(appRuntime),
+  });
 
   logger.info('Queue worker process started successfully', {
     event: 'queue-worker-process-started',
@@ -53,7 +53,7 @@ async function main(): Promise<void> {
 function shutdown(): void {
   logger.info('Received shutdown signal, stopping workers...');
 
-  shutdownPgBoss()
+  (runtime?.dispose() ?? Promise.resolve())
     .then(() => {
       logger.info('Workers stopped successfully', {
         event: 'workers-stopped',

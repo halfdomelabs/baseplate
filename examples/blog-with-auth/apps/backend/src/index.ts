@@ -5,7 +5,9 @@ import { logger } from './services/logger.js';
 import { createAppRuntime } from './utils/app-runtime.js';
 
 async function startServer(): Promise<void> {
-  const runtime = await createAppRuntime();
+  const runtime = createAppRuntime({
+    disableQueueMaintenance: !config.ENABLE_EMBEDDED_WORKERS,
+  });
   const fastify = await buildServer({
     loggerInstance: logger,
     runtime,

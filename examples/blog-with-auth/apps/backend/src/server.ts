@@ -47,7 +47,7 @@ export async function buildServer(
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);
-  await fastify.register(pgBossPlugin);
+  await fastify.register(pgBossPlugin, { runtime });
   await fastify.register(requestContextPlugin, { runtime });
   /* TPL_PLUGINS:END */
 
@@ -56,7 +56,7 @@ export async function buildServer(
     /* TPL_ROOT_MODULE:START */ rootModule /* TPL_ROOT_MODULE:END */,
   );
   for (const plugin of plugins) {
-    await fastify.register(plugin);
+    await fastify.register(plugin, { runtime });
   }
 
   return fastify;

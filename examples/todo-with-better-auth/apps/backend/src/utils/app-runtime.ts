@@ -1,4 +1,13 @@
+import type { QueueRuntime } from '@src/types/queue.types.js';
+
+import { buildAuth } from '@src/modules/accounts/auth/services/auth.js';
+import { createBetterAuthUserSessionService } from '@src/modules/accounts/auth/services/user-session.service.js';
+import { rootModule } from '@src/modules/index.js';
+import { createQueueRuntime } from '@src/services/bullmq.service.js';
+
 import type { RuntimeServices } from './runtime-services.js';
+
+import { flattenAppModule } from './app-modules.js';
 
 /**
  * Composition root for shared services. Constructs everything stateful and
@@ -13,6 +22,11 @@ import type { RuntimeServices } from './runtime-services.js';
 export interface AppRuntime {
   readonly services: Readonly<RuntimeServices>;
   /**
+   * The full queue runtime, for worker entrypoints and introspection.
+   * The same object as `services.queues`, narrowed there to the producer view.
+   */
+  readonly queues: QueueRuntime;
+  /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
    * AggregateError if any failed.
@@ -20,15 +34,18 @@ export interface AppRuntime {
   dispose(): Promise<void>;
 }
 
-export async function createAppRuntime(): Promise<AppRuntime> {
+export function createAppRuntime(): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
 
-  // No plugins registered yet - delete this await once the first one adds a
-  // real one.
-  await Promise.resolve();
+  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
+  const queues = createQueueRuntime(queueBindings);
+  disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
-  const services: RuntimeServices = {};
+  const betterAuth = buildAuth({ queues });
+  const userSession = createBetterAuthUserSessionService(betterAuth);
+
+  const services: RuntimeServices = { queues, betterAuth, userSession };
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -52,6 +69,7 @@ export async function createAppRuntime(): Promise<AppRuntime> {
 
   return {
     services,
+    queues,
     dispose,
   };
 }

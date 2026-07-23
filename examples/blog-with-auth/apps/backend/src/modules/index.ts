@@ -3,6 +3,7 @@ import { accountsModule } from './accounts/index.js';
 import { articlesModule } from './articles/index.js';
 import { authModule } from './auth/index.js';
 import { blogsModule } from './blogs/index.js';
+import { emailsModule } from './emails/index.js';
 import { graphqlModule } from './graphql/index.js';
 import { utilitiesModule } from './utilities/index.js';
 
@@ -16,6 +17,7 @@ export const /* TPL_MODULE_NAME:START */ rootModule /* TPL_MODULE_NAME:END */ =
           articlesModule,
           authModule,
           blogsModule,
+          emailsModule,
           graphqlModule,
           utilitiesModule,
         ],

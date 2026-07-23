@@ -1,17 +1,28 @@
+import type { QueueRuntime } from '@src/types/queue.types.js';
+
+import { rootModule } from '@src/modules/index.js';
+import { createQueueRuntime } from '@src/services/pg-boss.service.js';
+
 import type { RuntimeServices } from './runtime-services.js';
+
+import { flattenAppModule } from './app-modules.js';
 
 /**
  * Composition root for shared services. Constructs everything stateful and
  * owns disposal; nothing outside this file imports the assembled runtime.
  *
  * Construction must not connect or do I/O - allocate passive clients or
- * connect lazily (e.g. ioredis `lazyConnect`). This keeps construction cheap
- * enough for every execution path, including prisma-only seeds, to afford a
- * full service context.
+ * connect lazily. This keeps construction cheap enough for every execution
+ * path, including prisma-only seeds, to afford a full service context.
  */
 
 export interface AppRuntime {
   readonly services: Readonly<RuntimeServices>;
+  /**
+   * The full queue runtime, for worker entrypoints and introspection.
+   * The same object as `services.queues`, narrowed there to the producer view.
+   */
+  readonly queues: QueueRuntime;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -20,15 +31,25 @@ export interface AppRuntime {
   dispose(): Promise<void>;
 }
 
-export async function createAppRuntime(): Promise<AppRuntime> {
+/**
+ * @param options.disableQueueMaintenance Forwarded to pg-boss - disables its
+ * background maintenance/schedule loop for this runtime. Set this everywhere
+ * except the one process responsible for maintenance, when pg-boss runs
+ * across multiple processes (e.g. API + standalone worker).
+ */
+export function createAppRuntime(
+  options: { disableQueueMaintenance?: boolean } = {},
+): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
 
-  // No plugins registered yet - delete this await once the first one adds a
-  // real one.
-  await Promise.resolve();
+  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
+  const queues = createQueueRuntime(queueBindings, {
+    disableMaintenance: options.disableQueueMaintenance,
+  });
+  disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
-  const services: RuntimeServices = {};
+  const services: RuntimeServices = { queues };
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -52,6 +73,7 @@ export async function createAppRuntime(): Promise<AppRuntime> {
 
   return {
     services,
+    queues,
     dispose,
   };
 }
