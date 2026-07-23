@@ -11,6 +11,7 @@
       {
         "path": "src/modules/todos/authorizers/todo-item.query-filter.int.test.ts"
       },
+      { "path": "src/modules/todos/schema/connection-query.e2e.test.ts" },
       { "path": "src/modules/todos/services/todo-item-service.int.test.ts" },
       { "path": "src/plugins/stripe-webhook.int.test.ts" },
       { "path": "src/services/bullmq.service.int.test.ts" },
