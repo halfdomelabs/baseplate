@@ -84,6 +84,13 @@ export function GraphQLRootFieldsSection({
               label="Count"
               description="Count matching records, e.g. postsCount(...)"
             />
+            <ToggleItem
+              control={control}
+              name="graphql.queries.list.connection.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="Connection"
+              description="Cursor-based pagination, e.g. postsConnection(first, after)"
+            />
           </div>
           {hasAnyMutation && (
             <div className="space-y-4">
@@ -135,6 +142,7 @@ function ToggleItem({
     | 'graphql.queries.get.enabled'
     | 'graphql.queries.list.enabled'
     | 'graphql.queries.list.count.enabled'
+    | 'graphql.queries.list.connection.enabled'
     | 'graphql.mutations.create.enabled'
     | 'graphql.mutations.update.enabled'
     | 'graphql.mutations.delete.enabled';

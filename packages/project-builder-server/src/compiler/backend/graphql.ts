@@ -7,6 +7,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import {
   pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
+  pothosPrismaConnectionQueryGenerator,
   pothosPrismaCountQueryGenerator,
   pothosPrismaCrudMutationGenerator,
   pothosPrismaEnumGenerator,
@@ -159,6 +160,17 @@ function buildQueriesFileForModel(
         list.enabled && list.count.enabled
           ? pothosPrismaCountQueryGenerator({
               order: 2,
+              modelName: model.name,
+              policyRef,
+              children: {
+                authorize,
+              },
+            })
+          : undefined,
+      connectionQuery:
+        list.enabled && list.connection.enabled
+          ? pothosPrismaConnectionQueryGenerator({
+              order: 3,
               modelName: model.name,
               policyRef,
               children: {

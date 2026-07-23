@@ -1158,7 +1158,7 @@
           "get": { "enabled": true },
           "globalRoles": ["admin"],
           "instanceRoles": ["owner"],
-          "list": { "enabled": true }
+          "list": { "connection": { "enabled": true }, "enabled": true }
         }
       },
       "id": "model:ONd_Fbo61Tx7",
@@ -1300,7 +1300,7 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": { "enabled": true }
+          "list": { "connection": { "enabled": true }, "enabled": true }
         }
       },
       "id": "model:nmsOHh3rZMmE",
