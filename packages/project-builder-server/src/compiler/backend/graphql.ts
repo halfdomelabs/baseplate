@@ -48,6 +48,20 @@ function buildObjectTypeFile(
     appBuilder.projectDefinition,
   );
 
+  const toExposedField = (entry: {
+    ref: string;
+    globalRoles: string[];
+    instanceRoles: string[];
+  }): { name: string; globalRoles: string[]; instanceRoles: string[] } => ({
+    name: appBuilder.nameFromId(entry.ref),
+    globalRoles: isAuthEnabled
+      ? entry.globalRoles.map((r) => appBuilder.nameFromId(r))
+      : [],
+    instanceRoles: isAuthEnabled
+      ? entry.instanceRoles.map((r) => appBuilder.nameFromId(r))
+      : [],
+  });
+
   return pothosTypesFileGenerator({
     id: `${model.id}-object-type`,
     fileName: `${kebabCase(model.name)}.object-type`,
@@ -62,17 +76,14 @@ function buildObjectTypeFile(
           : undefined,
       objectType: pothosPrismaObjectGenerator({
         modelName: model.name,
-        exposedFields: [...fields, ...foreignRelations, ...localRelations].map(
-          (entry) => ({
-            name: appBuilder.nameFromId(entry.ref),
-            globalRoles: isAuthEnabled
-              ? entry.globalRoles.map((r) => appBuilder.nameFromId(r))
-              : [],
-            instanceRoles: isAuthEnabled
-              ? entry.instanceRoles.map((r) => appBuilder.nameFromId(r))
-              : [],
-          }),
-        ),
+        exposedFields: [
+          ...fields.map(toExposedField),
+          ...foreignRelations.map((entry) => ({
+            ...toExposedField(entry),
+            paginated: entry.paginated,
+          })),
+          ...localRelations.map(toExposedField),
+        ],
         order: 1,
       }),
     },

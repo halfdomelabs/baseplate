@@ -35,6 +35,7 @@ const exposedFieldSchema = z.object({
   name: z.string().min(1),
   globalRoles: z.array(z.string().min(1)).default([]),
   instanceRoles: z.array(z.string().min(1)).default([]),
+  paginated: z.boolean().default(false),
 });
 
 const descriptorSchema = z.object({
@@ -115,6 +116,13 @@ export const pothosPrismaObjectGenerator = createGenerator({
             ]),
         );
 
+        // Build lookup: fieldName → paginated flag
+        const fieldPaginatedMap = new Map(
+          exposedFields
+            .filter((f) => f.paginated)
+            .map((f) => [f.name, f.paginated]),
+        );
+
         /**
          * Build an authorize TsCodeFragment for a field, if it has auth config.
          */
@@ -186,10 +194,19 @@ export const pothosPrismaObjectGenerator = createGenerator({
               );
             }
 
+            const zFragment = TsCodeUtils.importFragment('z', 'zod');
+
             const fieldDefinitions = outputDto.fields
               .filter((field) => exposedFieldNames.includes(field.name))
               .map((field) => {
                 const authorize = buildAuthorizeFragment(field.name);
+                const paginated = fieldPaginatedMap.get(field.name) ?? false;
+
+                if (paginated && !field.isList) {
+                  throw new Error(
+                    `Field '${field.name}' on model '${modelName}' is marked paginated but is not a list relation.`,
+                  );
+                }
 
                 let fragment: string | TsCodeFragment;
                 if (field.type === 'scalar') {
@@ -200,14 +217,21 @@ export const pothosPrismaObjectGenerator = createGenerator({
                     typeReferences: [],
                     authorize,
                   });
-                } else if (authorize || field.isNullable) {
-                  // Relation with options (nullable and/or authorize)
+                } else if (authorize || field.isNullable || paginated) {
+                  // Relation with options (nullable, authorize, and/or pagination)
                   const options: Record<string, string | TsCodeFragment> = {};
                   if (field.isNullable) {
                     options.nullable = 'true';
                   }
                   if (authorize) {
                     options.authorize = authorize;
+                  }
+                  if (paginated) {
+                    options.args = tsTemplate`{
+                      skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+                      take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+                    }`;
+                    options.query = tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined })`;
                   }
                   fragment = tsTemplate`t.relation(${quot(field.name)}, ${TsCodeUtils.mergeFragmentsAsObject(options)})`;
                 } else {

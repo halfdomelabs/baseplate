@@ -19,9 +19,12 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   SwitchFieldController,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@baseplate-dev/ui-components';
 import { useController, useWatch } from 'react-hook-form';
-import { HiMiniLockClosed } from 'react-icons/hi2';
+import { HiMiniLockClosed, HiMiniQueueList } from 'react-icons/hi2';
 
 interface GraphQLObjectTypeSectionProps {
   control: Control<ModelConfigInput>;
@@ -31,6 +34,7 @@ interface FieldEntry {
   ref: string;
   globalRoles?: string[];
   instanceRoles?: string[];
+  paginated?: boolean;
 }
 
 /**
@@ -82,6 +86,19 @@ function updateEntryRoles(
 }
 
 /**
+ * Toggles the paginated flag on a specific field entry.
+ */
+function updateEntryPaginated(
+  entries: FieldEntry[],
+  ref: string,
+  paginated: boolean,
+): FieldEntry[] {
+  return entries.map((entry) =>
+    entry.ref === ref ? { ...entry, paginated } : entry,
+  );
+}
+
+/**
  * Gets the display names for roles configured on a field entry.
  */
 function getConfiguredRoleNames(
@@ -119,6 +136,7 @@ interface FieldEntryRowProps extends RoleOptions {
   allItems: { id: string }[];
   disabled: boolean;
   showAuth: boolean;
+  showPagination: boolean;
   onChange: (entries: FieldEntry[]) => void;
 }
 
@@ -131,6 +149,7 @@ function FieldEntryRow({
   allItems,
   disabled,
   showAuth,
+  showPagination,
   roleOptions,
   instanceRoleOptions,
   onChange,
@@ -157,11 +176,20 @@ function FieldEntryRow({
         <span>{label}</span>
         <div
           role="presentation"
-          className="ml-auto"
+          className="ml-auto flex items-center gap-1"
           onClick={(e) => {
             e.stopPropagation();
           }}
         >
+          {showPagination && (
+            <PaginationToggle
+              paginated={entry?.paginated ?? false}
+              disabled={!isChecked}
+              onChange={(paginated) => {
+                onChange(updateEntryPaginated(entries, entryRef, paginated));
+              }}
+            />
+          )}
           {showAuth && (
             <FieldAuthPopover
               entry={entry ?? { ref: entryRef }}
@@ -200,6 +228,7 @@ interface FieldEntryListProps extends RoleOptions {
   entries: FieldEntry[];
   disabled: boolean;
   showAuth: boolean;
+  showPagination?: boolean;
   idPrefix: string;
   onChange: (entries: FieldEntry[]) => void;
   getId?: (item: { id: string; name: string }) => string;
@@ -212,6 +241,7 @@ function FieldEntryList({
   entries,
   disabled,
   showAuth,
+  showPagination = false,
   idPrefix,
   roleOptions,
   instanceRoleOptions,
@@ -236,6 +266,7 @@ function FieldEntryList({
               allItems={items.map((i) => ({ id: getId(i) }))}
               disabled={disabled}
               showAuth={showAuth}
+              showPagination={showPagination}
               roleOptions={roleOptions}
               instanceRoleOptions={instanceRoleOptions}
               onChange={onChange}
@@ -244,6 +275,45 @@ function FieldEntryList({
         })}
       </div>
     </div>
+  );
+}
+
+interface PaginationToggleProps {
+  paginated: boolean;
+  disabled?: boolean;
+  onChange: (paginated: boolean) => void;
+}
+
+function PaginationToggle({
+  paginated,
+  disabled,
+  onChange,
+}: PaginationToggleProps): React.ReactElement {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <button
+            type="button"
+            aria-pressed={paginated}
+            disabled={disabled}
+            className="flex h-6 items-center justify-center rounded px-1.5 hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+            onClick={() => {
+              onChange(!paginated);
+            }}
+          />
+        }
+      >
+        <HiMiniQueueList
+          className={paginated ? 'text-primary' : 'text-muted-foreground'}
+        />
+      </TooltipTrigger>
+      <TooltipContent>
+        {paginated
+          ? 'Paginated with skip/take args'
+          : 'Enable skip/take pagination args'}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -464,6 +534,7 @@ export function GraphQLObjectTypeSection({
             entries={foreignRelationsValue}
             disabled={!isObjectTypeEnabled}
             showAuth={!!isObjectTypeEnabled && hasAuthOptions}
+            showPagination={!!isObjectTypeEnabled}
             idPrefix="foreign-rel"
             roleOptions={roleOptions}
             instanceRoleOptions={instanceRoleOptions}
