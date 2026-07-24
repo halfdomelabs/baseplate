@@ -130,18 +130,14 @@ export function EmailDefinitionEditor({
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureName = FeatureUtils.resolveFeatureName(
-          draftConfig,
-          data.emailFeatureRef,
-        );
         PluginUtils.setPluginConfig(
           draftConfig,
           metadata,
           {
             ...data,
-            emailFeatureRef: FeatureUtils.getFeatureIdByNameOrThrow(
+            emailFeatureRef: FeatureUtils.ensureFeatureByNameRecursively(
               draftConfig,
-              featureName,
+              data.emailFeatureRef,
             ),
           },
           definitionContainer,

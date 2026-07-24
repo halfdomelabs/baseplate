@@ -27,9 +27,9 @@ export const authPlugin = fp<{
 
     fastify.decorateRequest('auth');
 
-    fastify.addHook('onRequest', async (req) => {
+    fastify.addHook('onRequest', async (req, reply) => {
       const userSessionInfo =
-        await userSessionService.getSessionInfoFromRequest(req);
+        await userSessionService.getSessionInfoFromRequest(req, reply);
 
       const authContext = createAuthContextFromSessionInfo(userSessionInfo);
 
