@@ -1,5 +1,22 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.13
+
+### Patch Changes
+
+- [#929](https://github.com/halfdomelabs/baseplate/pull/929) [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb) Thanks [@kingston](https://github.com/kingston)! - Added opt-in Relay-style cursor pagination for list queries. Enable "Connection" alongside a model's existing "List" query in the GraphQL section of the model editor to generate a `<model>sConnection(first, after, last, before)` query backed by Pothos's `t.prismaConnection`, returning a `<Model>Connection` type with `edges`, `pageInfo`, and `totalCount`.
+
+- [#930](https://github.com/halfdomelabs/baseplate/pull/930) [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4) Thanks [@kingston](https://github.com/kingston)! - Added opt-in `skip`/`take` pagination args to to-many relation fields on object types (e.g. `user.todoLists(skip, take)`), mirroring the existing pagination on root list queries. Enable it via a new toggle next to each exposed foreign relation in the GraphQL section of the model editor.
+
+- [#919](https://github.com/halfdomelabs/baseplate/pull/919) [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289) Thanks [@kingston](https://github.com/kingston)! - Upgrade insecure dependencies flagged by pnpm audit. Generated projects now use axios 1.18.1 (was 1.16.1) and better-auth 1.6.23 (was 1.6.11), addressing multiple axios advisories (prototype pollution, DoS, proxy handling) and a stored XSS advisory in better-auth. Transitive dependencies (js-yaml, brace-expansion, protobufjs, esbuild, body-parser) were also updated to patched versions in the monorepo and example lockfiles.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Bump `@module-federation/enhanced` to 2.7.0 and `@module-federation/vite` to 1.17.0 for TypeScript 6 compatibility. `@module-federation/vite` is pinned at exactly 1.17.0 — 1.17.1+ breaks the module federation shared-scope singleton for `zod`/`@baseplate-dev/project-builder-lib`, which caused entity IDs to go unassigned when plugin-seeded models (e.g. auth, rate-limit) were merged into a new project during setup.
+
+- Updated dependencies [[`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb), [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4), [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289)]:
+  - @baseplate-dev/project-builder-lib@0.6.13
+  - @baseplate-dev/ui-components@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

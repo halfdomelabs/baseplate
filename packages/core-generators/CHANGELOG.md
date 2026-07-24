@@ -1,5 +1,19 @@
 # @baseplate-dev/core-generators
 
+## 0.6.13
+
+### Patch Changes
+
+- [#926](https://github.com/halfdomelabs/baseplate/pull/926) [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a) Thanks [@kingston](https://github.com/kingston)! - Removed the `preinstall: npx only-allow pnpm` script from generated `package.json` files. Package manager enforcement is already handled via the `packageManager` field, making this script redundant.
+
+- [#919](https://github.com/halfdomelabs/baseplate/pull/919) [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289) Thanks [@kingston](https://github.com/kingston)! - Upgrade insecure dependencies flagged by pnpm audit. Generated projects now use axios 1.18.1 (was 1.16.1) and better-auth 1.6.23 (was 1.6.11), addressing multiple axios advisories (prototype pollution, DoS, proxy handling) and a stored XSS advisory in better-auth. Transitive dependencies (js-yaml, brace-expansion, protobufjs, esbuild, body-parser) were also updated to patched versions in the monorepo and example lockfiles.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Upgrade TypeScript to 6.0.3 in generated projects (from 5.9.3), with typescript-eslint bumped to 8.65.0, @vitest/eslint-plugin to 1.6.23, and eslint-plugin-perfectionist to 5.10.0 for TypeScript 6 compatibility. Generated React apps now include `"types": ["node"]` in `tsconfig.app.json` since TypeScript 6 no longer implicitly includes `@types/node` globals for composite builds.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

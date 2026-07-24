@@ -1,5 +1,18 @@
 # @baseplate-dev/react-generators
 
+## 0.6.13
+
+### Patch Changes
+
+- [#918](https://github.com/halfdomelabs/baseplate/pull/918) [`80b7a20`](https://github.com/halfdomelabs/baseplate/commit/80b7a2090a06e5f729a798a7750ea126c8f27a8c) Thanks [@kingston](https://github.com/kingston)! - File categories can now restrict accepted file types via an "Allowed File Types" setting in the project builder, supporting individual MIME types and groups. The backend blocks uploads of disallowed types and the upload UI filters the file picker and shows clear, extension-based error messages. Validation is lightweight, and client errors are shown on failure rather than server errors.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Remove type assertions in generated embedded list/object field components that TypeScript 6's improved conditional type inference now makes redundant.
+
+- Updated dependencies [[`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

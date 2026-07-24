@@ -1,5 +1,23 @@
 # @baseplate-dev/plugin-queue
 
+## 0.6.13
+
+### Patch Changes
+
+- [#917](https://github.com/halfdomelabs/baseplate/pull/917) [`307ed48`](https://github.com/halfdomelabs/baseplate/commit/307ed48144da1dab378c8b21e8cdbbe592fc3c48) Thanks [@kingston](https://github.com/kingston)! - Queues can now deduplicate jobs by key, making enqueueing idempotent when a caller may retry. Set `deduplication: true` in a queue definition's options and pass a `singletonKey` when enqueueing: while a job with that key is pending or active, further enqueues with the same key are dropped instead of creating a duplicate job. The key is released once the job completes or fails, so a later enqueue with the same key creates a new job.
+
+- [#915](https://github.com/halfdomelabs/baseplate/pull/915) [`cd8465e`](https://github.com/halfdomelabs/baseplate/commit/cd8465ec84b69241ee4e9a53d5131cd9bfe0b39f) Thanks [@kingston](https://github.com/kingston)! - Queue job handler failures are now routed through the configured error logger. Previously, when a queue job threw (for example an email send failure), the error was written to the application logs but bypassed the error-logger service, so any configured external error handlers (such as Sentry) never received it. Both the pg-boss and BullMQ workers now report handler errors via `logError`, so failures reach every configured error handler in addition to the logs.
+
+- [#931](https://github.com/halfdomelabs/baseplate/pull/931) [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c) Thanks [@kingston](https://github.com/kingston)! - Queues are now declared with a token/binding split: `defineQueue()` produces an inert, import-safe reference for enqueueing, while `bindQueueHandler()` attaches the handler in a separate file so importing a queue never pulls in its handler's dependencies. BullMQ and pg-boss's generated queue runtimes construct passively (no connection at import time), collect their bindings from feature modules via `AppModule.queues`, and validate for duplicate queue names at startup. Worker entrypoints (`run-workers.ts`) now build their own `AppRuntime` and dispose it on shutdown instead of managing separate init/shutdown globals.
+
+- Updated dependencies [[`b03e69b`](https://github.com/halfdomelabs/baseplate/commit/b03e69b816d678140fee4dc023416b313a356edc), [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b), [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb), [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4), [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`e89c814`](https://github.com/halfdomelabs/baseplate/commit/e89c8143a7a4ea45817a45544fba6bf0ba6fe758), [`9030d45`](https://github.com/halfdomelabs/baseplate/commit/9030d45cd00ff8e3b9ea20744499457e25b0fbf4), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/fastify-generators@0.6.13
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/project-builder-lib@0.6.13
+  - @baseplate-dev/ui-components@0.6.13
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes
