@@ -240,6 +240,13 @@ type Mutation {
   updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
 type PresignedUrlField {
   name: String!
   value: String!
@@ -253,7 +260,9 @@ type Query {
   todoList(id: Uuid!): TodoList!
   todoListShare(id: TodoListSharePrimaryKey!): TodoListShare!
   todoListShares(skip: Int, take: Int): [TodoListShare!]!
+  todoListSharesConnection(after: String, before: String, first: Int, last: Int): TodoListShareConnection!
   todoLists(skip: Int, take: Int): [TodoList!]!
+  todoListsConnection(after: String, before: String, first: Int, last: Int): TodoListConnection!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!
 
@@ -324,6 +333,17 @@ type TodoList {
   updatedAt: DateTime!
 }
 
+type TodoListConnection {
+  edges: [TodoListEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TodoListEdge {
+  cursor: String!
+  node: TodoList!
+}
+
 type TodoListShare {
   createdAt: DateTime!
   todoList: TodoList!
@@ -331,6 +351,17 @@ type TodoListShare {
   updatedAt: DateTime!
   user: User!
   userId: Uuid!
+}
+
+type TodoListShareConnection {
+  edges: [TodoListShareEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TodoListShareEdge {
+  cursor: String!
+  node: TodoListShare!
 }
 
 input TodoListSharePrimaryKey {

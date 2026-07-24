@@ -8,7 +8,7 @@ import {
   prismaImportsProvider,
   serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const configAdapters = createTsTemplateFile({
@@ -293,14 +293,31 @@ export const mainGroup = {
 
 const queuesCleanUnusedFiles = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { queueServiceImports: queueServiceImportsProvider },
+  importMapProviders: { queuesImports: queuesImportsProvider },
   name: 'queues-clean-unused-files',
   projectExports: { cleanUnusedFilesQueue: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { servicesCleanUnusedFiles: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/queues/clean-unused-files.ts',
+      '../templates/module/queues/clean-unused-files.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesCleanUnusedFilesWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-clean-unused-files-worker',
+  projectExports: { cleanUnusedFilesWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: {
+    queuesCleanUnusedFiles: {},
+    servicesCleanUnusedFiles: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/clean-unused-files.worker.ts',
     ),
   },
   variables: {},
@@ -458,6 +475,7 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   configCategories,
   mainGroup,
   queuesCleanUnusedFiles,
+  queuesCleanUnusedFilesWorker,
   schemaGroup,
   servicesCleanUnusedFiles,
   servicesGetPublicUrl,

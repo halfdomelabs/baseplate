@@ -308,6 +308,7 @@
       "parentRef": "accounts"
     },
     { "id": "feature:QL2I7hoOmjBW", "name": "billing" },
+    { "id": "feature:VhK6dxNqTz9m", "name": "emails" },
     { "id": "feature:d2gEAaWMHAeL", "name": "storage" },
     { "id": "feature:5yQn3gjSzKEB", "name": "todos" }
   ],
@@ -1955,6 +1956,7 @@
     },
     {
       "config": {
+        "emailFeatureRef": "emails",
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
       "id": "plugin:baseplate-dev_plugin-email_email",

@@ -1,7 +1,0 @@
-{
-  "queues.constants.ts": {
-    "generator": "@baseplate-dev/plugin-queue#queue/core/queues",
-    "instanceData": {},
-    "template": "queue-registry"
-  }
-}

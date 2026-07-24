@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appModuleSetupImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -11,6 +12,7 @@ import {
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { BETTER_AUTH_BETTER_AUTH_MODULE_PATHS } from './template-paths.js';
@@ -76,6 +78,7 @@ const betterAuthBetterAuthModuleRenderers =
 
 const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    appModuleSetupImports: appModuleSetupImportsProvider,
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
@@ -83,6 +86,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
     paths: BETTER_AUTH_BETTER_AUTH_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaImports: prismaImportsProvider,
+    queuesImports: queuesImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
@@ -91,6 +95,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
       betterAuthBetterAuthModuleRenderers.export(),
   },
   run({
+    appModuleSetupImports,
     authContextImports,
     authRolesImports,
     configServiceImports,
@@ -98,6 +103,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
     paths,
     pothosImports,
     prismaImports,
+    queuesImports,
     typescriptFile,
     userSessionTypesImports,
   }) {
@@ -114,6 +120,7 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
                   configServiceImports,
                   emailModuleImports,
                   prismaImports,
+                  queuesImports,
                 },
                 ...options,
               }),
@@ -124,6 +131,9 @@ const betterAuthBetterAuthModuleRenderersTask = createGeneratorTask({
                 template:
                   BETTER_AUTH_BETTER_AUTH_MODULE_TEMPLATES.betterAuthPlugin,
                 destination: paths.betterAuthPlugin,
+                importMapProviders: {
+                  appModuleSetupImports,
+                },
                 generatorPaths: paths,
                 ...options,
               }),

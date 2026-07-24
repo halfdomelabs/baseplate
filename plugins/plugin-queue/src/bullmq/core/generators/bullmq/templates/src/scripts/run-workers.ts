@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 // @ts-nocheck
 
-import { initializeBullMQ, shutdownBullMQ, startWorkers } from '$bullmqService';
+import type { AppRuntime } from '%appRuntimeImports';
+
+import { createAppRuntime } from '%appRuntimeImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { QUEUE_REGISTRY } from '%queuesImports';
+import { createSystemServiceContext } from '%serviceContextImports';
 
 /**
- * Worker script for running BullMQ queue workers.
- * This script:
- * 1. Initializes BullMQ
- * 2. Starts all queue workers
- * 3. Handles graceful shutdown
+ * Worker script for running queue workers standalone (outside the API
+ * process). Constructs its own {@link AppRuntime} and disposes it on
+ * shutdown, mirroring how `buildServer` manages the runtime for the API.
  */
+
+let runtime: AppRuntime | undefined;
 
 /**
  * Main entry point for the worker script.
@@ -20,12 +22,13 @@ import { QUEUE_REGISTRY } from '%queuesImports';
 async function main(): Promise<void> {
   logger.info('Starting queue worker process...');
 
-  // Initialize BullMQ
-  initializeBullMQ();
+  const appRuntime = createAppRuntime();
+  runtime = appRuntime;
 
-  const activeQueueNames = QUEUE_REGISTRY.map((queue) => queue.name);
+  const activeQueueNames = appRuntime.queues
+    .listQueues()
+    .map((queue) => queue.name);
 
-  // Get active queue names from registry
   logger.info(
     {
       queues: activeQueueNames,
@@ -35,8 +38,9 @@ async function main(): Promise<void> {
     'Active queues from registry',
   );
 
-  // Start all workers
-  await startWorkers(QUEUE_REGISTRY);
+  await appRuntime.queues.startWorkers({
+    createContext: () => createSystemServiceContext(appRuntime),
+  });
 
   logger.info('Queue worker process started successfully', {
     event: 'queue-worker-process-started',
@@ -50,7 +54,7 @@ async function main(): Promise<void> {
 function shutdown(): void {
   logger.info('Received shutdown signal, stopping workers...');
 
-  shutdownBullMQ()
+  (runtime?.dispose() ?? Promise.resolve())
     .then(() => {
       logger.info('Workers stopped successfully', {
         event: 'workers-stopped',

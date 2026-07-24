@@ -2,10 +2,7 @@
   "name": "better-auth/better-auth-module",
   "extractors": {
     "ts": {
-      "defaultImportProviderName": "betterAuthModuleImportsProvider",
-      "importProviders": [
-        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
-      ]
+      "defaultImportProviderName": "betterAuthModuleImportsProvider"
     }
   },
   "templates": {
@@ -29,10 +26,19 @@
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/auth.ts",
-      "projectExports": { "auth": {}, "cookiePrefix": {} },
+      "projectExports": {
+        "Auth": { "isTypeOnly": true },
+        "AuthServiceDeps": { "isTypeOnly": true },
+        "buildAuth": {},
+        "cookiePrefix": {}
+      },
       "sourceFile": "module/services/auth.ts",
       "variables": {
         "TPL_ACCOUNT_VERIFICATION_EMAIL": {},
@@ -44,7 +50,12 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#better-auth/better-auth-module",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appModuleSetupImportsProvider": {
+          "importName": "appModuleSetupImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{module-root}/plugins/better-auth.plugin.ts",
       "projectExports": { "betterAuthPlugin": {} },
       "referencedGeneratorTemplates": ["auth", "headers-utils"],
@@ -93,7 +104,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "projectExports": { "userSessionService": {} },
+      "projectExports": { "createBetterAuthUserSessionService": {} },
       "referencedGeneratorTemplates": ["auth", "headers-utils"],
       "sourceFile": "module/services/user-session.service.ts",
       "variables": {}

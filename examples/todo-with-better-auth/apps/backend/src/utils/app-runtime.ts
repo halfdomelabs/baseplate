@@ -1,4 +1,11 @@
+import type { QueueRuntime } from '../types/queue.types.js';
 import type { RuntimeServices } from './runtime-services.js';
+
+import { buildAuth } from '../modules/accounts/auth/services/auth.js';
+import { createBetterAuthUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
+import { rootModule } from '../modules/index.js';
+import { createQueueRuntime } from '../services/bullmq.service.js';
+import { flattenAppModule } from './app-modules.js';
 
 /**
  * Composition root for shared services. Constructs everything stateful and
@@ -9,9 +16,11 @@ import type { RuntimeServices } from './runtime-services.js';
  * enough for every execution path, including prisma-only seeds, to afford a
  * full service context.
  */
-
 export interface AppRuntime {
   readonly services: Readonly<RuntimeServices>;
+  /* TPL_RUNTIME_FIELDS:START */
+  queues: QueueRuntime;
+  /* TPL_RUNTIME_FIELDS:END */
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -20,15 +29,24 @@ export interface AppRuntime {
   dispose(): Promise<void>;
 }
 
-export async function createAppRuntime(): Promise<AppRuntime> {
+export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
 
-  // No plugins registered yet - delete this await once the first one adds a
-  // real one.
-  await Promise.resolve();
+  /* TPL_SERVICE_CONSTRUCTION:START */
+  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
+  const queues = createQueueRuntime(queueBindings);
+  disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
-  const services: RuntimeServices = {};
+  const betterAuth = buildAuth({ queues });
+  const userSession = createBetterAuthUserSessionService(betterAuth);
+  /* TPL_SERVICE_CONSTRUCTION:END */
+
+  const services: RuntimeServices = /* TPL_SERVICES_OBJECT:START */ {
+    betterAuth,
+    queues,
+    userSession,
+  }; /* TPL_SERVICES_OBJECT:END */
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -50,8 +68,9 @@ export async function createAppRuntime(): Promise<AppRuntime> {
     return disposePromise;
   }
 
-  return {
-    services,
-    dispose,
-  };
+  const runtime = /* TPL_RUNTIME_FIELD_VALUES:START */ {
+    queues,
+  }; /* TPL_RUNTIME_FIELD_VALUES:END */
+
+  return { ...runtime, services, dispose };
 }

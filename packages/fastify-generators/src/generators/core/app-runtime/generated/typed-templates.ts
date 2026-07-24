@@ -13,7 +13,13 @@ const appRuntime = createTsTemplateFile({
       '../templates/src/utils/app-runtime.ts',
     ),
   },
-  variables: {},
+  variables: {
+    TPL_OPTIONS_PARAM: {},
+    TPL_RUNTIME_FIELD_VALUES: {},
+    TPL_RUNTIME_FIELDS: {},
+    TPL_SERVICE_CONSTRUCTION: {},
+    TPL_SERVICES_OBJECT: {},
+  },
 });
 
 const runtimeServices = createTsTemplateFile({
@@ -27,7 +33,7 @@ const runtimeServices = createTsTemplateFile({
       '../templates/src/utils/runtime-services.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_SERVICES_FIELDS: {} },
 });
 
 export const CORE_APP_RUNTIME_TEMPLATES = { appRuntime, runtimeServices };

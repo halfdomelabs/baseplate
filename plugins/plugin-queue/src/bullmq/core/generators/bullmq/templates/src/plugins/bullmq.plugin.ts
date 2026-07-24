@@ -1,26 +1,22 @@
 // @ts-nocheck
 
+import type { AppRuntime } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 
-import { initializeBullMQ, shutdownBullMQ, startWorkers } from '$bullmqService';
 import { config } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { QUEUE_REGISTRY } from '%queuesImports';
+import { createSystemServiceContext } from '%serviceContextImports';
 import fastifyPlugin from 'fastify-plugin';
 
 /**
- * Fastify plugin for BullMQ queue system initialization.
+ * Fastify plugin that optionally starts BullMQ workers embedded in the API
+ * process. Queue construction and disposal are owned by {@link AppRuntime};
+ * this plugin only starts workers when embedded mode is enabled.
  */
-const bullMQPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
-  // Initialize BullMQ
-  initializeBullMQ();
-
-  // Handle graceful shutdown
-  fastify.addHook('onClose', async () => {
-    await shutdownBullMQ();
-  });
-
+const bullMQPluginCallback: FastifyPluginCallback<{
+  runtime: AppRuntime;
+}> = (fastify, opts, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
@@ -29,7 +25,9 @@ const bullMQPluginCallback: FastifyPluginCallback = (fastify, _opts, done) => {
 
     fastify.addHook('onReady', async () => {
       try {
-        await startWorkers(QUEUE_REGISTRY);
+        await opts.runtime.queues.startWorkers({
+          createContext: () => createSystemServiceContext(opts.runtime),
+        });
       } catch (error: unknown) {
         logError(error, {
           source: 'bullmq-plugin',

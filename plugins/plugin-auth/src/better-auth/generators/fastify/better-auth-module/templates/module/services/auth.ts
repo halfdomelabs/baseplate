@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type { AuthRole } from '%authRolesImports';
+import type { QueueService } from '%queuesImports';
 
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { config } from '%configServiceImports';
@@ -20,67 +21,84 @@ export const cookiePrefix =
     ? `better-auth-${config.SERVER_PORT}`
     : 'better-auth';
 
-export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: 'postgresql' }),
-  secret: config.BETTER_AUTH_SECRET,
-  baseURL: config.BETTER_AUTH_URL,
-  basePath: '/auth',
-  emailAndPassword: {
-    enabled: true,
-    async sendResetPassword({ token, user }) {
-      const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
-      await sendEmail(TPL_PASSWORD_RESET_EMAIL, {
-        to: user.email,
-        data: { resetLink },
-      });
-    },
-    resetPasswordTokenExpiresIn: 3600,
-  },
-  emailVerification: {
-    sendOnSignUp: true,
-    async sendVerificationEmail({ token, user }) {
-      const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
-      await sendEmail(TPL_ACCOUNT_VERIFICATION_EMAIL, {
-        to: user.email,
-        data: { verifyLink },
-      });
-    },
-  },
-  session: {
-    cookieCache: { enabled: true, maxAge: 5 * 60 },
-  },
-  advanced: {
-    cookiePrefix,
-    database: {
-      generateId: false,
-    },
-  },
-  trustedOrigins: config.ALLOWED_ORIGINS.split(',')
-    .map((o) => o.trim())
-    .filter(Boolean),
-  user: {
-    modelName: 'User',
-    changeEmail: {
+/**
+ * Dependencies `auth` needs at construction time.
+ */
+export interface AuthServiceDeps {
+  queues: QueueService;
+}
+
+export type Auth = ReturnType<typeof buildAuth>;
+
+/**
+ * Constructs a fresh {@link Auth} instance from the given deps. Called once
+ * per AppRuntime, inside `createAppRuntime()`, and exposed as
+ * `services.betterAuth` - not memoized here, since a runtime's services are
+ * only ever built once for the runtime's lifetime.
+ */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type is self-referential (Auth is derived from it above); betterAuth()'s inferred generic return type can't be spelled out by hand
+export const buildAuth = ({ queues }: AuthServiceDeps) =>
+  betterAuth({
+    database: prismaAdapter(prisma, { provider: 'postgresql' }),
+    secret: config.BETTER_AUTH_SECRET,
+    baseURL: config.BETTER_AUTH_URL,
+    basePath: '/auth',
+    emailAndPassword: {
       enabled: true,
+      async sendResetPassword({ token, user }) {
+        const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
+        await sendEmail(queues, TPL_PASSWORD_RESET_EMAIL, {
+          to: user.email,
+          data: { resetLink },
+        });
+      },
+      resetPasswordTokenExpiresIn: 3600,
     },
-  },
-  plugins: [
-    customSession(async ({ user, session }) => {
-      const userRoles = await TPL_USER_ROLE_MODEL.findMany({
-        where: { userId: user.id },
-      });
+    emailVerification: {
+      sendOnSignUp: true,
+      async sendVerificationEmail({ token, user }) {
+        const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
+        await sendEmail(queues, TPL_ACCOUNT_VERIFICATION_EMAIL, {
+          to: user.email,
+          data: { verifyLink },
+        });
+      },
+    },
+    session: {
+      cookieCache: { enabled: true, maxAge: 5 * 60 },
+    },
+    advanced: {
+      cookiePrefix,
+      database: {
+        generateId: false,
+      },
+    },
+    trustedOrigins: config.ALLOWED_ORIGINS.split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
+    user: {
+      modelName: 'User',
+      changeEmail: {
+        enabled: true,
+      },
+    },
+    plugins: [
+      customSession(async ({ user, session }) => {
+        const userRoles = await TPL_USER_ROLE_MODEL.findMany({
+          where: { userId: user.id },
+        });
 
-      const roles = [
-        ...new Set([...DEFAULT_USER_ROLES, ...userRoles.map((r) => r.role)]),
-      ] as AuthRole[];
+        const roles = [
+          ...new Set([...DEFAULT_USER_ROLES, ...userRoles.map((r) => r.role)]),
+        ] as AuthRole[];
 
-      return {
-        user,
-        session: {
-          ...session,
-          roles,
-        },
-      };
-    }),
-  ],
-});
+        return {
+          user,
+          session: {
+            ...session,
+            roles,
+          },
+        };
+      }),
+    ],
+  });

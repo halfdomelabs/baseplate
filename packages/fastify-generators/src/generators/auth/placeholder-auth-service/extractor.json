@@ -1,13 +1,5 @@
 {
   "name": "auth/placeholder-auth-service",
-  "extractors": {
-    "ts": {
-      "importProviders": [
-        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
-      ],
-      "skipDefaultImportMap": true
-    }
-  },
   "templates": {
     "user-session-service": {
       "sourceFile": "module/services/user-session.service.ts",

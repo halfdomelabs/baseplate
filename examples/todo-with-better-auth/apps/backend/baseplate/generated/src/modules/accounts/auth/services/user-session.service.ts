@@ -1,13 +1,14 @@
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyRequest } from 'fastify';
 
 import type { AuthUserSessionInfo } from '../types/auth-session.types.js';
 import type { UserSessionService } from '../types/user-session.types.js';
+import type { Auth } from './auth.js';
 
 import { toWebHeaders } from '../utils/headers.utils.js';
-import { auth, cookiePrefix } from './auth.js';
+import { cookiePrefix } from './auth.js';
 
 function toSessionInfo(
-  session: typeof auth.$Infer.Session,
+  session: Auth['$Infer']['Session'],
 ): AuthUserSessionInfo {
   return {
     id: session.session.id,
@@ -18,57 +19,65 @@ function toSessionInfo(
   };
 }
 
-export class BetterAuthUserSessionService implements UserSessionService {
-  /**
-   * Retrieves the user session information from the request.
-   *
-   * @param req - The Fastify request object containing the cookies.
-   * @param _reply - Unused for Better Auth cookie-based sessions.
-   * @returns A promise that resolves to the authenticated user session information or undefined if no session.
-   */
-  async getSessionInfoFromRequest(
-    req: FastifyRequest,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- must be accepted to satisfy UserSessionService but is unused for Better Auth cookie-based sessions
-    _reply?: FastifyReply,
-  ): Promise<AuthUserSessionInfo | undefined> {
-    const session = await auth.api.getSession({
-      headers: toWebHeaders(req.headers),
-    });
+/**
+ * Creates a {@link UserSessionService} backed by Better Auth.
+ *
+ * @param auth - The {@link Auth} instance to look up sessions with.
+ * @returns A {@link UserSessionService} implementation.
+ */
+export function createBetterAuthUserSessionService(
+  auth: Auth,
+): UserSessionService {
+  return {
+    /**
+     * Retrieves the user session information from the request.
+     *
+     * Better Auth looks up sessions purely from request headers, so the
+     * optional `res` parameter on {@link UserSessionService} is unused here.
+     *
+     * @param req - The Fastify request object containing the cookies.
+     * @returns A promise that resolves to the authenticated user session information or undefined if no session.
+     */
+    async getSessionInfoFromRequest(
+      req: FastifyRequest,
+    ): Promise<AuthUserSessionInfo | undefined> {
+      const session = await auth.api.getSession({
+        headers: toWebHeaders(req.headers),
+      });
 
-    if (!session) {
-      return undefined;
-    }
+      if (!session) {
+        return undefined;
+      }
 
-    return toSessionInfo(session);
-  }
+      return toSessionInfo(session);
+    },
 
-  /**
-   * Retrieves the user session information from the authentication token
-   *
-   * @param _req The request object (unused for Better Auth cookie-based sessions)
-   * @param token The session token
-   * @returns The session info or undefined if no session is found
-   */
-  async getSessionInfoFromToken(
-    _req: FastifyRequest,
-    token?: string | null,
-  ): Promise<AuthUserSessionInfo | undefined> {
-    if (!token) {
-      return undefined;
-    }
+    /**
+     * Retrieves the user session information from the authentication token
+     *
+     * @param _req The request object (unused for Better Auth cookie-based sessions)
+     * @param token The session token
+     * @returns The session info or undefined if no session is found
+     */
+    async getSessionInfoFromToken(
+      _req: FastifyRequest,
+      token?: string | null,
+    ): Promise<AuthUserSessionInfo | undefined> {
+      if (!token) {
+        return undefined;
+      }
 
-    const session = await auth.api.getSession({
-      headers: new Headers({
-        cookie: `${cookiePrefix}.session_token=${token}`,
-      }),
-    });
+      const session = await auth.api.getSession({
+        headers: new Headers({
+          cookie: `${cookiePrefix}.session_token=${token}`,
+        }),
+      });
 
-    if (!session) {
-      return undefined;
-    }
+      if (!session) {
+        return undefined;
+      }
 
-    return toSessionInfo(session);
-  }
+      return toSessionInfo(session);
+    },
+  };
 }
-
-export const userSessionService = new BetterAuthUserSessionService();

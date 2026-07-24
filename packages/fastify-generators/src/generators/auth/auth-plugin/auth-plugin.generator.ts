@@ -9,9 +9,9 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/index.js';
 import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
-import { userSessionServiceImportsProvider } from '../_providers/index.js';
 import { authContextImportsProvider } from '../auth-context/index.js';
 import { AUTH_AUTH_PLUGIN_GENERATED } from './generated/index.js';
 
@@ -33,14 +33,14 @@ export const authPluginGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         appModule: appModuleProvider,
         authContextImports: authContextImportsProvider,
-        userSessionServiceImports: userSessionServiceImportsProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
         paths: AUTH_AUTH_PLUGIN_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         appModule,
         authContextImports,
-        userSessionServiceImports,
+        appModuleSetupImports,
         paths,
       }) {
         appModule.moduleFields.set(
@@ -60,7 +60,7 @@ export const authPluginGenerator = createGenerator({
                 destination: paths.authPlugin,
                 importMapProviders: {
                   authContextImports,
-                  userSessionServiceImports,
+                  appModuleSetupImports,
                 },
               }),
             );

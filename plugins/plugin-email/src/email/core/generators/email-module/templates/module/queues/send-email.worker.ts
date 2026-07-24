@@ -1,16 +1,10 @@
 // @ts-nocheck
 
-import type { TransformedEmailMessage } from '$emailsTypes';
-
+import { sendEmailQueue } from '$sendEmailQueue';
 import { logger } from '%loggerServiceImports';
-import { createQueue } from '%queueServiceImports';
+import { bindQueueHandler } from '%queuesImports';
 
-interface SendEmailJobData {
-  message: TransformedEmailMessage;
-  template?: string;
-}
-
-export const sendEmailQueue = createQueue<SendEmailJobData>('send-email', {
+export const sendEmailWorker = bindQueueHandler(sendEmailQueue, {
   handler: async (job) => {
     const messageId = await TPL_EMAIL_ADAPTER.sendMail(job.data.message);
     logger.info(

@@ -110,7 +110,7 @@ export async function requestPasswordReset({
     const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
-    await sendEmail(TPL_PASSWORD_RESET_EMAIL, {
+    await sendEmail(context.services.queues, TPL_PASSWORD_RESET_EMAIL, {
       to: user.email,
       data: { resetLink },
     });
@@ -232,7 +232,7 @@ export async function completePasswordReset({
   await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
-  await sendEmail(TPL_PASSWORD_CHANGED_EMAIL, {
+  await sendEmail(context.services.queues, TPL_PASSWORD_CHANGED_EMAIL, {
     to: user.email,
     data: {},
   });

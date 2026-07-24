@@ -200,10 +200,6 @@
           "importName": "requestServiceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
         },
-        "userSessionServiceImportsProvider": {
-          "importName": "userSessionServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/user-session.ts"
-        },
         "userSessionTypesImportsProvider": {
           "importName": "userSessionTypesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"

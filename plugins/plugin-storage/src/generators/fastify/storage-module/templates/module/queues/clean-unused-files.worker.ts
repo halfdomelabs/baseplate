@@ -1,9 +1,10 @@
 // @ts-nocheck
 
+import { cleanUnusedFilesQueue } from '$queuesCleanUnusedFiles';
 import { cleanUnusedFiles } from '$servicesCleanUnusedFiles';
-import { createQueue } from '%queueServiceImports';
+import { bindQueueHandler } from '%queuesImports';
 
-export const cleanUnusedFilesQueue = createQueue('clean-unused-files', {
+export const cleanUnusedFilesWorker = bindQueueHandler(cleanUnusedFilesQueue, {
   handler: async () => {
     const result = await cleanUnusedFiles();
     return { numDeleted: result };

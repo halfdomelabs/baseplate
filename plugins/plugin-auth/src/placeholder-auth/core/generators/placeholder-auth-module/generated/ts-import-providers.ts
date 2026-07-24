@@ -1,14 +1,28 @@
+import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
+
 import {
   createTsImportMap,
+  createTsImportMapSchema,
   packageScope,
 } from '@baseplate-dev/core-generators';
 import {
-  userSessionServiceImportsProvider,
-  userSessionServiceImportsSchema,
-} from '@baseplate-dev/fastify-generators';
-import { createGeneratorTask } from '@baseplate-dev/sync';
+  createGeneratorTask,
+  createReadOnlyProviderType,
+} from '@baseplate-dev/sync';
 
 import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_PATHS } from './template-paths.js';
+
+export const placeholderAuthModuleImportsSchema = createTsImportMapSchema({
+  createPlaceholderUserSessionService: {},
+});
+
+export type PlaceholderAuthModuleImportsProvider =
+  TsImportMapProviderFromSchema<typeof placeholderAuthModuleImportsSchema>;
+
+export const placeholderAuthModuleImportsProvider =
+  createReadOnlyProviderType<PlaceholderAuthModuleImportsProvider>(
+    'placeholder-auth-module-imports',
+  );
 
 const placeholderAuthCorePlaceholderAuthModuleImportsTask = createGeneratorTask(
   {
@@ -16,15 +30,15 @@ const placeholderAuthCorePlaceholderAuthModuleImportsTask = createGeneratorTask(
       paths: PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_PATHS.provider,
     },
     exports: {
-      userSessionServiceImports:
-        userSessionServiceImportsProvider.export(packageScope),
+      placeholderAuthModuleImports:
+        placeholderAuthModuleImportsProvider.export(packageScope),
     },
     run({ paths }) {
       return {
         providers: {
-          userSessionServiceImports: createTsImportMap(
-            userSessionServiceImportsSchema,
-            { userSessionService: paths.userSessionService },
+          placeholderAuthModuleImports: createTsImportMap(
+            placeholderAuthModuleImportsSchema,
+            { createPlaceholderUserSessionService: paths.userSessionService },
           ),
         },
       };

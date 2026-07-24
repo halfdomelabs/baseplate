@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type { EmailRawOptions, EmailSendOptions } from '$emailsTypes';
+import type { QueueService } from '%queuesImports';
 
 import { sendEmailQueue } from '$sendEmailQueue';
 import { config } from '%configServiceImports';
@@ -12,13 +13,15 @@ function normalizeEmailAddresses(addresses: string | string[]): string[] {
 /**
  * Sends a raw email using the email queue.
  *
+ * @param queues - The queue service to enqueue the send-email job with.
  * @param options - The options for sending the email.
  * @returns The job ID of the email job.
  */
 export async function sendRawEmail(
+  queues: QueueService,
   options: EmailRawOptions,
 ): Promise<string | undefined> {
-  return await sendEmailQueue.enqueue({
+  return await queues.enqueue(sendEmailQueue, {
     message: {
       from: options.from ?? config.EMAIL_DEFAULT_FROM,
       to: normalizeEmailAddresses(options.to),
@@ -40,11 +43,13 @@ export async function sendRawEmail(
 /**
  * Renders an email component and sends it using the email queue.
  *
+ * @param queues - The queue service to enqueue the send-email job with.
  * @param component - The email component to render (must be created with defineEmail).
  * @param options - The options for sending the email, including data props.
  * @returns The job ID of the email job.
  */
 export async function sendEmail<P extends object>(
+  queues: QueueService,
   component: TPL_EMAIL_COMPONENT<P>,
   options: { data: P } & EmailSendOptions,
 ): Promise<string | undefined> {
@@ -63,7 +68,7 @@ export async function sendEmail<P extends object>(
     });
   }
 
-  return sendRawEmail({
+  return sendRawEmail(queues, {
     subject,
     ...options,
     html,

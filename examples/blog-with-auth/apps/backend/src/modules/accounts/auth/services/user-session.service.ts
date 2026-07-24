@@ -265,5 +265,3 @@ export class CookieUserSessionService implements UserSessionService {
     return this.getSessionInfoFromRequest(req, undefined);
   }
 }
-
-export const userSessionService = new CookieUserSessionService();

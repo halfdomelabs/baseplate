@@ -7,6 +7,7 @@ import {
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
+  tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
@@ -19,7 +20,6 @@ import {
   prismaGeneratedImportsProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -192,7 +192,8 @@ export const storageModuleGenerator = createGenerator({
         storageModuleImports: storageModuleImportsProvider,
         storageModuleConfigValues: storageModuleConfigValuesProvider,
         prismaGeneratedImports: prismaGeneratedImportsProvider,
-        queueConfig: queueConfigProvider.dependency().optional(),
+        appModule: appModuleProvider,
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
       run({
         prismaOutput,
@@ -201,7 +202,8 @@ export const storageModuleGenerator = createGenerator({
         storageModuleImports,
         storageModuleConfigValues,
         prismaGeneratedImports,
-        queueConfig,
+        appModule,
+        paths,
       }) {
         return {
           build: async (builder) => {
@@ -307,19 +309,23 @@ export const storageModuleGenerator = createGenerator({
             // Render clean-unused-files service
             await builder.apply(renderers.servicesCleanUnusedFiles.render({}));
 
-            // Render queue only if queue plugin is available
-            if (queueConfig) {
-              await builder.apply(renderers.queuesCleanUnusedFiles.render({}));
+            // Render queue
+            await builder.apply(renderers.queuesCleanUnusedFiles.render({}));
+            await builder.apply(
+              renderers.queuesCleanUnusedFilesWorker.render({}),
+            );
 
-              // Register with queue system
-              queueConfig.queues.set(
-                'clean-unused-files',
-                tsCodeFragment(
-                  'cleanUnusedFilesQueue',
-                  storageModuleImports.cleanUnusedFilesQueue.declaration(),
+            // Register with the app module's queues field
+            appModule.moduleFields.set(
+              'queues',
+              'cleanUnusedFilesWorker',
+              tsCodeFragment(
+                'cleanUnusedFilesWorker',
+                tsImportBuilder(['cleanUnusedFilesWorker']).from(
+                  paths.queuesCleanUnusedFilesWorker,
                 ),
-              );
-            }
+              ),
+            );
           },
         };
       },
