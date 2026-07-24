@@ -231,7 +231,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
                       skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                       take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                     }`;
-                    options.query = tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined })`;
+                    options.query = tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: { id: 'asc' } })`;
                   }
                   fragment = tsTemplate`t.relation(${quot(field.name)}, ${TsCodeUtils.mergeFragmentsAsObject(options)})`;
                 } else {
