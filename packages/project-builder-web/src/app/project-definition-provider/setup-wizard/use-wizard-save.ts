@@ -10,6 +10,7 @@ import {
   createPluginImplementationStoreWithNewPlugins,
   createPluginSpecStore,
   createProjectDefinitionSchema,
+  FeatureUtils,
   libraryEntityType,
   mergeDefinitionContainer,
   pluginDefaultsSpec,
@@ -36,6 +37,7 @@ import {
 } from './plugin-fqns.js';
 
 const TRANSACTIONAL_LIB_TYPE = '@baseplate-dev/plugin-email/transactional-lib';
+const EMAIL_FEATURE_NAME = 'emails';
 
 function findPlugin(
   plugins: PluginMetadataWithPaths[],
@@ -367,7 +369,13 @@ export function useWizardSave({
             PluginUtils.setPluginConfig(
               draft,
               emailPlugin,
-              { implementationPluginKey: implPlugin.key },
+              {
+                implementationPluginKey: implPlugin.key,
+                emailFeatureRef: FeatureUtils.ensureFeatureByNameRecursively(
+                  draft,
+                  EMAIL_FEATURE_NAME,
+                ),
+              },
               definitionContainer,
             );
 
