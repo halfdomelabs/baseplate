@@ -20,11 +20,11 @@
     "pathRootName": "routes-root"
   },
   {
-    "canonicalPath": "@/src/routes/emails",
+    "canonicalPath": "@/src/routes/notifications",
     "pathRootName": "routes-root"
   },
   {
-    "canonicalPath": "@/src/routes/notifications",
+    "canonicalPath": "@/src/routes/emails",
     "pathRootName": "routes-root"
   },
   {

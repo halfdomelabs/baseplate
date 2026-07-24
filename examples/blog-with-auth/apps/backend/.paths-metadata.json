@@ -20,11 +20,11 @@
     "pathRootName": "module-root"
   },
   {
-    "canonicalPath": "@/src/modules/emails",
+    "canonicalPath": "@/src/modules/notifications",
     "pathRootName": "module-root"
   },
   {
-    "canonicalPath": "@/src/modules/notifications",
+    "canonicalPath": "@/src/modules/emails",
     "pathRootName": "module-root"
   },
   {
