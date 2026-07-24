@@ -14,6 +14,7 @@ import {
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { getModelIdFieldName } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
@@ -227,11 +228,23 @@ export const pothosPrismaObjectGenerator = createGenerator({
                     options.authorize = authorize;
                   }
                   if (paginated) {
+                    const relatedModel = prismaOutput.getPrismaModel(
+                      field.nestedType.name,
+                    );
+                    const idFieldNames = relatedModel.idFields ?? [
+                      getModelIdFieldName(relatedModel),
+                    ];
+                    const orderByFragment = TsCodeUtils.mergeFragmentsAsObject(
+                      Object.fromEntries(
+                        idFieldNames.map((name) => [name, quot('asc')]),
+                      ),
+                    );
+
                     options.args = tsTemplate`{
                       skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                       take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                     }`;
-                    options.query = tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: { id: 'asc' } })`;
+                    options.query = tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: ${orderByFragment} })`;
                   }
                   fragment = tsTemplate`t.relation(${quot(field.name)}, ${TsCodeUtils.mergeFragmentsAsObject(options)})`;
                 } else {

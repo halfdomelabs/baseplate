@@ -105,10 +105,17 @@ describe('User.todoLists', () => {
     const owner = await prisma.user.create({
       data: { name: 'Owner', email: 'owner2@example.com' },
     });
+    // Assign explicit, lexically-sortable ids so ordering (by id) is
+    // deterministic regardless of creation order or timing.
     const lists = await Promise.all(
       Array.from({ length: 5 }, (_, i) =>
         prisma.todoList.create({
-          data: { ownerId: owner.id, position: i, name: `List ${i}` },
+          data: {
+            id: `00000000-0000-0000-0000-00000000000${i}`,
+            ownerId: owner.id,
+            position: i,
+            name: `List ${i}`,
+          },
         }),
       ),
     );
