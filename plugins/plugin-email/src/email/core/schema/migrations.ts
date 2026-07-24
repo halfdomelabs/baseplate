@@ -12,14 +12,14 @@ export const EMAIL_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
     name: 'add-email-feature-ref',
     version: 1,
     migrate: (config, projectDefinition) => {
-      const emailFeatureRef = FeatureUtils.ensureFeatureByNameRecursively(
+      FeatureUtils.ensureFeatureByNameRecursively(
         projectDefinition as ProjectDefinition,
         EMAIL_FEATURE_NAME,
       );
       return {
         updatedConfig: {
           ...(config as Record<string, unknown>),
-          emailFeatureRef,
+          emailFeatureRef: EMAIL_FEATURE_NAME,
         },
       };
     },

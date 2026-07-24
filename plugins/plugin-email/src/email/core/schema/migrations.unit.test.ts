@@ -19,9 +19,12 @@ describe('EMAIL_PLUGIN_CONFIG_MIGRATIONS', () => {
     expect(projectDefinition.features).toHaveLength(1);
     const [emailsFeature] = projectDefinition.features ?? [];
     expect(emailsFeature.name).toBe('emails');
+    // Migrations run on the raw, name-keyed definition (before reference
+    // deserialization resolves names to ids), so the stored ref must stay
+    // the feature's name, not the id ensureFeatureByNameRecursively returns.
     expect(result.updatedConfig).toMatchObject({
       implementationPluginKey: 'baseplate-dev_plugin-email_postmark',
-      emailFeatureRef: emailsFeature.id,
+      emailFeatureRef: 'emails',
     });
   });
 
@@ -35,7 +38,7 @@ describe('EMAIL_PLUGIN_CONFIG_MIGRATIONS', () => {
 
     expect(projectDefinition.features).toHaveLength(1);
     expect(result.updatedConfig).toMatchObject({
-      emailFeatureRef: 'feature:existing',
+      emailFeatureRef: 'emails',
     });
   });
 });
