@@ -4,10 +4,8 @@ import type { RuntimeServices } from '%appRuntimeImports';
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
 /**
- * The narrow view of `AppRuntime` module-contributed plugins receive as the
- * `runtime` option - services only, never lifecycle (`dispose`) or any
- * backend-specific control surface. `AppRuntime` structurally satisfies
- * this, so the server passes it directly; no adapter is needed.
+ * The view of `AppRuntime` module-contributed plugins receive as the
+ * `runtime` option.
  */
 export interface PluginRuntime {
   readonly services: Readonly<RuntimeServices>;

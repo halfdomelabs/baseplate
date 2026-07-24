@@ -22,12 +22,7 @@ export const cookiePrefix =
     : 'better-auth';
 
 /**
- * Dependencies `auth` needs at construction time, narrowed to exactly what it
- * uses - not the full AppRuntime - so this file only ever imports the leaf
- * queue types module, never app-runtime.ts itself. Pulling in AppRuntime here
- * would create a cycle: RuntimeServices would need to know about `auth`'s
- * type to expose it, while `auth`'s construction needs RuntimeServices/queues
- * to send email.
+ * Dependencies `auth` needs at construction time.
  */
 export interface AuthServiceDeps {
   queues: QueueService;
@@ -42,8 +37,8 @@ export type Auth = ReturnType<typeof buildAuth>;
  * only ever built once for the runtime's lifetime.
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type is self-referential (Auth is derived from it above); betterAuth()'s inferred generic return type can't be spelled out by hand
-export function buildAuth({ queues }: AuthServiceDeps) {
-  return betterAuth({
+export const buildAuth = ({ queues }: AuthServiceDeps) =>
+  betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     secret: config.BETTER_AUTH_SECRET,
     baseURL: config.BETTER_AUTH_URL,
@@ -107,4 +102,3 @@ export function buildAuth({ queues }: AuthServiceDeps) {
       }),
     ],
   });
-}

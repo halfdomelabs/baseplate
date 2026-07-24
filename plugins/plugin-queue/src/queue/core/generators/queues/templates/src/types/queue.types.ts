@@ -269,10 +269,7 @@ export interface ScheduledJob {
 
 /**
  * The full runtime surface for queues: enqueueing jobs, running workers, and
- * introspecting registered queues. Constructed once by {@link createAppRuntime}
- * and exposed both as `runtime.queues` (this full interface) and as
- * `runtime.services.queues` (narrowed to {@link QueueService}) - the same
- * underlying object in both places.
+ * introspecting registered queues.
  */
 export interface QueueRuntime {
   /**
