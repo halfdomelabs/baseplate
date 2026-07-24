@@ -104,6 +104,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   ),
                   [],
                 ),
+                paginated: ctx.withDefault(z.boolean(), false),
               }),
             )
             .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
