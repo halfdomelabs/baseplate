@@ -1,0 +1,25 @@
+{
+  "name": "pothos/pothos-prisma-filters-file",
+  "templates": {
+    "filters": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main-group",
+      "importMapProviders": {
+        "pothosImports": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/filters.ts",
+      "projectExports": {
+        "validateWhereComplexity": {
+          "isTypeOnly": false,
+          "name": "validateWhereComplexity"
+        }
+      },
+      "sourceFile": "src/plugins/graphql/filters.ts",
+      "variables": {}
+    }
+  }
+}

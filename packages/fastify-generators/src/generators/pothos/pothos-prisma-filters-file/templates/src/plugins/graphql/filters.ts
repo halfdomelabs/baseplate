@@ -1,4 +1,6 @@
-import { builder } from './builder.js';
+// @ts-nocheck
+
+import { builder } from '%pothosImports';
 
 export const booleanFilter = builder.inputType('BooleanFilter', {
   fields: (t) => ({

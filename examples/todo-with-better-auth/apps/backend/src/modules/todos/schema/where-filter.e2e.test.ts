@@ -8,7 +8,7 @@ import type { AuthRole } from '@src/modules/accounts/auth/constants/auth-roles.c
 import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { graphqlPlugin } from '@src/plugins/graphql/index.js';
 import { prisma } from '@src/services/prisma.js';
-import { createServiceContext } from '@src/utils/service-context.js';
+import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
 async function buildApp(
   roles: AuthRole[],
@@ -18,16 +18,13 @@ async function buildApp(
   fastify.decorateRequest('serviceContext');
   fastify.addHook('preHandler', (req, _reply, done) => {
     req.serviceContext = {
-      ...createServiceContext(
-        {
-          auth: createAuthContextFromSessionInfo(
-            userId === undefined
-              ? undefined
-              : { type: 'user', id: 'test-session', userId, roles },
-          ),
-        },
-        {},
-      ),
+      ...createTestServiceContext({
+        auth: createAuthContextFromSessionInfo(
+          userId === undefined
+            ? undefined
+            : { type: 'user', id: 'test-session', userId, roles },
+        ),
+      }),
       cookieStore: {
         get: () => undefined,
         set: () => undefined,
@@ -248,6 +245,37 @@ describe('todoLists where filtering', () => {
       OR: Array.from({ length: 30 }, (_, i) => ({
         name: { equals: `item-${i}` },
       })),
+    };
+
+    const result = await queryGraphql(
+      fastify,
+      `query ($where: TodoListWhereInput) {
+        todoLists(where: $where) { name }
+      }`,
+      { where },
+    );
+
+    expect(result.errors).toBeDefined();
+    expect(result.data?.todoLists).toBeUndefined();
+
+    await fastify.close();
+  });
+
+  it('rejects a scalar filter whose in/notIn array exceeds the configured max, even at depth 1', async () => {
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner-in-array@example.com' },
+    });
+    await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 0, name: 'Solo' },
+    });
+
+    const fastify = await buildApp(['public', 'user', 'admin'], owner.id);
+
+    // Depth 1, a single clause — passes the AND/OR/NOT clause-count check —
+    // but the `in` array itself has 30 entries, exceeding the configured
+    // max clause count of 25.
+    const where = {
+      name: { in: Array.from({ length: 30 }, (_, i) => `item-${i}`) },
     };
 
     const result = await queryGraphql(

@@ -90,16 +90,18 @@ export const uuidFilter = builder.inputType('UuidFilter', {
 
 /**
  * Recursively checks that a WhereInput value's AND/OR/NOT nesting does not
- * exceed maxDepth, and that the total number of AND/OR/NOT clauses across
- * the whole tree does not exceed maxClauseCount. GraphQL's own query
- * complexity/depth limiting only measures the selection set, not argument
- * values, so a `where` filter's shape must be bounded separately. The
- * configured limits are embedded at generation time in each query's
- * `validate` call rather than read from constants here.
+ * exceed maxDepth, that the total number of AND/OR/NOT clauses across the
+ * whole tree does not exceed maxClauseCount, and that no scalar filter's
+ * `in`/`notIn` operand array is longer than maxClauseCount. GraphQL's own
+ * query complexity/depth limiting only measures the selection set, not
+ * argument values, so a `where` filter's shape must be bounded separately.
+ * The configured limits are passed in by each query's `validate` call.
  *
  * Depth alone doesn't bound breadth — `{ OR: [ ...500 clauses... ] }` stays
  * at depth 2 no matter how many clauses are in the array — so both checks
- * run in the same pass.
+ * run in the same pass. Nor does the AND/OR/NOT clause count bound a single
+ * field's `in`/`notIn` array — `{ name: { in: [ ...100000 strings... ] } }`
+ * has one clause at depth 1, so it needs its own bound.
  */
 export function validateWhereComplexity(
   where: unknown,
@@ -108,9 +110,22 @@ export function validateWhereComplexity(
 ): boolean {
   let clauseCount = 0;
 
+  function hasOversizedOperandArray(value: unknown): boolean {
+    if (Array.isArray(value)) {
+      return value.length > maxClauseCount;
+    }
+    if (value && typeof value === 'object') {
+      return Object.values(value).some((v) => hasOversizedOperandArray(v));
+    }
+    return false;
+  }
+
   function walk(value: unknown, depth: number): boolean {
     if (!value || typeof value !== 'object') {
       return true;
+    }
+    if (hasOversizedOperandArray(value)) {
+      return false;
     }
     const { AND, OR, NOT } = value as {
       AND?: unknown[];

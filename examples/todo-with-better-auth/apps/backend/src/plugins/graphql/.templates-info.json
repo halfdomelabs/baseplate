@@ -4,6 +4,11 @@
     "instanceData": {},
     "template": "builder"
   },
+  "filters.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-prisma-filters-file",
+    "instanceData": {},
+    "template": "filters"
+  },
   "index.ts": {
     "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
     "instanceData": {},
