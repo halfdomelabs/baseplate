@@ -40,6 +40,13 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
           allow: ['NotFoundError', 'Redirect'],
         },
       ],
+
+      // Component return types are overwhelmingly restatements of what TS already
+      // infers from JSX (e.g. React.ReactElement); not worth the annotation noise
+      '@typescript-eslint/explicit-function-return-type': 'off',
+
+      // Pure duplication with TypeScript prop typing
+      'react/prop-types': 'off',
     },
   },
 
@@ -57,22 +64,6 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,
-
-  // Unicorn
-  {
-    rules: {
-      // Support kebab case with - prefix to support ignored files in routes and $ prefix for Tanstack camelCase files
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            kebabCase: true,
-          },
-          ignore: [String.raw\`^-[a-z0-9\\-\\.]+$\`, String.raw\`^\\$[a-zA-Z0-9\\.]+$\`],
-        },
-      ],
-    },
-  },
 `,
   [
     tsImportBuilder()

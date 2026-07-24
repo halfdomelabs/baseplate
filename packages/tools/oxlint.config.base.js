@@ -211,6 +211,14 @@ export const oxlintConfigBase = {
       'error',
       { allowExpressions: true, allowTypedFunctionExpressions: true },
     ],
+    // Catch new union members with no case handling at all; a `default` clause
+    // is treated as covering the remaining members since it's a common,
+    // intentional fallback pattern in this codebase. Needed explicitly here since
+    // oxlint's rule (unlike @typescript-eslint's) does not default to this behavior.
+    'typescript/switch-exhaustiveness-check': [
+      'error',
+      { considerDefaultExhaustiveForUnions: true },
+    ],
 
     // Unicorn rules
     'unicorn/consistent-assert': 'error',

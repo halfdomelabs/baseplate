@@ -117,7 +117,7 @@ function ResetPasswordPage(): React.JSX.Element {
             setTokenValid(false);
             break;
           }
-          default: {
+          case null: {
             setValidationError(
               logAndFormatError(
                 err,
@@ -160,7 +160,7 @@ function ResetPasswordPage(): React.JSX.Element {
             setTokenValid(false);
             break;
           }
-          default: {
+          case null: {
             toast.error(
               logAndFormatError(
                 err,

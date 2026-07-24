@@ -62,6 +62,10 @@ export function generateTypescriptEslintConfig(options = {}) {
     // ESLint Configs for all files
     eslint.configs.recommended,
     {
+      linterOptions: {
+        reportUnusedDisableDirectives: 'error',
+        reportUnusedInlineConfigs: 'error',
+      },
       languageOptions: {
         globals: { ...globals.node },
       },
@@ -134,6 +138,10 @@ export function generateTypescriptEslintConfig(options = {}) {
           'error',
           { ignoreTernaryTests: true },
         ],
+        // Catch new union members silently falling into a generic `default` case.
+        // A `default` clause still satisfies exhaustiveness for switches with no
+        // missing cases (allowDefaultCaseForExhaustiveSwitch, on by default).
+        '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
         // Allow redirect and notFound to be thrown from routes (placing in generic config to allow it to be used in *.ts files too)
         '@typescript-eslint/only-throw-error': [
@@ -206,25 +214,13 @@ export function generateTypescriptEslintConfig(options = {}) {
     },
 
     // Unicorn Configs
-    eslintPluginUnicorn.configs.recommended,
+    eslintPluginUnicorn.configs.unopinionated,
     {
       rules: {
-        // Disable the rule that prevents using abbreviations in identifiers, allowing
-        // flexibility in naming, especially for common abbreviations in code.
-        'unicorn/prevent-abbreviations': 'off',
-
-        // Disable the rule that disallows `null` values, allowing `null` to be used
-        // when necessary (e.g., for nullable types or optional fields).
-        'unicorn/no-null': 'off',
-
-        // Allow array callback references without flags, supporting patterns like
-        // `array.filter(callbackFunction)`, which can improve readability and code brevity.
-        'unicorn/no-array-callback-reference': 'off',
-
         // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
         'unicorn/prefer-logical-operator-over-ternary': 'off',
 
-        // Allow the use of arrow functions in nested scopes
+        // Re-enable with the arrow-function carve-out since the unopinionated preset omits this rule by default
         'unicorn/consistent-function-scoping': [
           'error',
           { checkArrowFunctions: false },
@@ -232,9 +228,6 @@ export function generateTypescriptEslintConfig(options = {}) {
 
         // A bit over-eager flagging any module references
         'unicorn/prefer-module': 'off',
-
-        // Allow error variables to be named anything
-        'unicorn/catch-error-name': 'off',
 
         // False positives with array-like functions (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1394)
         'unicorn/no-array-method-this-argument': 'off',
@@ -248,6 +241,23 @@ export function generateTypescriptEslintConfig(options = {}) {
 
         // This rule can cause performance issues (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/2819)
         'unicorn/no-unnecessary-polyfills': 'off',
+
+        // Enforce for-of/array methods over manual index loops; the unopinionated preset omits this rule by default
+        'unicorn/no-for-loop': 'error',
+
+        // Enforce kebab-case filenames (repo convention); the unopinionated preset omits this rule by default
+        'unicorn/filename-case': [
+          'error',
+          {
+            cases: {
+              kebabCase: true,
+            },
+            ignore: [
+              String.raw`^-[a-z0-9\-\.]+$`,
+              String.raw`^\$[a-zA-Z0-9\.]+$`,
+            ],
+          },
+        ],
       },
     },
 

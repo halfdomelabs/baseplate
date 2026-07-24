@@ -11,8 +11,6 @@ import { cn } from '@src/utils/cn';
 
 import { Button } from './button';
 
-/* eslint-disable react/prop-types -- needed for subcomponents */
-
 /**
  * A control that allows the user to select a date.
  *

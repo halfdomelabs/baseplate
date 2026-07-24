@@ -125,7 +125,7 @@ function LoginPage(): React.JSX.Element {
             });
             break;
           }
-          default: {
+          case null: {
             toast.error(
               logAndFormatError(err, 'Sorry, we could not log you in.'),
             );
