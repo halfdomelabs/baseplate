@@ -116,7 +116,8 @@
         "DataQuery": { "isTypeOnly": true, "name": "DataQuery" },
         "GetResult": { "isTypeOnly": true, "name": "GetResult" },
         "ModelPropName": { "isTypeOnly": true, "name": "ModelPropName" },
-        "WhereInput": { "isTypeOnly": true, "name": "WhereInput" }
+        "WhereInput": { "isTypeOnly": true, "name": "WhereInput" },
+        "WhereUniqueInput": { "isTypeOnly": true, "name": "WhereUniqueInput" }
       },
       "sourceFile": "src/utils/data-operations/prisma-types.ts",
       "variables": {}

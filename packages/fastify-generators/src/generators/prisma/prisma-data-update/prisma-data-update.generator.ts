@@ -7,6 +7,7 @@ import {
 } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { serviceFileProvider } from '#src/generators/core/index.js';
 import {
   contextKind,
@@ -25,7 +26,7 @@ import { generateAuthorizationStatements } from '../_shared/build-data-helpers/g
 import { generateWhereType } from '../_shared/build-data-helpers/generate-where-type.js';
 import { dataUtilsImportsProvider } from '../data-utils/index.js';
 import { prismaDataServiceProvider } from '../prisma-data-service/prisma-data-service.generator.js';
-import { prismaModelAuthorizerProvider } from '../prisma-model-authorizer/index.js';
+import { prismaModelPolicyProvider } from '../prisma-model-authorizer/index.js';
 import {
   prismaImportsProvider,
   prismaOutputProvider,
@@ -61,8 +62,9 @@ export const prismaDataUpdateGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         prismaImports: prismaImportsProvider,
         authorizerImports: authorizerUtilsImportsProvider,
+        errorHandlerImports: errorHandlerServiceImportsProvider,
         serviceContextImports: serviceContextImportsProvider,
-        modelAuthorizer: prismaModelAuthorizerProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(modelName),
       },
@@ -73,8 +75,9 @@ export const prismaDataUpdateGenerator = createGenerator({
         prismaOutput,
         prismaImports,
         authorizerImports,
+        errorHandlerImports,
         serviceContextImports,
-        modelAuthorizer,
+        modelPolicy,
       }) {
         const serviceFields = prismaDataService.getFields();
         const usedFields = serviceFields.filter((field) =>
@@ -115,21 +118,76 @@ export const prismaDataUpdateGenerator = createGenerator({
                 methodType: 'Update',
                 globalRoles,
                 instanceRoles,
-                modelAuthorizer,
+                modelPolicy,
                 authorizerImports,
               });
 
-            // Determine if we need existingItem:
-            // - Instance auth needs it for checkInstanceAuthorization
-            // - Transformers that set needsExistingItem (e.g., file transformers referencing existingItem.fieldId)
             const hasTransformNeedingExistingItem = usedFields.some(
               (f) => f.transformer?.needsExistingItem === true,
             );
-            const needsExistingItem =
-              hasInstanceAuth || hasTransformNeedingExistingItem;
-            const existingItemFragment = needsExistingItem
-              ? tsTemplate`const existingItem = await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where });`
+
+            const hasPolicy = modelPolicy != null;
+            const hasAnyGrant =
+              hasInstanceAuth ||
+              (globalRoles != null && globalRoles.length > 0);
+
+            const hasGlobalGrant =
+              globalRoles != null && globalRoles.length > 0;
+
+            // A policy-backed update routes authorization through the policy:
+            // - Scalar path (any grant): fold the grant into the `update` call via
+            //   `policy.update.whereUnique` — one query both authorizes and mutates.
+            //   Instance grants filter per row (→ 404 on miss); global-only grants
+            //   pass admins untouched and throw 403 for others, before the query.
+            // - Transform + INSTANCE grant: the row must be fetched anyway, so fold
+            //   the grant into that `findUniqueOrThrow`.
+            // - Transform + GLOBAL-ONLY grant: a row-less principal check —
+            //   `policy.update.checkGlobalRoles` (zero-query; routing it through a
+            //   fetch would add a query purely to check a principal).
+            const usesAtomicAuth =
+              hasAnyGrant && !hasTransformFields && hasPolicy;
+            const usesAuthedFetch =
+              hasInstanceAuth && hasTransformFields && hasPolicy;
+            const usesTransformGate =
+              hasGlobalGrant &&
+              !hasInstanceAuth &&
+              hasTransformFields &&
+              hasPolicy;
+
+            // Fetch the row when the transform needs it, or when the transform
+            // path authorizes through a fetch. The auth-fetch variant composes
+            // the grant into the selector and maps P2025 → 404.
+            const needsFetch =
+              usesAuthedFetch || hasTransformNeedingExistingItem;
+            const fetchWhereEntry = usesAuthedFetch
+              ? tsTemplate`where: ${modelPolicy.getActionWhereUniqueFragment('update')}(context, where)`
+              : 'where';
+            const fetchCatchFragment = usesAuthedFetch
+              ? tsTemplate`.catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}))`
               : '';
+            // Bind `existingItem` only when a transform reads it. When the fetch
+            // exists purely to authorize (the transform loads its own state), emit
+            // it as a bare assertion — no unused binding.
+            const bindsExistingItem = hasTransformNeedingExistingItem;
+            const fetchPrefix = bindsExistingItem
+              ? tsTemplate`const existingItem = `
+              : "// Authorize: throws 404 if the caller can't update this row.\n";
+            const existingItemFragment = needsFetch
+              ? tsTemplate`${fetchPrefix}await ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ ${fetchWhereEntry} })${fetchCatchFragment};`
+              : '';
+
+            // Auth statement for the transform path: `checkGlobalRoles` when a
+            // policy exists for a global-only grant; otherwise the helper's
+            // fragment (`checkGlobalAuthorization` for a policy-less model, or the
+            // instance `checkInstanceAuthorization` — though instance transform
+            // grants are carried by `usesAuthedFetch` and emit nothing here). The
+            // scalar/authed-fetch atomic forms carry the grant themselves → empty.
+            const authStatementFragment =
+              usesAtomicAuth || usesAuthedFetch
+                ? ''
+                : usesTransformGate
+                  ? tsTemplate`${modelPolicy.getActionCheckGlobalRolesFragment('update')}(context);`
+                  : authFragment;
 
             const whereType = generateWhereType(prismaModel);
 
@@ -143,11 +201,37 @@ export const prismaDataUpdateGenerator = createGenerator({
                 ? 'data,'
                 : tsTemplate`data: ${parts.prismaDataFragment},`;
 
-            // Context is always needed for transforms; for scalar-only, only when auth is present
-            const needsContext = hasTransformFields || authFragment !== '';
+            // Context is always needed for transforms; for scalar-only, when any
+            // auth runs (a check statement, or the atomic whereUnique that reads
+            // `context`).
+            const needsContext =
+              hasTransformFields || authFragment !== '' || usesAtomicAuth;
             const contextParam = needsContext ? 'context,' : '';
             const contextType = needsContext
               ? tsTemplate`context: ${serviceContextImports.ServiceContext.typeFragment()};`
+              : '';
+
+            // Scalar-path `where` entry and trailing `.catch`: atomic auth
+            // composes the grant into the unique selector and maps P2025 → 404;
+            // otherwise the caller's `where` passes through as shorthand.
+            const scalarWhereEntry = usesAtomicAuth
+              ? tsTemplate`where: ${modelPolicy.getActionWhereUniqueFragment('update')}(context, where),`
+              : 'where,';
+            const scalarCatchFragment = usesAtomicAuth
+              ? tsTemplate`.catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}))`
+              : '';
+
+            // Transform-path inner `tx.update`: for an instance grant, compose the
+            // grant into the mutating call too (not just the earlier auth fetch),
+            // so authorization and the write are atomic — no TOCTOU window between
+            // the fetch and the transaction. `whereUnique` builds the filter
+            // in-memory (no extra probe); the nested relation filter is evaluated
+            // inside the single `update`. `P2025` → 404, aborting the transaction.
+            const txWhereEntry = usesAuthedFetch
+              ? tsTemplate`where: ${modelPolicy.getActionWhereUniqueFragment('update')}(context, where),`
+              : 'where,';
+            const txCatchFragment = usesAuthedFetch
+              ? tsTemplate`.catch(${errorHandlerImports.throwIfPrismaNotFound.fragment()}(${quot(`${modelName} not found`)}))`
               : '';
 
             const updateFunction = hasTransformFields
@@ -165,7 +249,7 @@ export const prismaDataUpdateGenerator = createGenerator({
                   ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${existingItemFragment}
-                  ${authFragment}
+                  ${authStatementFragment}
                   ${parts.inputDestructureFragment}
 
                   const plan = await ${dataUtilsImports.prepareTransformers.fragment()}({
@@ -176,9 +260,9 @@ export const prismaDataUpdateGenerator = createGenerator({
                   const result = await ${dataUtilsImports.executeTransformPlan.fragment()}(plan, {
                     execute: async ({ tx, transformed }) =>
                       tx.${modelVar}.update({
-                        where,
+                        ${txWhereEntry}
                         ${prismaDataEntry}
-                      }),
+                      })${txCatchFragment},
                     refetch: (item) =>
                       ${prismaImports.prisma.fragment()}.${modelVar}.findUniqueOrThrow({ where: { id: item.id }, ...query }),
                   });
@@ -200,14 +284,14 @@ export const prismaDataUpdateGenerator = createGenerator({
                   ${contextType}
                 }): Promise<${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>> {
                   ${existingItemFragment}
-                  ${authFragment}
+                  ${authStatementFragment}
                   ${parts.inputDestructureFragment}
 
                   const result = await ${prismaImports.prisma.fragment()}.${modelVar}.update({
-                    where,
+                    ${scalarWhereEntry}
                     ${prismaDataEntry}
                     ...query,
-                  });
+                  })${scalarCatchFragment};
 
                   return result as ${dataUtilsImports.GetResult.typeFragment()}<${quot(modelVar)}, TQuery>;
                 }

@@ -201,7 +201,7 @@
     {
       "devPort": 6001,
       "enableAxios": true,
-      "enableSubscriptions": true,
+      "enableSubscriptions": false,
       "id": "app:OHiu1F64bPmB",
       "name": "backend",
       "type": "backend"
@@ -209,7 +209,6 @@
     {
       "description": "An app for cool todoers",
       "devPort": 6031,
-      "enableSubscriptions": true,
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "name": "web",
@@ -1160,7 +1159,7 @@
           "get": { "enabled": true },
           "globalRoles": ["admin"],
           "instanceRoles": ["owner"],
-          "list": { "enabled": true }
+          "list": { "connection": { "enabled": true }, "enabled": true }
         }
       },
       "id": "model:ONd_Fbo61Tx7",
@@ -1302,7 +1301,7 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": { "enabled": true }
+          "list": { "connection": { "enabled": true }, "enabled": true }
         }
       },
       "id": "model:nmsOHh3rZMmE",

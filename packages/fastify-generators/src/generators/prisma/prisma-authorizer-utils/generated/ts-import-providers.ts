@@ -18,9 +18,12 @@ import {
 import { PRISMA_PRISMA_AUTHORIZER_UTILS_PATHS } from './template-paths.js';
 
 export const prismaAuthorizerUtilsImportsSchema = createTsImportMapSchema({
-  createModelAuthorizer: {},
-  ModelAuthorizer: { isTypeOnly: true },
-  ModelAuthorizerConfig: { isTypeOnly: true },
+  ActionGrant: { isTypeOnly: true },
+  ActionMembers: { isTypeOnly: true },
+  cachedSet: {},
+  createModelPolicy: {},
+  PolicyRoleMembers: { isTypeOnly: true },
+  RoleBuilder: { isTypeOnly: true },
 });
 
 export type PrismaAuthorizerUtilsImportsProvider =
@@ -55,9 +58,12 @@ const prismaPrismaAuthorizerUtilsImportsTask = createGeneratorTask({
         prismaAuthorizerUtilsImports: createTsImportMap(
           prismaAuthorizerUtilsImportsSchema,
           {
-            createModelAuthorizer: paths.utilsAuthorizers,
-            ModelAuthorizer: paths.utilsAuthorizers,
-            ModelAuthorizerConfig: paths.utilsAuthorizers,
+            ActionGrant: paths.utilsAuthorizers,
+            ActionMembers: paths.utilsAuthorizers,
+            cachedSet: paths.utilsAuthorizers,
+            createModelPolicy: paths.utilsAuthorizers,
+            PolicyRoleMembers: paths.utilsAuthorizers,
+            RoleBuilder: paths.utilsAuthorizers,
           },
         ),
       },

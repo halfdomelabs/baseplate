@@ -12,7 +12,6 @@
     "build:affected": "turbo run build --affected",
     "check": "turbo run lint prettier:check test typecheck --affected --continue",
     "dev": "turbo run dev gql:watch watch",
-    "preinstall": "npx only-allow pnpm",
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "prettier:check": "turbo run prettier:check && pnpm run prettier:check:root",
@@ -30,7 +29,7 @@
     "prettier": "3.8.1",
     "prettier-plugin-packagejson": "3.0.0",
     "turbo": "2.9.15",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "packageManager": "pnpm@11.7.0",
   "engines": {

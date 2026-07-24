@@ -79,6 +79,9 @@ export const reactTypescriptGenerator = createGenerator({
                 noFallthroughCasesInSwitch: true,
                 noUncheckedSideEffectImports: true,
 
+                /* Types */
+                types: ['node'],
+
                 /* Paths */
                 paths: {
                   '@src/*': ['./src/*'],

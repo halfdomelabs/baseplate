@@ -11,6 +11,7 @@ import { z } from 'zod';
 
 import type { PothosWriterOptions } from '#src/writers/pothos/index.js';
 
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import {
   pothosFieldProvider,
   pothosTypeOutputProvider,
@@ -19,7 +20,7 @@ import {
   getModelIdFieldName,
   getPrimaryKeyDefinition,
 } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
-import { prismaModelQueryFilterProvider } from '#src/generators/prisma/prisma-model-query-filter/index.js';
+import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import { writePothosArgsFromDtoFields } from '#src/writers/pothos/index.js';
@@ -43,18 +44,11 @@ const descriptorSchema = z.object({
    */
   hasPrimaryKeyInputType: z.boolean(),
   /**
-   * Model name key to look up the query filter provider. When set,
-   * the resolve function will spread `queryFilter.buildWhere(ctx, roles)`.
+   * Model name key to look up the model policy provider. When set, the resolve
+   * function composes the read filter via `policy.read.whereUnique(ctx, { id })`
+   * and maps a not-found to a 404 with `throwIfPrismaNotFound`.
    */
-  queryFilterRef: z.string().optional(),
-  /**
-   * Role names to pass to `queryFilter.buildWhere()`.
-   */
-  queryFilterRoles: z.array(z.string()).optional(),
-  /**
-   * Global role names that bypass the query filter entirely.
-   */
-  queryFilterBypassRoles: z.array(z.string()).optional(),
+  policyRef: z.string().optional(),
 });
 
 export const pothosPrismaFindQueryGenerator = createGenerator({
@@ -62,19 +56,13 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({
-    modelName,
-    order,
-    hasPrimaryKeyInputType,
-    queryFilterRef,
-    queryFilterRoles,
-    queryFilterBypassRoles,
-  }) => ({
+  buildTasks: ({ modelName, order, hasPrimaryKeyInputType, policyRef }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypesFile: pothosTypesFileProvider,
         pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
+        errorHandlerImports: errorHandlerServiceImportsProvider,
         pothosPrimaryKeyInputType: pothosTypeOutputProvider
           .dependency()
           .optionalReference(
@@ -82,9 +70,9 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
               ? getPothosPrismaPrimaryKeyTypeOutputName(modelName)
               : undefined,
           ),
-        queryFilter: prismaModelQueryFilterProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
-          .optionalReference(queryFilterRef),
+          .optionalReference(policyRef),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
@@ -93,8 +81,9 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
         prismaOutput,
         pothosSchemaBaseTypes,
         pothosTypesFile,
+        errorHandlerImports,
         pothosPrimaryKeyInputType,
-        queryFilter,
+        modelPolicy,
       }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
@@ -137,52 +126,40 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
 
             const primaryKeyFieldName = getModelIdFieldName(modelOutput);
 
-            let resolveFunction: TsCodeFragment;
+            const idPart =
+              primaryKeyFieldName === primaryKeyDefinition.name
+                ? primaryKeyFieldName
+                : `${primaryKeyFieldName}: ${primaryKeyDefinition.name}`;
 
-            if (
-              queryFilter &&
-              queryFilterRoles &&
-              queryFilterRoles.length > 0
-            ) {
-              const rolesArray = queryFilterRoles
-                .map((r) => `'${r}'`)
-                .join(', ');
-              const queryFilterFragment = queryFilter.getQueryFilterFragment();
-
-              const idPart =
-                primaryKeyFieldName === primaryKeyDefinition.name
-                  ? primaryKeyFieldName
-                  : `${primaryKeyFieldName}: ${primaryKeyDefinition.name}`;
-
-              const bypassRolesArg =
-                queryFilterBypassRoles && queryFilterBypassRoles.length > 0
-                  ? `, { bypassRoles: [${queryFilterBypassRoles.map((r) => quot(r)).join(', ')}] }`
-                  : '';
-
-              resolveFunction = TsCodeUtils.formatFragment(
-                `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: { ID_PART, ...QUERY_FILTER.buildWhere(ctx, [ROLES]BYPASS_ROLES) }})`,
-                {
-                  ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
-                  MODEL: prismaOutput.getPrismaModelFragment(modelName),
-                  ID_PART: idPart,
-                  QUERY_FILTER: queryFilterFragment,
-                  ROLES: rolesArray,
-                  BYPASS_ROLES: bypassRolesArg,
-                },
-              );
-            } else {
-              resolveFunction = TsCodeUtils.formatFragment(
-                `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
-                {
-                  ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
-                  MODEL: prismaOutput.getPrismaModelFragment(modelName),
-                  WHERE_CLAUSE:
-                    primaryKeyFieldName === primaryKeyDefinition.name
-                      ? `{ ${primaryKeyFieldName} }`
-                      : `{ ${primaryKeyFieldName}: ${primaryKeyDefinition.name} }`,
-                },
-              );
-            }
+            // Policy-gated read: compose the read filter INTO the unique selector
+            // via `read.whereUnique`, so `findUniqueOrThrow` still takes a unique
+            // input and an unreadable/absent row → P2025 → 404 (existence hidden).
+            // `.catch(throwIfPrismaNotFound(...))` maps it. No policy → plain find.
+            const resolveFunction: TsCodeFragment = modelPolicy
+              ? TsCodeUtils.formatFragment(
+                  `async (query, _root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: READ_WHERE_UNIQUE(ctx, { ID_PART })}).catch(THROW_NOT_FOUND(NOT_FOUND_MSG))`,
+                  {
+                    ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
+                    MODEL: prismaOutput.getPrismaModelFragment(modelName),
+                    ID_PART: idPart,
+                    READ_WHERE_UNIQUE:
+                      modelPolicy.getActionWhereUniqueFragment('read'),
+                    THROW_NOT_FOUND:
+                      errorHandlerImports.throwIfPrismaNotFound.fragment(),
+                    NOT_FOUND_MSG: quot(`${modelName} not found`),
+                  },
+                )
+              : TsCodeUtils.formatFragment(
+                  `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
+                  {
+                    ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
+                    MODEL: prismaOutput.getPrismaModelFragment(modelName),
+                    WHERE_CLAUSE:
+                      primaryKeyFieldName === primaryKeyDefinition.name
+                        ? `{ ${primaryKeyFieldName} }`
+                        : `{ ${primaryKeyFieldName}: ${primaryKeyDefinition.name} }`,
+                  },
+                );
 
             const options = {
               type: quot(modelName),

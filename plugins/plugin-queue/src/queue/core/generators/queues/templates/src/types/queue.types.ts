@@ -162,7 +162,7 @@ export function bindQueueHandler<T>(
     },
     async invoke(job, ctx): Promise<unknown> {
       const handler = await ensureHandler();
-      return handler(job as QueueJob<T>, ctx as ServiceContextWith<never>);
+      return handler(job as QueueJob<T>, ctx);
     },
   };
 }

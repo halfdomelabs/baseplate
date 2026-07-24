@@ -1,0 +1,32 @@
+{
+  "generic-type.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-generic-type"
+  },
+  "in-app-channel.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-in-app-channel"
+  },
+  "notification-channel.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-channel"
+  },
+  "notification-content.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-content"
+  },
+  "notification-registry.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-registry"
+  },
+  "notification.service.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-service"
+  }
+}

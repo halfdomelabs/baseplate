@@ -70,6 +70,16 @@ const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
    * Side effect imports prior to loading the GraphQL schema.
    */
   sideEffectImports: t.map<string, TsCodeFragment>(),
+  /**
+   * Real-time subscription channels contributed to the pubsub type map.
+   *
+   * Each entry is a `PubSubPublishArgs` object field, e.g.
+   * `notificationReceived: 'notificationReceived: [userId: string, payload: { id: string }]'`.
+   * Features/plugins register channels here so `getPubSub()` is strongly typed
+   * without hand-editing the generated `pubsub.ts`. Only applied when the app
+   * has subscriptions enabled.
+   */
+  publishArgs: t.map<string, TsCodeFragment>(),
 }));
 
 export interface YogaPluginConfigProvider extends InferFieldMapSchemaFromBuilder<
@@ -92,6 +102,7 @@ export const yogaPluginGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ enableSubscriptions }) => ({
     paths: YOGA_YOGA_PLUGIN_GENERATED.paths.task,
+    imports: YOGA_YOGA_PLUGIN_GENERATED.imports.task,
     setup: createGeneratorTask({
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(packageScope),
@@ -218,13 +229,30 @@ export const yogaPluginGenerator = createGenerator({
               typescriptFile: typescriptFileProvider,
               paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
               fastifyRedisImports: fastifyRedisImportsProvider,
+              yogaPluginSetup: yogaPluginSetupProvider,
             },
-            run({ node, typescriptFile, paths, fastifyRedisImports }) {
+            run({
+              node,
+              typescriptFile,
+              paths,
+              fastifyRedisImports,
+              yogaPluginSetup,
+            }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
                   '@graphql-yoga/redis-event-target',
                 ]),
               });
+
+              // Channels registered by features/plugins via `publishArgs`, merged
+              // into an object type that is intersected with the base index
+              // signature in the template. Empty map -> `{}` (no channels).
+              const publishArgs =
+                yogaPluginSetup.publishArgs.size > 0
+                  ? TsCodeUtils.mergeFragmentsAsObject(
+                      yogaPluginSetup.publishArgs,
+                    )
+                  : tsCodeFragment('{}');
 
               return {
                 async build(builder) {
@@ -233,9 +261,7 @@ export const yogaPluginGenerator = createGenerator({
                       template: YOGA_YOGA_PLUGIN_GENERATED.templates.pubsub,
                       destination: paths.pubsub,
                       variables: {
-                        // Projects add their own channels here, e.g.
-                        // `{ myChannel: [payload: MyPayload] }`.
-                        TPL_PUBLISH_ARGS: 'Record<string, never>',
+                        TPL_PUBLISH_ARGS: publishArgs,
                       },
                       importMapProviders: { fastifyRedisImports },
                     }),

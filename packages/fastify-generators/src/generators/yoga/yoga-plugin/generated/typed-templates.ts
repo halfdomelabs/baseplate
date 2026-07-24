@@ -33,6 +33,7 @@ const pubsub = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: { fastifyRedisImports: fastifyRedisImportsProvider },
   name: 'pubsub',
+  projectExports: { getPubSub: {} },
   source: {
     path: path.join(
       import.meta.dirname,

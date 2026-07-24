@@ -6,5 +6,4 @@ export const builder = new SchemaBuilder<{
   TPL_SCHEMA_TYPE_OPTIONS;
 }>(TPL_SCHEMA_BUILDER_OPTIONS);
 
-builder.queryType();
-builder.mutationType();
+TPL_ROOT_TYPES;

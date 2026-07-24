@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
 
-import { todoListQueryFilter } from '../authorizers/todo-list.query-filter.js';
+import { todoListPolicy } from '../authorizers/todo-list.policy.js';
 
 builder.queryField('todoList', (t) =>
   t.prismaField({
@@ -11,15 +12,12 @@ builder.queryField('todoList', (t) =>
     authorize: ['admin'],
     args: { id: t.arg({ required: true, type: 'Uuid' }) },
     resolve: async (query, _root, { id }, ctx) =>
-      prisma.todoList.findUniqueOrThrow({
-        ...query,
-        where: {
-          id,
-          ...todoListQueryFilter.buildWhere(ctx, ['owner'], {
-            bypassRoles: ['admin'],
-          }),
-        },
-      }),
+      prisma.todoList
+        .findUniqueOrThrow({
+          ...query,
+          where: todoListPolicy.read.whereUnique(ctx, { id }),
+        })
+        .catch(throwIfPrismaNotFound('TodoList not found')),
   }),
 );
 
@@ -34,13 +32,28 @@ builder.queryField('todoLists', (t) =>
     resolve: async (query, _root, { skip, take }, ctx) =>
       prisma.todoList.findMany({
         ...query,
-        where: {
-          ...todoListQueryFilter.buildWhere(ctx, ['owner'], {
-            bypassRoles: ['admin'],
-          }),
-        },
+        where: todoListPolicy.read.where(ctx),
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),
   }),
+);
+
+builder.queryField('todoListsConnection', (t) =>
+  t.prismaConnection(
+    {
+      type: 'TodoList',
+      cursor: 'id',
+      authorize: ['admin'],
+      totalCount: (_connection, _args, ctx) =>
+        prisma.todoList.count({ where: todoListPolicy.read.where(ctx) }),
+      resolve: async (query, _root, _args, ctx) =>
+        prisma.todoList.findMany({
+          ...query,
+          where: todoListPolicy.read.where(ctx),
+        }),
+    },
+    { name: 'TodoListConnection' },
+    { name: 'TodoListEdge' },
+  ),
 );

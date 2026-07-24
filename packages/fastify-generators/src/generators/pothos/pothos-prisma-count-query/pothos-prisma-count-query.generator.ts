@@ -11,7 +11,7 @@ import { pluralize } from 'inflection';
 import { z } from 'zod';
 
 import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-field.js';
-import { prismaModelQueryFilterProvider } from '#src/generators/prisma/prisma-model-query-filter/index.js';
+import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 
@@ -28,17 +28,10 @@ const descriptorSchema = z.object({
    */
   order: z.number(),
   /**
-   * Model name key to look up the query filter provider.
+   * Model name key to look up the model policy provider. When set, the resolve
+   * function filters with `policy.read.where(ctx)`.
    */
-  queryFilterRef: z.string().optional(),
-  /**
-   * Role names to pass to `queryFilter.buildWhere()`.
-   */
-  queryFilterRoles: z.array(z.string()).optional(),
-  /**
-   * Global role names that bypass the query filter entirely.
-   */
-  queryFilterBypassRoles: z.array(z.string()).optional(),
+  policyRef: z.string().optional(),
 });
 
 export const pothosPrismaCountQueryGenerator = createGenerator({
@@ -46,25 +39,19 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({
-    modelName,
-    order,
-    queryFilterRef,
-    queryFilterRoles,
-    queryFilterBypassRoles,
-  }) => ({
+  buildTasks: ({ modelName, order, policyRef }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypesFile: pothosTypesFileProvider,
-        queryFilter: prismaModelQueryFilterProvider
+        modelPolicy: prismaModelPolicyProvider
           .dependency()
-          .optionalReference(queryFilterRef),
+          .optionalReference(policyRef),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, queryFilter }) {
+      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -91,27 +78,9 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
-            let resolveFunction: TsCodeFragment;
-
-            if (
-              queryFilter &&
-              queryFilterRoles &&
-              queryFilterRoles.length > 0
-            ) {
-              const rolesArray = queryFilterRoles
-                .map((r) => `'${r}'`)
-                .join(', ');
-              const queryFilterFragment = queryFilter.getQueryFilterFragment();
-
-              const bypassRolesArg =
-                queryFilterBypassRoles && queryFilterBypassRoles.length > 0
-                  ? `, { bypassRoles: [${queryFilterBypassRoles.map((r) => quot(r)).join(', ')}] }`
-                  : '';
-
-              resolveFunction = tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: { ...${queryFilterFragment}.buildWhere(ctx, [${rolesArray}]${bypassRolesArg}) } })`;
-            } else {
-              resolveFunction = tsTemplate`async () => ${prismaModelFragment}.count()`;
-            }
+            const resolveFunction: TsCodeFragment = modelPolicy
+              ? tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
+              : tsTemplate`async () => ${prismaModelFragment}.count()`;
 
             const options = {
               ...sortObjectKeys(customFields.value()),

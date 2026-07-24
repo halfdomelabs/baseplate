@@ -9,15 +9,23 @@ import { createPubSub } from 'graphql-yoga';
 /**
  * Map of subscription channel name to the arguments accepted by `pubSub.publish`.
  *
- * Add a channel as `channelName: [payload: PayloadType]` (or
- * `[topicId, payload]` for dynamic topics), then publish to it from your
- * mutations and subscribe to it from a `builder.subscriptionField`.
+ * Channels are registered by features/plugins via the yoga plugin's
+ * `publishArgs` config. Each entry is `channelName: [payload: PayloadType]` (or
+ * `[topicId, payload]` for dynamic topics); publish to it from your mutations
+ * and subscribe from a `builder.subscriptionField`.
+ *
+ * The base index signature satisfies graphql-yoga's `PubSubPublishArgsByKey`
+ * constraint; registered channels are intersected in for per-channel typing.
  *
  * @see https://the-guild.dev/graphql/yoga-server/docs/features/subscriptions
  */
 // must be a type to be used in the PubSub type
 
-type PubSubPublishArgs = TPL_PUBLISH_ARGS;
+type PubSubPublishArgs = Record<
+  string,
+  [] | [unknown] | [number | string, unknown]
+> &
+  TPL_PUBLISH_ARGS;
 
 let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
 

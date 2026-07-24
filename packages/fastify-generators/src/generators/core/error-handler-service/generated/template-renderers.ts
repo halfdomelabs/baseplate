@@ -9,6 +9,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { configServiceImportsProvider } from '#src/generators/core/config-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/generated/ts-import-providers.js';
+import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_providers/prisma-generated-imports.js';
 
 import { CORE_ERROR_HANDLER_SERVICE_PATHS } from './template-paths.js';
 import { CORE_ERROR_HANDLER_SERVICE_TEMPLATES } from './typed-templates.js';
@@ -56,12 +57,19 @@ const coreErrorHandlerServiceRenderersTask = createGeneratorTask({
     configServiceImports: configServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     coreErrorHandlerServiceRenderers: coreErrorHandlerServiceRenderers.export(),
   },
-  run({ configServiceImports, loggerServiceImports, paths, typescriptFile }) {
+  run({
+    configServiceImports,
+    loggerServiceImports,
+    paths,
+    prismaGeneratedImports,
+    typescriptFile,
+  }) {
     return {
       providers: {
         coreErrorHandlerServiceRenderers: {
@@ -94,6 +102,9 @@ const coreErrorHandlerServiceRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_ERROR_HANDLER_SERVICE_TEMPLATES.utilsGroup,
                 paths,
+                importMapProviders: {
+                  prismaGeneratedImports,
+                },
                 generatorPaths: paths,
                 ...options,
               }),

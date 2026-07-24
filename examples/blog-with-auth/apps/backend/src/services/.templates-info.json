@@ -29,6 +29,11 @@
     "instanceData": {},
     "template": "rate-limiter-service"
   },
+  "redis.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
+    "instanceData": {},
+    "template": "redis"
+  },
   "sentry.ts": {
     "generator": "@baseplate-dev/plugin-observability#core/fastify-sentry",
     "instanceData": {},

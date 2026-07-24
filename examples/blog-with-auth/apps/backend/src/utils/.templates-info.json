@@ -19,11 +19,6 @@
     "instanceData": {},
     "template": "http-errors"
   },
-  "query-filters.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils",
-    "instanceData": {},
-    "template": "utils-query-filters"
-  },
   "query-helpers.ts": {
     "generator": "@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils",
     "instanceData": {},

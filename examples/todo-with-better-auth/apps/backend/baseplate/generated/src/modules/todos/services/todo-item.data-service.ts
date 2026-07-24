@@ -8,16 +8,13 @@ import type {
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import {
-  checkGlobalAuthorization,
-  checkInstanceAuthorization,
-} from '@src/utils/authorizers.js';
 import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
 import { oneToManyTransformer } from '@src/utils/data-operations/nested-transformers.js';
 import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
 
-import { todoItemAuthorizer } from '../authorizers/todo-item.authorizer.js';
+import { todoItemPolicy } from '../authorizers/todo-item.policy.js';
 import {
   todoItemAttachmentFieldSchemas,
   todoItemAttachmentTransformers,
@@ -107,7 +104,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
-  checkGlobalAuthorization(context, ['user']);
+  todoItemPolicy.create.checkGlobalRoles(context);
   const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -147,11 +144,13 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
-  const existingItem = await prisma.todoItem.findUniqueOrThrow({ where });
-  await checkInstanceAuthorization(context, existingItem, [
-    'admin',
-    todoItemAuthorizer.roles.owner,
-  ]);
+  // Authorize: throws 404 if the caller can't update this row.
+  await prisma.todoItem
+    .findUniqueOrThrow({
+      where: todoItemPolicy.update.whereUnique(context, where),
+    })
+    .catch(throwIfPrismaNotFound('TodoItem not found'));
+
   const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -168,15 +167,17 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
 
   const result = await executeTransformPlan(plan, {
     execute: async ({ tx, transformed }) =>
-      tx.todoItem.update({
-        where,
-        data: {
-          ...rest,
-          ...transformed,
-          assignee: relationHelpers.connectUpdate({ id: assigneeId }),
-          todoList: relationHelpers.connectUpdate({ id: todoListId }),
-        },
-      }),
+      tx.todoItem
+        .update({
+          where: todoItemPolicy.update.whereUnique(context, where),
+          data: {
+            ...rest,
+            ...transformed,
+            assignee: relationHelpers.connectUpdate({ id: assigneeId }),
+            todoList: relationHelpers.connectUpdate({ id: todoListId }),
+          },
+        })
+        .catch(throwIfPrismaNotFound('TodoItem not found')),
     refetch: (item) =>
       prisma.todoItem.findUniqueOrThrow({ where: { id: item.id }, ...query }),
   });
@@ -193,16 +194,12 @@ export async function deleteTodoItem<TQuery extends DataQuery<'todoItem'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
-  const existingItem = await prisma.todoItem.findUniqueOrThrow({ where });
-  await checkInstanceAuthorization(context, existingItem, [
-    'admin',
-    todoItemAuthorizer.roles.owner,
-  ]);
-
-  const result = await prisma.todoItem.delete({
-    where,
-    ...query,
-  });
+  const result = await prisma.todoItem
+    .delete({
+      where: todoItemPolicy.delete.whereUnique(context, where),
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('TodoItem not found'));
 
   return result as GetResult<'todoItem', TQuery>;
 }

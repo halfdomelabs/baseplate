@@ -36,3 +36,17 @@ builder.queryField('todoListShares', (t) =>
       }),
   }),
 );
+
+builder.queryField('todoListSharesConnection', (t) =>
+  t.prismaConnection(
+    {
+      type: 'TodoListShare',
+      cursor: 'todoListId_userId',
+      authorize: ['user'],
+      totalCount: () => prisma.todoListShare.count(),
+      resolve: async (query) => prisma.todoListShare.findMany({ ...query }),
+    },
+    { name: 'TodoListShareConnection' },
+    { name: 'TodoListShareEdge' },
+  ),
+);

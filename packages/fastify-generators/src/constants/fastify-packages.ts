@@ -8,7 +8,7 @@ export const FASTIFY_PACKAGES = {
   pino: '9.5.0',
   'pino-pretty': '13.0.0',
 
-  graphql: '16.11.0',
+  graphql: '16.14.0',
   '@envelop/core': '5.3.0',
   '@envelop/disable-introspection': '8.0.0',
   'graphql-yoga': '5.15.1',
@@ -47,7 +47,7 @@ export const FASTIFY_PACKAGES = {
 
   // Compilation
   'tsc-alias': '1.8.10',
-  tsx: '4.22.3',
+  tsx: '4.23.1',
   '@types/node': `^22.0.0`,
 
   // Redis
@@ -64,7 +64,7 @@ export const FASTIFY_PACKAGES = {
   zod: '4.3.6',
 
   // Testing
-  'vitest-mock-extended': '3.1.0',
+  'vitest-mock-extended': '3.1.1',
   'pg-connection-string': '2.6.4',
 
   // Auth

@@ -88,3 +88,22 @@ export type WhereInput<TModelName extends ModelPropName> = Args<
   (typeof prisma)[TModelName],
   'findMany'
 >['where'];
+
+/**
+ * Type for a Prisma UNIQUE where clause — requires at least one unique key
+ * (`id`), but also accepts the full filter surface (`AND`/`OR`/scalar filters).
+ *
+ * @template TModelName - The Prisma model name
+ *
+ * @example
+ * ```typescript
+ * const where: WhereUniqueInput<'blogPost'> = {
+ *   id: postId,
+ *   AND: [{ publisherId: userId }], // auth filter composed in
+ * };
+ * ```
+ */
+export type WhereUniqueInput<TModelName extends ModelPropName> = Args<
+  (typeof prisma)[TModelName],
+  'findUnique'
+>['where'];

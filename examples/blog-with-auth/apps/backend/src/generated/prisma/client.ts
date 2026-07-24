@@ -67,6 +67,11 @@ export type BlogPost = Prisma.BlogPostModel
  */
 export type BlogUser = Prisma.BlogUserModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model RateLimiterFlexible
  * 
  */

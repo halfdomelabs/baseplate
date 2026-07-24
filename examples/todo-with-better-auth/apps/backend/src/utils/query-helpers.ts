@@ -10,7 +10,7 @@ import type {
  * - `WhereInput` is a Prisma where clause
  */
 export type WhereResult<TModelName extends ModelPropName> =
-  | WhereInput<TModelName>
+  | NonNullable<WhereInput<TModelName>>
   | boolean;
 
 /**
@@ -38,12 +38,12 @@ export const queryHelpers = {
     if (clauses.includes(true)) return true;
 
     const filtered = clauses.filter(
-      (c): c is WhereInput<TModelName> => c !== false,
+      (c): c is NonNullable<WhereInput<TModelName>> => c !== false,
     );
 
     if (filtered.length === 0) return false;
     if (filtered.length === 1) return filtered[0];
-    return { OR: filtered } as WhereInput<TModelName>;
+    return { OR: filtered };
   },
 
   /**
@@ -61,11 +61,11 @@ export const queryHelpers = {
     if (clauses.includes(false)) return false;
 
     const filtered = clauses.filter(
-      (c): c is WhereInput<TModelName> => c !== true,
+      (c): c is NonNullable<WhereInput<TModelName>> => c !== true,
     );
 
     if (filtered.length === 0) return true;
     if (filtered.length === 1) return filtered[0];
-    return { AND: filtered } as WhereInput<TModelName>;
+    return { AND: filtered };
   },
 };

@@ -2,7 +2,7 @@
 
 import type { AuthUserSessionInfo } from '%authContextImports';
 import type { UserSessionService } from '%userSessionTypesImports';
-import type { FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export class PlaceholderSessionService implements UserSessionService {
   /**
@@ -14,6 +14,7 @@ export class PlaceholderSessionService implements UserSessionService {
    */
   getSessionInfoFromRequest(
     req: FastifyRequest,
+    res?: FastifyReply,
   ): Promise<AuthUserSessionInfo | undefined> {
     throw new Error('Not implemented');
   }

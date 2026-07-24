@@ -8,15 +8,16 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { $Enums } from '@src/generated/prisma/client.js';
 import { prisma } from '@src/services/prisma.js';
-import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
 import { executeTransformPlan } from '@src/utils/data-operations/execute-transform-plan.js';
 import { prepareTransformers } from '@src/utils/data-operations/prepare-transformers.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
+import { throwIfPrismaNotFound } from '@src/utils/http-errors.js';
 
 import {
   fileInputSchema,
   fileTransformer,
 } from '../../storage/services/file-transformer.js';
+import { todoListPolicy } from '../authorizers/todo-list.policy.js';
 import { todoListCoverPhotoFileCategory } from '../constants/file-categories.js';
 
 const todoListFieldSchemas = z.object({
@@ -46,7 +47,7 @@ export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
-  checkGlobalAuthorization(context, ['user']);
+  todoListPolicy.create.checkGlobalRoles(context);
   const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -86,7 +87,7 @@ export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
   const existingItem = await prisma.todoList.findUniqueOrThrow({ where });
-  checkGlobalAuthorization(context, ['user']);
+  todoListPolicy.update.checkGlobalRoles(context);
   const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -125,12 +126,12 @@ export async function deleteTodoList<TQuery extends DataQuery<'todoList'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
-  checkGlobalAuthorization(context, ['user']);
-
-  const result = await prisma.todoList.delete({
-    where,
-    ...query,
-  });
+  const result = await prisma.todoList
+    .delete({
+      where: todoListPolicy.delete.whereUnique(context, where),
+      ...query,
+    })
+    .catch(throwIfPrismaNotFound('TodoList not found'));
 
   return result as GetResult<'todoList', TQuery>;
 }
