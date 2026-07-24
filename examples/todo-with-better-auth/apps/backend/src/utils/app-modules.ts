@@ -1,24 +1,25 @@
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
+import type { FileCategory } from '../modules/storage/types/file-category.js';
 import type { QueueHandlerBinding } from '../types/queue.types.js';
-import type { RuntimeServices } from './runtime-services.js';
+import type { AppServices } from './runtime-services.js';
 
 /**
  * The view of `AppRuntime` module-contributed plugins receive as the
  * `runtime` option.
  */
 export interface PluginRuntime {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
 }
 
 /**
  * A {@link PluginRuntime} narrowed to only the named services, for plugins
  * that want an honest signature instead of accepting every service.
  */
-export type PluginRuntimeWithServices<K extends keyof RuntimeServices> = Omit<
+export type PluginRuntimeWithServices<K extends keyof AppServices> = Omit<
   PluginRuntime,
   'services'
-> & { readonly services: Readonly<Pick<RuntimeServices, K>> };
+> & { readonly services: Readonly<Pick<AppServices, K>> };
 
 /**
  * A Fastify plugin registered through `AppModule.plugins`, receiving the
@@ -39,6 +40,7 @@ export interface AppModule {
   /* TPL_MODULE_FIELDS:START */
   plugins?: AppPlugin[];
   queues?: QueueHandlerBinding[];
+  storageCategories?: FileCategory[];
   /* TPL_MODULE_FIELDS:END */
 }
 
@@ -70,12 +72,14 @@ export function flattenAppModule(
   const result = /* TPL_MODULE_INITIALIZER:START */ {
     plugins: [...(rootModule.plugins ?? [])],
     queues: [...(rootModule.queues ?? [])],
+    storageCategories: [...(rootModule.storageCategories ?? [])],
   }; /* TPL_MODULE_INITIALIZER:END */
 
   for (const child of flattenedChildren) {
     /* TPL_MODULE_MERGER:START */
     result.plugins.push(...(child.plugins ?? []));
     result.queues.push(...(child.queues ?? []));
+    result.storageCategories.push(...(child.storageCategories ?? []));
     /* TPL_MODULE_MERGER:END */
   }
 

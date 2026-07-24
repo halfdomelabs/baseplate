@@ -47,7 +47,7 @@ export async function buildServer(
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
-  await fastify.register(healthCheckPlugin);
+  await fastify.register(healthCheckPlugin, { runtime });
   await fastify.register(pgBossPlugin, { runtime });
   /* TPL_PLUGINS:END */
 

@@ -1,8 +1,6 @@
 import type { File, Prisma } from '@src/generated/prisma/client.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
-import type { StorageAdapterKey } from '../config/adapters.config.js';
-
 /**
  * Configuration for a file category that specifies how files of a
  * particular type should be handled, including storage, authorization,
@@ -36,8 +34,14 @@ export interface FileCategory<
   /** Allowed MIME types */
   readonly allowedMimeTypes?: readonly string[];
 
-  /** Storage adapter to use for this category */
-  readonly adapter: StorageAdapterKey;
+  /**
+   * Name of the storage adapter to use for this category, validated at
+   * runtime by `StorageService.getAdapterOrThrow`. Not typed as a key of the
+   * configured adapters to avoid a type dependency on the runtime service
+   * (this file is a leaf, imported by every feature module's file
+   * categories).
+   */
+  readonly adapter: string;
 
   /**
    * Authorization rules for this file category.

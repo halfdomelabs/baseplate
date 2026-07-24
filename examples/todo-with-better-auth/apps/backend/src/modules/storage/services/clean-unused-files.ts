@@ -1,11 +1,10 @@
 import { groupBy } from 'es-toolkit';
 
+import type { ServiceContextWith } from '@src/utils/service-context.js';
+
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 import { prisma } from '@src/services/prisma.js';
-
-import { FILE_CATEGORIES } from '../config/categories.config.js';
-import { getAdapterOrThrow } from '../utils/get-adapter.js';
 
 /** How long to keep files that were uploaded but never referenced */
 const UNREFERENCED_UPLOAD_EXPIRY_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
@@ -24,18 +23,21 @@ const CLEAN_JOB_LIMIT = 100;
  * first, then DB records. If storage deletion fails, the error is logged and
  * DB records are preserved so they can be retried on the next run.
  *
+ * @param ctx - The service context, providing access to storage adapters
  * @returns The number of DB file records successfully cleaned up
  */
-export async function cleanUnusedFiles(): Promise<number> {
+export async function cleanUnusedFiles(
+  ctx: ServiceContextWith<'storage'>,
+): Promise<number> {
   const cutoffDate = new Date(Date.now() - UNREFERENCED_UPLOAD_EXPIRY_TIME_MS);
 
-  const categoriesForCleanup = FILE_CATEGORIES.filter(
-    (c) => !c.disableAutoCleanup,
-  );
+  const { categories } = ctx.services.storage;
+
+  const categoriesForCleanup = categories.filter((c) => !c.disableAutoCleanup);
 
   // Collect ALL known file relations across all categories for safety.
   const allFileRelations = [
-    ...new Set(FILE_CATEGORIES.flatMap((c) => c.referencedByRelations ?? [])),
+    ...new Set(categories.flatMap((c) => c.referencedByRelations ?? [])),
   ];
 
   const unusedFiles = await prisma.file.findMany({
@@ -84,7 +86,7 @@ export async function cleanUnusedFiles(): Promise<number> {
     );
 
     try {
-      const adapter = getAdapterOrThrow(adapterName);
+      const adapter = ctx.services.storage.getAdapterOrThrow(adapterName);
       // Phase 1: Delete from storage
       if (adapter.deleteFiles) {
         await adapter.deleteFiles(files.map((f) => f.storagePath));

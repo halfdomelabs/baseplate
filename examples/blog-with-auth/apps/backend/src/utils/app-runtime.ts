@@ -1,9 +1,16 @@
+import type { PubSub } from 'graphql-yoga';
+
+import type { PubSubPublishArgs } from '../plugins/graphql/pubsub.js';
 import type { QueueRuntime } from '../types/queue.types.js';
-import type { RuntimeServices } from './runtime-services.js';
+import type { AppServices } from './runtime-services.js';
 
 import { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
 import { rootModule } from '../modules/index.js';
+import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
+import { createNotificationService } from '../modules/notifications/services/notification.service.js';
+import { createGraphqlPubSub } from '../plugins/graphql/pubsub.js';
 import { createQueueRuntime } from '../services/pg-boss.service.js';
+import { createRedisRuntime } from '../services/redis.js';
 import { flattenAppModule } from './app-modules.js';
 
 /**
@@ -16,8 +23,9 @@ import { flattenAppModule } from './app-modules.js';
  * full service context.
  */
 export interface AppRuntime {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
   /* TPL_RUNTIME_FIELDS:START */
+  pubsub: PubSub<PubSubPublishArgs>;
   queues: QueueRuntime;
   /* TPL_RUNTIME_FIELDS:END */
   /**
@@ -37,6 +45,15 @@ export function createAppRuntime(
   let disposePromise: Promise<void> | undefined;
 
   /* TPL_SERVICE_CONSTRUCTION:START */
+  const redis = createRedisRuntime();
+  disposers.push({ name: 'redis', dispose: () => redis.dispose() });
+
+  const pubsub = createGraphqlPubSub(redis);
+
+  const notifications = createNotificationService({
+    events: createNotificationEvents(pubsub),
+  });
+
   const { queues: queueBindings = [] } = flattenAppModule(rootModule);
   const queues = createQueueRuntime(queueBindings, {
     disableMaintenance: options.disableQueueMaintenance,
@@ -46,8 +63,10 @@ export function createAppRuntime(
   const userSession = new CookieUserSessionService();
   /* TPL_SERVICE_CONSTRUCTION:END */
 
-  const services: RuntimeServices = /* TPL_SERVICES_OBJECT:START */ {
+  const services: AppServices = /* TPL_SERVICES_OBJECT:START */ {
+    notifications,
     queues,
+    redis,
     userSession,
   }; /* TPL_SERVICES_OBJECT:END */
 
@@ -72,6 +91,7 @@ export function createAppRuntime(
   }
 
   const runtime = /* TPL_RUNTIME_FIELD_VALUES:START */ {
+    pubsub,
     queues,
   }; /* TPL_RUNTIME_FIELD_VALUES:END */
 

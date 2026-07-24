@@ -1,5 +1,7 @@
 import type { CookieUserSessionService } from '@src/modules/accounts/auth/services/user-session.service.js';
 import type { AuthContext } from '@src/modules/accounts/auth/types/auth-context.types.js';
+import type { NotificationService } from '@src/modules/notifications/services/notification.service.js';
+import type { RedisRuntime } from '@src/services/redis.js';
 import type { QueueService } from '@src/types/queue.types.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
@@ -18,6 +20,16 @@ export function createTestServiceContext(
       auth: auth ?? createAuthContextFromSessionInfo(undefined),
     } /* TPL_CREATE_TEST_OBJECT:END */,
     /* TPL_TEST_RUNTIME_SERVICES:START */ {
+      notifications: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error(
+              'notifications is not available in this test context.',
+            );
+          },
+        },
+      ) as NotificationService,
       queues: new Proxy(
         {},
         {
@@ -26,6 +38,14 @@ export function createTestServiceContext(
           },
         },
       ) as QueueService,
+      redis: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error('redis is not available in this test context.');
+          },
+        },
+      ) as RedisRuntime,
       userSession: new Proxy(
         {},
         {

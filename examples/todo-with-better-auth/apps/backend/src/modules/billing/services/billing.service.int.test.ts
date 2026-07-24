@@ -12,15 +12,12 @@ vi.mock('@src/services/error-logger.js', () => ({
 vi.mock('@src/services/logger.js', () => ({
   logger: createMockLogger(),
 }));
-vi.mock('@src/services/stripe.js', () => ({
-  stripe: {
-    customers: { create: vi.fn() },
-    subscriptions: { update: vi.fn().mockResolvedValue({}) },
-    webhooks: { constructEventAsync: vi.fn() },
-  },
-}));
 
-import { stripe } from '@src/services/stripe.js';
+const stripe = {
+  customers: { create: vi.fn() },
+  subscriptions: { update: vi.fn().mockResolvedValue({}) },
+  webhooks: { constructEventAsync: vi.fn() },
+} as unknown as Stripe;
 
 import {
   handleSubscriptionEvent,
@@ -101,7 +98,7 @@ describe('billing.service', () => {
     it('creates a subscription and grants roles', async () => {
       const { userId } = await createTestUserWithBillingAccount();
 
-      await syncSubscriptionFromStripe(createFakeSubscription());
+      await syncSubscriptionFromStripe(stripe, createFakeSubscription());
 
       const subscription = await prisma.billingSubscription.findUnique({
         where: { stripeSubscriptionId: TEST_SUBSCRIPTION_ID },
@@ -123,7 +120,7 @@ describe('billing.service', () => {
       const { userId } = await createTestUserWithBillingAccount();
 
       // First sync — creates subscription and grants roles
-      await syncSubscriptionFromStripe(createFakeSubscription());
+      await syncSubscriptionFromStripe(stripe, createFakeSubscription());
 
       // Verify role was granted
       const rolesBefore = await prisma.userRole.findMany({
@@ -133,6 +130,7 @@ describe('billing.service', () => {
 
       // Cancel the subscription
       await syncSubscriptionFromStripe(
+        stripe,
         createFakeSubscription({
           id: TEST_SUBSCRIPTION_ID,
           status: 'canceled',
@@ -154,10 +152,10 @@ describe('billing.service', () => {
       await createTestUserWithBillingAccount();
 
       // First sync
-      await syncSubscriptionFromStripe(createFakeSubscription());
+      await syncSubscriptionFromStripe(stripe, createFakeSubscription());
 
       // Second sync with same status — should be idempotent
-      await syncSubscriptionFromStripe(createFakeSubscription());
+      await syncSubscriptionFromStripe(stripe, createFakeSubscription());
 
       const subscriptions = await prisma.billingSubscription.findMany();
       expect(subscriptions).toHaveLength(1);
@@ -167,10 +165,11 @@ describe('billing.service', () => {
       const { userId } = await createTestUserWithBillingAccount();
 
       // Activate subscription
-      await syncSubscriptionFromStripe(createFakeSubscription());
+      await syncSubscriptionFromStripe(stripe, createFakeSubscription());
 
       // Transition to past_due
       await syncSubscriptionFromStripe(
+        stripe,
         createFakeSubscription({ status: 'past_due' }),
       );
 
@@ -183,6 +182,7 @@ describe('billing.service', () => {
     it('returns early when no billing account found', async () => {
       // No user/billing account created
       await syncSubscriptionFromStripe(
+        stripe,
         createFakeSubscription({ customer: 'cus_nonexistent' }),
       );
 
@@ -194,6 +194,7 @@ describe('billing.service', () => {
       await createTestUserWithBillingAccount();
 
       await syncSubscriptionFromStripe(
+        stripe,
         createFakeSubscription({ metadata: {} }),
       );
 
@@ -217,7 +218,7 @@ describe('billing.service', () => {
         data: { object: {} },
       } as Stripe.Event;
 
-      await expect(handleSubscriptionEvent(event)).rejects.toThrow(
+      await expect(handleSubscriptionEvent(stripe, event)).rejects.toThrow(
         'Unexpected event type for subscription handler',
       );
     });
@@ -231,7 +232,7 @@ describe('billing.service', () => {
         data: { object: subscription },
       } as Stripe.Event;
 
-      await handleSubscriptionEvent(event);
+      await handleSubscriptionEvent(stripe, event);
 
       const dbSubscription = await prisma.billingSubscription.findUnique({
         where: { stripeSubscriptionId: TEST_SUBSCRIPTION_ID },

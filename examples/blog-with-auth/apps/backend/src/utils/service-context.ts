@@ -1,6 +1,6 @@
 import type { AuthContext } from '../modules/accounts/auth/types/auth-context.types.js';
 import type { AppRuntime } from './app-runtime.js';
-import type { RuntimeServices } from './runtime-services.js';
+import type { AppServices } from './runtime-services.js';
 
 import { createSystemAuthContext } from '../modules/accounts/auth/utils/auth-context.utils.js';
 import { createAppRuntime } from './app-runtime.js';
@@ -19,7 +19,7 @@ export interface ExecutionContext {
 }
 
 export interface ServiceContext extends ExecutionContext {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
 }
 
 /**
@@ -30,8 +30,8 @@ export interface ServiceContext extends ExecutionContext {
  * accepting the full {@link ServiceContext} where the set of services used
  * is known.
  */
-export type ServiceContextWith<K extends keyof RuntimeServices> =
-  ExecutionContext & { readonly services: Readonly<Pick<RuntimeServices, K>> };
+export type ServiceContextWith<K extends keyof AppServices> =
+  ExecutionContext & { readonly services: Readonly<Pick<AppServices, K>> };
 
 export function createServiceContext(
   /* TPL_CREATE_CONTEXT_ARGS:START */ {
@@ -39,7 +39,7 @@ export function createServiceContext(
   }: {
     auth: AuthContext;
   } /* TPL_CREATE_CONTEXT_ARGS:END */,
-  services: Readonly<RuntimeServices>,
+  services: Readonly<AppServices>,
 ): ServiceContext {
   return /* TPL_CONTEXT_OBJECT:START */ {
     auth,
