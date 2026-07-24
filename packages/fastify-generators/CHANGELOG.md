@@ -1,5 +1,32 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.13
+
+### Patch Changes
+
+- [#921](https://github.com/halfdomelabs/baseplate/pull/921) [`b03e69b`](https://github.com/halfdomelabs/baseplate/commit/b03e69b816d678140fee4dc023416b313a356edc) Thanks [@kingston](https://github.com/kingston)! - Generated backends now construct a single app runtime composition root (`createAppRuntime()`) that owns disposal of shared services, delivered to code via `ctx.services` on the service context. `ServiceContext` is now split into `ExecutionContext` (auth/authorizer state only) and `ServiceContext extends ExecutionContext` (adds `services`), with a new `ServiceContextWith<K>` type for narrowing dependencies to only the services actually used. Feature modules declare themselves via `defineAppModule()` instead of `satisfies AppModule`, and only the root module flattens the tree. A new `withScriptContext()` helper constructs and safely disposes a runtime for one-off scripts and seeds.
+
+- [#923](https://github.com/halfdomelabs/baseplate/pull/923) [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b) Thanks [@kingston](https://github.com/kingston)! - Add a native notification engine plugin (`@baseplate-dev/plugin-notifications`). The GraphQL Yoga plugin generator now exposes `getPubSub` as an import provider so notification (and other) modules can consume the real-time pubsub instance; this is an additive change with no effect on generated output for projects that don't use it.
+
+- [#929](https://github.com/halfdomelabs/baseplate/pull/929) [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb) Thanks [@kingston](https://github.com/kingston)! - Added opt-in Relay-style cursor pagination for list queries. Enable "Connection" alongside a model's existing "List" query in the GraphQL section of the model editor to generate a `<model>sConnection(first, after, last, before)` query backed by Pothos's `t.prismaConnection`, returning a `<Model>Connection` type with `edges`, `pageInfo`, and `totalCount`.
+
+- [#930](https://github.com/halfdomelabs/baseplate/pull/930) [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4) Thanks [@kingston](https://github.com/kingston)! - Added opt-in `skip`/`take` pagination args to to-many relation fields on object types (e.g. `user.todoLists(skip, take)`), mirroring the existing pagination on root list queries. Enable it via a new toggle next to each exposed foreign relation in the GraphQL section of the model editor.
+
+- [#931](https://github.com/halfdomelabs/baseplate/pull/931) [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c) Thanks [@kingston](https://github.com/kingston)! - Generated backends now expose a queue slot on the app runtime: `AppRuntime`/`RuntimeServices` gain a `queues` field constructed from queue bindings contributed by feature modules, and `AppModule` gains a `plugins` runtime-typed registration so Fastify plugins can receive `{ runtime }` and read `runtime.services` directly instead of importing singletons.
+
+- [#924](https://github.com/halfdomelabs/baseplate/pull/924) [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed) Thanks [@kingston](https://github.com/kingston)! - Consolidated model authorization into a single generated policy per model. Each model now emits one `createModelPolicy` file that declares its roles once and derives both the boolean instance check and the Prisma `where` filter from the same declaration, replacing the separate authorizer and query-filter files. Reads filter through the policy, and authorized updates and deletes compose the grant into the query as a single atomic operation, hiding an unauthorized row as a 404. Role predicates support scalar matches, relation filters, cached delegation to a parent model's policy, global-role and authenticated checks, and `and`/`or` combinations.
+
+- [#920](https://github.com/halfdomelabs/baseplate/pull/920) [`e89c814`](https://github.com/halfdomelabs/baseplate/commit/e89c8143a7a4ea45817a45544fba6bf0ba6fe758) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 7.9.0 in generated projects (`prisma`, `@prisma/client`, and `@prisma/adapter-pg` from 7.8.0 → 7.9.0), and update the bundled Prisma schema formatter to match.
+
+- [#928](https://github.com/halfdomelabs/baseplate/pull/928) [`9030d45`](https://github.com/halfdomelabs/baseplate/commit/9030d45cd00ff8e3b9ea20744499457e25b0fbf4) Thanks [@kingston](https://github.com/kingston)! - Upgrade tsx to 4.23.1 in generated backend projects (from 4.22.3) for performance improvements.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Support TypeScript 6 in generated backends: bump `vitest-mock-extended` to 3.1.1, set `rootDir`/`types` on the backend `tsconfig.json` to fix build output layout and `@types/node` resolution, and clean up now-redundant type assertions surfaced by TypeScript 6's improved inference.
+
+- Updated dependencies [[`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

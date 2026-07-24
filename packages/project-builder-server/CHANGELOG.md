@@ -1,5 +1,27 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.13
+
+### Patch Changes
+
+- [#929](https://github.com/halfdomelabs/baseplate/pull/929) [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb) Thanks [@kingston](https://github.com/kingston)! - Added opt-in Relay-style cursor pagination for list queries. Enable "Connection" alongside a model's existing "List" query in the GraphQL section of the model editor to generate a `<model>sConnection(first, after, last, before)` query backed by Pothos's `t.prismaConnection`, returning a `<Model>Connection` type with `edges`, `pageInfo`, and `totalCount`.
+
+- [#930](https://github.com/halfdomelabs/baseplate/pull/930) [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4) Thanks [@kingston](https://github.com/kingston)! - Added opt-in `skip`/`take` pagination args to to-many relation fields on object types (e.g. `user.todoLists(skip, take)`), mirroring the existing pagination on root list queries. Enable it via a new toggle next to each exposed foreign relation in the GraphQL section of the model editor.
+
+- [#922](https://github.com/halfdomelabs/baseplate/pull/922) [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70) Thanks [@kingston](https://github.com/kingston)! - Add a stage-patch-entity MCP action that stages a partial entity update, replacing only the provided root-level fields while preserving the rest of the entity. This complements stage-update-entity, which replaces the whole entity.
+
+- [#924](https://github.com/halfdomelabs/baseplate/pull/924) [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed) Thanks [@kingston](https://github.com/kingston)! - Consolidated model authorization into a single generated policy per model. Each model now emits one `createModelPolicy` file that declares its roles once and derives both the boolean instance check and the Prisma `where` filter from the same declaration, replacing the separate authorizer and query-filter files. Reads filter through the policy, and authorized updates and deletes compose the grant into the query as a single atomic operation, hiding an unauthorized row as a 404. Role predicates support scalar matches, relation filters, cached delegation to a parent model's policy, global-role and authenticated checks, and `and`/`or` combinations.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Bump `zod-to-ts` to support TypeScript 6.
+
+- Updated dependencies [[`b03e69b`](https://github.com/halfdomelabs/baseplate/commit/b03e69b816d678140fee4dc023416b313a356edc), [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b), [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb), [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4), [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`80b7a20`](https://github.com/halfdomelabs/baseplate/commit/80b7a2090a06e5f729a798a7750ea126c8f27a8c), [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`e89c814`](https://github.com/halfdomelabs/baseplate/commit/e89c8143a7a4ea45817a45544fba6bf0ba6fe758), [`9030d45`](https://github.com/halfdomelabs/baseplate/commit/9030d45cd00ff8e3b9ea20744499457e25b0fbf4), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/fastify-generators@0.6.13
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/project-builder-lib@0.6.13
+  - @baseplate-dev/react-generators@0.6.13
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

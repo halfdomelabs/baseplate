@@ -1,5 +1,25 @@
 # @baseplate-dev/project-builder-common
 
+## 0.6.13
+
+### Patch Changes
+
+- [#923](https://github.com/halfdomelabs/baseplate/pull/923) [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b) Thanks [@kingston](https://github.com/kingston)! - Add a native notification engine plugin (`@baseplate-dev/plugin-notifications`). The GraphQL Yoga plugin generator now exposes `getPubSub` as an import provider so notification (and other) modules can consume the real-time pubsub instance; this is an additive change with no effect on generated output for projects that don't use it.
+
+- Updated dependencies [[`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b), [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb), [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4), [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70), [`307ed48`](https://github.com/halfdomelabs/baseplate/commit/307ed48144da1dab378c8b21e8cdbbe592fc3c48), [`cd8465e`](https://github.com/halfdomelabs/baseplate/commit/cd8465ec84b69241ee4e9a53d5131cd9bfe0b39f), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`7ee22b8`](https://github.com/halfdomelabs/baseplate/commit/7ee22b8ee0e104ea72b22beafe5b792e94927cb1), [`80b7a20`](https://github.com/halfdomelabs/baseplate/commit/80b7a2090a06e5f729a798a7750ea126c8f27a8c), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/plugin-auth@0.6.13
+  - @baseplate-dev/plugin-email@0.6.13
+  - @baseplate-dev/plugin-notifications@0.6.13
+  - @baseplate-dev/project-builder-lib@0.6.13
+  - @baseplate-dev/project-builder-server@0.6.13
+  - @baseplate-dev/plugin-queue@0.6.13
+  - @baseplate-dev/plugin-observability@0.6.13
+  - @baseplate-dev/plugin-storage@0.6.13
+  - @baseplate-dev/plugin-payments@0.6.13
+  - @baseplate-dev/plugin-rate-limit@0.6.13
+  - @baseplate-dev/plugin-ai@0.6.13
+  - @baseplate-dev/sync@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

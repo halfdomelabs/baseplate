@@ -1,5 +1,27 @@
 # @baseplate-dev/plugin-auth
 
+## 0.6.13
+
+### Patch Changes
+
+- [#931](https://github.com/halfdomelabs/baseplate/pull/931) [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c) Thanks [@kingston](https://github.com/kingston)! - Generated auth backends (local-auth, Better Auth, and the placeholder auth fallback) now construct their user-session service once as part of the shared app runtime and expose it via `runtime.services.userSession`, instead of each module exporting its own module-level singleton. Better Auth's server instance is built the same way via `runtime.services.betterAuth`, and local-auth's email-verification/password-reset queue jobs are dispatched through the runtime's queue service rather than a directly-imported queue.
+
+- [#919](https://github.com/halfdomelabs/baseplate/pull/919) [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289) Thanks [@kingston](https://github.com/kingston)! - Upgrade insecure dependencies flagged by pnpm audit. Generated projects now use axios 1.18.1 (was 1.16.1) and better-auth 1.6.23 (was 1.6.11), addressing multiple axios advisories (prototype pollution, DoS, proxy handling) and a stored XSS advisory in better-auth. Transitive dependencies (js-yaml, brace-expansion, protobufjs, esbuild, body-parser) were also updated to patched versions in the monorepo and example lockfiles.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Update the Better Auth session service's `getSessionInfoFromRequest` to accept the optional `reply` parameter declared by `UserSessionService`, removing the need for a type assertion at the call site that TypeScript 6 flagged as unnecessary.
+
+- Updated dependencies [[`b03e69b`](https://github.com/halfdomelabs/baseplate/commit/b03e69b816d678140fee4dc023416b313a356edc), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`8b0e1cd`](https://github.com/halfdomelabs/baseplate/commit/8b0e1cdf33682edd592a69f961be5f489356d11b), [`1d5f3c0`](https://github.com/halfdomelabs/baseplate/commit/1d5f3c0724c30c99d16ecb6563c2c799ef05e5eb), [`1fd6ccb`](https://github.com/halfdomelabs/baseplate/commit/1fd6ccb695c8c0b4412248364c12f555419844c4), [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70), [`307ed48`](https://github.com/halfdomelabs/baseplate/commit/307ed48144da1dab378c8b21e8cdbbe592fc3c48), [`cd8465e`](https://github.com/halfdomelabs/baseplate/commit/cd8465ec84b69241ee4e9a53d5131cd9bfe0b39f), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`ed5d784`](https://github.com/halfdomelabs/baseplate/commit/ed5d784a0edb2f794ae723ba3fb46a3768cade4c), [`80b7a20`](https://github.com/halfdomelabs/baseplate/commit/80b7a2090a06e5f729a798a7750ea126c8f27a8c), [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`e89c814`](https://github.com/halfdomelabs/baseplate/commit/e89c8143a7a4ea45817a45544fba6bf0ba6fe758), [`9030d45`](https://github.com/halfdomelabs/baseplate/commit/9030d45cd00ff8e3b9ea20744499457e25b0fbf4), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/fastify-generators@0.6.13
+  - @baseplate-dev/plugin-email@0.6.13
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/project-builder-lib@0.6.13
+  - @baseplate-dev/plugin-queue@0.6.13
+  - @baseplate-dev/react-generators@0.6.13
+  - @baseplate-dev/ui-components@0.6.13
+  - @baseplate-dev/plugin-rate-limit@0.6.13
+  - @baseplate-dev/sync@0.6.13
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes
