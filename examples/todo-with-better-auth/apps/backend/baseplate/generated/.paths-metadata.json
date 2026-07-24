@@ -5,6 +5,7 @@
   { "canonicalPath": "@/src/modules/graphql", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/todos", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/storage", "pathRootName": "module-root" },
+  { "canonicalPath": "@/src/modules/emails", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/billing", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/accounts", "pathRootName": "module-root" },
   {

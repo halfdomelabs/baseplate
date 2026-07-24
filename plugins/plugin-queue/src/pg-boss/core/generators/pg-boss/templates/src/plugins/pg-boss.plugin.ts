@@ -1,28 +1,22 @@
 // @ts-nocheck
 
-import type { FastifyPluginAsync } from 'fastify';
+import type { AppRuntime } from '%appRuntimeImports';
+import type { FastifyPluginCallback } from 'fastify';
 
-import { initializePgBoss, shutdownPgBoss, startWorkers } from '$pgBossService';
 import { config } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { QUEUE_REGISTRY } from '%queuesImports';
+import { createSystemServiceContext } from '%serviceContextImports';
 import fastifyPlugin from 'fastify-plugin';
 
 /**
- * Fastify plugin for pg-boss queue system initialization.
+ * Fastify plugin that optionally starts pg-boss workers embedded in the API
+ * process. Queue construction and disposal are owned by {@link AppRuntime};
+ * this plugin only starts workers when embedded mode is enabled.
  */
-const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
-  // Initialize pg-boss - disable maintenance when workers run separately
-  await initializePgBoss({
-    disableMaintenance: !config.ENABLE_EMBEDDED_WORKERS,
-  });
-
-  // Handle graceful shutdown
-  fastify.addHook('onClose', async () => {
-    await shutdownPgBoss();
-  });
-
+const pgBossPluginCallback: FastifyPluginCallback<{
+  runtime: AppRuntime;
+}> = (fastify, opts, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
@@ -31,7 +25,9 @@ const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
 
     fastify.addHook('onReady', async () => {
       try {
-        await startWorkers(QUEUE_REGISTRY);
+        await opts.runtime.queues.startWorkers({
+          createContext: () => createSystemServiceContext(opts.runtime),
+        });
       } catch (error: unknown) {
         logError(error, {
           source: 'pg-boss-plugin',
@@ -43,6 +39,8 @@ const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
       }
     });
   }
+
+  done();
 };
 
 export const pgBossPlugin = fastifyPlugin(pgBossPluginCallback, {

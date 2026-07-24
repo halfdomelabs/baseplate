@@ -1,15 +1,21 @@
 import {
   nodeProvider,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  appModuleImportsProvider,
+  appModuleSetupImportsProvider,
+  appRuntimeConfigProvider,
   fastifyOutputProvider,
   fastifyProvider,
   fastifyServerConfigProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import { queuesImportsProvider } from '#src/queue/core/generators/queues/index.js';
 
 import { PG_BOSS_CORE_PG_BOSS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
@@ -39,6 +45,51 @@ export const pgBossGenerator = createGenerator({
             'pgBossPlugin',
             tsImportBuilder(['pgBossPlugin']).from(paths.pgBossPlugin),
           ),
+          options: tsCodeFragment('{ runtime }'),
+        });
+        fastifyServerConfig.runtimeConstructionOptions.set(
+          tsCodeFragment(
+            '{ disableQueueMaintenance: !config.ENABLE_EMBEDDED_WORKERS }',
+          ),
+        );
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        appModuleImports: appModuleImportsProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
+        queuesImports: queuesImportsProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({
+        appRuntimeConfig,
+        appModuleImports,
+        appModuleSetupImports,
+        queuesImports,
+        paths,
+      }) {
+        appRuntimeConfig.services.set(
+          'queues',
+          queuesImports.QueueService.typeFragment(),
+        );
+        appRuntimeConfig.runtimeFields.set(
+          'queues',
+          queuesImports.QueueRuntime.typeFragment(),
+        );
+        appRuntimeConfig.constructionOptions.set(
+          'disableQueueMaintenance?',
+          tsCodeFragment('boolean'),
+        );
+        appRuntimeConfig.construction.set('queues', {
+          orderPriority: 'EARLY',
+          fragment: TsCodeUtils.template`
+            const { queues: queueBindings = [] } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});
+            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
+              disableMaintenance: options.disableQueueMaintenance,
+            });
+            disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
+          `,
         });
       },
     }),

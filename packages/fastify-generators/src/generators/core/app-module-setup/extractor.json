@@ -5,9 +5,20 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/app-module-setup",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/utils/app-modules.ts",
-      "projectExports": { "defineAppModule": {}, "flattenAppModule": {} },
+      "projectExports": {
+        "AppPlugin": { "isTypeOnly": true },
+        "defineAppModule": {},
+        "flattenAppModule": {},
+        "PluginRuntime": { "isTypeOnly": true },
+        "PluginRuntimeWithServices": { "isTypeOnly": true }
+      },
       "sourceFile": "src/utils/app-modules.ts",
       "variables": {
         "TPL_MODULE_FIELDS": {},

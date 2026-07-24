@@ -5,6 +5,7 @@ export interface LocalAuthCoreAuthModulePaths {
   authRoleEnum: string;
   cookieSigner: string;
   queuesCleanupAuthVerification: string;
+  queuesCleanupAuthVerificationWorker: string;
   schemaUserSessionMutations: string;
   schemaUserSessionPayloadObjectType: string;
   schemaUserSessionQueries: string;
@@ -36,6 +37,7 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
           authRoleEnum: `${moduleRoot}/schema/auth-role.enum.ts`,
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
           queuesCleanupAuthVerification: `${moduleRoot}/queues/cleanup-auth-verification.queue.ts`,
+          queuesCleanupAuthVerificationWorker: `${moduleRoot}/queues/cleanup-auth-verification.worker.ts`,
           schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,
           schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,
           schemaUserSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,

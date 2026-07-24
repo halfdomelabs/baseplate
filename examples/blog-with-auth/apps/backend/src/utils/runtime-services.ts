@@ -1,9 +1,13 @@
+import type { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
+import type { QueueService } from '../types/queue.types.js';
+
 /**
  * Services constructed by {@link createAppRuntime} and delivered on
  * {@link ServiceContext.services}. Deep-readonly: fields, not just the bag.
- *
- * Empty until a plugin contributes a field (e.g. queues, email, storage).
  */
 export interface RuntimeServices {
-  readonly placeholder?: never;
+  /* TPL_SERVICES_FIELDS:START */
+  queues: QueueService;
+  userSession: CookieUserSessionService;
+  /* TPL_SERVICES_FIELDS:END */
 }

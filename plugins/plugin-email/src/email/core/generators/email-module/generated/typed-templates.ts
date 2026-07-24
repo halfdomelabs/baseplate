@@ -3,16 +3,16 @@ import {
   configServiceImportsProvider,
   loggerServiceImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import {
-  queueServiceImportsProvider,
-  queuesImportsProvider,
-} from '@baseplate-dev/plugin-queue';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const emailsService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: { configServiceImports: configServiceImportsProvider },
+  importMapProviders: {
+    configServiceImports: configServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
   name: 'emails-service',
   projectExports: {
     sendEmail: { isTypeOnly: false },
@@ -22,7 +22,7 @@ const emailsService = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/emails/services/emails.service.ts',
+      '../templates/module/services/emails.service.ts',
     ),
   },
   variables: { TPL_EMAIL_COMPONENT: {}, TPL_RENDER_EMAIL: {} },
@@ -41,10 +41,7 @@ const emailsTypes = createTsTemplateFile({
     TransformedEmailMessage: { isTypeOnly: true },
   },
   source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/emails/emails.types.ts',
-    ),
+    path: path.join(import.meta.dirname, '../templates/module/emails.types.ts'),
   },
   variables: {},
 });
@@ -52,22 +49,43 @@ const emailsTypes = createTsTemplateFile({
 const sendEmailQueue = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {
-    loggerServiceImports: loggerServiceImportsProvider,
-    queueServiceImports: queueServiceImportsProvider,
-  },
+  importMapProviders: { queuesImports: queuesImportsProvider },
   name: 'send-email-queue',
   projectExports: { sendEmailQueue: { isTypeOnly: false } },
   referencedGeneratorTemplates: { emailsTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/emails/queues/send-email.queue.ts',
+      '../templates/module/queues/send-email.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const sendEmailWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    loggerServiceImports: loggerServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
+  name: 'send-email-worker',
+  projectExports: { sendEmailWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { sendEmailQueue: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/send-email.worker.ts',
     ),
   },
   variables: { TPL_EMAIL_ADAPTER: {} },
 });
 
-export const mainGroup = { emailsService, emailsTypes, sendEmailQueue };
+export const mainGroup = {
+  emailsService,
+  emailsTypes,
+  sendEmailQueue,
+  sendEmailWorker,
+};
 
 export const EMAIL_CORE_EMAIL_MODULE_TEMPLATES = { mainGroup };

@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appModuleSetupImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -8,6 +9,7 @@ import {
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const auth = createTsTemplateFile({
@@ -17,9 +19,15 @@ const auth = createTsTemplateFile({
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
     prismaImports: prismaImportsProvider,
+    queuesImports: queuesImportsProvider,
   },
   name: 'auth',
-  projectExports: { auth: {}, cookiePrefix: {} },
+  projectExports: {
+    Auth: { isTypeOnly: true },
+    AuthServiceDeps: { isTypeOnly: true },
+    buildAuth: {},
+    cookiePrefix: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -35,7 +43,7 @@ const auth = createTsTemplateFile({
 
 const betterAuthPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: { appModuleSetupImports: appModuleSetupImportsProvider },
   name: 'better-auth-plugin',
   projectExports: { betterAuthPlugin: {} },
   referencedGeneratorTemplates: { auth: {}, headersUtils: {} },
@@ -85,7 +93,7 @@ const userSessionService = createTsTemplateFile({
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   name: 'user-session-service',
-  projectExports: { userSessionService: {} },
+  projectExports: { createBetterAuthUserSessionService: {} },
   referencedGeneratorTemplates: { auth: {}, headersUtils: {} },
   source: {
     path: path.join(

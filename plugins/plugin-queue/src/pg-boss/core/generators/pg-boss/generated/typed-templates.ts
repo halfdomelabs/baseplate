@@ -1,8 +1,10 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
+  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
@@ -12,10 +14,11 @@ const pgBossPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
-    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'pg-boss-plugin',
   projectExports: {},
@@ -37,16 +40,10 @@ const pgBossService = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'pg-boss-service',
-  projectExports: {
-    cleanupOrphanedSchedules: { isTypeOnly: false },
-    createQueue: { isTypeOnly: false },
-    getScheduledJobs: { isTypeOnly: false },
-    initializePgBoss: { isTypeOnly: false },
-    shutdownPgBoss: { isTypeOnly: false },
-    startWorkers: { isTypeOnly: false },
-  },
+  projectExports: { createQueueRuntime: { isTypeOnly: false } },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -60,9 +57,10 @@ const runWorkers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
-    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'run-workers',
   projectExports: {},

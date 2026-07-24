@@ -4,6 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
+
 import { CORE_APP_MODULE_SETUP_PATHS } from './template-paths.js';
 import { CORE_APP_MODULE_SETUP_TEMPLATES } from './typed-templates.js';
 
@@ -27,13 +29,14 @@ const coreAppModuleSetupRenderers =
 
 const coreAppModuleSetupRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     paths: CORE_APP_MODULE_SETUP_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     coreAppModuleSetupRenderers: coreAppModuleSetupRenderers.export(),
   },
-  run({ paths, typescriptFile }) {
+  run({ appRuntimeImports, paths, typescriptFile }) {
     return {
       providers: {
         coreAppModuleSetupRenderers: {
@@ -42,6 +45,9 @@ const coreAppModuleSetupRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_APP_MODULE_SETUP_TEMPLATES.appModules,
                 destination: paths.appModules,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 ...options,
               }),
           },

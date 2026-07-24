@@ -1,7 +1,5 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
-import { userSessionService } from '../services/user-session.service.js';
-
 builder.mutationField('logOut', (t) =>
   t.fieldWithInputPayload({
     authorize: ['public'],
@@ -12,7 +10,10 @@ builder.mutationField('logOut', (t) =>
     },
     resolve: async (parent, args, context) => {
       if (context.auth.session?.type === 'user') {
-        await userSessionService.clearSession(context.auth.session, context);
+        await context.services.userSession.clearSession(
+          context.auth.session,
+          context,
+        );
       }
 
       return { success: true };

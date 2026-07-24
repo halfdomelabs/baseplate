@@ -8,6 +8,7 @@
     "canonicalPath": "@/src/modules/notifications",
     "pathRootName": "module-root"
   },
+  { "canonicalPath": "@/src/modules/emails", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/blogs", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/auth", "pathRootName": "module-root" },
   { "canonicalPath": "@/src/modules/articles", "pathRootName": "module-root" },

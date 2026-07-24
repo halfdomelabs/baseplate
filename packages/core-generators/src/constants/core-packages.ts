@@ -1,21 +1,21 @@
 export const CORE_PACKAGES = {
   // Typescript
-  typescript: '5.9.3',
+  typescript: '6.0.3',
 
   // Linting
   '@eslint/js': '9.39.2',
-  '@vitest/eslint-plugin': '1.6.9',
+  '@vitest/eslint-plugin': '1.6.23',
   eslint: '9.39.2',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
   'eslint-plugin-better-tailwindcss': '4.3.2',
   'eslint-plugin-import-x': '4.16.2',
   'eslint-plugin-jsx-a11y': '6.10.2',
-  'eslint-plugin-perfectionist': '5.4.0',
+  'eslint-plugin-perfectionist': '5.10.0',
   'eslint-plugin-react': '7.37.5',
   'eslint-plugin-react-hooks': '7.0.1',
   'eslint-plugin-unicorn': '62.0.0',
-  'typescript-eslint': '8.54.0',
+  'typescript-eslint': '8.65.0',
   globals: '17.3.0',
   tailwindcss: '4.3.1',
 

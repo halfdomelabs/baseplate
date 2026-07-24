@@ -6,7 +6,7 @@ import { config } from '%configServiceImports';
 import { logger } from '%loggerServiceImports';
 
 async function startServer(): Promise<void> {
-  const runtime = await createAppRuntime();
+  const runtime = createAppRuntime(TPL_RUNTIME_OPTIONS);
   const fastify = await buildServer({
     loggerInstance: logger,
     runtime,

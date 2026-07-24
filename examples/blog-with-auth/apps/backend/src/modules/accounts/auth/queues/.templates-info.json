@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
     "instanceData": {},
     "template": "queues-cleanup-auth-verification"
+  },
+  "cleanup-auth-verification.worker.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "queues-cleanup-auth-verification-worker"
   }
 }

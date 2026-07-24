@@ -8,7 +8,7 @@ import type { AuthRole } from '@src/modules/accounts/auth/constants/auth-roles.c
 import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { graphqlPlugin } from '@src/plugins/graphql/index.js';
 import { prisma } from '@src/services/prisma.js';
-import { createServiceContext } from '@src/utils/service-context.js';
+import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 
 async function buildApp(
   roles: AuthRole[],
@@ -18,16 +18,13 @@ async function buildApp(
   fastify.decorateRequest('serviceContext');
   fastify.addHook('preHandler', (req, _reply, done) => {
     req.serviceContext = {
-      ...createServiceContext(
-        {
-          auth: createAuthContextFromSessionInfo(
-            userId === undefined
-              ? undefined
-              : { type: 'user', id: 'test-session', userId, roles },
-          ),
-        },
-        {},
-      ),
+      ...createTestServiceContext({
+        auth: createAuthContextFromSessionInfo(
+          userId === undefined
+            ? undefined
+            : { type: 'user', id: 'test-session', userId, roles },
+        ),
+      }),
       cookieStore: {
         get: () => undefined,
         set: () => undefined,

@@ -580,7 +580,7 @@ export function createModelPolicy<
       .count({
         where: {
           AND: [{ [config.idField]: id }, where],
-        } as NonNullable<WhereInput<TModelName>>,
+        },
       })
       .then((n) => n > 0);
 
@@ -619,14 +619,11 @@ export function createModelPolicy<
         // omitted field → match-all.
         const m = node.match(ctx);
         if (m === false) return false;
-        validateMatch(m as Record<string, unknown>, key);
-        return m as WhereResult<TModelName>;
+        validateMatch(m, key);
+        return m;
       }
       case 'via': {
-        return node.target.roles[node.role].nestedWhere(
-          ctx,
-          node.relation,
-        ) as WhereResult<TModelName>;
+        return node.target.roles[node.role].nestedWhere(ctx, node.relation);
       }
       case 'where': {
         return assertNotUndefined(node.where(ctx), key);
@@ -675,11 +672,7 @@ export function createModelPolicy<
         // Zero-query fast path: scalar equality in-memory, no probe.
         const m = node.match(ctx);
         if (m === false) return false;
-        return evaluateMatch(
-          m as Record<string, unknown>,
-          model as Record<string, unknown>,
-          key,
-        );
+        return evaluateMatch(m, model, key);
       }
       case 'via': {
         // Delegation: parent's cached checkById, keyed on the PARENT id → N
@@ -770,7 +763,7 @@ export function createModelPolicy<
         if (w === true) return true;
         if (w === false) return false;
         // via is to-one only → direct nesting `{ relation: w }`, no `{ some }`.
-        return { [relationField]: w } as WhereResult<TModelName>;
+        return { [relationField]: w };
       },
     };
   }
@@ -833,7 +826,7 @@ export function createModelPolicy<
     // Compose. Only one side present → return it as-is; both → AND-nest.
     if (authWhere === undefined) return callerWhere;
     if (callerWhere === undefined) return authWhere;
-    return { AND: [callerWhere, authWhere] } as WhereInput<TModelName>;
+    return { AND: [callerWhere, authWhere] };
   }
 
   /** Build an action's members from its grant (superuser folded into globals). */
@@ -899,10 +892,5 @@ export function createModelPolicy<
     model: config.model,
     roles: roleMembers,
     ...actionMembers,
-  } as {
-    readonly model: TModelName;
-    readonly roles: {
-      readonly [K in keyof TRoles]: PolicyRoleMembers<TModelName>;
-    };
-  } & { readonly [K in keyof TActions]: ActionMembers<TModelName> };
+  };
 }

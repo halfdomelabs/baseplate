@@ -19,7 +19,6 @@ import {
 } from '%passwordHasherServiceImports';
 import { prisma } from '%prismaImports';
 import { memoizeRateLimiter } from '%rateLimitImports';
-import { userSessionService } from '%userSessionServiceImports';
 import z from 'zod';
 
 const PROVIDER_ID = 'email-password';
@@ -140,7 +139,10 @@ export async function registerUserWithEmailAndPassword({
   );
 
   const user = await createUserWithEmailAndPassword({ input });
-  const session = await userSessionService.createSession(user.id, context);
+  const session = await context.services.userSession.createSession(
+    user.id,
+    context,
+  );
 
   // Send verification email (fire-and-forget, don't block registration)
   requestEmailVerification({ userId: user.id, context }).catch(logError);
@@ -215,7 +217,7 @@ export async function authenticateUserWithEmailAndPassword({
   // Reset consecutive failures on successful login
   await getLoginConsecutiveFailsLimiter().delete(emailIpKey);
 
-  const session = await userSessionService.createSession(
+  const session = await context.services.userSession.createSession(
     userAccount.userId,
     context,
   );

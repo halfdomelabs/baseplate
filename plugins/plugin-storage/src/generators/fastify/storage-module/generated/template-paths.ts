@@ -7,6 +7,7 @@ export interface FastifyStorageModulePaths {
   configAdapters: string;
   configCategories: string;
   queuesCleanUnusedFiles: string;
+  queuesCleanUnusedFilesWorker: string;
   schemaFileCategory: string;
   schemaFileInput: string;
   schemaPresignedMutations: string;
@@ -44,7 +45,8 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           adaptersUrl: `${moduleRoot}/adapters/url.ts`,
           configAdapters: `${moduleRoot}/config/adapters.config.ts`,
           configCategories: `${moduleRoot}/config/categories.config.ts`,
-          queuesCleanUnusedFiles: `${moduleRoot}/queues/clean-unused-files.ts`,
+          queuesCleanUnusedFiles: `${moduleRoot}/queues/clean-unused-files.queue.ts`,
+          queuesCleanUnusedFilesWorker: `${moduleRoot}/queues/clean-unused-files.worker.ts`,
           schemaFileCategory: `${moduleRoot}/schema/file-category.enum.ts`,
           schemaFileInput: `${moduleRoot}/schema/file-input.input-type.ts`,
           schemaPresignedMutations: `${moduleRoot}/schema/presigned.mutations.ts`,

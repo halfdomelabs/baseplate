@@ -81,7 +81,7 @@ function VerifyEmailPage(): React.JSX.Element {
             setStatus('error');
             break;
           }
-          default: {
+          case null: {
             toast.error(
               logAndFormatError(err, 'Sorry, we could not verify your email.'),
             );

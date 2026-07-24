@@ -3,5 +3,10 @@
     "generator": "@baseplate-dev/plugin-email#email/core/email-module",
     "instanceData": {},
     "template": "emails-types"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-module",
+    "instanceData": {},
+    "template": "index"
   }
 }

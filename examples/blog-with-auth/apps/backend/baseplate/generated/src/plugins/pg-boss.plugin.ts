@@ -1,31 +1,22 @@
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyPluginCallback } from 'fastify';
 
 import fastifyPlugin from 'fastify-plugin';
 
-import { QUEUE_REGISTRY } from '../constants/queues.constants.js';
+import type { AppRuntime } from '../utils/app-runtime.js';
+
 import { config } from '../services/config.js';
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
-import {
-  initializePgBoss,
-  shutdownPgBoss,
-  startWorkers,
-} from '../services/pg-boss.service.js';
+import { createSystemServiceContext } from '../utils/service-context.js';
 
 /**
- * Fastify plugin for pg-boss queue system initialization.
+ * Fastify plugin that optionally starts pg-boss workers embedded in the API
+ * process. Queue construction and disposal are owned by {@link AppRuntime};
+ * this plugin only starts workers when embedded mode is enabled.
  */
-const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
-  // Initialize pg-boss - disable maintenance when workers run separately
-  await initializePgBoss({
-    disableMaintenance: !config.ENABLE_EMBEDDED_WORKERS,
-  });
-
-  // Handle graceful shutdown
-  fastify.addHook('onClose', async () => {
-    await shutdownPgBoss();
-  });
-
+const pgBossPluginCallback: FastifyPluginCallback<{
+  runtime: AppRuntime;
+}> = (fastify, opts, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
@@ -34,7 +25,9 @@ const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
 
     fastify.addHook('onReady', async () => {
       try {
-        await startWorkers(QUEUE_REGISTRY);
+        await opts.runtime.queues.startWorkers({
+          createContext: () => createSystemServiceContext(opts.runtime),
+        });
       } catch (error: unknown) {
         logError(error, {
           source: 'pg-boss-plugin',
@@ -46,6 +39,8 @@ const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
       }
     });
   }
+
+  done();
 };
 
 export const pgBossPlugin = fastifyPlugin(pgBossPluginCallback, {

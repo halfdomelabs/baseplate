@@ -16,7 +16,7 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueServiceImportsProvider } from '@baseplate-dev/plugin-queue';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
@@ -48,6 +48,16 @@ export interface LocalAuthCoreAuthModuleRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerification
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  queuesCleanupAuthVerificationWorker: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerificationWorker
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -100,7 +110,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
-    queueServiceImports: queueServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
@@ -117,7 +127,7 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
-    queueServiceImports,
+    queuesImports,
     requestServiceContextImports,
     typescriptFile,
     userSessionTypesImports,
@@ -156,7 +166,19 @@ const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
                   LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerification,
                 destination: paths.queuesCleanupAuthVerification,
                 importMapProviders: {
-                  queueServiceImports,
+                  queuesImports,
+                },
+                ...options,
+              }),
+          },
+          queuesCleanupAuthVerificationWorker: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.queuesCleanupAuthVerificationWorker,
+                destination: paths.queuesCleanupAuthVerificationWorker,
+                importMapProviders: {
+                  queuesImports,
                 },
                 generatorPaths: paths,
                 ...options,

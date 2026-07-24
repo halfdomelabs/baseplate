@@ -24,7 +24,7 @@ function makeRow(
     type,
     templateVersion,
     params,
-    segments: FROZEN as unknown as Prisma.JsonValue,
+    segments: FROZEN,
     fallbackText: 'FROZEN v1',
     actionUrl: '/frozen',
     actorId: null,

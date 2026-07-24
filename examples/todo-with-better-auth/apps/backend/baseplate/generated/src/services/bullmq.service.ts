@@ -4,11 +4,15 @@ import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
 import type {
   EnqueueOptions,
-  Queue,
-  QueueDefinition,
+  QueueHandlerBinding,
+  QueueInfo,
   QueueJob,
+  QueueRuntime,
+  QueueToken,
   RepeatableConfig,
+  ScheduledJob,
 } from '../types/queue.types.js';
+import type { ServiceContext } from '../utils/service-context.js';
 
 import { config } from './config.js';
 import { logError } from './error-logger.js';
@@ -16,72 +20,31 @@ import { logger } from './logger.js';
 import { createRedisClient } from './redis.js';
 
 /**
- * Global registry of active queues and workers.
- */
-const activeQueues = new Map<string, BullMQQueueBase>();
-const activeWorkers = new Map<string, BullMQWorker>();
-
-/**
- * Redis connection for BullMQ operations.
- */
-let bullMQRedisClient: ReturnType<typeof createRedisClient> | undefined =
-  undefined;
-
-/**
  * Days to retain completed jobs.
  */
 const DELETE_AFTER_DAYS = /* TPL_DELETE_AFTER_DAYS:START */ 7; /* TPL_DELETE_AFTER_DAYS:END */
 
-/**
- * Initialize the BullMQ system with Redis connection.
- */
-export function initializeBullMQ(): void {
-  if (bullMQRedisClient) {
-    return;
-  }
+const MAX_REPEATABLE_JOBS_PER_QUEUE = 3;
 
-  // Create dedicated Redis connection for BullMQ
-  bullMQRedisClient = createRedisClient({ usePrefix: false });
+/**
+ * Awaits every promise and returns the rejection reasons, if any, instead of
+ * short-circuiting on the first failure.
+ * @param promises The promises to settle.
+ * @returns The rejection reason of each promise that rejected.
+ */
+async function collectRejections(
+  promises: Promise<unknown>[],
+): Promise<unknown[]> {
+  const results = await Promise.allSettled(promises);
+  const reasons: unknown[] = [];
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      reasons.push(result.reason as unknown);
+    }
+  }
+  return reasons;
 }
 
-/**
- * Shutdown the BullMQ system, closing all queues and workers.
- * @returns Promise that resolves when BullMQ is stopped.
- */
-export async function shutdownBullMQ(): Promise<void> {
-  // Close all workers first
-  await Promise.all(
-    [...activeWorkers.values()].map((worker) => worker.close()),
-  );
-  activeWorkers.clear();
-
-  // Close all queues
-  await Promise.all([...activeQueues.values()].map((queue) => queue.close()));
-  activeQueues.clear();
-
-  // Close Redis connection
-  if (bullMQRedisClient) {
-    await bullMQRedisClient.quit();
-    bullMQRedisClient = undefined;
-  }
-}
-
-/**
- * Get the BullMQ Redis client, throwing if not initialized.
- * @returns The Redis client instance.
- */
-function getBullMQRedis(): ReturnType<typeof createRedisClient> {
-  if (!bullMQRedisClient) {
-    throw new Error('BullMQ not initialized. Call initializeBullMQ() first.');
-  }
-  return bullMQRedisClient;
-}
-
-/**
- * Convert our EnqueueOptions to BullMQ job options.
- * @param options The enqueue options from our interface.
- * @returns BullMQ job options.
- */
 /**
  * Ensure a deduplicated queue is never enqueued to without a singleton key.
  *
@@ -90,15 +53,15 @@ function getBullMQRedis(): ReturnType<typeof createRedisClient> {
  * idempotency would get duplicate jobs.
  *
  * @param queueName The name of the queue.
- * @param definition The queue definition.
+ * @param binding The queue's erased handler binding.
  * @param singletonKey The resolved singleton key for this job, if any.
  */
-function assertSingletonKeyIfDeduplicated<T>(
+function assertSingletonKeyIfDeduplicated(
   queueName: string,
-  definition: QueueDefinition<T>,
+  binding: QueueHandlerBinding,
   singletonKey: string | undefined,
 ): void {
-  if (definition.options?.deduplication && singletonKey === undefined) {
+  if (binding.options?.deduplication && singletonKey === undefined) {
     throw new Error(
       `Queue "${queueName}" has deduplication enabled, so every job must be enqueued with a singletonKey.`,
     );
@@ -148,11 +111,6 @@ function mapEnqueueOptions(options?: EnqueueOptions): JobsOptions {
   return bullMQOptions;
 }
 
-/**
- * Convert BullMQ job to our QueueJob interface.
- * @param bullJob The BullMQ job object.
- * @returns Our QueueJob interface.
- */
 function mapBullMQJob<T>(bullJob: Job<T>): QueueJob<T> {
   return {
     id: bullJob.id ?? 'unknown',
@@ -163,14 +121,6 @@ function mapBullMQJob<T>(bullJob: Job<T>): QueueJob<T> {
   };
 }
 
-const MAX_REPEATABLE_JOBS_PER_QUEUE = 3;
-
-/**
- * Setup repeatable jobs for a queue.
- * @param queue The BullMQ queue instance.
- * @param queueName The name of the queue.
- * @param repeatable The repeatable configuration.
- */
 async function setupRepeatableJobs(
   queue: BullMQQueueBase,
   queueName: string,
@@ -185,14 +135,14 @@ async function setupRepeatableJobs(
   }
 
   for (let i = 0; i < MAX_REPEATABLE_JOBS_PER_QUEUE; i++) {
-    const config = configs.at(i);
+    const jobConfig = configs.at(i);
     const name = `${queueName}-repeatable-${i}`;
-    if (config?.pattern) {
-      await queue.upsertJobScheduler(name, { pattern: config.pattern }, {});
+    if (jobConfig?.pattern) {
+      await queue.upsertJobScheduler(name, { pattern: jobConfig.pattern }, {});
       logger.info(
         {
           queueName,
-          pattern: config.pattern,
+          pattern: jobConfig.pattern,
           event: 'repeatable-job-scheduled',
         },
         'Scheduled repeatable job',
@@ -204,205 +154,252 @@ async function setupRepeatableJobs(
 }
 
 /**
- * Implementation of Queue interface backed by BullMQ.
+ * Constructs a {@link QueueRuntime} backed by BullMQ from a list of handler
+ * bindings collected from the app module tree.
+ *
+ * Passively allocates: the Redis connection and BullMQ Queue/Worker instances
+ * are created lazily on first use, not here, so construction performs no I/O.
+ *
+ * @param bindings Every queue handler binding registered across app modules.
+ * @returns A {@link QueueRuntime} for enqueueing jobs and running workers.
+ * @throws If two bindings share the same token name.
  */
-export class BullMQQueue<T> implements Queue<T> {
-  private bullQueue: BullMQQueueBase | undefined = undefined;
-  private worker?: BullMQWorker<T>;
-  private isWorkerStarted = false;
-
-  public getBullQueue(): BullMQQueueBase {
-    if (!this.bullQueue) {
-      const redis = getBullMQRedis();
-      const prefix = config.REDIS_KEY_PREFIX;
-
-      this.bullQueue = new BullMQQueueBase<T>(this.name, {
-        connection: redis,
-        prefix,
-        defaultJobOptions: mapEnqueueOptions(
-          this.definition.options?.defaultJobOptions,
-        ),
-      });
-
-      // Register in active queues
-      activeQueues.set(this.name, this.bullQueue);
-
-      // Set up error handling
-      this.bullQueue.on('error', (error: Error) => {
-        logError(error, { source: 'bullmq-queue', queueName: this.name });
-      });
+export function createQueueRuntime(
+  bindings: QueueHandlerBinding[],
+): QueueRuntime {
+  const seenNames = new Set<string>();
+  for (const binding of bindings) {
+    if (seenNames.has(binding.token.name)) {
+      throw new Error(
+        `Duplicate queue binding name "${binding.token.name}". Queue names must be unique across all app modules.`,
+      );
     }
-    return this.bullQueue;
+    seenNames.add(binding.token.name);
   }
 
-  constructor(
-    public readonly name: string,
-    private readonly definition: QueueDefinition<T>,
-  ) {}
+  const bindingsByName = new Map(
+    bindings.map((binding) => [binding.token.name, binding]),
+  );
 
-  async enqueue(
+  let redisClient: ReturnType<typeof createRedisClient> | undefined;
+  const bullQueues = new Map<string, BullMQQueueBase>();
+  const bullWorkers = new Map<string, BullMQWorker>();
+
+  function getRedisClient(): ReturnType<typeof createRedisClient> {
+    redisClient ??= createRedisClient({ usePrefix: false });
+    return redisClient;
+  }
+
+  function getBullQueue(binding: QueueHandlerBinding): BullMQQueueBase {
+    const { name } = binding.token;
+    let bullQueue = bullQueues.get(name);
+    if (!bullQueue) {
+      bullQueue = new BullMQQueueBase(name, {
+        connection: getRedisClient(),
+        prefix: config.REDIS_KEY_PREFIX,
+        defaultJobOptions: mapEnqueueOptions(
+          binding.options?.defaultJobOptions,
+        ),
+      });
+      bullQueue.on('error', (error: Error) => {
+        logError(error, { source: 'bullmq-queue', queueName: name });
+      });
+      bullQueues.set(name, bullQueue);
+    }
+    return bullQueue;
+  }
+
+  async function enqueue<T>(
+    token: QueueToken<T>,
     data: T,
     options?: EnqueueOptions,
   ): Promise<string | undefined> {
-    // Merge default job options with per-job options
+    const binding = bindingsByName.get(token.name);
+    if (!binding) {
+      throw new Error(
+        `No handler bound for queue "${token.name}". Bind one with bindQueueHandler().`,
+      );
+    }
+
     const mergedOptions: EnqueueOptions = {
-      ...this.definition.options?.defaultJobOptions,
+      ...binding.options?.defaultJobOptions,
       ...options,
     };
 
     assertSingletonKeyIfDeduplicated(
-      this.name,
-      this.definition,
+      token.name,
+      binding,
       mergedOptions.singletonKey,
     );
 
     const bullMQOptions = mapEnqueueOptions(mergedOptions);
     // When a job is deduplicated, BullMQ does not store it and instead returns
-    // the id of the job that is already in flight, so the id below may belong to
-    // that existing job rather than a newly created one. Callers must not treat
-    // the returned id as proof that a new job was created.
-    const job = await this.getBullQueue().add(this.name, data, bullMQOptions);
+    // the id of the job that is already in flight, so the id below may belong
+    // to that existing job rather than a newly created one. Callers must not
+    // treat the returned id as proof that a new job was created.
+    const job = await getBullQueue(binding).add(
+      token.name,
+      data,
+      bullMQOptions,
+    );
 
     return job.id;
   }
 
-  async work(): Promise<void> {
-    if (this.isWorkerStarted) {
-      logger.warn(
-        { queueName: this.name, event: 'worker-already-started' },
-        'Worker already started for queue',
-      );
-      return;
-    }
+  async function startWorkers(options: {
+    createContext: () => ServiceContext;
+  }): Promise<void> {
+    const startedWorkers: BullMQWorker[] = [];
 
-    // Set up repeatable jobs if configured
-    if (this.definition.repeatable) {
-      await setupRepeatableJobs(
-        this.getBullQueue(),
-        this.name,
-        this.definition.repeatable,
-      ).catch((err: unknown) => {
-        logError(err, {
-          source: 'bullmq',
-          event: 'repeatable-job-setup-failed',
-        });
-      });
-    }
+    async function startOne(binding: QueueHandlerBinding): Promise<void> {
+      const { name } = binding.token;
 
-    const redis = getBullMQRedis();
-    const prefix = config.REDIS_KEY_PREFIX;
+      // Resolve any lazyHandler now, so a broken dynamic import fails
+      // startup instead of surfacing as a job failure/retry later.
+      await binding.resolve();
 
-    // Create worker
-    this.worker = new BullMQWorker<T>(
-      this.name,
-      async (job: Job<T>) => {
-        const queueJob = mapBullMQJob(job);
+      const bullQueue = getBullQueue(binding);
 
-        logger.info(
-          {
-            queueName: this.name,
-            jobId: job.id,
-            attemptNumber: queueJob.attemptNumber,
-            event: 'job-processing-started',
-          },
-          `Processing job ${job.id} for queue ${this.name} (attempt ${queueJob.attemptNumber})`,
-        );
+      if (binding.repeatable) {
+        await setupRepeatableJobs(bullQueue, name, binding.repeatable);
+      }
 
-        try {
-          const result = await this.definition.handler(queueJob);
+      const worker = new BullMQWorker(
+        name,
+        async (job: Job) => {
+          // A fresh context per job: execution-scoped caches (auth,
+          // authorizer model lookups) must not leak across unrelated jobs.
+          const ctx = options.createContext();
+          const queueJob = mapBullMQJob(job);
 
           logger.info(
             {
-              queueName: this.name,
+              queueName: name,
               jobId: job.id,
-              event: 'job-processing-completed',
-              result,
+              attemptNumber: queueJob.attemptNumber,
+              event: 'job-processing-started',
             },
-            `Job ${job.id} for queue ${this.name} completed successfully`,
+            `Processing job ${job.id ?? 'unknown'} for queue ${name} (attempt ${queueJob.attemptNumber})`,
           );
 
-          return result;
-        } catch (error: unknown) {
-          logError(error, {
-            queueName: this.name,
-            jobId: job.id,
-            attemptNumber: queueJob.attemptNumber,
-            event: 'job-processing-failed',
-          });
+          try {
+            const result = await binding.invoke(queueJob, ctx);
 
-          throw error;
-        }
-      },
-      {
-        connection: redis,
-        prefix,
-      },
-    );
+            logger.info(
+              {
+                queueName: name,
+                jobId: job.id,
+                event: 'job-processing-completed',
+                result,
+              },
+              `Job ${job.id ?? 'unknown'} for queue ${name} completed successfully`,
+            );
 
-    // Register in active workers
-    activeWorkers.set(this.name, this.worker);
+            return result;
+          } catch (error: unknown) {
+            logError(error, {
+              queueName: name,
+              jobId: job.id,
+              attemptNumber: queueJob.attemptNumber,
+              event: 'job-processing-failed',
+            });
 
-    // Set up worker error handling
-    this.worker.on('error', (error: Error) => {
-      logError(error, { source: 'bullmq-worker', queueName: this.name });
-    });
+            throw error;
+          }
+        },
+        {
+          connection: getRedisClient(),
+          prefix: config.REDIS_KEY_PREFIX,
+        },
+      );
 
-    this.isWorkerStarted = true;
+      worker.on('error', (error: Error) => {
+        logError(error, { source: 'bullmq-worker', queueName: name });
+      });
 
-    logger.info(
-      {
-        queueName: this.name,
-        hasRepeatable: !!this.definition.repeatable,
-        event: 'queue-worker-started',
-      },
-      'Queue worker started',
-    );
-  }
-}
+      await worker.waitUntilReady();
 
-/**
- * Create a queue with the specified name and definition.
- * The worker is not started automatically - call queue.work() to start processing jobs.
- *
- * @param name The name of the queue.
- * @param definition The queue definition containing handler and options.
- * @returns A Queue interface for enqueuing jobs and starting workers.
- */
-export function createQueue<T>(
-  name: string,
-  definition: QueueDefinition<T>,
-): BullMQQueue<T> {
-  return new BullMQQueue(name, definition);
-}
+      bullWorkers.set(name, worker);
+      startedWorkers.push(worker);
 
-/**
- * Start all queue workers from the registry.
- * @param registry The list of queues to start workers for.
- */
-export async function startWorkers(registry: Queue<unknown>[]): Promise<void> {
-  const startPromises = registry.map(async (queue) => {
+      logger.info(
+        {
+          queueName: name,
+          hasRepeatable: !!binding.repeatable,
+          event: 'queue-worker-started',
+        },
+        'Queue worker started',
+      );
+    }
+
     try {
-      await queue.work();
+      await Promise.all(bindings.map((binding) => startOne(binding)));
     } catch (error: unknown) {
-      logError(error, { source: 'run-workers', queueName: queue.name });
-    }
-  });
-  await Promise.all(startPromises);
-}
-
-/**
- * Get all scheduled/cron jobs from BullMQ.
- * @returns Promise that resolves to array of scheduled job names.
- */
-export async function getScheduledJobs(): Promise<string[]> {
-  const scheduledQueueNames: string[] = [];
-
-  for (const [queueName, queue] of activeQueues) {
-    const schedulers = await queue.getJobSchedulers();
-    if (schedulers.length > 0) {
-      scheduledQueueNames.push(queueName);
+      // Roll back any workers that did start, so a partial failure doesn't
+      // leave some queues silently processing jobs while boot reports failure.
+      await Promise.all(startedWorkers.map((worker) => worker.close()));
+      for (const worker of startedWorkers) {
+        bullWorkers.delete(worker.name);
+      }
+      throw error;
     }
   }
 
-  return scheduledQueueNames;
+  /**
+   * Closes workers, then queues, then Redis, in that order - always
+   * attempting every stage even if an earlier one fails, so one rejection
+   * (e.g. a stuck worker) can't leave queue handles or the Redis connection
+   * open. Aggregates every failure instead of surfacing only the first.
+   */
+  async function stopWorkers(): Promise<void> {
+    const errors: unknown[] = [];
+
+    const workerErrors = await collectRejections(
+      [...bullWorkers.values()].map((worker) => worker.close()),
+    );
+    errors.push(...workerErrors);
+    bullWorkers.clear();
+
+    const queueErrors = await collectRejections(
+      [...bullQueues.values()].map((queue) => queue.close()),
+    );
+    errors.push(...queueErrors);
+    bullQueues.clear();
+
+    if (redisClient) {
+      const client = redisClient;
+      redisClient = undefined;
+      const redisErrors = await collectRejections([client.quit()]);
+      errors.push(...redisErrors);
+    }
+
+    if (errors.length > 0) {
+      throw new AggregateError(errors, 'Failed to stop queue workers');
+    }
+  }
+
+  function listQueues(): QueueInfo[] {
+    return bindings.map((binding) => ({ name: binding.token.name }));
+  }
+
+  async function getScheduledJobs(): Promise<ScheduledJob[]> {
+    const scheduled: ScheduledJob[] = [];
+
+    for (const [name, bullQueue] of bullQueues) {
+      const schedulers = await bullQueue.getJobSchedulers();
+      if (schedulers.length > 0) {
+        scheduled.push({ name });
+      }
+    }
+
+    return scheduled;
+  }
+
+  return {
+    enqueue,
+    startWorkers,
+    stopWorkers,
+    listQueues,
+    getScheduledJobs,
+  };
 }

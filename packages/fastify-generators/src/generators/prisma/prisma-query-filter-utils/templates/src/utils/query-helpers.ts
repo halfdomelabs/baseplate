@@ -42,7 +42,7 @@ export const queryHelpers = {
 
     if (filtered.length === 0) return false;
     if (filtered.length === 1) return filtered[0];
-    return { OR: filtered } as NonNullable<WhereInput<TModelName>>;
+    return { OR: filtered };
   },
 
   /**
@@ -65,6 +65,6 @@ export const queryHelpers = {
 
     if (filtered.length === 0) return true;
     if (filtered.length === 1) return filtered[0];
-    return { AND: filtered } as NonNullable<WhereInput<TModelName>>;
+    return { AND: filtered };
   },
 };

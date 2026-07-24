@@ -7,8 +7,10 @@ import {
   TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
-import { configServiceProvider } from '@baseplate-dev/fastify-generators';
-import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
+import {
+  appModuleProvider,
+  configServiceProvider,
+} from '@baseplate-dev/fastify-generators';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -97,18 +99,19 @@ export const emailModuleGenerator = createGenerator({
         });
       },
     ),
-    // Register sendEmailQueue with the queue registry
-    queueConfig: createGeneratorTask({
+    // Register sendEmailWorker with the app module's queues field
+    appModuleConfig: createGeneratorTask({
       dependencies: {
         paths: GENERATED_TEMPLATES.paths.provider,
-        queueConfig: queueConfigProvider,
+        appModule: appModuleProvider,
       },
-      run({ paths, queueConfig }) {
-        queueConfig.queues.set(
-          'sendEmailQueue',
+      run({ paths, appModule }) {
+        appModule.moduleFields.set(
+          'queues',
+          'sendEmailWorker',
           tsCodeFragment(
-            'sendEmailQueue',
-            tsImportBuilder(['sendEmailQueue']).from(paths.sendEmailQueue),
+            'sendEmailWorker',
+            tsImportBuilder(['sendEmailWorker']).from(paths.sendEmailWorker),
           ),
         );
       },
@@ -140,7 +143,7 @@ export const emailModuleGenerator = createGenerator({
                       transactionalLibPackageName,
                     ),
                   },
-                  sendEmailQueue: {
+                  sendEmailWorker: {
                     TPL_EMAIL_ADAPTER: emailAdapter,
                   },
                 },

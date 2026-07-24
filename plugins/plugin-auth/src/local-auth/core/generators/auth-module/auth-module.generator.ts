@@ -1,12 +1,16 @@
-import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsTypeImportBuilder,
+} from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
+  appRuntimeConfigProvider,
   configServiceProvider,
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
-import { queueConfigProvider } from '@baseplate-dev/plugin-queue';
 import {
   createGenerator,
   createGeneratorTask,
@@ -85,10 +89,10 @@ export const authModuleGenerator = createGenerator({
           .reference(
             createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
           ),
-        queueConfig: queueConfigProvider.dependency().optional(),
+        appModule: appModuleProvider,
         paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ prismaOutput, renderers, userObjectType, queueConfig, paths }) {
+      run({ prismaOutput, renderers, userObjectType, appModule, paths }) {
         return {
           providers: {
             authModule: {},
@@ -130,23 +134,47 @@ export const authModuleGenerator = createGenerator({
                 },
               }),
             );
-            // Render queue only if queue plugin is available
-            if (queueConfig) {
-              await builder.apply(
-                renderers.queuesCleanupAuthVerification.render({}),
-              );
+            // Render queue
+            await builder.apply(
+              renderers.queuesCleanupAuthVerification.render({}),
+            );
+            await builder.apply(
+              renderers.queuesCleanupAuthVerificationWorker.render({}),
+            );
 
-              // Register with` queue system
-              queueConfig.queues.set(
-                'cleanup-auth-verification',
-                TsCodeUtils.importFragment(
-                  'cleanupAuthVerificationQueue',
-                  paths.queuesCleanupAuthVerification,
-                ),
-              );
-            }
+            // Register with the app module's queues field
+            appModule.moduleFields.set(
+              'queues',
+              'cleanupAuthVerificationWorker',
+              TsCodeUtils.importFragment(
+                'cleanupAuthVerificationWorker',
+                paths.queuesCleanupAuthVerificationWorker,
+              ),
+            );
           },
         };
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ appRuntimeConfig, paths }) {
+        appRuntimeConfig.services.set(
+          'userSession',
+          tsCodeFragment(
+            'CookieUserSessionService',
+            tsTypeImportBuilder(['CookieUserSessionService']).from(
+              paths.userSessionService,
+            ),
+          ),
+        );
+        appRuntimeConfig.construction.set('userSession', {
+          fragment: TsCodeUtils.template`
+            const userSession = new ${TsCodeUtils.importFragment('CookieUserSessionService', paths.userSessionService)}();
+          `,
+        });
       },
     }),
   }),

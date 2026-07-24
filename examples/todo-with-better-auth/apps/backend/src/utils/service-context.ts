@@ -73,7 +73,7 @@ export function createSystemServiceContext(
 export async function withScriptContext<T>(
   fn: (context: ServiceContext) => Promise<T>,
 ): Promise<T> {
-  const runtime = await createAppRuntime();
+  const runtime = createAppRuntime();
   try {
     return await fn(createSystemServiceContext(runtime));
   } finally {

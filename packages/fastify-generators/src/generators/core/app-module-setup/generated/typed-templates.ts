@@ -1,11 +1,19 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
+
 const appModules = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
   name: 'app-modules',
-  projectExports: { defineAppModule: {}, flattenAppModule: {} },
+  projectExports: {
+    AppPlugin: { isTypeOnly: true },
+    defineAppModule: {},
+    flattenAppModule: {},
+    PluginRuntime: { isTypeOnly: true },
+    PluginRuntimeWithServices: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,

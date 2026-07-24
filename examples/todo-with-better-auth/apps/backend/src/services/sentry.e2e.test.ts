@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 
 it('should handle fastify request errors', async () => {
-  const runtime = await createAppRuntime();
+  const runtime = createAppRuntime();
   const server = await buildServer({
     logger: false,
     runtime,

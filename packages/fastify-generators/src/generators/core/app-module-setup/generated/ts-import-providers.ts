@@ -13,8 +13,11 @@ import {
 import { CORE_APP_MODULE_SETUP_PATHS } from './template-paths.js';
 
 export const appModuleSetupImportsSchema = createTsImportMapSchema({
+  AppPlugin: { isTypeOnly: true },
   defineAppModule: {},
   flattenAppModule: {},
+  PluginRuntime: { isTypeOnly: true },
+  PluginRuntimeWithServices: { isTypeOnly: true },
 });
 
 export type AppModuleSetupImportsProvider = TsImportMapProviderFromSchema<
@@ -37,8 +40,11 @@ const coreAppModuleSetupImportsTask = createGeneratorTask({
     return {
       providers: {
         appModuleSetupImports: createTsImportMap(appModuleSetupImportsSchema, {
+          AppPlugin: paths.appModules,
           defineAppModule: paths.appModules,
           flattenAppModule: paths.appModules,
+          PluginRuntime: paths.appModules,
+          PluginRuntimeWithServices: paths.appModules,
         }),
       },
     };

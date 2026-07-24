@@ -13,7 +13,6 @@ import {
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
   requestServiceContextImportsProvider,
-  userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
@@ -77,7 +76,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     rateLimitImports: rateLimitImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
-    userSessionServiceImports: userSessionServiceImportsProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   exports: {
@@ -97,7 +95,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     rateLimitImports,
     requestServiceContextImports,
     typescriptFile,
-    userSessionServiceImports,
     userSessionTypesImports,
   }) {
     return {
@@ -120,7 +117,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   prismaImports,
                   rateLimitImports,
                   requestServiceContextImports,
-                  userSessionServiceImports,
                   userSessionTypesImports,
                 },
                 generatorPaths: paths,

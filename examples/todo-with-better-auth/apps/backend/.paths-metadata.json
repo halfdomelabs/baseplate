@@ -24,6 +24,10 @@
     "pathRootName": "module-root"
   },
   {
+    "canonicalPath": "@/src/modules/emails",
+    "pathRootName": "module-root"
+  },
+  {
     "canonicalPath": "@/src/modules/billing",
     "pathRootName": "module-root"
   },

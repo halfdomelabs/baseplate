@@ -113,6 +113,7 @@ export async function requestPasswordReset({
 
     // Send email asynchronously (queue-based)
     await sendEmail(
+      context.services.queues,
       /* TPL_PASSWORD_RESET_EMAIL:START */ PasswordResetEmail /* TPL_PASSWORD_RESET_EMAIL:END */,
       {
         to: user.email,
@@ -238,6 +239,7 @@ export async function completePasswordReset({
 
   // Send password changed confirmation email
   await sendEmail(
+    context.services.queues,
     /* TPL_PASSWORD_CHANGED_EMAIL:START */ PasswordChangedEmail /* TPL_PASSWORD_CHANGED_EMAIL:END */,
     {
       to: user.email,

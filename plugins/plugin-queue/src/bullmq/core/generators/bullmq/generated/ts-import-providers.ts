@@ -10,18 +10,10 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
-import {
-  queueServiceImportsProvider,
-  queueServiceImportsSchema,
-} from '#src/queue/providers/queue-service.provider.js';
-
 import { BULLMQ_CORE_BULLMQ_PATHS } from './template-paths.js';
 
 export const bullmqImportsSchema = createTsImportMapSchema({
-  getScheduledJobs: {},
-  initializeBullMQ: {},
-  shutdownBullMQ: {},
-  startWorkers: {},
+  createQueueRuntime: {},
 });
 
 export type BullmqImportsProvider = TsImportMapProviderFromSchema<
@@ -35,21 +27,12 @@ const bullmqCoreBullmqImportsTask = createGeneratorTask({
   dependencies: {
     paths: BULLMQ_CORE_BULLMQ_PATHS.provider,
   },
-  exports: {
-    bullmqImports: bullmqImportsProvider.export(packageScope),
-    queueServiceImports: queueServiceImportsProvider.export(packageScope),
-  },
+  exports: { bullmqImports: bullmqImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {
         bullmqImports: createTsImportMap(bullmqImportsSchema, {
-          getScheduledJobs: paths.bullmqService,
-          initializeBullMQ: paths.bullmqService,
-          shutdownBullMQ: paths.bullmqService,
-          startWorkers: paths.bullmqService,
-        }),
-        queueServiceImports: createTsImportMap(queueServiceImportsSchema, {
-          createQueue: paths.bullmqService,
+          createQueueRuntime: paths.bullmqService,
         }),
       },
     };

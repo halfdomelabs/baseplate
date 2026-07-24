@@ -195,7 +195,7 @@ export async function notify<P extends NotificationParams>(
       // Render source, replayed at read time.
       params: params as Prisma.InputJsonValue,
       // Recovery content for a retired renderer / param drift.
-      segments: frozen.segments as unknown as Prisma.InputJsonValue,
+      segments: frozen.segments,
       fallbackText: frozen.fallbackText,
       actionUrl: frozen.actionUrl,
       ...actorColumns(input.actorId),

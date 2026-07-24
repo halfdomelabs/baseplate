@@ -22,7 +22,7 @@
       "pathRootRelativePath": "{src-root}/index.ts",
       "referencedGeneratorTemplates": ["server"],
       "sourceFile": "src/index.ts",
-      "variables": { "TPL_LOG_ERROR": {} }
+      "variables": { "TPL_LOG_ERROR": {}, "TPL_RUNTIME_OPTIONS": {} }
     },
     "server": {
       "type": "ts",

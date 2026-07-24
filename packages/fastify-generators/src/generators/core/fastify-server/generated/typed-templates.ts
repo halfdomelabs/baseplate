@@ -18,7 +18,7 @@ const index = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/src/index.ts'),
   },
-  variables: { TPL_LOG_ERROR: {} },
+  variables: { TPL_LOG_ERROR: {}, TPL_RUNTIME_OPTIONS: {} },
 });
 
 const server = createTsTemplateFile({

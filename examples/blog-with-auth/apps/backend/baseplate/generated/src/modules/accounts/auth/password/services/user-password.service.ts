@@ -15,7 +15,6 @@ import { handleZodRequestValidationError } from '@src/utils/zod.js';
 
 import type { UserSessionPayload } from '../../types/user-session.types.js';
 
-import { userSessionService } from '../../services/user-session.service.js';
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
@@ -148,7 +147,10 @@ export async function registerUserWithEmailAndPassword({
   );
 
   const user = await createUserWithEmailAndPassword({ input });
-  const session = await userSessionService.createSession(user.id, context);
+  const session = await context.services.userSession.createSession(
+    user.id,
+    context,
+  );
 
   // Send verification email (fire-and-forget, don't block registration)
   requestEmailVerification({ userId: user.id, context }).catch(logError);
@@ -223,7 +225,7 @@ export async function authenticateUserWithEmailAndPassword({
   // Reset consecutive failures on successful login
   await getLoginConsecutiveFailsLimiter().delete(emailIpKey);
 
-  const session = await userSessionService.createSession(
+  const session = await context.services.userSession.createSession(
     userAccount.userId,
     context,
   );

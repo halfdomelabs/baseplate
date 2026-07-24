@@ -3,10 +3,12 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   fastifyRedisImportsProvider,
   loggerServiceImportsProvider,
+  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -34,22 +36,26 @@ const bullmqCoreBullmqRenderers = createProviderType<BullmqCoreBullmqRenderers>(
 
 const bullmqCoreBullmqRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     fastifyRedisImports: fastifyRedisImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: BULLMQ_CORE_BULLMQ_PATHS.provider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { bullmqCoreBullmqRenderers: bullmqCoreBullmqRenderers.export() },
   run({
+    appRuntimeImports,
     configServiceImports,
     errorHandlerServiceImports,
     fastifyRedisImports,
     loggerServiceImports,
     paths,
     queuesImports,
+    serviceContextImports,
     typescriptFile,
   }) {
     return {
@@ -61,11 +67,13 @@ const bullmqCoreBullmqRenderersTask = createGeneratorTask({
                 group: BULLMQ_CORE_BULLMQ_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
+                  appRuntimeImports,
                   configServiceImports,
                   errorHandlerServiceImports,
                   fastifyRedisImports,
                   loggerServiceImports,
                   queuesImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,

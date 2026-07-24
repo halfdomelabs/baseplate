@@ -1,6 +1,9 @@
 {
   "files": {
     "added": [
+      {
+        "path": "src/modules/accounts/users/schema/relation-pagination.e2e.test.ts"
+      },
       { "path": "src/modules/accounts/users/services/user.crud.int.test.ts" },
       {
         "path": "src/modules/accounts/users/services/user.data-service.int.test.ts"

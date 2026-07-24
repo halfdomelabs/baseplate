@@ -241,7 +241,7 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
       idField: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({
-        bad: r.match(() => ({ publisherId: undefined }) as never),
+        bad: r.match(() => ({ publisherId: undefined })),
       }),
       actions: { read: { roles: ['bad'] } },
     });

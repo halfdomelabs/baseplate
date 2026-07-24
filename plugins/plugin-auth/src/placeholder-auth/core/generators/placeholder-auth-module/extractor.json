@@ -1,13 +1,5 @@
 {
   "name": "placeholder-auth/core/placeholder-auth-module",
-  "extractors": {
-    "ts": {
-      "importProviders": [
-        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
-      ],
-      "skipDefaultImportMap": true
-    }
-  },
   "templates": {
     "user-session-service": {
       "type": "ts",
@@ -24,7 +16,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "projectExports": { "userSessionService": {} },
+      "projectExports": { "createPlaceholderUserSessionService": {} },
       "sourceFile": "module/services/user-session.service.ts",
       "variables": {}
     }

@@ -2,22 +2,13 @@ import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-genera
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import { serviceContextImportsProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { QUEUE_CORE_QUEUES_PATHS } from './template-paths.js';
 import { QUEUE_CORE_QUEUES_TEMPLATES } from './typed-templates.js';
 
 export interface QueueCoreQueuesRenderers {
-  queueRegistry: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof QUEUE_CORE_QUEUES_TEMPLATES.queueRegistry
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   queueTypes: {
     render: (
       options: Omit<
@@ -37,27 +28,22 @@ const queueCoreQueuesRenderers = createProviderType<QueueCoreQueuesRenderers>(
 const queueCoreQueuesRenderersTask = createGeneratorTask({
   dependencies: {
     paths: QUEUE_CORE_QUEUES_PATHS.provider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { queueCoreQueuesRenderers: queueCoreQueuesRenderers.export() },
-  run({ paths, typescriptFile }) {
+  run({ paths, serviceContextImports, typescriptFile }) {
     return {
       providers: {
         queueCoreQueuesRenderers: {
-          queueRegistry: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: QUEUE_CORE_QUEUES_TEMPLATES.queueRegistry,
-                destination: paths.queueRegistry,
-                generatorPaths: paths,
-                ...options,
-              }),
-          },
           queueTypes: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
                 template: QUEUE_CORE_QUEUES_TEMPLATES.queueTypes,
                 destination: paths.queueTypes,
+                importMapProviders: {
+                  serviceContextImports,
+                },
                 ...options,
               }),
           },

@@ -12,7 +12,7 @@ const userSessionService = createTsTemplateFile({
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   name: 'user-session-service',
-  projectExports: { userSessionService: {} },
+  projectExports: { createPlaceholderUserSessionService: {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -1,10 +1,15 @@
 import fp from 'fastify-plugin';
 
-import { auth } from '../services/auth.js';
+import type { PluginRuntimeWithServices } from '@src/utils/app-modules.js';
+
 import { toWebHeaders } from '../utils/headers.utils.js';
 
-export const betterAuthPlugin = fp(
-  (fastify, _opts, done) => {
+export const betterAuthPlugin = fp<{
+  runtime: PluginRuntimeWithServices<'betterAuth'>;
+}>(
+  (fastify, { runtime }, done) => {
+    const auth = runtime.services.betterAuth;
+
     fastify.all('/auth/*', async (request, reply) => {
       const url = new URL(request.url, `http://${request.headers.host}`);
 

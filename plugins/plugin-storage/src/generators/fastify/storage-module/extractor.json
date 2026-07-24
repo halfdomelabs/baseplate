@@ -54,20 +54,42 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
-        "queueServiceImportsProvider": {
-          "importName": "queueServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/providers/queue-service.provider.ts"
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/queues/clean-unused-files.ts",
+      "pathRootRelativePath": "{module-root}/queues/clean-unused-files.queue.ts",
       "projectExports": {
         "cleanUnusedFilesQueue": {
           "isTypeOnly": false,
           "name": "cleanUnusedFilesQueue"
         }
       },
-      "referencedGeneratorTemplates": ["services-clean-unused-files"],
-      "sourceFile": "module/queues/clean-unused-files.ts",
+      "sourceFile": "module/queues/clean-unused-files.queue.ts",
+      "variables": {}
+    },
+    "queues-clean-unused-files-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/clean-unused-files.worker.ts",
+      "projectExports": {
+        "cleanUnusedFilesWorker": {
+          "isTypeOnly": false,
+          "name": "cleanUnusedFilesWorker"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "queues-clean-unused-files",
+        "services-clean-unused-files"
+      ],
+      "sourceFile": "module/queues/clean-unused-files.worker.ts",
       "variables": {}
     },
     "schema-file-category": {

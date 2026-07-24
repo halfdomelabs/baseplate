@@ -5,6 +5,7 @@ export interface EmailCoreEmailModulePaths {
   emailsService: string;
   emailsTypes: string;
   sendEmailQueue: string;
+  sendEmailWorker: string;
 }
 
 const emailCoreEmailModulePaths = createProviderType<EmailCoreEmailModulePaths>(
@@ -20,9 +21,10 @@ const emailCoreEmailModulePathsTask = createGeneratorTask({
     return {
       providers: {
         emailCoreEmailModulePaths: {
-          emailsService: `${moduleRoot}/emails/services/emails.service.ts`,
-          emailsTypes: `${moduleRoot}/emails/emails.types.ts`,
-          sendEmailQueue: `${moduleRoot}/emails/queues/send-email.queue.ts`,
+          emailsService: `${moduleRoot}/services/emails.service.ts`,
+          emailsTypes: `${moduleRoot}/emails.types.ts`,
+          sendEmailQueue: `${moduleRoot}/queues/send-email.queue.ts`,
+          sendEmailWorker: `${moduleRoot}/queues/send-email.worker.ts`,
         },
       },
     };

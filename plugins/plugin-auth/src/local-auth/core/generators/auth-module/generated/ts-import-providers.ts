@@ -6,10 +6,6 @@ import {
   packageScope,
 } from '@baseplate-dev/core-generators';
 import {
-  userSessionServiceImportsProvider,
-  userSessionServiceImportsSchema,
-} from '@baseplate-dev/fastify-generators';
-import {
   createGeneratorTask,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
@@ -17,7 +13,10 @@ import {
 import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
 
 export const authModuleImportsSchema = createTsImportMapSchema({
+  cleanupAuthVerificationQueue: {},
+  cleanupAuthVerificationWorker: {},
   cleanupExpiredAuthVerifications: {},
+  CookieUserSessionService: {},
   createAuthVerification: {},
   userSessionPayload: {},
   validateAuthVerification: {},
@@ -36,22 +35,20 @@ const localAuthCoreAuthModuleImportsTask = createGeneratorTask({
   },
   exports: {
     authModuleImports: authModuleImportsProvider.export(packageScope),
-    userSessionServiceImports:
-      userSessionServiceImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {
       providers: {
         authModuleImports: createTsImportMap(authModuleImportsSchema, {
+          cleanupAuthVerificationQueue: paths.queuesCleanupAuthVerification,
+          cleanupAuthVerificationWorker:
+            paths.queuesCleanupAuthVerificationWorker,
           cleanupExpiredAuthVerifications: paths.servicesAuthVerification,
+          CookieUserSessionService: paths.userSessionService,
           createAuthVerification: paths.servicesAuthVerification,
           userSessionPayload: paths.schemaUserSessionPayloadObjectType,
           validateAuthVerification: paths.servicesAuthVerification,
         }),
-        userSessionServiceImports: createTsImportMap(
-          userSessionServiceImportsSchema,
-          { userSessionService: paths.userSessionService },
-        ),
       },
     };
   },

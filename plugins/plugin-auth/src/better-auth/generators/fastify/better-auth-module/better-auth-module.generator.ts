@@ -4,11 +4,14 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
+  tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
+  appRuntimeConfigProvider,
   configServiceProvider,
   prismaOutputProvider,
+  userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import {
@@ -128,6 +131,35 @@ export const betterAuthModuleGenerator = createGenerator({
             await builder.apply(renderers.headersUtils.render({}));
           },
         };
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        userSessionTypesImports: userSessionTypesImportsProvider,
+        paths: BETTER_AUTH_BETTER_AUTH_MODULE_GENERATED.paths.provider,
+      },
+      run({ appRuntimeConfig, userSessionTypesImports, paths }) {
+        appRuntimeConfig.services.set(
+          'betterAuth',
+          tsCodeFragment(
+            'Auth',
+            tsTypeImportBuilder(['Auth']).from(paths.auth),
+          ),
+        );
+        appRuntimeConfig.services.set(
+          'userSession',
+          userSessionTypesImports.UserSessionService.typeFragment(),
+        );
+        // Both consts are emitted from a single construction entry so
+        // `userSession`'s construction (which depends on `betterAuth` being
+        // built first) doesn't rely on map key ordering.
+        appRuntimeConfig.construction.set('betterAuth', {
+          fragment: TsCodeUtils.template`
+            const betterAuth = ${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ queues });
+            const userSession = ${TsCodeUtils.importFragment('createBetterAuthUserSessionService', paths.userSessionService)}(betterAuth);
+          `,
+        });
       },
     }),
     nodePackages: createNodePackagesTask({

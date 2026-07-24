@@ -3,9 +3,11 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
+  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -33,20 +35,24 @@ const pgBossCorePgBossRenderers = createProviderType<PgBossCorePgBossRenderers>(
 
 const pgBossCorePgBossRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: PG_BOSS_CORE_PG_BOSS_PATHS.provider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { pgBossCorePgBossRenderers: pgBossCorePgBossRenderers.export() },
   run({
+    appRuntimeImports,
     configServiceImports,
     errorHandlerServiceImports,
     loggerServiceImports,
     paths,
     queuesImports,
+    serviceContextImports,
     typescriptFile,
   }) {
     return {
@@ -58,10 +64,12 @@ const pgBossCorePgBossRenderersTask = createGeneratorTask({
                 group: PG_BOSS_CORE_PG_BOSS_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
+                  appRuntimeImports,
                   configServiceImports,
                   errorHandlerServiceImports,
                   loggerServiceImports,
                   queuesImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,
