@@ -1410,7 +1410,7 @@
           ],
           "foreignRelations": [
             { "ref": "roles" },
-            { "ref": "todoLists" },
+            { "ref": "todoLists", "paginated": true },
             { "ref": "userProfile" },
             { "ref": "customer" }
           ]
