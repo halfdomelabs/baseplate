@@ -11,8 +11,6 @@ import * as React from 'react';
 import { DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { MdChevronLeft, MdChevronRight, MdExpandMore } from 'react-icons/md';
 
-/* eslint-disable react/prop-types -- needed for subcomponents */
-
 /**
  * A control that allows the user to select a date.
  *
