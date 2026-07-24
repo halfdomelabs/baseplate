@@ -1158,7 +1158,11 @@
           "get": { "enabled": true },
           "globalRoles": ["admin"],
           "instanceRoles": ["owner"],
-          "list": { "connection": { "enabled": true }, "enabled": true }
+          "list": {
+            "connection": { "enabled": true },
+            "enabled": true,
+            "where": { "enabled": true }
+          }
         }
       },
       "id": "model:ONd_Fbo61Tx7",

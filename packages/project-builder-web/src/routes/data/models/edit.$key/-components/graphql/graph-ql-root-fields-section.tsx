@@ -15,7 +15,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
-import { MdInfo } from 'react-icons/md';
+import { MdInfo, MdWarning } from 'react-icons/md';
 
 interface GraphQLRootFieldsSectionProps {
   control: Control<ModelConfigInput>;
@@ -38,6 +38,20 @@ export function GraphQLRootFieldsSection({
     (isCreateControllerEnabled ?? false) ||
     (isUpdateControllerEnabled ?? false) ||
     (isDeleteControllerEnabled ?? false);
+
+  const isWhereFilteringEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.where.enabled',
+  });
+  const exposedFields = useWatch({
+    control,
+    name: 'graphql.objectType.fields',
+  });
+  const hasRestrictedFilterableField = (exposedFields ?? []).some(
+    (entry) =>
+      (entry.globalRoles?.length ?? 0) > 0 ||
+      (entry.instanceRoles?.length ?? 0) > 0,
+  );
 
   return (
     <SectionListSection>
@@ -91,6 +105,28 @@ export function GraphQLRootFieldsSection({
               label="Connection"
               description="Cursor-based pagination, e.g. postsConnection(first, after)"
             />
+            <ToggleItem
+              control={control}
+              name="graphql.queries.list.where.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="Where Filtering"
+              description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
+            />
+            {isWhereFilteringEnabled && hasRestrictedFilterableField && (
+              <Alert variant="warning" className="max-w-md">
+                <MdWarning />
+                <AlertTitle>Restricted fields are still filterable</AlertTitle>
+                <AlertDescription>
+                  Some exposed fields have role restrictions configured, but
+                  where filtering does not enforce them — any caller can filter
+                  on a restricted field&apos;s value even if they can&apos;t
+                  read it directly (e.g. narrowing results with
+                  greater-than/less-than). Avoid enabling where filtering on
+                  models with role-restricted fields until per-role queries are
+                  supported.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
           {hasAnyMutation && (
             <div className="space-y-4">
@@ -143,6 +179,7 @@ function ToggleItem({
     | 'graphql.queries.list.enabled'
     | 'graphql.queries.list.count.enabled'
     | 'graphql.queries.list.connection.enabled'
+    | 'graphql.queries.list.where.enabled'
     | 'graphql.mutations.create.enabled'
     | 'graphql.mutations.update.enabled'
     | 'graphql.mutations.delete.enabled';

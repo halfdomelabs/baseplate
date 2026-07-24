@@ -10,6 +10,7 @@ import {
   fastifyRedisGenerator,
   fastifyServerGenerator,
   pothosGenerator,
+  pothosPrismaFiltersFileGenerator,
   pothosPrismaGenerator,
   pothosScalarGenerator,
   prismaGenerator,
@@ -35,6 +36,11 @@ export function buildFastify(
 ): GeneratorBundle {
   const { projectDefinition, appCompiler } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
+  const hasWhereFiltering = projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.where.enabled,
+  );
 
   // add graphql scalars
   const graphqlBundle = appModuleGenerator({
@@ -81,6 +87,9 @@ export function buildFastify(
         }),
         pothos: pothosGenerator({}),
         pothosPrisma: pothosPrismaGenerator({}),
+        pothosPrismaFilters: hasWhereFiltering
+          ? pothosPrismaFiltersFileGenerator({})
+          : undefined,
         modules: [
           ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
           graphqlBundle,

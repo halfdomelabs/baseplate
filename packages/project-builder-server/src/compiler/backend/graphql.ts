@@ -5,6 +5,7 @@ import type {
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
+  getPothosPrismaWhereInputTypeOutputName,
   pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
   pothosPrismaConnectionQueryGenerator,
@@ -15,6 +16,7 @@ import {
   pothosPrismaListQueryGenerator,
   pothosPrismaObjectGenerator,
   pothosPrismaPrimaryKeyGenerator,
+  pothosPrismaWhereInputGenerator,
   pothosTypesFileGenerator,
 } from '@baseplate-dev/fastify-generators';
 import { authConfigSpec, ModelUtils } from '@baseplate-dev/project-builder-lib';
@@ -75,6 +77,16 @@ function buildObjectTypeFile(
         ),
         order: 1,
       }),
+      whereInput:
+        queries.list.enabled && queries.list.where.enabled
+          ? pothosPrismaWhereInputGenerator({
+              modelName: model.name,
+              order: 2,
+              filterableFields: fields.map((entry) =>
+                appBuilder.nameFromId(entry.ref),
+              ),
+            })
+          : undefined,
     },
   });
 }
@@ -130,6 +142,11 @@ function buildQueriesFileForModel(
   const policyRef =
     isAuthEnabled && model.authorizer.roles.length > 0 ? model.name : undefined;
 
+  const whereInputRef =
+    list.enabled && list.where.enabled
+      ? getPothosPrismaWhereInputTypeOutputName(model.name)
+      : undefined;
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -151,6 +168,7 @@ function buildQueriesFileForModel(
             order: 1,
             modelName: model.name,
             policyRef,
+            whereInputRef,
             children: {
               authorize,
             },
@@ -162,6 +180,7 @@ function buildQueriesFileForModel(
               order: 2,
               modelName: model.name,
               policyRef,
+              whereInputRef,
               children: {
                 authorize,
               },
@@ -173,6 +192,7 @@ function buildQueriesFileForModel(
               order: 3,
               modelName: model.name,
               policyRef,
+              whereInputRef,
               children: {
                 authorize,
               },
@@ -310,6 +330,7 @@ function buildMutationsFileForModel(
 function buildEnumFileForModel(
   enumFileId: string,
   enums: EnumConfig[],
+  registerFilters: boolean,
 ): GeneratorBundle | undefined {
   if (enums.length === 0) {
     return undefined;
@@ -326,6 +347,7 @@ function buildEnumFileForModel(
               v.description ? [[v.name, v.description]] : [],
             ),
           ),
+          registerFilter: registerFilters,
         }),
       ),
     },
@@ -345,12 +367,18 @@ export function buildGraphqlForFeature(
     (e) => e.featureRef === featureId && e.isExposed,
   );
 
+  const hasWhereFiltering = appBuilder.projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.where.enabled,
+  );
+
   return [
     ...models.flatMap((model) => [
       buildObjectTypeFile(appBuilder, model),
       buildQueriesFileForModel(appBuilder, model),
       buildMutationsFileForModel(appBuilder, model),
     ]),
-    buildEnumFileForModel(`${featureId}-enums`, enums),
+    buildEnumFileForModel(`${featureId}-enums`, enums, hasWhereFiltering),
   ].filter(notEmpty);
 }

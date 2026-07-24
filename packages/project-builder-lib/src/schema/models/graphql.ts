@@ -145,6 +145,12 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                 }),
                 {},
               ),
+              where: ctx.withDefault(
+                z.object({
+                  enabled: ctx.withDefault(z.boolean(), false),
+                }),
+                {},
+              ),
             }),
             {},
           ),

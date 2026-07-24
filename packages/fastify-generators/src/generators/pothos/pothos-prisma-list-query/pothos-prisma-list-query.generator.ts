@@ -15,7 +15,9 @@ import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-a
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
+import { pothosPrismaWhereComplexityValidatorProvider } from '../pothos-prisma-filters-file/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
@@ -32,6 +34,11 @@ const descriptorSchema = z.object({
    * function filters with `policy.read.where(ctx)`.
    */
   policyRef: z.string().optional(),
+  /**
+   * Key to look up the model's WhereInput type output. When set, a `where`
+   * arg is added and passed as the caller-supplied where clause.
+   */
+  whereInputRef: z.string().optional(),
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -39,7 +46,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, policyRef }) => ({
+  buildTasks: ({ modelName, order, policyRef, whereInputRef }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -47,11 +54,23 @@ export const pothosPrismaListQueryGenerator = createGenerator({
         modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(policyRef),
+        whereInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(whereInputRef),
+        whereComplexityValidator: pothosPrismaWhereComplexityValidatorProvider
+          .dependency()
+          .optional(),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
+      run({
+        prismaOutput,
+        pothosTypesFile,
+        modelPolicy,
+        whereInputType,
+        whereComplexityValidator,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -80,15 +99,34 @@ export const pothosPrismaListQueryGenerator = createGenerator({
 
             const zFragment = TsCodeUtils.importFragment('z', 'zod');
 
+            const argsPattern = whereInputType
+              ? '{ skip, take, where }'
+              : '{ skip, take }';
+            const callerWhereArg = whereInputType ? ', where ?? undefined' : '';
+            const noPolicyWhere = whereInputType
+              ? 'where: where ?? undefined, '
+              : '';
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx), skip: skip ?? undefined, take: take ?? undefined })`
-              : tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
+              ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), skip: skip ?? undefined, take: take ?? undefined })`
+              : tsTemplate`async (query, _root, ${argsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${noPolicyWhere}skip: skip ?? undefined, take: take ?? undefined })`;
+
+            const whereArgFragment =
+              whereInputType && whereComplexityValidator
+                ? tsTemplate`where: t.arg({
+                    type: ${whereInputType.getTypeReference().fragment},
+                    validate: ${zFragment}.custom((where) => ${whereComplexityValidator.getValidatorFragment()}(where, ${whereComplexityValidator.getMaxDepth().toString()}, ${whereComplexityValidator.getMaxClauseCount().toString()}), {
+                      message: 'where filter is too deeply nested or has too many clauses',
+                    }),
+                  }),`
+                : '';
 
             const options = {
               type: `[${quot(modelName)}]`,
               args: tsTemplate`{
                 skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                 take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+                ${whereArgFragment}
               }`,
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
