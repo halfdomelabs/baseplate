@@ -50,6 +50,42 @@ function buildObjectTypeFile(
     appBuilder.projectDefinition,
   );
 
+  const filterableFieldEntries = fields.filter((entry) => entry.filterable);
+
+  if (
+    queries.list.enabled &&
+    queries.list.where.enabled &&
+    isAuthEnabled &&
+    filterableFieldEntries.length > 0
+  ) {
+    const unsafeFields = filterableFieldEntries.filter(
+      (entry) =>
+        !ModelUtils.isFieldSafeToFilter(
+          {
+            globalRoles: entry.globalRoles,
+            instanceRoles: entry.instanceRoles,
+          },
+          {
+            globalRoles: queries.globalRoles,
+            instanceRoles: queries.instanceRoles,
+          },
+        ),
+    );
+    if (unsafeFields.length > 0) {
+      const fieldNames = unsafeFields
+        .map((entry) => appBuilder.nameFromId(entry.ref))
+        .join(', ');
+      throw new Error(
+        `Model '${model.name}' marks field(s) [${fieldNames}] as filterable, but they ` +
+          `are restricted to roles narrower than the list query's own roles. Filtering ` +
+          `would let a caller who can list but not read these fields infer their values ` +
+          `(e.g. via 'contains'/'lt'/'gt'). Either widen the field's roles to match (or ` +
+          `exceed) the query's roles, narrow the query's roles to match the field's, or ` +
+          `unmark the field as filterable.`,
+      );
+    }
+  }
+
   return pothosTypesFileGenerator({
     id: `${model.id}-object-type`,
     fileName: `${kebabCase(model.name)}.object-type`,
@@ -82,7 +118,7 @@ function buildObjectTypeFile(
           ? pothosPrismaWhereInputGenerator({
               modelName: model.name,
               order: 2,
-              filterableFields: fields.map((entry) =>
+              filterableFields: filterableFieldEntries.map((entry) =>
                 appBuilder.nameFromId(entry.ref),
               ),
             })

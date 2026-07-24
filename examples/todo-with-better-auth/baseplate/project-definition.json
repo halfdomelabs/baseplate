@@ -1147,10 +1147,10 @@
             { "ref": "id" },
             { "ref": "ownerId" },
             { "ref": "position" },
-            { "ref": "name" },
+            { "ref": "name", "filterable": true },
             { "ref": "updatedAt" },
             { "ref": "createdAt" },
-            { "ref": "status" }
+            { "ref": "status", "filterable": true }
           ],
           "localRelations": [{ "ref": "owner" }, { "ref": "coverPhoto" }]
         },

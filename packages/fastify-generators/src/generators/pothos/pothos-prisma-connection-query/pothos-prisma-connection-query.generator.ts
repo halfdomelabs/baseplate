@@ -15,6 +15,10 @@ import { getModelIdFieldName } from '#src/generators/prisma/_shared/crud-method/
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
 import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
@@ -101,7 +105,7 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
               prismaOutput.getPrismaModelFragment(modelName);
 
             const argsPattern = whereInputType ? '{ where }' : '{}';
-            const callerWhereArg = whereInputType ? ', where ?? undefined' : '';
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
 
             const resolveFunction: TsCodeFragment = modelPolicy
               ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`
@@ -115,20 +119,21 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
                 ? tsTemplate`(_connection, ${argsPattern}) => ${prismaModelFragment}.count({ where: where ?? undefined })`
                 : tsTemplate`() => ${prismaModelFragment}.count()`;
 
-            const zFragment = TsCodeUtils.importFragment('z', 'zod');
-
             const options = {
               type: quot(modelName),
               cursor: quot(cursorFieldName),
               ...(whereInputType && whereComplexityValidator
                 ? {
                     args: tsTemplate`{
-                      where: t.arg({
-                        type: ${whereInputType.getTypeReference().fragment},
-                        validate: ${zFragment}.custom((where) => ${whereComplexityValidator.getValidatorFragment()}(where, ${whereComplexityValidator.getMaxDepth().toString()}, ${whereComplexityValidator.getMaxClauseCount().toString()}), {
-                          message: 'where filter is too deeply nested or has too many clauses',
-                        }),
-                      }),
+                      where: ${buildWhereArgFragment({
+                        whereInputTypeReference:
+                          whereInputType.getTypeReference().fragment,
+                        validatorFragment:
+                          whereComplexityValidator.getValidatorFragment(),
+                        maxDepth: whereComplexityValidator.getMaxDepth(),
+                        maxClauseCount:
+                          whereComplexityValidator.getMaxClauseCount(),
+                      })},
                     }`,
                   }
                 : {}),

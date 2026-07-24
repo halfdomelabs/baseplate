@@ -14,6 +14,10 @@ import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-fi
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
 import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
@@ -102,7 +106,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             const argsPattern = whereInputType
               ? '{ skip, take, where }'
               : '{ skip, take }';
-            const callerWhereArg = whereInputType ? ', where ?? undefined' : '';
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
             const noPolicyWhere = whereInputType
               ? 'where: where ?? undefined, '
               : '';
@@ -113,12 +117,15 @@ export const pothosPrismaListQueryGenerator = createGenerator({
 
             const whereArgFragment =
               whereInputType && whereComplexityValidator
-                ? tsTemplate`where: t.arg({
-                    type: ${whereInputType.getTypeReference().fragment},
-                    validate: ${zFragment}.custom((where) => ${whereComplexityValidator.getValidatorFragment()}(where, ${whereComplexityValidator.getMaxDepth().toString()}, ${whereComplexityValidator.getMaxClauseCount().toString()}), {
-                      message: 'where filter is too deeply nested or has too many clauses',
-                    }),
-                  }),`
+                ? tsTemplate`where: ${buildWhereArgFragment({
+                    whereInputTypeReference:
+                      whereInputType.getTypeReference().fragment,
+                    validatorFragment:
+                      whereComplexityValidator.getValidatorFragment(),
+                    maxDepth: whereComplexityValidator.getMaxDepth(),
+                    maxClauseCount:
+                      whereComplexityValidator.getMaxClauseCount(),
+                  })},`
                 : '';
 
             const options = {

@@ -108,6 +108,49 @@ function getPrimaryKeyFields(model: ModelConfig): ModelScalarFieldConfig[] {
   return primaryKeyFields.map((id) => getScalarFieldById(model, id));
 }
 
+/**
+ * Whether a field with the given read-role restriction is safe to expose as
+ * a where-filter operand on a query with the given read-role restriction.
+ *
+ * A field is safe to filter on only if every principal who can call the
+ * query can also read the field's value — i.e. the field's own restriction
+ * (if any) is no narrower than the query's. Role lists are OR'd (holding
+ * *any* listed role grants access), and an EMPTY role list means
+ * "unrestricted" (everyone), not "no one" — the widest grant, not the
+ * narrowest. So:
+ *  - field unrestricted (empty) -> always safe, regardless of the query.
+ *  - query unrestricted (empty) but field restricted -> never safe (the
+ *    query admits everyone; the field doesn't).
+ *  - both restricted -> safe only if every query role is also a field role
+ *    (the query's role set is a SUBSET of the field's), so no principal can
+ *    pass the query's gate without also passing the field's.
+ *
+ * @param field - The field's `globalRoles`/`instanceRoles` restriction.
+ * @param query - The query's `globalRoles`/`instanceRoles` restriction.
+ * @returns Whether the field is safe to filter on given the query's gate.
+ */
+function isFieldSafeToFilter(
+  field: { globalRoles: string[]; instanceRoles: string[] },
+  query: { globalRoles: string[]; instanceRoles: string[] },
+): boolean {
+  const isFieldRestricted =
+    field.globalRoles.length > 0 || field.instanceRoles.length > 0;
+  if (!isFieldRestricted) {
+    return true;
+  }
+  const isQueryRestricted =
+    query.globalRoles.length > 0 || query.instanceRoles.length > 0;
+  if (!isQueryRestricted) {
+    return false;
+  }
+  const isSubset = (subset: string[], superset: string[]): boolean =>
+    subset.every((role) => superset.includes(role));
+  return (
+    isSubset(query.globalRoles, field.globalRoles) &&
+    isSubset(query.instanceRoles, field.instanceRoles)
+  );
+}
+
 export const ModelUtils = {
   byId,
   byIdOrThrow,
@@ -121,4 +164,5 @@ export const ModelUtils = {
   validateModelName,
   getModelIdByNameOrDefault,
   getPrimaryKeyFields,
+  isFieldSafeToFilter,
 };

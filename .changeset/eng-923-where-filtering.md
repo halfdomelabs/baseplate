@@ -5,4 +5,4 @@
 '@baseplate-dev/project-builder-web': patch
 ---
 
-Added opt-in `where` filtering argument to GraphQL list, count, and connection queries, generating a Prisma-compatible `<Model>WhereInput` type with scalar/enum operators and `AND`/`OR`/`NOT` composition. Caller-supplied filters always compose with (never replace) existing row-level authorization, and filter complexity is capped to prevent overly nested or wide queries.
+Added opt-in `where` filtering to GraphQL list, count, and connection queries, with per-field selection of which exposed fields are filterable. Caller-supplied filters compose with existing row-level authorization and are capped in depth/breadth to prevent overly complex queries.
