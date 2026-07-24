@@ -47,6 +47,10 @@ export default defineConfig(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'warn',
+      reportUnusedInlineConfigs: 'warn',
+    },
     languageOptions: {
       globals: {
         ...globals./* TPL_GLOBALS:START */ browser /* TPL_GLOBALS:END */,
@@ -94,14 +98,6 @@ export default defineConfig(
         'error',
         { allowExpressions: true, allowTypedFunctionExpressions: true },
       ],
-      // Enforce the use of destructuring for objects where applicable, but not for arrays
-      '@typescript-eslint/prefer-destructuring': [
-        'error',
-        {
-          VariableDeclarator: { object: true, array: false },
-          AssignmentExpression: { object: false, array: false },
-        },
-      ],
       // Ensure consistent usage of type exports
       '@typescript-eslint/consistent-type-exports': 'error',
       // Ensure consistent usage of type imports
@@ -124,6 +120,8 @@ export default defineConfig(
         'error',
         { ignoreTernaryTests: true },
       ],
+      // Catch new union members silently falling into a generic `default` case
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
     },
   },
 
@@ -159,25 +157,13 @@ export default defineConfig(
   },
 
   // Unicorn Configs
-  eslintPluginUnicorn.configs['recommended'],
+  eslintPluginUnicorn.configs['unopinionated'],
   {
     rules: {
-      // Disable the rule that prevents using abbreviations in identifiers, allowing
-      // flexibility in naming, especially for common abbreviations in code.
-      'unicorn/prevent-abbreviations': 'off',
-
-      // Disable the rule that disallows `null` values, allowing `null` to be used
-      // when necessary (e.g., for nullable types or optional fields).
-      'unicorn/no-null': 'off',
-
-      // Allow array callback references without flags, supporting patterns like
-      // `array.filter(callbackFunction)`, which can improve readability and code brevity.
-      'unicorn/no-array-callback-reference': 'off',
-
       // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
       'unicorn/prefer-logical-operator-over-ternary': 'off',
 
-      // Allow the use of arrow functions in nested scopes
+      // Re-enable with the arrow-function carve-out since the unopinionated preset omits this rule by default
       'unicorn/consistent-function-scoping': [
         'error',
         { checkArrowFunctions: false },
@@ -185,9 +171,6 @@ export default defineConfig(
 
       // A bit over-eager flagging any module references
       'unicorn/prefer-module': 'off',
-
-      // Allow error variables to be named anything
-      'unicorn/catch-error-name': 'off',
 
       // False positives with array-like functions (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1394)
       'unicorn/no-array-method-this-argument': 'off',
@@ -204,6 +187,23 @@ export default defineConfig(
       // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
       // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
       'unicorn/text-encoding-identifier-case': 'off',
+
+      // Enforce for-of/array methods over manual index loops; the unopinionated preset omits this rule by default
+      'unicorn/no-for-loop': 'error',
+
+      // Enforce kebab-case filenames (repo convention); the unopinionated preset omits this rule by default
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [
+            String.raw`^-[a-z0-9\-\.]+$`,
+            String.raw`^\$[a-zA-Z0-9\.]+$`,
+          ],
+        },
+      ],
     },
   },
 
@@ -345,6 +345,13 @@ export default defineConfig(
           allow: ['NotFoundError', 'Redirect'],
         },
       ],
+
+      // Component return types are overwhelmingly restatements of what TS already
+      // infers from JSX (e.g. React.ReactElement); not worth the annotation noise
+      '@typescript-eslint/explicit-function-return-type': 'off',
+
+      // Pure duplication with TypeScript prop typing
+      'react/prop-types': 'off',
     },
   },
 
@@ -362,25 +369,6 @@ export default defineConfig(
 
   // Import-X
   eslintPluginImportX.flatConfigs.react,
-
-  // Unicorn
-  {
-    rules: {
-      // Support kebab case with - prefix to support ignored files in routes and $ prefix for Tanstack camelCase files
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            kebabCase: true,
-          },
-          ignore: [
-            String.raw`^-[a-z0-9\-\.]+$`,
-            String.raw`^\$[a-zA-Z0-9\.]+$`,
-          ],
-        },
-      ],
-    },
-  },
 
   // Vitest Configs
   {
