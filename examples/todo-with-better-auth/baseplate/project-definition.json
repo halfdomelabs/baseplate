@@ -1147,11 +1147,11 @@
           "fields": [
             { "ref": "id" },
             { "ref": "ownerId" },
-            { "ref": "position" },
-            { "ref": "name", "filterable": true },
+            { "ref": "position", "sortable": true },
+            { "filterable": true, "ref": "name", "sortable": true },
             { "ref": "updatedAt" },
-            { "ref": "createdAt" },
-            { "ref": "status", "filterable": true }
+            { "ref": "createdAt", "sortable": true },
+            { "filterable": true, "ref": "status" }
           ],
           "localRelations": [{ "ref": "owner" }, { "ref": "coverPhoto" }]
         },
@@ -1162,6 +1162,7 @@
           "list": {
             "connection": { "enabled": true },
             "enabled": true,
+            "orderBy": { "enabled": true },
             "where": { "enabled": true }
           }
         }
@@ -1297,7 +1298,7 @@
           "fields": [
             { "ref": "todoListId" },
             { "ref": "userId" },
-            { "ref": "createdAt" },
+            { "ref": "createdAt", "sortable": true },
             { "ref": "updatedAt" }
           ],
           "localRelations": [{ "ref": "todoList" }, { "ref": "user" }]
@@ -1305,7 +1306,11 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": { "connection": { "enabled": true }, "enabled": true }
+          "list": {
+            "connection": { "enabled": true },
+            "enabled": true,
+            "orderBy": { "enabled": true }
+          }
         }
       },
       "id": "model:nmsOHh3rZMmE",
@@ -1414,7 +1419,7 @@
           ],
           "foreignRelations": [
             { "ref": "roles" },
-            { "ref": "todoLists", "paginated": true },
+            { "paginated": true, "ref": "todoLists" },
             { "ref": "userProfile" },
             { "ref": "customer" }
           ]
@@ -1963,6 +1968,7 @@
         "emailFeatureRef": "emails",
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-email_email",
       "name": "email",
       "packageName": "@baseplate-dev/plugin-email",

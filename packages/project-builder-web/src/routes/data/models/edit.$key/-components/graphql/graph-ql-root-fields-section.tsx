@@ -8,11 +8,17 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Label,
   MultiComboboxField,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   SectionListSection,
   SectionListSectionContent,
   SectionListSectionDescription,
@@ -21,8 +27,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { useController, useWatch } from 'react-hook-form';
-import { HiMiniAdjustmentsHorizontal } from 'react-icons/hi2';
-import { MdInfo, MdWarning } from 'react-icons/md';
+import { MdInfo, MdSettings, MdWarning } from 'react-icons/md';
 
 interface GraphQLRootFieldsSectionProps {
   control: Control<ModelConfigInput>;
@@ -31,8 +36,6 @@ interface GraphQLRootFieldsSectionProps {
 export function GraphQLRootFieldsSection({
   control,
 }: GraphQLRootFieldsSectionProps): React.JSX.Element {
-  const { definitionContainer } = useProjectDefinition();
-
   const isObjectTypeEnabled = useWatch({
     control,
     name: 'graphql.objectType.enabled',
@@ -47,63 +50,6 @@ export function GraphQLRootFieldsSection({
     (isCreateControllerEnabled ?? false) ||
     (isUpdateControllerEnabled ?? false) ||
     (isDeleteControllerEnabled ?? false);
-
-  const isWhereFilteringEnabled = useWatch({
-    control,
-    name: 'graphql.queries.list.where.enabled',
-  });
-  const queryGlobalRoles = useWatch({
-    control,
-    name: 'graphql.queries.globalRoles',
-  });
-  const queryInstanceRoles = useWatch({
-    control,
-    name: 'graphql.queries.instanceRoles',
-  });
-  const {
-    field: { value: exposedFields = [], onChange: onExposedFieldsChange },
-  } = useController({ control, name: 'graphql.objectType.fields' });
-
-  const filterableOptions = exposedFields.map((entry) => ({
-    label: definitionContainer.nameFromId(entry.ref),
-    value: entry.ref,
-  }));
-
-  const filterableFieldRefs = exposedFields
-    .filter((entry) => entry.filterable)
-    .map((entry) => entry.ref);
-
-  const onFilterableFieldRefsChange = (refs: string[]): void => {
-    const refSet = new Set(refs);
-    onExposedFieldsChange(
-      exposedFields.map((entry) => ({
-        ...entry,
-        filterable: refSet.has(entry.ref),
-      })),
-    );
-  };
-
-  // A selected field is only safe to filter on if its read access is no
-  // narrower than the list query's own roles — see
-  // ModelUtils.isFieldSafeToFilter. Surfaced as a warning rather than
-  // hidden from the options, so an author isn't left wondering why a field
-  // they expect to see is missing from the picker.
-  const unsafeFilterableFieldNames = exposedFields
-    .filter(
-      (entry) =>
-        entry.filterable &&
-        !ModelUtils.isFieldSafeToFilter(
-          {
-            globalRoles: entry.globalRoles ?? [],
-            instanceRoles: entry.instanceRoles ?? [],
-          },
-          {
-            globalRoles: queryGlobalRoles ?? [],
-            instanceRoles: queryInstanceRoles ?? [],
-          },
-        ),
-    )
-    .map((entry) => definitionContainer.nameFromId(entry.ref));
 
   return (
     <SectionListSection>
@@ -126,19 +72,6 @@ export function GraphQLRootFieldsSection({
             </AlertDescription>
           </Alert>
         )}
-        {unsafeFilterableFieldNames.length > 0 && (
-          <Alert variant="warning" className="max-w-2xl">
-            <MdWarning />
-            <AlertTitle>Field roles narrower than the query</AlertTitle>
-            <AlertDescription>
-              {unsafeFilterableFieldNames.join(', ')}{' '}
-              {unsafeFilterableFieldNames.length === 1 ? 'is' : 'are'}{' '}
-              filterable but readable by fewer roles than the query itself,
-              letting a caller infer its value without permission to read it.
-              Match the roles or unselect it below — sync will otherwise fail.
-            </AlertDescription>
-          </Alert>
-        )}
         <div className="grid grid-cols-2 gap-8">
           <div className="space-y-4">
             <Label>Queries</Label>
@@ -149,70 +82,18 @@ export function GraphQLRootFieldsSection({
               label="Get By ID"
               description="Fetch a single record, e.g. post(id: ID!)"
             />
-            <ToggleItem
-              control={control}
-              name="graphql.queries.list.enabled"
-              disabled={!isObjectTypeEnabled}
-              label="List"
-              description="Query multiple records, e.g. posts(where: ...)"
-            />
-            <ToggleItem
-              control={control}
-              name="graphql.queries.list.count.enabled"
-              disabled={!isObjectTypeEnabled}
-              label="Count"
-              description="Count matching records, e.g. postsCount(...)"
-            />
-            <ToggleItem
-              control={control}
-              name="graphql.queries.list.connection.enabled"
-              disabled={!isObjectTypeEnabled}
-              label="Connection"
-              description="Cursor-based pagination, e.g. postsConnection(first, after)"
-            />
             <div className="flex items-start gap-1">
               <ToggleItem
                 control={control}
-                name="graphql.queries.list.where.enabled"
+                name="graphql.queries.list.enabled"
                 disabled={!isObjectTypeEnabled}
-                label="Where Filtering"
-                description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
+                label="List"
+                description="Query multiple records, e.g. posts(where: ...)"
               />
-              {isWhereFilteringEnabled && (
-                <Popover>
-                  <PopoverTrigger
-                    render={
-                      <button
-                        type="button"
-                        aria-label="Configure filterable fields"
-                        className="mt-1 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded hover:bg-muted"
-                      />
-                    }
-                  >
-                    <HiMiniAdjustmentsHorizontal
-                      className={
-                        filterableFieldRefs.length > 0
-                          ? 'text-primary'
-                          : 'text-muted-foreground'
-                      }
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-80 space-y-2">
-                    <p className="text-sm font-medium">Filterable Fields</p>
-                    <p className="text-xs text-muted-foreground">
-                      Choose which exposed fields can be used as `where` filter
-                      operands.
-                    </p>
-                    <MultiComboboxField
-                      placeholder="Select fields..."
-                      options={filterableOptions}
-                      value={filterableFieldRefs}
-                      onChange={onFilterableFieldRefsChange}
-                      noResultsText="No fields exposed"
-                    />
-                  </PopoverContent>
-                </Popover>
-              )}
+              <ListQuerySettingsDialog
+                control={control}
+                disabled={!isObjectTypeEnabled}
+              />
             </div>
           </div>
           {hasAnyMutation && (
@@ -253,6 +134,195 @@ export function GraphQLRootFieldsSection({
   );
 }
 
+function ListQuerySettingsDialog({
+  control,
+  disabled,
+}: {
+  control: Control<ModelConfigInput>;
+  disabled: boolean;
+}): React.JSX.Element {
+  const { definitionContainer } = useProjectDefinition();
+
+  const isListEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.enabled',
+  });
+  const isWhereFilteringEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.where.enabled',
+  });
+  const isOrderByEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.orderBy.enabled',
+  });
+  const queryGlobalRoles = useWatch({
+    control,
+    name: 'graphql.queries.globalRoles',
+  });
+  const queryInstanceRoles = useWatch({
+    control,
+    name: 'graphql.queries.instanceRoles',
+  });
+  const {
+    field: { value: exposedFields = [], onChange: onExposedFieldsChange },
+  } = useController({ control, name: 'graphql.objectType.fields' });
+
+  const fieldOptions = exposedFields.map((entry) => ({
+    label: definitionContainer.nameFromId(entry.ref),
+    value: entry.ref,
+  }));
+
+  const filterableFieldRefs = exposedFields
+    .filter((entry) => entry.filterable)
+    .map((entry) => entry.ref);
+
+  const onFilterableFieldRefsChange = (refs: string[]): void => {
+    const refSet = new Set(refs);
+    onExposedFieldsChange(
+      exposedFields.map((entry) => ({
+        ...entry,
+        filterable: refSet.has(entry.ref),
+      })),
+    );
+  };
+
+  const sortableFieldRefs = exposedFields
+    .filter((entry) => entry.sortable)
+    .map((entry) => entry.ref);
+
+  const onSortableFieldRefsChange = (refs: string[]): void => {
+    const refSet = new Set(refs);
+    onExposedFieldsChange(
+      exposedFields.map((entry) => ({
+        ...entry,
+        sortable: refSet.has(entry.ref),
+      })),
+    );
+  };
+
+  // A selected field is only safe to filter on if its read access is no
+  // narrower than the list query's own roles — see
+  // ModelUtils.isFieldSafeToFilter. Surfaced as a warning rather than
+  // hidden from the options, so an author isn't left wondering why a field
+  // they expect to see is missing from the picker. Rendered inside the
+  // dialog, next to the picker that produced it, since that's where the
+  // author is actually looking when they select an unsafe field.
+  const unsafeFilterableFieldNames = exposedFields
+    .filter(
+      (entry) =>
+        entry.filterable &&
+        !ModelUtils.isFieldSafeToFilter(
+          {
+            globalRoles: entry.globalRoles ?? [],
+            instanceRoles: entry.instanceRoles ?? [],
+          },
+          {
+            globalRoles: queryGlobalRoles ?? [],
+            instanceRoles: queryInstanceRoles ?? [],
+          },
+        ),
+    )
+    .map((entry) => definitionContainer.nameFromId(entry.ref));
+
+  return (
+    <Dialog>
+      <DialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            disabled={disabled}
+            title="Configure list query"
+          />
+        }
+      >
+        <MdSettings />
+      </DialogTrigger>
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>Configure List Query</DialogTitle>
+          <DialogDescription>
+            Enable additional list query capabilities and choose which fields
+            each one may operate on.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <ToggleItem
+            control={control}
+            name="graphql.queries.list.count.enabled"
+            disabled={!isListEnabled}
+            label="Count"
+            description="Count matching records, e.g. postsCount(...)"
+          />
+          <ToggleItem
+            control={control}
+            name="graphql.queries.list.connection.enabled"
+            disabled={!isListEnabled}
+            label="Connection"
+            description="Cursor-based pagination, e.g. postsConnection(first, after)"
+          />
+          <ToggleItem
+            control={control}
+            name="graphql.queries.list.where.enabled"
+            disabled={!isListEnabled}
+            label="Where Filtering"
+            description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
+          />
+          <div className="ml-6 space-y-2">
+            <MultiComboboxField
+              label="Filterable Fields"
+              description="Choose which exposed fields can be used as `where` filter operands."
+              placeholder="Select fields..."
+              options={fieldOptions}
+              value={filterableFieldRefs}
+              onChange={onFilterableFieldRefsChange}
+              noResultsText="No fields exposed"
+              disabled={!isListEnabled || !isWhereFilteringEnabled}
+            />
+            {isWhereFilteringEnabled &&
+              unsafeFilterableFieldNames.length > 0 && (
+                <Alert variant="warning">
+                  <MdWarning />
+                  <AlertTitle>Field roles narrower than the query</AlertTitle>
+                  <AlertDescription>
+                    {unsafeFilterableFieldNames.join(', ')}{' '}
+                    {unsafeFilterableFieldNames.length === 1 ? 'is' : 'are'}{' '}
+                    filterable but readable by fewer roles than the query
+                    itself, letting a caller infer its value without permission
+                    to read it. Match the roles or unselect it above — sync will
+                    otherwise fail.
+                  </AlertDescription>
+                </Alert>
+              )}
+          </div>
+          <ToggleItem
+            control={control}
+            name="graphql.queries.list.orderBy.enabled"
+            disabled={!isListEnabled}
+            label="Order By"
+            description="Sort records by field values, e.g. posts(orderBy: [{ createdAt: DESC }])"
+          />
+          <div className="ml-6">
+            <MultiComboboxField
+              label="Sortable Fields"
+              description="Choose which exposed fields can be used as `orderBy` sort keys."
+              placeholder="Select fields..."
+              options={fieldOptions}
+              value={sortableFieldRefs}
+              onChange={onSortableFieldRefsChange}
+              noResultsText="No fields exposed"
+              disabled={!isListEnabled || !isOrderByEnabled}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose render={<Button />}>Done</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ToggleItem({
   control,
   name,
@@ -267,6 +337,7 @@ function ToggleItem({
     | 'graphql.queries.list.count.enabled'
     | 'graphql.queries.list.connection.enabled'
     | 'graphql.queries.list.where.enabled'
+    | 'graphql.queries.list.orderBy.enabled'
     | 'graphql.mutations.create.enabled'
     | 'graphql.mutations.update.enabled'
     | 'graphql.mutations.delete.enabled';
