@@ -28,3 +28,11 @@ Example projects (`examples/`) are standalone monorepos not included in the pnpm
   - Test: `pnpm run:example todo-with-better-auth -- pnpm test`
   - Typecheck: `pnpm run:example todo-with-better-auth -- pnpm typecheck`
 - Run a command in all examples + root + tests: `pnpm run:all -- <command>`
+
+### Checking examples after regenerating them
+
+Examples run their own stricter generated-app lint/tsconfig, so errors in generated code (e.g. an eslint rule the source packages don't enforce) only surface when the example itself is checked. After changing generators or templates that regenerate example output, run:
+
+- `pnpm check:examples` — runs each example's own `check` (`lint`, `prettier:check`, `test`, `typecheck` over affected packages) via `pnpm run:examples -- pnpm check`.
+
+Assumes example deps are already installed (they use a committed lockfile); run `pnpm run:examples -- pnpm install --frozen-lockfile` once if not. The `test` step needs Docker running (`docker compose up -d` in each example's `docker/` dir). To lint/typecheck only, run: `pnpm run:examples -- sh -c 'pnpm lint && pnpm typecheck'`.
