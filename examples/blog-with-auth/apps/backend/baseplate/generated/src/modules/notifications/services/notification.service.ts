@@ -26,7 +26,6 @@ import {
   segmentsToText,
   toSegments,
 } from './notification-content.js';
-import { getNotificationType } from './notification-registry.js';
 
 /** Default render locale until i18n lands. */
 const DEFAULT_LOCALE = 'en';
@@ -64,62 +63,9 @@ function frozenContent(row: RenderSource): RenderedContent {
   };
 }
 
-/**
- * Render a row's content at read time, ATOMICALLY: segments, fallbackText and
- * actionUrl all come from a single invocation of the renderer that CREATED the
- * row — resolved by `(type, templateVersion)`, never "whatever is deployed now".
- * A copy/param refactor bumps the version, so history can't be silently rewritten.
- *
- * Falls back to the frozen snapshot (and logs) when the pinned renderer is gone
- * or the stored params no longer satisfy it.
- */
-export function renderContent(
-  row: RenderSource,
-  ctx?: RenderContext,
-): RenderedContent {
-  const type = getNotificationType(row.type, row.templateVersion);
-  if (!type) {
-    logError(
-      new Error(
-        `No renderer for notification "${row.type}@${row.templateVersion}"`,
-      ),
-      { source: 'notification-render', notificationId: row.id },
-    );
-    return frozenContent(row);
-  }
-
-  const params = type.paramsSchema.safeParse(row.params ?? {});
-  if (!params.success) {
-    logError(params.error, {
-      source: 'notification-render',
-      reason: 'params-drift',
-      notificationId: row.id,
-      type: `${row.type}@${row.templateVersion}`,
-    });
-    return frozenContent(row);
-  }
-
-  const event: NotificationEvent = {
-    recipientId: '', // not needed to render the body
-    params: params.data,
-    actorId: row.actorId ?? undefined,
-    entityType: row.entityType ?? undefined,
-    entityId: row.entityId ?? undefined,
-  };
-
-  try {
-    return toRenderedContent(
-      type.render([event], ctx ?? { locale: DEFAULT_LOCALE }),
-    );
-  } catch (error) {
-    logError(error, {
-      source: 'notification-render',
-      reason: 'render-threw',
-      notificationId: row.id,
-      type: `${row.type}@${row.templateVersion}`,
-    });
-    return frozenContent(row);
-  }
+/** Registry key: a row's renderer is pinned by BOTH its type and its version. */
+function registryKey(key: string, version: number): string {
+  return `${key}@${version}`;
 }
 
 /** Project a renderer's output into the served content (one render, all fields). */
@@ -202,6 +148,16 @@ export interface NotificationService {
     options?: NotifyTextOptions,
   ): Promise<Notification>;
   /**
+   * Render a row's content at read time, ATOMICALLY: segments, fallbackText and
+   * actionUrl all come from a single invocation of the renderer that CREATED
+   * the row — resolved by `(type, templateVersion)` against the per-runtime
+   * registry, never "whatever is deployed now". A copy/param refactor bumps the
+   * version, so history can't be silently rewritten. Falls back to the frozen
+   * snapshot (and logs) when the pinned renderer is gone or params no longer
+   * satisfy it.
+   */
+  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
+  /**
    * Count of UNSEEN notifications — the bell badge. Seen (opening the panel)
    * clears the badge; read (clicking one) clears its highlight. `readAt`
    * always implies `seenAt` (see the read mutations), so this never counts a
@@ -244,9 +200,73 @@ async function getUnseenCount(userId: string): Promise<number> {
  */
 export function createNotificationService(deps: {
   events: NotificationEvents;
+  notificationTypes: NotificationTypeDefinition[];
 }): NotificationService {
-  const { events } = deps;
+  const { events, notificationTypes } = deps;
   const channels = createChannels({ events });
+
+  // Per-runtime registry: collected from `AppModule.notificationTypes` at
+  // construction. Duplicate `(key, version)` pairs fail HERE — deterministically
+  // at runtime construction — instead of at whatever import happened to load a
+  // colliding definition first.
+  const registry = new Map<string, NotificationTypeDefinition>();
+  for (const type of notificationTypes) {
+    const id = registryKey(type.key, type.version);
+    if (registry.has(id)) {
+      throw new Error(`Notification type "${id}" is already defined`);
+    }
+    registry.set(id, type);
+  }
+
+  /** Render a row's content at read time; see {@link NotificationService.renderContent}. */
+  function renderContent(
+    row: RenderSource,
+    ctx?: RenderContext,
+  ): RenderedContent {
+    const type = registry.get(registryKey(row.type, row.templateVersion));
+    if (!type) {
+      logError(
+        new Error(
+          `No renderer for notification "${row.type}@${row.templateVersion}"`,
+        ),
+        { source: 'notification-render', notificationId: row.id },
+      );
+      return frozenContent(row);
+    }
+
+    const params = type.paramsSchema.safeParse(row.params ?? {});
+    if (!params.success) {
+      logError(params.error, {
+        source: 'notification-render',
+        reason: 'params-drift',
+        notificationId: row.id,
+        type: `${row.type}@${row.templateVersion}`,
+      });
+      return frozenContent(row);
+    }
+
+    const event: NotificationEvent = {
+      recipientId: '', // not needed to render the body
+      params: params.data,
+      actorId: row.actorId ?? undefined,
+      entityType: row.entityType ?? undefined,
+      entityId: row.entityId ?? undefined,
+    };
+
+    try {
+      return toRenderedContent(
+        type.render([event], ctx ?? { locale: DEFAULT_LOCALE }),
+      );
+    } catch (error) {
+      logError(error, {
+        source: 'notification-render',
+        reason: 'render-threw',
+        notificationId: row.id,
+        type: `${row.type}@${row.templateVersion}`,
+      });
+      return frozenContent(row);
+    }
+  }
 
   /** Deliver to each of the type's channels; a channel that throws is logged, not rethrown. */
   async function dispatchToChannels(
@@ -417,6 +437,7 @@ export function createNotificationService(deps: {
   return {
     notify,
     notifyText,
+    renderContent,
     getUnseenCount,
     markAsRead,
     markAllAsSeen,

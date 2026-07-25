@@ -1,17 +1,14 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
-import {
-  RENDER_SOURCE_SELECT,
-  renderContent,
-} from '../services/notification.service.js';
+import { RENDER_SOURCE_SELECT } from '../services/notification.service.js';
 import { notificationContentType } from './notification-content.object-types.js';
 import { notificationObjectType } from './notification.object-type.js';
 
 /**
- * The render-at-read site: `renderContent` re-renders from the stored source
- * (`params`) using the renderer that CREATED the row — pinned by
- * `(type, templateVersion)` — falling back to the frozen snapshot on a retired
- * renderer or param drift.
+ * The render-at-read site: `services.notifications.renderContent` re-renders
+ * from the stored source (`params`) using the renderer that CREATED the row —
+ * pinned by `(type, templateVersion)` — falling back to the frozen snapshot on
+ * a retired renderer or param drift.
  *
  * `locale` is an explicit ARG, not request context: Apollo keys its cache by
  * field args, so a language switch produces a separate cache entry instead of
@@ -27,8 +24,8 @@ builder.prismaObjectFields(
       type: notificationContentType,
       args: { locale: t.arg.string({ required: true, defaultValue: 'en' }) },
       select: RENDER_SOURCE_SELECT,
-      resolve: (notification, { locale }) =>
-        renderContent(notification, { locale }),
+      resolve: (notification, { locale }, ctx) =>
+        ctx.services.notifications.renderContent(notification, { locale }),
     }),
   }),
 );

@@ -1,5 +1,7 @@
 import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
+  appModuleConfigProvider,
+  appModuleFieldTypesProvider,
   appModuleProvider,
   appRuntimeConfigProvider,
   pothosSchemaProvider,
@@ -40,14 +42,44 @@ export const notificationModuleGenerator = createGenerator({
             paths.servicesNotificationService,
           ),
         );
+        appRuntimeConfig.flattenedModuleFields.set(
+          'notificationTypes',
+          'notificationTypes',
+        );
         appRuntimeConfig.construction.set('notifications', {
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`
             const notifications = ${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),
+              notificationTypes,
             });
           `,
         });
+      },
+    }),
+    // Declared without a type here and bound below, once `paths` can be
+    // resolved (the element type lives inside this module).
+    appModuleConfig: createGeneratorTask({
+      dependencies: {
+        appModuleConfig: appModuleConfigProvider,
+      },
+      run({ appModuleConfig }) {
+        appModuleConfig.moduleFields.set('notificationTypes', undefined);
+      },
+    }),
+    appModuleFieldTypes: createGeneratorTask({
+      dependencies: {
+        appModuleFieldTypes: appModuleFieldTypesProvider,
+        paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
+      },
+      run({ appModuleFieldTypes, paths }) {
+        appModuleFieldTypes.setFieldType(
+          'notificationTypes',
+          TsCodeUtils.typeImportFragment(
+            'NotificationTypeDefinition',
+            paths.servicesNotificationRegistry,
+          ),
+        );
       },
     }),
     main: createGeneratorTask({
@@ -79,9 +111,17 @@ export const notificationModuleGenerator = createGenerator({
           pothosSchema.registerSchemaFile(renderedPath);
         }
 
-        // Import the built-in `generic` type for its side effect (it registers
-        // itself on load, backing `notifyText`).
-        appModule.moduleImports.push(paths.servicesGenericType);
+        // Contribute the built-in `generic` type (backing `notifyText`) as a
+        // module declaration; the runtime collects it into the per-runtime
+        // registry at construction — no import-time side effect.
+        appModule.moduleFields.set(
+          'notificationTypes',
+          'generic',
+          TsCodeUtils.importFragment(
+            'GENERIC_NOTIFICATION_TYPE',
+            paths.servicesGenericType,
+          ),
+        );
 
         // Contribute the real-time channel to the pubsub type map.
         yogaPluginConfig.publishArgs.set(
