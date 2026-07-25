@@ -330,4 +330,45 @@ describe('todoListSharesConnection', () => {
 
     await fastify.close();
   });
+
+  it('accepts an empty orderBy clause without erroring', async () => {
+    // Every field on an OrderByInput is optional, so `orderBy: [{}]` is a
+    // schema-valid input. An empty clause reaching Prisma throws at runtime,
+    // so `applyStableOrderBy` must drop it before it is passed through — the
+    // query should still succeed, ordered only by the id tiebreaker.
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner5@example.com' },
+    });
+    const sharee = await prisma.user.create({
+      data: { name: 'Sharee', email: 'sharee5@example.com' },
+    });
+    const list = await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 0, name: 'Empty OrderBy List' },
+    });
+    await prisma.todoListShare.create({
+      data: { todoListId: list.id, userId: sharee.id },
+    });
+
+    const fastify = await buildApp(['public', 'user'], owner.id);
+
+    const page = await queryGraphql(
+      fastify,
+      `query {
+        todoListSharesConnection(first: 10, orderBy: [{}]) {
+          edges { node { todoListId userId } }
+        }
+      }`,
+    );
+    expect(page.errors).toBeUndefined();
+    const connection = page.data?.todoListSharesConnection as {
+      edges: { node: { todoListId: string; userId: string } }[];
+    };
+    expect(connection.edges).toHaveLength(1);
+    expect(connection.edges[0].node).toEqual({
+      todoListId: list.id,
+      userId: sharee.id,
+    });
+
+    await fastify.close();
+  });
 });

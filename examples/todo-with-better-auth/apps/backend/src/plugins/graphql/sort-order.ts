@@ -17,7 +17,11 @@ export function applyStableOrderBy<T extends Record<string, 'asc' | 'desc'>>(
   orderBy: T[] | null | undefined,
   idFields: string[],
 ): (T | Record<string, 'asc'>)[] | undefined {
-  const clauses = orderBy ?? [];
+  // Every field on an OrderByInput is optional, so `[{}]` is a valid input.
+  // An empty clause reaching Prisma throws at runtime, so drop it here.
+  const clauses = (orderBy ?? []).filter(
+    (clause) => Object.keys(clause).length > 0,
+  );
   const specifiedFields = new Set(
     clauses.flatMap((clause) => Object.keys(clause)),
   );
