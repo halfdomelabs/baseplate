@@ -6,6 +6,7 @@ import {
   prismaImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import path from 'node:path';
 
 const servicesGenericType = createTsTemplateFile({
@@ -46,18 +47,14 @@ const servicesNotificationChannel = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'services-notification-channel',
-  referencedGeneratorTemplates: {
-    servicesInAppChannel: {},
-    servicesNotificationContent: {},
-    servicesNotificationEvents: {},
-  },
+  referencedGeneratorTemplates: { servicesNotificationContent: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/module/services/notification-channel.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_CHANNEL_ENTRIES: {} },
 });
 
 const servicesNotificationContent = createTsTemplateFile({
@@ -80,8 +77,8 @@ const servicesNotificationEvents = createTsTemplateFile({
   importMapProviders: { yogaPluginImports: yogaPluginImportsProvider },
   name: 'services-notification-events',
   projectExports: {
-    NotificationEvents: { isTypeOnly: true },
     createNotificationEvents: {},
+    NotificationEvents: { isTypeOnly: true },
   },
   source: {
     path: path.join(
@@ -186,7 +183,6 @@ const schemaNotificationMutations = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-mutations',
-  referencedGeneratorTemplates: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -204,7 +200,6 @@ const schemaNotificationQueries = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-queries',
-  referencedGeneratorTemplates: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -236,7 +231,25 @@ export const schemaGroup = {
   schemaNotificationSubscriptions,
 };
 
+const servicesEmailChannel = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    emailModuleImports: emailModuleImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'services-email-channel',
+  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/email-channel.ts',
+    ),
+  },
+  variables: { TPL_NOTIFICATION_EMAIL: {} },
+});
+
 export const NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES = {
   mainGroup,
   schemaGroup,
+  servicesEmailChannel,
 };

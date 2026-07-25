@@ -60,6 +60,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/link.tsx",
+      "projectExports": { "Link": { "isTypeOnly": false, "name": "Link" } },
       "referencedGeneratorTemplates": ["constants-theme"],
       "sourceFile": "src/components/link.tsx",
       "variables": {}

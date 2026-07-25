@@ -4,6 +4,7 @@ import {
   pluginConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
+import { createNotificationsBackendSubscriptionsChecker } from './schema/notification-backend-issue-checker.js';
 import { createNotificationsWebSubscriptionsChecker } from './schema/notification-web-issue-checker.js';
 import { createNotificationsPluginDefinitionSchema } from './schema/plugin-definition.js';
 import { createNotificationsSchemaChecker } from './schema/schema-issue-checker.js';
@@ -23,9 +24,12 @@ export default createPluginModule({
     const schemaChecker = createNotificationsSchemaChecker(pluginKey);
     const webSubscriptionsChecker =
       createNotificationsWebSubscriptionsChecker(pluginKey);
+    const backendSubscriptionsChecker =
+      createNotificationsBackendSubscriptionsChecker(pluginKey);
     issueCheckers.checkers.set(pluginKey, (container) => [
       ...schemaChecker(container),
       ...webSubscriptionsChecker(container),
+      ...backendSubscriptionsChecker(container),
     ]);
   },
 });

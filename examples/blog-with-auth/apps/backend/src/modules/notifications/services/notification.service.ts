@@ -5,6 +5,7 @@ import { prisma } from '@src/services/prisma.js';
 
 import type {
   NotificationChannelKey,
+  NotificationChannels,
   ResolvedNotification,
 } from './notification-channel.js';
 import type {
@@ -19,7 +20,6 @@ import type {
 } from './notification-registry.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import { createChannels } from './notification-channel.js';
 import {
   isSafeUrl,
   notificationSegmentsSchema,
@@ -244,9 +244,9 @@ async function getUnseenCount(userId: string): Promise<number> {
  */
 export function createNotificationService(deps: {
   events: NotificationEvents;
+  channels: NotificationChannels;
 }): NotificationService {
-  const { events } = deps;
-  const channels = createChannels({ events });
+  const { events, channels } = deps;
 
   /** Deliver to each of the type's channels; a channel that throws is logged, not rethrown. */
   async function dispatchToChannels(

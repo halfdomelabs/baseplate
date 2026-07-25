@@ -1,4 +1,7 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -9,6 +12,7 @@ import {
   prismaImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
+import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.js';
@@ -35,6 +39,16 @@ export interface NotificationsCoreNotificationModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  servicesEmailChannel: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.servicesEmailChannel
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const notificationsCoreNotificationModuleRenderers =
@@ -44,6 +58,7 @@ const notificationsCoreNotificationModuleRenderers =
 
 const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
   dependencies: {
+    emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
@@ -57,6 +72,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
       notificationsCoreNotificationModuleRenderers.export(),
   },
   run({
+    emailModuleImports,
     errorHandlerServiceImports,
     paths,
     pothosImports,
@@ -92,6 +108,20 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   pothosImports,
+                  prismaImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesEmailChannel: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template:
+                  NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.servicesEmailChannel,
+                destination: paths.servicesEmailChannel,
+                importMapProviders: {
+                  emailModuleImports,
                   prismaImports,
                 },
                 generatorPaths: paths,

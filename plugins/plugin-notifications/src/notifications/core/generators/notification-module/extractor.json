@@ -3,9 +3,7 @@
   "templates": {
     "schema-notification-content-field": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -19,15 +17,11 @@
         "services-notification-service"
       ],
       "sourceFile": "module/schema/notification-content.field.ts",
-      "variables": {
-        "TPL_NOTIFICATION_OBJECT_TYPE": {}
-      }
+      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
     },
     "schema-notification-content-object-types": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -42,9 +36,7 @@
     },
     "schema-notification-mutations": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -57,17 +49,12 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/notification.mutations.ts",
-      "referencedGeneratorTemplates": [],
       "sourceFile": "module/schema/notification.mutations.ts",
-      "variables": {
-        "TPL_NOTIFICATION_OBJECT_TYPE": {}
-      }
+      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
     },
     "schema-notification-queries": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -80,15 +67,12 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/notification.queries.ts",
-      "referencedGeneratorTemplates": [],
       "sourceFile": "module/schema/notification.queries.ts",
       "variables": {}
     },
     "schema-notification-subscriptions": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -100,11 +84,27 @@
       "sourceFile": "module/schema/notification.subscriptions.ts",
       "variables": {}
     },
+    "services-email-channel": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "emailModuleImportsProvider": {
+          "importName": "emailModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/email-channel.ts",
+      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "sourceFile": "module/services/email-channel.ts",
+      "variables": { "TPL_NOTIFICATION_EMAIL": {} }
+    },
     "services-generic-type": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/generic-type.ts",
@@ -114,9 +114,7 @@
     },
     "services-in-app-channel": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {
         "prismaImportsProvider": {
@@ -134,25 +132,17 @@
     },
     "services-notification-channel": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
-      "referencedGeneratorTemplates": [
-        "services-in-app-channel",
-        "services-notification-content",
-        "services-notification-events"
-      ],
+      "referencedGeneratorTemplates": ["services-notification-content"],
       "sourceFile": "module/services/notification-channel.ts",
-      "variables": {}
+      "variables": { "TPL_CHANNEL_ENTRIES": {} }
     },
     "services-notification-content": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-content.ts",
@@ -161,9 +151,7 @@
     },
     "services-notification-events": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {
         "yogaPluginImportsProvider": {
@@ -173,19 +161,15 @@
       },
       "pathRootRelativePath": "{module-root}/services/notification-events.ts",
       "projectExports": {
-        "NotificationEvents": {
-          "isTypeOnly": true
-        },
-        "createNotificationEvents": {}
+        "createNotificationEvents": {},
+        "NotificationEvents": { "isTypeOnly": true }
       },
       "sourceFile": "module/services/notification-events.ts",
       "variables": {}
     },
     "services-notification-registry": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-registry.ts",
@@ -198,9 +182,7 @@
     },
     "services-notification-service": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
