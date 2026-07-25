@@ -11,6 +11,7 @@ import {
 import {
   Badge,
   Button,
+  cn,
   Empty,
   EmptyDescription,
   EmptyTitle,
@@ -95,6 +96,8 @@ interface Props {
   viewAllHref?: string;
   /** Description shown under the empty-state title. */
   emptyDescription?: string;
+  /** Called when a click navigates away (row or footer link); lets the host close the panel. */
+  onNavigate?: () => void;
 }
 
 /** The dropdown body: the feed list + mark-read affordances. */
@@ -103,6 +106,7 @@ export function NotificationPanel({
   loading,
   viewAllHref,
   emptyDescription = 'You have no new notifications.',
+  onNavigate,
 }: Props): ReactElement {
   const navigate = useNavigate();
   const [markRead] = useMutation(markNotificationReadMutation);
@@ -154,11 +158,10 @@ export function NotificationPanel({
               <li key={item.id}>
                 <button
                   type="button"
-                  className={
-                    isUnread
-                      ? 'flex w-full items-start gap-3 bg-accent/40 px-4 py-3 text-left'
-                      : 'flex w-full items-start gap-3 px-4 py-3 text-left'
-                  }
+                  className={cn(
+                    'flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-accent',
+                    isUnread && 'bg-accent/40',
+                  )}
                   onClick={() => {
                     if (isUnread) {
                       void markRead({ variables: { input: { id: item.id } } });
@@ -170,6 +173,7 @@ export function NotificationPanel({
                       } else {
                         void navigate({ to: inAppPath });
                       }
+                      onNavigate?.();
                     }
                   }}
                 >

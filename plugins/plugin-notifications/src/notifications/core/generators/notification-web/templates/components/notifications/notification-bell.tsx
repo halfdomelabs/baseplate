@@ -120,6 +120,7 @@ export function NotificationBell({
           loading={loading}
           viewAllHref={viewAllHref}
           emptyDescription={emptyDescription}
+          onNavigate={() => setOpen(false)}
         />
       </PopoverContent>
     </Popover>
