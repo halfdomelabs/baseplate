@@ -6,9 +6,7 @@ export const todoListPolicy = createModelPolicy({
   idField: 'id',
   delegate: prisma.todoList,
   roles: (r) => ({
-    owner: r.match((ctx) =>
-      ctx.auth.userId != null ? { ownerId: ctx.auth.userId } : false,
-    ),
+    owner: r.userMatch((session) => ({ ownerId: session.userId })),
   }),
   actions: {
     read: { roles: ['owner'], globalRoles: ['admin'] },
