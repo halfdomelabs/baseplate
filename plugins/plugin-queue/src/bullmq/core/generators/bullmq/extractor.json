@@ -28,7 +28,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/bullmq.plugin.ts",
-      "referencedGeneratorTemplates": ["bullmq-service"],
       "sourceFile": "src/plugins/bullmq.plugin.ts",
       "variables": {}
     },
@@ -95,7 +94,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/scripts/run-workers.ts",
-      "referencedGeneratorTemplates": ["bullmq-service"],
       "sourceFile": "src/scripts/run-workers.ts",
       "variables": {}
     }

@@ -4,6 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
+
 import { CORE_FASTIFY_HEALTH_CHECK_PATHS } from './template-paths.js';
 import { CORE_FASTIFY_HEALTH_CHECK_TEMPLATES } from './typed-templates.js';
 
@@ -27,13 +29,14 @@ const coreFastifyHealthCheckRenderers =
 
 const coreFastifyHealthCheckRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     paths: CORE_FASTIFY_HEALTH_CHECK_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     coreFastifyHealthCheckRenderers: coreFastifyHealthCheckRenderers.export(),
   },
-  run({ paths, typescriptFile }) {
+  run({ appRuntimeImports, paths, typescriptFile }) {
     return {
       providers: {
         coreFastifyHealthCheckRenderers: {
@@ -42,6 +45,9 @@ const coreFastifyHealthCheckRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_FASTIFY_HEALTH_CHECK_TEMPLATES.healthCheck,
                 destination: paths.healthCheck,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 ...options,
               }),
           },

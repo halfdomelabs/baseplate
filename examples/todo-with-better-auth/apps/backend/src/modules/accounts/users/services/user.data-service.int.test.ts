@@ -6,34 +6,19 @@ import { createTestServiceContext } from '@src/tests/helpers/service-context.tes
 
 import { createUser, deleteUser, updateUser } from './user.data-service.js';
 
-// Mock storage adapters to return successful metadata
-// The mock returns dynamic size based on the path
-vi.mock('@src/modules/storage/config/adapters.config.js', () => ({
-  STORAGE_ADAPTERS: {
-    uploads: {
-      getFileMetadata: vi.fn().mockImplementation((path: string) => {
-        // Extract filename from path to determine size
-        if (path.includes('avatar.png')) return Promise.resolve({ size: 1024 });
-        if (path.includes('avatar1.png'))
-          return Promise.resolve({ size: 1024 });
-        if (path.includes('avatar2.png'))
-          return Promise.resolve({ size: 2048 });
-        if (path.includes('image1.png')) return Promise.resolve({ size: 2048 });
-        if (path.includes('image2.png')) return Promise.resolve({ size: 3072 });
-        if (path.includes('image3.png')) return Promise.resolve({ size: 4096 });
-        return Promise.resolve({ size: 1024 });
-      }),
-    },
-    url: {
-      getFileMetadata: vi.fn().mockResolvedValue({ size: 1024 }),
-    },
-  },
-}));
+/** Reports a per-file size so upload validation can assert against it. */
+const getFileMetadata = vi.fn().mockImplementation((path: string) => {
+  if (path.includes('avatar2.png')) return Promise.resolve({ size: 2048 });
+  if (path.includes('image1.png')) return Promise.resolve({ size: 2048 });
+  if (path.includes('image2.png')) return Promise.resolve({ size: 3072 });
+  if (path.includes('image3.png')) return Promise.resolve({ size: 4096 });
+  return Promise.resolve({ size: 1024 });
+});
 
 // Create a test user ID for file uploads
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 
-const context = createTestServiceContext({
+const baseContext = createTestServiceContext({
   auth: createAuthContextFromSessionInfo({
     type: 'user',
     id: 'test-session',
@@ -41,6 +26,16 @@ const context = createTestServiceContext({
     roles: ['public', 'user', 'admin'],
   }),
 });
+
+// Overrides the throwing `storage` stub with adapters backed by the mock
+// above; file transformers validate pending uploads through this service.
+const context = {
+  ...baseContext,
+  services: {
+    ...baseContext.services,
+    storage: { getAdapterOrThrow: () => ({ getFileMetadata }) },
+  },
+} as unknown as typeof baseContext;
 
 describe('createUser', () => {
   beforeEach(async () => {

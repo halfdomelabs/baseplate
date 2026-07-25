@@ -12,8 +12,6 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.js';
-
 import { STRIPE_BILLING_MODULE_PATHS } from './template-paths.js';
 import { STRIPE_BILLING_MODULE_TEMPLATES } from './typed-templates.js';
 
@@ -40,7 +38,6 @@ const stripeBillingModuleRenderersTask = createGeneratorTask({
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    fastifyStripeImports: fastifyStripeImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     paths: STRIPE_BILLING_MODULE_PATHS.provider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
@@ -54,7 +51,6 @@ const stripeBillingModuleRenderersTask = createGeneratorTask({
     authRolesImports,
     configServiceImports,
     errorHandlerServiceImports,
-    fastifyStripeImports,
     loggerServiceImports,
     paths,
     prismaGeneratedImports,
@@ -73,7 +69,6 @@ const stripeBillingModuleRenderersTask = createGeneratorTask({
                   authRolesImports,
                   configServiceImports,
                   errorHandlerServiceImports,
-                  fastifyStripeImports,
                   loggerServiceImports,
                   prismaGeneratedImports,
                   prismaImports,

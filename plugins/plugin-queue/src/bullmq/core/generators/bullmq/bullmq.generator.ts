@@ -5,8 +5,6 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
-  appModuleImportsProvider,
-  appModuleSetupImportsProvider,
   appRuntimeConfigProvider,
   fastifyOutputProvider,
   fastifyProvider,
@@ -52,31 +50,22 @@ export const bullmqGenerator = createGenerator({
     appRuntimeConfig: createGeneratorTask({
       dependencies: {
         appRuntimeConfig: appRuntimeConfigProvider,
-        appModuleImports: appModuleImportsProvider,
-        appModuleSetupImports: appModuleSetupImportsProvider,
         queuesImports: queuesImportsProvider,
         paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({
-        appRuntimeConfig,
-        appModuleImports,
-        appModuleSetupImports,
-        queuesImports,
-        paths,
-      }) {
+      run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
           'queues',
           queuesImports.QueueService.typeFragment(),
         );
-        appRuntimeConfig.runtimeFields.set(
-          'queues',
-          queuesImports.QueueRuntime.typeFragment(),
-        );
+        appRuntimeConfig.runtimeFields.set('queues', {
+          type: queuesImports.QueueRuntime.typeFragment(),
+        });
+        appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queues', {
-          orderPriority: 'EARLY',
+          dependencies: ['redis'],
           fragment: TsCodeUtils.template`
-            const { queues: queueBindings = [] } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});
-            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.bullmqService)}(queueBindings);
+            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.bullmqService)}(queueBindings, redis);
             disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
           `,
         });

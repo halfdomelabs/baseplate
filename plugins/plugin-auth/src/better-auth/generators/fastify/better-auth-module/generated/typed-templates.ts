@@ -9,7 +9,6 @@ import {
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
-import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const auth = createTsTemplateFile({
@@ -19,7 +18,6 @@ const auth = createTsTemplateFile({
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
     prismaImports: prismaImportsProvider,
-    queuesImports: queuesImportsProvider,
   },
   name: 'auth',
   projectExports: {
@@ -46,7 +44,7 @@ const betterAuthPlugin = createTsTemplateFile({
   importMapProviders: { appModuleSetupImports: appModuleSetupImportsProvider },
   name: 'better-auth-plugin',
   projectExports: { betterAuthPlugin: {} },
-  referencedGeneratorTemplates: { auth: {}, headersUtils: {} },
+  referencedGeneratorTemplates: { headersUtils: {} },
   source: {
     path: path.join(
       import.meta.dirname,

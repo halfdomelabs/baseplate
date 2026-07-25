@@ -97,9 +97,14 @@ export const fileCategoriesGenerator = createGenerator({
           build: async (builder) => {
             const fileCategoryFragments = new Map<string, TsCodeFragment>();
             for (const category of fileCategories) {
-              storageModuleConfig.fileCategories.set(
+              appModule.moduleFields.set(
+                'storageCategories',
                 category.name,
                 getFileCategoryImportFragment(category.name),
+              );
+              storageModuleConfig.fileCategoryNames.set(
+                category.name,
+                category.name,
               );
               fileCategoryFragments.set(
                 category.name,

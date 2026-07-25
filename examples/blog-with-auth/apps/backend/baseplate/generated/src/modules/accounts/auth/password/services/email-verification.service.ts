@@ -91,7 +91,7 @@ export async function requestEmailVerification({
   const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
   await sendEmail(
-    context.services.queues,
+    context,
     /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
     {
       to: user.email,

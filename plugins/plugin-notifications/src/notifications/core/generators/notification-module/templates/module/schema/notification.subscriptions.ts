@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import { builder } from '%pothosImports';
-import { getPubSub } from '%yogaPluginImports';
 
 /**
  * Real-time invalidation: fires whenever the current user's notifications change
@@ -14,8 +13,7 @@ builder.subscriptionField('notificationsChanged', (t) =>
   t.int({
     authorize: ['user'],
     subscribe: (_root, _args, context) =>
-      getPubSub().subscribe(
-        'notificationsChanged',
+      context.services.notifications.subscribeToChanges(
         context.auth.userIdOrThrow(),
       ),
     resolve: (payload) => payload.count,

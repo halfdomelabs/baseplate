@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import type { StorageAdapterKey } from '$configAdapters';
 import type { File, Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 
@@ -37,8 +36,14 @@ export interface FileCategory<
   /** Allowed MIME types */
   readonly allowedMimeTypes?: readonly string[];
 
-  /** Storage adapter to use for this category */
-  readonly adapter: StorageAdapterKey;
+  /**
+   * Name of the storage adapter to use for this category, validated at
+   * runtime by `StorageService.getAdapterOrThrow`. Not typed as a key of the
+   * configured adapters to avoid a type dependency on the runtime service
+   * (this file is a leaf, imported by every feature module's file
+   * categories).
+   */
+  readonly adapter: string;
 
   /**
    * Authorization rules for this file category.

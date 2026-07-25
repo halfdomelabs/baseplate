@@ -43,10 +43,5 @@
     "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
     "instanceData": {},
     "template": "service-event-handlers"
-  },
-  "stripe.ts": {
-    "generator": "@baseplate-dev/plugin-payments#stripe/fastify-stripe",
-    "instanceData": {},
-    "template": "service"
   }
 }

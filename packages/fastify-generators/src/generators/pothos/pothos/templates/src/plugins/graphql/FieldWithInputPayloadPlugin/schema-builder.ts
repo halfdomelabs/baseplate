@@ -10,6 +10,23 @@ import {
   RootFieldBuilder,
 } from '@pothos/core';
 
+/**
+ * Builds the mutation field and normalizes its type. The casts sit behind
+ * fixed parameter types because `field()`'s option and return types shift with
+ * the enabled Pothos plugins; written inline they would be flagged as
+ * unnecessary in projects whose plugin set makes them redundant.
+ */
+function defineMutationField(
+  builder: { field: (options: never) => unknown },
+  options: object,
+): FieldRef<SchemaTypes, never, 'Mutation'> {
+  return builder.field(options as never) as FieldRef<
+    SchemaTypes,
+    never,
+    'Mutation'
+  >;
+}
+
 const rootBuilderProto =
   RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<
     SchemaTypes,
@@ -42,8 +59,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     return payload;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- required depending on which Pothos plugins are enabled
-  const fieldRef = this.field({
+  const fieldRef = defineMutationField(this, {
     args: {
       ...args,
       ...(inputRef
@@ -58,7 +74,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     type: payloadRef,
     nullable: false,
     ...fieldOptions,
-  } as never) as FieldRef<SchemaTypes, never, 'Mutation'>;
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fieldRef.onFirstUse((config: any) => {

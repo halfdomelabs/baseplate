@@ -20,7 +20,10 @@ const redis = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'redis',
-  projectExports: { createRedisClient: {}, getRedisClient: {} },
+  projectExports: {
+    createRedisRuntime: {},
+    RedisRuntime: { isTypeOnly: true },
+  },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/services/redis.ts'),
   },

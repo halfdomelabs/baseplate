@@ -5,6 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   configServiceImportsProvider,
   loggerServiceImportsProvider,
+  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
@@ -36,6 +37,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
     loggerServiceImports: loggerServiceImportsProvider,
     paths: EMAIL_CORE_EMAIL_MODULE_PATHS.provider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
@@ -46,6 +48,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
     loggerServiceImports,
     paths,
     queuesImports,
+    serviceContextImports,
     typescriptFile,
   }) {
     return {
@@ -60,6 +63,7 @@ const emailCoreEmailModuleRenderersTask = createGeneratorTask({
                   configServiceImports,
                   loggerServiceImports,
                   queuesImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,

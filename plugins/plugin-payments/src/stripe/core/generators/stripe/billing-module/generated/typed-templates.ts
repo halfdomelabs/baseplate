@@ -9,8 +9,6 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-import { fastifyStripeImportsProvider } from '#src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.js';
-
 const billingConfig = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'module',
@@ -38,7 +36,6 @@ const billingService = createTsTemplateFile({
   group: 'module',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    fastifyStripeImports: fastifyStripeImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,

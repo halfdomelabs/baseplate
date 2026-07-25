@@ -23,33 +23,6 @@
       "sourceFile": "module/adapters/url.ts",
       "variables": {}
     },
-    "config-adapters": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/config/adapters.config.ts",
-      "projectExports": {
-        "STORAGE_ADAPTERS": {},
-        "StorageAdapterKey": { "isTypeOnly": true }
-      },
-      "sourceFile": "module/config/adapters.config.ts",
-      "variables": { "TPL_ADAPTERS": {} }
-    },
-    "config-categories": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/config/categories.config.ts",
-      "projectExports": {
-        "FILE_CATEGORIES": {},
-        "FileCategoryName": { "isTypeOnly": true },
-        "getCategoryByName": {},
-        "getCategoryByNameOrThrow": {}
-      },
-      "referencedGeneratorTemplates": ["types-file-category"],
-      "sourceFile": "module/config/categories.config.ts",
-      "variables": { "TPL_FILE_CATEGORIES": {} }
-    },
     "queues-clean-unused-files": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -76,6 +49,10 @@
         "queuesImportsProvider": {
           "importName": "queuesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/queues/clean-unused-files.worker.ts",
@@ -104,9 +81,8 @@
       },
       "pathRootRelativePath": "{module-root}/schema/file-category.enum.ts",
       "projectExports": {},
-      "referencedGeneratorTemplates": ["config-categories"],
       "sourceFile": "module/schema/file-category.enum.ts",
-      "variables": {}
+      "variables": { "TPL_FILE_CATEGORY_ENUM_NAMES": {} }
     },
     "schema-file-input": {
       "type": "ts",
@@ -174,16 +150,16 @@
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/clean-unused-files.ts",
       "projectExports": {
         "cleanUnusedFiles": { "isTypeOnly": false, "name": "cleanUnusedFiles" }
       },
-      "referencedGeneratorTemplates": [
-        "config-categories",
-        "utils-get-adapter"
-      ],
       "sourceFile": "module/services/clean-unused-files.ts",
       "variables": {}
     },
@@ -203,10 +179,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
       "projectExports": { "createPresignedDownloadUrl": {} },
-      "referencedGeneratorTemplates": [
-        "config-categories",
-        "utils-get-adapter"
-      ],
       "sourceFile": "module/services/create-presigned-download-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -250,10 +222,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
-      "referencedGeneratorTemplates": [
-        "config-categories",
-        "utils-get-adapter"
-      ],
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -293,12 +261,35 @@
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/get-public-url.ts",
-      "referencedGeneratorTemplates": ["utils-get-adapter"],
       "sourceFile": "module/services/get-public-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
+    },
+    "services-storage": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/services/storage.service.ts",
+      "projectExports": {
+        "StorageService": { "isTypeOnly": true, "name": "StorageService" },
+        "StorageAdapterKey": {
+          "isTypeOnly": true,
+          "name": "StorageAdapterKey"
+        },
+        "createStorageService": {
+          "isTypeOnly": false,
+          "name": "createStorageService"
+        }
+      },
+      "referencedGeneratorTemplates": ["types-adapter", "types-file-category"],
+      "sourceFile": "module/services/storage.service.ts",
+      "variables": { "TPL_ADAPTERS": {} }
     },
     "services-upload-file": {
       "type": "ts",
@@ -347,7 +338,6 @@
       },
       "pathRootRelativePath": "{module-root}/types/file-category.ts",
       "projectExports": { "FileCategory": { "isTypeOnly": true } },
-      "referencedGeneratorTemplates": ["config-adapters"],
       "sourceFile": "module/types/file-category.ts",
       "variables": {}
     },
@@ -369,21 +359,6 @@
       },
       "referencedGeneratorTemplates": ["types-file-category"],
       "sourceFile": "module/utils/create-file-category.ts",
-      "variables": {}
-    },
-    "utils-get-adapter": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/utils/get-adapter.ts",
-      "projectExports": {
-        "getAdapterOrThrow": {
-          "isTypeOnly": false,
-          "name": "getAdapterOrThrow"
-        }
-      },
-      "referencedGeneratorTemplates": ["config-adapters", "types-adapter"],
-      "sourceFile": "module/utils/get-adapter.ts",
       "variables": {}
     },
     "utils-mime": {
@@ -421,10 +396,8 @@
         "validateFileUploadOptions": {}
       },
       "referencedGeneratorTemplates": [
-        "config-categories",
         "types-adapter",
         "types-file-category",
-        "utils-get-adapter",
         "utils-mime"
       ],
       "sourceFile": "module/utils/validate-file-upload-options.ts",
@@ -462,10 +435,7 @@
           "name": "validatePendingUpload"
         }
       },
-      "referencedGeneratorTemplates": [
-        "types-file-category",
-        "utils-get-adapter"
-      ],
+      "referencedGeneratorTemplates": ["types-file-category"],
       "sourceFile": "module/utils/validate-pending-upload.ts",
       "variables": {}
     }

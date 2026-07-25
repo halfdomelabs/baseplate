@@ -4,8 +4,6 @@ import type { StorageAdapter } from '$typesAdapter';
 import type { FileCategory } from '$typesFileCategory';
 import type { ServiceContext } from '%serviceContextImports';
 
-import { getCategoryByNameOrThrow } from '$configCategories';
-import { getAdapterOrThrow } from '$utilsGetAdapter';
 import {
   assertValidMimeType,
   getEncodingFromContentType,
@@ -150,7 +148,8 @@ export async function validateFileUploadOptions(
   const { category, contentType, filename, size } = validatedOptions;
 
   // Find and validate file category
-  const fileCategory = getCategoryByNameOrThrow(category);
+  const fileCategory =
+    context.services.storage.getCategoryByNameOrThrow(category);
 
   // Only system users or users with upload permission can upload files
   if (
@@ -180,7 +179,9 @@ export async function validateFileUploadOptions(
   const storagePath = `${pathPrefix}/${nanoid(14)}/${cleanedFilename}`;
 
   // Get storage adapter
-  const adapter = getAdapterOrThrow(fileCategory.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(
+    fileCategory.adapter,
+  );
 
   // Prepare file record data (size and pendingUpload set by caller)
   const fileCreateInput = {

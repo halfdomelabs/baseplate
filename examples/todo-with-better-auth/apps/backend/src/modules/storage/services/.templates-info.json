@@ -29,6 +29,11 @@
     "instanceData": {},
     "template": "services-get-public-url"
   },
+  "storage.service.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-storage"
+  },
   "upload-file.ts": {
     "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
     "instanceData": {},

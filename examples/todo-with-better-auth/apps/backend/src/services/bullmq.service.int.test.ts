@@ -6,7 +6,10 @@ import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 import { bindQueueHandler, defineQueue } from '@src/types/queue.types.js';
 
+import type { RedisRuntime } from './redis.js';
+
 import { createQueueRuntime } from './bullmq.service.js';
+import { createRedisRuntime } from './redis.js';
 
 // Mock the logger module to avoid log output during tests
 vi.mock('@src/services/logger.js', () => ({
@@ -47,10 +50,24 @@ const sleep = (ms: number): Promise<void> =>
 
 describe('BullMQ service integration tests', () => {
   let runtime: QueueRuntime | undefined;
+  let redis: RedisRuntime | undefined;
+
+  /**
+   * Builds a queue runtime over a fresh Redis connection manager. The manager
+   * owns the connection, so `afterEach` disposes it after stopping workers.
+   */
+  function createTestQueueRuntime(
+    bindings: Parameters<typeof createQueueRuntime>[0],
+  ): QueueRuntime {
+    redis = createRedisRuntime();
+    return createQueueRuntime(bindings, redis);
+  }
 
   afterEach(async () => {
     await runtime?.stopWorkers();
     runtime = undefined;
+    await redis?.dispose();
+    redis = undefined;
   });
 
   describe('basic job processing', () => {
@@ -75,7 +92,7 @@ describe('BullMQ service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createTestQueueRuntime([binding]);
       await runtime.startWorkers({
         createContext: createTestServiceContext,
       });
@@ -114,7 +131,7 @@ describe('BullMQ service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createTestQueueRuntime([binding]);
 
       // Enqueue BEFORE starting worker
       const jobId = await runtime.enqueue(token, { id: 123 });
@@ -164,7 +181,7 @@ describe('BullMQ service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createTestQueueRuntime([binding]);
       await runtime.startWorkers({ createContext: createTestServiceContext });
 
       // Enqueue a job
@@ -197,7 +214,7 @@ describe('BullMQ service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createTestQueueRuntime([binding]);
       await runtime.startWorkers({ createContext: createTestServiceContext });
 
       const enqueuedAt = Date.now();
@@ -240,7 +257,7 @@ describe('BullMQ service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createTestQueueRuntime([binding]);
       await runtime.startWorkers({ createContext: createTestServiceContext });
 
       // Verify the repeatable job was scheduled

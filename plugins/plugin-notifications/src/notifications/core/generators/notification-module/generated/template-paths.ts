@@ -11,6 +11,7 @@ export interface NotificationsCoreNotificationModulePaths {
   servicesInAppChannel: string;
   servicesNotificationChannel: string;
   servicesNotificationContent: string;
+  servicesNotificationEvents: string;
   servicesNotificationRegistry: string;
   servicesNotificationService: string;
 }
@@ -41,6 +42,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           servicesInAppChannel: `${moduleRoot}/services/in-app-channel.ts`,
           servicesNotificationChannel: `${moduleRoot}/services/notification-channel.ts`,
           servicesNotificationContent: `${moduleRoot}/services/notification-content.ts`,
+          servicesNotificationEvents: `${moduleRoot}/services/notification-events.ts`,
           servicesNotificationRegistry: `${moduleRoot}/services/notification-registry.ts`,
           servicesNotificationService: `${moduleRoot}/services/notification.service.ts`,
         },

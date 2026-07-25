@@ -1,5 +1,7 @@
 import { defineAppModule } from '@src/utils/app-modules.js';
 
+import { todoListCoverPhotoFileCategory } from './constants/file-categories.js';
+
 /* TPL_IMPORTS:START */
 import './schema/enums.js';
 import './schema/todo-item-attachment-tag.object-type.js';
@@ -17,5 +19,7 @@ import './schema/todo-list.queries.js';
 
 export const /* TPL_MODULE_NAME:START */ todosModule /* TPL_MODULE_NAME:END */ =
     defineAppModule(
-      /* TPL_MODULE_CONTENTS:START */ {} /* TPL_MODULE_CONTENTS:END */,
+      /* TPL_MODULE_CONTENTS:START */ {
+        storageCategories: [todoListCoverPhotoFileCategory],
+      } /* TPL_MODULE_CONTENTS:END */,
     );

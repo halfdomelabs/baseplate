@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { prisma } from '@src/services/prisma.js';
 
-import { notifyText } from '../modules/notifications/services/notification.service.js';
+import { withScriptContext } from '../utils/service-context.js';
 
 /**
  * Dev helper: fire a notification at a user so you can watch the admin bell
@@ -30,9 +30,11 @@ async function main(): Promise<void> {
     );
   }
 
-  const notification = await notifyText(recipient.id, text, {
-    actionUrl: '/admin/accounts/users',
-  });
+  const notification = await withScriptContext((ctx) =>
+    ctx.services.notifications.notifyText(recipient.id, text, {
+      actionUrl: '/admin/accounts/users',
+    }),
+  );
 
   console.info(
     `Sent notification ${notification.id} to ${recipient.email} (${recipient.id})`,
@@ -45,10 +47,9 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    // The Redis pubsub clients (owned internally by getPubSub) keep the event
-    // loop alive, so the process would otherwise hang. Give the fire-and-forget
-    // PUBLISH a tick to flush to the wire, disconnect Prisma, then force-exit.
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    // withScriptContext's runtime.dispose() quits the pubsub Redis
+    // connections gracefully (draining in-flight commands), so the PUBLISH
+    // is flushed before this resolves.
     await prisma.$disconnect();
     process.exit();
   });

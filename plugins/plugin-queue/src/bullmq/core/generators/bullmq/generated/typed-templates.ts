@@ -22,7 +22,6 @@ const bullmqPlugin = createTsTemplateFile({
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'bullmq-plugin',
-  referencedGeneratorTemplates: { bullmqService: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -64,7 +63,6 @@ const runWorkers = createTsTemplateFile({
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'run-workers',
-  referencedGeneratorTemplates: { bullmqService: {} },
   source: {
     path: path.join(
       import.meta.dirname,

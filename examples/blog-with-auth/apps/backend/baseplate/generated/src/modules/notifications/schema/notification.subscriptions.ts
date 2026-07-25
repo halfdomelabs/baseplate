@@ -1,5 +1,4 @@
 import { builder } from '@src/plugins/graphql/builder.js';
-import { getPubSub } from '@src/plugins/graphql/pubsub.js';
 
 /**
  * Real-time invalidation: fires whenever the current user's notifications change
@@ -12,8 +11,7 @@ builder.subscriptionField('notificationsChanged', (t) =>
   t.int({
     authorize: ['user'],
     subscribe: (_root, _args, context) =>
-      getPubSub().subscribe(
-        'notificationsChanged',
+      context.services.notifications.subscribeToChanges(
         context.auth.userIdOrThrow(),
       ),
     resolve: (payload) => payload.count,

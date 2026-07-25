@@ -3,7 +3,7 @@ import type { PubSub } from 'graphql-yoga';
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
 import { createPubSub } from 'graphql-yoga';
 
-import { createRedisClient } from '@src/services/redis.js';
+import type { RedisRuntime } from '@src/services/redis.js';
 
 /**
  * Map of subscription channel name to the arguments accepted by `pubSub.publish`.
@@ -20,7 +20,7 @@ import { createRedisClient } from '@src/services/redis.js';
  */
 // must be a type to be used in the PubSub type
 
-type PubSubPublishArgs = Record<
+export type PubSubPublishArgs = Record<
   string,
   [] | [unknown] | [number | string, unknown]
 > &
@@ -28,15 +28,17 @@ type PubSubPublishArgs = Record<
   { notificationsChanged: [userId: string, payload: { count: number }] };
 /* TPL_PUBLISH_ARGS:END */
 
-let cachedPubSub: PubSub<PubSubPublishArgs> | null = null;
-
-export function getPubSub(): PubSub<PubSubPublishArgs> {
-  if (cachedPubSub === null) {
-    const eventTarget = createRedisEventTarget({
-      publishClient: createRedisClient(),
-      subscribeClient: createRedisClient(),
-    });
-    cachedPubSub = createPubSub<PubSubPublishArgs>({ eventTarget });
-  }
-  return cachedPubSub;
+/**
+ * Creates a yoga `PubSub` backed by a dedicated publish/subscribe connection
+ * pair. `redis.createConnection` is lazy-connect, so this performs no I/O;
+ * the connections are torn down by {@link RedisRuntime.dispose}.
+ */
+export function createGraphqlPubSub(
+  redis: RedisRuntime,
+): PubSub<PubSubPublishArgs> {
+  const eventTarget = createRedisEventTarget({
+    publishClient: redis.createConnection(),
+    subscribeClient: redis.createConnection(),
+  });
+  return createPubSub<PubSubPublishArgs>({ eventTarget });
 }

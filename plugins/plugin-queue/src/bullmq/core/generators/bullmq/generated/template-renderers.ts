@@ -75,7 +75,6 @@ const bullmqCoreBullmqRenderersTask = createGeneratorTask({
                   queuesImports,
                   serviceContextImports,
                 },
-                generatorPaths: paths,
                 ...options,
               }),
           },

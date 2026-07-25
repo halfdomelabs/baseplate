@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { ServiceContextWith } from '@src/utils/service-context.js';
+
 import { prisma } from '@src/services/prisma.js';
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
 
+import type { StorageAdapter } from '../types/adapter.js';
 import type { FileCategory } from '../types/file-category.js';
 
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 import { cleanUnusedFiles } from './clean-unused-files.js';
 
 // Mock logger to suppress output during tests
@@ -38,45 +40,52 @@ const defaultFileCategories: FileCategory[] = [
   },
 ];
 
-// Mock categories config to allow overriding FILE_CATEGORIES in specific tests
-let fileCategoriesOverride: FileCategory[] | undefined;
-vi.mock('../config/categories.config.js', () => ({
-  get FILE_CATEGORIES() {
-    return fileCategoriesOverride ?? defaultFileCategories;
-  },
-  getCategoryByName: (name: string) =>
-    (fileCategoriesOverride ?? defaultFileCategories).find(
-      (c) => c.name === name,
-    ),
-  getCategoryByNameOrThrow: (name: string) => {
-    const category = (fileCategoriesOverride ?? defaultFileCategories).find(
-      (c) => c.name === name,
-    );
-    if (!category) {
-      throw new Error(`File category ${name} not found.`);
-    }
-    return category;
-  },
-}));
+const deleteFilesMock = vi
+  .fn()
+  .mockResolvedValue({ succeeded: [], failed: [] });
 
-// Mock storage adapters to prevent actual S3 calls
-vi.mock('../config/adapters.config.js', () => ({
-  STORAGE_ADAPTERS: {
-    uploads: {
-      uploadFile: vi.fn(),
-      downloadFile: vi.fn(),
-      fileExists: vi.fn(),
-      getFileMetadata: vi.fn(),
-      deleteFiles: vi.fn().mockResolvedValue({ succeeded: [], failed: [] }),
+const uploadsAdapter: StorageAdapter = {
+  uploadFile: vi.fn(),
+  downloadFile: vi.fn(),
+  fileExists: vi.fn(),
+  getFileMetadata: vi.fn(),
+  deleteFiles: deleteFilesMock,
+};
+
+const urlAdapter: StorageAdapter = {
+  uploadFile: vi.fn(),
+  downloadFile: vi.fn(),
+  fileExists: vi.fn(),
+  getFileMetadata: vi.fn(),
+};
+
+let fileCategoriesOverride: FileCategory[] | undefined;
+
+/** Builds a fake `ServiceContextWith<'storage'>` backed by test-controlled adapters/categories. */
+function createTestContext(): ServiceContextWith<'storage'> {
+  const categories = fileCategoriesOverride ?? defaultFileCategories;
+  return {
+    services: {
+      storage: {
+        categories,
+        getAdapterOrThrow: (adapterName: string) => {
+          if (adapterName === 'uploads') return uploadsAdapter;
+          if (adapterName === 'url') return urlAdapter;
+          throw new Error(`Unknown storage adapter: "${adapterName}"`);
+        },
+        getCategoryByName: (name: string) =>
+          categories.find((c) => c.name === name),
+        getCategoryByNameOrThrow: (name: string) => {
+          const category = categories.find((c) => c.name === name);
+          if (!category) {
+            throw new Error(`File category ${name} not found.`);
+          }
+          return category;
+        },
+      },
     },
-    url: {
-      uploadFile: vi.fn(),
-      downloadFile: vi.fn(),
-      fileExists: vi.fn(),
-      getFileMetadata: vi.fn(),
-    },
-  },
-}));
+  } as unknown as ServiceContextWith<'storage'>;
+}
 
 /**
  * Helper to create a file record with a specific age and upload state.
@@ -154,9 +163,6 @@ async function resetTables(): Promise<void> {
 }
 
 describe('cleanUnusedFiles integration tests', () => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const deleteFilesMock = vi.mocked(STORAGE_ADAPTERS.uploads.deleteFiles);
-
   beforeEach(async () => {
     vi.clearAllMocks();
     fileCategoriesOverride = undefined;
@@ -169,7 +175,7 @@ describe('cleanUnusedFiles integration tests', () => {
     it('should delete pending uploads older than 1 day', async () => {
       await createFileWithAge({ daysOld: 2, pendingUpload: true });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(1);
       expect(await countFiles()).toBe(0);
@@ -181,7 +187,7 @@ describe('cleanUnusedFiles integration tests', () => {
     it('should NOT delete pending uploads younger than 1 day', async () => {
       await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(0);
       expect(await countFiles()).toBe(1);
@@ -193,7 +199,7 @@ describe('cleanUnusedFiles integration tests', () => {
       await createFileWithAge({ daysOld: 0.5, pendingUpload: true });
       await createFileWithAge({ daysOld: 0.2, pendingUpload: true });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(2); // Only the 2 old files
       expect(await countFiles()).toBe(2); // 2 new files remain
@@ -226,13 +232,13 @@ describe('cleanUnusedFiles integration tests', () => {
       });
 
       // File should NOT be deleted while TodoList exists
-      expect(await cleanUnusedFiles()).toBe(0);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(0);
 
       // Delete TodoList
       await prisma.todoList.delete({ where: { id: todoList.id } });
 
       // Now file should be deleted (orphaned)
-      expect(await cleanUnusedFiles()).toBe(1);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(1);
       expect(await countFiles()).toBe(0);
     });
   });
@@ -254,7 +260,7 @@ describe('cleanUnusedFiles integration tests', () => {
         },
       });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(0);
       expect(await countFiles()).toBe(1);
@@ -275,11 +281,11 @@ describe('cleanUnusedFiles integration tests', () => {
       expect(await countFiles()).toBe(150);
 
       // First run should delete 100
-      expect(await cleanUnusedFiles()).toBe(100);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(100);
       expect(await countFiles()).toBe(50);
 
       // Second run should delete remaining 50
-      expect(await cleanUnusedFiles()).toBe(50);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(50);
       expect(await countFiles()).toBe(0);
     });
   });
@@ -310,7 +316,7 @@ describe('cleanUnusedFiles integration tests', () => {
 
       expect(await countFiles()).toBe(4);
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(2); // Files 1 and 4
       expect(await countFiles()).toBe(2); // Files 2 and 3 remain
@@ -335,7 +341,7 @@ describe('cleanUnusedFiles integration tests', () => {
         category: 'NO_CLEANUP_CATEGORY',
       });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       // File should NOT be deleted because the category has disableAutoCleanup
       expect(deletedCount).toBe(0);
@@ -373,14 +379,14 @@ describe('cleanUnusedFiles integration tests', () => {
       });
 
       // File should NOT be deleted — todoListCoverPhoto relation is populated
-      expect(await cleanUnusedFiles()).toBe(0);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(0);
       expect(await countFiles()).toBe(1);
 
       // Remove the TodoList relation
       await prisma.todoList.delete({ where: { id: todoList.id } });
 
       // Now all relations are empty — file should be deleted
-      expect(await cleanUnusedFiles()).toBe(1);
+      expect(await cleanUnusedFiles(createTestContext())).toBe(1);
       expect(await countFiles()).toBe(0);
     });
 
@@ -401,7 +407,7 @@ describe('cleanUnusedFiles integration tests', () => {
         adapter: 'uploads',
       });
 
-      const deletedCount = await cleanUnusedFiles();
+      const deletedCount = await cleanUnusedFiles(createTestContext());
 
       expect(deletedCount).toBe(2); // 2 old files
       expect(await countFiles()).toBe(1); // 1 new file remains

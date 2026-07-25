@@ -93,7 +93,6 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   pothosImports,
                   prismaImports,
-                  yogaPluginImports,
                 },
                 generatorPaths: paths,
                 ...options,

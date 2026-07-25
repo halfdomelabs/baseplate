@@ -25,6 +25,7 @@ import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/index.js';
+import { appRuntimeConfigProvider } from '#src/generators/core/app-runtime/index.js';
 import { configServiceImportsProvider } from '#src/generators/core/config-service/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
@@ -268,6 +269,23 @@ export const yogaPluginGenerator = createGenerator({
                   );
                 },
               };
+            },
+          }),
+          subscriptionAppRuntimeConfig: createGeneratorTask({
+            dependencies: {
+              appRuntimeConfig: appRuntimeConfigProvider,
+              paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
+            },
+            run({ appRuntimeConfig, paths }) {
+              appRuntimeConfig.runtimeFields.set('pubsub', {
+                type: TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
+              });
+              appRuntimeConfig.construction.set('pubsub', {
+                dependencies: ['redis'],
+                fragment: TsCodeUtils.template`
+                  const pubsub = ${TsCodeUtils.importFragment('createGraphqlPubSub', paths.pubsub)}(redis);
+                `,
+              });
             },
           }),
         }

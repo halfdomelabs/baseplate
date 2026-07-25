@@ -1,9 +1,11 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
+
 const healthCheck = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
   name: 'health-check',
   source: {
     path: path.join(

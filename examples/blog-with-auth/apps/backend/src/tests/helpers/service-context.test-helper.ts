@@ -1,5 +1,8 @@
 import type { CookieUserSessionService } from '@src/modules/accounts/auth/services/user-session.service.js';
 import type { AuthContext } from '@src/modules/accounts/auth/types/auth-context.types.js';
+import type { EmailTransport } from '@src/modules/emails/emails.types.js';
+import type { EmailService } from '@src/modules/emails/services/emails.service.js';
+import type { NotificationService } from '@src/modules/notifications/services/notification.service.js';
 import type { QueueService } from '@src/types/queue.types.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
@@ -18,6 +21,34 @@ export function createTestServiceContext(
       auth: auth ?? createAuthContextFromSessionInfo(undefined),
     } /* TPL_CREATE_TEST_OBJECT:END */,
     /* TPL_TEST_RUNTIME_SERVICES:START */ {
+      emails: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error('emails is not available in this test context.');
+          },
+        },
+      ) as EmailService,
+      emailTransport: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error(
+              'emailTransport is not available in this test context.',
+            );
+          },
+        },
+      ) as EmailTransport,
+      notifications: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error(
+              'notifications is not available in this test context.',
+            );
+          },
+        },
+      ) as NotificationService,
       queues: new Proxy(
         {},
         {

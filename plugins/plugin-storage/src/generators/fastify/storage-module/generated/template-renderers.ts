@@ -21,26 +21,6 @@ import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
 import { FASTIFY_STORAGE_MODULE_TEMPLATES } from './typed-templates.js';
 
 export interface FastifyStorageModuleRenderers {
-  configAdapters: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configAdapters
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  configCategories: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   mainGroup: {
     render: (
       options: Omit<
@@ -101,11 +81,11 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
-  utilsGetAdapter: {
+  servicesStorage: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGetAdapter
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.servicesStorage
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -159,23 +139,6 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
     return {
       providers: {
         fastifyStorageModuleRenderers: {
-          configAdapters: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: FASTIFY_STORAGE_MODULE_TEMPLATES.configAdapters,
-                destination: paths.configAdapters,
-                ...options,
-              }),
-          },
-          configCategories: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories,
-                destination: paths.configCategories,
-                generatorPaths: paths,
-                ...options,
-              }),
-          },
           mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -211,6 +174,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 destination: paths.queuesCleanUnusedFilesWorker,
                 importMapProviders: {
                   queuesImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,
@@ -238,8 +202,8 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   errorHandlerServiceImports,
                   loggerServiceImports,
                   prismaImports,
+                  serviceContextImports,
                 },
-                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -250,16 +214,16 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 destination: paths.servicesGetPublicUrl,
                 importMapProviders: {
                   prismaGeneratedImports,
+                  serviceContextImports,
                 },
-                generatorPaths: paths,
                 ...options,
               }),
           },
-          utilsGetAdapter: {
+          servicesStorage: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGetAdapter,
-                destination: paths.utilsGetAdapter,
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.servicesStorage,
+                destination: paths.servicesStorage,
                 generatorPaths: paths,
                 ...options,
               }),

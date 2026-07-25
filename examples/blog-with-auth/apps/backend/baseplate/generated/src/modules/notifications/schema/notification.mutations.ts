@@ -1,12 +1,6 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
-import {
-  deleteNotification,
-  markAllAsRead,
-  markAllAsSeen,
-  markAsRead,
-} from '../services/notification.service.js';
 import { notificationObjectType } from './notification.object-type.js';
 
 /**
@@ -28,7 +22,8 @@ builder.mutationField('markNotificationRead', (t) =>
     },
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();
-      const { changed, unseenCount } = await markAsRead(userId, input.id);
+      const { changed, unseenCount } =
+        await context.services.notifications.markAsRead(userId, input.id);
       const notification = await prisma.notification.findFirst({
         where: { id: input.id, recipientId: userId },
       });
@@ -46,7 +41,9 @@ builder.mutationField('markAllNotificationsSeen', (t) =>
       unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, _args, context) =>
-      markAllAsSeen(context.auth.userIdOrThrow()),
+      context.services.notifications.markAllAsSeen(
+        context.auth.userIdOrThrow(),
+      ),
   }),
 );
 
@@ -59,7 +56,9 @@ builder.mutationField('markAllNotificationsRead', (t) =>
       unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, _args, context) =>
-      markAllAsRead(context.auth.userIdOrThrow()),
+      context.services.notifications.markAllAsRead(
+        context.auth.userIdOrThrow(),
+      ),
   }),
 );
 
@@ -73,10 +72,11 @@ builder.mutationField('deleteNotification', (t) =>
       unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, { input }, context) => {
-      const { changed, unseenCount } = await deleteNotification(
-        context.auth.userIdOrThrow(),
-        input.id,
-      );
+      const { changed, unseenCount } =
+        await context.services.notifications.delete(
+          context.auth.userIdOrThrow(),
+          input.id,
+        );
       return { deletedId: changed ? input.id : null, unseenCount };
     },
   }),

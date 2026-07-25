@@ -50,9 +50,9 @@ export async function buildServer(
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
-  await fastify.register(healthCheckPlugin);
+  await fastify.register(healthCheckPlugin, { runtime });
   await fastify.register(rawBodyPlugin);
-  await fastify.register(stripeWebhookPlugin);
+  await fastify.register(stripeWebhookPlugin, { runtime });
   /* TPL_PLUGINS:END */
 
   // register app plugins

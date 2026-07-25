@@ -2,6 +2,7 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   configServiceImportsProvider,
   loggerServiceImportsProvider,
+  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
@@ -12,11 +13,14 @@ const emailsService = createTsTemplateFile({
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'emails-service',
   projectExports: {
+    createEmailService: { isTypeOnly: false },
+    createEmailTransport: { isTypeOnly: false },
+    EmailService: { isTypeOnly: true },
     sendEmail: { isTypeOnly: false },
-    sendRawEmail: { isTypeOnly: false },
   },
   referencedGeneratorTemplates: { emailsTypes: {}, sendEmailQueue: {} },
   source: {
@@ -38,6 +42,7 @@ const emailsTypes = createTsTemplateFile({
     EmailAttachment: { isTypeOnly: true },
     EmailRawOptions: { isTypeOnly: true },
     EmailSendOptions: { isTypeOnly: true },
+    EmailTransport: { isTypeOnly: true },
     TransformedEmailMessage: { isTypeOnly: true },
   },
   source: {
@@ -68,6 +73,7 @@ const sendEmailWorker = createTsTemplateFile({
   importMapProviders: {
     loggerServiceImports: loggerServiceImportsProvider,
     queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'send-email-worker',
   projectExports: { sendEmailWorker: { isTypeOnly: false } },
@@ -78,7 +84,7 @@ const sendEmailWorker = createTsTemplateFile({
       '../templates/module/queues/send-email.worker.ts',
     ),
   },
-  variables: { TPL_EMAIL_ADAPTER: {} },
+  variables: {},
 });
 
 export const mainGroup = {

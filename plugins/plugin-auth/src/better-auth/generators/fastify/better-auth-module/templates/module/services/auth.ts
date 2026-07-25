@@ -1,11 +1,10 @@
 // @ts-nocheck
 
 import type { AuthRole } from '%authRolesImports';
-import type { QueueService } from '%queuesImports';
+import type { EmailService } from '%emailModuleImports';
 
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { config } from '%configServiceImports';
-import { sendEmail } from '%emailModuleImports';
 import { prisma } from '%prismaImports';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -25,7 +24,7 @@ export const cookiePrefix =
  * Dependencies `auth` needs at construction time.
  */
 export interface AuthServiceDeps {
-  queues: QueueService;
+  emails: EmailService;
 }
 
 export type Auth = ReturnType<typeof buildAuth>;
@@ -37,7 +36,7 @@ export type Auth = ReturnType<typeof buildAuth>;
  * only ever built once for the runtime's lifetime.
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type is self-referential (Auth is derived from it above); betterAuth()'s inferred generic return type can't be spelled out by hand
-export const buildAuth = ({ queues }: AuthServiceDeps) =>
+export const buildAuth = ({ emails }: AuthServiceDeps) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     secret: config.BETTER_AUTH_SECRET,
@@ -47,7 +46,7 @@ export const buildAuth = ({ queues }: AuthServiceDeps) =>
       enabled: true,
       async sendResetPassword({ token, user }) {
         const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
-        await sendEmail(queues, TPL_PASSWORD_RESET_EMAIL, {
+        await emails.send(TPL_PASSWORD_RESET_EMAIL, {
           to: user.email,
           data: { resetLink },
         });
@@ -58,7 +57,7 @@ export const buildAuth = ({ queues }: AuthServiceDeps) =>
       sendOnSignUp: true,
       async sendVerificationEmail({ token, user }) {
         const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
-        await sendEmail(queues, TPL_ACCOUNT_VERIFICATION_EMAIL, {
+        await emails.send(TPL_ACCOUNT_VERIFICATION_EMAIL, {
           to: user.email,
           data: { verifyLink },
         });

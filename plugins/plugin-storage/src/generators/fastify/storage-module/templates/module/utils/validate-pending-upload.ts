@@ -4,7 +4,6 @@ import type { FileCategory } from '$typesFileCategory';
 import type { File, Prisma } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
 
-import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { BadRequestError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
 
@@ -91,7 +90,7 @@ export async function validatePendingUpload({
     );
   }
 
-  const adapter = getAdapterOrThrow(file.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(file.adapter);
   const fileMetadata = await adapter.getFileMetadata(file.storagePath);
 
   if (!fileMetadata) {

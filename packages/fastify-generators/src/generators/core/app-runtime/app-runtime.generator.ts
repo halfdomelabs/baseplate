@@ -11,37 +11,186 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { mapValuesOfMap, quot } from '@baseplate-dev/utils';
-import { sortBy } from 'es-toolkit';
+import {
+  compareStrings,
+  mapValuesOfMap,
+  quot,
+  toposort,
+  ToposortCyclicalDependencyError,
+} from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+// Imported from the generated import-provider module rather than the package
+// barrel: app-module-setup's generator imports from this file, so going
+// through its barrel would create a module cycle.
+import { appModuleSetupImportsProvider } from '../app-module-setup/generated/ts-import-providers.js';
+import { appModuleImportsProvider } from '../app-module/app-module.generator.js';
 import { CORE_APP_RUNTIME_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
 /**
- * A slice's construction entry: the construction STATEMENTS plus an optional
- * priority controlling render order relative to other slices, since a later
- * slice may reference an earlier slice's already-constructed const (e.g.
- * `betterAuth` needs `queues`). Mirrors `FastifyServerPlugin.orderPriority`.
+ * A slice's construction entry: the construction STATEMENTS for a single const
+ * named after the entry's key, plus the other construction keys those
+ * statements reference.
+ *
+ * `dependencies` is the hard ordering constraint - each named key is
+ * constructed first, so the fragment can reference its const (e.g. `betterAuth`
+ * references `emails`). Unknown or cyclic dependencies fail generation.
+ *
+ * `orderPriority` only breaks ties between slices left unordered by the
+ * dependency graph, expressing disposal intent that no edge captures: disposal
+ * runs in reverse construction order, so `FIRST` is for connection-level
+ * resources (e.g. `redis`) that must be torn down only after everything
+ * holding a connection has released it. Mirrors
+ * `FastifyServerPlugin.orderPriority`.
  */
 export interface AppRuntimeConstructionEntry {
   fragment: TsCodeFragment;
-  orderPriority?: 'EARLY' | 'MIDDLE' | 'END';
+  dependencies?: string[];
+  orderPriority?: 'FIRST' | 'EARLY' | 'MIDDLE' | 'END';
 }
 
-const CONSTRUCTION_ORDER_PRIORITY_MAP = { EARLY: 0, MIDDLE: 1, END: 2 };
+/**
+ * A top-level `AppRuntime` field: its type, plus an optional doc comment
+ * rendered above the declaration.
+ */
+export interface AppRuntimeFieldEntry {
+  type: TsCodeFragment;
+  /** Doc comment for the field, e.g. `\/** ... *\/`. */
+  comment?: string;
+}
+
+const CONSTRUCTION_ORDER_PRIORITY_MAP = {
+  FIRST: 0,
+  EARLY: 1,
+  MIDDLE: 2,
+  END: 3,
+};
+
+/**
+ * Orders construction entries so each entry follows everything it declares in
+ * `dependencies`. Entries the graph leaves unordered are emitted by
+ * `orderPriority`, then key, keeping output stable across syncs.
+ *
+ * @param construction Construction entries keyed by the const each one builds.
+ * @param providedNames Names bound before any construction runs (the
+ * `flattenedModuleFields` destructure), so slices may depend on them.
+ * @returns The entries in construction order.
+ * @throws If a dependency is unregistered or the graph has a cycle.
+ * @see toposort - the underlying sort; `compareFunc` breaks ties between
+ * entries at the same topological level.
+ */
+export function sortConstructionEntries(
+  construction: ReadonlyMap<string, AppRuntimeConstructionEntry>,
+  providedNames: ReadonlySet<string>,
+): [string, AppRuntimeConstructionEntry][] {
+  // Checked here rather than left to toposort's ToposortUnknownNodeError so
+  // the message can name the slice that declared the dependency.
+  const edges = [...construction].flatMap(([key, entry]) =>
+    (entry.dependencies ?? [])
+      .filter((dependency) => !providedNames.has(dependency))
+      .map((dependency): [string, string] => {
+        if (!construction.has(dependency)) {
+          throw new Error(
+            `App runtime slice ${quot(key)} depends on ${quot(dependency)}, which no slice registers. Either enable the plugin that provides it or drop the dependency.`,
+          );
+        }
+        return [dependency, key];
+      }),
+  );
+
+  const compareReady = (a: string, b: string): number =>
+    CONSTRUCTION_ORDER_PRIORITY_MAP[
+      construction.get(a)?.orderPriority ?? 'MIDDLE'
+    ] -
+      CONSTRUCTION_ORDER_PRIORITY_MAP[
+        construction.get(b)?.orderPriority ?? 'MIDDLE'
+      ] || compareStrings(a, b);
+
+  try {
+    const sortedKeys = toposort([...construction.keys()], edges, {
+      compareFunc: compareReady,
+    });
+    return sortedKeys.flatMap((key) => {
+      const entry = construction.get(key);
+      return entry
+        ? [[key, entry] as [string, AppRuntimeConstructionEntry]]
+        : [];
+    });
+  } catch (error) {
+    if (error instanceof ToposortCyclicalDependencyError) {
+      throw new TypeError(
+        `App runtime slices have a circular construction dependency: ${error.cyclePath.join(' -> ')}.`,
+        { cause: error },
+      );
+    }
+    throw error;
+  }
+}
+
+/**
+ * Verifies every name the runtime will reference is actually bound by
+ * construction, and that no two bindings claim the same name.
+ *
+ * `sortConstructionEntries` covers the other direction (a slice depending on a
+ * name nobody registers); without this, a slice that registers a `services` or
+ * `runtimeFields` entry but no matching `construction` entry emits a reference
+ * to an undefined const, and generation succeeds while the generated project
+ * fails to compile.
+ *
+ * @param maps The registered app-runtime config maps.
+ * @throws If a declared field has no construction entry, or a construction key
+ * collides with a flattened module binding.
+ */
+export function validateConstructionBindings({
+  services,
+  construction,
+  runtimeFields,
+  flattenedModuleFields,
+}: {
+  services: ReadonlyMap<string, unknown>;
+  construction: ReadonlyMap<string, AppRuntimeConstructionEntry>;
+  runtimeFields: ReadonlyMap<string, AppRuntimeFieldEntry>;
+  flattenedModuleFields: ReadonlyMap<string, string>;
+}): void {
+  const constructedNames = new Set([
+    ...construction.keys(),
+    ...flattenedModuleFields.values(),
+  ]);
+  const unconstructed = [
+    ...new Set([...services.keys(), ...runtimeFields.keys()]),
+  ]
+    .filter((key) => !constructedNames.has(key))
+    .toSorted(compareStrings);
+  if (unconstructed.length > 0) {
+    throw new Error(
+      `App runtime declares ${unconstructed.map((key) => quot(key)).join(', ')} but no slice registers a construction entry building them. Add a matching construction.set(...) or drop the declaration.`,
+    );
+  }
+
+  // Construction consts and flattened module bindings share one identifier
+  // namespace inside createAppRuntime, so a shared name emits a duplicate const.
+  const collisions = [...flattenedModuleFields.values()]
+    .filter((localName) => construction.has(localName))
+    .toSorted(compareStrings);
+  if (collisions.length > 0) {
+    throw new Error(
+      `App runtime construction ${collisions.map((key) => quot(key)).join(', ')} collides with a flattened module binding of the same name. Rename the binding's local name.`,
+    );
+  }
+}
 
 /**
  * A slice registers itself against these keyed maps, all keyed by the same
  * field name:
- * - `services`: the field's TYPE, rendered into `RuntimeServices`.
- * - `construction`: the construction STATEMENTS for the field, rendered in
- *   `orderPriority` order (default `MIDDLE`, tie-broken by key) so a later
- *   slice can depend on an earlier one's already-constructed const (e.g.
- *   `betterAuth` needs `queues`, so `queues` registers `EARLY`). Should push
- *   a disposer via `disposers.push(...)` if the slice owns a resource that
- *   needs cleanup.
+ * - `services`: the field's TYPE, rendered into `AppServices`.
+ * - `construction`: the construction STATEMENTS for the field, topologically
+ *   sorted so every entry named in a slice's `dependencies` is constructed
+ *   before it (e.g. `betterAuth` declares `dependencies: ['emails']`).
+ *   Slices the graph leaves unordered fall back to `orderPriority` (default
+ *   `MIDDLE`), then key order. Should push a disposer via
+ *   `disposers.push(...)` if the slice owns a resource that needs cleanup.
  * - `runtimeFields` (optional): the field's TYPE for `AppRuntime`'s top-level
  *   surface, for slices that need a view beyond `services` (e.g.
  *   `runtime.queues` exposes the full `QueueRuntime`, not just the narrowed
@@ -53,14 +202,21 @@ const CONSTRUCTION_ORDER_PRIORITY_MAP = { EARLY: 0, MIDDLE: 1, END: 2 };
  *   options parameter, for slices whose construction needs a caller-supplied
  *   value (e.g. pg-boss's `disableQueueMaintenance`, with no bullmq
  *   equivalent). Referenced from a construction statement as `options.<key>`.
+ * - `flattenedModuleFields` (optional): an `AppModule` field this slice reads
+ *   from the flattened root module, mapped to the local const name to bind it
+ *   to (e.g. `queues` -> `queueBindings`). All entries are emitted as a single
+ *   destructure of one `flattenAppModule(rootModule)` call, before any slice
+ *   construction, so each field is flattened once regardless of how many
+ *   slices consume it.
  */
 const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       services: t.map<string, TsCodeFragment>(),
       construction: t.map<string, AppRuntimeConstructionEntry>(),
-      runtimeFields: t.map<string, TsCodeFragment>(),
+      runtimeFields: t.map<string, AppRuntimeFieldEntry>(),
       constructionOptions: t.map<string, TsCodeFragment>(),
+      flattenedModuleFields: t.map<string, string>(),
     }),
     {
       prefix: 'app-runtime',
@@ -72,11 +228,11 @@ export { appRuntimeConfigProvider };
 
 export interface AppRuntimeTestUtilsProvider {
   /**
-   * A `RuntimeServices` object literal for tests that need a
+   * A `AppServices` object literal for tests that need a
    * `ServiceContext` but never touch runtime services directly - each field
    * throws on access instead of silently returning `undefined`.
    */
-  getTestRuntimeServicesFragment(): TsCodeFragment;
+  getTestAppServicesFragment(): TsCodeFragment;
 }
 
 export const appRuntimeTestUtilsProvider =
@@ -84,7 +240,7 @@ export const appRuntimeTestUtilsProvider =
 
 /**
  * Generates the app runtime composition root: `createAppRuntime()` and the
- * `RuntimeServices` bag it delivers. Slices (queues, email, storage, etc.)
+ * `AppServices` bag it delivers. Slices (queues, email, storage, etc.)
  * register themselves via `appRuntimeConfigProvider`; this generator renders
  * whatever they've registered.
  */
@@ -101,6 +257,8 @@ export const appRuntimeGenerator = createGenerator({
       dependencies: {
         renderers: CORE_APP_RUNTIME_GENERATED.renderers.provider,
         appRuntimeConfigValues: appRuntimeConfigValuesProvider,
+        appModuleImports: appModuleImportsProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
       },
       exports: {
         appRuntimeTestUtils: appRuntimeTestUtilsProvider.export(packageScope),
@@ -112,12 +270,15 @@ export const appRuntimeGenerator = createGenerator({
           construction,
           runtimeFields,
           constructionOptions,
+          flattenedModuleFields,
         },
+        appModuleImports,
+        appModuleSetupImports,
       }) {
         return {
           providers: {
             appRuntimeTestUtils: {
-              getTestRuntimeServicesFragment: () =>
+              getTestAppServicesFragment: () =>
                 services.size === 0
                   ? tsCodeFragment('{}')
                   : TsCodeUtils.mergeFragmentsAsObject(
@@ -131,6 +292,13 @@ export const appRuntimeGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            validateConstructionBindings({
+              services,
+              construction,
+              runtimeFields,
+              flattenedModuleFields,
+            });
+
             const servicesInterface =
               services.size === 0
                 ? 'placeholder?: never'
@@ -138,18 +306,39 @@ export const appRuntimeGenerator = createGenerator({
                     mapValuesOfMap(services, (type) => type),
                   );
 
-            const orderedConstruction = sortBy(
-              [...construction.entries()],
-              [
-                ([, entry]) =>
-                  CONSTRUCTION_ORDER_PRIORITY_MAP[
-                    entry.orderPriority ?? 'MIDDLE'
-                  ],
-                ([key]) => key,
-              ],
+            // The destructure below binds these before any slice runs, so a
+            // slice may name one as a dependency without a construction entry
+            // providing it.
+            const orderedConstruction = sortConstructionEntries(
+              construction,
+              new Set(flattenedModuleFields.values()),
             );
+            // One destructure of one flattenAppModule() call, before any
+            // slice construction, so a field consumed by several slices is
+            // still only flattened once.
+            const flattenedModuleFragments =
+              flattenedModuleFields.size === 0
+                ? []
+                : [
+                    TsCodeUtils.template`const { ${[
+                      ...flattenedModuleFields.entries(),
+                    ]
+                      .toSorted(([a], [b]) => compareStrings(a, b))
+                      .map(([field, localName]) =>
+                        field === localName
+                          ? `${field} = []`
+                          : `${field}: ${localName} = []`,
+                      )
+                      .join(
+                        ', ',
+                      )} } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});`,
+                  ];
+
             const constructionStatements = TsCodeUtils.mergeFragmentsPresorted(
-              orderedConstruction.map(([, entry]) => entry.fragment),
+              [
+                ...flattenedModuleFragments,
+                ...orderedConstruction.map(([, entry]) => entry.fragment),
+              ],
               '\n\n',
             );
 
@@ -162,11 +351,21 @@ export const appRuntimeGenerator = createGenerator({
                     ),
                   );
 
+            // Built member-by-member rather than via
+            // mergeFragmentsAsInterfaceContent so a field's `comment` renders
+            // on its own line above the declaration.
             const runtimeFieldsInterface =
               runtimeFields.size === 0
                 ? 'readonly __runtimeFieldsPlaceholder?: never'
-                : TsCodeUtils.mergeFragmentsAsInterfaceContent(
-                    mapValuesOfMap(runtimeFields, (type) => type),
+                : TsCodeUtils.mergeFragmentsPresorted(
+                    [...runtimeFields.entries()]
+                      .toSorted(([a], [b]) => compareStrings(a, b))
+                      .map(([key, entry]) =>
+                        entry.comment
+                          ? TsCodeUtils.template`${entry.comment}\n${key}: ${entry.type};`
+                          : TsCodeUtils.template`${key}: ${entry.type};`,
+                      ),
+                    '\n',
                   );
 
             const runtimeFieldValues =

@@ -6,9 +6,6 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { ForbiddenError } from '@src/utils/http-errors.js';
 
-import { getCategoryByNameOrThrow } from '../config/categories.config.js';
-import { getAdapterOrThrow } from '../utils/get-adapter.js';
-
 /**
  * Downloads a file from storage.
  *
@@ -28,7 +25,9 @@ export async function downloadFile(
           })
       : fileIdOrFile;
 
-  const category = getCategoryByNameOrThrow(file.category);
+  const category = context.services.storage.getCategoryByNameOrThrow(
+    file.category,
+  );
 
   const isAuthorizedToRead =
     context.auth.roles.includes('system') ||
@@ -39,7 +38,7 @@ export async function downloadFile(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  const adapter = getAdapterOrThrow(file.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(file.adapter);
 
   return adapter.downloadFile(file.storagePath);
 }

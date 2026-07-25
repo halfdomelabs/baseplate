@@ -1,5 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
@@ -10,13 +11,14 @@ const pluginsWebhook = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'plugins',
   importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
   },
   name: 'plugins-webhook',
   projectExports: { stripeWebhookPlugin: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { service: {}, serviceEventHandlers: {} },
+  referencedGeneratorTemplates: { serviceEventHandlers: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -28,26 +30,12 @@ const pluginsWebhook = createTsTemplateFile({
 
 export const pluginsGroup = { pluginsWebhook };
 
-const service = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'services',
-  importMapProviders: { configServiceImports: configServiceImportsProvider },
-  name: 'service',
-  projectExports: { stripe: { isTypeOnly: false } },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/services/stripe.ts'),
-  },
-  variables: {},
-});
-
-export const servicesGroup = { service };
-
 const serviceEventHandlers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'webhook-services',
   importMapProviders: {},
   name: 'service-event-handlers',
-  projectExports: { stripeEventHandlers: { isTypeOnly: false } },
+  projectExports: { createStripeEventHandlers: { isTypeOnly: false } },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -61,6 +49,5 @@ export const webhookServicesGroup = { serviceEventHandlers };
 
 export const STRIPE_FASTIFY_STRIPE_TEMPLATES = {
   pluginsGroup,
-  servicesGroup,
   webhookServicesGroup,
 };

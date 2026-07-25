@@ -136,3 +136,19 @@ export interface EmailAdapter {
    */
   sendMail(message: TransformedEmailMessage): Promise<string>;
 }
+
+/**
+ * Delivery capability: sends an already-rendered, frozen message. Lives on
+ * `services.emailTransport`, the same object graph as everything else (not a
+ * separate worker-only object) - visible and review-catchable, distinct from
+ * `EmailService` so producer code can't accidentally bypass the queue.
+ */
+export interface EmailTransport {
+  /**
+   * Delivers a fully-rendered email message via the configured adapter.
+   *
+   * @param message - The frozen, already-rendered email message.
+   * @returns The provider's message ID.
+   */
+  deliver(message: TransformedEmailMessage): Promise<string>;
+}

@@ -3,10 +3,17 @@ import type { EmailComponent } from '@prisma-crud/transactional';
 import { renderEmail } from '@prisma-crud/transactional';
 
 import type { QueueService } from '@src/types/queue.types.js';
+import type { ServiceContextWith } from '@src/utils/service-context.js';
 
 import { config } from '@src/services/config.js';
 
-import type { EmailRawOptions, EmailSendOptions } from '../emails.types.js';
+import type {
+  EmailAdapter,
+  EmailRawOptions,
+  EmailSendOptions,
+  EmailTransport,
+  TransformedEmailMessage,
+} from '../emails.types.js';
 
 import { sendEmailQueue } from '../queues/send-email.queue.js';
 
@@ -14,72 +21,134 @@ function normalizeEmailAddresses(addresses: string | string[]): string[] {
   return Array.isArray(addresses) ? addresses : [addresses];
 }
 
-/**
- * Sends a raw email using the email queue.
- *
- * @param queues - The queue service to enqueue the send-email job with.
- * @param options - The options for sending the email.
- * @returns The job ID of the email job.
- */
-export async function sendRawEmail(
-  queues: QueueService,
+function buildTransformedMessage(
   options: EmailRawOptions,
-): Promise<string | undefined> {
-  return await queues.enqueue(sendEmailQueue, {
-    message: {
-      from: options.from ?? config.EMAIL_DEFAULT_FROM,
-      to: normalizeEmailAddresses(options.to),
-      cc: options.cc ? normalizeEmailAddresses(options.cc) : undefined,
-      bcc: options.bcc ? normalizeEmailAddresses(options.bcc) : undefined,
-      replyTo: options.replyTo
-        ? normalizeEmailAddresses(options.replyTo)
-        : undefined,
-      subject: options.subject,
-      html: options.html,
-      text: options.text,
-      attachments: options.attachments,
-      headers: options.headers,
-    },
-    template: options.template,
-  });
+): TransformedEmailMessage {
+  return {
+    from: options.from ?? config.EMAIL_DEFAULT_FROM,
+    to: normalizeEmailAddresses(options.to),
+    cc: options.cc ? normalizeEmailAddresses(options.cc) : undefined,
+    bcc: options.bcc ? normalizeEmailAddresses(options.bcc) : undefined,
+    replyTo: options.replyTo
+      ? normalizeEmailAddresses(options.replyTo)
+      : undefined,
+    subject: options.subject,
+    html: options.html,
+    text: options.text,
+    attachments: options.attachments,
+    headers: options.headers,
+  };
 }
 
-/**
- * Renders an email component and sends it using the email queue.
- *
- * @param queues - The queue service to enqueue the send-email job with.
- * @param component - The email component to render (must be created with defineEmail).
- * @param options - The options for sending the email, including data props.
- * @returns The job ID of the email job.
- */
-export async function sendEmail<P extends object>(
-  queues: QueueService,
+async function renderEmailComponent<P extends object>(
   component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
-  options: { data: P } & EmailSendOptions,
-): Promise<string | undefined> {
-  let html: string;
-  let text: string;
-  let subject: string;
-
+  data: P,
+): Promise<{ html: string; text: string; subject: string }> {
   try {
-    const rendered = await /* TPL_RENDER_EMAIL:START */ renderEmail(
+    return await /* TPL_RENDER_EMAIL:START */ renderEmail(
       /* TPL_RENDER_EMAIL:END */ component,
-      options.data,
+      data,
     );
-    html = rendered.html;
-    text = rendered.text;
-    subject = rendered.subject;
   } catch (error) {
     throw new Error(`Failed to render email template: ${component.name}`, {
       cause: error,
     });
   }
+}
 
-  return sendRawEmail(queues, {
-    subject,
-    ...options,
-    html,
-    text,
-    template: component.displayName,
-  });
+/**
+ * Producer-side email capability: renders a message and enqueues it for
+ * delivery. Rendering happens here, before enqueue - once queued, the
+ * message format is frozen and the worker only delivers it (`emailTransport`).
+ */
+export interface EmailService {
+  /**
+   * Sends a raw email (no React rendering) using the email queue.
+   *
+   * @param options - The options for sending the email.
+   * @returns The job ID of the email job.
+   */
+  sendRaw(options: EmailRawOptions): Promise<string | undefined>;
+
+  /**
+   * Renders an email component and sends it using the email queue.
+   *
+   * @param component - The email component to render (must be created with defineEmail).
+   * @param options - The options for sending the email, including data props.
+   * @returns The job ID of the email job.
+   */
+  send<P extends object>(
+    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+    options: { data: P } & EmailSendOptions,
+  ): Promise<string | undefined>;
+}
+
+/**
+ * Creates the {@link EmailService}. Construction allocates no resources -
+ * enqueueing is deferred to `queues`, itself already constructed.
+ *
+ * @param deps - Construction dependencies
+ * @param deps.queues - The queue service to enqueue the send-email job with.
+ * @returns The email service
+ */
+export function createEmailService({
+  queues,
+}: {
+  queues: QueueService;
+}): EmailService {
+  async function sendRaw(
+    options: EmailRawOptions,
+  ): Promise<string | undefined> {
+    return queues.enqueue(sendEmailQueue, {
+      message: buildTransformedMessage(options),
+      template: options.template,
+    });
+  }
+
+  async function send<P extends object>(
+    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+    options: { data: P } & EmailSendOptions,
+  ): Promise<string | undefined> {
+    const rendered = await renderEmailComponent(component, options.data);
+    return sendRaw({
+      subject: rendered.subject,
+      ...options,
+      html: rendered.html,
+      text: rendered.text,
+      template: component.displayName,
+    });
+  }
+
+  return { sendRaw, send };
+}
+
+/**
+ * Renders an email component and sends it, via `ctx.services.emails`. The
+ * primary authoring surface for feature code holding a `ServiceContext`.
+ *
+ * @param ctx - The service context, providing access to `services.emails`.
+ * @param component - The email component to render (must be created with defineEmail).
+ * @param options - The options for sending the email, including data props.
+ * @returns The job ID of the email job.
+ */
+export async function sendEmail<P extends object>(
+  ctx: ServiceContextWith<'emails'>,
+  component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
+  options: { data: P } & EmailSendOptions,
+): Promise<string | undefined> {
+  return ctx.services.emails.send(component, options);
+}
+
+/**
+ * Wraps an {@link EmailAdapter} as an {@link EmailTransport}. Construction
+ * allocates no resources - the adapter's own client (if any) is created
+ * lazily by the adapter itself.
+ *
+ * @param adapter - The configured email adapter (e.g. Postmark).
+ * @returns The email transport
+ */
+export function createEmailTransport(adapter: EmailAdapter): EmailTransport {
+  return {
+    deliver: (message) => adapter.sendMail(message),
+  };
 }

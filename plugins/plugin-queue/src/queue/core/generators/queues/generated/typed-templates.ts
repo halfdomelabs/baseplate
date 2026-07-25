@@ -1,10 +1,16 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
-import { serviceContextImportsProvider } from '@baseplate-dev/fastify-generators';
+import {
+  appRuntimeImportsProvider,
+  serviceContextImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
 const queueTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
   name: 'queue-types',
   projectExports: {
     bindQueueHandler: {},

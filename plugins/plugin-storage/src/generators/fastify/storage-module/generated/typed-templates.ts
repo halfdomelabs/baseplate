@@ -11,43 +11,6 @@ import {
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
-const configAdapters = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'config-adapters',
-  projectExports: {
-    STORAGE_ADAPTERS: {},
-    StorageAdapterKey: { isTypeOnly: true },
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/config/adapters.config.ts',
-    ),
-  },
-  variables: { TPL_ADAPTERS: {} },
-});
-
-const configCategories = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'config-categories',
-  projectExports: {
-    FILE_CATEGORIES: {},
-    FileCategoryName: { isTypeOnly: true },
-    getCategoryByName: {},
-    getCategoryByNameOrThrow: {},
-  },
-  referencedGeneratorTemplates: { typesFileCategory: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/config/categories.config.ts',
-    ),
-  },
-  variables: { TPL_FILE_CATEGORIES: {} },
-});
-
 const adaptersS_3 = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -83,7 +46,6 @@ const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
   },
   name: 'services-create-presigned-download-url',
   projectExports: { createPresignedDownloadUrl: {} },
-  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -122,7 +84,6 @@ const servicesDownloadFile = createTsTemplateFile({
   },
   name: 'services-download-file',
   projectExports: { downloadFile: {} },
-  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -203,7 +164,6 @@ const typesFileCategory = createTsTemplateFile({
   },
   name: 'types-file-category',
   projectExports: { FileCategory: { isTypeOnly: true } },
-  referencedGeneratorTemplates: { configAdapters: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -261,10 +221,8 @@ const utilsValidateFileUploadOptions = createTsTemplateFile({
     validateFileUploadOptions: {},
   },
   referencedGeneratorTemplates: {
-    configCategories: {},
     typesAdapter: {},
     typesFileCategory: {},
-    utilsGetAdapter: {},
     utilsMime: {},
   },
   source: {
@@ -307,7 +265,10 @@ const queuesCleanUnusedFiles = createTsTemplateFile({
 
 const queuesCleanUnusedFilesWorker = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { queuesImports: queuesImportsProvider },
+  importMapProviders: {
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
   name: 'queues-clean-unused-files-worker',
   projectExports: { cleanUnusedFilesWorker: { isTypeOnly: false } },
   referencedGeneratorTemplates: {
@@ -329,14 +290,13 @@ const schemaFileCategory = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-file-category',
   projectExports: {},
-  referencedGeneratorTemplates: { configCategories: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/module/schema/file-category.enum.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_FILE_CATEGORY_ENUM_NAMES: {} },
 });
 
 const schemaFileInput = createTsTemplateFile({
@@ -403,10 +363,10 @@ const servicesCleanUnusedFiles = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
     prismaImports: prismaImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'services-clean-unused-files',
   projectExports: { cleanUnusedFiles: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { configCategories: {}, utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -420,9 +380,9 @@ const servicesGetPublicUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     prismaGeneratedImports: prismaGeneratedImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'services-get-public-url',
-  referencedGeneratorTemplates: { utilsGetAdapter: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -432,19 +392,23 @@ const servicesGetPublicUrl = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
-const utilsGetAdapter = createTsTemplateFile({
+const servicesStorage = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
-  name: 'utils-get-adapter',
-  projectExports: { getAdapterOrThrow: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { configAdapters: {}, typesAdapter: {} },
+  name: 'services-storage',
+  projectExports: {
+    StorageService: { isTypeOnly: true },
+    StorageAdapterKey: { isTypeOnly: true },
+    createStorageService: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: { typesAdapter: {}, typesFileCategory: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/utils/get-adapter.ts',
+      '../templates/module/services/storage.service.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_ADAPTERS: {} },
 });
 
 const utilsValidatePendingUpload = createTsTemplateFile({
@@ -460,7 +424,7 @@ const utilsValidatePendingUpload = createTsTemplateFile({
     ValidatedPendingUpload: { isTypeOnly: true },
     validatePendingUpload: { isTypeOnly: false },
   },
-  referencedGeneratorTemplates: { typesFileCategory: {}, utilsGetAdapter: {} },
+  referencedGeneratorTemplates: { typesFileCategory: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -471,14 +435,12 @@ const utilsValidatePendingUpload = createTsTemplateFile({
 });
 
 export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
-  configAdapters,
-  configCategories,
   mainGroup,
   queuesCleanUnusedFiles,
   queuesCleanUnusedFilesWorker,
   schemaGroup,
   servicesCleanUnusedFiles,
   servicesGetPublicUrl,
-  utilsGetAdapter,
+  servicesStorage,
   utilsValidatePendingUpload,
 };

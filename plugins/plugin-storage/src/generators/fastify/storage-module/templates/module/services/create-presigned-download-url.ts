@@ -2,8 +2,6 @@
 
 import type { ServiceContext } from '%serviceContextImports';
 
-import { getCategoryByNameOrThrow } from '$configCategories';
-import { getAdapterOrThrow } from '$utilsGetAdapter';
 import { ForbiddenError } from '%errorHandlerServiceImports';
 
 interface CreatePresignedDownloadUrlInput {
@@ -29,7 +27,9 @@ export async function createPresignedDownloadUrl(
     where: { id: fileId },
   });
 
-  const category = getCategoryByNameOrThrow(file.category);
+  const category = context.services.storage.getCategoryByNameOrThrow(
+    file.category,
+  );
 
   const isAuthorizedToRead =
     context.auth.roles.includes('system') ||
@@ -40,7 +40,7 @@ export async function createPresignedDownloadUrl(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  const adapter = getAdapterOrThrow(file.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(file.adapter);
 
   if (!adapter.createPresignedDownloadUrl) {
     throw new Error(

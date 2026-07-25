@@ -3,9 +3,6 @@ import type { ServiceContext } from '@src/utils/service-context.js';
 import { prisma } from '@src/services/prisma.js';
 import { ForbiddenError } from '@src/utils/http-errors.js';
 
-import { getCategoryByNameOrThrow } from '../config/categories.config.js';
-import { getAdapterOrThrow } from '../utils/get-adapter.js';
-
 interface CreatePresignedDownloadUrlInput {
   fileId: string;
 }
@@ -31,7 +28,9 @@ export async function createPresignedDownloadUrl(
         where: { id: fileId },
       });
 
-  const category = getCategoryByNameOrThrow(file.category);
+  const category = context.services.storage.getCategoryByNameOrThrow(
+    file.category,
+  );
 
   const isAuthorizedToRead =
     context.auth.roles.includes('system') ||
@@ -42,7 +41,7 @@ export async function createPresignedDownloadUrl(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  const adapter = getAdapterOrThrow(file.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(file.adapter);
 
   if (!adapter.createPresignedDownloadUrl) {
     throw new Error(
