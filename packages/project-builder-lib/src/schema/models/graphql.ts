@@ -65,6 +65,13 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                  * fields are filterable.
                  */
                 filterable: ctx.withDefault(z.boolean(), false),
+                /**
+                 * Whether this field is exposed as an `orderBy` sort key
+                 * when the model's list query has sorting enabled. Opt-in:
+                 * an author must explicitly choose which exposed fields are
+                 * sortable.
+                 */
+                sortable: ctx.withDefault(z.boolean(), false),
               }),
             )
             .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
@@ -154,6 +161,12 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                 {},
               ),
               where: ctx.withDefault(
+                z.object({
+                  enabled: ctx.withDefault(z.boolean(), false),
+                }),
+                {},
+              ),
+              orderBy: ctx.withDefault(
                 z.object({
                   enabled: ctx.withDefault(z.boolean(), false),
                 }),

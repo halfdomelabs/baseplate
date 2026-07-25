@@ -1,5 +1,6 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { stringFilter } from '@src/plugins/graphql/filters.js';
+import { sortOrderEnum } from '@src/plugins/graphql/sort-order.js';
 
 import { todoListStatusEnum, todoListStatusFilter } from './enums.js';
 
@@ -26,5 +27,17 @@ todoListWhereInputType.implement({
     AND: t.field({ type: [todoListWhereInputType] }),
     OR: t.field({ type: [todoListWhereInputType] }),
     NOT: t.field({ type: todoListWhereInputType }),
+  }),
+});
+
+export const todoListOrderByInputType = builder.inputRef(
+  'TodoListOrderByInput',
+);
+
+todoListOrderByInputType.implement({
+  fields: (t) => ({
+    position: t.field({ type: sortOrderEnum }),
+    name: t.field({ type: sortOrderEnum }),
+    createdAt: t.field({ type: sortOrderEnum }),
   }),
 });

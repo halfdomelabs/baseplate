@@ -1,4 +1,5 @@
 import { builder } from '@src/plugins/graphql/builder.js';
+import { sortOrderEnum } from '@src/plugins/graphql/sort-order.js';
 
 export const todoListSharePrimaryKeyInputType = builder.inputType(
   'TodoListSharePrimaryKey',
@@ -19,4 +20,12 @@ export const todoListShareObjectType = builder.prismaObject('TodoListShare', {
     todoList: t.relation('todoList'),
     user: t.relation('user'),
   }),
+});
+
+export const todoListShareOrderByInputType = builder.inputRef(
+  'TodoListShareOrderByInput',
+);
+
+todoListShareOrderByInputType.implement({
+  fields: (t) => ({ createdAt: t.field({ type: sortOrderEnum }) }),
 });

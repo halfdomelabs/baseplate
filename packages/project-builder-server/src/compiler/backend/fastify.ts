@@ -13,6 +13,7 @@ import {
   pothosPrismaFiltersFileGenerator,
   pothosPrismaGenerator,
   pothosScalarGenerator,
+  pothosSortOrderGenerator,
   prismaGenerator,
   prismaVitestGenerator,
   readmeGenerator,
@@ -40,6 +41,11 @@ export function buildFastify(
     (model) =>
       model.graphql.queries.list.enabled &&
       model.graphql.queries.list.where.enabled,
+  );
+  const hasOrderBy = projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.orderBy.enabled,
   );
 
   // add graphql scalars
@@ -90,6 +96,7 @@ export function buildFastify(
         pothosPrismaFilters: hasWhereFiltering
           ? pothosPrismaFiltersFileGenerator({})
           : undefined,
+        pothosSortOrder: hasOrderBy ? pothosSortOrderGenerator({}) : undefined,
         modules: [
           ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
           graphqlBundle,

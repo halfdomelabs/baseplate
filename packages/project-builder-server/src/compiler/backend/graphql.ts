@@ -5,6 +5,7 @@ import type {
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
+  getPothosPrismaOrderByInputTypeOutputName,
   getPothosPrismaWhereInputTypeOutputName,
   pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
@@ -15,6 +16,7 @@ import {
   pothosPrismaFindQueryGenerator,
   pothosPrismaListQueryGenerator,
   pothosPrismaObjectGenerator,
+  pothosPrismaOrderByInputGenerator,
   pothosPrismaPrimaryKeyGenerator,
   pothosPrismaWhereInputGenerator,
   pothosTypesFileGenerator,
@@ -51,6 +53,7 @@ function buildObjectTypeFile(
   );
 
   const filterableFieldEntries = fields.filter((entry) => entry.filterable);
+  const sortableFieldEntries = fields.filter((entry) => entry.sortable);
 
   if (
     queries.list.enabled &&
@@ -134,6 +137,16 @@ function buildObjectTypeFile(
               ),
             })
           : undefined,
+      orderByInput:
+        queries.list.enabled && queries.list.orderBy.enabled
+          ? pothosPrismaOrderByInputGenerator({
+              modelName: model.name,
+              order: 3,
+              sortableFields: sortableFieldEntries.map((entry) =>
+                appBuilder.nameFromId(entry.ref),
+              ),
+            })
+          : undefined,
     },
   });
 }
@@ -194,6 +207,11 @@ function buildQueriesFileForModel(
       ? getPothosPrismaWhereInputTypeOutputName(model.name)
       : undefined;
 
+  const orderByInputRef =
+    list.enabled && list.orderBy.enabled
+      ? getPothosPrismaOrderByInputTypeOutputName(model.name)
+      : undefined;
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -216,6 +234,7 @@ function buildQueriesFileForModel(
             modelName: model.name,
             policyRef,
             whereInputRef,
+            orderByInputRef,
             children: {
               authorize,
             },
@@ -240,6 +259,7 @@ function buildQueriesFileForModel(
               modelName: model.name,
               policyRef,
               whereInputRef,
+              orderByInputRef,
               children: {
                 authorize,
               },
