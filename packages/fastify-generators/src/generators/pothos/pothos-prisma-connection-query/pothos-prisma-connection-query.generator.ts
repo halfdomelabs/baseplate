@@ -15,8 +15,14 @@ import { getModelIdFieldName } from '#src/generators/prisma/_shared/crud-method/
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
+import { pothosPrismaWhereComplexityValidatorProvider } from '../pothos-prisma-filters-file/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
@@ -33,6 +39,12 @@ const descriptorSchema = z.object({
    * and totalCount functions filter with `policy.read.where(ctx)`.
    */
   policyRef: z.string().optional(),
+  /**
+   * Key to look up the model's WhereInput type output. When set, a `where`
+   * arg is added and passed as the caller-supplied where clause to both the
+   * resolve and totalCount functions.
+   */
+  whereInputRef: z.string().optional(),
 });
 
 export const pothosPrismaConnectionQueryGenerator = createGenerator({
@@ -40,7 +52,7 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, policyRef }) => ({
+  buildTasks: ({ modelName, order, policyRef, whereInputRef }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -48,11 +60,23 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
         modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(policyRef),
+        whereInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(whereInputRef),
+        whereComplexityValidator: pothosPrismaWhereComplexityValidatorProvider
+          .dependency()
+          .optional(),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
+      run({
+        prismaOutput,
+        pothosTypesFile,
+        modelPolicy,
+        whereInputType,
+        whereComplexityValidator,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -80,17 +104,39 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
+            const argsPattern = whereInputType ? '{ where }' : '{}';
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (query, _root, _args, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
-              : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
+              ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`
+              : whereInputType
+                ? tsTemplate`async (query, _root, ${argsPattern}) => ${prismaModelFragment}.findMany({ ...query, where: where ?? undefined })`
+                : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
 
             const totalCountFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`(_connection, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
-              : tsTemplate`() => ${prismaModelFragment}.count()`;
+              ? tsTemplate`(_connection, ${argsPattern}, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`
+              : whereInputType
+                ? tsTemplate`(_connection, ${argsPattern}) => ${prismaModelFragment}.count({ where: where ?? undefined })`
+                : tsTemplate`() => ${prismaModelFragment}.count()`;
 
             const options = {
               type: quot(modelName),
               cursor: quot(cursorFieldName),
+              ...(whereInputType && whereComplexityValidator
+                ? {
+                    args: tsTemplate`{
+                      where: ${buildWhereArgFragment({
+                        whereInputTypeReference:
+                          whereInputType.getTypeReference().fragment,
+                        validatorFragment:
+                          whereComplexityValidator.getValidatorFragment(),
+                        maxDepth: whereComplexityValidator.getMaxDepth(),
+                        maxClauseCount:
+                          whereComplexityValidator.getMaxClauseCount(),
+                      })},
+                    }`,
+                  }
+                : {}),
               ...sortObjectKeys(customFields.value()),
               totalCount: totalCountFunction,
               resolve: resolveFunction,

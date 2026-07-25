@@ -27,3 +27,15 @@ export const billingSubscriptionStatusEnum = builder.enumType(
     },
   },
 );
+
+export const billingSubscriptionStatusFilter = builder.inputType(
+  'BillingSubscriptionStatusFilter',
+  {
+    fields: (t) => ({
+      equals: t.field({ type: billingSubscriptionStatusEnum }),
+      not: t.field({ type: billingSubscriptionStatusEnum }),
+      in: t.field({ type: [billingSubscriptionStatusEnum] }),
+      notIn: t.field({ type: [billingSubscriptionStatusEnum] }),
+    }),
+  },
+);

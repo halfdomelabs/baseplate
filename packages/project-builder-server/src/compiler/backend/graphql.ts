@@ -5,6 +5,7 @@ import type {
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
+  getPothosPrismaWhereInputTypeOutputName,
   pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
   pothosPrismaConnectionQueryGenerator,
@@ -15,6 +16,7 @@ import {
   pothosPrismaListQueryGenerator,
   pothosPrismaObjectGenerator,
   pothosPrismaPrimaryKeyGenerator,
+  pothosPrismaWhereInputGenerator,
   pothosTypesFileGenerator,
 } from '@baseplate-dev/fastify-generators';
 import { authConfigSpec, ModelUtils } from '@baseplate-dev/project-builder-lib';
@@ -47,6 +49,42 @@ function buildObjectTypeFile(
   const isAuthEnabled = !!authConfig.getAuthConfig(
     appBuilder.projectDefinition,
   );
+
+  const filterableFieldEntries = fields.filter((entry) => entry.filterable);
+
+  if (
+    queries.list.enabled &&
+    queries.list.where.enabled &&
+    isAuthEnabled &&
+    filterableFieldEntries.length > 0
+  ) {
+    const unsafeFields = filterableFieldEntries.filter(
+      (entry) =>
+        !ModelUtils.isFieldSafeToFilter(
+          {
+            globalRoles: entry.globalRoles,
+            instanceRoles: entry.instanceRoles,
+          },
+          {
+            globalRoles: queries.globalRoles,
+            instanceRoles: queries.instanceRoles,
+          },
+        ),
+    );
+    if (unsafeFields.length > 0) {
+      const fieldNames = unsafeFields
+        .map((entry) => appBuilder.nameFromId(entry.ref))
+        .join(', ');
+      throw new Error(
+        `Model '${model.name}' marks field(s) [${fieldNames}] as filterable, but they ` +
+          `are restricted to roles narrower than the list query's own roles. Filtering ` +
+          `would let a caller who can list but not read these fields infer their values ` +
+          `(e.g. via 'contains'/'lt'/'gt'). Either widen the field's roles to match (or ` +
+          `exceed) the query's roles, narrow the query's roles to match the field's, or ` +
+          `unmark the field as filterable.`,
+      );
+    }
+  }
 
   const toExposedField = (entry: {
     ref: string;
@@ -86,6 +124,16 @@ function buildObjectTypeFile(
         ],
         order: 1,
       }),
+      whereInput:
+        queries.list.enabled && queries.list.where.enabled
+          ? pothosPrismaWhereInputGenerator({
+              modelName: model.name,
+              order: 2,
+              filterableFields: filterableFieldEntries.map((entry) =>
+                appBuilder.nameFromId(entry.ref),
+              ),
+            })
+          : undefined,
     },
   });
 }
@@ -141,6 +189,11 @@ function buildQueriesFileForModel(
   const policyRef =
     isAuthEnabled && model.authorizer.roles.length > 0 ? model.name : undefined;
 
+  const whereInputRef =
+    list.enabled && list.where.enabled
+      ? getPothosPrismaWhereInputTypeOutputName(model.name)
+      : undefined;
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -162,6 +215,7 @@ function buildQueriesFileForModel(
             order: 1,
             modelName: model.name,
             policyRef,
+            whereInputRef,
             children: {
               authorize,
             },
@@ -173,6 +227,7 @@ function buildQueriesFileForModel(
               order: 2,
               modelName: model.name,
               policyRef,
+              whereInputRef,
               children: {
                 authorize,
               },
@@ -184,6 +239,7 @@ function buildQueriesFileForModel(
               order: 3,
               modelName: model.name,
               policyRef,
+              whereInputRef,
               children: {
                 authorize,
               },
@@ -321,6 +377,7 @@ function buildMutationsFileForModel(
 function buildEnumFileForModel(
   enumFileId: string,
   enums: EnumConfig[],
+  registerFilters: boolean,
 ): GeneratorBundle | undefined {
   if (enums.length === 0) {
     return undefined;
@@ -337,6 +394,7 @@ function buildEnumFileForModel(
               v.description ? [[v.name, v.description]] : [],
             ),
           ),
+          registerFilter: registerFilters,
         }),
       ),
     },
@@ -356,12 +414,18 @@ export function buildGraphqlForFeature(
     (e) => e.featureRef === featureId && e.isExposed,
   );
 
+  const hasWhereFiltering = appBuilder.projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.where.enabled,
+  );
+
   return [
     ...models.flatMap((model) => [
       buildObjectTypeFile(appBuilder, model),
       buildQueriesFileForModel(appBuilder, model),
       buildMutationsFileForModel(appBuilder, model),
     ]),
-    buildEnumFileForModel(`${featureId}-enums`, enums),
+    buildEnumFileForModel(`${featureId}-enums`, enums, hasWhereFiltering),
   ].filter(notEmpty);
 }

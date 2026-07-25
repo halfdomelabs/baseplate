@@ -12,6 +12,12 @@ import { pothosImportsProvider } from '../pothos/index.js';
 const descriptorSchema = z.object({
   enumName: z.string().min(1),
   valueDescriptions: z.record(z.string(), z.string()).optional(),
+  /**
+   * Whether to also emit a `{EnumName}Filter` input type for use in a
+   * `WhereInput`. Only set when at least one model in the project has
+   * where-filtering enabled.
+   */
+  registerFilter: z.boolean().optional(),
 });
 
 export const pothosPrismaEnumGenerator = createGenerator({
@@ -19,7 +25,7 @@ export const pothosPrismaEnumGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.enumName,
-  buildTasks: ({ enumName, valueDescriptions }) => ({
+  buildTasks: ({ enumName, valueDescriptions, registerFilter }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -55,6 +61,10 @@ export const pothosPrismaEnumGenerator = createGenerator({
           exportName,
           fragment: enumFragment,
         });
+
+        if (registerFilter) {
+          pothosEnumsFile.registerEnumFilter(enumName, exportName);
+        }
 
         return {};
       },
