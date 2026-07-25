@@ -13,6 +13,7 @@ import {
   notificationModuleGenerator,
   notificationWebGenerator,
 } from './generators/index.js';
+import { getNotificationsWebAppData } from './schema/web-app-schema.js';
 
 export default createPluginModule({
   name: 'node',
@@ -46,7 +47,10 @@ export default createPluginModule({
         pluginKey,
         appType: webAppEntryType,
         compile: ({ appCompiler, appDefinition }) => {
-          if (!appDefinition.includeNotifications) {
+          const includeNotifications =
+            getNotificationsWebAppData(appDefinition, pluginKey)
+              ?.includeNotifications ?? false;
+          if (!includeNotifications) {
             return;
           }
 

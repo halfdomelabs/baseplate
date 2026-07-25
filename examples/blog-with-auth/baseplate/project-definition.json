@@ -82,8 +82,8 @@
       "devPort": 5030,
       "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
-      "includeNotifications": true,
       "name": "admin",
+      "pluginData": { "baseplate-dev_plugin-notifications_notifications": {} },
       "title": "Blog Admin",
       "type": "web"
     },
@@ -96,7 +96,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.5",
+  "cliVersion": "0.6.12",
   "enums": [],
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
@@ -1241,7 +1241,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 31,
+  "schemaVersion": 32,
   "settings": {
     "general": {
       "name": "blog-with-auth",
