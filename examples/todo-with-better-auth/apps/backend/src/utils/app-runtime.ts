@@ -1,5 +1,10 @@
 import Stripe from 'stripe';
 
+import type { Auth } from '../modules/accounts/auth/services/auth.js';
+import type { UserSessionService } from '../modules/accounts/auth/types/user-session.types.js';
+import type { EmailTransport } from '../modules/emails/emails.types.js';
+import type { EmailService } from '../modules/emails/services/emails.service.js';
+import type { StorageService } from '../modules/storage/services/storage.service.js';
 import type { RedisRuntime } from '../services/redis.js';
 import type { QueueRuntime } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
@@ -27,8 +32,10 @@ import { flattenAppModule } from './app-modules.js';
  * enough for every execution path, including prisma-only seeds, to afford a
  * full service context.
  */
-export interface AppRuntime {
-  readonly services: Readonly<AppServices>;
+export interface AppRuntime<
+  TServices extends Partial<AppServices> = AppServices,
+> {
+  readonly services: Readonly<TServices>;
   /* TPL_RUNTIME_FIELDS:START */
   queues: QueueRuntime;
   /** Runtime-internal: connection lifecycle, not for feature code. */
@@ -42,34 +49,107 @@ export interface AppRuntime {
   dispose(): Promise<void>;
 }
 
-export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
+/**
+ * Runtime objects that may be supplied instead of constructed, keyed by the
+ * concrete object each one replaces. A superset of {@link AppServices}: it
+ * also covers runtime-internal objects like `redis` that feature code never
+ * sees.
+ *
+ * Where a service is exposed through a narrowed view (`services.queues` is a
+ * `QueueService`), the override is typed as the full underlying object, since
+ * both surfaces alias it.
+ */
+export interface AppRuntimeOverrides {
+  /* TPL_OVERRIDE_FIELDS:START */
+  betterAuth: Auth;
+  emails: EmailService;
+  emailTransport: EmailTransport;
+  queues: QueueRuntime;
+  redis: RedisRuntime;
+  storage: StorageService;
+  stripe: Stripe;
+  userSession: UserSessionService;
+  /* TPL_OVERRIDE_FIELDS:END */
+}
+
+export function createAppRuntime(
+  /* TPL_OPTIONS_PARAM:START */ options: {
+    /**
+     * Runtime objects to use instead of constructing them. An overridden key's
+     * construction is skipped entirely and downstream construction consumes the
+     * override. Overrides are borrowed: the runtime never disposes them.
+     */
+    overrides?: Partial<AppRuntimeOverrides>;
+  } = {} /* TPL_OPTIONS_PARAM:END */,
+): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
+  const overrides = options.overrides ?? {};
+
+  /**
+   * Returns the runtime object for `key`: the supplied override if there is
+   * one, otherwise the constructed value.
+   *
+   * An override skips construction entirely and is borrowed - only a value
+   * this function constructs registers a disposer, so the runtime never
+   * disposes what a caller owns.
+   *
+   * @param key The runtime object being provided.
+   * @param create Builds the object when it is not overridden.
+   * @param dispose Releases a constructed object, if it holds resources.
+   * @returns The override or the newly constructed object.
+   */
+  function provide<K extends keyof AppRuntimeOverrides>(
+    key: K,
+    create: () => AppRuntimeOverrides[K],
+    dispose?: (value: AppRuntimeOverrides[K]) => Promise<void>,
+  ): AppRuntimeOverrides[K] {
+    const overridden = overrides[key];
+    if (overridden !== undefined) {
+      return overridden;
+    }
+
+    const value = create();
+    if (dispose) {
+      disposers.push({ name: key, dispose: () => dispose(value) });
+    }
+    return value;
+  }
 
   /* TPL_SERVICE_CONSTRUCTION:START */
   const { queues: queueBindings = [], storageCategories = [] } =
     flattenAppModule(rootModule);
 
-  const redis = createRedisRuntime();
-  disposers.push({ name: 'redis', dispose: () => redis.dispose() });
+  const redis = provide('redis', createRedisRuntime, (redis) =>
+    redis.dispose(),
+  );
 
-  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+  const emailTransport = provide('emailTransport', () =>
+    createEmailTransport(postmarkEmailAdapter),
+  );
 
-  const queues = createQueueRuntime(queueBindings, redis);
-  disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
+  const queues = provide(
+    'queues',
+    () => createQueueRuntime(queueBindings, redis),
+    (queues) => queues.stopWorkers(),
+  );
 
-  const emails = createEmailService({ queues });
+  const emails = provide('emails', () => createEmailService({ queues }));
 
-  const betterAuth = buildAuth({ emails });
+  const betterAuth = provide('betterAuth', () => buildAuth({ emails }));
 
-  const storage = createStorageService(storageCategories);
+  const storage = provide('storage', () =>
+    createStorageService(storageCategories),
+  );
 
-  const stripe = new Stripe(config.STRIPE_SECRET_KEY);
+  const stripe = provide('stripe', () => new Stripe(config.STRIPE_SECRET_KEY));
 
-  const userSession = createBetterAuthUserSessionService(betterAuth);
+  const userSession = provide('userSession', () =>
+    createBetterAuthUserSessionService(betterAuth),
+  );
   /* TPL_SERVICE_CONSTRUCTION:END */
 
-  const services: AppServices = /* TPL_SERVICES_OBJECT:START */ {
+  const services = /* TPL_SERVICES_OBJECT:START */ {
     betterAuth,
     emails,
     emailTransport,
@@ -77,7 +157,7 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
     storage,
     stripe,
     userSession,
-  }; /* TPL_SERVICES_OBJECT:END */
+  } /* TPL_SERVICES_OBJECT:END */ satisfies AppServices;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -99,10 +179,12 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
     return disposePromise;
   }
 
-  const runtime = /* TPL_RUNTIME_FIELD_VALUES:START */ {
+  return {
+    services,
+    /* TPL_RUNTIME_FIELD_VALUES:START */
     queues,
     redis,
-  }; /* TPL_RUNTIME_FIELD_VALUES:END */
-
-  return { ...runtime, services, dispose };
+    /* TPL_RUNTIME_FIELD_VALUES:END */
+    dispose,
+  };
 }

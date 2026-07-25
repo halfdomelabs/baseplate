@@ -4,6 +4,8 @@ import type { ServiceContextWith } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
+import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
+import { createFakeStorageService } from '@src/tests/helpers/storage.test-helper.js';
 
 import type { StorageAdapter } from '../types/adapter.js';
 import type { FileCategory } from '../types/file-category.js';
@@ -63,28 +65,14 @@ let fileCategoriesOverride: FileCategory[] | undefined;
 
 /** Builds a fake `ServiceContextWith<'storage'>` backed by test-controlled adapters/categories. */
 function createTestContext(): ServiceContextWith<'storage'> {
-  const categories = fileCategoriesOverride ?? defaultFileCategories;
-  return {
+  return createTestServiceContext({
     services: {
-      storage: {
-        categories,
-        getAdapterOrThrow: (adapterName: string) => {
-          if (adapterName === 'uploads') return uploadsAdapter;
-          if (adapterName === 'url') return urlAdapter;
-          throw new Error(`Unknown storage adapter: "${adapterName}"`);
-        },
-        getCategoryByName: (name: string) =>
-          categories.find((c) => c.name === name),
-        getCategoryByNameOrThrow: (name: string) => {
-          const category = categories.find((c) => c.name === name);
-          if (!category) {
-            throw new Error(`File category ${name} not found.`);
-          }
-          return category;
-        },
-      },
+      storage: createFakeStorageService({
+        categories: fileCategoriesOverride ?? defaultFileCategories,
+        adapters: { uploads: uploadsAdapter, url: urlAdapter },
+      }),
     },
-  } as unknown as ServiceContextWith<'storage'>;
+  });
 }
 
 /**

@@ -1,91 +1,35 @@
-import type Stripe from 'stripe';
-
-import type { Auth } from '@src/modules/accounts/auth/services/auth.js';
 import type { AuthContext } from '@src/modules/accounts/auth/types/auth-context.types.js';
-import type { UserSessionService } from '@src/modules/accounts/auth/types/user-session.types.js';
-import type { EmailTransport } from '@src/modules/emails/emails.types.js';
-import type { EmailService } from '@src/modules/emails/services/emails.service.js';
-import type { StorageService } from '@src/modules/storage/services/storage.service.js';
-import type { QueueService } from '@src/types/queue.types.js';
+import type { AppServices } from '@src/utils/runtime-services.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { createServiceContext } from '@src/utils/service-context.js';
 
+/**
+ * A `ServiceContext` for tests, carrying only the services it is handed.
+ *
+ * Services the test does not supply are absent rather than stubbed, so code
+ * reaching for one fails on access instead of reading a silent `undefined`.
+ * Supply whatever the code under test consumes.
+ *
+ * @param options The auth context to run as, and the services to supply.
+ * @returns A {@link ServiceContext} delivering the supplied services.
+ */
 export function createTestServiceContext(
   /* TPL_CREATE_TEST_ARGS:START */ {
     auth,
+    services,
   }: {
     auth?: AuthContext;
+    services?: Partial<AppServices>;
   } = {} /* TPL_CREATE_TEST_ARGS:END */,
 ): ServiceContext {
   return createServiceContext(
     /* TPL_CREATE_TEST_OBJECT:START */ {
       auth: auth ?? createAuthContextFromSessionInfo(undefined),
     } /* TPL_CREATE_TEST_OBJECT:END */,
-    /* TPL_TEST_RUNTIME_SERVICES:START */ {
-      betterAuth: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error(
-              'betterAuth is not available in this test context.',
-            );
-          },
-        },
-      ) as Auth,
-      emails: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error('emails is not available in this test context.');
-          },
-        },
-      ) as EmailService,
-      emailTransport: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error(
-              'emailTransport is not available in this test context.',
-            );
-          },
-        },
-      ) as EmailTransport,
-      queues: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error('queues is not available in this test context.');
-          },
-        },
-      ) as QueueService,
-      storage: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error('storage is not available in this test context.');
-          },
-        },
-      ) as StorageService,
-      stripe: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error('stripe is not available in this test context.');
-          },
-        },
-      ) as Stripe,
-      userSession: new Proxy(
-        {},
-        {
-          get() {
-            throw new Error(
-              'userSession is not available in this test context.',
-            );
-          },
-        },
-      ) as UserSessionService,
-    } /* TPL_TEST_RUNTIME_SERVICES:END */,
+    // Data services still declare the full `ServiceContext`, so the bag is
+    // typed as complete; only what a test supplies actually exists.
+    (services ?? {}) as AppServices,
   );
 }
