@@ -3,22 +3,6 @@ import { Redis } from 'ioredis';
 import { config } from './config.js';
 
 /**
- * Creates a new Redis connection.
- *
- * @param options - Connection options
- * @param options.usePrefix - Whether to apply `REDIS_KEY_PREFIX` to keys on this connection (default true)
- * @returns A new, uncached `ioredis` client
- */
-export function createRedisClient({
-  usePrefix = true,
-}: { usePrefix?: boolean } = {}): Redis {
-  return new Redis(config.REDIS_URL, {
-    maxRetriesPerRequest: null,
-    keyPrefix: usePrefix ? config.REDIS_KEY_PREFIX : undefined,
-  });
-}
-
-/**
  * Connection manager for Redis. Construction allocates no connections;
  * connections are created lazily (`lazyConnect: true`) and only actually
  * connect on first command, so `createRedisRuntime()` performs no I/O.

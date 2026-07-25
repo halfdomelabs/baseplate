@@ -1,9 +1,15 @@
 import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import { describe, expect, it } from 'vitest';
 
-import type { AppRuntimeConstructionEntry } from './app-runtime.generator.js';
+import type {
+  AppRuntimeConstructionEntry,
+  AppRuntimeFieldEntry,
+} from './app-runtime.generator.js';
 
-import { sortConstructionEntries } from './app-runtime.generator.js';
+import {
+  sortConstructionEntries,
+  validateConstructionBindings,
+} from './app-runtime.generator.js';
 
 function buildConstruction(
   entries: Record<string, Omit<AppRuntimeConstructionEntry, 'fragment'>>,
@@ -86,5 +92,97 @@ describe('sortConstructionEntries', () => {
         queues: {},
       }),
     ).toThrow(/circular construction dependency: .*betterAuth.*emails/);
+  });
+});
+
+function validate({
+  services = [],
+  construction = [],
+  runtimeFields = [],
+  flattenedModuleFields = [],
+}: {
+  services?: string[];
+  construction?: string[];
+  runtimeFields?: string[];
+  flattenedModuleFields?: [string, string][];
+}): void {
+  validateConstructionBindings({
+    services: new Map(services.map((key) => [key, tsCodeFragment(key)])),
+    construction: new Map(
+      construction.map((key): [string, AppRuntimeConstructionEntry] => [
+        key,
+        { fragment: tsCodeFragment(`const ${key} = build();`) },
+      ]),
+    ),
+    runtimeFields: new Map(
+      runtimeFields.map((key): [string, AppRuntimeFieldEntry] => [
+        key,
+        { type: tsCodeFragment('unknown') },
+      ]),
+    ),
+    flattenedModuleFields: new Map(flattenedModuleFields),
+  });
+}
+
+describe('validateConstructionBindings', () => {
+  it('accepts fields backed by a construction entry', () => {
+    expect(() => {
+      validate({
+        services: ['emails', 'queues'],
+        construction: ['emails', 'queues'],
+        runtimeFields: ['queues'],
+      });
+    }).not.toThrow();
+  });
+
+  it('accepts a field bound by a flattened module binding', () => {
+    expect(() => {
+      validate({
+        services: ['storageCategories'],
+        flattenedModuleFields: [['storageCategories', 'storageCategories']],
+      });
+    }).not.toThrow();
+  });
+
+  it('throws naming a service with no construction entry', () => {
+    expect(() => {
+      validate({ services: ['emails', 'storage'], construction: ['emails'] });
+    }).toThrow(
+      /declares 'storage' but no slice registers a construction entry/,
+    );
+  });
+
+  it('throws naming a runtime field with no construction entry', () => {
+    expect(() => {
+      validate({ runtimeFields: ['redis'] });
+    }).toThrow(/declares 'redis' but no slice registers a construction entry/);
+  });
+
+  it('reports every unconstructed field at once, sorted', () => {
+    expect(() => {
+      validate({ services: ['stripe', 'redis'] });
+    }).toThrow(/declares 'redis', 'stripe' but no slice registers/);
+  });
+
+  it('throws when a construction key collides with a flattened binding', () => {
+    expect(() => {
+      validate({
+        services: ['queues'],
+        construction: ['queues'],
+        flattenedModuleFields: [['queues', 'queues']],
+      });
+    }).toThrow(
+      /construction 'queues' collides with a flattened module binding/,
+    );
+  });
+
+  it('accepts a flattened binding renamed away from its construction key', () => {
+    expect(() => {
+      validate({
+        services: ['queues'],
+        construction: ['queues'],
+        flattenedModuleFields: [['queues', 'queueBindings']],
+      });
+    }).not.toThrow();
   });
 });

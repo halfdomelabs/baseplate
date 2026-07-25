@@ -1,4 +1,5 @@
 import type { Job, JobsOptions } from 'bullmq';
+import type { Redis } from 'ioredis';
 
 import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
@@ -13,11 +14,11 @@ import type {
   ScheduledJob,
 } from '../types/queue.types.js';
 import type { ServiceContext } from '../utils/service-context.js';
+import type { RedisRuntime } from './redis.js';
 
 import { config } from './config.js';
 import { logError } from './error-logger.js';
 import { logger } from './logger.js';
-import { createRedisClient } from './redis.js';
 
 /**
  * Days to retain completed jobs.
@@ -161,11 +162,13 @@ async function setupRepeatableJobs(
  * are created lazily on first use, not here, so construction performs no I/O.
  *
  * @param bindings Every queue handler binding registered across app modules.
+ * @param redis Connection manager owning the lifecycle of the BullMQ connection.
  * @returns A {@link QueueRuntime} for enqueueing jobs and running workers.
  * @throws If two bindings share the same token name.
  */
 export function createQueueRuntime(
   bindings: QueueHandlerBinding[],
+  redis: RedisRuntime,
 ): QueueRuntime {
   const seenNames = new Set<string>();
   for (const binding of bindings) {
@@ -181,12 +184,15 @@ export function createQueueRuntime(
     bindings.map((binding) => [binding.token.name, binding]),
   );
 
-  let redisClient: ReturnType<typeof createRedisClient> | undefined;
   const bullQueues = new Map<string, BullMQQueueBase>();
   const bullWorkers = new Map<string, BullMQWorker>();
 
-  function getRedisClient(): ReturnType<typeof createRedisClient> {
-    redisClient ??= createRedisClient({ usePrefix: false });
+  let redisClient: Redis | undefined;
+
+  // BullMQ applies its own `prefix`, so this connection must not also carry
+  // the global key prefix.
+  function getRedisClient(): Redis {
+    redisClient ??= redis.createConnection({ usePrefix: false });
     return redisClient;
   }
 
@@ -346,10 +352,11 @@ export function createQueueRuntime(
   }
 
   /**
-   * Closes workers, then queues, then Redis, in that order - always
-   * attempting every stage even if an earlier one fails, so one rejection
-   * (e.g. a stuck worker) can't leave queue handles or the Redis connection
-   * open. Aggregates every failure instead of surfacing only the first.
+   * Closes workers, then queues - always attempting both even if the first
+   * fails, so one rejection (e.g. a stuck worker) can't leave queue handles
+   * open. Aggregates every failure instead of surfacing only the first. The
+   * Redis connection itself belongs to `RedisRuntime`, which disposes it after
+   * this runs.
    */
   async function stopWorkers(): Promise<void> {
     const errors: unknown[] = [];
@@ -366,12 +373,7 @@ export function createQueueRuntime(
     errors.push(...queueErrors);
     bullQueues.clear();
 
-    if (redisClient) {
-      const client = redisClient;
-      redisClient = undefined;
-      const redisErrors = await collectRejections([client.quit()]);
-      errors.push(...redisErrors);
-    }
+    redisClient = undefined;
 
     if (errors.length > 0) {
       throw new AggregateError(errors, 'Failed to stop queue workers');

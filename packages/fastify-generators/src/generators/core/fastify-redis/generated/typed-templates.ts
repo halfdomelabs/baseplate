@@ -21,7 +21,6 @@ const redis = createTsTemplateFile({
   importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'redis',
   projectExports: {
-    createRedisClient: {},
     createRedisRuntime: {},
     RedisRuntime: { isTypeOnly: true },
   },

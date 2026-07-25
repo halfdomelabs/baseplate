@@ -130,6 +130,58 @@ export function sortConstructionEntries(
 }
 
 /**
+ * Verifies every name the runtime will reference is actually bound by
+ * construction, and that no two bindings claim the same name.
+ *
+ * `sortConstructionEntries` covers the other direction (a slice depending on a
+ * name nobody registers); without this, a slice that registers a `services` or
+ * `runtimeFields` entry but no matching `construction` entry emits a reference
+ * to an undefined const, and generation succeeds while the generated project
+ * fails to compile.
+ *
+ * @param maps The registered app-runtime config maps.
+ * @throws If a declared field has no construction entry, or a construction key
+ * collides with a flattened module binding.
+ */
+export function validateConstructionBindings({
+  services,
+  construction,
+  runtimeFields,
+  flattenedModuleFields,
+}: {
+  services: ReadonlyMap<string, unknown>;
+  construction: ReadonlyMap<string, AppRuntimeConstructionEntry>;
+  runtimeFields: ReadonlyMap<string, AppRuntimeFieldEntry>;
+  flattenedModuleFields: ReadonlyMap<string, string>;
+}): void {
+  const constructedNames = new Set([
+    ...construction.keys(),
+    ...flattenedModuleFields.values(),
+  ]);
+  const unconstructed = [
+    ...new Set([...services.keys(), ...runtimeFields.keys()]),
+  ]
+    .filter((key) => !constructedNames.has(key))
+    .toSorted(compareStrings);
+  if (unconstructed.length > 0) {
+    throw new Error(
+      `App runtime declares ${unconstructed.map((key) => quot(key)).join(', ')} but no slice registers a construction entry building them. Add a matching construction.set(...) or drop the declaration.`,
+    );
+  }
+
+  // Construction consts and flattened module bindings share one identifier
+  // namespace inside createAppRuntime, so a shared name emits a duplicate const.
+  const collisions = [...flattenedModuleFields.values()]
+    .filter((localName) => construction.has(localName))
+    .toSorted(compareStrings);
+  if (collisions.length > 0) {
+    throw new Error(
+      `App runtime construction ${collisions.map((key) => quot(key)).join(', ')} collides with a flattened module binding of the same name. Rename the binding's local name.`,
+    );
+  }
+}
+
+/**
  * A slice registers itself against these keyed maps, all keyed by the same
  * field name:
  * - `services`: the field's TYPE, rendered into `AppServices`.
@@ -240,6 +292,13 @@ export const appRuntimeGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            validateConstructionBindings({
+              services,
+              construction,
+              runtimeFields,
+              flattenedModuleFields,
+            });
+
             const servicesInterface =
               services.size === 0
                 ? 'placeholder?: never'

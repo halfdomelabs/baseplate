@@ -13,7 +13,6 @@ import {
 import { CORE_FASTIFY_REDIS_PATHS } from './template-paths.js';
 
 export const fastifyRedisImportsSchema = createTsImportMapSchema({
-  createRedisClient: {},
   createRedisRuntime: {},
   RedisRuntime: { isTypeOnly: true },
 });
@@ -38,7 +37,6 @@ const coreFastifyRedisImportsTask = createGeneratorTask({
     return {
       providers: {
         fastifyRedisImports: createTsImportMap(fastifyRedisImportsSchema, {
-          createRedisClient: paths.redis,
           createRedisRuntime: paths.redis,
           RedisRuntime: paths.redis,
         }),

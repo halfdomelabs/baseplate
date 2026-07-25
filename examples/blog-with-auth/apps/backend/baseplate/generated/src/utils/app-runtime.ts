@@ -86,11 +86,11 @@ export function createAppRuntime(
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
-    for (const { dispose: disposeOne } of disposers.toReversed()) {
+    for (const { name, dispose: disposeOne } of disposers.toReversed()) {
       try {
         await disposeOne();
       } catch (error: unknown) {
-        errors.push(error);
+        errors.push(new Error(`Failed to dispose ${name}`, { cause: error }));
       }
     }
 

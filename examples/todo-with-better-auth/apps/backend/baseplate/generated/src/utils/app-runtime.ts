@@ -55,7 +55,7 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
 
   const emailTransport = createEmailTransport(postmarkEmailAdapter);
 
-  const queues = createQueueRuntime(queueBindings);
+  const queues = createQueueRuntime(queueBindings, redis);
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
   const emails = createEmailService({ queues });
@@ -81,11 +81,11 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
-    for (const { dispose: disposeOne } of disposers.toReversed()) {
+    for (const { name, dispose: disposeOne } of disposers.toReversed()) {
       try {
         await disposeOne();
       } catch (error: unknown) {
-        errors.push(error);
+        errors.push(new Error(`Failed to dispose ${name}`, { cause: error }));
       }
     }
 
