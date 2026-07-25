@@ -14,7 +14,7 @@ const postmarkService = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/emails/services/postmark.service.ts',
+      '../templates/module/services/postmark.service.ts',
     ),
   },
   variables: {},

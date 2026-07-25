@@ -24,5 +24,5 @@ export function createStripeEventHandlers(
       handleSubscriptionEvent(stripe, event),
     'customer.subscription.updated': (event) =>
       handleSubscriptionEvent(stripe, event),
-  }; /* TPL_EVENT_HANDLERS:END */
+  } /* TPL_EVENT_HANDLERS:END */;
 }

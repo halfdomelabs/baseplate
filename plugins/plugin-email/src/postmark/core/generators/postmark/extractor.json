@@ -14,8 +14,8 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/emails/services/postmark.service.ts",
-      "sourceFile": "module/emails/services/postmark.service.ts",
+      "pathRootRelativePath": "{module-root}/services/postmark.service.ts",
+      "sourceFile": "module/services/postmark.service.ts",
       "variables": {}
     }
   }

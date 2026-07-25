@@ -17,7 +17,7 @@ const healthCheckPluginCallback: FastifyPluginCallback<{
       await prisma.$queryRaw`SELECT 1;`;
 
       // check Redis is operating
-      await opts.runtime.services.redis.healthCheck();
+      await opts.runtime.redis.healthCheck();
       return { success: true };
     } /* TPL_HEALTH_CHECKS:END */,
   );

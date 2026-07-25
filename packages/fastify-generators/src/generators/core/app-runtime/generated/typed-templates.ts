@@ -26,7 +26,7 @@ const runtimeServices = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'runtime-services',
-  projectExports: { RuntimeServices: { isTypeOnly: true } },
+  projectExports: { AppServices: { isTypeOnly: true } },
   source: {
     path: path.join(
       import.meta.dirname,

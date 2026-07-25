@@ -9,6 +9,7 @@ import {
 } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
+  appRuntimeConfigProvider,
   configServiceProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -116,18 +117,40 @@ export const emailModuleGenerator = createGenerator({
         );
       },
     }),
-    main: createGeneratorTask({
+    appRuntimeConfig: createGeneratorTask({
       dependencies: {
-        renderers: GENERATED_TEMPLATES.renderers.provider,
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
         emailConfigValues: emailConfigValuesProvider,
       },
-      run({ renderers, emailConfigValues }) {
+      run({ appRuntimeConfig, paths, emailConfigValues }) {
         const { emailAdapter } = emailConfigValues;
         if (!emailAdapter) {
           throw new Error(
             'No email adapter registered. Enable an email implementation plugin (e.g., Postmark).',
           );
         }
+        appRuntimeConfig.services.set(
+          'emails',
+          TsCodeUtils.typeImportFragment('EmailService', paths.emailsService),
+        );
+        appRuntimeConfig.services.set(
+          'emailTransport',
+          TsCodeUtils.typeImportFragment('EmailTransport', paths.emailsTypes),
+        );
+        appRuntimeConfig.construction.set('emails', {
+          fragment: TsCodeUtils.template`
+            const emails = ${TsCodeUtils.importFragment('createEmailService', paths.emailsService)}({ queues });
+            const emailTransport = ${TsCodeUtils.importFragment('createEmailTransport', paths.emailsService)}(${emailAdapter});
+          `,
+        });
+      },
+    }),
+    main: createGeneratorTask({
+      dependencies: {
+        renderers: GENERATED_TEMPLATES.renderers.provider,
+      },
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -142,9 +165,6 @@ export const emailModuleGenerator = createGenerator({
                       'EmailComponent',
                       transactionalLibPackageName,
                     ),
-                  },
-                  sendEmailWorker: {
-                    TPL_EMAIL_ADAPTER: emailAdapter,
                   },
                 },
               }),

@@ -18,7 +18,7 @@ const postmarkCorePostmarkPathsTask = createGeneratorTask({
     return {
       providers: {
         postmarkCorePostmarkPaths: {
-          postmarkService: `${moduleRoot}/emails/services/postmark.service.ts`,
+          postmarkService: `${moduleRoot}/services/postmark.service.ts`,
         },
       },
     };

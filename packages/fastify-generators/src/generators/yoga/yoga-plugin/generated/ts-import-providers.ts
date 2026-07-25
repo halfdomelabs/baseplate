@@ -13,7 +13,8 @@ import {
 import { YOGA_YOGA_PLUGIN_PATHS } from './template-paths.js';
 
 export const yogaPluginImportsSchema = createTsImportMapSchema({
-  getPubSub: {},
+  createGraphqlPubSub: {},
+  PubSubPublishArgs: { isTypeOnly: true },
 });
 
 export type YogaPluginImportsProvider = TsImportMapProviderFromSchema<
@@ -34,7 +35,8 @@ const yogaYogaPluginImportsTask = createGeneratorTask({
     return {
       providers: {
         yogaPluginImports: createTsImportMap(yogaPluginImportsSchema, {
-          getPubSub: paths.pubsub,
+          createGraphqlPubSub: paths.pubsub,
+          PubSubPublishArgs: paths.pubsub,
         }),
       },
     };

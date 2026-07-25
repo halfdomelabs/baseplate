@@ -39,10 +39,6 @@
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         },
-        "fastifyStripeImportsProvider": {
-          "importName": "fastifyStripeImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-payments:src/stripe/core/generators/fastify-stripe/generated/ts-import-providers.ts"
-        },
         "loggerServiceImportsProvider": {
           "importName": "loggerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"

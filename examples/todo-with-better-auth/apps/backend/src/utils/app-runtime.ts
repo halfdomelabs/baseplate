@@ -47,23 +47,24 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
   let disposePromise: Promise<void> | undefined;
 
   /* TPL_SERVICE_CONSTRUCTION:START */
+  const { queues: queueBindings = [], storageCategories = [] } =
+    flattenAppModule(rootModule);
+
   const redis = createRedisRuntime();
   disposers.push({ name: 'redis', dispose: () => redis.dispose() });
 
-  const { queues: queueBindings = [], storageCategories = [] } =
-    flattenAppModule(rootModule);
   const queues = createQueueRuntime(queueBindings);
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
   const emails = createEmailService({ queues });
   const emailTransport = createEmailTransport(postmarkEmailAdapter);
 
-  const betterAuth = buildAuth({ emails });
-  const userSession = createBetterAuthUserSessionService(betterAuth);
+  const storage = createStorageService(storageCategories);
 
   const stripe = new Stripe(config.STRIPE_SECRET_KEY);
 
-  const storage = createStorageService(storageCategories);
+  const betterAuth = buildAuth({ emails });
+  const userSession = createBetterAuthUserSessionService(betterAuth);
   /* TPL_SERVICE_CONSTRUCTION:END */
 
   const services: AppServices = /* TPL_SERVICES_OBJECT:START */ {

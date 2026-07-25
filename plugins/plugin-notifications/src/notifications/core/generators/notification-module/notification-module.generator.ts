@@ -1,6 +1,7 @@
-import { tsCodeFragment } from '@baseplate-dev/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
+  appRuntimeConfigProvider,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
   yogaPluginConfigProvider,
@@ -26,6 +27,29 @@ export const notificationModuleGenerator = createGenerator({
   buildTasks: () => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
+      },
+      run({ appRuntimeConfig, paths }) {
+        appRuntimeConfig.services.set(
+          'notifications',
+          TsCodeUtils.typeImportFragment(
+            'NotificationService',
+            paths.servicesNotificationService,
+          ),
+        );
+        // MIDDLE, after `pubsub` is constructed from redis.
+        appRuntimeConfig.construction.set('notifications', {
+          fragment: TsCodeUtils.template`
+            const notifications = ${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
+              events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),
+            });
+          `,
+        });
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,

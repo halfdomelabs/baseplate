@@ -1,9 +1,10 @@
 // @ts-nocheck
 
+import type { AppRuntime } from '%appRuntimeImports';
+import type { FastifyPluginCallback } from 'fastify';
 import type { Stripe } from 'stripe';
 
-import { stripe } from '$service';
-import { stripeEventHandlers } from '$serviceEventHandlers';
+import { createStripeEventHandlers } from '$serviceEventHandlers';
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
@@ -12,11 +13,13 @@ import fp from 'fastify-plugin';
 /**
  * Constructs and verifies a Stripe event from the raw webhook body.
  *
+ * @param stripe - The Stripe client.
  * @param rawBody - The raw request body.
  * @param signature - The Stripe signature header.
  * @returns The verified Stripe event.
  */
 async function getStripeEvent(
+  stripe: Stripe,
   rawBody: string | Buffer = '',
   signature: string | string[] = '',
 ): Promise<Stripe.Event> {
@@ -32,32 +35,36 @@ async function getStripeEvent(
   }
 }
 
+const stripeWebhookPluginCallback: FastifyPluginCallback<{
+  runtime: AppRuntime;
+}> = (fastify, opts, done) => {
+  const { stripe } = opts.runtime.services;
+  const stripeEventHandlers = createStripeEventHandlers(stripe);
+
+  fastify.post('/webhooks/stripe', {
+    config: { rawBody: true },
+    handler: async (req, reply) => {
+      const signature = req.headers['stripe-signature'] ?? '';
+
+      const event = await getStripeEvent(stripe, req.rawBody, signature);
+
+      const handler = stripeEventHandlers[event.type];
+
+      if (handler) {
+        await handler(event);
+      } else {
+        logger.info(`No handler registered for event type ${event.type}`);
+      }
+
+      await reply.send({ success: true });
+    },
+  });
+
+  done();
+};
+
 /** Fastify plugin that handles incoming Stripe webhook events. */
-export const stripeWebhookPlugin = fp(
-  (fastify, opts, done) => {
-    fastify.post('/webhooks/stripe', {
-      config: { rawBody: true },
-      handler: async (req, reply) => {
-        const signature = req.headers['stripe-signature'] ?? '';
-
-        const event = await getStripeEvent(req.rawBody, signature);
-
-        const handler = stripeEventHandlers[event.type];
-
-        if (handler) {
-          await handler(event);
-        } else {
-          logger.info(`No handler registered for event type ${event.type}`);
-        }
-
-        await reply.send({ success: true });
-      },
-    });
-
-    done();
-  },
-  {
-    encapsulate: true,
-    name: 'stripe-webhook',
-  },
-);
+export const stripeWebhookPlugin = fp(stripeWebhookPluginCallback, {
+  encapsulate: true,
+  name: 'stripe-webhook',
+});

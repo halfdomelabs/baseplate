@@ -21,7 +21,11 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/redis.ts",
-      "projectExports": { "createRedisClient": {}, "getRedisClient": {} },
+      "projectExports": {
+        "createRedisClient": {},
+        "createRedisRuntime": {},
+        "RedisRuntime": { "isTypeOnly": true }
+      },
       "sourceFile": "src/services/redis.ts",
       "variables": {}
     }

@@ -4,8 +4,6 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface FastifyStorageModulePaths {
   adaptersS_3: string;
   adaptersUrl: string;
-  configAdapters: string;
-  configCategories: string;
   queuesCleanUnusedFiles: string;
   queuesCleanUnusedFilesWorker: string;
   schemaFileCategory: string;
@@ -18,11 +16,11 @@ export interface FastifyStorageModulePaths {
   servicesDownloadFile: string;
   servicesFileTransformer: string;
   servicesGetPublicUrl: string;
+  servicesStorage: string;
   servicesUploadFile: string;
   typesAdapter: string;
   typesFileCategory: string;
   utilsCreateFileCategory: string;
-  utilsGetAdapter: string;
   utilsMime: string;
   utilsValidateFileUploadOptions: string;
   utilsValidatePendingUpload: string;
@@ -43,8 +41,6 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
         fastifyStorageModulePaths: {
           adaptersS_3: `${moduleRoot}/adapters/s3.ts`,
           adaptersUrl: `${moduleRoot}/adapters/url.ts`,
-          configAdapters: `${moduleRoot}/config/adapters.config.ts`,
-          configCategories: `${moduleRoot}/config/categories.config.ts`,
           queuesCleanUnusedFiles: `${moduleRoot}/queues/clean-unused-files.queue.ts`,
           queuesCleanUnusedFilesWorker: `${moduleRoot}/queues/clean-unused-files.worker.ts`,
           schemaFileCategory: `${moduleRoot}/schema/file-category.enum.ts`,
@@ -57,11 +53,11 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           servicesDownloadFile: `${moduleRoot}/services/download-file.ts`,
           servicesFileTransformer: `${moduleRoot}/services/file-transformer.ts`,
           servicesGetPublicUrl: `${moduleRoot}/services/get-public-url.ts`,
+          servicesStorage: `${moduleRoot}/services/storage.service.ts`,
           servicesUploadFile: `${moduleRoot}/services/upload-file.ts`,
           typesAdapter: `${moduleRoot}/types/adapter.ts`,
           typesFileCategory: `${moduleRoot}/types/file-category.ts`,
           utilsCreateFileCategory: `${moduleRoot}/utils/create-file-category.ts`,
-          utilsGetAdapter: `${moduleRoot}/utils/get-adapter.ts`,
           utilsMime: `${moduleRoot}/utils/mime.ts`,
           utilsValidateFileUploadOptions: `${moduleRoot}/utils/validate-file-upload-options.ts`,
           utilsValidatePendingUpload: `${moduleRoot}/utils/validate-pending-upload.ts`,

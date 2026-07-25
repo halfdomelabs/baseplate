@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { RuntimeServices } from '%appRuntimeImports';
+import type { AppServices } from '%appRuntimeImports';
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
 /**
@@ -8,17 +8,17 @@ import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
  * `runtime` option.
  */
 export interface PluginRuntime {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
 }
 
 /**
  * A {@link PluginRuntime} narrowed to only the named services, for plugins
  * that want an honest signature instead of accepting every service.
  */
-export type PluginRuntimeWithServices<K extends keyof RuntimeServices> = Omit<
+export type PluginRuntimeWithServices<K extends keyof AppServices> = Omit<
   PluginRuntime,
   'services'
-> & { readonly services: Readonly<Pick<RuntimeServices, K>> };
+> & { readonly services: Readonly<Pick<AppServices, K>> };
 
 /**
  * A Fastify plugin registered through `AppModule.plugins`, receiving the

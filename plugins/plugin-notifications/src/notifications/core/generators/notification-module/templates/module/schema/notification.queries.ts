@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import { getUnseenCount } from '$servicesNotificationService';
 import { builder } from '%pothosImports';
 import { prisma } from '%prismaImports';
 import { z } from 'zod';
@@ -33,6 +32,8 @@ builder.queryField('unseenNotificationCount', (t) =>
   t.int({
     authorize: ['user'],
     resolve: (_root, _args, context) =>
-      getUnseenCount(context.auth.userIdOrThrow()),
+      context.services.notifications.getUnseenCount(
+        context.auth.userIdOrThrow(),
+      ),
   }),
 );

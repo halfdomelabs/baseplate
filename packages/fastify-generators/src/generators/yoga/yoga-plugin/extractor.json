@@ -40,7 +40,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/pubsub.ts",
-      "projectExports": { "getPubSub": {} },
+      "projectExports": {
+        "createGraphqlPubSub": {},
+        "PubSubPublishArgs": { "isTypeOnly": true }
+      },
       "sourceFile": "src/plugins/graphql/pubsub.ts",
       "variables": { "TPL_PUBLISH_ARGS": {} }
     },

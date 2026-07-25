@@ -14,6 +14,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import { appRuntimeImportsProvider } from '../app-runtime/index.js';
 import { fastifyServerConfigProvider } from '../fastify-server/index.js';
 import { CORE_FASTIFY_HEALTH_CHECK_GENERATED } from './generated/index.js';
 
@@ -53,6 +54,7 @@ export const fastifyHealthCheckGenerator = createGenerator({
             'healthCheckPlugin',
             tsImportBuilder(['healthCheckPlugin']).from(paths.healthCheck),
           ),
+          options: tsCodeFragment('{ runtime }'),
         });
       },
     }),
@@ -60,11 +62,13 @@ export const fastifyHealthCheckGenerator = createGenerator({
       dependencies: {
         fastifyHealthCheckConfigValues: fastifyHealthCheckConfigValuesProvider,
         typescriptFile: typescriptFileProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
         paths: CORE_FASTIFY_HEALTH_CHECK_GENERATED.paths.provider,
       },
       run({
         fastifyHealthCheckConfigValues: { healthChecks },
         typescriptFile,
+        appRuntimeImports,
         paths,
       }) {
         return {
@@ -83,6 +87,9 @@ export const fastifyHealthCheckGenerator = createGenerator({
                     return { success: true };
                 }`
                       : `async () => ({ success: true })`,
+                },
+                importMapProviders: {
+                  appRuntimeImports,
                 },
               }),
             );

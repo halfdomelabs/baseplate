@@ -6,8 +6,6 @@ import { BadRequestError } from '@src/utils/http-errors.js';
 
 import type { FileCategory } from '../types/file-category.js';
 
-import { getAdapterOrThrow } from './get-adapter.js';
-
 /**
  * Result of validating a pending upload, containing everything needed
  * to confirm the upload within a transaction.
@@ -91,7 +89,7 @@ export async function validatePendingUpload({
     );
   }
 
-  const adapter = getAdapterOrThrow(file.adapter);
+  const adapter = context.services.storage.getAdapterOrThrow(file.adapter);
   const fileMetadata = await adapter.getFileMetadata(file.storagePath);
 
   if (!fileMetadata) {

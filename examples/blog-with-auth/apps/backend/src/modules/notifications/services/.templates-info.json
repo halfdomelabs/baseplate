@@ -19,6 +19,11 @@
     "instanceData": {},
     "template": "services-notification-content"
   },
+  "notification-events.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-events"
+  },
   "notification-registry.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},

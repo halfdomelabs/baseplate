@@ -9,6 +9,8 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeConfigProvider,
+  configServiceImportsProvider,
   configServiceProvider,
   FASTIFY_PACKAGES,
   fastifyServerConfigProvider,
@@ -88,9 +90,30 @@ export const fastifyStripeGenerator = createGenerator({
               '@/src/plugins/stripe-webhook.js',
             ),
           ),
+          options: tsCodeFragment('{ runtime }'),
         });
       },
     ),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        configServiceImports: configServiceImportsProvider,
+      },
+      run({ appRuntimeConfig, configServiceImports }) {
+        appRuntimeConfig.services.set(
+          'stripe',
+          tsCodeFragment(
+            'Stripe',
+            tsImportBuilder().default('Stripe').typeOnly().from('stripe'),
+          ),
+        );
+        appRuntimeConfig.construction.set('stripe', {
+          fragment: TsCodeUtils.template`
+            const stripe = new ${tsCodeFragment('Stripe', tsImportBuilder().default('Stripe').from('stripe'))}(${configServiceImports.config.fragment()}.STRIPE_SECRET_KEY);
+          `,
+        });
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: STRIPE_FASTIFY_STRIPE_GENERATED.renderers.provider,
@@ -99,7 +122,6 @@ export const fastifyStripeGenerator = createGenerator({
       run({ renderers, stripeWebhookConfigValues }) {
         return {
           build: async (builder) => {
-            await builder.apply(renderers.servicesGroup.render({}));
             await builder.apply(renderers.pluginsGroup.render({}));
             await builder.apply(
               renderers.webhookServicesGroup.render({

@@ -2,7 +2,10 @@ import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-genera
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
-import { serviceContextImportsProvider } from '@baseplate-dev/fastify-generators';
+import {
+  appRuntimeImportsProvider,
+  serviceContextImportsProvider,
+} from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { QUEUE_CORE_QUEUES_PATHS } from './template-paths.js';
@@ -27,12 +30,13 @@ const queueCoreQueuesRenderers = createProviderType<QueueCoreQueuesRenderers>(
 
 const queueCoreQueuesRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     paths: QUEUE_CORE_QUEUES_PATHS.provider,
     serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { queueCoreQueuesRenderers: queueCoreQueuesRenderers.export() },
-  run({ paths, serviceContextImports, typescriptFile }) {
+  run({ appRuntimeImports, paths, serviceContextImports, typescriptFile }) {
     return {
       providers: {
         queueCoreQueuesRenderers: {
@@ -42,6 +46,7 @@ const queueCoreQueuesRenderersTask = createGeneratorTask({
                 template: QUEUE_CORE_QUEUES_TEMPLATES.queueTypes,
                 destination: paths.queueTypes,
                 importMapProviders: {
+                  appRuntimeImports,
                   serviceContextImports,
                 },
                 ...options,

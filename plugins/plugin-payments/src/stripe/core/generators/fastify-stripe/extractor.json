@@ -6,6 +6,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "plugins",
       "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        },
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
@@ -26,24 +30,8 @@
           "name": "stripeWebhookPlugin"
         }
       },
-      "referencedGeneratorTemplates": ["service", "service-event-handlers"],
+      "referencedGeneratorTemplates": ["service-event-handlers"],
       "sourceFile": "src/plugins/stripe-webhook.ts",
-      "variables": {}
-    },
-    "service": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "services",
-      "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/services/stripe.ts",
-      "projectExports": { "stripe": { "isTypeOnly": false, "name": "stripe" } },
-      "sourceFile": "src/services/stripe.ts",
       "variables": {}
     },
     "service-event-handlers": {
@@ -53,9 +41,9 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/stripe-event-handlers.ts",
       "projectExports": {
-        "stripeEventHandlers": {
+        "createStripeEventHandlers": {
           "isTypeOnly": false,
-          "name": "stripeEventHandlers"
+          "name": "createStripeEventHandlers"
         }
       },
       "sourceFile": "src/services/stripe-event-handlers.ts",

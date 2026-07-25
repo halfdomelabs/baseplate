@@ -6,11 +6,10 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { customSession } from 'better-auth/plugins';
 
-import type { EmailService } from '@src/modules/emails/services/emails.service.js';
-
 import { config } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
+import type { EmailService } from '../../../emails/services/emails.service.js';
 import type { AuthRole } from '../constants/auth-roles.constants.js';
 
 import { DEFAULT_USER_ROLES } from '../constants/auth-roles.constants.js';

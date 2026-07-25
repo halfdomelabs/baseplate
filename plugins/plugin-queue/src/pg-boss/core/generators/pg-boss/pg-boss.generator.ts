@@ -5,8 +5,6 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
-  appModuleImportsProvider,
-  appModuleSetupImportsProvider,
   appRuntimeConfigProvider,
   fastifyOutputProvider,
   fastifyProvider,
@@ -57,34 +55,25 @@ export const pgBossGenerator = createGenerator({
     appRuntimeConfig: createGeneratorTask({
       dependencies: {
         appRuntimeConfig: appRuntimeConfigProvider,
-        appModuleImports: appModuleImportsProvider,
-        appModuleSetupImports: appModuleSetupImportsProvider,
         queuesImports: queuesImportsProvider,
         paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({
-        appRuntimeConfig,
-        appModuleImports,
-        appModuleSetupImports,
-        queuesImports,
-        paths,
-      }) {
+      run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
           'queues',
           queuesImports.QueueService.typeFragment(),
         );
-        appRuntimeConfig.runtimeFields.set(
-          'queues',
-          queuesImports.QueueRuntime.typeFragment(),
-        );
+        appRuntimeConfig.runtimeFields.set('queues', {
+          type: queuesImports.QueueRuntime.typeFragment(),
+        });
         appRuntimeConfig.constructionOptions.set(
           'disableQueueMaintenance?',
           tsCodeFragment('boolean'),
         );
+        appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queues', {
           orderPriority: 'EARLY',
           fragment: TsCodeUtils.template`
-            const { queues: queueBindings = [] } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});
             const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
               disableMaintenance: options.disableQueueMaintenance,
             });

@@ -13,14 +13,17 @@ import {
 import { EMAIL_CORE_EMAIL_MODULE_PATHS } from './template-paths.js';
 
 export const emailModuleImportsSchema = createTsImportMapSchema({
+  createEmailService: {},
+  createEmailTransport: {},
   EmailAdapter: { isTypeOnly: true },
   EmailAttachment: { isTypeOnly: true },
   EmailRawOptions: { isTypeOnly: true },
   EmailSendOptions: { isTypeOnly: true },
+  EmailService: { isTypeOnly: true },
+  EmailTransport: { isTypeOnly: true },
   sendEmail: {},
   sendEmailQueue: {},
   sendEmailWorker: {},
-  sendRawEmail: {},
   TransformedEmailMessage: { isTypeOnly: true },
 });
 
@@ -44,14 +47,17 @@ const emailCoreEmailModuleImportsTask = createGeneratorTask({
     return {
       providers: {
         emailModuleImports: createTsImportMap(emailModuleImportsSchema, {
+          createEmailService: paths.emailsService,
+          createEmailTransport: paths.emailsService,
           EmailAdapter: paths.emailsTypes,
           EmailAttachment: paths.emailsTypes,
           EmailRawOptions: paths.emailsTypes,
           EmailSendOptions: paths.emailsTypes,
+          EmailService: paths.emailsService,
+          EmailTransport: paths.emailsTypes,
           sendEmail: paths.emailsService,
           sendEmailQueue: paths.sendEmailQueue,
           sendEmailWorker: paths.sendEmailWorker,
-          sendRawEmail: paths.emailsService,
           TransformedEmailMessage: paths.emailsTypes,
         }),
       },

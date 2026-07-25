@@ -3,6 +3,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
+  appRuntimeImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   loggerServiceImportsProvider,
@@ -18,16 +19,6 @@ export interface StripeFastifyStripeRenderers {
       options: Omit<
         RenderTsTemplateGroupActionInput<
           typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.pluginsGroup
-        >,
-        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
-  servicesGroup: {
-    render: (
-      options: Omit<
-        RenderTsTemplateGroupActionInput<
-          typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.servicesGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -52,6 +43,7 @@ const stripeFastifyStripeRenderers =
 
 const stripeFastifyStripeRenderersTask = createGeneratorTask({
   dependencies: {
+    appRuntimeImports: appRuntimeImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
@@ -62,6 +54,7 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
     stripeFastifyStripeRenderers: stripeFastifyStripeRenderers.export(),
   },
   run({
+    appRuntimeImports,
     configServiceImports,
     errorHandlerServiceImports,
     loggerServiceImports,
@@ -77,22 +70,12 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
                 group: STRIPE_FASTIFY_STRIPE_TEMPLATES.pluginsGroup,
                 paths,
                 importMapProviders: {
+                  appRuntimeImports,
                   configServiceImports,
                   errorHandlerServiceImports,
                   loggerServiceImports,
                 },
                 generatorPaths: paths,
-                ...options,
-              }),
-          },
-          servicesGroup: {
-            render: (options) =>
-              typescriptFile.renderTemplateGroup({
-                group: STRIPE_FASTIFY_STRIPE_TEMPLATES.servicesGroup,
-                paths,
-                importMapProviders: {
-                  configServiceImports,
-                },
                 ...options,
               }),
           },

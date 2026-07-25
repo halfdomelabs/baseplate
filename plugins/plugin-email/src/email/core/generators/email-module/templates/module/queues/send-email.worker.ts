@@ -1,18 +1,19 @@
 // @ts-nocheck
 
+import type { ServiceContextWith } from '%serviceContextImports';
+
 import { sendEmailQueue } from '$sendEmailQueue';
 import { logger } from '%loggerServiceImports';
 import { bindQueueHandler } from '%queuesImports';
 
 export const sendEmailWorker = bindQueueHandler(sendEmailQueue, {
-  handler: async (job) => {
-    const messageId = await TPL_EMAIL_ADAPTER.sendMail(job.data.message);
+  handler: async (job, ctx: ServiceContextWith<'emailTransport'>) => {
+    const messageId = await ctx.services.emailTransport.deliver(
+      job.data.message,
+    );
     logger.info(
-      {
-        template: job.data.template,
-        messageId,
-      },
-      `Email sent successfully using ${TPL_EMAIL_ADAPTER.name}`,
+      { template: job.data.template, messageId },
+      'Email sent successfully',
     );
   },
 });

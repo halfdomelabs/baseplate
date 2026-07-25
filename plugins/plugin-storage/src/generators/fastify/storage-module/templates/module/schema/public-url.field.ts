@@ -8,8 +8,8 @@ builder.objectField(TPL_FILE_OBJECT_TYPE, 'publicUrl', (t) =>
     description:
       'URL of the file where it is publicly hosted. Returns null if it is not publicly available.',
     nullable: true,
-    resolve: async (file) => {
-      const url = await getPublicUrl(file);
+    resolve: async (file, _args, context) => {
+      const url = await getPublicUrl(file, context);
       return url ?? null;
     },
   }),

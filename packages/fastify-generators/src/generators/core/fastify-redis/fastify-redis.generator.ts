@@ -2,7 +2,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   tsCodeFragment,
-  tsImportBuilder,
+  TsCodeUtils,
   typescriptFileProvider,
   vitestConfigProvider,
 } from '@baseplate-dev/core-generators';
@@ -16,6 +16,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
+import { appRuntimeConfigProvider } from '../app-runtime/index.js';
 import {
   configServiceImportsProvider,
   configServiceProvider,
@@ -62,18 +63,37 @@ export const fastifyRedisGenerator = createGenerator({
     fastifyHealthCheck: createGeneratorTask({
       dependencies: {
         fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
-        paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
       },
-      run({ fastifyHealthCheckConfig, paths }) {
+      run({ fastifyHealthCheckConfig }) {
         fastifyHealthCheckConfig.healthChecks.set(
           'redis',
           tsCodeFragment(
             `// check Redis is operating
-          const redisClient = getRedisClient();
-          await redisClient.ping();`,
-            tsImportBuilder(['getRedisClient']).from(paths.redis),
+          await opts.runtime.redis.healthCheck();`,
           ),
         );
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
+      },
+      run({ appRuntimeConfig, paths }) {
+        appRuntimeConfig.runtimeFields.set('redis', {
+          type: TsCodeUtils.typeImportFragment('RedisRuntime', paths.redis),
+          comment:
+            '/** Runtime-internal: connection lifecycle, not for feature code. */',
+        });
+        // FIRST so it is constructed before slices that open connections
+        // through it, and torn down only after they have released theirs.
+        appRuntimeConfig.construction.set('redis', {
+          orderPriority: 'FIRST',
+          fragment: TsCodeUtils.template`
+            const redis = ${TsCodeUtils.importFragment('createRedisRuntime', paths.redis)}();
+            disposers.push({ name: 'redis', dispose: () => redis.dispose() });
+          `,
+        });
       },
     }),
     renderers: CORE_FASTIFY_REDIS_GENERATED.renderers.task,

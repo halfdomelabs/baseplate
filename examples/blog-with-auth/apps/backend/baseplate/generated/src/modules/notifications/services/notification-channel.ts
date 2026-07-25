@@ -1,6 +1,7 @@
 import type { RenderedContent } from './notification-content.js';
+import type { NotificationEvents } from './notification-events.js';
 
-import { inAppChannel } from './in-app-channel.js';
+import { createInAppChannel } from './in-app-channel.js';
 
 /** A resolved notification handed to a channel for delivery. */
 export interface ResolvedNotification extends RenderedContent {
@@ -15,14 +16,16 @@ export interface NotificationChannel {
 }
 
 /** The available delivery channels, keyed by channel key. */
-export const CHANNELS = {
-  inApp: inAppChannel,
-} satisfies Record<string, NotificationChannel>;
+export type NotificationChannels = Record<string, NotificationChannel>;
+
+/** Builds the delivery channel dictionary, wiring runtime deps into each channel. */
+export function createChannels(deps: {
+  events: NotificationEvents;
+}): NotificationChannels {
+  return {
+    inApp: createInAppChannel(deps),
+  } satisfies Record<string, NotificationChannel>;
+}
 
 /** A valid channel key. */
-export type NotificationChannelKey = keyof typeof CHANNELS;
-
-/** Look up a channel by key. */
-export function getChannel(key: NotificationChannelKey): NotificationChannel {
-  return CHANNELS[key];
-}
+export type NotificationChannelKey = keyof ReturnType<typeof createChannels>;

@@ -1,5 +1,10 @@
 import { defineAppModule } from '@src/utils/app-modules.js';
 
+import {
+  userImageFileFileCategory,
+  userProfileAvatarFileCategory,
+} from './constants/file-categories.js';
+
 /* TPL_IMPORTS:START */
 import './schema/customer.object-type.js';
 import './schema/user-image.object-type.js';
@@ -12,5 +17,10 @@ import './schema/user.queries.js';
 
 export const /* TPL_MODULE_NAME:START */ usersModule /* TPL_MODULE_NAME:END */ =
     defineAppModule(
-      /* TPL_MODULE_CONTENTS:START */ {} /* TPL_MODULE_CONTENTS:END */,
+      /* TPL_MODULE_CONTENTS:START */ {
+        storageCategories: [
+          userImageFileFileCategory,
+          userProfileAvatarFileCategory,
+        ],
+      } /* TPL_MODULE_CONTENTS:END */,
     );

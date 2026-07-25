@@ -1,6 +1,11 @@
+import type Stripe from 'stripe';
+
 import type { Auth } from '@src/modules/accounts/auth/services/auth.js';
 import type { AuthContext } from '@src/modules/accounts/auth/types/auth-context.types.js';
 import type { UserSessionService } from '@src/modules/accounts/auth/types/user-session.types.js';
+import type { EmailTransport } from '@src/modules/emails/emails.types.js';
+import type { EmailService } from '@src/modules/emails/services/emails.service.js';
+import type { StorageService } from '@src/modules/storage/services/storage.service.js';
 import type { QueueService } from '@src/types/queue.types.js';
 import type { ServiceContext } from '@src/utils/service-context.js';
 
@@ -29,6 +34,24 @@ export function createTestServiceContext(
           },
         },
       ) as Auth,
+      emails: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error('emails is not available in this test context.');
+          },
+        },
+      ) as EmailService,
+      emailTransport: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error(
+              'emailTransport is not available in this test context.',
+            );
+          },
+        },
+      ) as EmailTransport,
       queues: new Proxy(
         {},
         {
@@ -37,6 +60,22 @@ export function createTestServiceContext(
           },
         },
       ) as QueueService,
+      storage: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error('storage is not available in this test context.');
+          },
+        },
+      ) as StorageService,
+      stripe: new Proxy(
+        {},
+        {
+          get() {
+            throw new Error('stripe is not available in this test context.');
+          },
+        },
+      ) as Stripe,
       userSession: new Proxy(
         {},
         {

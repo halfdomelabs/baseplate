@@ -3,7 +3,9 @@
   "templates": {
     "schema-notification-content-field": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -17,11 +19,15 @@
         "services-notification-service"
       ],
       "sourceFile": "module/schema/notification-content.field.ts",
-      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+      "variables": {
+        "TPL_NOTIFICATION_OBJECT_TYPE": {}
+      }
     },
     "schema-notification-content-object-types": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -36,7 +42,9 @@
     },
     "schema-notification-mutations": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -49,13 +57,17 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/notification.mutations.ts",
-      "referencedGeneratorTemplates": ["services-notification-service"],
+      "referencedGeneratorTemplates": [],
       "sourceFile": "module/schema/notification.mutations.ts",
-      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+      "variables": {
+        "TPL_NOTIFICATION_OBJECT_TYPE": {}
+      }
     },
     "schema-notification-queries": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -68,22 +80,20 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/notification.queries.ts",
-      "referencedGeneratorTemplates": ["services-notification-service"],
+      "referencedGeneratorTemplates": [],
       "sourceFile": "module/schema/notification.queries.ts",
       "variables": {}
     },
     "schema-notification-subscriptions": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
-        },
-        "yogaPluginImportsProvider": {
-          "importName": "yogaPluginImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/schema/notification.subscriptions.ts",
@@ -92,7 +102,9 @@
     },
     "services-generic-type": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/generic-type.ts",
@@ -102,48 +114,78 @@
     },
     "services-in-app-channel": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
-        "yogaPluginImportsProvider": {
-          "importName": "yogaPluginImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/in-app-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "referencedGeneratorTemplates": [
+        "services-notification-channel",
+        "services-notification-events"
+      ],
       "sourceFile": "module/services/in-app-channel.ts",
       "variables": {}
     },
     "services-notification-channel": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
       "referencedGeneratorTemplates": [
         "services-in-app-channel",
-        "services-notification-content"
+        "services-notification-content",
+        "services-notification-events"
       ],
       "sourceFile": "module/services/notification-channel.ts",
       "variables": {}
     },
     "services-notification-content": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-content.ts",
       "sourceFile": "module/services/notification-content.ts",
       "variables": {}
     },
+    "services-notification-events": {
+      "type": "ts",
+      "fileOptions": {
+        "kind": "singleton"
+      },
+      "group": "main",
+      "importMapProviders": {
+        "yogaPluginImportsProvider": {
+          "importName": "yogaPluginImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/notification-events.ts",
+      "projectExports": {
+        "NotificationEvents": {
+          "isTypeOnly": true
+        },
+        "createNotificationEvents": {}
+      },
+      "sourceFile": "module/services/notification-events.ts",
+      "variables": {}
+    },
     "services-notification-registry": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-registry.ts",
@@ -156,7 +198,9 @@
     },
     "services-notification-service": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
@@ -170,10 +214,6 @@
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
-        "yogaPluginImportsProvider": {
-          "importName": "yogaPluginImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/yoga/yoga-plugin/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/notification.service.ts",
@@ -181,6 +221,7 @@
         "services-generic-type",
         "services-notification-channel",
         "services-notification-content",
+        "services-notification-events",
         "services-notification-registry"
       ],
       "sourceFile": "module/services/notification.service.ts",

@@ -1,3 +1,4 @@
+import type { AppServices } from '../utils/runtime-services.js';
 import type {
   ServiceContext,
   ServiceContextWith,
@@ -76,27 +77,29 @@ export interface QueueHandlerBindingConfig<T> {
 
 /**
  * A handler function bound to a queue, receiving each job and the worker's
- * service context.
+ * service context, narrowed to the service keys the handler declares it uses.
  * @template T The type of the data in the job payload.
+ * @template K The `AppServices` keys this handler's context is narrowed to. Defaults to none.
  */
-export type QueueJobHandler<T> = (
+export type QueueJobHandler<T, K extends keyof AppServices = never> = (
   job: QueueJob<T>,
-  ctx: ServiceContextWith<never>,
+  ctx: ServiceContextWith<K>,
 ) => unknown;
 
 /**
  * The configuration accepted by {@link bindQueueHandler}: a handler or
  * lazyHandler (exactly one), plus the shared binding options.
  * @template T The type of the data in the job payload.
+ * @template K The `AppServices` keys the handler's context is narrowed to.
  */
-export type QueueHandlerBindingInput<T> =
+export type QueueHandlerBindingInput<T, K extends keyof AppServices> =
   | (Omit<QueueHandlerBindingConfig<T>, 'token'> & {
-      handler: QueueJobHandler<T>;
+      handler: QueueJobHandler<T, K>;
       lazyHandler?: never;
     })
   | (Omit<QueueHandlerBindingConfig<T>, 'token'> & {
       handler?: never;
-      lazyHandler: () => Promise<{ handler: QueueJobHandler<T> }>;
+      lazyHandler: () => Promise<{ handler: QueueJobHandler<T, K> }>;
     });
 
 /**
@@ -127,17 +130,22 @@ export interface QueueHandlerBinding extends Omit<
  * Binds a handler to a {@link QueueToken}. Place this call in a file separate
  * from the token definition and from any enqueue-side code, so importing the
  * token never pulls in the handler's dependencies.
+ *
+ * The handler's `ctx` parameter type determines `K` by inference; annotate it
+ * explicitly (e.g. `ctx: ServiceContextWith<'storage'>`) to narrow which
+ * services the handler declares it uses. A full {@link ServiceContext} is
+ * always passed at runtime, so any narrowing is sound.
  * @param token The token to bind a handler to.
  * @param config The binding configuration (handler or lazyHandler, plus options).
  * @returns The erased {@link QueueHandlerBinding} to register on an `AppModule`.
  */
-export function bindQueueHandler<T>(
+export function bindQueueHandler<T, K extends keyof AppServices = never>(
   token: QueueToken<T>,
-  config: QueueHandlerBindingInput<T>,
+  config: QueueHandlerBindingInput<T, K>,
 ): QueueHandlerBinding {
   let resolvedHandler = config.handler;
 
-  async function ensureHandler(): Promise<QueueJobHandler<T>> {
+  async function ensureHandler(): Promise<QueueJobHandler<T, K>> {
     if (resolvedHandler) {
       return resolvedHandler;
     }

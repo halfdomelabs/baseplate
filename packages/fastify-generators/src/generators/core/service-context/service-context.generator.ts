@@ -177,7 +177,7 @@ export const serviceContextGenerator = createGenerator({
                       : TsCodeUtils.template`${createContextArgs(true)} = {}`,
                   TPL_CREATE_TEST_OBJECT: testObject,
                   TPL_TEST_RUNTIME_SERVICES:
-                    appRuntimeTestUtils.getTestRuntimeServicesFragment(),
+                    appRuntimeTestUtils.getTestAppServicesFragment(),
                 },
               }),
             );

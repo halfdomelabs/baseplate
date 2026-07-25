@@ -11,10 +11,15 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { mapValuesOfMap, quot } from '@baseplate-dev/utils';
+import { compareStrings, mapValuesOfMap, quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+// Imported from the generated import-provider module rather than the package
+// barrel: app-module-setup's generator imports from this file, so going
+// through its barrel would create a module cycle.
+import { appModuleSetupImportsProvider } from '../app-module-setup/generated/ts-import-providers.js';
+import { appModuleImportsProvider } from '../app-module/app-module.generator.js';
 import { CORE_APP_RUNTIME_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -23,19 +28,38 @@ const descriptorSchema = z.object({});
  * A slice's construction entry: the construction STATEMENTS plus an optional
  * priority controlling render order relative to other slices, since a later
  * slice may reference an earlier slice's already-constructed const (e.g.
- * `betterAuth` needs `queues`). Mirrors `FastifyServerPlugin.orderPriority`.
+ * `betterAuth` needs `emails`). Mirrors `FastifyServerPlugin.orderPriority`.
+ *
+ * `FIRST` is for connection-level resources other slices build on (e.g.
+ * `redis`, which `pubsub` connects through). Constructing first also means
+ * disposing last, after everything holding a connection has torn down.
  */
 export interface AppRuntimeConstructionEntry {
   fragment: TsCodeFragment;
-  orderPriority?: 'EARLY' | 'MIDDLE' | 'END';
+  orderPriority?: 'FIRST' | 'EARLY' | 'MIDDLE' | 'END';
 }
 
-const CONSTRUCTION_ORDER_PRIORITY_MAP = { EARLY: 0, MIDDLE: 1, END: 2 };
+/**
+ * A top-level `AppRuntime` field: its type, plus an optional doc comment
+ * rendered above the declaration.
+ */
+export interface AppRuntimeFieldEntry {
+  type: TsCodeFragment;
+  /** Doc comment for the field, e.g. `\/** ... *\/`. */
+  comment?: string;
+}
+
+const CONSTRUCTION_ORDER_PRIORITY_MAP = {
+  FIRST: 0,
+  EARLY: 1,
+  MIDDLE: 2,
+  END: 3,
+};
 
 /**
  * A slice registers itself against these keyed maps, all keyed by the same
  * field name:
- * - `services`: the field's TYPE, rendered into `RuntimeServices`.
+ * - `services`: the field's TYPE, rendered into `AppServices`.
  * - `construction`: the construction STATEMENTS for the field, rendered in
  *   `orderPriority` order (default `MIDDLE`, tie-broken by key) so a later
  *   slice can depend on an earlier one's already-constructed const (e.g.
@@ -53,14 +77,21 @@ const CONSTRUCTION_ORDER_PRIORITY_MAP = { EARLY: 0, MIDDLE: 1, END: 2 };
  *   options parameter, for slices whose construction needs a caller-supplied
  *   value (e.g. pg-boss's `disableQueueMaintenance`, with no bullmq
  *   equivalent). Referenced from a construction statement as `options.<key>`.
+ * - `flattenedModuleFields` (optional): an `AppModule` field this slice reads
+ *   from the flattened root module, mapped to the local const name to bind it
+ *   to (e.g. `queues` -> `queueBindings`). All entries are emitted as a single
+ *   destructure of one `flattenAppModule(rootModule)` call, before any slice
+ *   construction, so each field is flattened once regardless of how many
+ *   slices consume it.
  */
 const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       services: t.map<string, TsCodeFragment>(),
       construction: t.map<string, AppRuntimeConstructionEntry>(),
-      runtimeFields: t.map<string, TsCodeFragment>(),
+      runtimeFields: t.map<string, AppRuntimeFieldEntry>(),
       constructionOptions: t.map<string, TsCodeFragment>(),
+      flattenedModuleFields: t.map<string, string>(),
     }),
     {
       prefix: 'app-runtime',
@@ -72,11 +103,11 @@ export { appRuntimeConfigProvider };
 
 export interface AppRuntimeTestUtilsProvider {
   /**
-   * A `RuntimeServices` object literal for tests that need a
+   * A `AppServices` object literal for tests that need a
    * `ServiceContext` but never touch runtime services directly - each field
    * throws on access instead of silently returning `undefined`.
    */
-  getTestRuntimeServicesFragment(): TsCodeFragment;
+  getTestAppServicesFragment(): TsCodeFragment;
 }
 
 export const appRuntimeTestUtilsProvider =
@@ -84,7 +115,7 @@ export const appRuntimeTestUtilsProvider =
 
 /**
  * Generates the app runtime composition root: `createAppRuntime()` and the
- * `RuntimeServices` bag it delivers. Slices (queues, email, storage, etc.)
+ * `AppServices` bag it delivers. Slices (queues, email, storage, etc.)
  * register themselves via `appRuntimeConfigProvider`; this generator renders
  * whatever they've registered.
  */
@@ -101,6 +132,8 @@ export const appRuntimeGenerator = createGenerator({
       dependencies: {
         renderers: CORE_APP_RUNTIME_GENERATED.renderers.provider,
         appRuntimeConfigValues: appRuntimeConfigValuesProvider,
+        appModuleImports: appModuleImportsProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
       },
       exports: {
         appRuntimeTestUtils: appRuntimeTestUtilsProvider.export(packageScope),
@@ -112,12 +145,15 @@ export const appRuntimeGenerator = createGenerator({
           construction,
           runtimeFields,
           constructionOptions,
+          flattenedModuleFields,
         },
+        appModuleImports,
+        appModuleSetupImports,
       }) {
         return {
           providers: {
             appRuntimeTestUtils: {
-              getTestRuntimeServicesFragment: () =>
+              getTestAppServicesFragment: () =>
                 services.size === 0
                   ? tsCodeFragment('{}')
                   : TsCodeUtils.mergeFragmentsAsObject(
@@ -148,8 +184,32 @@ export const appRuntimeGenerator = createGenerator({
                 ([key]) => key,
               ],
             );
+            // One destructure of one flattenAppModule() call, before any
+            // slice construction, so a field consumed by several slices is
+            // still only flattened once.
+            const flattenedModuleFragments =
+              flattenedModuleFields.size === 0
+                ? []
+                : [
+                    TsCodeUtils.template`const { ${[
+                      ...flattenedModuleFields.entries(),
+                    ]
+                      .toSorted(([a], [b]) => compareStrings(a, b))
+                      .map(([field, localName]) =>
+                        field === localName
+                          ? `${field} = []`
+                          : `${field}: ${localName} = []`,
+                      )
+                      .join(
+                        ', ',
+                      )} } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});`,
+                  ];
+
             const constructionStatements = TsCodeUtils.mergeFragmentsPresorted(
-              orderedConstruction.map(([, entry]) => entry.fragment),
+              [
+                ...flattenedModuleFragments,
+                ...orderedConstruction.map(([, entry]) => entry.fragment),
+              ],
               '\n\n',
             );
 
@@ -162,11 +222,21 @@ export const appRuntimeGenerator = createGenerator({
                     ),
                   );
 
+            // Built member-by-member rather than via
+            // mergeFragmentsAsInterfaceContent so a field's `comment` renders
+            // on its own line above the declaration.
             const runtimeFieldsInterface =
               runtimeFields.size === 0
                 ? 'readonly __runtimeFieldsPlaceholder?: never'
-                : TsCodeUtils.mergeFragmentsAsInterfaceContent(
-                    mapValuesOfMap(runtimeFields, (type) => type),
+                : TsCodeUtils.mergeFragmentsPresorted(
+                    [...runtimeFields.entries()]
+                      .toSorted(([a], [b]) => compareStrings(a, b))
+                      .map(([key, entry]) =>
+                        entry.comment
+                          ? TsCodeUtils.template`${entry.comment}\n${key}: ${entry.type};`
+                          : TsCodeUtils.template`${key}: ${entry.type};`,
+                      ),
+                    '\n',
                   );
 
             const runtimeFieldValues =

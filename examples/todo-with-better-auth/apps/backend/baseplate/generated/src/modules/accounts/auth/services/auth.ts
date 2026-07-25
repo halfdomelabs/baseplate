@@ -6,14 +6,12 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { customSession } from 'better-auth/plugins';
 
-import type { QueueService } from '@src/types/queue.types.js';
-
 import { config } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
+import type { EmailService } from '../../../emails/services/emails.service.js';
 import type { AuthRole } from '../constants/auth-roles.constants.js';
 
-import { sendEmail } from '../../../emails/services/emails.service.js';
 import { DEFAULT_USER_ROLES } from '../constants/auth-roles.constants.js';
 
 /**
@@ -30,7 +28,7 @@ export const cookiePrefix =
  * Dependencies `auth` needs at construction time.
  */
 export interface AuthServiceDeps {
-  queues: QueueService;
+  emails: EmailService;
 }
 
 export type Auth = ReturnType<typeof buildAuth>;
@@ -42,7 +40,7 @@ export type Auth = ReturnType<typeof buildAuth>;
  * only ever built once for the runtime's lifetime.
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type is self-referential (Auth is derived from it above); betterAuth()'s inferred generic return type can't be spelled out by hand
-export const buildAuth = ({ queues }: AuthServiceDeps) =>
+export const buildAuth = ({ emails }: AuthServiceDeps) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     secret: config.BETTER_AUTH_SECRET,
@@ -52,8 +50,7 @@ export const buildAuth = ({ queues }: AuthServiceDeps) =>
       enabled: true,
       async sendResetPassword({ token, user }) {
         const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
-        await sendEmail(
-          queues,
+        await emails.send(
           /* TPL_PASSWORD_RESET_EMAIL:START */ PasswordResetEmail /* TPL_PASSWORD_RESET_EMAIL:END */,
           {
             to: user.email,
@@ -67,8 +64,7 @@ export const buildAuth = ({ queues }: AuthServiceDeps) =>
       sendOnSignUp: true,
       async sendVerificationEmail({ token, user }) {
         const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
-        await sendEmail(
-          queues,
+        await emails.send(
           /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
           {
             to: user.email,

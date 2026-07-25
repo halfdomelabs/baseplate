@@ -1,10 +1,16 @@
 import type { PubSub } from 'graphql-yoga';
 
 import type { PubSubPublishArgs } from '../plugins/graphql/pubsub.js';
+import type { RedisRuntime } from '../services/redis.js';
 import type { QueueRuntime } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 
 import { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
+import {
+  createEmailService,
+  createEmailTransport,
+} from '../modules/emails/services/emails.service.js';
+import { postmarkEmailAdapter } from '../modules/emails/services/postmark.service.js';
 import { rootModule } from '../modules/index.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
 import { createNotificationService } from '../modules/notifications/services/notification.service.js';
@@ -27,6 +33,8 @@ export interface AppRuntime {
   /* TPL_RUNTIME_FIELDS:START */
   pubsub: PubSub<PubSubPublishArgs>;
   queues: QueueRuntime;
+  /** Runtime-internal: connection lifecycle, not for feature code. */
+  redis: RedisRuntime;
   /* TPL_RUNTIME_FIELDS:END */
   /**
    * Disposes every constructed service in reverse construction order.
@@ -45,28 +53,33 @@ export function createAppRuntime(
   let disposePromise: Promise<void> | undefined;
 
   /* TPL_SERVICE_CONSTRUCTION:START */
+  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
+
   const redis = createRedisRuntime();
   disposers.push({ name: 'redis', dispose: () => redis.dispose() });
 
   const pubsub = createGraphqlPubSub(redis);
 
-  const notifications = createNotificationService({
-    events: createNotificationEvents(pubsub),
-  });
-
-  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
   const queues = createQueueRuntime(queueBindings, {
     disableMaintenance: options.disableQueueMaintenance,
   });
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
+  const emails = createEmailService({ queues });
+  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+
+  const notifications = createNotificationService({
+    events: createNotificationEvents(pubsub),
+  });
+
   const userSession = new CookieUserSessionService();
   /* TPL_SERVICE_CONSTRUCTION:END */
 
   const services: AppServices = /* TPL_SERVICES_OBJECT:START */ {
+    emails,
+    emailTransport,
     notifications,
     queues,
-    redis,
     userSession,
   }; /* TPL_SERVICES_OBJECT:END */
 
@@ -93,6 +106,7 @@ export function createAppRuntime(
   const runtime = /* TPL_RUNTIME_FIELD_VALUES:START */ {
     pubsub,
     queues,
+    redis,
   }; /* TPL_RUNTIME_FIELD_VALUES:END */
 
   return { ...runtime, services, dispose };

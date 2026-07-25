@@ -26,12 +26,12 @@ const servicesGenericType = createTsTemplateFile({
 const servicesInAppChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {
-    prismaImports: prismaImportsProvider,
-    yogaPluginImports: yogaPluginImportsProvider,
-  },
+  importMapProviders: { prismaImports: prismaImportsProvider },
   name: 'services-in-app-channel',
-  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  referencedGeneratorTemplates: {
+    servicesNotificationChannel: {},
+    servicesNotificationEvents: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -49,6 +49,7 @@ const servicesNotificationChannel = createTsTemplateFile({
   referencedGeneratorTemplates: {
     servicesInAppChannel: {},
     servicesNotificationContent: {},
+    servicesNotificationEvents: {},
   },
   source: {
     path: path.join(
@@ -68,6 +69,24 @@ const servicesNotificationContent = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/module/services/notification-content.ts',
+    ),
+  },
+  variables: {},
+});
+
+const servicesNotificationEvents = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: { yogaPluginImports: yogaPluginImportsProvider },
+  name: 'services-notification-events',
+  projectExports: {
+    NotificationEvents: { isTypeOnly: true },
+    createNotificationEvents: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/notification-events.ts',
     ),
   },
   variables: {},
@@ -98,13 +117,13 @@ const servicesNotificationService = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
-    yogaPluginImports: yogaPluginImportsProvider,
   },
   name: 'services-notification-service',
   referencedGeneratorTemplates: {
     servicesGenericType: {},
     servicesNotificationChannel: {},
     servicesNotificationContent: {},
+    servicesNotificationEvents: {},
     servicesNotificationRegistry: {},
   },
   source: {
@@ -121,6 +140,7 @@ export const mainGroup = {
   servicesInAppChannel,
   servicesNotificationChannel,
   servicesNotificationContent,
+  servicesNotificationEvents,
   servicesNotificationRegistry,
   servicesNotificationService,
 };
@@ -166,7 +186,7 @@ const schemaNotificationMutations = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-mutations',
-  referencedGeneratorTemplates: { servicesNotificationService: {} },
+  referencedGeneratorTemplates: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -184,7 +204,7 @@ const schemaNotificationQueries = createTsTemplateFile({
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-queries',
-  referencedGeneratorTemplates: { servicesNotificationService: {} },
+  referencedGeneratorTemplates: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -197,10 +217,7 @@ const schemaNotificationQueries = createTsTemplateFile({
 const schemaNotificationSubscriptions = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'schema',
-  importMapProviders: {
-    pothosImports: pothosImportsProvider,
-    yogaPluginImports: yogaPluginImportsProvider,
-  },
+  importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-notification-subscriptions',
   source: {
     path: path.join(

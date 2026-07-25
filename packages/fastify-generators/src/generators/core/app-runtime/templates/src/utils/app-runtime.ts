@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { RuntimeServices } from '$runtimeServices';
+import type { AppServices } from '$runtimeServices';
 
 /**
  * Composition root for shared services. Constructs everything stateful and
@@ -12,7 +12,7 @@ import type { RuntimeServices } from '$runtimeServices';
  * full service context.
  */
 export interface AppRuntime {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
   TPL_RUNTIME_FIELDS;
   /**
    * Disposes every constructed service in reverse construction order.
@@ -28,7 +28,7 @@ export function createAppRuntime(TPL_OPTIONS_PARAM): AppRuntime {
 
   TPL_SERVICE_CONSTRUCTION;
 
-  const services: RuntimeServices = TPL_SERVICES_OBJECT;
+  const services: AppServices = TPL_SERVICES_OBJECT;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];

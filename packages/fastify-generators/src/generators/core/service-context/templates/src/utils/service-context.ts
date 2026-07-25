@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppRuntime, RuntimeServices } from '%appRuntimeImports';
+import type { AppRuntime, AppServices } from '%appRuntimeImports';
 
 import { createAppRuntime } from '%appRuntimeImports';
 
@@ -14,7 +14,7 @@ export interface ExecutionContext {
 }
 
 export interface ServiceContext extends ExecutionContext {
-  readonly services: Readonly<RuntimeServices>;
+  readonly services: Readonly<AppServices>;
 }
 
 /**
@@ -25,12 +25,12 @@ export interface ServiceContext extends ExecutionContext {
  * accepting the full {@link ServiceContext} where the set of services used
  * is known.
  */
-export type ServiceContextWith<K extends keyof RuntimeServices> =
-  ExecutionContext & { readonly services: Readonly<Pick<RuntimeServices, K>> };
+export type ServiceContextWith<K extends keyof AppServices> =
+  ExecutionContext & { readonly services: Readonly<Pick<AppServices, K>> };
 
 export function createServiceContext(
   TPL_CREATE_CONTEXT_ARGS,
-  services: Readonly<RuntimeServices>,
+  services: Readonly<AppServices>,
 ): ServiceContext {
   return TPL_CONTEXT_OBJECT;
 }

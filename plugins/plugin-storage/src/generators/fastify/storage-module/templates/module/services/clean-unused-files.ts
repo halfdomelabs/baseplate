@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { FILE_CATEGORIES } from '$configCategories';
-import { getAdapterOrThrow } from '$utilsGetAdapter';
+import type { ServiceContextWith } from '%serviceContextImports';
+
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { prisma } from '%prismaImports';
@@ -24,18 +24,21 @@ const CLEAN_JOB_LIMIT = 100;
  * first, then DB records. If storage deletion fails, the error is logged and
  * DB records are preserved so they can be retried on the next run.
  *
+ * @param ctx - The service context, providing access to storage adapters
  * @returns The number of DB file records successfully cleaned up
  */
-export async function cleanUnusedFiles(): Promise<number> {
+export async function cleanUnusedFiles(
+  ctx: ServiceContextWith<'storage'>,
+): Promise<number> {
   const cutoffDate = new Date(Date.now() - UNREFERENCED_UPLOAD_EXPIRY_TIME_MS);
 
-  const categoriesForCleanup = FILE_CATEGORIES.filter(
-    (c) => !c.disableAutoCleanup,
-  );
+  const { categories } = ctx.services.storage;
+
+  const categoriesForCleanup = categories.filter((c) => !c.disableAutoCleanup);
 
   // Collect ALL known file relations across all categories for safety.
   const allFileRelations = [
-    ...new Set(FILE_CATEGORIES.flatMap((c) => c.referencedByRelations ?? [])),
+    ...new Set(categories.flatMap((c) => c.referencedByRelations ?? [])),
   ];
 
   const unusedFiles = await prisma.file.findMany({
@@ -84,7 +87,7 @@ export async function cleanUnusedFiles(): Promise<number> {
     );
 
     try {
-      const adapter = getAdapterOrThrow(adapterName);
+      const adapter = ctx.services.storage.getAdapterOrThrow(adapterName);
       // Phase 1: Delete from storage
       if (adapter.deleteFiles) {
         await adapter.deleteFiles(files.map((f) => f.storagePath));

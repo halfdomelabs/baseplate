@@ -39,10 +39,12 @@ export const billingModuleGenerator = createGenerator({
         paths: STRIPE_BILLING_MODULE_GENERATED.paths.provider,
       },
       run({ stripeWebhookConfig, paths }) {
-        const handlerFragment = TsCodeUtils.importFragment(
+        // Closes over the `stripe` param of `createStripeEventHandlers`, which
+        // `handleSubscriptionEvent` needs to call back into the Stripe API.
+        const handlerFragment = TsCodeUtils.template`(event) => ${TsCodeUtils.importFragment(
           'handleSubscriptionEvent',
           paths.billingService,
-        );
+        )}(stripe, event)`;
         stripeWebhookConfig.eventHandlers.set(
           'customer.subscription.created',
           handlerFragment,

@@ -14,8 +14,8 @@ import { CORE_APP_RUNTIME_PATHS } from './template-paths.js';
 
 export const appRuntimeImportsSchema = createTsImportMapSchema({
   AppRuntime: { isTypeOnly: true },
+  AppServices: { isTypeOnly: true },
   createAppRuntime: {},
-  RuntimeServices: { isTypeOnly: true },
 });
 
 export type AppRuntimeImportsProvider = TsImportMapProviderFromSchema<
@@ -37,8 +37,8 @@ const coreAppRuntimeImportsTask = createGeneratorTask({
       providers: {
         appRuntimeImports: createTsImportMap(appRuntimeImportsSchema, {
           AppRuntime: paths.appRuntime,
+          AppServices: paths.runtimeServices,
           createAppRuntime: paths.appRuntime,
-          RuntimeServices: paths.runtimeServices,
         }),
       },
     };

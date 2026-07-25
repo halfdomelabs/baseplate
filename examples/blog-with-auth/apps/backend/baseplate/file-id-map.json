@@ -144,6 +144,7 @@
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-in-app-channel": "src/modules/notifications/services/in-app-channel.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-notification-channel": "src/modules/notifications/services/notification-channel.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-notification-content": "src/modules/notifications/services/notification-content.ts",
+  "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-notification-events": "src/modules/notifications/services/notification-events.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-notification-registry": "src/modules/notifications/services/notification-registry.ts",
   "@baseplate-dev/plugin-notifications#notifications/core/notification-module:services-notification-service": "src/modules/notifications/services/notification.service.ts",
   "@baseplate-dev/plugin-observability#core/fastify-sentry:instrument": "src/instrument.ts",

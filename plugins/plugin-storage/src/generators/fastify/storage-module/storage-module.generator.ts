@@ -10,7 +10,10 @@ import {
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
+  appModuleConfigProvider,
+  appModuleFieldTypesProvider,
   appModuleProvider,
+  appRuntimeConfigProvider,
   configServiceImportsProvider,
   configServiceProvider,
   createPothosTypeReference,
@@ -26,6 +29,7 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
+import { compareStrings, quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
@@ -53,14 +57,18 @@ const descriptorSchema = z.object({
   ),
 });
 
+/**
+ * Collects file category NAMES for the static GraphQL enum. Names only (no
+ * paths), so registering does not depend on any module's own paths provider.
+ */
 const [
   configTask,
   storageModuleConfigProvider,
   storageModuleConfigValuesProvider,
 ] = createConfigProviderTask(
   (t) => ({
-    /** Map of file category name to the config fragment for the file category. */
-    fileCategories: t.map<string, TsCodeFragment>(),
+    /** File category names, used to build the GraphQL enum values. */
+    fileCategoryNames: t.map<string, string>(),
   }),
   {
     prefix: 'storage-module',
@@ -115,12 +123,20 @@ export const storageModuleGenerator = createGenerator({
         appModule: appModuleProvider,
         renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
         pothosSchema: pothosSchemaProvider,
+        storageModuleConfigValues: storageModuleConfigValuesProvider,
         fileObjectType: pothosTypeOutputProvider
           .dependency()
           .reference(`prisma-object-type:${STORAGE_MODELS.file}`),
         paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
-      run({ appModule, pothosSchema, renderers, fileObjectType, paths }) {
+      run({
+        appModule,
+        pothosSchema,
+        renderers,
+        storageModuleConfigValues,
+        fileObjectType,
+        paths,
+      }) {
         const { schemaGroup } = FASTIFY_STORAGE_MODULE_GENERATED.templates;
         for (const template of Object.keys(schemaGroup)) {
           const renderedPath = paths[template as keyof typeof schemaGroup];
@@ -130,9 +146,17 @@ export const storageModuleGenerator = createGenerator({
         return {
           build: async (builder) => {
             const fileObjectRef = fileObjectType.getTypeReference();
+            const categoryNames = [
+              ...storageModuleConfigValues.fileCategoryNames.keys(),
+            ].toSorted(compareStrings);
             await builder.apply(
               renderers.schemaGroup.render({
                 variables: {
+                  schemaFileCategory: {
+                    TPL_FILE_CATEGORY_ENUM_NAMES: TsCodeUtils.template`${TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      categoryNames.map((name) => quot(name)),
+                    )} as const`,
+                  },
                   schemaPresignedMutations: {
                     TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
                   },
@@ -190,7 +214,6 @@ export const storageModuleGenerator = createGenerator({
         configServiceImports: configServiceImportsProvider,
         renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
         storageModuleImports: storageModuleImportsProvider,
-        storageModuleConfigValues: storageModuleConfigValuesProvider,
         prismaGeneratedImports: prismaGeneratedImportsProvider,
         appModule: appModuleProvider,
         paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
@@ -200,7 +223,6 @@ export const storageModuleGenerator = createGenerator({
         configServiceImports,
         renderers,
         storageModuleImports,
-        storageModuleConfigValues,
         prismaGeneratedImports,
         appModule,
         paths,
@@ -280,28 +302,14 @@ export const storageModuleGenerator = createGenerator({
             );
 
             await builder.apply(
-              renderers.configAdapters.render({
+              renderers.servicesStorage.render({
                 variables: {
                   TPL_ADAPTERS: TsCodeUtils.mergeFragmentsAsObject(adapterMap),
                 },
               }),
             );
 
-            // Copy constants
-
-            const categoriesMap = storageModuleConfigValues.fileCategories;
-
-            await builder.apply(
-              renderers.configCategories.render({
-                variables: {
-                  TPL_FILE_CATEGORIES:
-                    TsCodeUtils.mergeFragmentsAsArray(categoriesMap),
-                },
-              }),
-            );
-
             // Render standalone utility templates
-            await builder.apply(renderers.utilsGetAdapter.render({}));
             await builder.apply(
               renderers.utilsValidatePendingUpload.render({}),
             );
@@ -328,6 +336,55 @@ export const storageModuleGenerator = createGenerator({
             );
           },
         };
+      },
+    }),
+    // Declared without a type here (no path needed, so no dependency on this
+    // module's own paths) and bound below, once `paths` can be resolved.
+    appModuleConfig: createGeneratorTask({
+      dependencies: {
+        appModuleConfig: appModuleConfigProvider,
+      },
+      run({ appModuleConfig }) {
+        appModuleConfig.moduleFields.set('storageCategories', undefined);
+      },
+    }),
+    appModuleFieldTypes: createGeneratorTask({
+      dependencies: {
+        appModuleFieldTypes: appModuleFieldTypesProvider,
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
+      },
+      run({ appModuleFieldTypes, paths }) {
+        appModuleFieldTypes.setFieldType(
+          'storageCategories',
+          TsCodeUtils.typeImportFragment(
+            'FileCategory',
+            paths.typesFileCategory,
+          ),
+        );
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
+      },
+      run({ appRuntimeConfig, paths }) {
+        appRuntimeConfig.services.set(
+          'storage',
+          TsCodeUtils.typeImportFragment(
+            'StorageService',
+            paths.servicesStorage,
+          ),
+        );
+        appRuntimeConfig.flattenedModuleFields.set(
+          'storageCategories',
+          'storageCategories',
+        );
+        appRuntimeConfig.construction.set('storage', {
+          fragment: TsCodeUtils.template`
+            const storage = ${TsCodeUtils.importFragment('createStorageService', paths.servicesStorage)}(storageCategories);
+          `,
+        });
       },
     }),
   }),

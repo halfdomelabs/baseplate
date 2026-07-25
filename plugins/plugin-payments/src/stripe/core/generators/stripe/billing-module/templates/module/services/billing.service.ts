@@ -9,7 +9,6 @@ import type Stripe from 'stripe';
 
 import { getPriceId, SUBSCRIPTION_PLANS } from '$billingConfig';
 import { logError } from '%errorHandlerServiceImports';
-import { stripe } from '%fastifyStripeImports';
 import { logger } from '%loggerServiceImports';
 import { prisma } from '%prismaImports';
 
@@ -73,10 +72,12 @@ async function syncSubscriptionRoles(
  * Otherwise, creates a new Stripe customer and BillingAccount record, and links
  * it back to the user.
  *
+ * @param stripe - The Stripe client.
  * @param userId - The user ID to get or create a billing account for.
  * @returns The BillingAccount record.
  */
 export async function getOrCreateBillingAccount(
+  stripe: Stripe,
   userId: string,
 ): Promise<BillingAccount> {
   const user = await prisma.user.findUniqueOrThrow({
@@ -111,11 +112,13 @@ export async function getOrCreateBillingAccount(
  * price ID match is found but metadata was missing, auto-heals the Stripe
  * subscription metadata so future webhooks resolve immediately.
  *
+ * @param stripe - The Stripe client.
  * @param stripeSubscription - The Stripe subscription object.
  * @param firstItem - The first subscription item.
  * @returns The resolved plan key, or undefined if no plan could be identified.
  */
 function resolvePlanKey(
+  stripe: Stripe,
   stripeSubscription: Stripe.Subscription,
   firstItem: Stripe.SubscriptionItem,
 ): PlanKey | undefined {
@@ -162,9 +165,11 @@ function resolvePlanKey(
  * Uses the Stripe subscription ID (providerId) for idempotent upserts.
  * Translates Stripe status strings to our BillingSubscriptionStatus enum.
  *
+ * @param stripe - The Stripe client.
  * @param stripeSubscription - The Stripe subscription object from a webhook event.
  */
 export async function syncSubscriptionFromStripe(
+  stripe: Stripe,
   stripeSubscription: Stripe.Subscription,
 ): Promise<void> {
   const status = STRIPE_STATUS_MAP[stripeSubscription.status];
@@ -195,7 +200,7 @@ export async function syncSubscriptionFromStripe(
     return;
   }
 
-  const resolvedPlanKey = resolvePlanKey(stripeSubscription, firstItem);
+  const resolvedPlanKey = resolvePlanKey(stripe, stripeSubscription, firstItem);
 
   if (!resolvedPlanKey) {
     logger.warn(
@@ -249,9 +254,11 @@ export async function syncSubscriptionFromStripe(
  *
  * Validates the event type at runtime before narrowing to a subscription event.
  *
+ * @param stripe - The Stripe client.
  * @param event - A generic Stripe event (type-checked at runtime).
  */
 export async function handleSubscriptionEvent(
+  stripe: Stripe,
   event: Stripe.Event,
 ): Promise<void> {
   if (
@@ -266,5 +273,5 @@ export async function handleSubscriptionEvent(
 
   const subscription = event.data.object;
   logger.info(`Processing ${event.type} for subscription ${subscription.id}`);
-  await syncSubscriptionFromStripe(subscription);
+  await syncSubscriptionFromStripe(stripe, subscription);
 }
