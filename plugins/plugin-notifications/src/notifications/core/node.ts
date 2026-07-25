@@ -39,11 +39,17 @@ export default createPluginModule({
           );
         },
       }),
-      // Web: mount the notification bell into the admin layout header.
+      // Web: generate the notification bell/panel when opted into for this app.
+      // Auto-mounts into the admin layout header if the app has one; otherwise
+      // the components are generated for manual placement.
       pluginAppCompiler({
         pluginKey,
         appType: webAppEntryType,
-        compile: ({ appCompiler }) => {
+        compile: ({ appCompiler, appDefinition }) => {
+          if (!appDefinition.includeNotifications) {
+            return;
+          }
+
           appCompiler.addRootChildren({
             notificationWeb: notificationWebGenerator({}),
           });

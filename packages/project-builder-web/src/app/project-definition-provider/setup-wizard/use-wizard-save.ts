@@ -120,6 +120,7 @@ export function buildInitialApps(
       description: isAdmin ? 'Admin panel' : 'Web application',
       includeAuth: false,
       includeUploadComponents: false,
+      includeNotifications: false,
       enableSubscriptions: false,
       adminApp: {
         enabled: isAdmin,

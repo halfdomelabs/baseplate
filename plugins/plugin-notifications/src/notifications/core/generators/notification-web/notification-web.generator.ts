@@ -11,8 +11,9 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_WEB_GENERATED } from './generated/index
 const descriptorSchema = z.object({});
 
 /**
- * Generates the notification bell/panel widget and mounts it into the admin
- * layout header via the header-actions extension point.
+ * Generates the notification bell/panel widget. Auto-mounts into the admin
+ * layout header via the header-actions extension point when the app has an
+ * admin layout; otherwise the components are generated for manual placement.
  */
 export const notificationWebGenerator = createGenerator({
   name: 'notifications/core/notification-web',
@@ -27,10 +28,10 @@ export const notificationWebGenerator = createGenerator({
           NOTIFICATIONS_CORE_NOTIFICATION_WEB_GENERATED.renderers.provider,
         paths: NOTIFICATIONS_CORE_NOTIFICATION_WEB_GENERATED.paths.provider,
         adminLayoutHeaderActionContainer:
-          adminLayoutHeaderActionContainerProvider,
+          adminLayoutHeaderActionContainerProvider.dependency().optional(),
       },
       run({ renderers, paths, adminLayoutHeaderActionContainer }) {
-        adminLayoutHeaderActionContainer.addAction({
+        adminLayoutHeaderActionContainer?.addAction({
           name: 'notification-bell',
           order: 0,
           content: tsTemplateWithImports([
