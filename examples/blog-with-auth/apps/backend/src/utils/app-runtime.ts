@@ -58,7 +58,13 @@ export function createAppRuntime(
   const redis = createRedisRuntime();
   disposers.push({ name: 'redis', dispose: () => redis.dispose() });
 
+  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+
   const pubsub = createGraphqlPubSub(redis);
+
+  const notifications = createNotificationService({
+    events: createNotificationEvents(pubsub),
+  });
 
   const queues = createQueueRuntime(queueBindings, {
     disableMaintenance: options.disableQueueMaintenance,
@@ -66,11 +72,6 @@ export function createAppRuntime(
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
   const emails = createEmailService({ queues });
-  const emailTransport = createEmailTransport(postmarkEmailAdapter);
-
-  const notifications = createNotificationService({
-    events: createNotificationEvents(pubsub),
-  });
 
   const userSession = new CookieUserSessionService();
   /* TPL_SERVICE_CONSTRUCTION:END */

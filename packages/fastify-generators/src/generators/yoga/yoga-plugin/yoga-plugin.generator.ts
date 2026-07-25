@@ -280,10 +280,8 @@ export const yogaPluginGenerator = createGenerator({
               appRuntimeConfig.runtimeFields.set('pubsub', {
                 type: TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
               });
-              // EARLY (after redis's FIRST) so slices consuming pubsub in
-              // their own construction can rely on it already existing.
               appRuntimeConfig.construction.set('pubsub', {
-                orderPriority: 'EARLY',
+                dependencies: ['redis'],
                 fragment: TsCodeUtils.template`
                   const pubsub = ${TsCodeUtils.importFragment('createGraphqlPubSub', paths.pubsub)}(redis);
                 `,

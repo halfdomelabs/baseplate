@@ -63,7 +63,6 @@ export const bullmqGenerator = createGenerator({
         });
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queues', {
-          orderPriority: 'EARLY',
           fragment: TsCodeUtils.template`
             const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.bullmqService)}(queueBindings);
             disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });

@@ -53,17 +53,19 @@ export function createAppRuntime(/* TPL_OPTIONS_PARAM:INLINE */): AppRuntime {
   const redis = createRedisRuntime();
   disposers.push({ name: 'redis', dispose: () => redis.dispose() });
 
+  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+
   const queues = createQueueRuntime(queueBindings);
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
   const emails = createEmailService({ queues });
-  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+
+  const betterAuth = buildAuth({ emails });
 
   const storage = createStorageService(storageCategories);
 
   const stripe = new Stripe(config.STRIPE_SECRET_KEY);
 
-  const betterAuth = buildAuth({ emails });
   const userSession = createBetterAuthUserSessionService(betterAuth);
   /* TPL_SERVICE_CONSTRUCTION:END */
 

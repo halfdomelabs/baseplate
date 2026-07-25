@@ -40,8 +40,8 @@ export const notificationModuleGenerator = createGenerator({
             paths.servicesNotificationService,
           ),
         );
-        // MIDDLE, after `pubsub` is constructed from redis.
         appRuntimeConfig.construction.set('notifications', {
+          dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`
             const notifications = ${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),

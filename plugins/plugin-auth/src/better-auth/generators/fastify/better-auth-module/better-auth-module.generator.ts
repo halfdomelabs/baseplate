@@ -151,14 +151,15 @@ export const betterAuthModuleGenerator = createGenerator({
           'userSession',
           userSessionTypesImports.UserSessionService.typeFragment(),
         );
-        // Both consts are emitted from a single construction entry so
-        // `userSession`'s construction (which depends on `betterAuth` being
-        // built first) doesn't rely on map key ordering. orderPriority: END
-        // since betterAuth depends on `emails`, itself MIDDLE.
         appRuntimeConfig.construction.set('betterAuth', {
-          orderPriority: 'END',
+          dependencies: ['emails'],
           fragment: TsCodeUtils.template`
             const betterAuth = ${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ emails });
+          `,
+        });
+        appRuntimeConfig.construction.set('userSession', {
+          dependencies: ['betterAuth'],
+          fragment: TsCodeUtils.template`
             const userSession = ${TsCodeUtils.importFragment('createBetterAuthUserSessionService', paths.userSessionService)}(betterAuth);
           `,
         });

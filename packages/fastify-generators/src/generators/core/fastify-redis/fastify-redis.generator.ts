@@ -85,8 +85,9 @@ export const fastifyRedisGenerator = createGenerator({
           comment:
             '/** Runtime-internal: connection lifecycle, not for feature code. */',
         });
-        // FIRST so it is constructed before slices that open connections
-        // through it, and torn down only after they have released theirs.
+        // FIRST so it is torn down only after slices that opened connections
+        // through it have released theirs - disposal runs in reverse
+        // construction order, and not every such slice declares an edge here.
         appRuntimeConfig.construction.set('redis', {
           orderPriority: 'FIRST',
           fragment: TsCodeUtils.template`

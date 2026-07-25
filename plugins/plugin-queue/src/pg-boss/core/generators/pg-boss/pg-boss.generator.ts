@@ -72,7 +72,6 @@ export const pgBossGenerator = createGenerator({
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queues', {
-          orderPriority: 'EARLY',
           fragment: TsCodeUtils.template`
             const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
               disableMaintenance: options.disableQueueMaintenance,

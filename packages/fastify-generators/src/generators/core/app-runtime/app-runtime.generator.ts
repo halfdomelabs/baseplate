@@ -11,8 +11,13 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { compareStrings, mapValuesOfMap, quot } from '@baseplate-dev/utils';
-import { sortBy } from 'es-toolkit';
+import {
+  compareStrings,
+  mapValuesOfMap,
+  quot,
+  toposort,
+  ToposortCyclicalDependencyError,
+} from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 // Imported from the generated import-provider module rather than the package
@@ -25,17 +30,24 @@ import { CORE_APP_RUNTIME_GENERATED } from './generated/index.js';
 const descriptorSchema = z.object({});
 
 /**
- * A slice's construction entry: the construction STATEMENTS plus an optional
- * priority controlling render order relative to other slices, since a later
- * slice may reference an earlier slice's already-constructed const (e.g.
- * `betterAuth` needs `emails`). Mirrors `FastifyServerPlugin.orderPriority`.
+ * A slice's construction entry: the construction STATEMENTS for a single const
+ * named after the entry's key, plus the other construction keys those
+ * statements reference.
  *
- * `FIRST` is for connection-level resources other slices build on (e.g.
- * `redis`, which `pubsub` connects through). Constructing first also means
- * disposing last, after everything holding a connection has torn down.
+ * `dependencies` is the hard ordering constraint - each named key is
+ * constructed first, so the fragment can reference its const (e.g. `betterAuth`
+ * references `emails`). Unknown or cyclic dependencies fail generation.
+ *
+ * `orderPriority` only breaks ties between slices left unordered by the
+ * dependency graph, expressing disposal intent that no edge captures: disposal
+ * runs in reverse construction order, so `FIRST` is for connection-level
+ * resources (e.g. `redis`) that must be torn down only after everything
+ * holding a connection has released it. Mirrors
+ * `FastifyServerPlugin.orderPriority`.
  */
 export interface AppRuntimeConstructionEntry {
   fragment: TsCodeFragment;
+  dependencies?: string[];
   orderPriority?: 'FIRST' | 'EARLY' | 'MIDDLE' | 'END';
 }
 
@@ -57,15 +69,76 @@ const CONSTRUCTION_ORDER_PRIORITY_MAP = {
 };
 
 /**
+ * Orders construction entries so each entry follows everything it declares in
+ * `dependencies`. Entries the graph leaves unordered are emitted by
+ * `orderPriority`, then key, keeping output stable across syncs.
+ *
+ * @param construction Construction entries keyed by the const each one builds.
+ * @param providedNames Names bound before any construction runs (the
+ * `flattenedModuleFields` destructure), so slices may depend on them.
+ * @returns The entries in construction order.
+ * @throws If a dependency is unregistered or the graph has a cycle.
+ * @see toposort - the underlying sort; `compareFunc` breaks ties between
+ * entries at the same topological level.
+ */
+export function sortConstructionEntries(
+  construction: ReadonlyMap<string, AppRuntimeConstructionEntry>,
+  providedNames: ReadonlySet<string>,
+): [string, AppRuntimeConstructionEntry][] {
+  // Checked here rather than left to toposort's ToposortUnknownNodeError so
+  // the message can name the slice that declared the dependency.
+  const edges = [...construction].flatMap(([key, entry]) =>
+    (entry.dependencies ?? [])
+      .filter((dependency) => !providedNames.has(dependency))
+      .map((dependency): [string, string] => {
+        if (!construction.has(dependency)) {
+          throw new Error(
+            `App runtime slice ${quot(key)} depends on ${quot(dependency)}, which no slice registers. Either enable the plugin that provides it or drop the dependency.`,
+          );
+        }
+        return [dependency, key];
+      }),
+  );
+
+  const compareReady = (a: string, b: string): number =>
+    CONSTRUCTION_ORDER_PRIORITY_MAP[
+      construction.get(a)?.orderPriority ?? 'MIDDLE'
+    ] -
+      CONSTRUCTION_ORDER_PRIORITY_MAP[
+        construction.get(b)?.orderPriority ?? 'MIDDLE'
+      ] || compareStrings(a, b);
+
+  try {
+    const sortedKeys = toposort([...construction.keys()], edges, {
+      compareFunc: compareReady,
+    });
+    return sortedKeys.flatMap((key) => {
+      const entry = construction.get(key);
+      return entry
+        ? [[key, entry] as [string, AppRuntimeConstructionEntry]]
+        : [];
+    });
+  } catch (error) {
+    if (error instanceof ToposortCyclicalDependencyError) {
+      throw new TypeError(
+        `App runtime slices have a circular construction dependency: ${error.cyclePath.join(' -> ')}.`,
+        { cause: error },
+      );
+    }
+    throw error;
+  }
+}
+
+/**
  * A slice registers itself against these keyed maps, all keyed by the same
  * field name:
  * - `services`: the field's TYPE, rendered into `AppServices`.
- * - `construction`: the construction STATEMENTS for the field, rendered in
- *   `orderPriority` order (default `MIDDLE`, tie-broken by key) so a later
- *   slice can depend on an earlier one's already-constructed const (e.g.
- *   `betterAuth` needs `queues`, so `queues` registers `EARLY`). Should push
- *   a disposer via `disposers.push(...)` if the slice owns a resource that
- *   needs cleanup.
+ * - `construction`: the construction STATEMENTS for the field, topologically
+ *   sorted so every entry named in a slice's `dependencies` is constructed
+ *   before it (e.g. `betterAuth` declares `dependencies: ['emails']`).
+ *   Slices the graph leaves unordered fall back to `orderPriority` (default
+ *   `MIDDLE`), then key order. Should push a disposer via
+ *   `disposers.push(...)` if the slice owns a resource that needs cleanup.
  * - `runtimeFields` (optional): the field's TYPE for `AppRuntime`'s top-level
  *   surface, for slices that need a view beyond `services` (e.g.
  *   `runtime.queues` exposes the full `QueueRuntime`, not just the narrowed
@@ -174,15 +247,12 @@ export const appRuntimeGenerator = createGenerator({
                     mapValuesOfMap(services, (type) => type),
                   );
 
-            const orderedConstruction = sortBy(
-              [...construction.entries()],
-              [
-                ([, entry]) =>
-                  CONSTRUCTION_ORDER_PRIORITY_MAP[
-                    entry.orderPriority ?? 'MIDDLE'
-                  ],
-                ([key]) => key,
-              ],
+            // The destructure below binds these before any slice runs, so a
+            // slice may name one as a dependency without a construction entry
+            // providing it.
+            const orderedConstruction = sortConstructionEntries(
+              construction,
+              new Set(flattenedModuleFields.values()),
             );
             // One destructure of one flattenAppModule() call, before any
             // slice construction, so a field consumed by several slices is
