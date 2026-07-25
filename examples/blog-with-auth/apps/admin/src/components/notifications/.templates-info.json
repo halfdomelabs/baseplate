@@ -1,0 +1,17 @@
+{
+  "notification-bell.tsx": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-web",
+    "instanceData": {},
+    "template": "notification-bell"
+  },
+  "notification-operations.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-web",
+    "instanceData": {},
+    "template": "notification-operations"
+  },
+  "notification-panel.tsx": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-web",
+    "instanceData": {},
+    "template": "notification-panel"
+  }
+}

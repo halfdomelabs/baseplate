@@ -1,4 +1,6 @@
-import { graphql } from '@src/gql';
+// @ts-nocheck
+
+import { graphql } from '%graphqlImports';
 
 /** How many feed rows the widget loads; shared by the query + cache writes. */
 export const FEED_PAGE_SIZE = 20;

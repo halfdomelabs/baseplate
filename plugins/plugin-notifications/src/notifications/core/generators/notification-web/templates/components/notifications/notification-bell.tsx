@@ -1,5 +1,24 @@
+// @ts-nocheck
+
 import type { ReactElement } from 'react';
 
+import {
+  FEED_PAGE_SIZE,
+  markAllNotificationsSeenMutation,
+  notificationFeedQuery,
+  notificationItemFragment,
+  notificationsChangedSubscription,
+} from '$notificationOperations';
+import { NotificationPanel } from '$notificationPanel';
+import { useSession } from '%authHooksImports';
+import { readFragment } from '%graphqlImports';
+import {
+  Badge,
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '%reactComponentsImports';
 import {
   useApolloClient,
   useMutation,
@@ -8,21 +27,6 @@ import {
 } from '@apollo/client/react';
 import { useState } from 'react';
 import { MdNotifications } from 'react-icons/md';
-
-import { readFragment } from '@src/gql';
-import { useSession } from '@src/hooks/use-session';
-
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import {
-  FEED_PAGE_SIZE,
-  markAllNotificationsSeenMutation,
-  notificationFeedQuery,
-  notificationItemFragment,
-  notificationsChangedSubscription,
-} from './notification-operations';
-import { NotificationPanel } from './notification-panel';
 
 /**
  * Header bell: unseen badge + a popover feed, kept live over SSE.

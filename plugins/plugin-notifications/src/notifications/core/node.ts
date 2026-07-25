@@ -4,11 +4,15 @@ import {
   createPluginModule,
   pluginAppCompiler,
   PluginUtils,
+  webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 
 import type { NotificationsPluginDefinition } from './schema/plugin-definition.js';
 
-import { notificationModuleGenerator } from './generators/index.js';
+import {
+  notificationModuleGenerator,
+  notificationWebGenerator,
+} from './generators/index.js';
 
 export default createPluginModule({
   name: 'node',
@@ -33,6 +37,16 @@ export default createPluginModule({
               notificationModule: notificationModuleGenerator({}),
             },
           );
+        },
+      }),
+      // Web: mount the notification bell into the admin layout header.
+      pluginAppCompiler({
+        pluginKey,
+        appType: webAppEntryType,
+        compile: ({ appCompiler }) => {
+          appCompiler.addRootChildren({
+            notificationWeb: notificationWebGenerator({}),
+          });
         },
       }),
     );
