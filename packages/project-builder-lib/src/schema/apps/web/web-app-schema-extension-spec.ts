@@ -39,16 +39,16 @@ export interface WebAppConfigWithPluginData {
  *
  * `pluginData` is validated per-plugin by that plugin's registered schema
  * creator, but is statically untyped here (the merged schema is built at
- * runtime). Callers supply the type they infer from their own schema creator
- * via `def.InferOutput`.
+ * runtime). Callers cast the result to the type they infer from their own schema
+ * creator via `def.InferOutput`.
  *
  * @param webApp - The web app config to read from
  * @param pluginKey - The registering plugin's key
  * @returns The plugin's slice, or `undefined` if the app has not opted in
  */
-export function getWebAppPluginData<T>(
+export function getWebAppPluginData(
   webApp: WebAppConfigWithPluginData,
   pluginKey: string,
-): T | undefined {
-  return webApp.pluginData?.[pluginKey] as T | undefined;
+): unknown {
+  return webApp.pluginData?.[pluginKey];
 }

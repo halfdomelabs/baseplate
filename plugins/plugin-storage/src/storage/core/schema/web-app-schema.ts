@@ -30,5 +30,7 @@ export function getStorageWebAppData(
   webApp: WebAppConfigWithPluginData,
   pluginKey: string,
 ): StorageWebAppData | undefined {
-  return getWebAppPluginData<StorageWebAppData>(webApp, pluginKey);
+  return getWebAppPluginData(webApp, pluginKey) as
+    | StorageWebAppData
+    | undefined;
 }

@@ -30,5 +30,7 @@ export function getNotificationsWebAppData(
   webApp: WebAppConfigWithPluginData,
   pluginKey: string,
 ): NotificationsWebAppData | undefined {
-  return getWebAppPluginData<NotificationsWebAppData>(webApp, pluginKey);
+  return getWebAppPluginData(webApp, pluginKey) as
+    | NotificationsWebAppData
+    | undefined;
 }
