@@ -22,6 +22,8 @@ import { quot } from '@baseplate-dev/utils';
 
 import {
   generateFieldRefOrLiteralCode,
+  generateFieldRefOrLiteralCodeForSession,
+  isGuaranteedAuthField,
   serializeLiteralValue,
 } from './authorizer-expression-codegen-utils.js';
 
@@ -41,6 +43,47 @@ export interface QueryFilterCodeContext {
   resolvedFilters: Map<string, ResolvedNestedQueryFilter>;
 }
 
+/** Options for {@link generateQueryFilterExpressionCode}. */
+export interface QueryFilterCodeOptions {
+  /**
+   * Render for the `r.userWhere` callback (`session.field`, no null-guard)
+   * instead of `r.where` (`ctx.auth.field`, null-guarded). Only valid when the
+   * node references `auth.userId` and no other auth field — callers must
+   * check {@link referencesOnlyGuaranteedAuthField} first.
+   */
+  forSession?: boolean;
+}
+
+/**
+ * Does this leaf node (a `fieldComparison` or `relationFilter` — the only
+ * shapes the policy lowering's `asWhere` fallback receives) reference
+ * `auth.userId` and no other auth field? If so, its null-guard collapses
+ * under `r.userWhere`'s non-null guarantee.
+ */
+export function referencesOnlyGuaranteedAuthField(
+  node: AuthorizerExpressionNode,
+): boolean {
+  const authFieldRefs: (FieldRefNode | LiteralValueNode)[] = [];
+  if (node.type === 'fieldComparison') {
+    if (node.left.type === 'fieldRef' && node.left.source === 'auth') {
+      authFieldRefs.push(node.left);
+    }
+    if (node.right.type === 'fieldRef' && node.right.source === 'auth') {
+      authFieldRefs.push(node.right);
+    }
+  } else if (node.type === 'relationFilter') {
+    for (const condition of node.conditions) {
+      if (
+        condition.value.type === 'fieldRef' &&
+        condition.value.source === 'auth'
+      ) {
+        authFieldRefs.push(condition.value);
+      }
+    }
+  }
+  return authFieldRefs.length > 0 && authFieldRefs.every(isGuaranteedAuthField);
+}
+
 /**
  * Build a visitor that emits Prisma where-clause code from AST nodes.
  *
@@ -51,6 +94,7 @@ export interface QueryFilterCodeContext {
  */
 function createQueryFilterCodeVisitor(
   codeContext?: QueryFilterCodeContext,
+  options?: QueryFilterCodeOptions,
 ): AuthorizerExpressionVisitor<string> {
   return {
     fieldComparison(node) {
@@ -58,6 +102,7 @@ function createQueryFilterCodeVisitor(
         node.left,
         node.right,
         node.operator,
+        options,
       );
     },
     hasRole(node) {
@@ -84,7 +129,7 @@ function createQueryFilterCodeVisitor(
       )}, [${roles}])`;
     },
     relationFilter(node) {
-      return generateRelationFilterWhereCode(node);
+      return generateRelationFilterWhereCode(node, options);
     },
     binaryLogical(node, _ctx, visit) {
       const helper = node.operator === '||' ? 'or' : 'and';
@@ -101,10 +146,11 @@ function createQueryFilterCodeVisitor(
 export function generateQueryFilterExpressionCode(
   node: AuthorizerExpressionNode,
   codeContext?: QueryFilterCodeContext,
+  options?: QueryFilterCodeOptions,
 ): string {
   return visitAuthorizerExpression(
     node,
-    createQueryFilterCodeVisitor(codeContext),
+    createQueryFilterCodeVisitor(codeContext, options),
   );
 }
 
@@ -145,20 +191,30 @@ function getResolvedQueryFilter(
 
 /**
  * Prisma where for a relation filter: `some` → `{ rel: { some: {...} } }`,
- * `every` → `{ rel: { every: {...} } }`. Auth-field conditions get a null guard.
+ * `every` → `{ rel: { every: {...} } }`. Auth-field conditions get a null
+ * guard, UNLESS `forSession` (every auth field in the filter is `userId`,
+ * guaranteed non-null by `r.userWhere` — see `referencesOnlyGuaranteedAuthField`).
  */
 function generateRelationFilterWhereCode(
   node: Extract<AuthorizerExpressionNode, { type: 'relationFilter' }>,
+  options?: QueryFilterCodeOptions,
 ): string {
   const prismaOperator = node.operator === 'some' ? 'some' : 'every';
+  const renderValue = options?.forSession
+    ? generateFieldRefOrLiteralCodeForSession
+    : generateFieldRefOrLiteralCode;
 
   const conditionEntries = node.conditions.map((condition) => {
-    const valueCode = generateFieldRefOrLiteralCode(condition.value);
+    const valueCode = renderValue(condition.value);
     return `${condition.field}: ${valueCode}`;
   });
   const conditionsCode = conditionEntries.join(', ');
 
   const whereClause = `{ ${node.relationName}: { ${prismaOperator}: { ${conditionsCode} } } }`;
+
+  if (options?.forSession) {
+    return whereClause;
+  }
 
   const authFieldConditions = node.conditions.filter(
     (c) => c.value.type === 'fieldRef' && c.value.source === 'auth',
@@ -180,11 +236,14 @@ function generateRelationFilterWhereCode(
  * - `model.field !== literal` → `{ field: { not: literal } }`
  * - `model.field === auth.x`  → `(ctx.auth.x != null ? { field: ctx.auth.x } : false)`
  * - `model.field !== auth.x`  → `(ctx.auth.x != null ? { field: { not: ctx.auth.x } } : false)`
+ * - `forSession` (auth.x is `userId`, guaranteed non-null by `r.userWhere`):
+ *   `model.field === userId` → `{ field: session.userId }` (no null-guard)
  */
 function generateFieldComparisonWhereCode(
   left: FieldRefNode | LiteralValueNode,
   right: FieldRefNode | LiteralValueNode,
   operator: '===' | '!==',
+  options?: QueryFilterCodeOptions,
 ): string {
   const modelNode =
     left.type === 'fieldRef' && left.source === 'model'
@@ -214,6 +273,15 @@ function generateFieldComparisonWhereCode(
       'Field comparison must compare a model field against an auth field or a literal value.',
     );
   }
+
+  if (options?.forSession) {
+    const sessionExpr = generateFieldRefOrLiteralCodeForSession(otherNode);
+    if (operator === '!==') {
+      return `{ ${modelNode.field}: { not: ${sessionExpr} } }`;
+    }
+    return `{ ${modelNode.field}: ${sessionExpr} }`;
+  }
+
   const authExpr = `ctx.auth.${otherNode.field}`;
   if (operator === '!==') {
     return `(${authExpr} != null ? { ${modelNode.field}: { not: ${authExpr} } } : false)`;

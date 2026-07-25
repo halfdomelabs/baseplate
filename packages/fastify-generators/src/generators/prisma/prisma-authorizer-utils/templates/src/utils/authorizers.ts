@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { AuthUserSessionInfo } from '%authContextImports';
 import type { AuthRole } from '%authRolesImports';
 import type {
   GetResult,
@@ -119,8 +120,10 @@ interface ViaLink<M extends ModelPropName, R extends ToOneRelationKeys<M>> {
 // createModelPolicy — one declaration per role; the boolean `check` and the
 // Prisma `where` are BOTH derived, with cached delegation (not a per-child
 // probe). Role kinds:
-//   match   — scalar equality on self (zero-query on a loaded row)
-//   where   — arbitrary Prisma filter (DB-evaluated)
+//   match     — scalar equality on self (zero-query on a loaded row)
+//   userMatch — like `match`, but only for an authenticated principal (auto-denies anonymous)
+//   where     — arbitrary Prisma filter (DB-evaluated)
+//   userWhere — like `where`, but only for an authenticated principal (auto-denies anonymous)
 //   via     — cached delegation to a parent policy's role
 //   hasRole — global/principal-role leaf, nestable
 //   authenticated — held if there is any logged-in principal
@@ -193,6 +196,32 @@ interface PredicateRole<TModelName extends ModelPropName> {
   kind: 'where';
   where: (ctx: ServiceContext) => WhereResult<TModelName>;
 }
+/**
+ * `r.userMatch` — like `r.match`, but the callback only runs for an
+ * authenticated principal (a `type: 'user'` session), receiving that session
+ * (`userId` guaranteed non-null) alongside `ctx`. Unauthenticated → deny,
+ * callback never invoked. Removes the per-callsite
+ * `ctx.auth.userId != null ? {...} : false` guard.
+ */
+interface UserMatchRole<TModelName extends ModelPropName> {
+  kind: 'userMatch';
+  userMatch: (
+    session: AuthUserSessionInfo,
+    ctx: ServiceContext,
+  ) => LocalMatch<TModelName> | false;
+}
+/**
+ * `r.userWhere` — like `r.where`, but the callback only runs for an
+ * authenticated principal (a `type: 'user'` session), receiving that session
+ * (`userId` guaranteed non-null) alongside `ctx`.
+ */
+interface UserWhereRole<TModelName extends ModelPropName> {
+  kind: 'userWhere';
+  userWhere: (
+    session: AuthUserSessionInfo,
+    ctx: ServiceContext,
+  ) => WhereResult<TModelName>;
+}
 /** `r.via` — delegate to a parent policy's role through a FK (cached checkById). */
 interface ViaRole<TModelName extends ModelPropName> {
   kind: 'via';
@@ -247,7 +276,9 @@ interface CheckRole<TModelName extends ModelPropName> {
  */
 type RoleNode<TModelName extends ModelPropName> =
   | MatchRole<TModelName>
+  | UserMatchRole<TModelName>
   | PredicateRole<TModelName>
+  | UserWhereRole<TModelName>
   | ViaRole<TModelName>
   | HasRoleLeaf
   | AuthenticatedLeaf
@@ -270,6 +301,28 @@ export interface RoleBuilder<TModelName extends ModelPropName> {
   where: (
     where: (ctx: ServiceContext) => WhereResult<TModelName>,
   ) => PredicateRole<TModelName>;
+  /**
+   * Authenticated scalar-equality fast path (zero-query). Callback only runs
+   * for a `type: 'user'` session — unauthenticated denies without calling it.
+   * See `UserMatchRole`.
+   */
+  userMatch: (
+    userMatch: (
+      session: AuthUserSessionInfo,
+      ctx: ServiceContext,
+    ) => LocalMatch<TModelName> | false,
+  ) => UserMatchRole<TModelName>;
+  /**
+   * Authenticated Prisma filter (DB-evaluated). Callback only runs for a
+   * `type: 'user'` session — unauthenticated denies without calling it. See
+   * `UserWhereRole`.
+   */
+  userWhere: (
+    userWhere: (
+      session: AuthUserSessionInfo,
+      ctx: ServiceContext,
+    ) => WhereResult<TModelName>,
+  ) => UserWhereRole<TModelName>;
   /**
    * Delegate to a parent policy's role through a FK (cached checkById). The
    * type checks `relation` is a to-one key and `fk` is a scalar of this model,
@@ -536,7 +589,9 @@ export function createModelPolicy<
 
   const builder: RoleBuilder<TModelName> = {
     match: (match) => ({ kind: 'match', match }),
+    userMatch: (userMatch) => ({ kind: 'userMatch', userMatch }),
     where: (where) => ({ kind: 'where', where }),
+    userWhere: (userWhere) => ({ kind: 'userWhere', userWhere }),
     via: (target, role, link) => ({
       kind: 'via',
       target,
@@ -600,7 +655,10 @@ export function createModelPolicy<
     parts: readonly RoleNode<TModelName>[],
   ): { node: RoleNode<TModelName>; i: number }[] {
     const cheap = (n: RoleNode<TModelName>): number =>
-      n.kind === 'match' || n.kind === 'hasRole' || n.kind === 'authenticated'
+      n.kind === 'match' ||
+      n.kind === 'userMatch' ||
+      n.kind === 'hasRole' ||
+      n.kind === 'authenticated'
         ? 0
         : 1;
     return parts
@@ -624,11 +682,26 @@ export function createModelPolicy<
         validateMatch(m, key);
         return m;
       }
+      case 'userMatch': {
+        // Deny BEFORE invoking the callback if unauthenticated — the callback's
+        // session is guaranteed `type: 'user'` (non-null `userId`).
+        const { session } = ctx.auth;
+        if (session?.type !== 'user') return false;
+        const m = node.userMatch(session, ctx);
+        if (m === false) return false;
+        validateMatch(m, key);
+        return m;
+      }
       case 'via': {
         return node.target.roles[node.role].nestedWhere(ctx, node.relation);
       }
       case 'where': {
         return assertNotUndefined(node.where(ctx), key);
+      }
+      case 'userWhere': {
+        const { session } = ctx.auth;
+        if (session?.type !== 'user') return false;
+        return assertNotUndefined(node.userWhere(session, ctx), key);
       }
       case 'hasRole': {
         // Held → unrestricted (`true` folds through queryHelpers); else `false`
@@ -676,6 +749,13 @@ export function createModelPolicy<
         if (m === false) return false;
         return evaluateMatch(m, model, key);
       }
+      case 'userMatch': {
+        const { session } = ctx.auth;
+        if (session?.type !== 'user') return false;
+        const m = node.userMatch(session, ctx);
+        if (m === false) return false;
+        return evaluateMatch(m, model, key);
+      }
       case 'via': {
         // Delegation: parent's cached checkById, keyed on the PARENT id → N
         // children of one parent collapse to 1 query, even concurrently.
@@ -684,6 +764,17 @@ export function createModelPolicy<
       }
       case 'where': {
         const where = assertNotUndefined(node.where(ctx), key);
+        if (where === true) return true;
+        if (where === false) return false;
+        const id = String(model[config.idField]);
+        return cachedBoolean(ctx, roleCacheKey(id, key), () =>
+          exists(ctx, id, where),
+        );
+      }
+      case 'userWhere': {
+        const { session } = ctx.auth;
+        if (session?.type !== 'user') return false;
+        const where = assertNotUndefined(node.userWhere(session, ctx), key);
         if (where === true) return true;
         if (where === false) return false;
         const id = String(model[config.idField]);
