@@ -83,7 +83,11 @@
       "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
       "name": "admin",
-      "pluginData": { "baseplate-dev_plugin-notifications_notifications": {} },
+      "pluginData": {
+        "baseplate-dev_plugin-notifications_notifications": {
+          "includeNotifications": true
+        }
+      },
       "title": "Blog Admin",
       "type": "web"
     },
@@ -96,7 +100,7 @@
       "type": "backend"
     }
   ],
-  "cliVersion": "0.6.12",
+  "cliVersion": "0.6.5",
   "enums": [],
   "features": [
     { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
