@@ -2,6 +2,7 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
+import { useNavigate } from '@tanstack/react-router';
 import { MdDoneAll, MdNotifications, MdNotificationsOff } from 'react-icons/md';
 
 import type { notificationItemFragment } from './notification-operations';
@@ -17,6 +18,22 @@ import {
 
 type NotificationItem = ResultOf<typeof notificationItemFragment>;
 type Segment = NotificationItem['content']['segments'][number];
+
+/**
+ * Resolves an action URL against the current origin. Returns the in-app path
+ * (path + query + hash) for same-origin URLs so the router can handle it, or
+ * `null` for cross-origin/non-http URLs that must leave the SPA. Handles both
+ * absolute (`https://app.example.com/x`) and relative (`/x`) inputs.
+ */
+function resolveInAppPath(url: string): string | null {
+  try {
+    const resolved = new URL(url, globalThis.location.origin);
+    if (resolved.origin !== globalThis.location.origin) return null;
+    return resolved.pathname + resolved.search + resolved.hash;
+  } catch {
+    return null;
+  }
+}
 
 /** Two-letter initials from a display name, e.g. "Dana Mehta" -> "DM". */
 function getInitials(name: string): string {
@@ -83,6 +100,7 @@ export function NotificationPanel({
   viewAllHref,
   emptyDescription = 'You have no new notifications.',
 }: Props): ReactElement {
+  const navigate = useNavigate();
   const [markRead] = useMutation(markNotificationReadMutation);
   const [markAllRead] = useMutation(markAllNotificationsReadMutation);
 
@@ -142,7 +160,12 @@ export function NotificationPanel({
                       void markRead({ variables: { input: { id: item.id } } });
                     }
                     if (content.actionUrl) {
-                      globalThis.location.assign(content.actionUrl);
+                      const inAppPath = resolveInAppPath(content.actionUrl);
+                      if (inAppPath === null) {
+                        globalThis.location.assign(content.actionUrl);
+                      } else {
+                        void navigate({ to: inAppPath });
+                      }
                     }
                   }}
                 >
