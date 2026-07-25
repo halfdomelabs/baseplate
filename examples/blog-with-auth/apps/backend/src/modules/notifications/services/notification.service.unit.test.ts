@@ -4,14 +4,41 @@ import { z } from 'zod';
 import type { Prisma } from '@src/generated/prisma/client.js';
 
 import type { NotificationSegment } from './notification-content.js';
+import type { NotificationEvents } from './notification-events.js';
+import type { NotificationTypeDefinition } from './notification-registry.js';
 import type { RenderSource } from './notification.service.js';
 
 import { defineNotificationType } from './notification-registry.js';
-import { renderContent } from './notification.service.js';
+import { createNotificationService } from './notification.service.js';
 
 vi.mock('@src/services/error-logger.js', () => ({ logError: vi.fn() }));
 
 const FROZEN: NotificationSegment[] = [{ type: 'text', value: 'FROZEN v1' }];
+
+/** `renderContent` never touches pubsub, so a stub `NotificationEvents` suffices. */
+const fakeEvents: NotificationEvents = {
+  publishUnseenCount: vi.fn(),
+  subscribeToUnseenCount: vi.fn(),
+};
+
+/** Build a service whose registry holds exactly the supplied types. */
+function serviceWith(
+  notificationTypes: NotificationTypeDefinition[],
+): ReturnType<typeof createNotificationService> {
+  return createNotificationService({ events: fakeEvents, notificationTypes });
+}
+
+/**
+ * The service's `renderContent`, wrapped so tests can call it directly.
+ * Wrapped (not destructured) because `renderContent` is an interface method;
+ * pulling it off the object bare would trip `@typescript-eslint/unbound-method`.
+ */
+function renderWith(
+  notificationTypes: NotificationTypeDefinition[],
+): ReturnType<typeof createNotificationService>['renderContent'] {
+  const service = serviceWith(notificationTypes);
+  return (row, ctx) => service.renderContent(row, ctx);
+}
 
 /** A persisted row whose frozen columns act as the recovery content. */
 function makeRow(
@@ -35,13 +62,15 @@ function makeRow(
 
 describe('renderContent (versioned render-at-read)', () => {
   it('renders LIVE from stored params, not the frozen snapshot', () => {
-    defineNotificationType({
-      key: 'test.live',
-      version: 1,
-      paramsSchema: z.object({ name: z.string() }),
-      channels: ['inApp'],
-      render: ([event]) => ({ body: `${event.params.name} commented` }),
-    });
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.live',
+        version: 1,
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp'],
+        render: ([event]) => ({ body: `${event.params.name} commented` }),
+      }),
+    ]);
 
     const content = renderContent(makeRow('test.live', 1, { name: 'Alice' }));
 
@@ -54,20 +83,22 @@ describe('renderContent (versioned render-at-read)', () => {
   it('PINS a row to the renderer version that created it', () => {
     // v1 and v2 of the same type are both registered. A row stamped v1 must keep
     // rendering with v1 even though v2 is the newest — history is not rewritten.
-    defineNotificationType({
-      key: 'test.versioned',
-      version: 1,
-      paramsSchema: z.object({ name: z.string() }),
-      channels: ['inApp'],
-      render: ([event]) => ({ body: `v1: ${event.params.name}` }),
-    });
-    defineNotificationType({
-      key: 'test.versioned',
-      version: 2,
-      paramsSchema: z.object({ name: z.string() }),
-      channels: ['inApp'],
-      render: ([event]) => ({ body: `v2: ${event.params.name}` }),
-    });
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.versioned',
+        version: 1,
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp'],
+        render: ([event]) => ({ body: `v1: ${event.params.name}` }),
+      }),
+      defineNotificationType({
+        key: 'test.versioned',
+        version: 2,
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp'],
+        render: ([event]) => ({ body: `v2: ${event.params.name}` }),
+      }),
+    ]);
 
     const oldRow = renderContent(makeRow('test.versioned', 1, { name: 'Al' }));
     const newRow = renderContent(makeRow('test.versioned', 2, { name: 'Al' }));
@@ -77,16 +108,18 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 
   it('renders content ATOMICALLY (segments, text and actionUrl from one render)', () => {
-    defineNotificationType({
-      key: 'test.atomic',
-      version: 1,
-      paramsSchema: z.object({ postId: z.string() }),
-      channels: ['inApp'],
-      render: ([event]) => ({
-        body: 'commented on your post',
-        actionUrl: `/posts/${event.params.postId}`,
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.atomic',
+        version: 1,
+        paramsSchema: z.object({ postId: z.string() }),
+        channels: ['inApp'],
+        render: ([event]) => ({
+          body: 'commented on your post',
+          actionUrl: `/posts/${event.params.postId}`,
+        }),
       }),
-    });
+    ]);
 
     const content = renderContent(makeRow('test.atomic', 1, { postId: 'p9' }));
 
@@ -96,19 +129,22 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 
   it('falls back to the frozen snapshot when the renderer is retired', () => {
+    const renderContent = renderWith([]);
     const content = renderContent(makeRow('test.gone', 1, { name: 'Bob' }));
     expect(content.segments).toEqual(FROZEN);
     expect(content.actionUrl).toBe('/frozen');
   });
 
   it('falls back to the frozen snapshot when stored params drift', () => {
-    defineNotificationType({
-      key: 'test.drift',
-      version: 1,
-      paramsSchema: z.object({ title: z.string() }),
-      channels: ['inApp'],
-      render: ([event]) => ({ body: event.params.title }),
-    });
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.drift',
+        version: 1,
+        paramsSchema: z.object({ title: z.string() }),
+        channels: ['inApp'],
+        render: ([event]) => ({ body: event.params.title }),
+      }),
+    ]);
 
     // Row predates the `title` param → schema validation fails → frozen.
     const drifted = renderContent(makeRow('test.drift', 1, { old: 1 }));
@@ -120,16 +156,18 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 
   it('rejects unsafe actionUrl schemes', () => {
-    defineNotificationType({
-      key: 'test.unsafe-url',
-      version: 1,
-      paramsSchema: z.object({}),
-      channels: ['inApp'],
-      render: () => ({
-        body: 'hi',
-        actionUrl: 'javascript:alert(1)',
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.unsafe-url',
+        version: 1,
+        paramsSchema: z.object({}),
+        channels: ['inApp'],
+        render: () => ({
+          body: 'hi',
+          actionUrl: 'javascript:alert(1)',
+        }),
       }),
-    });
+    ]);
 
     expect(
       renderContent(makeRow('test.unsafe-url', 1, {})).actionUrl,
@@ -139,18 +177,66 @@ describe('renderContent (versioned render-at-read)', () => {
   it('rejects an unsafe href in a LIVE renderer segment (falls back to frozen)', () => {
     // A renderer emitting a `javascript:` link must NOT reach the client: the
     // segment schema rejects it, render throws, and we fall back to frozen.
-    defineNotificationType({
-      key: 'test.unsafe-segment',
-      version: 1,
-      paramsSchema: z.object({}),
-      channels: ['inApp'],
-      render: () => ({
-        body: [{ type: 'link', value: 'click', href: 'javascript:alert(1)' }],
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.unsafe-segment',
+        version: 1,
+        paramsSchema: z.object({}),
+        channels: ['inApp'],
+        render: () => ({
+          body: [{ type: 'link', value: 'click', href: 'javascript:alert(1)' }],
+        }),
       }),
-    });
+    ]);
 
     expect(
       renderContent(makeRow('test.unsafe-segment', 1, {})).segments,
     ).toEqual(FROZEN);
+  });
+});
+
+describe('createNotificationService (registry construction invariant)', () => {
+  it('throws at construction when a (key, version) pair is registered twice', () => {
+    const first = defineNotificationType({
+      key: 'test.dup',
+      version: 1,
+      paramsSchema: z.object({}),
+      channels: ['inApp'],
+      render: () => ({ body: 'first' }),
+    });
+    const second = defineNotificationType({
+      key: 'test.dup',
+      version: 1,
+      paramsSchema: z.object({}),
+      channels: ['inApp'],
+      render: () => ({ body: 'second' }),
+    });
+
+    // The collision surfaces deterministically at runtime construction — citing
+    // the duplicated identifier — not at whatever import happened to load first.
+    expect(() => serviceWith([first, second])).toThrow(
+      'Notification type "test.dup@1" is already defined',
+    );
+  });
+
+  it('allows the same key across different versions', () => {
+    expect(() =>
+      serviceWith([
+        defineNotificationType({
+          key: 'test.multiversion',
+          version: 1,
+          paramsSchema: z.object({}),
+          channels: ['inApp'],
+          render: () => ({ body: 'v1' }),
+        }),
+        defineNotificationType({
+          key: 'test.multiversion',
+          version: 2,
+          paramsSchema: z.object({}),
+          channels: ['inApp'],
+          render: () => ({ body: 'v2' }),
+        }),
+      ]),
+    ).not.toThrow();
   });
 });
