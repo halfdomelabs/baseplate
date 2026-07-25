@@ -19,6 +19,7 @@ import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
  *
  * ShadCN changes:
  * - ComboboxList shows native scrollbar instead of no-scrollbar for better discoverability
+ * - ComboboxChip renders as muted gray text and hides its remove button when disabled
  *
  * https://ui.shadcn.com/docs/components/combobox
  */
@@ -285,16 +286,20 @@ function ComboboxChip({
     <ComboboxPrimitive.Chip
       data-slot="combobox-chip"
       className={cn(
-        'flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground has-disabled:pointer-events-none has-disabled:cursor-not-allowed has-disabled:opacity-50 has-data-[slot=combobox-chip-remove]:pr-0',
+        'group/combobox-chip flex h-[calc(--spacing(5.25))] w-fit items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium whitespace-nowrap text-foreground not-data-disabled:has-data-[slot=combobox-chip-remove]:pr-0',
+        // When the combobox is disabled, base-ui marks the chip with data-disabled.
+        // Render it as inert muted text (with the remove button hidden) rather than an interactive badge.
+        'data-disabled:cursor-not-allowed data-disabled:text-muted-foreground',
         className,
       )}
       {...props}
     >
       {children}
+      {/* Hide the remove button when disabled so chips read as plain labels. */}
       {showRemove && (
         <ComboboxPrimitive.ChipRemove
           render={<Button variant="ghost" size="icon-xs" />}
-          className="-ml-1 opacity-50 hover:opacity-100"
+          className="-ml-1 opacity-50 group-data-disabled/combobox-chip:hidden hover:opacity-100"
           data-slot="combobox-chip-remove"
         >
           <MdClose className="pointer-events-none" />

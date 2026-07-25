@@ -1,6 +1,8 @@
 import { builder } from '@src/plugins/graphql/builder.js';
+import { stringFilter } from '@src/plugins/graphql/filters.js';
+import { sortOrderEnum } from '@src/plugins/graphql/sort-order.js';
 
-import { todoListStatusEnum } from './enums.js';
+import { todoListStatusEnum, todoListStatusFilter } from './enums.js';
 
 export const todoListObjectType = builder.prismaObject('TodoList', {
   fields: (t) => ({
@@ -13,5 +15,29 @@ export const todoListObjectType = builder.prismaObject('TodoList', {
     status: t.expose('status', { nullable: true, type: todoListStatusEnum }),
     coverPhoto: t.relation('coverPhoto', { nullable: true }),
     owner: t.relation('owner'),
+  }),
+});
+
+export const todoListWhereInputType = builder.inputRef('TodoListWhereInput');
+
+todoListWhereInputType.implement({
+  fields: (t) => ({
+    name: t.field({ type: stringFilter }),
+    status: t.field({ type: todoListStatusFilter }),
+    AND: t.field({ type: [todoListWhereInputType] }),
+    OR: t.field({ type: [todoListWhereInputType] }),
+    NOT: t.field({ type: todoListWhereInputType }),
+  }),
+});
+
+export const todoListOrderByInputType = builder.inputRef(
+  'TodoListOrderByInput',
+);
+
+todoListOrderByInputType.implement({
+  fields: (t) => ({
+    position: t.field({ type: sortOrderEnum }),
+    name: t.field({ type: sortOrderEnum }),
+    createdAt: t.field({ type: sortOrderEnum }),
   }),
 });

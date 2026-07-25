@@ -45,3 +45,31 @@ export function generateFieldRefOrLiteralCode(
   }
   return `ctx.auth.${node.field}`;
 }
+
+/** An auth-field ref whose non-null form is guaranteed once authenticated. */
+export function isGuaranteedAuthField(
+  node: FieldRefNode | LiteralValueNode,
+): boolean {
+  return (
+    node.type === 'fieldRef' &&
+    node.source === 'auth' &&
+    node.field === 'userId'
+  );
+}
+
+/**
+ * Like {@link generateFieldRefOrLiteralCode}, but auth refs render as
+ * `session.field` (the `r.userMatch`/`r.userWhere` callback param — a
+ * guaranteed-authenticated session) instead of `ctx.auth.field`.
+ */
+export function generateFieldRefOrLiteralCodeForSession(
+  node: FieldRefNode | LiteralValueNode,
+): string {
+  if (node.type === 'literalValue') {
+    return serializeLiteralValue(node.value);
+  }
+  if (node.source === 'model') {
+    return `model.${node.field}`;
+  }
+  return `session.${node.field}`;
+}

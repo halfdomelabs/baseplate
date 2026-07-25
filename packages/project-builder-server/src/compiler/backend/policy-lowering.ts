@@ -32,8 +32,15 @@ import { quot } from '@baseplate-dev/utils';
 
 import type { QueryFilterCodeContext } from './query-filter-codegen.js';
 
-import { generateFieldRefOrLiteralCode } from './authorizer-expression-codegen-utils.js';
-import { generateQueryFilterExpressionCode } from './query-filter-codegen.js';
+import {
+  generateFieldRefOrLiteralCode,
+  generateFieldRefOrLiteralCodeForSession,
+  isGuaranteedAuthField,
+} from './authorizer-expression-codegen-utils.js';
+import {
+  generateQueryFilterExpressionCode,
+  referencesOnlyGuaranteedAuthField,
+} from './query-filter-codegen.js';
 
 /**
  * A resolved to-one delegation link (parent policy + FK/relation), for `r.via`.
@@ -77,13 +84,19 @@ function isMatchable(node: AuthorizerExpressionNode): boolean {
 }
 
 /**
- * Render the `{ field: value }` object body for a matchable comparison. If the
- * value is an auth field, guard it (`ctx.auth.x != null ? {...} : false`) so an
- * unauthenticated principal denies rather than matching everything.
+ * Render a matchable comparison as an `r.match`/`r.userMatch` builder call
+ * (the callback + verb together, since the two forms take different params).
+ *
+ * - Auth field is `userId` (non-null guaranteed once authenticated) →
+ *   `r.userMatch((session) => ({...}))`, no null-guard needed.
+ * - Auth field is anything else (no non-null guarantee) →
+ *   `r.match((ctx) => (ctx.auth.x != null ? {...} : false))`, guarded so an
+ *   unauthenticated principal denies rather than matching everything.
+ * - Literal value → `r.match(() => ({...}))`, unguarded.
  */
-function renderMatchBody(node: AuthorizerExpressionNode): string {
+function renderMatchCall(node: AuthorizerExpressionNode): string {
   if (node.type !== 'fieldComparison') {
-    throw new Error('renderMatchBody called on non-comparison node');
+    throw new Error('renderMatchCall called on non-comparison node');
   }
   const modelSide = ([node.left, node.right] as (typeof node.left)[]).find(
     (s): s is FieldRefNode => s.type === 'fieldRef' && s.source === 'model',
@@ -93,14 +106,21 @@ function renderMatchBody(node: AuthorizerExpressionNode): string {
     throw new Error('matchable comparison missing model field');
   }
   const { field } = modelSide;
+
+  if (isGuaranteedAuthField(otherSide)) {
+    const value = generateFieldRefOrLiteralCodeForSession(otherSide);
+    return `r.userMatch((session) => ({ ${field}: ${value} }))`;
+  }
+
   const value = generateFieldRefOrLiteralCode(otherSide);
   const objectBody = `{ ${field}: ${value} }`;
 
-  // Auth-field value → null-guard so unauthenticated denies (never match-all).
+  // Auth-field value (no non-null guarantee) → null-guard so unauthenticated
+  // denies (never match-all).
   if (otherSide.type === 'fieldRef' && otherSide.source === 'auth') {
-    return `(ctx) => (ctx.auth.${otherSide.field} != null ? ${objectBody} : false)`;
+    return `r.match((ctx) => (ctx.auth.${otherSide.field} != null ? ${objectBody} : false))`;
   }
-  return `() => (${objectBody})`;
+  return `r.match(() => (${objectBody}))`;
 }
 
 /**
@@ -120,24 +140,32 @@ function renderVia(link: ResolvedViaLink, role: string): string {
 function createPolicyLoweringVisitor(
   ctx: PolicyLoweringContext,
 ): AuthorizerExpressionVisitor<string> {
-  /** Fallback: lower any node to `r.where` using the query-filter codegen. */
+  /**
+   * Fallback: lower any node to `r.where`/`r.userWhere` using the query-filter
+   * codegen. `r.userWhere` applies when the node references `auth.userId` and
+   * no other auth field — its non-null guarantee lets the null-check collapse.
+   */
   const asWhere = (node: AuthorizerExpressionNode): string => {
+    const useUserPrincipal = referencesOnlyGuaranteedAuthField(node);
     const whereBody = generateQueryFilterExpressionCode(
       node,
       ctx.queryFilterContext,
+      { forSession: useUserPrincipal },
     );
     // The query-filter body is a `where`-returning expression; a leading `{`
     // needs parens to be a valid arrow body.
     const wrapped = whereBody.trimStart().startsWith('{')
       ? `(${whereBody})`
       : whereBody;
-    return `r.where((ctx) => ${wrapped})`;
+    return useUserPrincipal
+      ? `r.userWhere((session) => ${wrapped})`
+      : `r.where((ctx) => ${wrapped})`;
   };
 
   return {
     fieldComparison(node) {
       if (isMatchable(node)) {
-        return `r.match(${renderMatchBody(node)})`;
+        return renderMatchCall(node);
       }
       // `!==` (or model-vs-model) → where fallback.
       return asWhere(node);

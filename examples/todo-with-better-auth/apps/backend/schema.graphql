@@ -26,6 +26,18 @@ enum BillingSubscriptionStatus {
   UNPAID
 }
 
+input BillingSubscriptionStatusFilter {
+  equals: BillingSubscriptionStatus
+  in: [BillingSubscriptionStatus!]
+  not: BillingSubscriptionStatus
+  notIn: [BillingSubscriptionStatus!]
+}
+
+input BooleanFilter {
+  equals: Boolean
+  not: Boolean
+}
+
 """Input type for createPresignedDownloadUrl mutation"""
 input CreatePresignedDownloadUrlInput {
   fileId: Uuid!
@@ -137,10 +149,32 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
+input DateFilter {
+  equals: Date
+  gt: Date
+  gte: Date
+  in: [Date!]
+  lt: Date
+  lte: Date
+  not: Date
+  notIn: [Date!]
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+input DateTimeFilter {
+  equals: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  not: DateTime
+  notIn: [DateTime!]
+}
 
 """Input type for deleteTodoItem mutation"""
 input DeleteTodoItemInput {
@@ -211,6 +245,28 @@ input FileInput {
   name: String
 }
 
+input FloatFilter {
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: Float
+  notIn: [Float!]
+}
+
+input IntFilter {
+  equals: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  lt: Int
+  lte: Int
+  not: Int
+  notIn: [Int!]
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -259,10 +315,10 @@ type Query {
   todoItems(skip: Int, take: Int): [TodoItem!]!
   todoList(id: Uuid!): TodoList!
   todoListShare(id: TodoListSharePrimaryKey!): TodoListShare!
-  todoListShares(skip: Int, take: Int): [TodoListShare!]!
-  todoListSharesConnection(after: String, before: String, first: Int, last: Int): TodoListShareConnection!
-  todoLists(skip: Int, take: Int): [TodoList!]!
-  todoListsConnection(after: String, before: String, first: Int, last: Int): TodoListConnection!
+  todoListShares(orderBy: [TodoListShareOrderByInput!], skip: Int, take: Int): [TodoListShare!]!
+  todoListSharesConnection(after: String, before: String, first: Int, last: Int, orderBy: [TodoListShareOrderByInput!]): TodoListShareConnection!
+  todoLists(orderBy: [TodoListOrderByInput!], skip: Int, take: Int, where: TodoListWhereInput): [TodoList!]!
+  todoListsConnection(after: String, before: String, first: Int, last: Int, orderBy: [TodoListOrderByInput!], where: TodoListWhereInput): TodoListConnection!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!
 
@@ -279,6 +335,25 @@ input ResetUserPasswordInput {
 """Payload type for resetUserPassword mutation"""
 type ResetUserPasswordPayload {
   user: User!
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input StringFilter {
+  contains: String
+  endsWith: String
+  equals: String
+  gt: String
+  gte: String
+  in: [String!]
+  lt: String
+  lte: String
+  not: String
+  notIn: [String!]
+  startsWith: String
 }
 
 type TodoItem {
@@ -344,6 +419,12 @@ type TodoListEdge {
   node: TodoList!
 }
 
+input TodoListOrderByInput {
+  createdAt: SortOrder
+  name: SortOrder
+  position: SortOrder
+}
+
 type TodoListShare {
   createdAt: DateTime!
   todoList: TodoList!
@@ -364,6 +445,10 @@ type TodoListShareEdge {
   node: TodoListShare!
 }
 
+input TodoListShareOrderByInput {
+  createdAt: SortOrder
+}
+
 input TodoListSharePrimaryKey {
   todoListId: Uuid!
   userId: Uuid!
@@ -372,6 +457,21 @@ input TodoListSharePrimaryKey {
 enum TodoListStatus {
   ACTIVE
   INACTIVE
+}
+
+input TodoListStatusFilter {
+  equals: TodoListStatus
+  in: [TodoListStatus!]
+  not: TodoListStatus
+  notIn: [TodoListStatus!]
+}
+
+input TodoListWhereInput {
+  AND: [TodoListWhereInput!]
+  NOT: TodoListWhereInput
+  OR: [TodoListWhereInput!]
+  name: StringFilter
+  status: TodoListStatusFilter
 }
 
 input UpdateTodoItemData {
@@ -470,7 +570,7 @@ type User {
   id: ID!
   name: String!
   roles: [UserRole!]!
-  todoLists: [TodoList!]!
+  todoLists(skip: Int, take: Int): [TodoList!]!
   updatedAt: DateTime!
   userProfile: UserProfile
 }
@@ -527,3 +627,14 @@ input UserUserProfileNestedInput {
 A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
 """
 scalar Uuid
+
+input UuidFilter {
+  equals: Uuid
+  gt: Uuid
+  gte: Uuid
+  in: [Uuid!]
+  lt: Uuid
+  lte: Uuid
+  not: Uuid
+  notIn: [Uuid!]
+}

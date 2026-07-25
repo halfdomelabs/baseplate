@@ -6,6 +6,7 @@ import type { Plugin, ViteDevServer } from 'vite';
 import chokidar from 'chokidar';
 import mime from 'mime';
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
 
 /**
@@ -27,6 +28,10 @@ function pathSafeJoin(
   }
 
   return combinedPath;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -99,66 +104,59 @@ export function pluginDevServerPlugin(): Plugin {
 
       server.middlewares.use(
         (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-          if (req.url?.startsWith('/api/plugins/')) {
-            const urlMatch =
-              /^\/api\/plugins\/([^/]+)\/([^/]+)\/web\/([^?]*)(.*)$/.exec(
-                req.url,
-              );
-            if (urlMatch) {
-              const pluginKey = urlMatch[2];
-              const assetPath = urlMatch[3];
+          if (!req.url?.startsWith('/api/plugins/')) {
+            next();
+            return;
+          }
 
-              const pluginMatch = plugins.find((plugin) =>
-                pluginKey.startsWith(plugin.id),
-              );
+          const urlMatch =
+            /^\/api\/plugins\/([^/]+)\/([^/]+)\/web\/([^?]*)(.*)$/.exec(
+              req.url,
+            );
+          if (!urlMatch) {
+            next();
+            return;
+          }
 
-              if (!pluginMatch) {
-                next();
-                return;
-              }
+          const pluginKey = urlMatch[2];
+          const assetPath = urlMatch[3];
 
-              const basePath = path.join(pluginMatch.location, 'dist', 'web');
-              const fullAssetPath = pathSafeJoin(basePath, assetPath);
+          const pluginMatch = plugins.find((plugin) =>
+            pluginKey.startsWith(plugin.id),
+          );
 
-              if (!fullAssetPath) {
-                res.statusCode = 404;
-                res.end('Not found');
-                return;
-              }
+          if (!pluginMatch) {
+            next();
+            return;
+          }
 
-              const respondWithAsset = (): void => {
+          const basePath = path.join(pluginMatch.location, 'dist', 'web');
+          const fullAssetPath = pathSafeJoin(basePath, assetPath);
+
+          if (!fullAssetPath) {
+            res.statusCode = 404;
+            res.end('Not found');
+            return;
+          }
+
+          void (async (): Promise<void> => {
+            // try for 10 seconds in case the asset is still being written
+            for (let tries = 0; tries < 50; tries++) {
+              try {
+                const contents = await fsPromises.readFile(fullAssetPath);
                 res.setHeader(
                   'Content-Type',
                   mime.getType(fullAssetPath) ?? 'application/octet-stream',
                 );
-                res.end(fs.readFileSync(fullAssetPath));
-              };
-
-              if (fs.existsSync(fullAssetPath)) {
-                respondWithAsset();
+                res.end(contents);
                 return;
-              } else {
-                // try for 10 seconds in case it's still being written
-                let tries = 0;
-                const interval = setInterval(() => {
-                  if (fs.existsSync(fullAssetPath)) {
-                    clearInterval(interval);
-                    respondWithAsset();
-                  } else {
-                    tries++;
-                    if (tries > 50) {
-                      clearInterval(interval);
-                      res.statusCode = 404;
-                      res.end('Not found');
-                    }
-                  }
-                }, 200);
-                return;
+              } catch {
+                await sleep(200);
               }
             }
-          }
-
-          next();
+            res.statusCode = 404;
+            res.end('Not found');
+          })();
         },
       );
     },

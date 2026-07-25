@@ -1,0 +1,61 @@
+{
+  "name": "notifications/core/notification-web",
+  "templates": {
+    "notification-bell": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "notifications",
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/notifications/notification-bell.tsx",
+      "projectExports": { "NotificationBell": {} },
+      "referencedGeneratorTemplates": [
+        "notification-operations",
+        "notification-panel"
+      ],
+      "sourceFile": "components/notifications/notification-bell.tsx",
+      "variables": {}
+    },
+    "notification-operations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "notifications",
+      "importMapProviders": {
+        "graphqlImportsProvider": {
+          "importName": "graphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/graphql-imports.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/notifications/notification-operations.ts",
+      "sourceFile": "components/notifications/notification-operations.ts",
+      "variables": {}
+    },
+    "notification-panel": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "notifications",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/notifications/notification-panel.tsx",
+      "referencedGeneratorTemplates": ["notification-operations"],
+      "sourceFile": "components/notifications/notification-panel.tsx",
+      "variables": {}
+    }
+  }
+}

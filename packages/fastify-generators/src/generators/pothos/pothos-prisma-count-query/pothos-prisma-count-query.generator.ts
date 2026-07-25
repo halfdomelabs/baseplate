@@ -14,8 +14,14 @@ import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-fi
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
+import { pothosPrismaWhereComplexityValidatorProvider } from '../pothos-prisma-filters-file/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
@@ -32,6 +38,11 @@ const descriptorSchema = z.object({
    * function filters with `policy.read.where(ctx)`.
    */
   policyRef: z.string().optional(),
+  /**
+   * Key to look up the model's WhereInput type output. When set, a `where`
+   * arg is added and passed as the caller-supplied where clause.
+   */
+  whereInputRef: z.string().optional(),
 });
 
 export const pothosPrismaCountQueryGenerator = createGenerator({
@@ -39,7 +50,7 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, policyRef }) => ({
+  buildTasks: ({ modelName, order, policyRef, whereInputRef }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -47,11 +58,23 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
         modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(policyRef),
+        whereInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(whereInputRef),
+        whereComplexityValidator: pothosPrismaWhereComplexityValidatorProvider
+          .dependency()
+          .optional(),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
+      run({
+        prismaOutput,
+        pothosTypesFile,
+        modelPolicy,
+        whereInputType,
+        whereComplexityValidator,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -78,11 +101,31 @@ export const pothosPrismaCountQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
+            const argsPattern = whereInputType ? '{ where }' : '{}';
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (_root, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
-              : tsTemplate`async () => ${prismaModelFragment}.count()`;
+              ? tsTemplate`async (_root, ${argsPattern}, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`
+              : whereInputType
+                ? tsTemplate`async (_root, ${argsPattern}) => ${prismaModelFragment}.count({ where: where ?? undefined })`
+                : tsTemplate`async () => ${prismaModelFragment}.count()`;
 
             const options = {
+              ...(whereInputType && whereComplexityValidator
+                ? {
+                    args: tsTemplate`{
+                      where: ${buildWhereArgFragment({
+                        whereInputTypeReference:
+                          whereInputType.getTypeReference().fragment,
+                        validatorFragment:
+                          whereComplexityValidator.getValidatorFragment(),
+                        maxDepth: whereComplexityValidator.getMaxDepth(),
+                        maxClauseCount:
+                          whereComplexityValidator.getMaxClauseCount(),
+                      })},
+                    }`,
+                  }
+                : {}),
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };

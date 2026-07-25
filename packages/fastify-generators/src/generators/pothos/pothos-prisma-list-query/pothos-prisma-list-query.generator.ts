@@ -14,8 +14,15 @@ import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-fi
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
+import { pothosPrismaWhereComplexityValidatorProvider } from '../pothos-prisma-filters-file/index.js';
+import { pothosSortOrderProvider } from '../pothos-sort-order/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
@@ -32,6 +39,16 @@ const descriptorSchema = z.object({
    * function filters with `policy.read.where(ctx)`.
    */
   policyRef: z.string().optional(),
+  /**
+   * Key to look up the model's WhereInput type output. When set, a `where`
+   * arg is added and passed as the caller-supplied where clause.
+   */
+  whereInputRef: z.string().optional(),
+  /**
+   * Key to look up the model's OrderByInput type output. When set, an
+   * `orderBy` arg is added and passed as the caller-supplied sort order.
+   */
+  orderByInputRef: z.string().optional(),
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -39,7 +56,13 @@ export const pothosPrismaListQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, policyRef }) => ({
+  buildTasks: ({
+    modelName,
+    order,
+    policyRef,
+    whereInputRef,
+    orderByInputRef,
+  }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -47,11 +70,29 @@ export const pothosPrismaListQueryGenerator = createGenerator({
         modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(policyRef),
+        whereInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(whereInputRef),
+        whereComplexityValidator: pothosPrismaWhereComplexityValidatorProvider
+          .dependency()
+          .optional(),
+        orderByInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(orderByInputRef),
+        sortOrder: pothosSortOrderProvider.dependency().optional(),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
+      run({
+        prismaOutput,
+        pothosTypesFile,
+        modelPolicy,
+        whereInputType,
+        whereComplexityValidator,
+        orderByInputType,
+        sortOrder,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -80,16 +121,54 @@ export const pothosPrismaListQueryGenerator = createGenerator({
 
             const zFragment = TsCodeUtils.importFragment('z', 'zod');
 
+            const argNames = [
+              'skip',
+              'take',
+              ...(whereInputType ? ['where'] : []),
+              ...(orderByInputType ? ['orderBy'] : []),
+            ];
+            const argsPattern = `{ ${argNames.join(', ')} }`;
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
+            const noPolicyWhere = whereInputType
+              ? 'where: where ?? undefined, '
+              : '';
+            const orderByFragment =
+              orderByInputType && sortOrder
+                ? tsTemplate`orderBy: ${sortOrder.getApplyStableOrderByFragment()}(orderBy, ${JSON.stringify(idFields)}) ?? undefined, `
+                : '';
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (query, _root, { skip, take }, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx), skip: skip ?? undefined, take: take ?? undefined })`
-              : tsTemplate`async (query, _root, { skip, take }) => ${prismaModelFragment}.findMany({ ...query, skip: skip ?? undefined, take: take ?? undefined })`;
+              ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment}skip: skip ?? undefined, take: take ?? undefined })`
+              : tsTemplate`async (query, _root, ${argsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${noPolicyWhere}${orderByFragment}skip: skip ?? undefined, take: take ?? undefined })`;
+
+            const argFragments: Record<string, TsCodeFragment> = {
+              skip: tsTemplate`t.arg.int({ validate: ${zFragment}.int().min(0) })`,
+              take: tsTemplate`t.arg.int({ validate: ${zFragment}.int().min(0) })`,
+              ...(whereInputType && whereComplexityValidator
+                ? {
+                    where: buildWhereArgFragment({
+                      whereInputTypeReference:
+                        whereInputType.getTypeReference().fragment,
+                      validatorFragment:
+                        whereComplexityValidator.getValidatorFragment(),
+                      maxDepth: whereComplexityValidator.getMaxDepth(),
+                      maxClauseCount:
+                        whereComplexityValidator.getMaxClauseCount(),
+                    }),
+                  }
+                : {}),
+              ...(orderByInputType
+                ? {
+                    orderBy: tsTemplate`t.arg({ type: [${orderByInputType.getTypeReference().fragment}] })`,
+                  }
+                : {}),
+            };
 
             const options = {
               type: `[${quot(modelName)}]`,
-              args: tsTemplate`{
-                skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
-                take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
-              }`,
+              args: TsCodeUtils.mergeFragmentsAsObject(argFragments, {
+                disableSort: true,
+              }),
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };

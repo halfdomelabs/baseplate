@@ -151,20 +151,25 @@ async function createTestUser(): Promise<string> {
   return user.id;
 }
 
+// cleanUnusedFiles scans the whole File table, so exact-count assertions are
+// only valid against an empty table. Reset in beforeEach too — afterEach alone
+// can't protect the first test from rows leaked by an interrupted prior run.
+async function resetTables(): Promise<void> {
+  await prisma.todoList.deleteMany();
+  await prisma.userImage.deleteMany();
+  await prisma.userProfile.deleteMany();
+  await prisma.file.deleteMany();
+  await prisma.user.deleteMany();
+}
+
 describe('cleanUnusedFiles integration tests', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     fileCategoriesOverride = undefined;
+    await resetTables();
   });
 
-  afterEach(async () => {
-    // Clean up all test data
-    await prisma.todoList.deleteMany();
-    await prisma.userImage.deleteMany();
-    await prisma.userProfile.deleteMany();
-    await prisma.file.deleteMany();
-    await prisma.user.deleteMany();
-  });
+  afterEach(resetTables);
 
   describe('pending upload expiry', () => {
     it('should delete pending uploads older than 1 day', async () => {

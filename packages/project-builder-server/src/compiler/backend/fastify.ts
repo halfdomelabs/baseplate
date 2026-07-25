@@ -10,8 +10,10 @@ import {
   fastifyRedisGenerator,
   fastifyServerGenerator,
   pothosGenerator,
+  pothosPrismaFiltersFileGenerator,
   pothosPrismaGenerator,
   pothosScalarGenerator,
+  pothosSortOrderGenerator,
   prismaGenerator,
   prismaVitestGenerator,
   readmeGenerator,
@@ -35,6 +37,16 @@ export function buildFastify(
 ): GeneratorBundle {
   const { projectDefinition, appCompiler } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
+  const hasWhereFiltering = projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.where.enabled,
+  );
+  const hasOrderBy = projectDefinition.models.some(
+    (model) =>
+      model.graphql.queries.list.enabled &&
+      model.graphql.queries.list.orderBy.enabled,
+  );
 
   // add graphql scalars
   const graphqlBundle = appModuleGenerator({
@@ -81,6 +93,10 @@ export function buildFastify(
         }),
         pothos: pothosGenerator({}),
         pothosPrisma: pothosPrismaGenerator({}),
+        pothosPrismaFilters: hasWhereFiltering
+          ? pothosPrismaFiltersFileGenerator({})
+          : undefined,
+        pothosSortOrder: hasOrderBy ? pothosSortOrderGenerator({}) : undefined,
         modules: [
           ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
           graphqlBundle,

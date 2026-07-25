@@ -15,8 +15,15 @@ import { getModelIdFieldName } from '#src/generators/prisma/_shared/crud-method/
 import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-authorizer/index.js';
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
+import {
+  buildWhereArgFragment,
+  getCallerWhereArg,
+} from '#src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosFieldScope } from '../_providers/scopes.js';
+import { pothosPrismaWhereComplexityValidatorProvider } from '../pothos-prisma-filters-file/index.js';
+import { pothosSortOrderProvider } from '../pothos-sort-order/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
@@ -33,6 +40,20 @@ const descriptorSchema = z.object({
    * and totalCount functions filter with `policy.read.where(ctx)`.
    */
   policyRef: z.string().optional(),
+  /**
+   * Key to look up the model's WhereInput type output. When set, a `where`
+   * arg is added and passed as the caller-supplied where clause to both the
+   * resolve and totalCount functions.
+   */
+  whereInputRef: z.string().optional(),
+  /**
+   * Key to look up the model's OrderByInput type output. When set, an
+   * `orderBy` arg is added and passed as the caller-supplied sort order to
+   * the resolve function (not totalCount, since ordering is meaningless for
+   * a count). The model's ID field(s) are appended as a stable tiebreaker so
+   * cursor pagination doesn't skip or repeat rows when the sort has ties.
+   */
+  orderByInputRef: z.string().optional(),
 });
 
 export const pothosPrismaConnectionQueryGenerator = createGenerator({
@@ -40,7 +61,13 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, order, policyRef }) => ({
+  buildTasks: ({
+    modelName,
+    order,
+    policyRef,
+    whereInputRef,
+    orderByInputRef,
+  }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -48,11 +75,29 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
         modelPolicy: prismaModelPolicyProvider
           .dependency()
           .optionalReference(policyRef),
+        whereInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(whereInputRef),
+        whereComplexityValidator: pothosPrismaWhereComplexityValidatorProvider
+          .dependency()
+          .optional(),
+        orderByInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(orderByInputRef),
+        sortOrder: pothosSortOrderProvider.dependency().optional(),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosTypesFile, modelPolicy }) {
+      run({
+        prismaOutput,
+        pothosTypesFile,
+        modelPolicy,
+        whereInputType,
+        whereComplexityValidator,
+        orderByInputType,
+        sortOrder,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -80,17 +125,70 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
             const prismaModelFragment =
               prismaOutput.getPrismaModelFragment(modelName);
 
+            // totalCount is a `.count()` call — ordering is meaningless there,
+            // so its arg pattern never includes `orderBy` even when the
+            // resolve function's does.
+            const totalCountArgsPattern = whereInputType ? '{ where }' : '{}';
+            const resolveArgNames = [
+              ...(whereInputType ? ['where'] : []),
+              ...(orderByInputType ? ['orderBy'] : []),
+            ];
+            const resolveArgsPattern =
+              resolveArgNames.length > 0
+                ? `{ ${resolveArgNames.join(', ')} }`
+                : '{}';
+            const callerWhereArg = getCallerWhereArg(!!whereInputType);
+            const orderByFragment =
+              orderByInputType && sortOrder
+                ? tsTemplate`orderBy: ${sortOrder.getApplyStableOrderByFragment()}(orderBy, ${JSON.stringify(idFields)}) ?? undefined, `
+                : '';
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (query, _root, _args, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
-              : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
+              ? tsTemplate`async (query, _root, ${resolveArgsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment} })`
+              : whereInputType
+                ? tsTemplate`async (query, _root, ${resolveArgsPattern}) => ${prismaModelFragment}.findMany({ ...query, where: where ?? undefined, ${orderByFragment} })`
+                : orderByInputType
+                  ? tsTemplate`async (query, _root, ${resolveArgsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${orderByFragment} })`
+                  : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
 
             const totalCountFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`(_connection, _args, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx) })`
-              : tsTemplate`() => ${prismaModelFragment}.count()`;
+              ? tsTemplate`(_connection, ${totalCountArgsPattern}, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`
+              : whereInputType
+                ? tsTemplate`(_connection, ${totalCountArgsPattern}) => ${prismaModelFragment}.count({ where: where ?? undefined })`
+                : tsTemplate`() => ${prismaModelFragment}.count()`;
+
+            const argFragments: Record<string, TsCodeFragment> = {
+              ...(whereInputType && whereComplexityValidator
+                ? {
+                    where: buildWhereArgFragment({
+                      whereInputTypeReference:
+                        whereInputType.getTypeReference().fragment,
+                      validatorFragment:
+                        whereComplexityValidator.getValidatorFragment(),
+                      maxDepth: whereComplexityValidator.getMaxDepth(),
+                      maxClauseCount:
+                        whereComplexityValidator.getMaxClauseCount(),
+                    }),
+                  }
+                : {}),
+              ...(orderByInputType
+                ? {
+                    orderBy: tsTemplate`t.arg({ type: [${orderByInputType.getTypeReference().fragment}] })`,
+                  }
+                : {}),
+            };
+            const hasArgs = Object.keys(argFragments).length > 0;
 
             const options = {
               type: quot(modelName),
               cursor: quot(cursorFieldName),
+              ...(hasArgs
+                ? {
+                    args: TsCodeUtils.mergeFragmentsAsObject(argFragments, {
+                      disableSort: true,
+                    }),
+                  }
+                : {}),
               ...sortObjectKeys(customFields.value()),
               totalCount: totalCountFunction,
               resolve: resolveFunction,

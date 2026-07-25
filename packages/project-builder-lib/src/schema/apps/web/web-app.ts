@@ -19,6 +19,7 @@ export const createWebAppSchema = definitionSchemaWithSlots(
       title: z.string().default(''),
       description: z.string().default(''),
       includeUploadComponents: ctx.withDefault(z.boolean(), false),
+      includeNotifications: ctx.withDefault(z.boolean(), false),
       enableSubscriptions: ctx.withDefault(z.boolean(), false),
       adminApp: createAdminAppSchema(ctx, { appSlot }),
     }),

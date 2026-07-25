@@ -1,4 +1,8 @@
-import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
+import {
+  packageScope,
+  TsCodeUtils,
+  tsImportBuilder,
+} from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -7,6 +11,9 @@ import { reactAuthRoutesProvider } from '#src/generators/auth/index.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import { reactRoutesProvider } from '#src/providers/index.js';
 
+import type { AdminLayoutHeaderAction } from '../_providers/admin-layout-header-actions.js';
+
+import { adminLayoutHeaderActionContainerProvider } from '../_providers/admin-layout-header-actions.js';
 import { ADMIN_ADMIN_LAYOUT_GENERATED } from './generated/index.js';
 
 const linkItemSchema = z.object({
@@ -75,8 +82,19 @@ export const adminLayoutGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
         renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.provider,
       },
+      exports: {
+        adminLayoutHeaderActionContainer:
+          adminLayoutHeaderActionContainerProvider.export(packageScope),
+      },
       run({ reactComponentsImports, renderers }) {
+        const headerActions: AdminLayoutHeaderAction[] = [];
+
         return {
+          providers: {
+            adminLayoutHeaderActionContainer: {
+              addAction: (action) => headerActions.push(action),
+            },
+          },
           build: async (builder) => {
             const navEntries = Object.fromEntries(
               links.map((link) => [
@@ -98,11 +116,20 @@ export const adminLayoutGenerator = createGenerator({
               ]),
             );
 
+            const sortedHeaderActions = headerActions.toSorted(
+              (a, b) => a.order - b.order,
+            );
+
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
                   appSidebar: {
                     TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
+                  },
+                  adminLayout: {
+                    TPL_HEADER_ACTIONS: TsCodeUtils.mergeFragmentsPresorted(
+                      sortedHeaderActions.map((action) => action.content),
+                    ),
                   },
                 },
               }),

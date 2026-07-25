@@ -68,3 +68,20 @@ export const Labelled: Story = {
     className: 'w-96',
   },
 };
+
+export const Disabled: Story = {
+  args: {
+    options: [
+      { label: 'Option 1', value: '1' },
+      { label: 'Option 2', value: '2' },
+      { label: 'Option 3', value: '3' },
+    ],
+    label: 'What are your favorite options?',
+    description: 'This field is disabled.',
+    value: ['1', '2'],
+    disabled: true,
+    getOptionLabel: (option) => (option as { label: string }).label,
+    getOptionValue: (option) => (option as { value: string }).value,
+    className: 'w-96',
+  },
+};

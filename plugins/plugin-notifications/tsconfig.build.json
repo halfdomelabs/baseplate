@@ -25,6 +25,9 @@
       "path": "../../packages/project-builder-lib/tsconfig.build.json"
     },
     {
+      "path": "../../packages/react-generators/tsconfig.build.json"
+    },
+    {
       "path": "../../packages/sync/tsconfig.build.json"
     },
     {

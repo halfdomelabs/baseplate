@@ -228,4 +228,147 @@ describe('todoListSharesConnection', () => {
 
     await fastify.close();
   });
+
+  it('paginates without skipping or repeating rows when orderBy has ties, in both directions', async () => {
+    // All shares get the same `createdAt`, forcing the caller-supplied
+    // `orderBy: [{ createdAt: ASC }]` to have ties across the whole set.
+    // Correctness here depends on `applyStableOrderBy` appending the
+    // compound primary key (`todoListId`, `userId` — not the joined
+    // `todoListId_userId` cursor alias) as a tiebreaker; a shared tiebreaker
+    // that used the joined alias, or omitted it, would let Postgres return
+    // ties in a nondeterministic order across the paged queries, causing
+    // rows to be skipped or duplicated at page boundaries.
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner4@example.com' },
+    });
+    const otherUsers = await Promise.all(
+      Array.from({ length: 5 }, (_, i) =>
+        prisma.user.create({
+          data: { name: `Sharee ${i}`, email: `sharee4-${i}@example.com` },
+        }),
+      ),
+    );
+    const list = await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 0, name: 'Tied Shared List' },
+    });
+
+    const tiedCreatedAt = new Date('2026-01-01T00:00:00Z');
+    const shares = await Promise.all(
+      otherUsers.map((u) =>
+        prisma.todoListShare.create({
+          data: {
+            todoListId: list.id,
+            userId: u.id,
+            createdAt: tiedCreatedAt,
+          },
+        }),
+      ),
+    );
+    const shareKeys = new Set(shares.map((s) => `${s.todoListId}:${s.userId}`));
+
+    const fastify = await buildApp(['public', 'user'], owner.id);
+
+    // Forward pagination: first/after.
+    const forwardPages: { todoListId: string; userId: string }[][] = [];
+    let after: string | undefined;
+    for (;;) {
+      const page = await queryGraphql(
+        fastify,
+        `query ($first: Int, $after: String) {
+          todoListSharesConnection(first: $first, after: $after, orderBy: [{ createdAt: ASC }]) {
+            pageInfo { hasNextPage endCursor }
+            edges { node { todoListId userId } }
+          }
+        }`,
+        { first: 2, after },
+      );
+      expect(page.errors).toBeUndefined();
+      const connection = page.data?.todoListSharesConnection as {
+        pageInfo: { hasNextPage: boolean; endCursor: string };
+        edges: { node: { todoListId: string; userId: string } }[];
+      };
+      forwardPages.push(connection.edges.map((e) => e.node));
+      if (!connection.pageInfo.hasNextPage) break;
+      after = connection.pageInfo.endCursor;
+    }
+
+    const forwardKeys = forwardPages
+      .flat()
+      .map((n) => `${n.todoListId}:${n.userId}`);
+    expect(new Set(forwardKeys).size).toBe(shareKeys.size);
+    expect(new Set(forwardKeys)).toEqual(shareKeys);
+
+    // Backward pagination: last/before, starting from the end of the set.
+    const backwardPages: { todoListId: string; userId: string }[][] = [];
+    let before: string | undefined;
+    for (;;) {
+      const page = await queryGraphql(
+        fastify,
+        `query ($last: Int, $before: String) {
+          todoListSharesConnection(last: $last, before: $before, orderBy: [{ createdAt: ASC }]) {
+            pageInfo { hasPreviousPage startCursor }
+            edges { node { todoListId userId } }
+          }
+        }`,
+        { last: 2, before },
+      );
+      expect(page.errors).toBeUndefined();
+      const connection = page.data?.todoListSharesConnection as {
+        pageInfo: { hasPreviousPage: boolean; startCursor: string };
+        edges: { node: { todoListId: string; userId: string } }[];
+      };
+      backwardPages.push(connection.edges.map((e) => e.node));
+      if (!connection.pageInfo.hasPreviousPage) break;
+      before = connection.pageInfo.startCursor;
+    }
+
+    const backwardKeys = backwardPages
+      .flat()
+      .map((n) => `${n.todoListId}:${n.userId}`);
+    expect(new Set(backwardKeys).size).toBe(shareKeys.size);
+    expect(new Set(backwardKeys)).toEqual(shareKeys);
+
+    await fastify.close();
+  });
+
+  it('accepts an empty orderBy clause without erroring', async () => {
+    // Every field on an OrderByInput is optional, so `orderBy: [{}]` is a
+    // schema-valid input. An empty clause reaching Prisma throws at runtime,
+    // so `applyStableOrderBy` must drop it before it is passed through — the
+    // query should still succeed, ordered only by the id tiebreaker.
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner5@example.com' },
+    });
+    const sharee = await prisma.user.create({
+      data: { name: 'Sharee', email: 'sharee5@example.com' },
+    });
+    const list = await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 0, name: 'Empty OrderBy List' },
+    });
+    await prisma.todoListShare.create({
+      data: { todoListId: list.id, userId: sharee.id },
+    });
+
+    const fastify = await buildApp(['public', 'user'], owner.id);
+
+    const page = await queryGraphql(
+      fastify,
+      `query {
+        todoListSharesConnection(first: 10, orderBy: [{}]) {
+          edges { node { todoListId userId } }
+        }
+      }`,
+    );
+    expect(page.errors).toBeUndefined();
+    const connection = page.data?.todoListSharesConnection as {
+      edges: { node: { todoListId: string; userId: string } }[];
+    };
+    expect(connection.edges).toHaveLength(1);
+    expect(connection.edges[0].node).toEqual({
+      todoListId: list.id,
+      userId: sharee.id,
+    });
+
+    await fastify.close();
+  });
 });
