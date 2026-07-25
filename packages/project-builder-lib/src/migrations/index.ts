@@ -28,6 +28,7 @@ import { migration028EnableStripePlugin } from './migration-028-enable-stripe-pl
 import { migration029AdminRoleAndAutoAssigned } from './migration-029-admin-role-and-auto-assigned.js';
 import { migration030RemoveThemeHoverColors } from './migration-030-remove-theme-hover-colors.js';
 import { migration031UuidDefaultGeneration } from './migration-031-uuid-default-generation.js';
+import { migration032WebAppPluginData } from './migration-032-web-app-plugin-data.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -57,6 +58,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration029AdminRoleAndAutoAssigned,
   migration030RemoveThemeHoverColors,
   migration031UuidDefaultGeneration,
+  migration032WebAppPluginData,
 ];
 
 export function isMigrateableProjectDefinition(

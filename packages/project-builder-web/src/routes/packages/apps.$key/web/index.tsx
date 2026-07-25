@@ -9,6 +9,7 @@ import {
   useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
+  webAppSchemaExtensionWebSpec,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -30,10 +31,15 @@ export const Route = createFileRoute('/packages/apps/$key/web/')({
 });
 
 function WebAppGeneralForm(): React.JSX.Element {
-  const { saveDefinitionWithFeedback, definition } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, definition, pluginContainer } =
+    useProjectDefinition();
   const { webDefinition } = Route.useRouteContext();
   const appKey = appEntityType.keyFromId(webDefinition.id);
   const adminEnabled = webDefinition.adminApp.enabled;
+
+  const pluginSettingsConfigs = [
+    ...pluginContainer.use(webAppSchemaExtensionWebSpec).configs.values(),
+  ];
 
   const handleEnableAdmin = (): void => {
     void saveDefinitionWithFeedback(
@@ -121,25 +127,17 @@ function WebAppGeneralForm(): React.JSX.Element {
           </SectionListSectionHeader>
           <SectionListSectionContent className="space-y-6">
             <SwitchFieldController
-              label="Include Auth?"
-              control={control}
-              name="includeAuth"
-            />
-            <SwitchFieldController
-              label="Include Upload Components?"
-              control={control}
-              name="includeUploadComponents"
-            />
-            <SwitchFieldController
-              label="Include Notifications?"
-              control={control}
-              name="includeNotifications"
-            />
-            <SwitchFieldController
               label="Enable GraphQL Subscriptions?"
               control={control}
               name="enableSubscriptions"
             />
+            {pluginSettingsConfigs.map(({ pluginKey, Form }) => (
+              <Form
+                key={pluginKey}
+                formProps={formProps}
+                pluginKey={pluginKey}
+              />
+            ))}
           </SectionListSectionContent>
         </SectionListSection>
 

@@ -118,9 +118,6 @@ export function buildInitialApps(
       devPort: portOffset + 30 + webNames.indexOf(webName),
       title: startCase(webName),
       description: isAdmin ? 'Admin panel' : 'Web application',
-      includeAuth: false,
-      includeUploadComponents: false,
-      includeNotifications: false,
       enableSubscriptions: false,
       adminApp: {
         enabled: isAdmin,
