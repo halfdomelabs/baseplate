@@ -27,7 +27,7 @@ export const REACT_PACKAGES = {
   'react-icons': '5.5.0',
   zustand: '5.0.3',
   'react-error-boundary': '6.0.0',
-  '@base-ui/react': '1.4.1',
+  '@base-ui/react': '1.6.0',
   'class-variance-authority': '0.7.1',
   sonner: '2.0.3',
 
