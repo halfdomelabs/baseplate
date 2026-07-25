@@ -41,7 +41,7 @@ const adminLayout = createTsTemplateFile({
       '../templates/components/layouts/admin-layout.tsx',
     ),
   },
-  variables: {},
+  variables: { TPL_HEADER_ACTIONS: {} },
 });
 
 const appBreadcrumbs = createTsTemplateFile({

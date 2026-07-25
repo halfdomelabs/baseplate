@@ -39,6 +39,9 @@ export function AdminLayout({ className }: Props): ReactElement {
               className="mx-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
             />
             <AppBreadcrumbs />
+            <div className="ml-auto flex items-center gap-1">
+              <TPL_HEADER_ACTIONS />
+            </div>
           </div>
         </header>
         <div className="flex flex-1 flex-col">

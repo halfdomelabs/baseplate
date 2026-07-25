@@ -131,6 +131,11 @@ function WebAppGeneralForm(): React.JSX.Element {
               name="includeUploadComponents"
             />
             <SwitchFieldController
+              label="Include Notifications?"
+              control={control}
+              name="includeNotifications"
+            />
+            <SwitchFieldController
               label="Enable GraphQL Subscriptions?"
               control={control}
               name="enableSubscriptions"

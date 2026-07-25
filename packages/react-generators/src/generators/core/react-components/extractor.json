@@ -382,6 +382,15 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/empty.tsx",
+      "projectExports": {
+        "Empty": {},
+        "EmptyContent": {},
+        "EmptyDescription": {},
+        "EmptyHeader": {},
+        "EmptyMedia": {},
+        "emptyMediaVariants": {},
+        "EmptyTitle": {}
+      },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/empty.tsx",
       "variables": {}

@@ -82,6 +82,7 @@
       "devPort": 5030,
       "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
+      "includeNotifications": true,
       "name": "admin",
       "title": "Blog Admin",
       "type": "web"
@@ -1179,6 +1180,7 @@
         "emailFeatureRef": "emails",
         "implementationPluginKey": "baseplate-dev_plugin-email_postmark"
       },
+      "configSchemaVersion": 1,
       "id": "plugin:baseplate-dev_plugin-email_email",
       "name": "email",
       "packageName": "@baseplate-dev/plugin-email",

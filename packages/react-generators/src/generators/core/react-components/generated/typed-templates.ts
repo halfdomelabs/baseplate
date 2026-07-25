@@ -397,6 +397,15 @@ const empty = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'empty',
+  projectExports: {
+    Empty: {},
+    EmptyContent: {},
+    EmptyDescription: {},
+    EmptyHeader: {},
+    EmptyMedia: {},
+    emptyMediaVariants: {},
+    EmptyTitle: {},
+  },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(

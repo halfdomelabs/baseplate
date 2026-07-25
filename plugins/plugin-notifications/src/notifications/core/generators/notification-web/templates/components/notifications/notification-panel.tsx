@@ -1,22 +1,25 @@
+// @ts-nocheck
+
+import type { notificationItemFragment } from '$notificationOperations';
 import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
-import { useMutation } from '@apollo/client/react';
-import { useNavigate } from '@tanstack/react-router';
-import { MdDoneAll, MdNotifications, MdNotificationsOff } from 'react-icons/md';
-
-import { cn } from '@src/utils/cn';
-
-import type { notificationItemFragment } from './notification-operations';
-
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Empty, EmptyDescription, EmptyTitle } from '../ui/empty';
-import { Spinner } from '../ui/spinner';
 import {
   markAllNotificationsReadMutation,
   markNotificationReadMutation,
-} from './notification-operations';
+} from '$notificationOperations';
+import {
+  Badge,
+  Button,
+  cn,
+  Empty,
+  EmptyDescription,
+  EmptyTitle,
+  Spinner,
+} from '%reactComponentsImports';
+import { useMutation } from '@apollo/client/react';
+import { useNavigate } from '@tanstack/react-router';
+import { MdDoneAll, MdNotifications, MdNotificationsOff } from 'react-icons/md';
 
 type NotificationItem = ResultOf<typeof notificationItemFragment>;
 type Segment = NotificationItem['content']['segments'][number];

@@ -1718,6 +1718,9 @@ importers:
       '@baseplate-dev/project-builder-lib':
         specifier: workspace:*
         version: link:../../packages/project-builder-lib
+      '@baseplate-dev/react-generators':
+        specifier: workspace:*
+        version: link:../../packages/react-generators
       '@baseplate-dev/sync':
         specifier: workspace:*
         version: link:../../packages/sync
