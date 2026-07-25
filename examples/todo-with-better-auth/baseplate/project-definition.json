@@ -210,7 +210,6 @@
       "description": "An app for cool todoers",
       "devPort": 6031,
       "id": "app:yYeMVhgQG01I",
-      "includeAuth": true,
       "name": "web",
       "title": "Todoer App",
       "type": "web"
@@ -2062,7 +2061,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 31,
+  "schemaVersion": 32,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

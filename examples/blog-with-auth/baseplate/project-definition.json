@@ -82,8 +82,12 @@
       "devPort": 5030,
       "enableSubscriptions": true,
       "id": "app:I3X22H8XDMp1",
-      "includeNotifications": true,
       "name": "admin",
+      "pluginData": {
+        "baseplate-dev_plugin-notifications_notifications": {
+          "includeNotifications": true
+        }
+      },
       "title": "Blog Admin",
       "type": "web"
     },
@@ -1241,7 +1245,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 31,
+  "schemaVersion": 32,
   "settings": {
     "general": {
       "name": "blog-with-auth",

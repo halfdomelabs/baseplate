@@ -15,6 +15,7 @@ import {
   notificationModuleGenerator,
   notificationWebGenerator,
 } from './generators/index.js';
+import { getNotificationsWebAppData } from './schema/web-app-schema.js';
 
 /** Package name of the email plugin whose presence enables the email channel. */
 const EMAIL_PLUGIN_PACKAGE = '@baseplate-dev/plugin-email';
@@ -65,7 +66,10 @@ export default createPluginModule({
         pluginKey,
         appType: webAppEntryType,
         compile: ({ appCompiler, appDefinition }) => {
-          if (!appDefinition.includeNotifications) {
+          const includeNotifications =
+            getNotificationsWebAppData(appDefinition, pluginKey)
+              ?.includeNotifications ?? false;
+          if (!includeNotifications) {
             return;
           }
 

@@ -19,10 +19,12 @@ interface ConstructionEntry {
 
 function createAppRuntimeConfigStub(): {
   services: Map<string, unknown>;
+  flattenedModuleFields: Map<string, string>;
   construction: Map<string, ConstructionEntry>;
 } {
   return {
     services: new Map(),
+    flattenedModuleFields: new Map(),
     construction: new Map(),
   };
 }

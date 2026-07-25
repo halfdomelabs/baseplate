@@ -15,6 +15,7 @@ import type { FileTransformerDefinition } from '../transformers/schema/file-tran
 import type { StoragePluginDefinition } from './schema/plugin-definition.js';
 
 import { fileCategoriesGenerator } from './generators/file-categories/file-categories.generator.js';
+import { getStorageWebAppData } from './schema/web-app-schema.js';
 
 export default createPluginModule({
   name: 'node',
@@ -161,10 +162,10 @@ export default createPluginModule({
             return;
           }
 
-          if (
-            !appDefinition.includeUploadComponents &&
-            !appDefinition.adminApp.enabled
-          ) {
+          const includeUploadComponents =
+            getStorageWebAppData(appDefinition, pluginKey)
+              ?.includeUploadComponents ?? false;
+          if (!includeUploadComponents && !appDefinition.adminApp.enabled) {
             return;
           }
 

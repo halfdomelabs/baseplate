@@ -55,7 +55,8 @@ export function createAppRuntime(
   let disposePromise: Promise<void> | undefined;
 
   /* TPL_SERVICE_CONSTRUCTION:START */
-  const { queues: queueBindings = [] } = flattenAppModule(rootModule);
+  const { notificationTypes = [], queues: queueBindings = [] } =
+    flattenAppModule(rootModule);
 
   const redis = createRedisRuntime();
   disposers.push({ name: 'redis', dispose: () => redis.dispose() });
@@ -74,6 +75,7 @@ export function createAppRuntime(
   const notificationEvents = createNotificationEvents(pubsub);
   const notifications = createNotificationService({
     events: notificationEvents,
+    notificationTypes,
     channels: {
       email: createEmailChannel({ emails }),
       inApp: createInAppChannel({ events: notificationEvents }),

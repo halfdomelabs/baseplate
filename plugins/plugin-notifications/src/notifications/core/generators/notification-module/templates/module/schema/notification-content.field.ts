@@ -1,17 +1,14 @@
 // @ts-nocheck
 
 import { notificationContentType } from '$schemaNotificationContentObjectTypes';
-import {
-  RENDER_SOURCE_SELECT,
-  renderContent,
-} from '$servicesNotificationService';
+import { RENDER_SOURCE_SELECT } from '$servicesNotificationService';
 import { builder } from '%pothosImports';
 
 /**
- * The render-at-read site: `renderContent` re-renders from the stored source
- * (`params`) using the renderer that CREATED the row — pinned by
- * `(type, templateVersion)` — falling back to the frozen snapshot on a retired
- * renderer or param drift.
+ * The render-at-read site: `services.notifications.renderContent` re-renders
+ * from the stored source (`params`) using the renderer that CREATED the row —
+ * pinned by `(type, templateVersion)` — falling back to the frozen snapshot on
+ * a retired renderer or param drift.
  *
  * `locale` is an explicit ARG, not request context: Apollo keys its cache by
  * field args, so a language switch produces a separate cache entry instead of
@@ -25,7 +22,7 @@ builder.prismaObjectFields(TPL_NOTIFICATION_OBJECT_TYPE, (t) => ({
     type: notificationContentType,
     args: { locale: t.arg.string({ required: true, defaultValue: 'en' }) },
     select: RENDER_SOURCE_SELECT,
-    resolve: (notification, { locale }) =>
-      renderContent(notification, { locale }),
+    resolve: (notification, { locale }, ctx) =>
+      ctx.services.notifications.renderContent(notification, { locale }),
   }),
 }));

@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
+import type { NotificationTypeDefinition } from '../modules/notifications/services/notification-registry.js';
 import type { QueueHandlerBinding } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 
@@ -37,6 +38,7 @@ export type AppPlugin =
 export interface AppModule {
   children?: AppModule[];
   /* TPL_MODULE_FIELDS:START */
+  notificationTypes?: NotificationTypeDefinition[];
   plugins?: AppPlugin[];
   queues?: QueueHandlerBinding[];
   /* TPL_MODULE_FIELDS:END */
@@ -68,12 +70,14 @@ export function flattenAppModule(
   const flattenedChildren = children.map(flattenAppModule);
 
   const result = /* TPL_MODULE_INITIALIZER:START */ {
+    notificationTypes: [...(rootModule.notificationTypes ?? [])],
     plugins: [...(rootModule.plugins ?? [])],
     queues: [...(rootModule.queues ?? [])],
   }; /* TPL_MODULE_INITIALIZER:END */
 
   for (const child of flattenedChildren) {
     /* TPL_MODULE_MERGER:START */
+    result.notificationTypes.push(...(child.notificationTypes ?? []));
     result.plugins.push(...(child.plugins ?? []));
     result.queues.push(...(child.queues ?? []));
     /* TPL_MODULE_MERGER:END */
