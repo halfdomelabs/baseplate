@@ -30,9 +30,9 @@ function lower(
 
 describe('lowerExpressionToRoleTree', () => {
   describe('r.match — scalar equality (===)', () => {
-    it('auth field → null-guarded match', () => {
+    it('auth field userId → r.userMatch (no null-guard, guaranteed non-null)', () => {
       expect(lower('model.publisherId === userId')).toBe(
-        'r.match((ctx) => (ctx.auth.userId != null ? { publisherId: ctx.auth.userId } : false))',
+        'r.userMatch((session) => ({ publisherId: session.userId }))',
       );
     });
 
@@ -65,9 +65,9 @@ describe('lowerExpressionToRoleTree', () => {
       );
     });
 
-    it('!== against auth field falls back to r.where (null-guarded)', () => {
+    it('!== against auth field userId falls back to r.userWhere (no null-guard)', () => {
       expect(lower('model.id !== userId')).toBe(
-        'r.where((ctx) => (ctx.auth.userId != null ? { id: { not: ctx.auth.userId } } : false))',
+        'r.userWhere((session) => ({ id: { not: session.userId } }))',
       );
     });
   });
@@ -116,7 +116,7 @@ describe('lowerExpressionToRoleTree', () => {
 
     it('|| → r.some', () => {
       expect(lower("model.publisherId === userId || hasRole('admin')")).toBe(
-        "r.some([r.match((ctx) => (ctx.auth.userId != null ? { publisherId: ctx.auth.userId } : false)), r.hasRole('admin')])",
+        "r.some([r.userMatch((session) => ({ publisherId: session.userId })), r.hasRole('admin')])",
       );
     });
 
@@ -142,11 +142,22 @@ describe('lowerExpressionToRoleTree', () => {
   });
 
   describe('r.where — relation membership fallback', () => {
-    it('exists(...) → r.where with { some }', () => {
-      // The where-body already starts with `(` (the null-guard ternary), so the
-      // asWhere wrapper does not add redundant parens.
+    it('exists(...) referencing only userId → r.userWhere (no null-guard)', () => {
       expect(lower('exists(model.members, { userId: userId })')).toBe(
-        'r.where((ctx) => (ctx.auth.userId != null ? { members: { some: { userId: ctx.auth.userId } } } : false))',
+        'r.userWhere((session) => ({ members: { some: { userId: session.userId } } }))',
+      );
+    });
+  });
+
+  describe('r.userMatch / r.userWhere — composition', () => {
+    it('r.userMatch composes inside r.some with r.via', () => {
+      expect(
+        lower(
+          "model.ownerId === userId || hasRole(model.blog, 'owner')",
+          ctxWith({ blog: VIA_BLOG }),
+        ),
+      ).toBe(
+        "r.some([r.userMatch((session) => ({ ownerId: session.userId })), r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' })])",
       );
     });
   });
