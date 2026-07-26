@@ -85,7 +85,7 @@
     "@types/node": "catalog:",
     "@types/prettier": "^2.7.3",
     "@types/semver": "^7.5.8",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.15.1",

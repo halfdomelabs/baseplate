@@ -70,7 +70,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
