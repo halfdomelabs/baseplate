@@ -1,5 +1,23 @@
 # @baseplate-dev/core-generators
 
+## 0.6.13
+
+### Patch Changes
+
+- [#926](https://github.com/halfdomelabs/baseplate/pull/926) [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a) Thanks [@kingston](https://github.com/kingston)! - Removed the `preinstall: npx only-allow pnpm` script from generated `package.json` files. Package manager enforcement is already handled via the `packageManager` field, making this script redundant.
+
+- [#950](https://github.com/halfdomelabs/baseplate/pull/950) [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3) Thanks [@kingston](https://github.com/kingston)! - Refined the ESLint config for generated apps, and brought the internal monorepo configs in line with it. `eslint-plugin-unicorn` now uses its `unopinionated` preset while retaining `consistent-function-scoping`, `filename-case`, and `no-for-loop`, with `filename-case` applying to all generated apps rather than only React ones; `@typescript-eslint/switch-exhaustiveness-check` catches new union members silently falling into a generic `default` case; `react/prop-types` is disabled as redundant with TypeScript prop typing; `@typescript-eslint/explicit-function-return-type` no longer applies to React components (it remains load-bearing elsewhere) and `@typescript-eslint/prefer-destructuring` was removed. Unused ESLint disable directives and inline configs are now reported.
+
+- [#945](https://github.com/halfdomelabs/baseplate/pull/945) [`4819cfa`](https://github.com/halfdomelabs/baseplate/commit/4819cfad49158dec8eec05fc9d9b0025e7a81434) Thanks [@kingston](https://github.com/kingston)! - Generated backend test suites now run in parallel across Vitest workers instead of being pinned to a single worker: each worker migrates a shared template database once then clones its own per-worker database from it, and Redis keys are namespaced per worker, so concurrent test files no longer clobber each other's data. The generated `vitest.config.ts` takes an optional `maxWorkers` value, which DB-backed runs cap at 8 to avoid exhausting Postgres connections or clone locks on high-core CI runners, while unit-only runs (`TEST_MODE=unit`) stay uncapped.
+
+- [#919](https://github.com/halfdomelabs/baseplate/pull/919) [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289) Thanks [@kingston](https://github.com/kingston)! - Upgrade insecure dependencies flagged by pnpm audit. Generated projects now use axios 1.18.1 (was 1.16.1) and better-auth 1.6.23 (was 1.6.11), addressing multiple axios advisories (prototype pollution, DoS, proxy handling) and a stored XSS advisory in better-auth. Transitive dependencies (js-yaml, brace-expansion, protobufjs, esbuild, body-parser) were also updated to patched versions in the monorepo and example lockfiles.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Upgraded generated projects to TypeScript 6.0.3 (from 5.9.3), with typescript-eslint 8.65.0, `@vitest/eslint-plugin` 1.6.23, `eslint-plugin-perfectionist` 5.10.0, and `vitest-mock-extended` 3.1.1 for compatibility. Generated React apps now set `"types": ["node"]` in `tsconfig.app.json` and generated backends set `rootDir`/`types` in their `tsconfig.json`, since TypeScript 6 no longer implicitly includes `@types/node` globals for composite builds. Note that `@module-federation/vite` is pinned at exactly 1.17.0 — 1.17.1+ breaks the module federation shared-scope singleton for `zod`/`@baseplate-dev/project-builder-lib`, which left entity IDs unassigned when plugin-seeded models were merged into a new project during setup.
+
+- Updated dependencies [[`80c1474`](https://github.com/halfdomelabs/baseplate/commit/80c1474f8903f0609f8d7484b0d0be8b59d4f6c0)]:
+  - @baseplate-dev/utils@0.6.13
+  - @baseplate-dev/sync@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

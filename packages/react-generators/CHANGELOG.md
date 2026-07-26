@@ -1,5 +1,28 @@
 # @baseplate-dev/react-generators
 
+## 0.6.13
+
+### Patch Changes
+
+- [#951](https://github.com/halfdomelabs/baseplate/pull/951) [`becf3c5`](https://github.com/halfdomelabs/baseplate/commit/becf3c52b87a775c3a988995385b174e42c0b9e4) Thanks [@kingston](https://github.com/kingston)! - Add horizontal padding to the admin panel's main content area so page content no longer renders flush against the sidebar and window edges, and fix a Base UI console warning by marking the admin CRUD edit action button as non-native since it renders a link
+
+- [#950](https://github.com/halfdomelabs/baseplate/pull/950) [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3) Thanks [@kingston](https://github.com/kingston)! - Refined the ESLint config for generated apps, and brought the internal monorepo configs in line with it. `eslint-plugin-unicorn` now uses its `unopinionated` preset while retaining `consistent-function-scoping`, `filename-case`, and `no-for-loop`, with `filename-case` applying to all generated apps rather than only React ones; `@typescript-eslint/switch-exhaustiveness-check` catches new union members silently falling into a generic `default` case; `react/prop-types` is disabled as redundant with TypeScript prop typing; `@typescript-eslint/explicit-function-return-type` no longer applies to React components (it remains load-bearing elsewhere) and `@typescript-eslint/prefer-destructuring` was removed. Unused ESLint disable directives and inline configs are now reported.
+
+- [#939](https://github.com/halfdomelabs/baseplate/pull/939) [`03cc94e`](https://github.com/halfdomelabs/baseplate/commit/03cc94e0308d441404b4e84457e678b4d19c47b8) Thanks [@kingston](https://github.com/kingston)! - Improve disabled state for multi-select combobox chips: badges now hide their remove buttons and render as muted gray text when the field is disabled.
+
+- [#950](https://github.com/halfdomelabs/baseplate/pull/950) [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3) Thanks [@kingston](https://github.com/kingston)! - Added a native notification plugin (`@baseplate-dev/plugin-notifications`). Notification types are declared through `AppModule.notificationTypes` and delivered in-app over GraphQL subscriptions, or by email when the email plugin is enabled and a type lists `email` in its `channels`, rendering a branded notification email through the transactional email library. A `notification-web` generator provides a notification bell and feed panel with avatars, unread badges, and an optional "View All" link, enabled per web app and mounted through a new extension point in the generated admin layout header — the slot renders empty when no plugin contributes to it, so existing generated apps are unaffected. The plugin surfaces a clear error when enabled on a backend app that has GraphQL subscriptions disabled.
+
+- [#918](https://github.com/halfdomelabs/baseplate/pull/918) [`80b7a20`](https://github.com/halfdomelabs/baseplate/commit/80b7a2090a06e5f729a798a7750ea126c8f27a8c) Thanks [@kingston](https://github.com/kingston)! - File categories can now restrict accepted file types via an "Allowed File Types" setting in the project builder, supporting individual MIME types and groups. The backend blocks uploads of disallowed types and the upload UI filters the file picker and shows clear, extension-based error messages. Validation is lightweight, and client errors are shown on failure rather than server errors.
+
+- [#937](https://github.com/halfdomelabs/baseplate/pull/937) [`47765e5`](https://github.com/halfdomelabs/baseplate/commit/47765e58ebd1979f94f0b1889efe539bcfe3e7f1) Thanks [@kingston](https://github.com/kingston)! - Upgrade @base-ui/react from 1.4.1 to 1.6.0, bringing focus-return fixes, RTL fixes across Combobox/Menu/NavigationMenu/Popover/ScrollArea, and improved keyboard navigation across components.
+
+- [#927](https://github.com/halfdomelabs/baseplate/pull/927) [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83) Thanks [@kingston](https://github.com/kingston)! - Upgraded generated projects to TypeScript 6.0.3 (from 5.9.3), with typescript-eslint 8.65.0, `@vitest/eslint-plugin` 1.6.23, `eslint-plugin-perfectionist` 5.10.0, and `vitest-mock-extended` 3.1.1 for compatibility. Generated React apps now set `"types": ["node"]` in `tsconfig.app.json` and generated backends set `rootDir`/`types` in their `tsconfig.json`, since TypeScript 6 no longer implicitly includes `@types/node` globals for composite builds. Note that `@module-federation/vite` is pinned at exactly 1.17.0 — 1.17.1+ breaks the module federation shared-scope singleton for `zod`/`@baseplate-dev/project-builder-lib`, which left entity IDs unassigned when plugin-seeded models were merged into a new project during setup.
+
+- Updated dependencies [[`80c1474`](https://github.com/halfdomelabs/baseplate/commit/80c1474f8903f0609f8d7484b0d0be8b59d4f6c0), [`45886a6`](https://github.com/halfdomelabs/baseplate/commit/45886a6fc3ac02f37bf19a3dae45d38186c9ad8a), [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3), [`4819cfa`](https://github.com/halfdomelabs/baseplate/commit/4819cfad49158dec8eec05fc9d9b0025e7a81434), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289), [`0d3cd21`](https://github.com/halfdomelabs/baseplate/commit/0d3cd21bec022599977539f65fb2431d28574c83)]:
+  - @baseplate-dev/utils@0.6.13
+  - @baseplate-dev/core-generators@0.6.13
+  - @baseplate-dev/sync@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes
