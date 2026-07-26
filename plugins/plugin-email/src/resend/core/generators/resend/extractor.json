@@ -1,7 +1,7 @@
 {
   "name": "resend/core/resend",
   "templates": {
-    "resend-service": {
+    "resend-adapter": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
@@ -14,8 +14,8 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/services/resend.service.ts",
-      "sourceFile": "module/services/resend.service.ts",
+      "pathRootRelativePath": "{module-root}/services/resend.adapter.ts",
+      "sourceFile": "module/services/resend.adapter.ts",
       "variables": {}
     }
   }

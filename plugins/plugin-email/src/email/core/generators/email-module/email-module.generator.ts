@@ -131,19 +131,19 @@ export const emailModuleGenerator = createGenerator({
           );
         }
         appRuntimeConfig.services.set(
-          'emails',
-          TsCodeUtils.typeImportFragment('EmailService', paths.emailsService),
+          'email',
+          TsCodeUtils.typeImportFragment('EmailService', paths.emailService),
         );
         appRuntimeConfig.services.set(
           'emailTransport',
-          TsCodeUtils.typeImportFragment('EmailTransport', paths.emailsTypes),
+          TsCodeUtils.typeImportFragment('EmailTransport', paths.emailTypes),
         );
-        appRuntimeConfig.construction.set('emails', {
-          dependencies: ['queues'],
-          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailService', paths.emailsService)}({ queues })`,
+        appRuntimeConfig.construction.set('email', {
+          dependencies: ['queue'],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailService', paths.emailService)}({ queue })`,
         });
         appRuntimeConfig.construction.set('emailTransport', {
-          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailTransport', paths.emailsService)}(${emailAdapter})`,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailTransport', paths.emailService)}(${emailAdapter})`,
         });
       },
     }),
@@ -157,7 +157,7 @@ export const emailModuleGenerator = createGenerator({
             await builder.apply(
               renderers.mainGroup.render({
                 variables: {
-                  emailsService: {
+                  emailService: {
                     TPL_RENDER_EMAIL: TsCodeUtils.importFragment(
                       'renderEmail',
                       transactionalLibPackageName,

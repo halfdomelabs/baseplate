@@ -1,12 +1,12 @@
 {
-  "emails.service.ts": {
+  "email.service.ts": {
     "generator": "@baseplate-dev/plugin-email#email/core/email-module",
     "instanceData": {},
-    "template": "emails-service"
+    "template": "email-service"
   },
-  "postmark.service.ts": {
+  "postmark.adapter.ts": {
     "generator": "@baseplate-dev/plugin-email#postmark/core/postmark",
     "instanceData": {},
-    "template": "postmark-service"
+    "template": "postmark-adapter"
   }
 }

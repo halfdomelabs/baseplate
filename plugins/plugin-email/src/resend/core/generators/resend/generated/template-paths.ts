@@ -2,7 +2,7 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ResendCoreResendPaths {
-  resendService: string;
+  resendAdapter: string;
 }
 
 const resendCoreResendPaths = createProviderType<ResendCoreResendPaths>(
@@ -18,7 +18,7 @@ const resendCoreResendPathsTask = createGeneratorTask({
     return {
       providers: {
         resendCoreResendPaths: {
-          resendService: `${moduleRoot}/services/resend.service.ts`,
+          resendAdapter: `${moduleRoot}/services/resend.adapter.ts`,
         },
       },
     };

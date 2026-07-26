@@ -1,4 +1,10 @@
-// @ts-nocheck
+import type { EmailComponent } from '@prisma-crud/transactional';
+
+import { renderEmail } from '@prisma-crud/transactional';
+
+import type { QueueService } from '@src/types/queue.types.js';
+
+import { config } from '@src/services/config.js';
 
 import type {
   EmailAdapter,
@@ -6,11 +12,9 @@ import type {
   EmailSendOptions,
   EmailTransport,
   TransformedEmailMessage,
-} from '$emailsTypes';
-import type { QueueService } from '%queuesImports';
+} from '../email.types.js';
 
-import { sendEmailQueue } from '$sendEmailQueue';
-import { config } from '%configServiceImports';
+import { sendEmailQueue } from '../queues/send-email.queue.js';
 
 function normalizeEmailAddresses(addresses: string | string[]): string[] {
   return Array.isArray(addresses) ? addresses : [addresses];
@@ -36,11 +40,14 @@ function buildTransformedMessage(
 }
 
 async function renderEmailComponent<P extends object>(
-  component: TPL_EMAIL_COMPONENT<P>,
+  component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
   data: P,
 ): Promise<{ html: string; text: string; subject: string }> {
   try {
-    return await TPL_RENDER_EMAIL(component, data);
+    return await /* TPL_RENDER_EMAIL:START */ renderEmail(
+      /* TPL_RENDER_EMAIL:END */ component,
+      data,
+    );
   } catch (error) {
     throw new Error(`Failed to render email template: ${component.name}`, {
       cause: error,
@@ -70,35 +77,35 @@ export interface EmailService {
    * @returns The job ID of the email job.
    */
   send<P extends object>(
-    component: TPL_EMAIL_COMPONENT<P>,
+    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined>;
 }
 
 /**
  * Creates the {@link EmailService}. Construction allocates no resources -
- * enqueueing is deferred to `queues`, itself already constructed.
+ * enqueueing is deferred to `queue`, itself already constructed.
  *
  * @param deps - Construction dependencies
- * @param deps.queues - The queue service to enqueue the send-email job with.
+ * @param deps.queue - The queue service to enqueue the send-email job with.
  * @returns The email service
  */
 export function createEmailService({
-  queues,
+  queue,
 }: {
-  queues: QueueService;
+  queue: QueueService;
 }): EmailService {
   async function sendRaw(
     options: EmailRawOptions,
   ): Promise<string | undefined> {
-    return queues.enqueue(sendEmailQueue, {
+    return queue.enqueue(sendEmailQueue, {
       message: buildTransformedMessage(options),
       template: options.template,
     });
   }
 
   async function send<P extends object>(
-    component: TPL_EMAIL_COMPONENT<P>,
+    component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
     options: { data: P } & EmailSendOptions,
   ): Promise<string | undefined> {
     const rendered = await renderEmailComponent(component, options.data);

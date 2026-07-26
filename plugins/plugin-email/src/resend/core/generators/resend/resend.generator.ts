@@ -59,7 +59,7 @@ export const resendGenerator = createGenerator({
         emailConfig.emailAdapter.set(
           tsCodeFragment(
             'resendEmailAdapter',
-            tsImportBuilder(['resendEmailAdapter']).from(paths.resendService),
+            tsImportBuilder(['resendEmailAdapter']).from(paths.resendAdapter),
           ),
         );
       },
@@ -72,7 +72,7 @@ export const resendGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              renderers.resendService.render({
+              renderers.resendAdapter.render({
                 variables: {},
               }),
             );

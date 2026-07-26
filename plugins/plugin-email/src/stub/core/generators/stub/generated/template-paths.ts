@@ -2,7 +2,7 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface StubCoreStubPaths {
-  stubService: string;
+  stubAdapter: string;
 }
 
 const stubCoreStubPaths = createProviderType<StubCoreStubPaths>(
@@ -18,7 +18,7 @@ const stubCoreStubPathsTask = createGeneratorTask({
     return {
       providers: {
         stubCoreStubPaths: {
-          stubService: `${moduleRoot}/services/stub.service.ts`,
+          stubAdapter: `${moduleRoot}/services/stub.adapter.ts`,
         },
       },
     };

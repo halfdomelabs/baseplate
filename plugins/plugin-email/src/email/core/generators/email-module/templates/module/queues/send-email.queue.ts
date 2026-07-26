@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { TransformedEmailMessage } from '$emailsTypes';
+import type { TransformedEmailMessage } from '$emailTypes';
 
 import { defineQueue } from '%queuesImports';
 

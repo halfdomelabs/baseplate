@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   }
 
   const notification = await withScriptContext((ctx) =>
-    ctx.services.notifications.notifyText(recipient.id, text, {
+    ctx.services.notification.notifyText(recipient.id, text, {
       actionUrl: '/admin/accounts/users',
     }),
   );

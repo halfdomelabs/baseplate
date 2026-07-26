@@ -54,7 +54,7 @@ export async function requestEmailVerification({
   context,
 }: {
   userId: string;
-  context: RequestServiceContextWith<'emails'>;
+  context: RequestServiceContextWith<'email'>;
 }): Promise<{ success: true }> {
   const { services } = context;
 
@@ -93,7 +93,7 @@ export async function requestEmailVerification({
   // Construct verification URL using configured domain
   const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
-  await services.emails.send(TPL_ACCOUNT_VERIFICATION_EMAIL, {
+  await services.email.send(TPL_ACCOUNT_VERIFICATION_EMAIL, {
     to: user.email,
     data: { verifyLink },
   });

@@ -1,7 +1,7 @@
 {
   "name": "email/core/email-module",
   "templates": {
-    "emails-service": {
+    "email-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
@@ -15,7 +15,7 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/services/emails.service.ts",
+      "pathRootRelativePath": "{module-root}/services/email.service.ts",
       "projectExports": {
         "createEmailService": {
           "isTypeOnly": false,
@@ -27,11 +27,11 @@
         },
         "EmailService": { "isTypeOnly": true, "name": "EmailService" }
       },
-      "referencedGeneratorTemplates": ["emails-types", "send-email-queue"],
-      "sourceFile": "module/services/emails.service.ts",
+      "referencedGeneratorTemplates": ["email-types", "send-email-queue"],
+      "sourceFile": "module/services/email.service.ts",
       "variables": { "TPL_EMAIL_COMPONENT": {}, "TPL_RENDER_EMAIL": {} }
     },
-    "emails-types": {
+    "email-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
@@ -41,7 +41,7 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/emails.types.ts",
+      "pathRootRelativePath": "{module-root}/email.types.ts",
       "projectExports": {
         "EmailAdapter": { "isTypeOnly": true, "name": "EmailAdapter" },
         "EmailAttachment": { "isTypeOnly": true, "name": "EmailAttachment" },
@@ -53,7 +53,7 @@
           "name": "TransformedEmailMessage"
         }
       },
-      "sourceFile": "module/emails.types.ts",
+      "sourceFile": "module/email.types.ts",
       "variables": {}
     },
     "send-email-queue": {
@@ -70,7 +70,7 @@
       "projectExports": {
         "sendEmailQueue": { "isTypeOnly": false, "name": "sendEmailQueue" }
       },
-      "referencedGeneratorTemplates": ["emails-types"],
+      "referencedGeneratorTemplates": ["email-types"],
       "sourceFile": "module/queues/send-email.queue.ts",
       "variables": {}
     },

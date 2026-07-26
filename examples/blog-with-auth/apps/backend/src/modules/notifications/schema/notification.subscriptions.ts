@@ -11,7 +11,7 @@ builder.subscriptionField('notificationsChanged', (t) =>
   t.int({
     authorize: ['user'],
     subscribe: (_root, _args, context) =>
-      context.services.notifications.subscribeToChanges(
+      context.services.notification.subscribeToChanges(
         context.auth.userIdOrThrow(),
       ),
     resolve: (payload) => payload.count,

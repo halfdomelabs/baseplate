@@ -152,8 +152,8 @@ export const betterAuthModuleGenerator = createGenerator({
           userSessionTypesImports.UserSessionService.typeFragment(),
         );
         appRuntimeConfig.construction.set('betterAuth', {
-          dependencies: ['emails'],
-          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ emails })`,
+          dependencies: ['email'],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ email })`,
         });
         appRuntimeConfig.construction.set('userSession', {
           dependencies: ['betterAuth'],

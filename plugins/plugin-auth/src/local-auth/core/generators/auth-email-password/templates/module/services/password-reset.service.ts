@@ -68,7 +68,7 @@ export async function requestPasswordReset({
   context,
 }: {
   email: string;
-  context: RequestServiceContextWith<'emails'>;
+  context: RequestServiceContextWith<'email'>;
 }): Promise<{ success: true }> {
   const { services } = context;
 
@@ -111,7 +111,7 @@ export async function requestPasswordReset({
     const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
-    await services.emails.send(TPL_PASSWORD_RESET_EMAIL, {
+    await services.email.send(TPL_PASSWORD_RESET_EMAIL, {
       to: user.email,
       data: { resetLink },
     });
@@ -173,7 +173,7 @@ export async function completePasswordReset({
 }: {
   token: string;
   newPassword: string;
-  context: RequestServiceContextWith<'emails'>;
+  context: RequestServiceContextWith<'email'>;
 }): Promise<{ success: true }> {
   const { services } = context;
 
@@ -235,7 +235,7 @@ export async function completePasswordReset({
   await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
-  await services.emails.send(TPL_PASSWORD_CHANGED_EMAIL, {
+  await services.email.send(TPL_PASSWORD_CHANGED_EMAIL, {
     to: user.email,
     data: {},
   });

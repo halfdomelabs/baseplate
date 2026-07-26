@@ -7,34 +7,34 @@ import {
 import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
-const emailsService = createTsTemplateFile({
+const emailService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     queuesImports: queuesImportsProvider,
   },
-  name: 'emails-service',
+  name: 'email-service',
   projectExports: {
     createEmailService: { isTypeOnly: false },
     createEmailTransport: { isTypeOnly: false },
     EmailService: { isTypeOnly: true },
   },
-  referencedGeneratorTemplates: { emailsTypes: {}, sendEmailQueue: {} },
+  referencedGeneratorTemplates: { emailTypes: {}, sendEmailQueue: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/emails.service.ts',
+      '../templates/module/services/email.service.ts',
     ),
   },
   variables: { TPL_EMAIL_COMPONENT: {}, TPL_RENDER_EMAIL: {} },
 });
 
-const emailsTypes = createTsTemplateFile({
+const emailTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: { queuesImports: queuesImportsProvider },
-  name: 'emails-types',
+  name: 'email-types',
   projectExports: {
     EmailAdapter: { isTypeOnly: true },
     EmailAttachment: { isTypeOnly: true },
@@ -44,7 +44,7 @@ const emailsTypes = createTsTemplateFile({
     TransformedEmailMessage: { isTypeOnly: true },
   },
   source: {
-    path: path.join(import.meta.dirname, '../templates/module/emails.types.ts'),
+    path: path.join(import.meta.dirname, '../templates/module/email.types.ts'),
   },
   variables: {},
 });
@@ -55,7 +55,7 @@ const sendEmailQueue = createTsTemplateFile({
   importMapProviders: { queuesImports: queuesImportsProvider },
   name: 'send-email-queue',
   projectExports: { sendEmailQueue: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { emailsTypes: {} },
+  referencedGeneratorTemplates: { emailTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -86,8 +86,8 @@ const sendEmailWorker = createTsTemplateFile({
 });
 
 export const mainGroup = {
-  emailsService,
-  emailsTypes,
+  emailService,
+  emailTypes,
   sendEmailQueue,
   sendEmailWorker,
 };

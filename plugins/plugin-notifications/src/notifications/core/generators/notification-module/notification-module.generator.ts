@@ -55,7 +55,7 @@ export const notificationModuleGenerator = createGenerator({
       },
       run({ appRuntimeConfig, paths }) {
         appRuntimeConfig.services.set(
-          'notifications',
+          'notification',
           TsCodeUtils.typeImportFragment(
             'NotificationService',
             paths.servicesNotificationService,
@@ -79,7 +79,7 @@ export const notificationModuleGenerator = createGenerator({
         // separately-branched list.
         const channelFactories: Record<string, TsCodeFragment> = {
           inApp: TsCodeUtils.template`${TsCodeUtils.importFragment('createInAppChannel', paths.servicesInAppChannel)}({ events: notificationEvents })`,
-          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ emails })`,
+          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email })`,
         };
         const channelEntries = Object.fromEntries(
           installedChannelKeys(includeEmailChannel ?? false).map((key) => [
@@ -95,10 +95,10 @@ export const notificationModuleGenerator = createGenerator({
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
         });
-        appRuntimeConfig.construction.set('notifications', {
+        appRuntimeConfig.construction.set('notification', {
           dependencies: [
             'notificationEvents',
-            ...(includeEmailChannel ? ['emails'] : []),
+            ...(includeEmailChannel ? ['email'] : []),
           ],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: notificationEvents,
