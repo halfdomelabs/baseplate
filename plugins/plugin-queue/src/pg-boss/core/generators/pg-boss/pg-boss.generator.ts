@@ -64,9 +64,11 @@ export const pgBossGenerator = createGenerator({
           queuesImports.QueueRuntime.typeFragment(),
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
+        // `supervise`/`schedule` are constructor options and any enqueue calls
+        // `boss.start()`, so the loops need gating at construction rather than
+        // at worker startup.
+        appRuntimeConfig.usesBackgroundServices.set(true);
         appRuntimeConfig.construction.set('queues', {
-          // pg-boss's supervision and schedule loops are the background work
-          // the runtime-wide policy governs.
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
             disableMaintenance: !options.backgroundServices,
           })`,

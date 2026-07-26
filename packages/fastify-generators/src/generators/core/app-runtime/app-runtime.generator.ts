@@ -212,18 +212,25 @@ export function validateConstructionTypes({
  *   Each entry is emitted as a `provide('<key>', ...)` call, so supplying the
  *   key via `createAppRuntime({ overrides })` skips its construction; declare
  *   `disposeFragment` for cleanup rather than pushing a disposer directly.
- * Slices do not add their own top-level options: `createAppRuntime`'s surface
- * is application-wide runtime policy (`overrides`, `backgroundServices`), not
- * a bag of per-service switches. A slice needing caller input reads the
- * policy - pg-boss derives its `supervise`/`schedule` from
- * `options.backgroundServices` - and anything narrower belongs inside the
- * service factory.
  * - `flattenedModuleFields` (optional): an `AppModule` field this slice reads
  *   from the flattened root module, mapped to the local const name to bind it
  *   to (e.g. `queues` -> `queueBindings`). All entries are emitted as a single
  *   destructure of one `flattenAppModule(rootModule)` call, before any slice
  *   construction, so each field is flattened once regardless of how many
  *   slices consume it.
+ * - `usesBackgroundServices` (optional): declares that a slice starts loops at
+ *   CONSTRUCTION time that should run in only one process, which adds the
+ *   `backgroundServices` option to `createAppRuntime`. Set it only from a slice
+ *   that reads `options.backgroundServices`, so a project whose slices have no
+ *   such loops never generates an option nothing consumes. pg-boss sets it
+ *   because `supervise`/`schedule` are client constructor options and any
+ *   enqueue starts them; bullmq does not, because its repeatable-job
+ *   registration happens inside `startWorkers()` and is already gated by
+ *   whether a process starts workers at all.
+ *
+ * Slices contribute no other top-level options: `createAppRuntime`'s surface is
+ * application-wide runtime policy, not a bag of per-service switches. Anything
+ * narrower than a process-level capability belongs inside the service factory.
  */
 const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
   createConfigProviderTask(
@@ -231,6 +238,7 @@ const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
       services: t.map<string, TsCodeFragment>(),
       construction: t.map<string, AppRuntimeConstructionEntry>(),
       flattenedModuleFields: t.map<string, string>(),
+      usesBackgroundServices: t.scalar<boolean>(),
     }),
     {
       prefix: 'app-runtime',
@@ -268,6 +276,7 @@ export const appRuntimeGenerator = createGenerator({
           services,
           construction,
           flattenedModuleFields,
+          usesBackgroundServices,
         },
         appModuleImports,
         appModuleSetupImports,
@@ -351,27 +360,40 @@ export const appRuntimeGenerator = createGenerator({
                     ),
                   );
 
-            // Fixed surface: application-wide runtime policy only. Slices read
-            // these rather than registering options of their own, so the
-            // parameter can't accrue per-service switches. Defaulted, so
+            // Application-wide runtime policy only - slices opt into these
+            // rather than contributing options of their own, so the parameter
+            // can't accrue per-service switches. Defaulted, so
             // `createAppRuntime()` keeps working with no arguments.
-            const optionsParam = TsCodeUtils.template`
-              options: {
+            const backgroundServicesOption = usesBackgroundServices
+              ? TsCodeUtils.template`
                 /**
-                 * Whether this process runs the background loops a service owns - pg-boss
-                 * supervision and scheduling, and anything similar a future service adds.
-                 * Exactly one process should enable them.
+                 * Whether this process runs the background loops a service owns, e.g.
+                 * pg-boss supervision and scheduling. Exactly one process should enable
+                 * them.
                  *
                  * Defaults to \`false\`, so scripts and tests stay passive unless they opt
                  * in.
                  */
-                backgroundServices?: boolean;
+                backgroundServices?: boolean;`
+              : undefined;
+
+            const optionsParam = TsCodeUtils.template`
+              options: {
+                ${TsCodeUtils.mergeFragmentsPresorted(
+                  [
+                    ...(backgroundServicesOption
+                      ? [backgroundServicesOption]
+                      : []),
+                    TsCodeUtils.template`
                 /**
                  * Services to use instead of constructing them. An overridden key's
                  * construction is skipped entirely and downstream construction consumes the
                  * override. Overrides are borrowed: the runtime never disposes them.
                  */
-                overrides?: Partial<AppServices>;
+                overrides?: Partial<AppServices>;`,
+                  ],
+                  '\n',
+                )}
               } = {},`;
 
             await builder.apply(

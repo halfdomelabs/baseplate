@@ -47,9 +47,9 @@ export interface AppRuntime {
 export function createAppRuntime(
   /* TPL_OPTIONS_PARAM:START */ options: {
     /**
-     * Whether this process runs the background loops a service owns - pg-boss
-     * supervision and scheduling, and anything similar a future service adds.
-     * Exactly one process should enable them.
+     * Whether this process runs the background loops a service owns, e.g.
+     * pg-boss supervision and scheduling. Exactly one process should enable
+     * them.
      *
      * Defaults to `false`, so scripts and tests stay passive unless they opt
      * in.
