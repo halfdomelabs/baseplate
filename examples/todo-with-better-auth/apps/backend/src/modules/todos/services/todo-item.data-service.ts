@@ -104,7 +104,7 @@ export async function createTodoItem<TQuery extends DataQuery<'todoItem'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoItem', TQuery>> {
-  todoItemPolicy.create.checkGlobalRoles(context);
+  todoItemPolicy.actions.create.checkGlobalRoles(context);
   const { attachments, assigneeId, todoListId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -147,7 +147,7 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
   // Authorize: throws 404 if the caller can't update this row.
   await prisma.todoItem
     .findUniqueOrThrow({
-      where: todoItemPolicy.update.whereUnique(context, where),
+      where: todoItemPolicy.actions.update.whereUnique(context, where),
     })
     .catch(throwIfPrismaNotFound('TodoItem not found'));
 
@@ -169,7 +169,7 @@ export async function updateTodoItem<TQuery extends DataQuery<'todoItem'>>({
     execute: async ({ tx, transformed }) =>
       tx.todoItem
         .update({
-          where: todoItemPolicy.update.whereUnique(context, where),
+          where: todoItemPolicy.actions.update.whereUnique(context, where),
           data: {
             ...rest,
             ...transformed,
@@ -196,7 +196,7 @@ export async function deleteTodoItem<TQuery extends DataQuery<'todoItem'>>({
 }): Promise<GetResult<'todoItem', TQuery>> {
   const result = await prisma.todoItem
     .delete({
-      where: todoItemPolicy.delete.whereUnique(context, where),
+      where: todoItemPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('TodoItem not found'));

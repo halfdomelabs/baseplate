@@ -231,7 +231,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  userPolicy.create.checkGlobalRoles(context);
+  userPolicy.actions.create.checkGlobalRoles(context);
   const { customer, images, roles, userProfile, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -269,7 +269,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  userPolicy.update.checkGlobalRoles(context);
+  userPolicy.actions.update.checkGlobalRoles(context);
   const { customer, images, roles, userProfile, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -318,7 +318,7 @@ export async function deleteUser<TQuery extends DataQuery<'user'>>({
 }): Promise<GetResult<'user', TQuery>> {
   const result = await prisma.user
     .delete({
-      where: userPolicy.delete.whereUnique(context, where),
+      where: userPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('User not found'));

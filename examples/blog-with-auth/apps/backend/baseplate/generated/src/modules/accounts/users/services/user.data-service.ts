@@ -33,7 +33,7 @@ export async function createUser<TQuery extends DataQuery<'user'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'user', TQuery>> {
-  userPolicy.create.checkGlobalRoles(context);
+  userPolicy.actions.create.checkGlobalRoles(context);
 
   const result = await prisma.user.create({
     data,
@@ -58,7 +58,7 @@ export async function updateUser<TQuery extends DataQuery<'user'>>({
 }): Promise<GetResult<'user', TQuery>> {
   const result = await prisma.user
     .update({
-      where: userPolicy.update.whereUnique(context, where),
+      where: userPolicy.actions.update.whereUnique(context, where),
       data,
       ...query,
     })
@@ -78,7 +78,7 @@ export async function deleteUser<TQuery extends DataQuery<'user'>>({
 }): Promise<GetResult<'user', TQuery>> {
   const result = await prisma.user
     .delete({
-      where: userPolicy.delete.whereUnique(context, where),
+      where: userPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('User not found'));

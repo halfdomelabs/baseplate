@@ -15,7 +15,7 @@ builder.queryField('user', (t) =>
       prisma.user
         .findUniqueOrThrow({
           ...query,
-          where: userPolicy.read.whereUnique(ctx, { id }),
+          where: userPolicy.actions.read.whereUnique(ctx, { id }),
         })
         .catch(throwIfPrismaNotFound('User not found')),
   }),
@@ -32,7 +32,7 @@ builder.queryField('users', (t) =>
     resolve: async (query, _root, { skip, take }, ctx) =>
       prisma.user.findMany({
         ...query,
-        where: userPolicy.read.where(ctx),
+        where: userPolicy.actions.read.where(ctx),
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),

@@ -159,10 +159,7 @@ export function createModelPolicy<
   readonly roles: {
     readonly [K in keyof TRoles]: PolicyRoleMembers<TModelName, TIdField>;
   };
-  readonly actions: {
-    readonly [K in keyof TActions]: ActionMembers<TModelName>;
-  };
-} {
+} & { readonly [K in keyof TActions]: ActionMembers<TModelName> } {
   const superuser = config.superuser ?? [];
   const idFields: readonly TIdField[] = Object.freeze(
     (Array.isArray(config.id)
@@ -258,7 +255,7 @@ export function createModelPolicy<
     return ids;
   }
 
-  /** Return `null` when an optional foreign key cannot identify a target row. */
+  /** Return `null` when every field of an optional foreign key is unset. */
   function buildTargetIds(
     keys: Record<string, string | undefined>,
     model: Record<string, unknown>,
@@ -269,7 +266,7 @@ export function createModelPolicy<
         ([localField, targetField]) =>
           [localField, targetField, model[localField]] as const,
       );
-    if (values.some((entry) => entry[2] === null || entry[2] === undefined)) {
+    if (values.every((entry) => entry[2] === null || entry[2] === undefined)) {
       return null;
     }
     const ids: Record<string, string | number> = {};
@@ -631,19 +628,17 @@ export function createModelPolicy<
     };
   }
 
-  const actionMembers = Object.fromEntries(
-    Object.entries(config.actions).map(([action, grant]) => [
-      action,
-      buildAction(grant),
-    ]),
-  ) as {
+  const actionMembers = {} as {
     [K in keyof TActions]: ActionMembers<TModelName>;
   };
+  for (const a of Object.keys(config.actions) as (keyof TActions & string)[]) {
+    actionMembers[a] = buildAction(config.actions[a]);
+  }
 
   return {
     model: config.model,
     idFields,
     roles: roleMembers,
-    actions: actionMembers,
+    ...actionMembers,
   };
 }
