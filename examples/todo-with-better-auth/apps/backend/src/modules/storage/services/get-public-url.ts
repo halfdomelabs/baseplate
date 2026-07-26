@@ -1,5 +1,5 @@
 import type { File } from '@src/generated/prisma/client.js';
-import type { ServiceContext } from '@src/utils/service-context.js';
+import type { ServiceContextWith } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
 
@@ -13,7 +13,7 @@ import { prisma } from '@src/services/prisma.js';
  */
 export async function getPublicUrl(
   fileIdOrFile: string | File,
-  context: ServiceContext,
+  context: ServiceContextWith<'storage'>,
 ): Promise<string | undefined> {
   const file =
     typeof fileIdOrFile === 'string'

@@ -4,7 +4,7 @@ import {
 } from '@blog-with-auth/transactional';
 import z from 'zod';
 
-import type { RequestServiceContext } from '@src/utils/request-service-context.js';
+import type { RequestServiceContextWith } from '@src/utils/request-service-context.js';
 
 import { config } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
@@ -12,7 +12,6 @@ import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 import { handleZodRequestValidationError } from '@src/utils/zod.js';
 
-import { sendEmail } from '../../../../emails/services/emails.service.js';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -71,8 +70,10 @@ export async function requestPasswordReset({
   context,
 }: {
   email: string;
-  context: RequestServiceContext;
+  context: RequestServiceContextWith<'emails'>;
 }): Promise<{ success: true }> {
+  const { services } = context;
+
   const { email } = await requestPasswordResetSchema
     .parseAsync({ email: rawEmail })
     .catch(handleZodRequestValidationError);
@@ -112,8 +113,7 @@ export async function requestPasswordReset({
     const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
-    await sendEmail(
-      context,
+    await services.emails.send(
       /* TPL_PASSWORD_RESET_EMAIL:START */ PasswordResetEmail /* TPL_PASSWORD_RESET_EMAIL:END */,
       {
         to: user.email,
@@ -178,8 +178,10 @@ export async function completePasswordReset({
 }: {
   token: string;
   newPassword: string;
-  context: RequestServiceContext;
+  context: RequestServiceContextWith<'emails'>;
 }): Promise<{ success: true }> {
+  const { services } = context;
+
   const { token, newPassword } = await completePasswordResetSchema
     .parseAsync({
       token: rawToken,
@@ -238,8 +240,7 @@ export async function completePasswordReset({
   await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
-  await sendEmail(
-    context,
+  await services.emails.send(
     /* TPL_PASSWORD_CHANGED_EMAIL:START */ PasswordChangedEmail /* TPL_PASSWORD_CHANGED_EMAIL:END */,
     {
       to: user.email,

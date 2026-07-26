@@ -5,6 +5,8 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { AppServices } from '@src/utils/runtime-services.js';
+
 import { stripeWebhookPlugin } from '@src/plugins/stripe-webhook.js';
 
 vi.mock('@src/services/config.js', () => ({
@@ -13,43 +15,9 @@ vi.mock('@src/services/config.js', () => ({
     STRIPE_ENDPOINT_SECRET: 'whsec_test_fake',
   },
 }));
-
-// The subscription-event handler queries the billing account; returning
-// `null` exercises its "no matching billing account" early-return path
-// without requiring a real database.
-vi.mock('@src/services/prisma.js', () => ({
-  prisma: {
-    billingAccount: { findUnique: vi.fn().mockResolvedValue(null) },
-  },
-}));
 vi.mock('@src/services/logger.js', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
-
-function createFakeSubscription(): Stripe.Subscription {
-  return {
-    id: 'sub_test_123',
-    object: 'subscription',
-    customer: 'cus_test_123',
-    status: 'active',
-    cancel_at_period_end: false,
-    metadata: {},
-    items: {
-      object: 'list',
-      data: [
-        {
-          id: 'si_test',
-          object: 'subscription_item',
-          price: { id: 'price_test' },
-          current_period_start: 1_700_000_000,
-          current_period_end: 1_702_592_000,
-        } as unknown as Stripe.SubscriptionItem,
-      ],
-      has_more: false,
-      url: '',
-    },
-  } as Stripe.Subscription;
-}
 
 function createFakeWebhookEvent(
   overrides?: Partial<Stripe.Event>,
@@ -63,9 +31,7 @@ function createFakeWebhookEvent(
     pending_webhooks: 0,
     type: 'customer.subscription.created',
     request: null,
-    data: {
-      object: createFakeSubscription(),
-    },
+    data: { object: {} },
     ...overrides,
   } as Stripe.Event;
 }
@@ -78,10 +44,19 @@ function createMockStripe(): Stripe {
   } as unknown as Stripe;
 }
 
-async function buildApp(stripe: Stripe): Promise<FastifyInstance> {
+function createMockBilling(): AppServices['billing'] {
+  return {
+    getOrCreateAccount: vi.fn(),
+    handleSubscriptionEvent: vi.fn(),
+  };
+}
+
+async function buildApp(
+  services: Pick<AppServices, 'billing' | 'stripe'>,
+): Promise<FastifyInstance> {
   const fastify = Fastify();
   await fastify.register(rawBodyPlugin, { global: false });
-  await fastify.register(stripeWebhookPlugin, { services: { stripe } });
+  await fastify.register(stripeWebhookPlugin, { services });
   return fastify;
 }
 
@@ -91,9 +66,10 @@ describe('stripeWebhookPlugin', () => {
       type: 'customer.subscription.deleted',
     });
     const stripe = createMockStripe();
+    const billing = createMockBilling();
     vi.mocked(stripe.webhooks.constructEventAsync).mockResolvedValue(event);
 
-    const fastify = await buildApp(stripe);
+    const fastify = await buildApp({ stripe, billing });
 
     const response = await fastify.inject({
       method: 'POST',
@@ -103,6 +79,7 @@ describe('stripeWebhookPlugin', () => {
     });
 
     expect(response.statusCode).toBe(200);
+    expect(billing.handleSubscriptionEvent).toHaveBeenCalledWith(event);
     expect(
       vi.mocked(stripe.webhooks.constructEventAsync).mock.calls[0]?.[1],
     ).toBe('sig_test');
@@ -111,9 +88,10 @@ describe('stripeWebhookPlugin', () => {
   it('returns 200 for unregistered event types', async () => {
     const event = createFakeWebhookEvent({ type: 'charge.succeeded' });
     const stripe = createMockStripe();
+    const billing = createMockBilling();
     vi.mocked(stripe.webhooks.constructEventAsync).mockResolvedValue(event);
 
-    const fastify = await buildApp(stripe);
+    const fastify = await buildApp({ stripe, billing });
 
     const response = await fastify.inject({
       method: 'POST',
@@ -124,15 +102,17 @@ describe('stripeWebhookPlugin', () => {
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toEqual({ success: true });
+    expect(billing.handleSubscriptionEvent).not.toHaveBeenCalled();
   });
 
   it('returns 400 when signature verification fails', async () => {
     const stripe = createMockStripe();
+    const billing = createMockBilling();
     vi.mocked(stripe.webhooks.constructEventAsync).mockRejectedValue(
       new Error('Invalid signature'),
     );
 
-    const fastify = await buildApp(stripe);
+    const fastify = await buildApp({ stripe, billing });
 
     const response = await fastify.inject({
       method: 'POST',
@@ -142,5 +122,28 @@ describe('stripeWebhookPlugin', () => {
     });
 
     expect(response.statusCode).toBe(400);
+  });
+
+  it('propagates an error when the handler throws, so Stripe retries', async () => {
+    const event = createFakeWebhookEvent({
+      type: 'customer.subscription.updated',
+    });
+    const stripe = createMockStripe();
+    const billing = createMockBilling();
+    vi.mocked(stripe.webhooks.constructEventAsync).mockResolvedValue(event);
+    vi.mocked(billing.handleSubscriptionEvent).mockRejectedValue(
+      new Error('No BillingAccount found for Stripe customer: cus_test_123'),
+    );
+
+    const fastify = await buildApp({ stripe, billing });
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/webhooks/stripe',
+      payload: event,
+      headers: { 'stripe-signature': 'sig_test' },
+    });
+
+    expect(response.statusCode).toBe(500);
   });
 });

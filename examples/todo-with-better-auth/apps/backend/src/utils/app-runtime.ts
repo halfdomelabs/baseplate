@@ -4,6 +4,7 @@ import type { AppServices } from './runtime-services.js';
 
 import { buildAuth } from '../modules/accounts/auth/services/auth.js';
 import { createBetterAuthUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
+import { createBillingService } from '../modules/billing/services/billing.service.js';
 import {
   createEmailService,
   createEmailTransport,
@@ -123,6 +124,8 @@ export function createAppRuntime(
 
   const stripe = provide('stripe', () => new Stripe(config.STRIPE_SECRET_KEY));
 
+  const billing = provide('billing', () => createBillingService({ stripe }));
+
   const userSession = provide('userSession', () =>
     createBetterAuthUserSessionService(betterAuth),
   );
@@ -130,6 +133,7 @@ export function createAppRuntime(
 
   const services = /* TPL_SERVICES_OBJECT:START */ {
     betterAuth,
+    billing,
     emails,
     emailTransport,
     queues,
