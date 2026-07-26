@@ -77,10 +77,6 @@
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         },
-        "emailModuleImportsProvider": {
-          "importName": "emailModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
-        },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
@@ -115,10 +111,6 @@
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        },
-        "emailModuleImportsProvider": {
-          "importName": "emailModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
         },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",

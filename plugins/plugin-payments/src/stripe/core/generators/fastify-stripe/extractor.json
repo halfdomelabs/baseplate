@@ -32,13 +32,18 @@
       },
       "referencedGeneratorTemplates": ["service-event-handlers"],
       "sourceFile": "src/plugins/stripe-webhook.ts",
-      "variables": {}
+      "variables": { "TPL_SERVICES_TYPE": {} }
     },
     "service-event-handlers": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "webhook-services",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/services/stripe-event-handlers.ts",
       "projectExports": {
         "createStripeEventHandlers": {
@@ -47,7 +52,11 @@
         }
       },
       "sourceFile": "src/services/stripe-event-handlers.ts",
-      "variables": { "TPL_EVENT_HANDLERS": {} }
+      "variables": {
+        "TPL_EVENT_HANDLERS": {},
+        "TPL_SERVICES_DESTRUCTURE": {},
+        "TPL_SERVICES_TYPE": {}
+      }
     }
   }
 }

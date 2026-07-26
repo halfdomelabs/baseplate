@@ -13,14 +13,12 @@ const emailsService = createTsTemplateFile({
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     queuesImports: queuesImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
   },
   name: 'emails-service',
   projectExports: {
     createEmailService: { isTypeOnly: false },
     createEmailTransport: { isTypeOnly: false },
     EmailService: { isTypeOnly: true },
-    sendEmail: { isTypeOnly: false },
   },
   referencedGeneratorTemplates: { emailsTypes: {}, sendEmailQueue: {} },
   source: {

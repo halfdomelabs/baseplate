@@ -23,6 +23,16 @@ export interface RequestServiceContext extends ServiceContext {
   /* TPL_CONTEXT_FIELDS:END */
 }
 
+/**
+ * A {@link RequestServiceContext} narrowed to only the named services,
+ * mirroring {@link ServiceContextWith} for request-scoped code that wants an
+ * honest signature. Structurally satisfied by the full context.
+ */
+export type RequestServiceContextWith<K extends keyof AppServices> = Omit<
+  RequestServiceContext,
+  'services'
+> & { readonly services: Pick<AppServices, K> };
+
 export function createContextFromRequest(
   request: FastifyRequest,
   services: AppServices,

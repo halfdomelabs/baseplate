@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import { TsCodeUtils } from '@baseplate-dev/core-generators';
+import { appRuntimeConfigProvider } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -36,15 +37,11 @@ export const billingModuleGenerator = createGenerator({
     webhookHandlers: createGeneratorTask({
       dependencies: {
         stripeWebhookConfig: stripeWebhookConfigProvider,
-        paths: STRIPE_BILLING_MODULE_GENERATED.paths.provider,
       },
-      run({ stripeWebhookConfig, paths }) {
-        // Closes over the `stripe` param of `createStripeEventHandlers`, which
-        // `handleSubscriptionEvent` needs to call back into the Stripe API.
-        const handlerFragment = TsCodeUtils.template`(event) => ${TsCodeUtils.importFragment(
-          'handleSubscriptionEvent',
-          paths.billingService,
-        )}(stripe, event)`;
+      run({ stripeWebhookConfig }) {
+        // Closes over `billing`, which the event-handler factory destructures
+        // from the services `createStripeEventHandlers` receives.
+        const handlerFragment = TsCodeUtils.template`(event) => billing.handleSubscriptionEvent(event)`;
         stripeWebhookConfig.eventHandlers.set(
           'customer.subscription.created',
           handlerFragment,
@@ -57,6 +54,29 @@ export const billingModuleGenerator = createGenerator({
           'customer.subscription.deleted',
           handlerFragment,
         );
+        stripeWebhookConfig.additionalServices.push('billing');
+      },
+    }),
+    appRuntimeConfig: createGeneratorTask({
+      dependencies: {
+        appRuntimeConfig: appRuntimeConfigProvider,
+        paths: STRIPE_BILLING_MODULE_GENERATED.paths.provider,
+      },
+      run({ appRuntimeConfig, paths }) {
+        appRuntimeConfig.services.set(
+          'billing',
+          TsCodeUtils.typeImportFragment(
+            'BillingService',
+            paths.billingService,
+          ),
+        );
+        appRuntimeConfig.construction.set('billing', {
+          dependencies: ['stripe'],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment(
+            'createBillingService',
+            paths.billingService,
+          )}({ stripe })`,
+        });
       },
     }),
     main: createGeneratorTask({

@@ -25,7 +25,7 @@ const pluginsWebhook = createTsTemplateFile({
       '../templates/src/plugins/stripe-webhook.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_SERVICES_TYPE: {} },
 });
 
 export const pluginsGroup = { pluginsWebhook };
@@ -33,7 +33,7 @@ export const pluginsGroup = { pluginsWebhook };
 const serviceEventHandlers = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'webhook-services',
-  importMapProviders: {},
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
   name: 'service-event-handlers',
   projectExports: { createStripeEventHandlers: { isTypeOnly: false } },
   source: {
@@ -42,7 +42,11 @@ const serviceEventHandlers = createTsTemplateFile({
       '../templates/src/services/stripe-event-handlers.ts',
     ),
   },
-  variables: { TPL_EVENT_HANDLERS: {} },
+  variables: {
+    TPL_EVENT_HANDLERS: {},
+    TPL_SERVICES_DESTRUCTURE: {},
+    TPL_SERVICES_TYPE: {},
+  },
 });
 
 export const webhookServicesGroup = { serviceEventHandlers };

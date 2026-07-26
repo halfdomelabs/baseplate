@@ -84,6 +84,9 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: STRIPE_FASTIFY_STRIPE_TEMPLATES.webhookServicesGroup,
                 paths,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 ...options,
               }),
           },

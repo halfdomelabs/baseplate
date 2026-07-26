@@ -13,10 +13,6 @@
         "queuesImportsProvider": {
           "importName": "queuesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
-        },
-        "serviceContextImportsProvider": {
-          "importName": "serviceContextImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/emails.service.ts",
@@ -29,8 +25,7 @@
           "isTypeOnly": false,
           "name": "createEmailTransport"
         },
-        "EmailService": { "isTypeOnly": true, "name": "EmailService" },
-        "sendEmail": { "isTypeOnly": false, "name": "sendEmail" }
+        "EmailService": { "isTypeOnly": true, "name": "EmailService" }
       },
       "referencedGeneratorTemplates": ["emails-types", "send-email-queue"],
       "sourceFile": "module/services/emails.service.ts",

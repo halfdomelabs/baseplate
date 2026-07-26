@@ -141,9 +141,8 @@ export interface EmailAdapter {
 
 /**
  * Delivery capability: sends an already-rendered, frozen message. Lives on
- * `services.emailTransport`, the same object graph as everything else (not a
- * separate worker-only object) - visible and review-catchable, distinct from
- * `EmailService` so producer code can't accidentally bypass the queue.
+ * `services.emailTransport`, distinct from `EmailService` (which renders and
+ * enqueues).
  */
 export interface EmailTransport {
   /**

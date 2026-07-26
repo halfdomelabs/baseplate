@@ -1,13 +1,15 @@
 import { AccountVerificationEmail } from '@blog-with-auth/transactional';
 
-import type { RequestServiceContext } from '@src/utils/request-service-context.js';
+import type {
+  RequestServiceContext,
+  RequestServiceContextWith,
+} from '@src/utils/request-service-context.js';
 
 import { config } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 
-import { sendEmail } from '../../../../emails/services/emails.service.js';
 import {
   createAuthVerification,
   validateAuthVerification,
@@ -53,8 +55,10 @@ export async function requestEmailVerification({
   context,
 }: {
   userId: string;
-  context: RequestServiceContext;
+  context: RequestServiceContextWith<'emails'>;
 }): Promise<{ success: true }> {
+  const { services } = context;
+
   await Promise.all([
     getRequestEmailVerificationIpLimiter().consumeOrThrow(
       context.reqInfo.ip,
@@ -90,8 +94,7 @@ export async function requestEmailVerification({
   // Construct verification URL using configured domain
   const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
 
-  await sendEmail(
-    context,
+  await services.emails.send(
     /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
     {
       to: user.email,

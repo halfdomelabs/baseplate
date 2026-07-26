@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import type { File } from '%prismaGeneratedImports';
-import type { ServiceContext } from '%serviceContextImports';
+import type { ServiceContextWith } from '%serviceContextImports';
 
 /**
  * Gets a permanent public URL for a file.
@@ -13,7 +13,7 @@ import type { ServiceContext } from '%serviceContextImports';
  */
 export async function getPublicUrl(
   fileIdOrFile: string | File,
-  context: ServiceContext,
+  context: ServiceContextWith<'storage'>,
 ): Promise<string | undefined> {
   const file =
     typeof fileIdOrFile === 'string'

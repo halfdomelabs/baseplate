@@ -3,7 +3,6 @@ import type { EmailComponent } from '@blog-with-auth/transactional';
 import { renderEmail } from '@blog-with-auth/transactional';
 
 import type { QueueService } from '@src/types/queue.types.js';
-import type { ServiceContextWith } from '@src/utils/service-context.js';
 
 import { config } from '@src/services/config.js';
 
@@ -120,23 +119,6 @@ export function createEmailService({
   }
 
   return { sendRaw, send };
-}
-
-/**
- * Renders an email component and sends it, via `ctx.services.emails`. The
- * primary authoring surface for feature code holding a `ServiceContext`.
- *
- * @param ctx - The service context, providing access to `services.emails`.
- * @param component - The email component to render (must be created with defineEmail).
- * @param options - The options for sending the email, including data props.
- * @returns The job ID of the email job.
- */
-export async function sendEmail<P extends object>(
-  ctx: ServiceContextWith<'emails'>,
-  component: /* TPL_EMAIL_COMPONENT:START */ EmailComponent/* TPL_EMAIL_COMPONENT:END */ <P>,
-  options: { data: P } & EmailSendOptions,
-): Promise<string | undefined> {
-  return ctx.services.emails.send(component, options);
 }
 
 /**
