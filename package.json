@@ -75,7 +75,7 @@
     "@playwright/cli": "^0.1.13",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
-    "es-toolkit": "1.44.0",
+    "es-toolkit": "^1.44.0",
     "eslint": "catalog:",
     "husky": "9.1.7",
     "knip": "5.79.0",

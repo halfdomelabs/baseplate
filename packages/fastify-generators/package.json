@@ -51,10 +51,10 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "@prisma/prisma-schema-wasm": "7.9.0-1.e922089b7d7502aff4249d5da3420f6fa55fc6ad",
-    "change-case": "5.4.4",
-    "es-toolkit": "1.44.0",
-    "indent-string": "5.0.0",
-    "inflection": "3.0.0",
+    "change-case": "^5.4.4",
+    "es-toolkit": "^1.44.0",
+    "indent-string": "^5.0.0",
+    "inflection": "^3.0.0",
     "zod": "catalog:"
   },
   "devDependencies": {

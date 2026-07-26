@@ -54,13 +54,13 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "@hookform/lenses": "0.8.1",
-    "@hookform/resolvers": "5.2.2",
-    "es-toolkit": "1.44.0",
-    "mime-types": "2.1.35",
+    "@hookform/lenses": "^0.8.1",
+    "@hookform/resolvers": "^5.2.2",
+    "es-toolkit": "^1.44.0",
+    "mime-types": "^2.1.35",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "7.71.1",
+    "react-hook-form": "^7.71.1",
     "zod": "catalog:"
   },
   "devDependencies": {
