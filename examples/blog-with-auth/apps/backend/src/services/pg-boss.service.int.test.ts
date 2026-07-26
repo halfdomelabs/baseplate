@@ -190,7 +190,9 @@ describe('pg-boss service integration tests', () => {
       });
 
       runtime = createQueueRuntime([binding]);
-      await runtime.startWorkers({ createContext: createTestServiceContext });
+      await runtime.startWorkers({
+        createContext: createTestServiceContext,
+      });
 
       const enqueuedAt = Date.now();
       await runtime.enqueue(
@@ -210,7 +212,7 @@ describe('pg-boss service integration tests', () => {
       assert.isDefined(processedAt);
       const actualDelay = processedAt - enqueuedAt;
       expect(actualDelay).toBeGreaterThanOrEqual(900); // Allow some tolerance
-    });
+    }, 10_000); // pg-boss's poll interval can push this past the default 5000ms timeout
   });
 
   describe('cleanup', () => {
