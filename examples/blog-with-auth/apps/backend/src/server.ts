@@ -22,6 +22,7 @@ export async function buildServer(
   options: FastifyServerOptions & { runtime: AppRuntime },
 ): Promise<FastifyInstance> {
   const { runtime, ...fastifyOptions } = options;
+  // `runtime` owns disposal below; plugins only ever receive `services`.
   const { services } = runtime;
   const fastify = Fastify({
     genReqId: () => nanoid(),
