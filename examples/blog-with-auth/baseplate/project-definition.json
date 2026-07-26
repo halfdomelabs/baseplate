@@ -526,6 +526,15 @@
       }
     },
     {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "model.userId === userId",
+            "id": "model-authorizer-role:7WM73tVtaXCL",
+            "name": "owner"
+          }
+        ]
+      },
       "featureRef": "blogs",
       "id": "model:at_hVtN6XVWX",
       "model": {
@@ -584,6 +593,83 @@
         ]
       },
       "name": "BlogUser",
+      "service": { "transformers": [] }
+    },
+    {
+      "authorizer": {
+        "roles": [
+          {
+            "expression": "hasRole(model.blogUser, 'owner')",
+            "id": "model-authorizer-role:sLvn5W6o5XOZ",
+            "name": "owner"
+          }
+        ]
+      },
+      "featureRef": "blogs",
+      "id": "model:3UyWRcyru3ON",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:edpeeBlxJPPt",
+            "isOptional": false,
+            "name": "id",
+            "options": { "defaultGeneration": "uuidv4" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:edl19SCQRZdz",
+            "isOptional": false,
+            "name": "blogId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:7ZbaMW8463OU",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:Jsrk2LCnRypv",
+            "isOptional": false,
+            "name": "note",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:EPC6KXsCqswQ",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:49cULB6kAu9x",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:33GOUdZmTj41",
+            "foreignRelationName": "notes",
+            "id": "model-local-relation:J7SPyoN1jhxy",
+            "modelRef": "BlogUser",
+            "name": "blogUser",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "blogId", "localRef": "blogId" },
+              { "foreignRef": "userId", "localRef": "userId" }
+            ]
+          }
+        ]
+      },
+      "name": "BlogUserNote",
       "service": { "transformers": [] }
     },
     {

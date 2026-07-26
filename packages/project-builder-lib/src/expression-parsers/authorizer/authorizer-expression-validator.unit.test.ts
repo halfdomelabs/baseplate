@@ -458,7 +458,6 @@ describe('validateAuthorizerExpression', () => {
         [
           'todoList',
           {
-            referenceCount: 1,
             foreignModelName: 'TodoList',
             foreignAuthorizerRoleNames: new Set(['owner', 'editor']),
             direction: 'local' as const,
@@ -467,7 +466,6 @@ describe('validateAuthorizerExpression', () => {
         [
           'compositeRelation',
           {
-            referenceCount: 2,
             foreignModelName: 'Other',
             foreignAuthorizerRoleNames: new Set(['admin']),
             direction: 'local' as const,
@@ -520,7 +518,7 @@ describe('validateAuthorizerExpression', () => {
       expect(warnings[0].message).toContain("'Todo'");
     });
 
-    it('should warn for composite FK relation', () => {
+    it('should validate valid nested hasRole through a composite FK relation', () => {
       const ast: NestedHasRoleNode = {
         type: 'nestedHasRole',
         relationName: 'compositeRelation',
@@ -538,9 +536,7 @@ describe('validateAuthorizerExpression', () => {
         defaultDefinition,
       );
 
-      expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain('2 foreign key references');
-      expect(warnings[0].message).toContain('single-key');
+      expect(warnings).toEqual([]);
     });
 
     it('should warn for nonexistent role on foreign model', () => {
@@ -644,7 +640,6 @@ describe('validateAuthorizerExpression', () => {
         [
           'members',
           {
-            referenceCount: 1,
             foreignModelName: 'BrandMember',
             foreignAuthorizerRoleNames: new Set<string>(),
             foreignScalarFieldNames: new Set([

@@ -8,7 +8,75 @@
     }
   },
   "templates": {
-    "utils-authorizers": {
+    "create-model-policy": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "dataUtilsImportsProvider": {
+          "importName": "dataUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaQueryFilterUtilsImportsProvider": {
+          "importName": "prismaQueryFilterUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma-query-filter-utils/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/authorizers/create-model-policy.ts",
+      "projectExports": {
+        "cachedSet": { "isTypeOnly": false, "name": "cachedSet" },
+        "createModelPolicy": {
+          "isTypeOnly": false,
+          "name": "createModelPolicy"
+        }
+      },
+      "referencedGeneratorTemplates": ["types"],
+      "sourceFile": "src/utils/authorizers/create-model-policy.ts",
+      "variables": {}
+    },
+    "field-gates": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/utils/authorizers/field-gates.ts",
+      "projectExports": {
+        "checkGlobalAuthorization": {
+          "isTypeOnly": false,
+          "name": "checkGlobalAuthorization"
+        },
+        "checkInstanceAuthorization": {
+          "isTypeOnly": false,
+          "name": "checkInstanceAuthorization"
+        },
+        "GlobalRoleCheck": { "isTypeOnly": true, "name": "GlobalRoleCheck" },
+        "InstanceRoleCheck": { "isTypeOnly": true, "name": "InstanceRoleCheck" }
+      },
+      "sourceFile": "src/utils/authorizers/field-gates.ts",
+      "variables": {}
+    },
+    "types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
@@ -17,17 +85,9 @@
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
         },
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
         "dataUtilsImportsProvider": {
           "importName": "dataUtilsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/data-utils/generated/ts-import-providers.ts"
-        },
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         },
         "prismaGeneratedImportsProvider": {
           "importName": "prismaGeneratedImportsProvider",
@@ -42,35 +102,46 @@
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/utils/authorizers.ts",
+      "pathRootRelativePath": "{src-root}/utils/authorizers/types.ts",
       "projectExports": {
         "ActionGrant": { "isTypeOnly": true, "name": "ActionGrant" },
         "ActionMembers": { "isTypeOnly": true, "name": "ActionMembers" },
-        "cachedSet": { "isTypeOnly": false, "name": "cachedSet" },
-        "checkGlobalAuthorization": {
-          "isTypeOnly": false,
-          "name": "checkGlobalAuthorization"
-        },
-        "checkInstanceAuthorization": {
-          "isTypeOnly": false,
-          "name": "checkInstanceAuthorization"
-        },
-        "createModelPolicy": {
-          "isTypeOnly": false,
-          "name": "createModelPolicy"
-        },
-        "GlobalRoleCheck": { "isTypeOnly": true, "name": "GlobalRoleCheck" },
-        "InstanceRoleCheck": {
+        "AllRole": { "isTypeOnly": true, "name": "AllRole" },
+        "AuthenticatedLeaf": {
           "isTypeOnly": true,
-          "name": "InstanceRoleCheck"
+          "name": "AuthenticatedLeaf"
         },
+        "AuthoredRole": { "isTypeOnly": true, "name": "AuthoredRole" },
+        "CheckRole": { "isTypeOnly": true, "name": "CheckRole" },
+        "DelegationTarget": { "isTypeOnly": true, "name": "DelegationTarget" },
+        "Exists": { "isTypeOnly": true, "name": "Exists" },
+        "HasRoleLeaf": { "isTypeOnly": true, "name": "HasRoleLeaf" },
+        "LocallyComparable": {
+          "isTypeOnly": true,
+          "name": "LocallyComparable"
+        },
+        "LocalMatch": { "isTypeOnly": true, "name": "LocalMatch" },
+        "MatchRole": { "isTypeOnly": true, "name": "MatchRole" },
+        "ModelDelegate": { "isTypeOnly": true, "name": "ModelDelegate" },
+        "NonEmptyArray": { "isTypeOnly": true, "name": "NonEmptyArray" },
         "PolicyRoleMembers": {
           "isTypeOnly": true,
           "name": "PolicyRoleMembers"
         },
-        "RoleBuilder": { "isTypeOnly": true, "name": "RoleBuilder" }
+        "PredicateRole": { "isTypeOnly": true, "name": "PredicateRole" },
+        "RoleBuilder": { "isTypeOnly": true, "name": "RoleBuilder" },
+        "RoleNode": { "isTypeOnly": true, "name": "RoleNode" },
+        "SomeRole": { "isTypeOnly": true, "name": "SomeRole" },
+        "ToOneRelationKeys": {
+          "isTypeOnly": true,
+          "name": "ToOneRelationKeys"
+        },
+        "UserMatchRole": { "isTypeOnly": true, "name": "UserMatchRole" },
+        "UserWhereRole": { "isTypeOnly": true, "name": "UserWhereRole" },
+        "ViaLink": { "isTypeOnly": true, "name": "ViaLink" },
+        "ViaRole": { "isTypeOnly": true, "name": "ViaRole" }
       },
-      "sourceFile": "src/utils/authorizers.ts",
+      "sourceFile": "src/utils/authorizers/types.ts",
       "variables": {}
     }
   }

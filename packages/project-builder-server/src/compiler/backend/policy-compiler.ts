@@ -74,14 +74,14 @@ function resolveViaLinks(
         `Relation '${relationName}' not found on model '${model.name}'`,
       );
     }
-    if (relation.references.length !== 1) {
-      throw new Error(
-        `Relation '${relationName}' on model '${model.name}' has ${relation.references.length} FK references. Delegation (r.via) only supports single-key relations.`,
-      );
-    }
 
-    const fkFieldName = appBuilder.nameFromId(relation.references[0].localRef);
-    if (!fkFieldName) {
+    const keys = Object.fromEntries(
+      relation.references.map((ref) => [
+        appBuilder.nameFromId(ref.localRef),
+        appBuilder.nameFromId(ref.foreignRef),
+      ]),
+    );
+    if (Object.entries(keys).some(([local, target]) => !local || !target)) {
       throw new Error(
         `Could not resolve FK field for relation '${relationName}' on model '${model.name}'`,
       );
@@ -94,7 +94,7 @@ function resolveViaLinks(
 
     resolvedVia.set(relationName, {
       targetPolicyVar: `${lowercaseFirstChar(foreignModel.name)}Policy`,
-      fkFieldName,
+      keys,
       relationName,
     });
 
@@ -242,12 +242,7 @@ export function buildPoliciesForFeature(
     .filter((model) => model.authorizer.roles.length > 0)
     .map((model) => {
       const primaryKeyFields = ModelUtils.getPrimaryKeyFields(model);
-      if (primaryKeyFields.length !== 1) {
-        throw new Error(
-          `Model '${model.name}' must have exactly one primary key field to use a model policy. Found ${primaryKeyFields.length}.`,
-        );
-      }
-      const idFieldName = primaryKeyFields[0].name;
+      const idFieldNames = primaryKeyFields.map((f) => f.name);
 
       // Collect nested + relation-filter refs across all roles.
       const parsedRoles = model.authorizer.roles.map((role) => ({
@@ -304,7 +299,7 @@ export function buildPoliciesForFeature(
 
       return prismaModelPolicyGenerator({
         modelName: model.name,
-        idFieldName,
+        idFieldNames,
         foreignPolicyModelNames: foreignModelNames,
         roles,
         actions: buildActionsMap(appBuilder, model),

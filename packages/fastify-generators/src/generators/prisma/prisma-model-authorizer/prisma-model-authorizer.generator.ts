@@ -39,7 +39,7 @@ const actionGrantSchema = z.object({
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
-  idFieldName: z.string().min(1),
+  idFieldNames: z.array(z.string().min(1)).min(1),
   roles: z.array(roleSchema).min(1),
   /** `read` is required; create/update/delete + custom verbs alongside. */
   actions: z.record(z.string(), actionGrantSchema),
@@ -122,7 +122,7 @@ export const prismaModelPolicyGenerator = createGenerator({
           prismaAuthorizerUtilsImports,
           ...dynamicDeps
         }) {
-          const { modelName, idFieldName, roles, actions } = descriptor;
+          const { modelName, idFieldNames, roles, actions } = descriptor;
           const modelVarName = lowercaseFirstChar(modelName);
           const policyName = `${modelVarName}Policy`;
 
@@ -193,10 +193,12 @@ export const prismaModelPolicyGenerator = createGenerator({
               const prismaModelFragment =
                 prismaOutput.getPrismaModelFragment(modelName);
 
+              const idFieldsLiteral = `[${idFieldNames.map((f) => `'${f}'`).join(', ')}]`;
+
               const fileFragment = tsTemplate`
                 export const ${policyName} = ${prismaAuthorizerUtilsImports.createModelPolicy.fragment()}({
                   model: '${modelVarName}',
-                  idField: '${idFieldName}',
+                  id: ${idFieldsLiteral},
                   delegate: ${prismaModelFragment},
                   roles: (r) => (${rolesFragment}),
                   actions: ${actionsFragment},

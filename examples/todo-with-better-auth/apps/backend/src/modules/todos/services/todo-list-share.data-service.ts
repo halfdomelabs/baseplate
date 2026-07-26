@@ -7,7 +7,7 @@ import type {
 import type { ServiceContext } from '@src/utils/service-context.js';
 
 import { prisma } from '@src/services/prisma.js';
-import { checkGlobalAuthorization } from '@src/utils/authorizers.js';
+import { checkGlobalAuthorization } from '@src/utils/authorizers/field-gates.js';
 import { relationHelpers } from '@src/utils/data-operations/relation-helpers.js';
 
 const todoListShareFieldSchemas = z.object({

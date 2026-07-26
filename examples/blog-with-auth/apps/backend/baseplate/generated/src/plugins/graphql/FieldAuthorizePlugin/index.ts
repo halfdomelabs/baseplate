@@ -5,7 +5,7 @@ import SchemaBuilder, { BasePlugin } from '@pothos/core';
 
 import type { ServiceContext } from '@src/utils/service-context.js';
 
-import { checkInstanceAuthorization } from '@src/utils/authorizers.js';
+import { checkInstanceAuthorization } from '@src/utils/authorizers/field-gates.js';
 
 import type { AuthorizeRoleRuleOption } from './types.js';
 

@@ -10,6 +10,7 @@ import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/uti
 const blogCount = vi.fn();
 const blogPostCount = vi.fn();
 const blogUserCount = vi.fn();
+const blogUserNoteCount = vi.fn();
 vi.mock('@src/services/prisma.js', () => ({
   prisma: {
     blog: {
@@ -18,13 +19,18 @@ vi.mock('@src/services/prisma.js', () => ({
     },
     blogPost: { count: (...a: unknown[]): unknown => blogPostCount(...a) },
     blogUser: { count: (...a: unknown[]): unknown => blogUserCount(...a) },
+    blogUserNote: {
+      count: (...a: unknown[]): unknown => blogUserNoteCount(...a),
+    },
   },
 }));
 
 const { prisma } = await import('@src/services/prisma.js');
-const { createModelPolicy } = await import('@src/utils/authorizers.js');
+const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
 const { blogPolicy } = await import('./blog.policy.js');
 const { blogPostPolicy } = await import('./blog-post.policy.js');
+const { blogUserPolicy } = await import('./blog-user.policy.js');
+const { blogUserNotePolicy } = await import('./blog-user-note.policy.js');
 
 // Test-only policy carrying demo roles (`myPinnedPost` = multi-condition
 // `r.match`, `pinnedByBlogOwner` = `r.all([match, via])`). These exercise runtime
@@ -32,11 +38,17 @@ const { blogPostPolicy } = await import('./blog-post.policy.js');
 // in the generated policy, so the example stays exactly what the generator emits.
 const blogPostPolicyExtended = createModelPolicy({
   model: 'blogPost',
-  idField: 'id',
+  id: ['id'],
   delegate: prisma.blogPost,
   superuser: ['admin'],
   roles: (r) => ({
-    owner: r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' }),
+    // blogId (this model) → id (Blog's PK) — NOT an identity mapping, the
+    // normal case. Proves `via` queries the target's own field name, not the
+    // local FK's name (see the field-name regression test below).
+    owner: r.via(blogPolicy, 'owner', {
+      relation: 'blog',
+      keys: { blogId: 'id' },
+    }),
     myPinnedPost: r.match((ctx) =>
       ctx.auth.userId != null
         ? { publisherId: ctx.auth.userId, title: 'PINNED' }
@@ -44,7 +56,10 @@ const blogPostPolicyExtended = createModelPolicy({
     ),
     pinnedByBlogOwner: r.all([
       r.match(() => ({ title: 'PINNED' })),
-      r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' }),
+      r.via(blogPolicy, 'owner', {
+        relation: 'blog',
+        keys: { blogId: 'id' },
+      }),
     ]),
   }),
   actions: {
@@ -95,6 +110,7 @@ beforeEach(() => {
   blogCount.mockReset();
   blogPostCount.mockReset();
   blogUserCount.mockReset();
+  blogUserNoteCount.mockReset();
 });
 
 describe('single-source: derived check for local scalar (owner)', () => {
@@ -113,6 +129,161 @@ describe('single-source: derived check for local scalar (owner)', () => {
     expect(no).toBe(false);
     // Pure in-memory scalar match — the probe never fires.
     expect(blogCount).not.toHaveBeenCalled();
+  });
+});
+
+describe('composite PK: BlogUser.owner derived check for local scalar', () => {
+  it('owner derived check evaluates in-memory over BOTH key fields — NO db query', async () => {
+    const ctx = makeCtx(USER_ID);
+    const ok = await blogUserPolicy.roles.owner.check(ctx, {
+      blogId: 'blog-1',
+      userId: USER_ID,
+    } as never);
+    const no = await blogUserPolicy.roles.owner.check(ctx, {
+      blogId: 'blog-1',
+      userId: 'someone-else',
+    } as never);
+
+    expect(ok).toBe(true);
+    expect(no).toBe(false);
+    expect(blogUserCount).not.toHaveBeenCalled();
+  });
+});
+
+describe('composite FK: BlogUserNote.owner delegates via a 2-column FK', () => {
+  it('checkById probes blogUser AND-ed on BOTH fk columns', async () => {
+    // BlogUserNote.owner = r.via(blogUserPolicy, 'owner', { relation: 'blogUser', keys: { blogId: 'blogId', userId: 'userId' } }).
+    // blogUser.owner is itself a where (r.userMatch), so the delegated check
+    // resolves to a cached probe keyed on the composite { blogId, userId }.
+    // NOTE: this relation's keys ARE identity (blogId→blogId, userId→userId),
+    // so this test alone would NOT catch a local/target field-name mixup —
+    // see the dedicated field-name regression test in the fan-out describe
+    // block below, which uses BlogPost.blogId → Blog.id (not identity).
+    blogUserCount.mockResolvedValue(1);
+    const ctx = makeCtx(USER_ID);
+    const note = { id: 'note-1', blogId: 'blog-1', userId: USER_ID };
+
+    const ok = await blogUserNotePolicy.roles.owner.check(ctx, note as never);
+
+    expect(ok).toBe(true);
+    expect(blogUserCount).toHaveBeenCalledTimes(1);
+    const [{ where }] = blogUserCount.mock.calls[0] as [
+      { where: { AND: [Record<string, unknown>, unknown] } },
+    ];
+    expect(where.AND[0]).toEqual({ blogId: 'blog-1', userId: USER_ID });
+    expect(blogUserNoteCount).not.toHaveBeenCalled();
+  });
+
+  it('N notes sharing one membership → ONE probe (keyed on the composite id, cached)', async () => {
+    blogUserCount.mockResolvedValue(1);
+    const ctx = makeCtx(USER_ID);
+    const notes = Array.from({ length: 10 }, (_, i) => ({
+      id: `note-${i}`,
+      blogId: 'blog-1',
+      userId: USER_ID,
+    }));
+
+    const results = [];
+    for (const n of notes) {
+      results.push(await blogUserNotePolicy.roles.owner.check(ctx, n as never));
+    }
+
+    expect(results.every(Boolean)).toBe(true);
+    // 10 notes, one shared (blogId, userId) membership → 1 probe, not 10.
+    expect(blogUserCount).toHaveBeenCalledTimes(1);
+  });
+
+  it('a different userId on the same blog is a DIFFERENT cache key → separate probe', async () => {
+    blogUserCount.mockResolvedValue(1);
+    const ctx = makeCtx(USER_ID);
+
+    await blogUserNotePolicy.roles.owner.check(ctx, {
+      id: 'note-a',
+      blogId: 'blog-1',
+      userId: 'user-a',
+    } as never);
+    await blogUserNotePolicy.roles.owner.check(ctx, {
+      id: 'note-b',
+      blogId: 'blog-1',
+      userId: 'user-b',
+    } as never);
+
+    // Field order in the id map must not matter, but a different VALUE must —
+    // two distinct (blogId, userId) pairs are two distinct probes.
+    expect(blogUserCount).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('r.via: null FK on an optional relation denies rather than throwing', () => {
+  // BlogPost.blogId isn't actually nullable in this schema, but the runtime
+  // check doesn't know that — it must handle whatever a loaded row contains,
+  // since Prisma models CAN have optional to-one relations in general. These
+  // simulate that case by bypassing the type (`as never`), matching how the
+  // OTHER tests in this file already probe runtime behavior TS can't express.
+  it('an all-null composite FK denies (no query) — matches `.where`\'s "unset relation doesn\'t match"', async () => {
+    const ctx = makeCtx(USER_ID);
+    // Every field the `via` link maps to is null → the relation is unset.
+    const note = { id: 'note-1', blogId: null, userId: null };
+
+    const ok = await blogUserNotePolicy.roles.owner.check(ctx, note as never);
+
+    expect(ok).toBe(false);
+    expect(blogUserCount).not.toHaveBeenCalled();
+  });
+
+  it('a PARTIALLY-null composite FK throws (corrupt data, not an absent relation)', async () => {
+    const ctx = makeCtx(USER_ID);
+    // Only ONE of the two composite FK columns is null — this is invalid
+    // data (a real absent relation has ALL its FK columns null together),
+    // so it must throw rather than silently deny or silently query.
+    const note = { id: 'note-1', blogId: 'blog-1', userId: null };
+
+    await expect(
+      blogUserNotePolicy.roles.owner.check(ctx, note as never),
+    ).rejects.toThrow(/not a string or number/i);
+  });
+});
+
+describe('r.via: construction-time keys validation (bypassed-TS callers)', () => {
+  // These deliberately bypass the compile-time check (via `as never`) to
+  // prove the RUNTIME validation independently catches what TypeScript can't
+  // see — a hand-authored policy built from untyped/dynamic input, or a
+  // caller that widened a type with an unsafe cast.
+  it('duplicate target-field mappings on a composite target throw (no silent overwrite)', () => {
+    expect(() =>
+      createModelPolicy({
+        model: 'blogPost',
+        id: 'id',
+        delegate: prisma.blogPost,
+        roles: (r) => ({
+          // blogUserPolicy's id fields are ['blogId', 'userId'] — this map
+          // targets 'blogId' TWICE and never covers 'userId'.
+          owner: r.via(blogUserPolicy, 'owner', {
+            relation: 'blog' as never,
+            keys: { blogId: 'blogId', userId: 'blogId' } as never,
+          }),
+        }),
+        actions: { read: {} },
+      }),
+    ).toThrow(/keys.*target|target.*id fields/i);
+  });
+
+  it('missing target-field coverage throws', () => {
+    expect(() =>
+      createModelPolicy({
+        model: 'blogPost',
+        id: 'id',
+        delegate: prisma.blogPost,
+        roles: (r) => ({
+          // Only covers 'blogId', never maps to blogUserPolicy's 'userId'.
+          owner: r.via(blogUserPolicy, 'owner', {
+            relation: 'blog' as never,
+            keys: { blogId: 'blogId' } as never,
+          }),
+        }),
+        actions: { read: {} },
+      }),
+    ).toThrow(/keys.*target|target.*id fields/i);
   });
 });
 
@@ -209,14 +380,14 @@ describe('r.match: where-form equals the match object (duality by construction)'
 });
 
 describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', async () => {
-  const { createModelPolicy } = await import('@src/utils/authorizers.js');
+  const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
 
   it('an object value in a match → throws (scalar-equality only)', async () => {
     // TypeScript forbids this via `LocalMatch`, but a caller bypassing types
     // (`as never`) must still be caught at runtime, not silently mis-decided.
     const policy = createModelPolicy({
       model: 'blogPost',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.match(() => ({ title: { some: 'x' } }) as never),
@@ -238,7 +409,7 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
     // throws before that object can reach the DB.
     const policy = createModelPolicy({
       model: 'blogPost',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.match(() => ({ publisherId: undefined })),
@@ -254,7 +425,7 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
     // error at authoring; this covers the bypassed-types path.)
     const policy = createModelPolicy({
       model: 'blogPost',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.where(() => undefined as never),
@@ -355,6 +526,28 @@ describe('fan-out: derived check via CACHED delegation stays 1 query', () => {
     expect(blogCount).toHaveBeenCalledTimes(1);
     // And blogPost was never probed at the child level (delegation, not flatten).
     expect(blogPostCount).not.toHaveBeenCalled();
+  });
+
+  it('REGRESSION: via probes the TARGET field (Blog.id), not the local FK name (blogId)', async () => {
+    // blogPostPolicy.owner = r.via(blogPolicy, 'owner', { relation: 'blog', keys: { blogId: 'id' } }).
+    // A naive implementation that reused the LOCAL fk name as the filter key
+    // would query `prisma.blog.count({ where: { blogId: ... } })` — but Blog
+    // has no `blogId` field, only `id`. This asserts the actual filter shape.
+    blogCount.mockResolvedValue(1);
+    const ctx = makeCtx(USER_ID);
+    const post = { id: 'post-1', blogId: 'blog-1' };
+
+    const ok = await blogPostPolicy.roles.owner.check(ctx, post as never);
+
+    expect(ok).toBe(true);
+    expect(blogCount).toHaveBeenCalledTimes(1);
+    const [{ where }] = blogCount.mock.calls[0] as [
+      { where: { AND: [Record<string, unknown>, unknown] } },
+    ];
+    // The id map must be keyed on Blog's OWN field name (`id`), carrying the
+    // post's `blogId` VALUE — never a `blogId` key on the Blog delegate.
+    expect(where.AND[0]).toEqual({ id: 'blog-1' });
+    expect(where.AND[0]).not.toHaveProperty('blogId');
   });
 
   it('CONCURRENT (Promise.all) N posts sharing one blog → still ONE probe', async () => {
@@ -459,11 +652,11 @@ describe('r.all: conjunction of local match AND cached via', () => {
   it('r.all([]) → throws at construction (empty conjunction is allow-all)', async () => {
     // The tuple type makes `r.all([])` a compile error; this covers the bypassed
     // runtime path — an empty conjunction must never silently become allow-all.
-    const { createModelPolicy } = await import('@src/utils/authorizers.js');
+    const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
     expect(() =>
       createModelPolicy({
         model: 'blogPost',
-        idField: 'id',
+        id: ['id'],
         delegate: prisma.blogPost,
         roles: (r) => ({ bad: r.all([] as never) }),
         actions: { read: { roles: ['bad'] } },
@@ -473,13 +666,13 @@ describe('r.all: conjunction of local match AND cached via', () => {
 });
 
 describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
-  const { createModelPolicy } = await import('@src/utils/authorizers.js');
+  const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function buildPolicy() {
     return createModelPolicy({
       model: 'blogPost',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blogPost,
       roles: (r) => ({
         // `owner || admin` — the || case: r.some of a match leaf and a hasRole leaf.
@@ -586,7 +779,7 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
   it('r.authenticated: logged-in grants, anonymous denies (both paths)', async () => {
     const policy = createModelPolicy({
       model: 'blogPost',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blogPost,
       roles: (r) => ({ loggedIn: r.authenticated() }),
       actions: { read: { roles: ['loggedIn'] } },
@@ -613,7 +806,7 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     expect(() =>
       createModelPolicy({
         model: 'blogPost',
-        idField: 'id',
+        id: ['id'],
         delegate: prisma.blogPost,
         roles: (r) => ({ bad: r.some([] as never) }),
         actions: { read: { roles: ['bad'] } },
@@ -624,7 +817,7 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
 
 describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
   const { createModelPolicy, cachedSet } =
-    await import('@src/utils/authorizers.js');
+    await import('@src/utils/authorizers/create-model-policy.js');
 
   // Simulates "one query loads all my memberships, then each role is a lookup".
   // A blog stands in for a team; findMemberships is the single membership query.
@@ -645,7 +838,7 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
   function buildTeamPolicy() {
     return createModelPolicy({
       model: 'blog',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blog,
       roles: (r) => ({
         teamAdmin: r.check((ctx, m) =>
@@ -733,7 +926,7 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
     // any other where path.
     const policy = createModelPolicy({
       model: 'blog',
-      idField: 'id',
+      id: ['id'],
       delegate: prisma.blog,
       roles: (r) => ({ teamAdmin: r.check(() => Promise.resolve(true)) }),
       actions: { read: { roles: ['teamAdmin'] } },

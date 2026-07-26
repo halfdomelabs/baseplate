@@ -1,425 +1,24 @@
-import type { Prisma, PrismaClient } from '../generated/prisma/client.js';
-import type { AuthRole } from '../modules/accounts/auth/constants/auth-roles.constants.js';
-import type { AuthUserSessionInfo } from '../modules/accounts/auth/types/auth-session.types.js';
 import type {
   GetResult,
   ModelPropName,
   WhereInput,
   WhereUniqueInput,
-} from './data-operations/prisma-types.js';
-import type { WhereResult } from './query-helpers.js';
-import type { ServiceContext } from './service-context.js';
+} from '../data-operations/prisma-types.js';
+import type { WhereResult } from '../query-helpers.js';
+import type { ServiceContext } from '../service-context.js';
+import type {
+  ActionGrant,
+  ActionMembers,
+  AuthoredRole,
+  Exists,
+  ModelDelegate,
+  PolicyRoleMembers,
+  RoleBuilder,
+  RoleNode,
+} from './types.js';
 
-import { ForbiddenError } from './http-errors.js';
-import { queryHelpers } from './query-helpers.js';
-
-// ============================================================================
-// Field-gate rules (consumed by the GraphQL FieldAuthorizePlugin)
-// ----------------------------------------------------------------------------
-// A field `authorize:` rule is either a GLOBAL role (a string, checked via
-// `ctx.auth.hasSomeRole`) or an INSTANCE check — a `(ctx, model) => boolean`.
-// A policy role's `.check` member satisfies `InstanceRoleCheck` exactly, so a
-// field gate reads `authorize: ['admin', userPolicy.roles.self.check]`.
-// ============================================================================
-
-/** A global-role field-gate rule — a role string. */
-export type GlobalRoleCheck = AuthRole;
-
-/** An instance field-gate rule — satisfied by `policy.roles.<name>.check`. */
-export type InstanceRoleCheck<TInstance> = (
-  ctx: ServiceContext,
-  instance: TInstance,
-) => Promise<boolean> | boolean;
-
-/** Throw unless the principal holds one of the global roles. */
-export function checkGlobalAuthorization(
-  ctx: ServiceContext,
-  authorize: AuthRole[],
-): void {
-  if (!ctx.auth.hasSomeRole(authorize)) {
-    throw new ForbiddenError('Forbidden');
-  }
-}
-
-/**
- * OR of field-gate rules: global roles (strings) checked first via
- * `hasSomeRole`, then instance checks (functions) run sequentially with lazy
- * instance loading. Throws `ForbiddenError` if none pass.
- */
-export async function checkInstanceAuthorization<T>(
-  ctx: ServiceContext,
-  instance: T | (() => Promise<T>),
-  authorize: (InstanceRoleCheck<T> | AuthRole)[],
-): Promise<void> {
-  const globalRoles = authorize.filter(
-    (check): check is AuthRole => typeof check === 'string',
-  );
-  const instanceChecks = authorize.filter(
-    (check): check is InstanceRoleCheck<T> => typeof check === 'function',
-  );
-
-  if (globalRoles.length > 0 && ctx.auth.hasSomeRole(globalRoles)) {
-    return;
-  }
-
-  if (instanceChecks.length > 0) {
-    const resolvedInstance =
-      typeof instance === 'function'
-        ? await (instance as () => Promise<T>)()
-        : instance;
-
-    for (const check of instanceChecks) {
-      if (await check(ctx, resolvedInstance)) return;
-    }
-  }
-
-  throw new ForbiddenError('Forbidden');
-}
-
-// ---- payload-derived relation typing ----------------------------------------
-// Reads relation keys/arity off Prisma's `$Payload` (the resolved-data type, no
-// XOR wrapper). Couples to Prisma's payload shape — the relation-typing tests
-// are the tripwire if a Prisma bump reshapes it.
-
-/** The $Payload type for a model prop name (TypeMap keys are PascalCase). */
-type PayloadOf<M extends ModelPropName> =
-  Prisma.TypeMap['model'][Capitalize<M>] extends { payload: infer P }
-    ? P
-    : never;
-
-/** The relation `objects` block of a model's payload. */
-type ObjectsOf<M extends ModelPropName> =
-  PayloadOf<M> extends { objects: infer O } ? O : never;
-
-/** Relation field names of a model (excludes scalars and scalar FKs). */
-type RelationKeys<M extends ModelPropName> = keyof ObjectsOf<M> & string;
-
-/**
- * TO-ONE relation keys only. `via` is to-one because its whole value is the
- * parent-keyed cache (N children of one parent → 1 query, keyed on the shared
- * FK). A to-many relation has no single FK to key on, so it would just be a
- * slower `r.where(ctx => ({ rel: { some } }))` — excluded at the type level.
- */
-type ToOneRelationKeys<M extends ModelPropName> = {
-  [K in RelationKeys<M>]: ObjectsOf<M>[K] extends readonly unknown[]
-    ? never
-    : K;
-}[RelationKeys<M>];
-
-/** `via` link shape — to-one only. */
-interface ViaLink<M extends ModelPropName, R extends ToOneRelationKeys<M>> {
-  /** FK field on THIS model backing the relation. */
-  fk: keyof GetResult<M> & string;
-  /** Relation name — must be a TO-ONE relation; typo or to-many → compile error. */
-  relation: R;
-}
-
-// ============================================================================
-// createModelPolicy — one declaration per role; the boolean `check` and the
-// Prisma `where` are BOTH derived, with cached delegation (not a per-child
-// probe). Role kinds:
-//   match     — scalar equality on self (zero-query on a loaded row)
-//   userMatch — like `match`, but only for an authenticated principal (auto-denies anonymous)
-//   where     — arbitrary Prisma filter (DB-evaluated)
-//   userWhere — like `where`, but only for an authenticated principal (auto-denies anonymous)
-//   via     — cached delegation to a parent policy's role
-//   hasRole — global/principal-role leaf, nestable
-//   authenticated — held if there is any logged-in principal
-//   all     — conjunction (AND) of nested nodes
-//   some    — disjunction (OR) of nested nodes
-//   check   — arbitrary boolean, no where form (instance/mutation checks only)
-// ============================================================================
-
-/** The Prisma model delegate (`prisma.blogPost`) — the existence check derives from it. */
-type ModelDelegate<M extends ModelPropName> = PrismaClient[M];
-
-/** Existence check derived from the delegate: `count({ AND: [{id}, where] }) > 0`. */
-type Exists<TModelName extends ModelPropName> = (
-  ctx: ServiceContext,
-  id: string,
-  where: NonNullable<WhereInput<TModelName>>,
-) => Promise<boolean>;
-
-/** Minimal shape of a target policy this model can delegate into. */
-interface DelegationTarget {
-  roles: Record<
-    string,
-    {
-      checkById: (ctx: ServiceContext, id: string) => Promise<boolean>;
-      nestedWhere: (
-        ctx: ServiceContext,
-        relationField: string,
-      ) => WhereResult<ModelPropName>;
-    }
-  >;
-}
-
-// ---- local-match typing (the scalar-equality subset) ------------------------
-
-/**
- * Scalar types whose SQL equality and JS `===` agree. Excludes Date (reference
- * `!==` on same-instant Dates falsely denies) and, by omission, JSON / Decimal /
- * Bytes. The only value type `r.match` accepts.
- */
-type LocallyComparable = string | number | bigint | boolean | null;
-
-/**
- * The shape `r.match` accepts: this model's scalar-equality fields → literals.
- * Relation fields aren't `LocallyComparable`, so `{ blog: {...} }` is a compile
- * error — relations use `r.where`. This is what makes `r.match`'s local and
- * Prisma forms provably equivalent rather than a heuristic interpreter.
- */
-type LocalMatch<TModelName extends ModelPropName> = Partial<{
-  [K in keyof GetResult<TModelName> as GetResult<TModelName>[K] extends LocallyComparable
-    ? K
-    : never]: GetResult<TModelName>[K] & LocallyComparable;
-}>;
-
-// ---- authored role kinds (what `r.*` produces) ------------------------------
-
-/**
- * `r.match` — scalar-equality on this model's own columns. The declared
- * zero-query fast path: `check` evaluates `row[k] === v` in-memory, and the same
- * object is its Prisma `where`. Return `false` to deny unconditionally.
- */
-interface MatchRole<TModelName extends ModelPropName> {
-  kind: 'match';
-  match: (ctx: ServiceContext) => LocalMatch<TModelName> | false;
-}
-/**
- * `r.where` — an arbitrary Prisma filter; Prisma is the evaluator, so `check`
- * always probes the DB (no in-memory interpretation). For relations/operators.
- */
-interface PredicateRole<TModelName extends ModelPropName> {
-  kind: 'where';
-  where: (ctx: ServiceContext) => WhereResult<TModelName>;
-}
-/**
- * `r.userMatch` — like `r.match`, but the callback only runs for an
- * authenticated principal (a `type: 'user'` session), receiving that session
- * (`userId` guaranteed non-null) alongside `ctx`. Unauthenticated → deny,
- * callback never invoked. Removes the per-callsite
- * `ctx.auth.userId != null ? {...} : false` guard.
- */
-interface UserMatchRole<TModelName extends ModelPropName> {
-  kind: 'userMatch';
-  userMatch: (
-    session: AuthUserSessionInfo,
-    ctx: ServiceContext,
-  ) => LocalMatch<TModelName> | false;
-}
-/**
- * `r.userWhere` — like `r.where`, but the callback only runs for an
- * authenticated principal (a `type: 'user'` session), receiving that session
- * (`userId` guaranteed non-null) alongside `ctx`.
- */
-interface UserWhereRole<TModelName extends ModelPropName> {
-  kind: 'userWhere';
-  userWhere: (
-    session: AuthUserSessionInfo,
-    ctx: ServiceContext,
-  ) => WhereResult<TModelName>;
-}
-/** `r.via` — delegate to a parent policy's role through a FK (cached checkById). */
-interface ViaRole<TModelName extends ModelPropName> {
-  kind: 'via';
-  target: DelegationTarget;
-  role: string;
-  fk: keyof GetResult<TModelName> & string;
-  relation: string;
-}
-/** `r.hasRole` — a global/principal-role leaf, nestable inside `all`/`some`. */
-interface HasRoleLeaf {
-  kind: 'hasRole';
-  /** Held if the principal has ANY of these roles. */
-  roles: readonly string[];
-}
-/** `r.authenticated` — held if there is any real (logged-in) principal. */
-interface AuthenticatedLeaf {
-  kind: 'authenticated';
-}
-/**
- * `r.all` — conjunction; all parts must hold. `check` ANDs them cheapest-first,
- * short-circuiting on the first failure; `where` ANDs the fragments. Parts are
- * `RoleNode`s, so `all`/`some` nest arbitrarily.
- */
-interface AllRole<TModelName extends ModelPropName> {
-  kind: 'all';
-  parts: NonEmptyArray<RoleNode<TModelName>>;
-}
-/**
- * `r.some` — disjunction; ANY part holds. `check` ORs them cheapest-first,
- * short-circuiting on the first success; `where` ORs the fragments. The `||`
- * sibling of `r.all`. Empty `some` fails SAFE (deny) — opposite of empty `all`.
- */
-interface SomeRole<TModelName extends ModelPropName> {
-  kind: 'some';
-  parts: NonEmptyArray<RoleNode<TModelName>>;
-}
-/** Tuple with ≥1 element — an empty `all` is allow-all; an empty `some` is deny. */
-type NonEmptyArray<T> = [T, ...T[]];
-/**
- * `r.check` — an arbitrary boolean over the loaded row, for logic no `where` can
- * express (batch role-set lookups, computed rules). NO where form: usable for
- * mutation/field/instance checks, but a read/filter path throws (guarded).
- */
-interface CheckRole<TModelName extends ModelPropName> {
-  kind: 'check';
-  fn: (ctx: ServiceContext, model: GetResult<TModelName>) => Promise<boolean>;
-}
-/**
- * The recursive role tree. Leaves (`match`/`via`/`where`/`hasRole`/`check`) and
- * combinators (`all`/`some`) are uniform — an `all`/`some` part is any node, so
- * `(A && B) || C` is `some([all([A, B]), C])`. A top-level role is any node.
- */
-type RoleNode<TModelName extends ModelPropName> =
-  | MatchRole<TModelName>
-  | UserMatchRole<TModelName>
-  | PredicateRole<TModelName>
-  | UserWhereRole<TModelName>
-  | ViaRole<TModelName>
-  | HasRoleLeaf
-  | AuthenticatedLeaf
-  | AllRole<TModelName>
-  | SomeRole<TModelName>
-  | CheckRole<TModelName>;
-type AuthoredRole<TModelName extends ModelPropName> = RoleNode<TModelName>;
-
-/**
- * The role-builder surface (`r`). Each helper closes over the model type so
- * clauses are typed with no annotations. See the role-kind interfaces above for
- * each kind's semantics.
- */
-export interface RoleBuilder<TModelName extends ModelPropName> {
-  /** Scalar-equality fast path (zero-query). Return `false` to deny. See `MatchRole`. */
-  match: (
-    match: (ctx: ServiceContext) => LocalMatch<TModelName> | false,
-  ) => MatchRole<TModelName>;
-  /** Arbitrary Prisma filter (DB-evaluated). See `PredicateRole`. */
-  where: (
-    where: (ctx: ServiceContext) => WhereResult<TModelName>,
-  ) => PredicateRole<TModelName>;
-  /**
-   * Authenticated scalar-equality fast path (zero-query). Callback only runs
-   * for a `type: 'user'` session — unauthenticated denies without calling it.
-   * See `UserMatchRole`.
-   */
-  userMatch: (
-    userMatch: (
-      session: AuthUserSessionInfo,
-      ctx: ServiceContext,
-    ) => LocalMatch<TModelName> | false,
-  ) => UserMatchRole<TModelName>;
-  /**
-   * Authenticated Prisma filter (DB-evaluated). Callback only runs for a
-   * `type: 'user'` session — unauthenticated denies without calling it. See
-   * `UserWhereRole`.
-   */
-  userWhere: (
-    userWhere: (
-      session: AuthUserSessionInfo,
-      ctx: ServiceContext,
-    ) => WhereResult<TModelName>,
-  ) => UserWhereRole<TModelName>;
-  /**
-   * Delegate to a parent policy's role through a FK (cached checkById). The
-   * type checks `relation` is a to-one key and `fk` is a scalar of this model,
-   * but NOT that `fk` actually backs `relation` — so the `{ fk, relation }` pair
-   * must be a matched pair (the generator derives it from schema; hand-authors
-   * must keep them consistent).
-   */
-  via: <R extends ToOneRelationKeys<TModelName>>(
-    target: DelegationTarget,
-    role: string,
-    link: ViaLink<TModelName, R>,
-  ) => ViaRole<TModelName>;
-  /** Global/principal-role leaf (held if the principal has any). See `HasRoleLeaf`. */
-  hasRole: (...roles: string[]) => HasRoleLeaf;
-  /** Authenticated-principal leaf (held if logged in). See `AuthenticatedLeaf`. */
-  authenticated: () => AuthenticatedLeaf;
-  /** Conjunction (all parts hold), cheapest-first. Parts nest. See `AllRole`. */
-  all: (parts: NonEmptyArray<RoleNode<TModelName>>) => AllRole<TModelName>;
-  /** Disjunction (any part holds), cheapest-first. Parts nest. See `SomeRole`. */
-  some: (parts: NonEmptyArray<RoleNode<TModelName>>) => SomeRole<TModelName>;
-  /**
-   * Arbitrary boolean over the loaded row; no where form. See `CheckRole`.
-   * Multiple `check` roles sharing one memoized resolver (`cachedSet`) collapse
-   * to a single query.
-   */
-  check: (
-    fn: (ctx: ServiceContext, model: GetResult<TModelName>) => Promise<boolean>,
-  ) => CheckRole<TModelName>;
-}
-
-/**
- * A grant: "any of `roles` OR any of `globalRoles` (OR superuser)". Every entry
- * in the `actions` map is one — `read`, CRUD, or a custom verb. A role
- * declaration only; input/data checks are service-layer validation.
- */
-export interface ActionGrant<TRoleName extends string> {
-  roles?: TRoleName[];
-  globalRoles?: string[];
-}
-
-/**
- * Members of an action, all derived from the same `{ roles, globalRoles }` grant.
- *
- * Convention: `read` is the fan-out grant — consume its `.where` at read
- * surfaces; don't attach a per-row read `.check` to a field ("filter a list,
- * don't 403 it").
- */
-export interface ActionMembers<TModelName extends ModelPropName> {
-  /** Instance authz against a loaded row; throws on denial. */
-  check: (
-    ctx: ServiceContext,
-    instance: GetResult<TModelName> | (() => Promise<GetResult<TModelName>>),
-  ) => Promise<GetResult<TModelName>>;
-  /**
-   * The grant as a Prisma filter, AND-composed with an optional caller filter
-   * (`{ AND: [callerWhere, authWhere] }`, never a spread). `read`'s primary form;
-   * also bulk mutations / editable-rows lists. Unrestricted + no caller filter →
-   * `undefined`.
-   */
-  where: (
-    ctx: ServiceContext,
-    callerWhere?: WhereInput<TModelName>,
-  ) => WhereInput<TModelName> | undefined;
-  /**
-   * The grant composed into a unique selector for ATOMIC authorized
-   * `update`/`delete`: one query, returns the row, no TOCTOU. No match
-   * (unauthorized OR absent) → Prisma `P2025` → 404 via `throwIfPrismaNotFound`.
-   * Unconditional deny → throws before the query.
-   */
-  whereUnique: (
-    ctx: ServiceContext,
-    unique: WhereUniqueInput<TModelName>,
-  ) => WhereUniqueInput<TModelName>;
-  /**
-   * Throws unless the caller holds one of the action's global roles — a row-less
-   * principal check for a `create` (or a global-only mutation). Valid ONLY on a
-   * grant with no instance roles; throws if the action has any (checking globals
-   * alone would skip the per-row check).
-   */
-  checkGlobalRoles: (ctx: ServiceContext) => void;
-}
-
-export interface PolicyRoleMembers<TModelName extends ModelPropName> {
-  check: (
-    ctx: ServiceContext,
-    model: GetResult<TModelName>,
-  ) => Promise<boolean>;
-  checkById: (ctx: ServiceContext, id: string) => Promise<boolean>;
-  /**
-   * Throwing form of `checkById` — for the create guarded block, where the
-   * request-content grant is "hold this role on the input's parent id". One
-   * line: `await policy.roles.owner.assertById(ctx, input.blogId)`.
-   */
-  assertById: (ctx: ServiceContext, id: string) => Promise<void>;
-  nestedWhere: (
-    ctx: ServiceContext,
-    relationField: string,
-  ) => WhereResult<TModelName>;
-}
+import { ForbiddenError } from '../http-errors.js';
+import { queryHelpers } from '../query-helpers.js';
 
 /** The value types `r.match` compares by `===` (see `LocallyComparable`). */
 type MatchValue = string | number | bigint | boolean | null;
@@ -555,6 +154,9 @@ function cachedBoolean(
 
 export function createModelPolicy<
   TModelName extends ModelPropName,
+  const TId extends
+    | (keyof GetResult<TModelName> & string)
+    | readonly (keyof GetResult<TModelName> & string)[],
   const TRoles extends Record<string, AuthoredRole<TModelName>>,
   const TActions extends {
     // `read` is REQUIRED — a model with no read grant leaks by default, so "who
@@ -563,9 +165,17 @@ export function createModelPolicy<
     // in (no absolute-deny; narrow `superuser` to lock admins out).
     read: ActionGrant<Extract<keyof TRoles, string>>;
   } & Record<string, ActionGrant<Extract<keyof TRoles, string>>>,
+  // Normalize `TId` (a single field name OR an array of them) to the literal
+  // union of field names, for `PolicyRoleMembers`'/`DelegationTarget`'s
+  // `TIdField` — e.g. `'id'` stays `'id'`; `['tenantId', 'userId']` becomes
+  // `'tenantId' | 'userId'`.
+  TIdField extends string = TId extends readonly (infer F extends string)[]
+    ? F
+    : TId & string,
 >(config: {
   model: TModelName;
-  idField: keyof GetResult<TModelName> & string;
+  /** Primary key field(s). A single name for a scalar PK, or an array for a composite PK. */
+  id: TId;
   /** The Prisma model delegate — `prisma.blogPost`. The count/existence check is derived from it. */
   delegate: ModelDelegate<TModelName>;
   superuser?: string[];
@@ -579,24 +189,56 @@ export function createModelPolicy<
   actions: TActions;
 }): {
   readonly model: TModelName;
+  readonly idFields: readonly TIdField[];
   readonly roles: {
-    readonly [K in keyof TRoles]: PolicyRoleMembers<TModelName>;
+    readonly [K in keyof TRoles]: PolicyRoleMembers<TModelName, TIdField>;
   };
 } & { readonly [K in keyof TActions]: ActionMembers<TModelName> } {
   const superuser = config.superuser ?? [];
+  // Frozen + copied so a caller's mutation of the original array/config after
+  // construction can't retroactively invalidate the checks just below.
+  const idFields: readonly TIdField[] = Object.freeze(
+    (Array.isArray(config.id)
+      ? config.id.slice()
+      : [config.id]) as unknown as TIdField[],
+  );
+  if (idFields.length === 0) {
+    throw new Error(
+      `createModelPolicy('${config.model}'): \`id\` must name at least one field.`,
+    );
+  }
 
   const builder: RoleBuilder<TModelName> = {
     match: (match) => ({ kind: 'match', match }),
     userMatch: (userMatch) => ({ kind: 'userMatch', userMatch }),
     where: (where) => ({ kind: 'where', where }),
     userWhere: (userWhere) => ({ kind: 'userWhere', userWhere }),
-    via: (target, role, link) => ({
-      kind: 'via',
-      target,
-      role,
-      fk: link.fk,
-      relation: link.relation,
-    }),
+    via: (target, role, link) => {
+      const mappings = Object.entries(link.keys);
+      const targetFields = mappings.map(([, targetField]) => targetField);
+      // Every mapping must have a value, one mapping per target id field (no
+      // dropped/duplicate coverage — a duplicate target field would silently
+      // let one mapping overwrite another's contribution in `buildTargetIds`).
+      const isValid =
+        targetFields.every((f): f is string => f !== undefined) &&
+        targetFields.length === target.idFields.length &&
+        new Set(targetFields).size === targetFields.length &&
+        target.idFields.every((f) => targetFields.includes(f));
+      if (!isValid) {
+        throw new Error(
+          `r.via('${role}', relation '${link.relation}'): \`keys\` targets [${targetFields.join(', ')}], ` +
+            `but the target policy's id fields are [${target.idFields.join(', ')}]. ` +
+            `\`keys\` must map each local field to exactly ONE of the target's id fields, with no duplicates or gaps.`,
+        );
+      }
+      return {
+        kind: 'via',
+        target,
+        role,
+        keys: Object.freeze({ ...link.keys }),
+        relation: link.relation,
+      };
+    },
     all: (parts) => {
       // Runtime backstop for a bypassed caller: an empty conjunction is vacuous
       // truth (allow-all). The tuple type makes this a compile error already;
@@ -630,17 +272,121 @@ export function createModelPolicy<
       where: NonNullable<WhereInput<TModelName>>;
     }) => Promise<number>;
   };
-  const exists: Exists<TModelName> = (_ctx, id, where) =>
+  /** An id field's value must be a definite scalar — never null/undefined/bigint. */
+  function assertIdValue(
+    field: string,
+    value: unknown,
+  ): asserts value is string | number {
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      throw new TypeError(
+        `createModelPolicy('${config.model}'): id field '${field}' resolved to ` +
+          `${value === null ? 'null' : value === undefined ? 'undefined' : typeof value}, ` +
+          'not a string or number. Every id field must be a loaded scalar.',
+      );
+    }
+  }
+
+  /** Project a loaded row down to its OWN id field(s) as a field-name → value map. */
+  function buildIds(
+    model: Record<string, unknown>,
+  ): Record<string, string | number> {
+    const ids: Record<string, string | number> = {};
+    for (const field of idFields) {
+      const value = model[field];
+      assertIdValue(field, value);
+      ids[field] = value;
+    }
+    return ids;
+  }
+
+  /**
+   * Project a loaded row down to the TARGET's id field(s), via a `keys`
+   * local→target map — e.g. `{ blogId: 'id' }` on a `BlogPost` row produces
+   * `{ id: row.blogId }`, the shape the target's OWN `checkById` expects.
+   *
+   * An OPTIONAL relation's unset FK (every mapped local value null/undefined)
+   * returns `null` — "relation not set", matching how the `.where` path's
+   * `nestedWhere` behaves (Prisma's own relation filter just doesn't match an
+   * absent relation, it doesn't error). A PARTIALLY-null composite FK (some
+   * columns set, some not) is corrupt data, not an absent relation — that
+   * still throws via `assertIdValue`.
+   */
+  function buildTargetIds(
+    keys: Record<string, string | undefined>,
+    model: Record<string, unknown>,
+  ): Record<string, string | number> | null {
+    const values = Object.entries(keys)
+      .filter((entry): entry is [string, string] => entry[1] !== undefined)
+      .map(
+        ([localField, targetField]) =>
+          [localField, targetField, model[localField]] as const,
+      );
+    if (values.every((entry) => entry[2] === null || entry[2] === undefined)) {
+      return null;
+    }
+    const ids: Record<string, string | number> = {};
+    for (const [localField, targetField, value] of values) {
+      assertIdValue(localField, value);
+      ids[targetField] = value;
+    }
+    return ids;
+  }
+
+  /**
+   * Validate an id map's key set is EXACTLY a model's declared id fields (no
+   * partial/extra/empty maps) AND that every expected field's value is a
+   * definite scalar — closes the gap where a bypassed-TS caller could pass a
+   * key with an `undefined` value, which Prisma treats as an omitted filter
+   * (silently widening the match to "any row").
+   */
+  function assertIdsComplete(
+    ids: Record<string, unknown>,
+    expectedFields: readonly string[],
+  ): asserts ids is Record<string, string | number> {
+    const actual = new Set(Object.keys(ids));
+    const expected = new Set(expectedFields);
+    const matches =
+      actual.size === expected.size &&
+      [...actual].every((f) => expected.has(f));
+    if (!matches) {
+      throw new Error(
+        `createModelPolicy('${config.model}'): expected an id map with exactly ` +
+          `[${expectedFields.join(', ')}], got [${[...actual].join(', ')}].`,
+      );
+    }
+    for (const field of expectedFields) {
+      assertIdValue(field, ids[field]);
+    }
+  }
+
+  const exists: Exists<TModelName> = (_ctx, ids, where) =>
     delegate
       .count({
         where: {
-          AND: [{ [config.idField]: id }, where],
+          AND: [ids, where],
         },
       })
       .then((n) => n > 0);
 
-  function roleCacheKey(id: string | number, role: string): string {
-    return `authz:${config.model}:role:${role}:${String(id)}`;
+  /**
+   * Deterministic, collision-proof cache key for an id map — sorted `[k, v]`
+   * pairs through `JSON.stringify` so no delimiter choice can let two distinct
+   * id maps encode to the same string (unlike a hand-joined `k=v,k=v` scheme,
+   * where a value containing `,`/`=` can forge another map's key).
+   */
+  function idsCacheKey(ids: Record<string, string | number>): string {
+    return JSON.stringify(
+      Object.keys(ids)
+        .toSorted()
+        .map((k) => [k, ids[k]]),
+    );
+  }
+
+  function roleCacheKey(
+    ids: Record<string, string | number>,
+    role: string,
+  ): string {
+    return `authz:${config.model}:role:${role}:${idsCacheKey(ids)}`;
   }
 
   // ---- recursive tree walk (leaves + all/some combinators) ----------------
@@ -755,18 +501,21 @@ export function createModelPolicy<
         return evaluateMatch(m, model, key);
       }
       case 'via': {
-        // Delegation: parent's cached checkById, keyed on the PARENT id → N
+        // Delegation: parent's cached checkById, keyed on the TARGET id(s) → N
         // children of one parent collapse to 1 query, even concurrently.
-        const fkVal = String(model[node.fk]);
-        return node.target.roles[node.role].checkById(ctx, fkVal);
+        const targetIds = buildTargetIds(node.keys, model);
+        // Unset optional relation → deny, matching `nestedWhere`'s "absent
+        // relation doesn't match" semantics on the `.where` path (no query).
+        if (targetIds === null) return false;
+        return node.target.roles[node.role].checkById(ctx, targetIds);
       }
       case 'where': {
         const where = assertNotUndefined(node.where(ctx), key);
         if (where === true) return true;
         if (where === false) return false;
-        const id = String(model[config.idField]);
-        return cachedBoolean(ctx, roleCacheKey(id, key), () =>
-          exists(ctx, id, where),
+        const ids = buildIds(model);
+        return cachedBoolean(ctx, roleCacheKey(ids, key), () =>
+          exists(ctx, ids, where),
         );
       }
       case 'userWhere': {
@@ -775,9 +524,9 @@ export function createModelPolicy<
         const where = assertNotUndefined(node.userWhere(session, ctx), key);
         if (where === true) return true;
         if (where === false) return false;
-        const id = String(model[config.idField]);
-        return cachedBoolean(ctx, roleCacheKey(id, key), () =>
-          exists(ctx, id, where),
+        const ids = buildIds(model);
+        return cachedBoolean(ctx, roleCacheKey(ids, key), () =>
+          exists(ctx, ids, where),
         );
       }
       case 'hasRole': {
@@ -823,15 +572,18 @@ export function createModelPolicy<
   function checkRoleById(
     ctx: ServiceContext,
     role: string,
-    id: string,
+    ids: Record<string, string | number>,
   ): Promise<boolean> {
+    // Reject a partial/extra/empty id map BEFORE it reaches `exists()` — a
+    // partial map there would silently widen the filter to "any row".
+    assertIdsComplete(ids, idFields);
     // Resolve to a single where (an `all` folds to a conjoined where via
-    // roleWhere) and probe by id, coalesced on the shared key.
+    // roleWhere) and probe by id(s), coalesced on the shared key.
     const where = roleWhere(ctx, role);
     if (where === true) return Promise.resolve(true);
     if (where === false) return Promise.resolve(false);
-    return cachedBoolean(ctx, roleCacheKey(id, role), () =>
-      exists(ctx, id, where),
+    return cachedBoolean(ctx, roleCacheKey(ids, role), () =>
+      exists(ctx, ids, where),
     );
   }
 
@@ -841,11 +593,11 @@ export function createModelPolicy<
   for (const roleName of Object.keys(authored) as (keyof TRoles & string)[]) {
     roleMembers[roleName] = {
       check: (ctx, model) => checkRole(ctx, roleName, model),
-      checkById: (ctx, id) => checkRoleById(ctx, roleName, id),
-      assertById: async (ctx, id) => {
-        if (!(await checkRoleById(ctx, roleName, id))) {
+      checkById: (ctx, ids) => checkRoleById(ctx, roleName, ids),
+      assertById: async (ctx, ids) => {
+        if (!(await checkRoleById(ctx, roleName, ids))) {
           throw new ForbiddenError(
-            `Forbidden: requires role '${roleName}' on '${config.model}' ${id}.`,
+            `Forbidden: requires role '${roleName}' on '${config.model}' ${idsCacheKey(ids)}.`,
           );
         }
       },
@@ -981,6 +733,7 @@ export function createModelPolicy<
 
   return {
     model: config.model,
+    idFields,
     roles: roleMembers,
     ...actionMembers,
   };

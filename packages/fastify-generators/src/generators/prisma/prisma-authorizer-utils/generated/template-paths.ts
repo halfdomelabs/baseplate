@@ -2,7 +2,9 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PrismaPrismaAuthorizerUtilsPaths {
-  utilsAuthorizers: string;
+  createModelPolicy: string;
+  fieldGates: string;
+  types: string;
 }
 
 const prismaPrismaAuthorizerUtilsPaths =
@@ -21,7 +23,9 @@ const prismaPrismaAuthorizerUtilsPathsTask = createGeneratorTask({
     return {
       providers: {
         prismaPrismaAuthorizerUtilsPaths: {
-          utilsAuthorizers: `${srcRoot}/utils/authorizers.ts`,
+          createModelPolicy: `${srcRoot}/utils/authorizers/create-model-policy.ts`,
+          fieldGates: `${srcRoot}/utils/authorizers/field-gates.ts`,
+          types: `${srcRoot}/utils/authorizers/types.ts`,
         },
       },
     };

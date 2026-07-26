@@ -1,17 +1,17 @@
 import { prisma } from '@src/services/prisma.js';
-import { createModelPolicy } from '@src/utils/authorizers.js';
+import { createModelPolicy } from '@src/utils/authorizers/create-model-policy.js';
 
 import { todoListPolicy } from './todo-list.policy.js';
 
 export const todoItemPolicy = createModelPolicy({
   model: 'todoItem',
-  idField: 'id',
+  id: ['id'],
   delegate: prisma.todoItem,
   roles: (r) => ({
     owner: r.some([
       r.via(todoListPolicy, 'owner', {
-        fk: 'todoListId',
         relation: 'todoList',
+        keys: { todoListId: 'id' },
       }),
       r.hasRole('admin'),
     ]),
