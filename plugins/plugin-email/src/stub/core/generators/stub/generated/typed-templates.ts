@@ -14,7 +14,7 @@ const stubService = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/emails/services/stub.service.ts',
+      '../templates/module/services/stub.service.ts',
     ),
   },
   variables: {
