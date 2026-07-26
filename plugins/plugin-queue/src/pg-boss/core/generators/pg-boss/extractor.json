@@ -29,7 +29,6 @@
       },
       "pathRootRelativePath": "{src-root}/plugins/pg-boss.plugin.ts",
       "projectExports": {},
-      "referencedGeneratorTemplates": ["pg-boss-service"],
       "sourceFile": "src/plugins/pg-boss.plugin.ts",
       "variables": {}
     },
@@ -93,7 +92,6 @@
       },
       "pathRootRelativePath": "{src-root}/scripts/run-workers.ts",
       "projectExports": {},
-      "referencedGeneratorTemplates": ["pg-boss-service"],
       "sourceFile": "src/scripts/run-workers.ts",
       "variables": {}
     }

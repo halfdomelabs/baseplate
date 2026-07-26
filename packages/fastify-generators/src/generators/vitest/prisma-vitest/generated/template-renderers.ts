@@ -41,6 +41,16 @@ export interface VitestPrismaVitestRenderers {
       >,
     ) => BuilderAction;
   };
+  setupDb: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof VITEST_PRISMA_VITEST_TEMPLATES.setupDb
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const vitestPrismaVitestRenderers =
@@ -90,6 +100,15 @@ const vitestPrismaVitestRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   prismaImports,
                 },
+                ...options,
+              }),
+          },
+          setupDb: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: VITEST_PRISMA_VITEST_TEMPLATES.setupDb,
+                destination: paths.setupDb,
+                generatorPaths: paths,
                 ...options,
               }),
           },

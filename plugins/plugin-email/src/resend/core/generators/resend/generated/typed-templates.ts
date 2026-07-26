@@ -14,7 +14,7 @@ const resendService = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/emails/services/resend.service.ts',
+      '../templates/module/services/resend.service.ts',
     ),
   },
   variables: {},

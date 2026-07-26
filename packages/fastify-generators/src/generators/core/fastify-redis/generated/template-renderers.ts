@@ -10,21 +10,21 @@ import { CORE_FASTIFY_REDIS_PATHS } from './template-paths.js';
 import { CORE_FASTIFY_REDIS_TEMPLATES } from './typed-templates.js';
 
 export interface CoreFastifyRedisRenderers {
-  globalSetupRedis: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof CORE_FASTIFY_REDIS_TEMPLATES.globalSetupRedis
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   redis: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_REDIS_TEMPLATES.redis
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  setupRedis: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_FASTIFY_REDIS_TEMPLATES.setupRedis
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -47,14 +47,6 @@ const coreFastifyRedisRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreFastifyRedisRenderers: {
-          globalSetupRedis: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_REDIS_TEMPLATES.globalSetupRedis,
-                destination: paths.globalSetupRedis,
-                ...options,
-              }),
-          },
           redis: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -63,6 +55,14 @@ const coreFastifyRedisRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   configServiceImports,
                 },
+                ...options,
+              }),
+          },
+          setupRedis: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_FASTIFY_REDIS_TEMPLATES.setupRedis,
+                destination: paths.setupRedis,
                 ...options,
               }),
           },

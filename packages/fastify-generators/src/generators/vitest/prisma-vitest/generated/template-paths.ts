@@ -5,6 +5,7 @@ export interface VitestPrismaVitestPaths {
   dbTestHelper: string;
   globalSetupPrisma: string;
   prismaTestHelper: string;
+  setupDb: string;
 }
 
 const vitestPrismaVitestPaths = createProviderType<VitestPrismaVitestPaths>(
@@ -23,6 +24,7 @@ const vitestPrismaVitestPathsTask = createGeneratorTask({
           dbTestHelper: `${srcRoot}/tests/helpers/db.test-helper.ts`,
           globalSetupPrisma: `${srcRoot}/tests/scripts/global-setup-prisma.ts`,
           prismaTestHelper: `${srcRoot}/tests/helpers/prisma.test-helper.ts`,
+          setupDb: `${srcRoot}/tests/scripts/setup-db.ts`,
         },
       },
     };

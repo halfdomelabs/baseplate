@@ -8,12 +8,12 @@ export default defineConfig(
       clearMocks: true,
       dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
-      globalSetup: [
-        'src/tests/scripts/global-setup-prisma.ts',
-        'src/tests/scripts/global-setup-redis.ts',
-      ],
-      maxWorkers: 1,
+      globalSetup: ['src/tests/scripts/global-setup-prisma.ts'],
       passWithNoTests: true,
+      setupFiles: [
+        'src/tests/scripts/setup-db.ts',
+        'src/tests/scripts/setup-redis.ts',
+      ],
     },
   } /* TPL_CONFIG:END */,
 );
