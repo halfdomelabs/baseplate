@@ -15,6 +15,7 @@ import { CORE_REQUEST_SERVICE_CONTEXT_PATHS } from './template-paths.js';
 export const requestServiceContextImportsSchema = createTsImportMapSchema({
   createContextFromRequest: {},
   RequestServiceContext: { isTypeOnly: true },
+  RequestServiceContextWith: { isTypeOnly: true },
 });
 
 export type RequestServiceContextImportsProvider =
@@ -41,6 +42,7 @@ const coreRequestServiceContextImportsTask = createGeneratorTask({
           {
             createContextFromRequest: paths.requestServiceContext,
             RequestServiceContext: paths.requestServiceContext,
+            RequestServiceContextWith: paths.requestServiceContext,
           },
         ),
       },

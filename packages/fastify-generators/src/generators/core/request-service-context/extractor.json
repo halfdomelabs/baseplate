@@ -18,7 +18,8 @@
       "pathRootRelativePath": "{src-root}/utils/request-service-context.ts",
       "projectExports": {
         "createContextFromRequest": {},
-        "RequestServiceContext": { "isTypeOnly": true }
+        "RequestServiceContext": { "isTypeOnly": true },
+        "RequestServiceContextWith": { "isTypeOnly": true }
       },
       "sourceFile": "src/utils/request-service-context.ts",
       "variables": {

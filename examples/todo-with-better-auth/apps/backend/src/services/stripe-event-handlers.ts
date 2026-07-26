@@ -15,9 +15,15 @@ export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
  * @returns The event type to handler map.
  */
 export function createStripeEventHandlers(
-  services: Pick<AppServices, 'billing' | 'stripe'>,
+  services: Pick<
+    AppServices,
+    /* TPL_SERVICES_TYPE:START */ | 'billing'
+    | 'stripe' /* TPL_SERVICES_TYPE:END */
+  >,
 ): Partial<Record<string, StripeEventHandler>> {
+  /* TPL_SERVICES_DESTRUCTURE:START */
   const { billing } = services;
+  /* TPL_SERVICES_DESTRUCTURE:END */
 
   return /* TPL_EVENT_HANDLERS:START */ {
     'customer.subscription.created': (event) =>

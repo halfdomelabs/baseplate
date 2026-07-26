@@ -9,7 +9,6 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import path from 'node:path';
 
@@ -73,7 +72,6 @@ const servicesPasswordReset = createTsTemplateFile({
   importMapProviders: {
     authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
-    emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     prismaImports: prismaImportsProvider,
@@ -158,7 +156,6 @@ const servicesEmailVerification = createTsTemplateFile({
   importMapProviders: {
     authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
-    emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaImports: prismaImportsProvider,
     rateLimitImports: rateLimitImportsProvider,

@@ -15,7 +15,6 @@ import {
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
-import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
 import { rateLimitImportsProvider } from '@baseplate-dev/plugin-rate-limit';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -66,7 +65,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   dependencies: {
     authModuleImports: authModuleImportsProvider,
     configServiceImports: configServiceImportsProvider,
-    emailModuleImports: emailModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
     paths: LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
@@ -85,7 +83,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   run({
     authModuleImports,
     configServiceImports,
-    emailModuleImports,
     errorHandlerServiceImports,
     passwordHasherServiceImports,
     paths,
@@ -109,7 +106,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authModuleImports,
                   configServiceImports,
-                  emailModuleImports,
                   errorHandlerServiceImports,
                   passwordHasherServiceImports,
                   pothosImports,
@@ -145,7 +141,6 @@ const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authModuleImports,
                   configServiceImports,
-                  emailModuleImports,
                   errorHandlerServiceImports,
                   prismaImports,
                   rateLimitImports,

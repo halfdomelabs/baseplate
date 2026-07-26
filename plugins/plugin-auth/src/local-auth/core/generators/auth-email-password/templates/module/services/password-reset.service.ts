@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { RequestServiceContext } from '%requestServiceContextImports';
+import type { RequestServiceContextWith } from '%requestServiceContextImports';
 
 import {
   PASSWORD_MAX_LENGTH,
@@ -13,7 +13,6 @@ import {
   validateAuthVerification,
 } from '%authModuleImports';
 import { config } from '%configServiceImports';
-import { sendEmail } from '%emailModuleImports';
 import {
   BadRequestError,
   handleZodRequestValidationError,
@@ -69,8 +68,10 @@ export async function requestPasswordReset({
   context,
 }: {
   email: string;
-  context: RequestServiceContext;
+  context: RequestServiceContextWith<'emails'>;
 }): Promise<{ success: true }> {
+  const { services } = context;
+
   const { email } = await requestPasswordResetSchema
     .parseAsync({ email: rawEmail })
     .catch(handleZodRequestValidationError);
@@ -110,7 +111,7 @@ export async function requestPasswordReset({
     const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
-    await sendEmail(context, TPL_PASSWORD_RESET_EMAIL, {
+    await services.emails.send(TPL_PASSWORD_RESET_EMAIL, {
       to: user.email,
       data: { resetLink },
     });
@@ -172,8 +173,10 @@ export async function completePasswordReset({
 }: {
   token: string;
   newPassword: string;
-  context: RequestServiceContext;
+  context: RequestServiceContextWith<'emails'>;
 }): Promise<{ success: true }> {
+  const { services } = context;
+
   const { token, newPassword } = await completePasswordResetSchema
     .parseAsync({
       token: rawToken,
@@ -232,7 +235,7 @@ export async function completePasswordReset({
   await resetLoginRateLimits({ email: user.email, ip: context.reqInfo.ip });
 
   // Send password changed confirmation email
-  await sendEmail(context, TPL_PASSWORD_CHANGED_EMAIL, {
+  await services.emails.send(TPL_PASSWORD_CHANGED_EMAIL, {
     to: user.email,
     data: {},
   });

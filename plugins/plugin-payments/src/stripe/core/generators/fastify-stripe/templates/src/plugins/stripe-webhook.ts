@@ -36,9 +36,10 @@ async function getStripeEvent(
 }
 
 const stripeWebhookPluginCallback: FastifyPluginCallback<{
-  services: Pick<AppServices, 'stripe'>;
-}> = (fastify, { services: { stripe } }, done) => {
-  const stripeEventHandlers = createStripeEventHandlers(stripe);
+  services: Pick<AppServices, TPL_SERVICES_TYPE>;
+}> = (fastify, { services }, done) => {
+  const { stripe } = services;
+  const stripeEventHandlers = createStripeEventHandlers(services);
 
   fastify.post('/webhooks/stripe', {
     config: { rawBody: true },

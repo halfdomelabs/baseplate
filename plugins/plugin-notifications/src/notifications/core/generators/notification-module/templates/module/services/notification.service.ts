@@ -125,9 +125,8 @@ export interface MarkNotificationsResult {
 
 /**
  * The application-facing notifications capability: trigger, read, and
- * acknowledge notifications. Owns no connection itself — it closes over
- * {@link NotificationEvents} (runtime-internal, never exposed directly to
- * feature code) to broadcast unseen-count changes and real-time updates.
+ * acknowledge notifications. Closes over {@link NotificationEvents} to
+ * broadcast unseen-count changes and real-time updates.
  */
 export interface NotificationService {
   /**
@@ -182,12 +181,7 @@ export interface NotificationService {
   subscribeToChanges(userId: string): AsyncIterable<{ count: number }>;
 }
 
-/**
- * Count of UNSEEN notifications — the bell badge. Seen (opening the panel)
- * clears the badge; read (clicking one) clears its highlight. `readAt` always
- * implies `seenAt` (see the read mutations), so this never counts a row
- * already read.
- */
+/** Counts unseen notifications; see {@link NotificationService.getUnseenCount}. */
 async function getUnseenCount(userId: string): Promise<number> {
   return prisma.notification.count({
     where: { recipientId: userId, seenAt: null },
@@ -304,7 +298,6 @@ export function createNotificationService(deps: {
     // every read.
     const params = type.paramsSchema.parse(input.params);
 
-    // A single event today. The digest engine will pass N.
     const event: NotificationEvent<P> = {
       recipientId: input.recipientId,
       params,

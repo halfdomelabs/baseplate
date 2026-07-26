@@ -14,6 +14,7 @@ const requestServiceContext = createTsTemplateFile({
   projectExports: {
     createContextFromRequest: {},
     RequestServiceContext: { isTypeOnly: true },
+    RequestServiceContextWith: { isTypeOnly: true },
   },
   source: {
     path: path.join(
