@@ -1,6 +1,6 @@
 import { defineQueue } from '@src/types/queue.types.js';
 
-import type { TransformedEmailMessage } from '../emails.types.js';
+import type { TransformedEmailMessage } from '../email.types.js';
 
 export interface SendEmailJobData {
   message: TransformedEmailMessage;

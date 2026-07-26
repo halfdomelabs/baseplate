@@ -12,7 +12,7 @@ import type {
   EmailSendOptions,
   EmailTransport,
   TransformedEmailMessage,
-} from '../emails.types.js';
+} from '../email.types.js';
 
 import { sendEmailQueue } from '../queues/send-email.queue.js';
 
@@ -84,21 +84,21 @@ export interface EmailService {
 
 /**
  * Creates the {@link EmailService}. Construction allocates no resources -
- * enqueueing is deferred to `queues`, itself already constructed.
+ * enqueueing is deferred to `queue`, itself already constructed.
  *
  * @param deps - Construction dependencies
- * @param deps.queues - The queue service to enqueue the send-email job with.
+ * @param deps.queue - The queue service to enqueue the send-email job with.
  * @returns The email service
  */
 export function createEmailService({
-  queues,
+  queue,
 }: {
-  queues: QueueService;
+  queue: QueueService;
 }): EmailService {
   async function sendRaw(
     options: EmailRawOptions,
   ): Promise<string | undefined> {
-    return queues.enqueue(sendEmailQueue, {
+    return queue.enqueue(sendEmailQueue, {
       message: buildTransformedMessage(options),
       template: options.template,
     });

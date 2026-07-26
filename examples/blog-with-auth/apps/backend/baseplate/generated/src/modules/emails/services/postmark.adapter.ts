@@ -2,7 +2,7 @@ import { Models, ServerClient } from 'postmark';
 
 import { config } from '@src/services/config.js';
 
-import type { EmailAdapter } from '../emails.types.js';
+import type { EmailAdapter } from '../email.types.js';
 
 let postmarkClient: ServerClient | undefined;
 

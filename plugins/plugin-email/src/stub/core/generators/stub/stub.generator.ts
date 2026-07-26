@@ -37,7 +37,7 @@ export const stubGenerator = createGenerator({
           emailConfig.emailAdapter.set(
             tsCodeFragment(
               adapterName,
-              tsImportBuilder([adapterName]).from(paths.stubService),
+              tsImportBuilder([adapterName]).from(paths.stubAdapter),
             ),
           );
         },
@@ -50,7 +50,7 @@ export const stubGenerator = createGenerator({
           return {
             build: async (builder) => {
               await builder.apply(
-                renderers.stubService.render({
+                renderers.stubAdapter.render({
                   variables: {
                     TPL_ADAPTER_NAME: adapterName,
                     TPL_PROVIDER_NAME: `'${providerName}'`,

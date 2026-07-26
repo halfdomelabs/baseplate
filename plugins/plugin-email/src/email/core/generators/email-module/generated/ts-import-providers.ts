@@ -46,17 +46,17 @@ const emailCoreEmailModuleImportsTask = createGeneratorTask({
     return {
       providers: {
         emailModuleImports: createTsImportMap(emailModuleImportsSchema, {
-          createEmailService: paths.emailsService,
-          createEmailTransport: paths.emailsService,
-          EmailAdapter: paths.emailsTypes,
-          EmailAttachment: paths.emailsTypes,
-          EmailRawOptions: paths.emailsTypes,
-          EmailSendOptions: paths.emailsTypes,
-          EmailService: paths.emailsService,
-          EmailTransport: paths.emailsTypes,
+          createEmailService: paths.emailService,
+          createEmailTransport: paths.emailService,
+          EmailAdapter: paths.emailTypes,
+          EmailAttachment: paths.emailTypes,
+          EmailRawOptions: paths.emailTypes,
+          EmailSendOptions: paths.emailTypes,
+          EmailService: paths.emailService,
+          EmailTransport: paths.emailTypes,
           sendEmailQueue: paths.sendEmailQueue,
           sendEmailWorker: paths.sendEmailWorker,
-          TransformedEmailMessage: paths.emailsTypes,
+          TransformedEmailMessage: paths.emailTypes,
         }),
       },
     };

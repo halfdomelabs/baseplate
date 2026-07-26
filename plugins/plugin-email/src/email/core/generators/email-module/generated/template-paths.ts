@@ -2,8 +2,8 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface EmailCoreEmailModulePaths {
-  emailsService: string;
-  emailsTypes: string;
+  emailService: string;
+  emailTypes: string;
   sendEmailQueue: string;
   sendEmailWorker: string;
 }
@@ -21,8 +21,8 @@ const emailCoreEmailModulePathsTask = createGeneratorTask({
     return {
       providers: {
         emailCoreEmailModulePaths: {
-          emailsService: `${moduleRoot}/services/emails.service.ts`,
-          emailsTypes: `${moduleRoot}/emails.types.ts`,
+          emailService: `${moduleRoot}/services/email.service.ts`,
+          emailTypes: `${moduleRoot}/email.types.ts`,
           sendEmailQueue: `${moduleRoot}/queues/send-email.queue.ts`,
           sendEmailWorker: `${moduleRoot}/queues/send-email.worker.ts`,
         },

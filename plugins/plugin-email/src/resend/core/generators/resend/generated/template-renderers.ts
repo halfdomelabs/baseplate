@@ -11,11 +11,11 @@ import { RESEND_CORE_RESEND_PATHS } from './template-paths.js';
 import { RESEND_CORE_RESEND_TEMPLATES } from './typed-templates.js';
 
 export interface ResendCoreResendRenderers {
-  resendService: {
+  resendAdapter: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof RESEND_CORE_RESEND_TEMPLATES.resendService
+          typeof RESEND_CORE_RESEND_TEMPLATES.resendAdapter
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -39,11 +39,11 @@ const resendCoreResendRenderersTask = createGeneratorTask({
     return {
       providers: {
         resendCoreResendRenderers: {
-          resendService: {
+          resendAdapter: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: RESEND_CORE_RESEND_TEMPLATES.resendService,
-                destination: paths.resendService,
+                template: RESEND_CORE_RESEND_TEMPLATES.resendAdapter,
+                destination: paths.resendAdapter,
                 importMapProviders: {
                   configServiceImports,
                   emailModuleImports,

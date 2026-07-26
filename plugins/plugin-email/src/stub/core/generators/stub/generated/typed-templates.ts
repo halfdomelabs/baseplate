@@ -4,17 +4,17 @@ import path from 'node:path';
 
 import { emailModuleImportsProvider } from '#src/email/core/generators/email-module/generated/ts-import-providers.js';
 
-const stubService = createTsTemplateFile({
+const stubAdapter = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     emailModuleImports: emailModuleImportsProvider,
     loggerServiceImports: loggerServiceImportsProvider,
   },
-  name: 'stub-service',
+  name: 'stub-adapter',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/stub.service.ts',
+      '../templates/module/services/stub.adapter.ts',
     ),
   },
   variables: {
@@ -24,4 +24,4 @@ const stubService = createTsTemplateFile({
   },
 });
 
-export const STUB_CORE_STUB_TEMPLATES = { stubService };
+export const STUB_CORE_STUB_TEMPLATES = { stubAdapter };

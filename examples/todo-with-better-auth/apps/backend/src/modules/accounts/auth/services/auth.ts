@@ -9,7 +9,7 @@ import { customSession } from 'better-auth/plugins';
 import { config } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
-import type { EmailService } from '../../../emails/services/emails.service.js';
+import type { EmailService } from '../../../emails/services/email.service.js';
 import type { AuthRole } from '../constants/auth-roles.constants.js';
 
 import { DEFAULT_USER_ROLES } from '../constants/auth-roles.constants.js';
@@ -28,7 +28,7 @@ export const cookiePrefix =
  * Dependencies `auth` needs at construction time.
  */
 export interface AuthServiceDeps {
-  emails: EmailService;
+  email: EmailService;
 }
 
 export type Auth = ReturnType<typeof buildAuth>;
@@ -40,7 +40,7 @@ export type Auth = ReturnType<typeof buildAuth>;
  * only ever built once for the runtime's lifetime.
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- return type is self-referential (Auth is derived from it above); betterAuth()'s inferred generic return type can't be spelled out by hand
-export const buildAuth = ({ emails }: AuthServiceDeps) =>
+export const buildAuth = ({ email }: AuthServiceDeps) =>
   betterAuth({
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     secret: config.BETTER_AUTH_SECRET,
@@ -50,7 +50,7 @@ export const buildAuth = ({ emails }: AuthServiceDeps) =>
       enabled: true,
       async sendResetPassword({ token, user }) {
         const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${token}`;
-        await emails.send(
+        await email.send(
           /* TPL_PASSWORD_RESET_EMAIL:START */ PasswordResetEmail /* TPL_PASSWORD_RESET_EMAIL:END */,
           {
             to: user.email,
@@ -64,7 +64,7 @@ export const buildAuth = ({ emails }: AuthServiceDeps) =>
       sendOnSignUp: true,
       async sendVerificationEmail({ token, user }) {
         const verifyLink = `${config.AUTH_FRONTEND_URL}/auth/verify-email?token=${token}`;
-        await emails.send(
+        await email.send(
           /* TPL_ACCOUNT_VERIFICATION_EMAIL:START */ AccountVerificationEmail /* TPL_ACCOUNT_VERIFICATION_EMAIL:END */,
           {
             to: user.email,

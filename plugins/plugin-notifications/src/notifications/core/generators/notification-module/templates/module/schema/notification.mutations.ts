@@ -23,7 +23,7 @@ builder.mutationField('markNotificationRead', (t) =>
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();
       const { changed, unseenCount } =
-        await context.services.notifications.markAsRead(userId, input.id);
+        await context.services.notification.markAsRead(userId, input.id);
       const notification = await prisma.notification.findFirst({
         where: { id: input.id, recipientId: userId },
       });
@@ -41,9 +41,7 @@ builder.mutationField('markAllNotificationsSeen', (t) =>
       unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, _args, context) =>
-      context.services.notifications.markAllAsSeen(
-        context.auth.userIdOrThrow(),
-      ),
+      context.services.notification.markAllAsSeen(context.auth.userIdOrThrow()),
   }),
 );
 
@@ -56,9 +54,7 @@ builder.mutationField('markAllNotificationsRead', (t) =>
       unseenCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, _args, context) =>
-      context.services.notifications.markAllAsRead(
-        context.auth.userIdOrThrow(),
-      ),
+      context.services.notification.markAllAsRead(context.auth.userIdOrThrow()),
   }),
 );
 
@@ -73,7 +69,7 @@ builder.mutationField('deleteNotification', (t) =>
     },
     resolve: async (_root, { input }, context) => {
       const { changed, unseenCount } =
-        await context.services.notifications.delete(
+        await context.services.notification.delete(
           context.auth.userIdOrThrow(),
           input.id,
         );

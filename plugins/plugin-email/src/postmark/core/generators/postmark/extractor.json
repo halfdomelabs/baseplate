@@ -1,7 +1,7 @@
 {
   "name": "postmark/core/postmark",
   "templates": {
-    "postmark-service": {
+    "postmark-adapter": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "importMapProviders": {
@@ -14,8 +14,8 @@
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{module-root}/services/postmark.service.ts",
-      "sourceFile": "module/services/postmark.service.ts",
+      "pathRootRelativePath": "{module-root}/services/postmark.adapter.ts",
+      "sourceFile": "module/services/postmark.adapter.ts",
       "variables": {}
     }
   }

@@ -11,11 +11,11 @@ import { STUB_CORE_STUB_PATHS } from './template-paths.js';
 import { STUB_CORE_STUB_TEMPLATES } from './typed-templates.js';
 
 export interface StubCoreStubRenderers {
-  stubService: {
+  stubAdapter: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof STUB_CORE_STUB_TEMPLATES.stubService
+          typeof STUB_CORE_STUB_TEMPLATES.stubAdapter
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -39,11 +39,11 @@ const stubCoreStubRenderersTask = createGeneratorTask({
     return {
       providers: {
         stubCoreStubRenderers: {
-          stubService: {
+          stubAdapter: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: STUB_CORE_STUB_TEMPLATES.stubService,
-                destination: paths.stubService,
+                template: STUB_CORE_STUB_TEMPLATES.stubAdapter,
+                destination: paths.stubAdapter,
                 importMapProviders: {
                   emailModuleImports,
                   loggerServiceImports,

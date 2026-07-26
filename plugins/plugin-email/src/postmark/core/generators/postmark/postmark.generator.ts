@@ -60,7 +60,7 @@ export const postmarkGenerator = createGenerator({
           tsCodeFragment(
             'postmarkEmailAdapter',
             tsImportBuilder(['postmarkEmailAdapter']).from(
-              paths.postmarkService,
+              paths.postmarkAdapter,
             ),
           ),
         );
@@ -74,7 +74,7 @@ export const postmarkGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              renderers.postmarkService.render({
+              renderers.postmarkAdapter.render({
                 variables: {},
               }),
             );

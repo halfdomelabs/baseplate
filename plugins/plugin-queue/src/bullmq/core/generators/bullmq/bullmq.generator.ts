@@ -55,14 +55,14 @@ export const bullmqGenerator = createGenerator({
       },
       run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
-          'queues',
+          'queue',
           queuesImports.QueueRuntime.typeFragment(),
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
-        appRuntimeConfig.construction.set('queues', {
+        appRuntimeConfig.construction.set('queue', {
           dependencies: ['redis'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.bullmqService)}(queueBindings, redis)`,
-          disposeFragment: tsCodeFragment('(queues) => queues.stopWorkers()'),
+          disposeFragment: tsCodeFragment('(queue) => queue.stopWorkers()'),
         });
       },
     }),

@@ -5,7 +5,7 @@ import { RENDER_SOURCE_SELECT } from '$servicesNotificationService';
 import { builder } from '%pothosImports';
 
 /**
- * The render-at-read site: `services.notifications.renderContent` re-renders
+ * The render-at-read site: `services.notification.renderContent` re-renders
  * from the stored source (`params`) using the renderer that CREATED the row —
  * pinned by `(type, templateVersion)` — falling back to the frozen snapshot on
  * a retired renderer or param drift.
@@ -23,6 +23,6 @@ builder.prismaObjectFields(TPL_NOTIFICATION_OBJECT_TYPE, (t) => ({
     args: { locale: t.arg.string({ required: true, defaultValue: 'en' }) },
     select: RENDER_SOURCE_SELECT,
     resolve: (notification, { locale }, ctx) =>
-      ctx.services.notifications.renderContent(notification, { locale }),
+      ctx.services.notification.renderContent(notification, { locale }),
   }),
 }));

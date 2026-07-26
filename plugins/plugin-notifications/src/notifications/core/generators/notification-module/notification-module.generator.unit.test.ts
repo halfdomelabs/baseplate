@@ -57,9 +57,9 @@ async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
     paths: PATHS_STUB,
   });
 
-  const entry = appRuntimeConfig.construction.get('notifications');
+  const entry = appRuntimeConfig.construction.get('notification');
   if (!entry) {
-    throw new Error('notifications construction entry was not registered');
+    throw new Error('notification construction entry was not registered');
   }
   return {
     dependencies: entry.dependencies ?? [],
@@ -84,7 +84,7 @@ describe('notificationModuleGenerator channel wiring', () => {
     const { dependencies, fragmentContents } = await runAppRuntimeConfig(true);
 
     expect(dependencies).toContain('pubsub');
-    expect(dependencies).toContain('emails');
+    expect(dependencies).toContain('email');
     expect(fragmentContents).toContain('inApp');
     expect(fragmentContents).toContain('email');
     expect(fragmentContents).toContain('createEmailChannel');

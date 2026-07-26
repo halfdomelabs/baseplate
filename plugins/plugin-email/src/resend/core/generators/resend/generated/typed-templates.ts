@@ -4,20 +4,20 @@ import path from 'node:path';
 
 import { emailModuleImportsProvider } from '#src/email/core/generators/email-module/generated/ts-import-providers.js';
 
-const resendService = createTsTemplateFile({
+const resendAdapter = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     configServiceImports: configServiceImportsProvider,
     emailModuleImports: emailModuleImportsProvider,
   },
-  name: 'resend-service',
+  name: 'resend-adapter',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/resend.service.ts',
+      '../templates/module/services/resend.adapter.ts',
     ),
   },
   variables: {},
 });
 
-export const RESEND_CORE_RESEND_TEMPLATES = { resendService };
+export const RESEND_CORE_RESEND_TEMPLATES = { resendAdapter };

@@ -1,8 +1,8 @@
 import type { PubSub } from 'graphql-yoga';
 
 import type { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
-import type { EmailTransport } from '../modules/emails/emails.types.js';
-import type { EmailService } from '../modules/emails/services/emails.service.js';
+import type { EmailTransport } from '../modules/emails/email.types.js';
+import type { EmailService } from '../modules/emails/services/email.service.js';
 import type { NotificationEvents } from '../modules/notifications/services/notification-events.js';
 import type { NotificationService } from '../modules/notifications/services/notification.service.js';
 import type { PubSubPublishArgs } from '../plugins/graphql/pubsub.js';
@@ -16,12 +16,12 @@ import type { QueueRuntime } from '../types/queue.types.js';
  */
 export interface AppServices {
   /* TPL_SERVICES_FIELDS:START */
-  readonly emails: EmailService;
+  readonly email: EmailService;
   readonly emailTransport: EmailTransport;
+  readonly notification: NotificationService;
   readonly notificationEvents: NotificationEvents;
-  readonly notifications: NotificationService;
   readonly pubsub: PubSub<PubSubPublishArgs>;
-  readonly queues: QueueRuntime;
+  readonly queue: QueueRuntime;
   readonly redis: RedisRuntime;
   readonly userSession: CookieUserSessionService;
   /* TPL_SERVICES_FIELDS:END */

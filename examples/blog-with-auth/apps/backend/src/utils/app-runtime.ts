@@ -4,8 +4,8 @@ import { CookieUserSessionService } from '../modules/accounts/auth/services/user
 import {
   createEmailService,
   createEmailTransport,
-} from '../modules/emails/services/emails.service.js';
-import { postmarkEmailAdapter } from '../modules/emails/services/postmark.service.js';
+} from '../modules/emails/services/email.service.js';
+import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapter.js';
 import { rootModule } from '../modules/index.js';
 import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
 import { createInAppChannel } from '../modules/notifications/services/in-app-channel.js';
@@ -122,23 +122,23 @@ export function createAppRuntime(
     createNotificationEvents(pubsub),
   );
 
-  const queues = provide(
-    'queues',
+  const queue = provide(
+    'queue',
     () =>
       createQueueRuntime(queueBindings, {
         disableMaintenance: !options.backgroundServices,
       }),
-    (queues) => queues.stopWorkers(),
+    (queue) => queue.stopWorkers(),
   );
 
-  const emails = provide('emails', () => createEmailService({ queues }));
+  const email = provide('email', () => createEmailService({ queue }));
 
-  const notifications = provide('notifications', () =>
+  const notification = provide('notification', () =>
     createNotificationService({
       events: notificationEvents,
       notificationTypes,
       channels: {
-        email: createEmailChannel({ emails }),
+        email: createEmailChannel({ email }),
         inApp: createInAppChannel({ events: notificationEvents }),
       },
     }),
@@ -151,12 +151,12 @@ export function createAppRuntime(
   /* TPL_SERVICE_CONSTRUCTION:END */
 
   const services = /* TPL_SERVICES_OBJECT:START */ {
-    emails,
+    email,
     emailTransport,
+    notification,
     notificationEvents,
-    notifications,
     pubsub,
-    queues,
+    queue,
     redis,
     userSession,
   } /* TPL_SERVICES_OBJECT:END */ satisfies AppServices;

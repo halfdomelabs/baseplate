@@ -15,7 +15,7 @@ import { createSystemServiceContext } from '../utils/service-context.js';
  * this plugin only starts workers when embedded mode is enabled.
  */
 const pgBossPluginCallback: FastifyPluginCallback<{
-  // Not narrowed to `queues`: job handlers run with a full service context.
+  // Not narrowed to `queue`: job handlers run with a full service context.
   services: AppServices;
 }> = (fastify, { services }, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
@@ -26,7 +26,7 @@ const pgBossPluginCallback: FastifyPluginCallback<{
 
     fastify.addHook('onReady', async () => {
       try {
-        await services.queues.startWorkers({
+        await services.queue.startWorkers({
           createContext: () => createSystemServiceContext(services),
         });
       } catch (error: unknown) {

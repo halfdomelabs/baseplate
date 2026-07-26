@@ -8,8 +8,8 @@ import { createBillingService } from '../modules/billing/services/billing.servic
 import {
   createEmailService,
   createEmailTransport,
-} from '../modules/emails/services/emails.service.js';
-import { postmarkEmailAdapter } from '../modules/emails/services/postmark.service.js';
+} from '../modules/emails/services/email.service.js';
+import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapter.js';
 import { rootModule } from '../modules/index.js';
 import { createStorageService } from '../modules/storage/services/storage.service.js';
 import { createQueueRuntime } from '../services/bullmq.service.js';
@@ -108,15 +108,15 @@ export function createAppRuntime(
     createEmailTransport(postmarkEmailAdapter),
   );
 
-  const queues = provide(
-    'queues',
+  const queue = provide(
+    'queue',
     () => createQueueRuntime(queueBindings, redis),
-    (queues) => queues.stopWorkers(),
+    (queue) => queue.stopWorkers(),
   );
 
-  const emails = provide('emails', () => createEmailService({ queues }));
+  const email = provide('email', () => createEmailService({ queue }));
 
-  const betterAuth = provide('betterAuth', () => buildAuth({ emails }));
+  const betterAuth = provide('betterAuth', () => buildAuth({ email }));
 
   const storage = provide('storage', () =>
     createStorageService(storageCategories),
@@ -134,9 +134,9 @@ export function createAppRuntime(
   const services = /* TPL_SERVICES_OBJECT:START */ {
     betterAuth,
     billing,
-    emails,
+    email,
     emailTransport,
-    queues,
+    queue,
     redis,
     storage,
     stripe,

@@ -31,7 +31,7 @@ builder.queryField('unseenNotificationCount', (t) =>
   t.int({
     authorize: ['user'],
     resolve: (_root, _args, context) =>
-      context.services.notifications.getUnseenCount(
+      context.services.notification.getUnseenCount(
         context.auth.userIdOrThrow(),
       ),
   }),

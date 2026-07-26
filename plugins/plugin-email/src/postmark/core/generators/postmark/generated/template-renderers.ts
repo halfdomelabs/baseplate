@@ -11,11 +11,11 @@ import { POSTMARK_CORE_POSTMARK_PATHS } from './template-paths.js';
 import { POSTMARK_CORE_POSTMARK_TEMPLATES } from './typed-templates.js';
 
 export interface PostmarkCorePostmarkRenderers {
-  postmarkService: {
+  postmarkAdapter: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof POSTMARK_CORE_POSTMARK_TEMPLATES.postmarkService
+          typeof POSTMARK_CORE_POSTMARK_TEMPLATES.postmarkAdapter
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -42,11 +42,11 @@ const postmarkCorePostmarkRenderersTask = createGeneratorTask({
     return {
       providers: {
         postmarkCorePostmarkRenderers: {
-          postmarkService: {
+          postmarkAdapter: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: POSTMARK_CORE_POSTMARK_TEMPLATES.postmarkService,
-                destination: paths.postmarkService,
+                template: POSTMARK_CORE_POSTMARK_TEMPLATES.postmarkAdapter,
+                destination: paths.postmarkAdapter,
                 importMapProviders: {
                   configServiceImports,
                   emailModuleImports,

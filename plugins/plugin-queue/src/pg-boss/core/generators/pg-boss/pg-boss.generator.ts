@@ -60,7 +60,7 @@ export const pgBossGenerator = createGenerator({
       },
       run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
-          'queues',
+          'queue',
           queuesImports.QueueRuntime.typeFragment(),
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
@@ -68,11 +68,11 @@ export const pgBossGenerator = createGenerator({
         // `boss.start()`, so the loops need gating at construction rather than
         // at worker startup.
         appRuntimeConfig.usesBackgroundServices.set(true);
-        appRuntimeConfig.construction.set('queues', {
+        appRuntimeConfig.construction.set('queue', {
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
             disableMaintenance: !options.backgroundServices,
           })`,
-          disposeFragment: tsCodeFragment('(queues) => queues.stopWorkers()'),
+          disposeFragment: tsCodeFragment('(queue) => queue.stopWorkers()'),
         });
       },
     }),
