@@ -153,15 +153,11 @@ export const betterAuthModuleGenerator = createGenerator({
         );
         appRuntimeConfig.construction.set('betterAuth', {
           dependencies: ['emails'],
-          fragment: TsCodeUtils.template`
-            const betterAuth = ${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ emails });
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('buildAuth', paths.auth)}({ emails })`,
         });
         appRuntimeConfig.construction.set('userSession', {
           dependencies: ['betterAuth'],
-          fragment: TsCodeUtils.template`
-            const userSession = ${TsCodeUtils.importFragment('createBetterAuthUserSessionService', paths.userSessionService)}(betterAuth);
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createBetterAuthUserSessionService', paths.userSessionService)}(betterAuth)`,
         });
       },
     }),

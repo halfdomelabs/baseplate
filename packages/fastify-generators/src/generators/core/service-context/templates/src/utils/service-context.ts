@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppRuntime, AppServices } from '%appRuntimeImports';
+import type { AppServices } from '%appRuntimeImports';
 
 import { createAppRuntime } from '%appRuntimeImports';
 
@@ -14,7 +14,7 @@ export interface ExecutionContext {
 }
 
 export interface ServiceContext extends ExecutionContext {
-  readonly services: Readonly<AppServices>;
+  readonly services: AppServices;
 }
 
 /**
@@ -26,28 +26,28 @@ export interface ServiceContext extends ExecutionContext {
  * is known.
  */
 export type ServiceContextWith<K extends keyof AppServices> =
-  ExecutionContext & { readonly services: Readonly<Pick<AppServices, K>> };
+  ExecutionContext & { readonly services: Pick<AppServices, K> };
 
 export function createServiceContext(
   TPL_CREATE_CONTEXT_ARGS,
-  services: Readonly<AppServices>,
+  services: AppServices,
 ): ServiceContext {
   return TPL_CONTEXT_OBJECT;
 }
 
 /**
- * Creates a service context for the system user, delivering services from
- * the given runtime.
+ * Creates a service context for the system user, delivering the given
+ * services.
  */
 export function createSystemServiceContext(
-  runtime: AppRuntime,
+  services: AppServices,
 ): ServiceContext {
-  return createServiceContext(TPL_SYSTEM_CONTEXT_OBJECT, runtime.services);
+  return createServiceContext(TPL_SYSTEM_CONTEXT_OBJECT, services);
 }
 
 /**
  * Runs `fn` with a system service context, constructing a fresh
- * {@link AppRuntime} around the call and guaranteeing disposal - including
+ * `AppRuntime` around the call and guaranteeing disposal - including
  * when `fn` throws. Safe on every execution path, including prisma-only
  * scripts, because construction performs no I/O.
  */
@@ -56,7 +56,7 @@ export async function withScriptContext<T>(
 ): Promise<T> {
   const runtime = createAppRuntime();
   try {
-    return await fn(createSystemServiceContext(runtime));
+    return await fn(createSystemServiceContext(runtime.services));
   } finally {
     await runtime.dispose();
   }

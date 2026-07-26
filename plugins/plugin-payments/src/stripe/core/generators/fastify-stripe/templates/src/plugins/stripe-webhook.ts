@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppRuntime } from '%appRuntimeImports';
+import type { AppServices } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 import type { Stripe } from 'stripe';
 
@@ -36,9 +36,8 @@ async function getStripeEvent(
 }
 
 const stripeWebhookPluginCallback: FastifyPluginCallback<{
-  runtime: AppRuntime;
-}> = (fastify, opts, done) => {
-  const { stripe } = opts.runtime.services;
+  services: Pick<AppServices, 'stripe'>;
+}> = (fastify, { services: { stripe } }, done) => {
   const stripeEventHandlers = createStripeEventHandlers(stripe);
 
   fastify.post('/webhooks/stripe', {

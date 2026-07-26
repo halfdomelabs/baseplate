@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppRuntime } from '%appRuntimeImports';
+import type { AppServices } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 
 import { config } from '%configServiceImports';
@@ -15,8 +15,9 @@ import fastifyPlugin from 'fastify-plugin';
  * this plugin only starts workers when embedded mode is enabled.
  */
 const pgBossPluginCallback: FastifyPluginCallback<{
-  runtime: AppRuntime;
-}> = (fastify, opts, done) => {
+  // Not narrowed to `queues`: job handlers run with a full service context.
+  services: AppServices;
+}> = (fastify, { services }, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
@@ -25,8 +26,8 @@ const pgBossPluginCallback: FastifyPluginCallback<{
 
     fastify.addHook('onReady', async () => {
       try {
-        await opts.runtime.queues.startWorkers({
-          createContext: () => createSystemServiceContext(opts.runtime),
+        await services.queues.startWorkers({
+          createContext: () => createSystemServiceContext(services),
         });
       } catch (error: unknown) {
         logError(error, {

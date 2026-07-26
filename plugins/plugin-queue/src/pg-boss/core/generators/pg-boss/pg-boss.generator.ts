@@ -43,11 +43,11 @@ export const pgBossGenerator = createGenerator({
             'pgBossPlugin',
             tsImportBuilder(['pgBossPlugin']).from(paths.pgBossPlugin),
           ),
-          options: tsCodeFragment('{ runtime }'),
+          options: tsCodeFragment('{ services }'),
         });
         fastifyServerConfig.runtimeConstructionOptions.set(
           tsCodeFragment(
-            '{ disableQueueMaintenance: !config.ENABLE_EMBEDDED_WORKERS }',
+            '{ backgroundServices: config.ENABLE_EMBEDDED_WORKERS }',
           ),
         );
       },
@@ -61,23 +61,16 @@ export const pgBossGenerator = createGenerator({
       run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
           'queues',
-          queuesImports.QueueService.typeFragment(),
-        );
-        appRuntimeConfig.runtimeFields.set('queues', {
-          type: queuesImports.QueueRuntime.typeFragment(),
-        });
-        appRuntimeConfig.constructionOptions.set(
-          'disableQueueMaintenance?',
-          tsCodeFragment('boolean'),
+          queuesImports.QueueRuntime.typeFragment(),
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queues', {
-          fragment: TsCodeUtils.template`
-            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
-              disableMaintenance: options.disableQueueMaintenance,
-            });
-            disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
-          `,
+          // pg-boss's supervision and schedule loops are the background work
+          // the runtime-wide policy governs.
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
+            disableMaintenance: !options.backgroundServices,
+          })`,
+          disposeFragment: tsCodeFragment('(queues) => queues.stopWorkers()'),
         });
       },
     }),

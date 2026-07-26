@@ -10,7 +10,7 @@ import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appRuntimeTestUtilsProvider } from '../app-runtime/index.js';
+import { appRuntimeImportsProvider } from '../app-runtime/generated/ts-import-providers.js';
 import { CORE_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -78,12 +78,12 @@ export const serviceContextGenerator = createGenerator({
       dependencies: {
         serviceContextConfigValues: serviceContextConfigValuesProvider,
         renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.provider,
-        appRuntimeTestUtils: appRuntimeTestUtilsProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
       },
       run({
         serviceContextConfigValues: { contextFields },
         renderers,
-        appRuntimeTestUtils,
+        appRuntimeImports,
       }) {
         return {
           build: async (builder) => {
@@ -168,16 +168,30 @@ export const serviceContextGenerator = createGenerator({
                     ),
                   );
 
+            // `services` is always present, unlike the context fields, so the
+            // parameter is emitted even when no slice registered one - without
+            // it there would be no seam to supply services in tests.
+            const testArgs = TsCodeUtils.template`{
+                ${[...orderedContextArgs.map((arg) => arg.name), 'services'].join(', ')} }: {
+                 ${TsCodeUtils.mergeFragmentsPresorted(
+                   [
+                     ...orderedContextArgs.map(
+                       (arg) =>
+                         TsCodeUtils.template`${arg.name}${
+                           arg.testDefault ? '?' : ''
+                         }: ${arg.type}`,
+                     ),
+                     TsCodeUtils.template`services?: Partial<${appRuntimeImports.AppServices.typeFragment()}>`,
+                   ],
+                   '; ',
+                 )}
+                } = {}`;
+
             await builder.apply(
               renderers.testHelper.render({
                 variables: {
-                  TPL_CREATE_TEST_ARGS:
-                    orderedContextArgs.length === 0
-                      ? ''
-                      : TsCodeUtils.template`${createContextArgs(true)} = {}`,
+                  TPL_CREATE_TEST_ARGS: testArgs,
                   TPL_CREATE_TEST_OBJECT: testObject,
-                  TPL_TEST_RUNTIME_SERVICES:
-                    appRuntimeTestUtils.getTestAppServicesFragment(),
                 },
               }),
             );

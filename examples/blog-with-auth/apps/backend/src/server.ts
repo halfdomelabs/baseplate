@@ -22,6 +22,7 @@ export async function buildServer(
   options: FastifyServerOptions & { runtime: AppRuntime },
 ): Promise<FastifyInstance> {
   const { runtime, ...fastifyOptions } = options;
+  const { services } = runtime;
   const fastify = Fastify({
     genReqId: () => nanoid(),
     forceCloseConnections: 'idle',
@@ -43,12 +44,12 @@ export async function buildServer(
   /* TPL_PLUGINS:START */
   await fastify.register(errorHandlerPlugin);
   await fastify.register(helmet);
-  await fastify.register(requestContextPlugin, { runtime });
+  await fastify.register(requestContextPlugin, { services });
   await fastify.register(fastifyCookie);
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
-  await fastify.register(healthCheckPlugin, { runtime });
-  await fastify.register(pgBossPlugin, { runtime });
+  await fastify.register(healthCheckPlugin, { services });
+  await fastify.register(pgBossPlugin, { services });
   /* TPL_PLUGINS:END */
 
   // register app plugins
@@ -56,7 +57,7 @@ export async function buildServer(
     /* TPL_ROOT_MODULE:START */ rootModule /* TPL_ROOT_MODULE:END */,
   );
   for (const plugin of plugins) {
-    await fastify.register(plugin, { runtime });
+    await fastify.register(plugin, { services });
   }
 
   return fastify;

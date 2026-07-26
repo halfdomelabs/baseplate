@@ -94,7 +94,7 @@ export const requestContextGenerator = createGenerator({
               paths.requestContext,
             ),
           ),
-          options: tsCodeFragment('{ runtime }'),
+          options: tsCodeFragment('{ services }'),
           orderPriority: 'EARLY',
         });
       },

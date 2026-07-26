@@ -54,7 +54,7 @@ export const fastifyHealthCheckGenerator = createGenerator({
             'healthCheckPlugin',
             tsImportBuilder(['healthCheckPlugin']).from(paths.healthCheck),
           ),
-          options: tsCodeFragment('{ runtime }'),
+          options: tsCodeFragment('{ services }'),
         });
       },
     }),

@@ -2,7 +2,7 @@ import type { FastifyPluginCallback } from 'fastify';
 
 import fastifyPlugin from 'fastify-plugin';
 
-import type { AppRuntime } from '../utils/app-runtime.js';
+import type { AppServices } from '../utils/runtime-services.js';
 
 import { config } from '../services/config.js';
 import { logError } from '../services/error-logger.js';
@@ -15,8 +15,9 @@ import { createSystemServiceContext } from '../utils/service-context.js';
  * this plugin only starts workers when embedded mode is enabled.
  */
 const bullMQPluginCallback: FastifyPluginCallback<{
-  runtime: AppRuntime;
-}> = (fastify, opts, done) => {
+  // Not narrowed to `queues`: job handlers run with a full service context.
+  services: AppServices;
+}> = (fastify, { services }, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
@@ -25,8 +26,8 @@ const bullMQPluginCallback: FastifyPluginCallback<{
 
     fastify.addHook('onReady', async () => {
       try {
-        await opts.runtime.queues.startWorkers({
-          createContext: () => createSystemServiceContext(opts.runtime),
+        await services.queues.startWorkers({
+          createContext: () => createSystemServiceContext(services),
         });
       } catch (error: unknown) {
         logError(error, {

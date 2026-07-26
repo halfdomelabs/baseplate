@@ -25,7 +25,7 @@ async function main(): Promise<void> {
   const appRuntime = createAppRuntime();
   runtime = appRuntime;
 
-  const activeQueueNames = appRuntime.queues
+  const activeQueueNames = appRuntime.services.queues
     .listQueues()
     .map((queue) => queue.name);
 
@@ -38,8 +38,8 @@ async function main(): Promise<void> {
     'Active queues from registry',
   );
 
-  await appRuntime.queues.startWorkers({
-    createContext: () => createSystemServiceContext(appRuntime),
+  await appRuntime.services.queues.startWorkers({
+    createContext: () => createSystemServiceContext(appRuntime.services),
   });
 
   logger.info('Queue worker process started successfully', {

@@ -15,8 +15,6 @@ const appRuntime = createTsTemplateFile({
   },
   variables: {
     TPL_OPTIONS_PARAM: {},
-    TPL_RUNTIME_FIELD_VALUES: {},
-    TPL_RUNTIME_FIELDS: {},
     TPL_SERVICE_CONSTRUCTION: {},
     TPL_SERVICES_OBJECT: {},
   },

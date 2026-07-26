@@ -2,13 +2,13 @@ import type { FastifyPluginCallback } from 'fastify';
 
 import fp from 'fastify-plugin';
 
-import type { AppRuntime } from '../utils/app-runtime.js';
+import type { AppServices } from '../utils/runtime-services.js';
 
 import { prisma } from '../services/prisma.js';
 
 const healthCheckPluginCallback: FastifyPluginCallback<{
-  runtime: AppRuntime;
-}> = (fastify, opts, done) => {
+  services: AppServices;
+}> = (fastify, { services }, done) => {
   fastify.get(
     '/healthz',
     { logLevel: 'warn' },
@@ -17,7 +17,7 @@ const healthCheckPluginCallback: FastifyPluginCallback<{
       await prisma.$queryRaw`SELECT 1;`;
 
       // check Redis is operating
-      await opts.runtime.redis.healthCheck();
+      await services.redis.healthCheck();
       return { success: true };
     } /* TPL_HEALTH_CHECKS:END */,
   );

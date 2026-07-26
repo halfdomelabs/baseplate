@@ -85,7 +85,7 @@ export const requestServiceContextGenerator = createGenerator({
           TsCodeUtils.templateWithImports(
             requestServiceContextImports.createContextFromRequest.declaration(),
           )`fastify.addHook('preHandler', (req, reply, done) => {
-  req.serviceContext = createContextFromRequest(req, opts.runtime, reply);
+  req.serviceContext = createContextFromRequest(req, services, reply);
   done();
 });`,
         );
@@ -134,7 +134,7 @@ export const requestServiceContextGenerator = createGenerator({
                         field.creator('request', 'reply'),
                       ),
                     )
-              }, runtime.services)`,
+              }, services)`,
                 ...Object.fromEntries(
                   mapValuesOfMap(contextFields, (field) =>
                     field.creator('request', 'reply'),

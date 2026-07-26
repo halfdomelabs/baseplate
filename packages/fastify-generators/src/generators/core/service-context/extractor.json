@@ -32,16 +32,17 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/service-context",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/tests/helpers/service-context.test-helper.ts",
       "projectExports": { "createTestServiceContext": {} },
       "referencedGeneratorTemplates": ["service-context"],
       "sourceFile": "src/tests/helpers/service-context.test-helper.ts",
-      "variables": {
-        "TPL_CREATE_TEST_ARGS": {},
-        "TPL_CREATE_TEST_OBJECT": {},
-        "TPL_TEST_RUNTIME_SERVICES": {}
-      }
+      "variables": { "TPL_CREATE_TEST_ARGS": {}, "TPL_CREATE_TEST_OBJECT": {} }
     }
   }
 }

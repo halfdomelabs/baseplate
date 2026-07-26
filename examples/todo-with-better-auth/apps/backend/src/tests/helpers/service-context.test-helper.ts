@@ -6,11 +6,8 @@ import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/uti
 import { createServiceContext } from '@src/utils/service-context.js';
 
 /**
- * A `ServiceContext` for tests, carrying only the services it is handed.
- *
- * Services the test does not supply are absent rather than stubbed, so code
- * reaching for one fails on access instead of reading a silent `undefined`.
- * Supply whatever the code under test consumes.
+ * A `ServiceContext` for tests. Reaching for a service that was not supplied
+ * throws naming it, rather than reading as `undefined`.
  *
  * @param options The auth context to run as, and the services to supply.
  * @returns A {@link ServiceContext} delivering the supplied services.
@@ -24,12 +21,22 @@ export function createTestServiceContext(
     services?: Partial<AppServices>;
   } = {} /* TPL_CREATE_TEST_ARGS:END */,
 ): ServiceContext {
+  // Symbol keys fall through so inspection and test-runner diffing don't throw.
+  const suppliedServices = new Proxy((services ?? {}) as AppServices, {
+    get(target, key): unknown {
+      if (typeof key === 'string' && !(key in target)) {
+        throw new Error(
+          `${key} was not supplied to createTestServiceContext. Pass it via the \`services\` option.`,
+        );
+      }
+      return target[key as keyof AppServices];
+    },
+  });
+
   return createServiceContext(
     /* TPL_CREATE_TEST_OBJECT:START */ {
       auth: auth ?? createAuthContextFromSessionInfo(undefined),
     } /* TPL_CREATE_TEST_OBJECT:END */,
-    // Data services still declare the full `ServiceContext`, so the bag is
-    // typed as complete; only what a test supplies actually exists.
-    (services ?? {}) as AppServices,
+    suppliedServices,
   );
 }

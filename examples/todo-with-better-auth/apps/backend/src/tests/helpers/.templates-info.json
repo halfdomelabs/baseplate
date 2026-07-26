@@ -18,5 +18,10 @@
     "generator": "@baseplate-dev/fastify-generators#core/service-context",
     "instanceData": {},
     "template": "test-helper"
+  },
+  "storage.test-helper.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "storage-test-helper"
   }
 }

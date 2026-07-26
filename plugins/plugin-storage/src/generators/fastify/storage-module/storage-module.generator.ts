@@ -314,6 +314,8 @@ export const storageModuleGenerator = createGenerator({
               renderers.utilsValidatePendingUpload.render({}),
             );
 
+            await builder.apply(renderers.storageTestHelper.render({}));
+
             // Render clean-unused-files service
             await builder.apply(renderers.servicesCleanUnusedFiles.render({}));
 
@@ -381,9 +383,7 @@ export const storageModuleGenerator = createGenerator({
           'storageCategories',
         );
         appRuntimeConfig.construction.set('storage', {
-          fragment: TsCodeUtils.template`
-            const storage = ${TsCodeUtils.importFragment('createStorageService', paths.servicesStorage)}(storageCategories);
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createStorageService', paths.servicesStorage)}(storageCategories)`,
         });
       },
     }),

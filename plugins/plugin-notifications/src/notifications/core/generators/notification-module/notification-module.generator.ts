@@ -42,11 +42,9 @@ export const notificationModuleGenerator = createGenerator({
         );
         appRuntimeConfig.construction.set('notifications', {
           dependencies: ['pubsub'],
-          fragment: TsCodeUtils.template`
-            const notifications = ${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),
-            });
-          `,
+            })`,
         });
       },
     }),

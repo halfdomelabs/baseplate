@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { PluginRuntimeWithServices } from '%appModuleSetupImports';
+import type { AppServices } from '%appRuntimeImports';
 import type { AuthContext } from '%authContextImports';
 
 import { createAuthContextFromSessionInfo } from '%authContextImports';
@@ -20,16 +20,14 @@ declare module '@fastify/request-context' {
 }
 
 export const authPlugin = fp<{
-  runtime: PluginRuntimeWithServices<'userSession'>;
+  services: Pick<AppServices, 'userSession'>;
 }>(
-  (fastify, { runtime }, done) => {
-    const { userSession: userSessionService } = runtime.services;
-
+  (fastify, { services }, done) => {
     fastify.decorateRequest('auth');
 
     fastify.addHook('onRequest', async (req, reply) => {
       const userSessionInfo =
-        await userSessionService.getSessionInfoFromRequest(req, reply);
+        await services.userSession.getSessionInfoFromRequest(req, reply);
 
       const authContext = createAuthContextFromSessionInfo(userSessionInfo);
 

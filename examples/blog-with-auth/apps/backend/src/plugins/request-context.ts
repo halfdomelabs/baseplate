@@ -6,8 +6,8 @@ import {
 } from '@fastify/request-context';
 import fp from 'fastify-plugin';
 
-import type { AppRuntime } from '../utils/app-runtime.js';
 import type { RequestServiceContext } from '../utils/request-service-context.js';
+import type { AppServices } from '../utils/runtime-services.js';
 
 import { createContextFromRequest } from '../utils/request-service-context.js';
 
@@ -34,8 +34,8 @@ declare module 'fastify' {
   }
 }
 
-export const requestContextPlugin = fp<{ runtime: AppRuntime }>(
-  async (fastify, opts) => {
+export const requestContextPlugin = fp<{ services: AppServices }>(
+  async (fastify, { services }) => {
     await fastify.register(fastifyRequestContext);
 
     fastify.decorateRequest('reqInfo');
@@ -60,7 +60,7 @@ export const requestContextPlugin = fp<{ runtime: AppRuntime }>(
 
     /* TPL_EXTRA_HOOKS:START */
     fastify.addHook('preHandler', (req, reply, done) => {
-      req.serviceContext = createContextFromRequest(req, opts.runtime, reply);
+      req.serviceContext = createContextFromRequest(req, services, reply);
       done();
     });
     /* TPL_EXTRA_HOOKS:END */

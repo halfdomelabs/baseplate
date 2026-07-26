@@ -30,9 +30,7 @@ export const placeholderAuthModuleGenerator = createGenerator({
           userSessionTypesImports.UserSessionService.typeFragment(),
         );
         appRuntimeConfig.construction.set('userSession', {
-          fragment: TsCodeUtils.template`
-            const userSession = ${TsCodeUtils.importFragment('createPlaceholderUserSessionService', paths.userSessionService)}();
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createPlaceholderUserSessionService', paths.userSessionService)}()`,
         });
       },
     }),

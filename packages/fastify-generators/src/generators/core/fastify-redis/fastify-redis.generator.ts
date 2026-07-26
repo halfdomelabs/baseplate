@@ -69,7 +69,7 @@ export const fastifyRedisGenerator = createGenerator({
           'redis',
           tsCodeFragment(
             `// check Redis is operating
-          await opts.runtime.redis.healthCheck();`,
+          await services.redis.healthCheck();`,
           ),
         );
       },
@@ -80,20 +80,17 @@ export const fastifyRedisGenerator = createGenerator({
         paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.runtimeFields.set('redis', {
-          type: TsCodeUtils.typeImportFragment('RedisRuntime', paths.redis),
-          comment:
-            '/** Runtime-internal: connection lifecycle, not for feature code. */',
-        });
+        appRuntimeConfig.services.set(
+          'redis',
+          TsCodeUtils.typeImportFragment('RedisRuntime', paths.redis),
+        );
         // FIRST so it is torn down only after slices that opened connections
         // through it have released theirs - disposal runs in reverse
         // construction order, and not every such slice declares an edge here.
         appRuntimeConfig.construction.set('redis', {
           orderPriority: 'FIRST',
-          fragment: TsCodeUtils.template`
-            const redis = ${TsCodeUtils.importFragment('createRedisRuntime', paths.redis)}();
-            disposers.push({ name: 'redis', dispose: () => redis.dispose() });
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createRedisRuntime', paths.redis)}()`,
+          disposeFragment: tsCodeFragment('(redis) => redis.dispose()'),
         });
       },
     }),

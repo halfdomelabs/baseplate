@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
-  appModuleSetupImportsProvider,
+  appRuntimeImportsProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -41,7 +41,7 @@ const auth = createTsTemplateFile({
 
 const betterAuthPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { appModuleSetupImports: appModuleSetupImportsProvider },
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
   name: 'better-auth-plugin',
   projectExports: { betterAuthPlugin: {} },
   referencedGeneratorTemplates: { headersUtils: {} },

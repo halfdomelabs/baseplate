@@ -6,7 +6,7 @@
       "fileOptions": { "kind": "singleton" },
       "group": "main-group",
       "importMapProviders": {
-        "pothosImports": {
+        "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
         }

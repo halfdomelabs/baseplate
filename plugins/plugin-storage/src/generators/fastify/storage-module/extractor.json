@@ -277,15 +277,15 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/storage.service.ts",
       "projectExports": {
-        "StorageService": { "isTypeOnly": true, "name": "StorageService" },
+        "createStorageService": {
+          "isTypeOnly": false,
+          "name": "createStorageService"
+        },
         "StorageAdapterKey": {
           "isTypeOnly": true,
           "name": "StorageAdapterKey"
         },
-        "createStorageService": {
-          "isTypeOnly": false,
-          "name": "createStorageService"
-        }
+        "StorageService": { "isTypeOnly": true, "name": "StorageService" }
       },
       "referencedGeneratorTemplates": ["types-adapter", "types-file-category"],
       "sourceFile": "module/services/storage.service.ts",
@@ -306,6 +306,29 @@
       "referencedGeneratorTemplates": ["utils-validate-file-upload-options"],
       "sourceFile": "module/services/upload-file.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
+    },
+    "storage-test-helper": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/helpers/storage.test-helper.ts",
+      "projectExports": {
+        "createFakeStorageAdapter": {
+          "isTypeOnly": false,
+          "name": "createFakeStorageAdapter"
+        },
+        "createFakeStorageService": {
+          "isTypeOnly": false,
+          "name": "createFakeStorageService"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "services-storage",
+        "types-adapter",
+        "types-file-category"
+      ],
+      "sourceFile": "src/tests/helpers/storage.test-helper.ts",
+      "variables": {}
     },
     "types-adapter": {
       "type": "ts",

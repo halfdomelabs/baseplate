@@ -16,8 +16,6 @@ export const appModuleSetupImportsSchema = createTsImportMapSchema({
   AppPlugin: { isTypeOnly: true },
   defineAppModule: {},
   flattenAppModule: {},
-  PluginRuntime: { isTypeOnly: true },
-  PluginRuntimeWithServices: { isTypeOnly: true },
 });
 
 export type AppModuleSetupImportsProvider = TsImportMapProviderFromSchema<
@@ -43,8 +41,6 @@ const coreAppModuleSetupImportsTask = createGeneratorTask({
           AppPlugin: paths.appModules,
           defineAppModule: paths.appModules,
           flattenAppModule: paths.appModules,
-          PluginRuntime: paths.appModules,
-          PluginRuntimeWithServices: paths.appModules,
         }),
       },
     };

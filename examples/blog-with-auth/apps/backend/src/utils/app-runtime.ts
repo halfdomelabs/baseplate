@@ -1,8 +1,3 @@
-import type { PubSub } from 'graphql-yoga';
-
-import type { PubSubPublishArgs } from '../plugins/graphql/pubsub.js';
-import type { RedisRuntime } from '../services/redis.js';
-import type { QueueRuntime } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 
 import { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
@@ -20,22 +15,27 @@ import { createRedisRuntime } from '../services/redis.js';
 import { flattenAppModule } from './app-modules.js';
 
 /**
- * Composition root for shared services. Constructs everything stateful and
- * owns disposal; nothing outside this file imports the assembled runtime.
+ * Owns the application's service graph and its aggregate disposal. Not a
+ * second dependency registry - every application-scoped dependency lives on
+ * {@link AppServices}, and consumers narrow with `ServiceContextWith<K>` to
+ * declare the subset they use.
  *
  * Construction must not connect or do I/O - allocate passive clients or
  * connect lazily (e.g. ioredis `lazyConnect`). This keeps construction cheap
  * enough for every execution path, including prisma-only seeds, to afford a
  * full service context.
+ *
+ * Always complete: overriding a service replaces what gets constructed, not
+ * which services exist. Consumers that want an honest signature narrow the
+ * services bag itself - a webhook plugin declares
+ * `{ services: Pick<AppServices, 'stripe'> }` rather than taking the runtime.
+ *
+ * `dispose` lives here rather than on {@link AppServices} because request
+ * contexts receive the services bag and must never be able to dispose the
+ * application.
  */
 export interface AppRuntime {
-  readonly services: Readonly<AppServices>;
-  /* TPL_RUNTIME_FIELDS:START */
-  pubsub: PubSub<PubSubPublishArgs>;
-  queues: QueueRuntime;
-  /** Runtime-internal: connection lifecycle, not for feature code. */
-  redis: RedisRuntime;
-  /* TPL_RUNTIME_FIELDS:END */
+  readonly services: AppServices;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -46,43 +46,104 @@ export interface AppRuntime {
 
 export function createAppRuntime(
   /* TPL_OPTIONS_PARAM:START */ options: {
-    disableQueueMaintenance?: boolean;
+    /**
+     * Whether this process runs the background loops a service owns - pg-boss
+     * supervision and scheduling, and anything similar a future service adds.
+     * Exactly one process should enable them.
+     *
+     * Defaults to `false`, so scripts and tests stay passive unless they opt
+     * in.
+     */
+    backgroundServices?: boolean;
+    /**
+     * Services to use instead of constructing them. An overridden key's
+     * construction is skipped entirely and downstream construction consumes the
+     * override. Overrides are borrowed: the runtime never disposes them.
+     */
+    overrides?: Partial<AppServices>;
   } = {} /* TPL_OPTIONS_PARAM:END */,
 ): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
+  const overrides = options.overrides ?? {};
+
+  /**
+   * Returns the service for `key`: the supplied override if there is one,
+   * otherwise the constructed value.
+   *
+   * An override skips construction entirely and is borrowed - only a value
+   * this function constructs registers a disposer, so the runtime never
+   * disposes what a caller owns.
+   *
+   * @param key The service being provided.
+   * @param create Builds the object when it is not overridden.
+   * @param dispose Releases a constructed object, if it holds resources.
+   * @returns The override or the newly constructed object.
+   */
+  function provide<K extends keyof AppServices>(
+    key: K,
+    create: () => AppServices[K],
+    dispose?: (value: AppServices[K]) => Promise<void>,
+  ): AppServices[K] {
+    const overridden = overrides[key];
+    if (overridden !== undefined) {
+      return overridden;
+    }
+
+    const value = create();
+    if (dispose) {
+      disposers.push({ name: key, dispose: () => dispose(value) });
+    }
+    return value;
+  }
 
   /* TPL_SERVICE_CONSTRUCTION:START */
   const { queues: queueBindings = [] } = flattenAppModule(rootModule);
 
-  const redis = createRedisRuntime();
-  disposers.push({ name: 'redis', dispose: () => redis.dispose() });
+  const redis = provide(
+    'redis',
+    () => createRedisRuntime(),
+    (redis) => redis.dispose(),
+  );
 
-  const emailTransport = createEmailTransport(postmarkEmailAdapter);
+  const emailTransport = provide('emailTransport', () =>
+    createEmailTransport(postmarkEmailAdapter),
+  );
 
-  const pubsub = createGraphqlPubSub(redis);
+  const pubsub = provide('pubsub', () => createGraphqlPubSub(redis));
 
-  const notifications = createNotificationService({
-    events: createNotificationEvents(pubsub),
-  });
+  const notifications = provide('notifications', () =>
+    createNotificationService({
+      events: createNotificationEvents(pubsub),
+    }),
+  );
 
-  const queues = createQueueRuntime(queueBindings, {
-    disableMaintenance: options.disableQueueMaintenance,
-  });
-  disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
+  const queues = provide(
+    'queues',
+    () =>
+      createQueueRuntime(queueBindings, {
+        disableMaintenance: !options.backgroundServices,
+      }),
+    (queues) => queues.stopWorkers(),
+  );
 
-  const emails = createEmailService({ queues });
+  const emails = provide('emails', () => createEmailService({ queues }));
 
-  const userSession = new CookieUserSessionService();
+  const userSession = provide(
+    'userSession',
+    () => new CookieUserSessionService(),
+  );
   /* TPL_SERVICE_CONSTRUCTION:END */
 
-  const services: AppServices = /* TPL_SERVICES_OBJECT:START */ {
+  const services = /* TPL_SERVICES_OBJECT:START */ {
     emails,
     emailTransport,
     notifications,
+    pubsub,
     queues,
+    redis,
     userSession,
-  }; /* TPL_SERVICES_OBJECT:END */
+  } /* TPL_SERVICES_OBJECT:END */ satisfies AppServices;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];
@@ -104,11 +165,5 @@ export function createAppRuntime(
     return disposePromise;
   }
 
-  const runtime = /* TPL_RUNTIME_FIELD_VALUES:START */ {
-    pubsub,
-    queues,
-    redis,
-  }; /* TPL_RUNTIME_FIELD_VALUES:END */
-
-  return { ...runtime, services, dispose };
+  return { services, dispose };
 }

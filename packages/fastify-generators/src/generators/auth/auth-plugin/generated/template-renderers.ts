@@ -5,7 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
-import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/generated/ts-import-providers.js';
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
 
 import { AUTH_AUTH_PLUGIN_PATHS } from './template-paths.js';
 import { AUTH_AUTH_PLUGIN_TEMPLATES } from './typed-templates.js';
@@ -29,13 +29,13 @@ const authAuthPluginRenderers = createProviderType<AuthAuthPluginRenderers>(
 
 const authAuthPluginRenderersTask = createGeneratorTask({
   dependencies: {
-    appModuleSetupImports: appModuleSetupImportsProvider,
+    appRuntimeImports: appRuntimeImportsProvider,
     authContextImports: authContextImportsProvider,
     paths: AUTH_AUTH_PLUGIN_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { authAuthPluginRenderers: authAuthPluginRenderers.export() },
-  run({ appModuleSetupImports, authContextImports, paths, typescriptFile }) {
+  run({ appRuntimeImports, authContextImports, paths, typescriptFile }) {
     return {
       providers: {
         authAuthPluginRenderers: {
@@ -45,7 +45,7 @@ const authAuthPluginRenderersTask = createGeneratorTask({
                 template: AUTH_AUTH_PLUGIN_TEMPLATES.authPlugin,
                 destination: paths.authPlugin,
                 importMapProviders: {
-                  appModuleSetupImports,
+                  appRuntimeImports,
                   authContextImports,
                 },
                 ...options,

@@ -31,7 +31,7 @@ const serviceContext = createTsTemplateFile({
 
 const testHelper = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
+  importMapProviders: { appRuntimeImports: appRuntimeImportsProvider },
   name: 'test-helper',
   projectExports: { createTestServiceContext: {} },
   referencedGeneratorTemplates: { serviceContext: {} },
@@ -41,11 +41,7 @@ const testHelper = createTsTemplateFile({
       '../templates/src/tests/helpers/service-context.test-helper.ts',
     ),
   },
-  variables: {
-    TPL_CREATE_TEST_ARGS: {},
-    TPL_CREATE_TEST_OBJECT: {},
-    TPL_TEST_RUNTIME_SERVICES: {},
-  },
+  variables: { TPL_CREATE_TEST_ARGS: {}, TPL_CREATE_TEST_OBJECT: {} },
 });
 
 export const CORE_SERVICE_CONTEXT_TEMPLATES = { serviceContext, testHelper };

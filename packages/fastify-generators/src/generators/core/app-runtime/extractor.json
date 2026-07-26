@@ -3,33 +3,43 @@
   "templates": {
     "app-runtime": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/app-runtime.ts",
       "projectExports": {
-        "AppRuntime": { "isTypeOnly": true },
+        "AppRuntime": {
+          "isTypeOnly": true
+        },
         "createAppRuntime": {}
       },
       "referencedGeneratorTemplates": ["runtime-services"],
       "sourceFile": "src/utils/app-runtime.ts",
       "variables": {
         "TPL_OPTIONS_PARAM": {},
-        "TPL_RUNTIME_FIELD_VALUES": {},
-        "TPL_RUNTIME_FIELDS": {},
         "TPL_SERVICE_CONSTRUCTION": {},
         "TPL_SERVICES_OBJECT": {}
       }
     },
     "runtime-services": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/runtime-services.ts",
-      "projectExports": { "AppServices": { "isTypeOnly": true } },
+      "projectExports": {
+        "AppServices": {
+          "isTypeOnly": true
+        }
+      },
       "sourceFile": "src/utils/runtime-services.ts",
-      "variables": { "TPL_SERVICES_FIELDS": {} }
+      "variables": {
+        "TPL_SERVICES_FIELDS": {}
+      }
     }
   }
 }

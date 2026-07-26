@@ -1,12 +1,5 @@
 import Stripe from 'stripe';
 
-import type { Auth } from '../modules/accounts/auth/services/auth.js';
-import type { UserSessionService } from '../modules/accounts/auth/types/user-session.types.js';
-import type { EmailTransport } from '../modules/emails/emails.types.js';
-import type { EmailService } from '../modules/emails/services/emails.service.js';
-import type { StorageService } from '../modules/storage/services/storage.service.js';
-import type { RedisRuntime } from '../services/redis.js';
-import type { QueueRuntime } from '../types/queue.types.js';
 import type { AppServices } from './runtime-services.js';
 
 import { buildAuth } from '../modules/accounts/auth/services/auth.js';
@@ -24,23 +17,27 @@ import { createRedisRuntime } from '../services/redis.js';
 import { flattenAppModule } from './app-modules.js';
 
 /**
- * Composition root for shared services. Constructs everything stateful and
- * owns disposal; nothing outside this file imports the assembled runtime.
+ * Owns the application's service graph and its aggregate disposal. Not a
+ * second dependency registry - every application-scoped dependency lives on
+ * {@link AppServices}, and consumers narrow with `ServiceContextWith<K>` to
+ * declare the subset they use.
  *
  * Construction must not connect or do I/O - allocate passive clients or
  * connect lazily (e.g. ioredis `lazyConnect`). This keeps construction cheap
  * enough for every execution path, including prisma-only seeds, to afford a
  * full service context.
+ *
+ * Always complete: overriding a service replaces what gets constructed, not
+ * which services exist. Consumers that want an honest signature narrow the
+ * services bag itself - a webhook plugin declares
+ * `{ services: Pick<AppServices, 'stripe'> }` rather than taking the runtime.
+ *
+ * `dispose` lives here rather than on {@link AppServices} because request
+ * contexts receive the services bag and must never be able to dispose the
+ * application.
  */
-export interface AppRuntime<
-  TServices extends Partial<AppServices> = AppServices,
-> {
-  readonly services: Readonly<TServices>;
-  /* TPL_RUNTIME_FIELDS:START */
-  queues: QueueRuntime;
-  /** Runtime-internal: connection lifecycle, not for feature code. */
-  redis: RedisRuntime;
-  /* TPL_RUNTIME_FIELDS:END */
+export interface AppRuntime {
+  readonly services: AppServices;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -49,37 +46,23 @@ export interface AppRuntime<
   dispose(): Promise<void>;
 }
 
-/**
- * Runtime objects that may be supplied instead of constructed, keyed by the
- * concrete object each one replaces. A superset of {@link AppServices}: it
- * also covers runtime-internal objects like `redis` that feature code never
- * sees.
- *
- * Where a service is exposed through a narrowed view (`services.queues` is a
- * `QueueService`), the override is typed as the full underlying object, since
- * both surfaces alias it.
- */
-export interface AppRuntimeOverrides {
-  /* TPL_OVERRIDE_FIELDS:START */
-  betterAuth: Auth;
-  emails: EmailService;
-  emailTransport: EmailTransport;
-  queues: QueueRuntime;
-  redis: RedisRuntime;
-  storage: StorageService;
-  stripe: Stripe;
-  userSession: UserSessionService;
-  /* TPL_OVERRIDE_FIELDS:END */
-}
-
 export function createAppRuntime(
   /* TPL_OPTIONS_PARAM:START */ options: {
     /**
-     * Runtime objects to use instead of constructing them. An overridden key's
+     * Whether this process runs the background loops a service owns - pg-boss
+     * supervision and scheduling, and anything similar a future service adds.
+     * Exactly one process should enable them.
+     *
+     * Defaults to `false`, so scripts and tests stay passive unless they opt
+     * in.
+     */
+    backgroundServices?: boolean;
+    /**
+     * Services to use instead of constructing them. An overridden key's
      * construction is skipped entirely and downstream construction consumes the
      * override. Overrides are borrowed: the runtime never disposes them.
      */
-    overrides?: Partial<AppRuntimeOverrides>;
+    overrides?: Partial<AppServices>;
   } = {} /* TPL_OPTIONS_PARAM:END */,
 ): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
@@ -87,23 +70,23 @@ export function createAppRuntime(
   const overrides = options.overrides ?? {};
 
   /**
-   * Returns the runtime object for `key`: the supplied override if there is
-   * one, otherwise the constructed value.
+   * Returns the service for `key`: the supplied override if there is one,
+   * otherwise the constructed value.
    *
    * An override skips construction entirely and is borrowed - only a value
    * this function constructs registers a disposer, so the runtime never
    * disposes what a caller owns.
    *
-   * @param key The runtime object being provided.
+   * @param key The service being provided.
    * @param create Builds the object when it is not overridden.
    * @param dispose Releases a constructed object, if it holds resources.
    * @returns The override or the newly constructed object.
    */
-  function provide<K extends keyof AppRuntimeOverrides>(
+  function provide<K extends keyof AppServices>(
     key: K,
-    create: () => AppRuntimeOverrides[K],
-    dispose?: (value: AppRuntimeOverrides[K]) => Promise<void>,
-  ): AppRuntimeOverrides[K] {
+    create: () => AppServices[K],
+    dispose?: (value: AppServices[K]) => Promise<void>,
+  ): AppServices[K] {
     const overridden = overrides[key];
     if (overridden !== undefined) {
       return overridden;
@@ -120,8 +103,10 @@ export function createAppRuntime(
   const { queues: queueBindings = [], storageCategories = [] } =
     flattenAppModule(rootModule);
 
-  const redis = provide('redis', createRedisRuntime, (redis) =>
-    redis.dispose(),
+  const redis = provide(
+    'redis',
+    () => createRedisRuntime(),
+    (redis) => redis.dispose(),
   );
 
   const emailTransport = provide('emailTransport', () =>
@@ -154,6 +139,7 @@ export function createAppRuntime(
     emails,
     emailTransport,
     queues,
+    redis,
     storage,
     stripe,
     userSession,
@@ -179,12 +165,5 @@ export function createAppRuntime(
     return disposePromise;
   }
 
-  return {
-    services,
-    /* TPL_RUNTIME_FIELD_VALUES:START */
-    queues,
-    redis,
-    /* TPL_RUNTIME_FIELD_VALUES:END */
-    dispose,
-  };
+  return { services, dispose };
 }
