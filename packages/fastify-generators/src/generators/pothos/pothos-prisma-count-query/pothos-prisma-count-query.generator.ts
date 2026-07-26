@@ -35,7 +35,7 @@ const descriptorSchema = z.object({
   order: z.number(),
   /**
    * Model name key to look up the model policy provider. When set, the resolve
-   * function filters with `policy.read.where(ctx)`.
+   * function filters with the policy's read action.
    */
   policyRef: z.string().optional(),
   /**

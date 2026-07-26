@@ -91,7 +91,7 @@ export const prismaDataDeleteGenerator = createGenerator({
             const whereType = generateWhereType(prismaModel);
 
             // A policy-backed delete is atomic: compose the grant into the unique
-            // selector via `policy.delete.whereUnique`, whether the grant is
+            // selector via `policy.actions.delete.whereUnique`, whether the grant is
             // instance-level (per-row filter → P2025 → 404 hides existence) or
             // global-only (admin passes untouched; non-admin throws 403 before
             // the query). One query, no separate fetch + check. Applies whenever a

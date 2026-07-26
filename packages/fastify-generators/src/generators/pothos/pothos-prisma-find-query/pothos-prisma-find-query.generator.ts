@@ -45,7 +45,7 @@ const descriptorSchema = z.object({
   hasPrimaryKeyInputType: z.boolean(),
   /**
    * Model name key to look up the model policy provider. When set, the resolve
-   * function composes the read filter via `policy.read.whereUnique(ctx, { id })`
+   * function composes the read filter via `policy.actions.read.whereUnique`
    * and maps a not-found to a 404 with `throwIfPrismaNotFound`.
    */
   policyRef: z.string().optional(),

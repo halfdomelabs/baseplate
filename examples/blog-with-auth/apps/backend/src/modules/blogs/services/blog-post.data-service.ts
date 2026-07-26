@@ -35,7 +35,7 @@ export async function createBlogPost<TQuery extends DataQuery<'blogPost'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'blogPost', TQuery>> {
-  blogPostPolicy.create.checkGlobalRoles(context);
+  blogPostPolicy.actions.create.checkGlobalRoles(context);
   const { blogId, publisherId, ...rest } = data;
 
   const result = await prisma.blogPost.create({
@@ -67,7 +67,7 @@ export async function updateBlogPost<TQuery extends DataQuery<'blogPost'>>({
 
   const result = await prisma.blogPost
     .update({
-      where: blogPostPolicy.update.whereUnique(context, where),
+      where: blogPostPolicy.actions.update.whereUnique(context, where),
       data: {
         ...rest,
         blog: relationHelpers.connectUpdate({ id: blogId }),
@@ -91,7 +91,7 @@ export async function deleteBlogPost<TQuery extends DataQuery<'blogPost'>>({
 }): Promise<GetResult<'blogPost', TQuery>> {
   const result = await prisma.blogPost
     .delete({
-      where: blogPostPolicy.delete.whereUnique(context, where),
+      where: blogPostPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('BlogPost not found'));

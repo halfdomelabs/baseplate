@@ -232,16 +232,14 @@ describe('r.via: null FK on an optional relation denies rather than throwing', (
     expect(blogUserCount).not.toHaveBeenCalled();
   });
 
-  it('a PARTIALLY-null composite FK throws (corrupt data, not an absent relation)', async () => {
+  it('a partially-null composite FK denies without querying', async () => {
     const ctx = makeCtx(USER_ID);
-    // Only ONE of the two composite FK columns is null — this is invalid
-    // data (a real absent relation has ALL its FK columns null together),
-    // so it must throw rather than silently deny or silently query.
     const note = { id: 'note-1', blogId: 'blog-1', userId: null };
 
-    await expect(
-      blogUserNotePolicy.roles.owner.check(ctx, note as never),
-    ).rejects.toThrow(/not a string or number/i);
+    const ok = await blogUserNotePolicy.roles.owner.check(ctx, note as never);
+
+    expect(ok).toBe(false);
+    expect(blogUserCount).not.toHaveBeenCalled();
   });
 });
 
@@ -307,6 +305,35 @@ describe('r.via: construction-time validation (bypassed-TS callers)', () => {
         actions: { read: {} },
       }),
     ).toThrow(/does not define role 'missingRole'/);
+  });
+});
+
+describe('actions namespace', () => {
+  it('keeps custom action names from clobbering policy metadata', async () => {
+    const policy = createModelPolicy({
+      model: 'blogPost',
+      id: 'id',
+      delegate: prisma.blogPost,
+      roles: (r) => ({
+        owner: r.match(() => ({ title: 'PINNED' })),
+      }),
+      actions: {
+        read: { roles: ['owner'] },
+        model: { roles: ['owner'] },
+        idFields: { roles: ['owner'] },
+        roles: { roles: ['owner'] },
+      },
+    });
+    const ctx = makeCtx(USER_ID);
+
+    expect(policy.model).toBe('blogPost');
+    expect(policy.idFields).toEqual(['id']);
+    await expect(
+      policy.roles.owner.check(ctx, { id: 'post-1', title: 'PINNED' } as never),
+    ).resolves.toBe(true);
+    expect(policy.actions.model.where(ctx)).toEqual({ title: 'PINNED' });
+    expect(policy.actions.idFields.where(ctx)).toEqual({ title: 'PINNED' });
+    expect(policy.actions.roles.where(ctx)).toEqual({ title: 'PINNED' });
   });
 });
 
@@ -440,7 +467,9 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
       }),
       actions: { read: { roles: ['bad'] } },
     });
-    expect(() => policy.read.where(makeCtx(USER_ID))).toThrow(/undefined/);
+    expect(() => policy.actions.read.where(makeCtx(USER_ID))).toThrow(
+      /undefined/,
+    );
   });
 
   it('an `r.where` returning `undefined` → throws (would read as allow-all)', () => {
@@ -456,7 +485,9 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
       }),
       actions: { read: { roles: ['bad'] } },
     });
-    expect(() => policy.read.where(makeCtx(USER_ID))).toThrow(/undefined/);
+    expect(() => policy.actions.read.where(makeCtx(USER_ID))).toThrow(
+      /undefined/,
+    );
   });
 });
 
@@ -479,7 +510,9 @@ describe('whereUnique: composes the grant into a unique selector (atomic mutatio
     // where. whereUnique must AND that into the caller's { id }, never spread it,
     // so the unique key survives and the auth filter can't be clobbered.
     const ctx = makeCtx(USER_ID);
-    const w = blogPostPolicyExtended.update.whereUnique(ctx, { id: 'post-1' });
+    const w = blogPostPolicyExtended.actions.update.whereUnique(ctx, {
+      id: 'post-1',
+    });
     expect(w).toEqual({
       id: 'post-1',
       AND: [{ blog: { userId: USER_ID } }],
@@ -500,7 +533,9 @@ describe('whereUnique: composes the grant into a unique selector (atomic mutatio
       authorizerCache: new Map(),
       authorizerModelCache: new Map(),
     };
-    const w = blogPostPolicyExtended.update.whereUnique(ctx, { id: 'post-1' });
+    const w = blogPostPolicyExtended.actions.update.whereUnique(ctx, {
+      id: 'post-1',
+    });
     expect(w).toEqual({ id: 'post-1' });
   });
 
@@ -508,7 +543,7 @@ describe('whereUnique: composes the grant into a unique selector (atomic mutatio
     // A caller-supplied `AND` (e.g. a status guard) must survive — the auth
     // filter is appended, not substituted.
     const ctx = makeCtx(USER_ID);
-    const w = blogPostPolicyExtended.update.whereUnique(ctx, {
+    const w = blogPostPolicyExtended.actions.update.whereUnique(ctx, {
       id: 'post-1',
       AND: [{ title: 'DRAFT' }],
     });
@@ -524,7 +559,7 @@ describe('whereUnique: composes the grant into a unique selector (atomic mutatio
     // where that would silently match nothing.
     const ctx = makeCtx(undefined);
     expect(() =>
-      blogPostPolicyExtended.update.whereUnique(ctx, { id: 'post-1' }),
+      blogPostPolicyExtended.actions.update.whereUnique(ctx, { id: 'post-1' }),
     ).toThrow(/Forbidden/);
   });
 });
@@ -764,12 +799,12 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     // `update` grant is only `ownerOrAdmin`, isolating that one role's where.
     // Non-admin → hasRole('admin') folds to false and drops; a single-element OR
     // unwraps → just the match filter.
-    expect(policy.update.where(ctxWithRoles(USER_ID, ['user']))).toEqual({
-      publisherId: USER_ID,
-    });
+    expect(
+      policy.actions.update.where(ctxWithRoles(USER_ID, ['user'])),
+    ).toEqual({ publisherId: USER_ID });
     // Admin → hasRole('admin') folds to true → unrestricted (undefined).
     expect(
-      policy.update.where(ctxWithRoles(USER_ID, ['admin'])),
+      policy.actions.update.where(ctxWithRoles(USER_ID, ['admin'])),
     ).toBeUndefined();
   });
 
@@ -794,10 +829,12 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     // the admin short-circuit (`true`). queryHelpers.or short-circuits on `true`
     // → unrestricted (undefined).
     expect(
-      policy.delete.where(ctxWithRoles(USER_ID, ['admin'])),
+      policy.actions.delete.where(ctxWithRoles(USER_ID, ['admin'])),
     ).toBeUndefined();
     // As non-admin: admin leaf drops → single-element OR unwraps → the inner AND.
-    expect(policy.delete.where(ctxWithRoles(USER_ID, ['user']))).toEqual({
+    expect(
+      policy.actions.delete.where(ctxWithRoles(USER_ID, ['user'])),
+    ).toEqual({
       AND: [{ title: 'PINNED' }, { publisherId: USER_ID }],
     });
   });
@@ -822,10 +859,12 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
       } as never),
     ).toBe(false);
     // where: authenticated → unrestricted (undefined); anonymous → deny (throws)
-    expect(policy.read.where(ctxWithRoles(USER_ID, ['user']))).toBeUndefined();
-    expect(() => policy.read.where(ctxWithRoles(undefined, []))).toThrow(
-      /Forbidden/,
-    );
+    expect(
+      policy.actions.read.where(ctxWithRoles(USER_ID, ['user'])),
+    ).toBeUndefined();
+    expect(() =>
+      policy.actions.read.where(ctxWithRoles(undefined, [])),
+    ).toThrow(/Forbidden/);
   });
 
   it('r.some([]) → throws (fails safe as deny, but still rejected)', () => {
@@ -957,6 +996,8 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
       roles: (r) => ({ teamAdmin: r.check(() => Promise.resolve(true)) }),
       actions: { read: { roles: ['teamAdmin'] } },
     });
-    expect(() => policy.read.where(makeCtx(USER_ID))).toThrow(/check-only/);
+    expect(() => policy.actions.read.where(makeCtx(USER_ID))).toThrow(
+      /check-only/,
+    );
   });
 });

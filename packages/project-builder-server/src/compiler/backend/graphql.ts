@@ -194,7 +194,7 @@ function buildQueriesFileForModel(
   const authorize = deriveQueryAuthorize(appBuilder, queries, isAuthEnabled);
 
   // The policy encodes the whole read grant (global + instance roles); reads
-  // filter through `policy.read.where`. A policy exists whenever the model
+  // filter through `policy.actions.read.where`. A policy exists whenever the model
   // declares authorizer roles. For a global-only read the filter is a no-op
   // (`read.where` returns unrestricted when the global grant is satisfied), so
   // referencing the policy uniformly is correct and simpler than the old

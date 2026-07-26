@@ -31,7 +31,7 @@ export async function updateBlog<TQuery extends DataQuery<'blog'>>({
 
   const result = await prisma.blog
     .update({
-      where: blogPolicy.update.whereUnique(context, where),
+      where: blogPolicy.actions.update.whereUnique(context, where),
       data: { ...rest, user: relationHelpers.connectUpdate({ id: userId }) },
       ...query,
     })
@@ -51,7 +51,7 @@ export async function deleteBlog<TQuery extends DataQuery<'blog'>>({
 }): Promise<GetResult<'blog', TQuery>> {
   const result = await prisma.blog
     .delete({
-      where: blogPolicy.delete.whereUnique(context, where),
+      where: blogPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('Blog not found'));

@@ -4,4 +4,4 @@
 '@baseplate-dev/project-builder-lib': patch
 ---
 
-Model policies and `r.via` role delegation now support models with composite primary keys and relations backed by multiple foreign key columns. Previously, defining an authorizer role on a model with a composite primary key, or delegating through a multi-column foreign key relation, would fail to generate.
+Model policies and `r.via` role delegation now support composite primary keys and multi-column foreign keys, while generated policy action helpers are grouped under `policy.actions`.
