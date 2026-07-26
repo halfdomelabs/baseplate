@@ -9,6 +9,7 @@ export default defineConfig(
       dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
       globalSetup: ['src/tests/scripts/global-setup-prisma.ts'],
+      maxWorkers: process.env.TEST_MODE === 'unit' ? undefined : 8,
       passWithNoTests: true,
       setupFiles: [
         'src/tests/scripts/setup-db.ts',
