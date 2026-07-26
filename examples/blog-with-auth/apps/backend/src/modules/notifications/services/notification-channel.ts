@@ -1,7 +1,4 @@
 import type { RenderedContent } from './notification-content.js';
-import type { NotificationEvents } from './notification-events.js';
-
-import { createInAppChannel } from './in-app-channel.js';
 
 /** A resolved notification handed to a channel for delivery. */
 export interface ResolvedNotification extends RenderedContent {
@@ -15,17 +12,16 @@ export interface NotificationChannel {
   deliver(notification: ResolvedNotification): Promise<void>;
 }
 
-/** The available delivery channels, keyed by channel key. */
-export type NotificationChannels = Record<string, NotificationChannel>;
-
-/** Builds the delivery channel dictionary, wiring runtime deps into each channel. */
-export function createChannels(deps: {
-  events: NotificationEvents;
-}): NotificationChannels {
-  return {
-    inApp: createInAppChannel(deps),
-  } satisfies Record<string, NotificationChannel>;
+/**
+ * The installed delivery channels. Keys are spelled out so an unknown channel
+ * is a compile error, not a runtime miss. Assembled in the composition root.
+ */
+export interface NotificationChannels {
+  /* TPL_CHANNEL_ENTRIES:START */
+  readonly inApp: NotificationChannel;
+  readonly email: NotificationChannel;
+  /* TPL_CHANNEL_ENTRIES:END */
 }
 
 /** A valid channel key. */
-export type NotificationChannelKey = keyof ReturnType<typeof createChannels>;
+export type NotificationChannelKey = keyof NotificationChannels;

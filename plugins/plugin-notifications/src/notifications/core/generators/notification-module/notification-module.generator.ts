@@ -1,11 +1,16 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
+  appModuleConfigProvider,
+  appModuleFieldTypesProvider,
   appModuleProvider,
   appRuntimeConfigProvider,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
   yogaPluginConfigProvider,
 } from '@baseplate-dev/fastify-generators';
+import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -13,7 +18,23 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
 
 import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  /** Generate the email delivery channel (only when the email plugin is enabled). */
+  includeEmailChannel: z.boolean().optional(),
+});
+
+/**
+ * The installed delivery channels, in registry order. The single source both the
+ * generated `NotificationChannels` interface (the compile-time channel-key union)
+ * and the composition-root registry render from — so a channel a type lists but
+ * the app doesn't install is a compile error, not a runtime miss, and the two
+ * renders can't drift.
+ */
+export function installedChannelKeys(
+  includeEmailChannel: boolean,
+): readonly string[] {
+  return ['inApp', ...(includeEmailChannel ? ['email'] : [])];
+}
 
 /**
  * Generates the native notification backend module: the render-at-read services,
@@ -24,7 +45,7 @@ export const notificationModuleGenerator = createGenerator({
   name: 'notifications/core/notification-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ includeEmailChannel }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
     appRuntimeConfig: createGeneratorTask({
@@ -40,12 +61,59 @@ export const notificationModuleGenerator = createGenerator({
             paths.servicesNotificationService,
           ),
         );
+        appRuntimeConfig.flattenedModuleFields.set(
+          'notificationTypes',
+          'notificationTypes',
+        );
+
+        // Each channel factory owns its own deps; assembly happens here (the
+        // composition root), not inside the service. Keyed by channel so the
+        // registry is the installed subset of `installedChannelKeys`, never a
+        // separately-branched list.
+        const channelFactories: Record<string, TsCodeFragment> = {
+          inApp: TsCodeUtils.template`${TsCodeUtils.importFragment('createInAppChannel', paths.servicesInAppChannel)}({ events: notificationEvents })`,
+          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ emails })`,
+        };
+        const channelEntries = Object.fromEntries(
+          installedChannelKeys(includeEmailChannel ?? false).map((key) => [
+            key,
+            channelFactories[key],
+          ]),
+        );
+
         appRuntimeConfig.construction.set('notifications', {
-          dependencies: ['pubsub'],
+          dependencies: ['pubsub', ...(includeEmailChannel ? ['emails'] : [])],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),
+              notificationTypes,
+              channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
             })`,
         });
+      },
+    }),
+    // Declared without a type here and bound below, once `paths` can be
+    // resolved (the element type lives inside this module).
+    appModuleConfig: createGeneratorTask({
+      dependencies: {
+        appModuleConfig: appModuleConfigProvider,
+      },
+      run({ appModuleConfig }) {
+        appModuleConfig.moduleFields.set('notificationTypes', undefined);
+      },
+    }),
+    appModuleFieldTypes: createGeneratorTask({
+      dependencies: {
+        appModuleFieldTypes: appModuleFieldTypesProvider,
+        paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
+      },
+      run({ appModuleFieldTypes, paths }) {
+        appModuleFieldTypes.setFieldType(
+          'notificationTypes',
+          TsCodeUtils.typeImportFragment(
+            'NotificationTypeDefinition',
+            paths.servicesNotificationRegistry,
+          ),
+        );
       },
     }),
     main: createGeneratorTask({
@@ -59,6 +127,11 @@ export const notificationModuleGenerator = createGenerator({
           .dependency()
           .reference(`prisma-object-type:${NOTIFICATION_MODELS.notification}`),
         paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
+        // Only needed for the email channel's component import; optional so the
+        // module builds when the email plugin isn't enabled.
+        transactionalLibConfig: transactionalLibConfigProvider
+          .dependency()
+          .optional(),
       },
       run({
         appModule,
@@ -67,6 +140,7 @@ export const notificationModuleGenerator = createGenerator({
         yogaPluginConfig,
         notificationObjectType,
         paths,
+        transactionalLibConfig,
       }) {
         // Register each schema file with the Pothos builder + the module index.
         const { schemaGroup } =
@@ -77,9 +151,26 @@ export const notificationModuleGenerator = createGenerator({
           pothosSchema.registerSchemaFile(renderedPath);
         }
 
-        // Import the built-in `generic` type for its side effect (it registers
-        // itself on load, backing `notifyText`).
-        appModule.moduleImports.push(paths.servicesGenericType);
+        // Contribute the built-in `generic` type (backing `notifyText`) as a
+        // module declaration; the runtime collects it into the per-runtime
+        // registry at construction — no import-time side effect.
+        appModule.moduleFields.set(
+          'notificationTypes',
+          'generic',
+          TsCodeUtils.importFragment(
+            'GENERIC_NOTIFICATION_TYPE',
+            paths.servicesGenericType,
+          ),
+        );
+
+        // The module publishes unseen-count changes over the GraphQL pubsub,
+        // which only exists when the backend app enables subscriptions. Fail
+        // with a clear message instead of a confusing missing-`getPubSub` error.
+        if (!yogaPluginConfig.isSubscriptionEnabled()) {
+          throw new Error(
+            'The notifications plugin requires GraphQL subscriptions. Enable subscriptions on the backend app that hosts the notifications feature.',
+          );
+        }
 
         // Contribute the real-time channel to the pubsub type map.
         yogaPluginConfig.publishArgs.set(
@@ -87,12 +178,46 @@ export const notificationModuleGenerator = createGenerator({
           tsCodeFragment('[userId: string, payload: { count: number }]'),
         );
 
+        // One interface member per installed channel — rendered from the same
+        // source as the composition-root registry, so the two can't drift.
+        const channelEntries = installedChannelKeys(
+          includeEmailChannel ?? false,
+        )
+          .map((key) => `readonly ${key}: NotificationChannel;`)
+          .join('\n');
+
         return {
           build: async (builder) => {
             const objectTypeFragment =
               notificationObjectType.getTypeReference().fragment;
 
-            await builder.apply(renderers.mainGroup.render({ variables: {} }));
+            await builder.apply(
+              renderers.mainGroup.render({
+                variables: {
+                  servicesNotificationChannel: {
+                    TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
+                  },
+                },
+              }),
+            );
+
+            if (includeEmailChannel) {
+              if (!transactionalLibConfig) {
+                throw new Error(
+                  'The notifications email channel requires the transactional email library. Enable the email plugin.',
+                );
+              }
+              await builder.apply(
+                renderers.servicesEmailChannel.render({
+                  variables: {
+                    TPL_NOTIFICATION_EMAIL: TsCodeUtils.importFragment(
+                      'NotificationEmail',
+                      transactionalLibConfig.getTransactionalLibPackageName(),
+                    ),
+                  },
+                }),
+              );
+            }
 
             await builder.apply(
               renderers.schemaGroup.render({

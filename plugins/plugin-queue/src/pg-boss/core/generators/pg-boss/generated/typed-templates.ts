@@ -22,7 +22,6 @@ const pgBossPlugin = createTsTemplateFile({
   },
   name: 'pg-boss-plugin',
   projectExports: {},
-  referencedGeneratorTemplates: { pgBossService: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -64,7 +63,6 @@ const runWorkers = createTsTemplateFile({
   },
   name: 'run-workers',
   projectExports: {},
-  referencedGeneratorTemplates: { pgBossService: {} },
   source: {
     path: path.join(
       import.meta.dirname,

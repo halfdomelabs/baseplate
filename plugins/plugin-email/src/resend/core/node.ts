@@ -4,6 +4,8 @@ import {
   createPluginModule,
 } from '@baseplate-dev/project-builder-lib';
 
+import { getEmailPluginDefinition } from '#src/email/utils/get-email-plugin-definition.js';
+
 import { resendGenerator } from './generators/resend/resend.generator.js';
 
 export default createPluginModule({
@@ -15,8 +17,10 @@ export default createPluginModule({
     appCompiler.compilers.push({
       pluginKey,
       appType: backendAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
+      compile: ({ projectDefinition, appCompiler }) => {
+        const email = getEmailPluginDefinition(projectDefinition);
+
+        appCompiler.addChildrenToFeature(email.emailFeatureRef, {
           resend: resendGenerator({}),
         });
       },

@@ -2,8 +2,8 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreFastifyRedisPaths {
-  globalSetupRedis: string;
   redis: string;
+  setupRedis: string;
 }
 
 const coreFastifyRedisPaths = createProviderType<CoreFastifyRedisPaths>(
@@ -19,8 +19,8 @@ const coreFastifyRedisPathsTask = createGeneratorTask({
     return {
       providers: {
         coreFastifyRedisPaths: {
-          globalSetupRedis: `${srcRoot}/tests/scripts/global-setup-redis.ts`,
           redis: `${srcRoot}/services/redis.ts`,
+          setupRedis: `${srcRoot}/tests/scripts/setup-redis.ts`,
         },
       },
     };

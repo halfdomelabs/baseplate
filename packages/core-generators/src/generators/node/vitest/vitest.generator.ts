@@ -79,7 +79,6 @@ export const vitestGenerator = createGenerator({
                 setupFiles.length > 0
                   ? JSON.stringify(setupFiles.toSorted())
                   : undefined,
-              maxWorkers: '1',
               dir: quot('src'),
               env: tsCodeFragment(
                 "loadEnv('development', process.cwd(), '')",

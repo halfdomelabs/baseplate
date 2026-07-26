@@ -4,9 +4,14 @@
     "instanceData": {},
     "template": "global-setup-prisma"
   },
-  "global-setup-redis.ts": {
+  "setup-db.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "setup-db"
+  },
+  "setup-redis.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
     "instanceData": {},
-    "template": "global-setup-redis"
+    "template": "setup-redis"
   }
 }

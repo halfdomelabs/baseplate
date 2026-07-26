@@ -5,6 +5,8 @@ import {
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
+import { getNotificationsWebAppData } from './web-app-schema.js';
+
 /**
  * Warns when a web app opts into notifications but leaves GraphQL subscriptions
  * off.
@@ -24,7 +26,8 @@ export function createNotificationsWebSubscriptionsChecker(
       .filter(
         (app) =>
           app.type === 'web' &&
-          app.includeNotifications &&
+          (getNotificationsWebAppData(app, pluginKey)?.includeNotifications ??
+            false) &&
           !app.enableSubscriptions,
       )
       .map((app) =>

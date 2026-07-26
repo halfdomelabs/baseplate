@@ -44,36 +44,20 @@ export interface NotificationTypeDefinition<
   paramsSchema: z.ZodType<P>;
   /** Eligible delivery channels, checked against the static channel dictionary. */
   channels: readonly NotificationChannelKey[];
-  /** Render content from a batch of events, in `ctx.locale`. */
-  render: (
+  /**
+   * Render content from a batch of events, in `ctx.locale`.
+   */
+  render(
     events: NotificationEvent<P>[],
     ctx: RenderContext,
-  ) => NotificationContent;
+  ): NotificationContent;
 }
 
-/** Registry key: a row's renderer is pinned by BOTH its type and its version. */
-function registryKey(key: string, version: number): string {
-  return `${key}@${version}`;
-}
-
-const registry = new Map<string, NotificationTypeDefinition>();
-
-/** Register a notification type version (call at module load). */
+/**
+ * Declares a notification type.
+ */
 export function defineNotificationType<P extends NotificationParams>(
   definition: NotificationTypeDefinition<P>,
 ): NotificationTypeDefinition<P> {
-  const id = registryKey(definition.key, definition.version);
-  if (registry.has(id)) {
-    throw new Error(`Notification type "${id}" is already defined`);
-  }
-  registry.set(id, definition as unknown as NotificationTypeDefinition);
   return definition;
-}
-
-/** Look up the renderer that a row was created with. */
-export function getNotificationType(
-  key: string,
-  version: number,
-): NotificationTypeDefinition | undefined {
-  return registry.get(registryKey(key, version));
 }

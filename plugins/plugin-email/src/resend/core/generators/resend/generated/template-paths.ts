@@ -18,7 +18,7 @@ const resendCoreResendPathsTask = createGeneratorTask({
     return {
       providers: {
         resendCoreResendPaths: {
-          resendService: `${moduleRoot}/emails/services/resend.service.ts`,
+          resendService: `${moduleRoot}/services/resend.service.ts`,
         },
       },
     };

@@ -18,7 +18,7 @@ const stubCoreStubPathsTask = createGeneratorTask({
     return {
       providers: {
         stubCoreStubPaths: {
-          stubService: `${moduleRoot}/emails/services/stub.service.ts`,
+          stubService: `${moduleRoot}/services/stub.service.ts`,
         },
       },
     };

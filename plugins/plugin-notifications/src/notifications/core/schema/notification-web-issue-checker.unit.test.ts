@@ -10,11 +10,13 @@ const PLUGIN_KEY = 'test-notifications';
 
 let nextDevPort = 5000;
 
-function webApp(overrides: {
+interface WebAppOverrides {
   name: string;
   includeNotifications?: boolean;
   enableSubscriptions?: boolean;
-}): Record<string, unknown> {
+}
+
+function webApp(overrides: WebAppOverrides): Record<string, unknown> {
   return {
     id: `app:${overrides.name}`,
     type: 'web',
@@ -22,17 +24,16 @@ function webApp(overrides: {
     devPort: nextDevPort++,
     title: '',
     description: '',
-    includeNotifications: overrides.includeNotifications ?? false,
     enableSubscriptions: overrides.enableSubscriptions ?? false,
   };
 }
 
 function containerWith(
-  apps: Record<string, unknown>[],
+  overrides: WebAppOverrides[],
   { withPlugin = true }: { withPlugin?: boolean } = {},
 ): ReturnType<typeof createTestProjectDefinitionContainer> {
   const input: Partial<ProjectDefinitionInput> = {
-    apps: apps as ProjectDefinitionInput['apps'],
+    apps: overrides.map(webApp) as ProjectDefinitionInput['apps'],
     plugins: withPlugin
       ? [
           {
@@ -45,7 +46,19 @@ function containerWith(
         ]
       : [],
   };
-  return createTestProjectDefinitionContainer(input);
+  const container = createTestProjectDefinitionContainer(input);
+  // The test parser context registers no plugin schemas, so `pluginData` keys
+  // are stripped on parse. Inject the notifications slice directly, matching the
+  // shape production produces once the plugin's schema is registered.
+  for (const [index, app] of container.definition.apps.entries()) {
+    if (app.type !== 'web') continue;
+    (app as { pluginData?: Record<string, unknown> }).pluginData = {
+      [PLUGIN_KEY]: {
+        includeNotifications: overrides[index].includeNotifications ?? false,
+      },
+    };
+  }
+  return container;
 }
 
 describe('createNotificationsWebSubscriptionsChecker', () => {
@@ -53,11 +66,7 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
 
   it('warns when a web app includes notifications but disables subscriptions', () => {
     const container = containerWith([
-      webApp({
-        name: 'admin',
-        includeNotifications: true,
-        enableSubscriptions: false,
-      }),
+      { name: 'admin', includeNotifications: true, enableSubscriptions: false },
     ]);
 
     const issues = check(container);
@@ -72,11 +81,7 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
 
   it('offers a fix that enables subscriptions for the offending app', () => {
     const container = containerWith([
-      webApp({
-        name: 'admin',
-        includeNotifications: true,
-        enableSubscriptions: false,
-      }),
+      { name: 'admin', includeNotifications: true, enableSubscriptions: false },
     ]);
 
     const [issue] = check(container);
@@ -89,11 +94,7 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
 
   it('does not warn when subscriptions are enabled', () => {
     const container = containerWith([
-      webApp({
-        name: 'admin',
-        includeNotifications: true,
-        enableSubscriptions: true,
-      }),
+      { name: 'admin', includeNotifications: true, enableSubscriptions: true },
     ]);
 
     expect(check(container)).toHaveLength(0);
@@ -101,11 +102,11 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
 
   it('does not warn for web apps that do not include notifications', () => {
     const container = containerWith([
-      webApp({
+      {
         name: 'admin',
         includeNotifications: false,
         enableSubscriptions: false,
-      }),
+      },
     ]);
 
     expect(check(container)).toHaveLength(0);
@@ -114,11 +115,11 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
   it('does nothing when the plugin is not configured', () => {
     const container = containerWith(
       [
-        webApp({
+        {
           name: 'admin',
           includeNotifications: true,
           enableSubscriptions: false,
-        }),
+        },
       ],
       { withPlugin: false },
     );

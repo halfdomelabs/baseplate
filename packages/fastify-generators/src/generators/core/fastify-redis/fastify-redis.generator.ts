@@ -123,9 +123,11 @@ export const fastifyRedisGenerator = createGenerator({
             );
 
             if (vitestConfig) {
-              await builder.apply(renderers.globalSetupRedis.render({}));
-              vitestConfig.globalSetupFiles.push(
-                normalizePathToOutputPath(paths.globalSetupRedis),
+              // Sets a per-worker Redis key prefix, so it reads VITEST_POOL_ID
+              // and must run per test file as a setupFile, not a global setup.
+              await builder.apply(renderers.setupRedis.render({}));
+              vitestConfig.setupFiles.push(
+                normalizePathToOutputPath(paths.setupRedis),
               );
             }
           },
