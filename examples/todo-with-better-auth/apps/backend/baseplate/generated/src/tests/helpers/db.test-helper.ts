@@ -110,6 +110,13 @@ export async function dropStaleTestDatabases(
   databaseUrl: string,
   { keepTemplate = false }: { keepTemplate?: boolean } = {},
 ): Promise<string[]> {
+  // The LIKE query is only a coarse prefilter (`_` is a LIKE wildcard); this
+  // pattern is the authoritative allowlist of what we may DROP. Safe to embed
+  // unescaped since TEST_DATABASE_NAME is validated to `[a-z0-9_]` at generation.
+  const workerDatabasePattern = new RegExp(
+    String.raw`^${TEST_DATABASE_NAME}_\d+$`,
+  );
+
   return withMaintenanceClient(databaseUrl, async (client) => {
     const rows = await client.$queryRaw<{ datname: string }[]>`
       SELECT datname FROM pg_database WHERE datname LIKE ${`${TEST_DATABASE_NAME}%`}
@@ -117,7 +124,10 @@ export async function dropStaleTestDatabases(
 
     const dropped: string[] = [];
     for (const { datname } of rows) {
-      if (keepTemplate && datname === TEMPLATE_DATABASE_NAME) continue;
+      const isTemplate = datname === TEMPLATE_DATABASE_NAME;
+      const isWorkerDatabase = workerDatabasePattern.test(datname);
+      if (!isTemplate && !isWorkerDatabase) continue;
+      if (keepTemplate && isTemplate) continue;
       // FORCE terminates lingering connections that would otherwise block the drop.
       await client.$executeRawUnsafe(
         `DROP DATABASE IF EXISTS ${quoteIdentifier(datname)} WITH (FORCE)`,

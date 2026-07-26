@@ -71,7 +71,6 @@ const pgBossCorePgBossRenderersTask = createGeneratorTask({
                   queuesImports,
                   serviceContextImports,
                 },
-                generatorPaths: paths,
                 ...options,
               }),
           },
