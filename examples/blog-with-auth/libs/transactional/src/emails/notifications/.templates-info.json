@@ -1,0 +1,7 @@
+{
+  "notification.email.tsx": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-email-templates",
+    "instanceData": {},
+    "template": "notification-email"
+  }
+}

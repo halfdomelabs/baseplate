@@ -12,6 +12,8 @@ import {
 } from '../modules/emails/services/emails.service.js';
 import { postmarkEmailAdapter } from '../modules/emails/services/postmark.service.js';
 import { rootModule } from '../modules/index.js';
+import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
+import { createInAppChannel } from '../modules/notifications/services/in-app-channel.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
 import { createNotificationService } from '../modules/notifications/services/notification.service.js';
 import { createGraphqlPubSub } from '../plugins/graphql/pubsub.js';
@@ -63,17 +65,22 @@ export function createAppRuntime(
 
   const pubsub = createGraphqlPubSub(redis);
 
-  const notifications = createNotificationService({
-    events: createNotificationEvents(pubsub),
-    notificationTypes,
-  });
-
   const queues = createQueueRuntime(queueBindings, {
     disableMaintenance: options.disableQueueMaintenance,
   });
   disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
 
   const emails = createEmailService({ queues });
+
+  const notificationEvents = createNotificationEvents(pubsub);
+  const notifications = createNotificationService({
+    events: notificationEvents,
+    notificationTypes,
+    channels: {
+      email: createEmailChannel({ emails }),
+      inApp: createInAppChannel({ events: notificationEvents }),
+    },
+  });
 
   const userSession = new CookieUserSessionService();
   /* TPL_SERVICE_CONSTRUCTION:END */

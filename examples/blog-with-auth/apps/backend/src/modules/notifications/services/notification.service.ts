@@ -5,6 +5,7 @@ import { prisma } from '@src/services/prisma.js';
 
 import type {
   NotificationChannelKey,
+  NotificationChannels,
   ResolvedNotification,
 } from './notification-channel.js';
 import type {
@@ -19,7 +20,6 @@ import type {
 } from './notification-registry.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import { createChannels } from './notification-channel.js';
 import {
   isSafeUrl,
   notificationSegmentsSchema,
@@ -201,9 +201,9 @@ async function getUnseenCount(userId: string): Promise<number> {
 export function createNotificationService(deps: {
   events: NotificationEvents;
   notificationTypes: NotificationTypeDefinition[];
+  channels: NotificationChannels;
 }): NotificationService {
-  const { events, notificationTypes } = deps;
-  const channels = createChannels({ events });
+  const { events, notificationTypes, channels } = deps;
 
   // Per-runtime registry: collected from `AppModule.notificationTypes` at
   // construction. Duplicate `(key, version)` pairs fail HERE — deterministically

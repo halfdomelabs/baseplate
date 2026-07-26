@@ -1,3 +1,4 @@
+import { emailTemplateSpec } from '@baseplate-dev/plugin-email';
 import {
   appCompilerSpec,
   backendAppEntryType,
@@ -10,17 +11,27 @@ import {
 import type { NotificationsPluginDefinition } from './schema/plugin-definition.js';
 
 import {
+  notificationEmailTemplatesGenerator,
   notificationModuleGenerator,
   notificationWebGenerator,
 } from './generators/index.js';
 import { getNotificationsWebAppData } from './schema/web-app-schema.js';
 
+/** Package name of the email plugin whose presence enables the email channel. */
+const EMAIL_PLUGIN_PACKAGE = '@baseplate-dev/plugin-email';
+
 export default createPluginModule({
   name: 'node',
   dependencies: {
     appCompiler: appCompilerSpec,
+    emailTemplate: emailTemplateSpec,
   },
-  initialize: ({ appCompiler }, { pluginKey }) => {
+  initialize: ({ appCompiler, emailTemplate }, { pluginKey }) => {
+    // Contribute the notification email component to the transactional lib. Safe
+    // to push unconditionally: the transactional-lib compiler only runs when the
+    // email plugin is enabled, so this is a no-op otherwise.
+    emailTemplate.generators.push(notificationEmailTemplatesGenerator({}));
+
     appCompiler.compilers.push(
       // Backend: generate the notification module into the configured feature.
       pluginAppCompiler({
@@ -32,10 +43,18 @@ export default createPluginModule({
             pluginKey,
           ) as NotificationsPluginDefinition;
 
+          // The email channel is generated only when the email plugin is
+          // enabled — otherwise it would import a module that doesn't exist.
+          const includeEmailChannel = (projectDefinition.plugins ?? []).some(
+            (plugin) => plugin.packageName === EMAIL_PLUGIN_PACKAGE,
+          );
+
           appCompiler.addChildrenToFeature(
             notifications.notificationsFeatureRef,
             {
-              notificationModule: notificationModuleGenerator({}),
+              notificationModule: notificationModuleGenerator({
+                includeEmailChannel,
+              }),
             },
           );
         },

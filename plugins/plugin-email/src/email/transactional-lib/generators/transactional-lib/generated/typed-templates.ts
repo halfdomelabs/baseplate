@@ -84,6 +84,7 @@ const componentsLink = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'components-link',
+  projectExports: { Link: { isTypeOnly: false } },
   referencedGeneratorTemplates: { constantsTheme: {} },
   source: {
     path: path.join(

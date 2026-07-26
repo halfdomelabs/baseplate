@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type { Prisma } from '@src/generated/prisma/client.js';
 
+import type { NotificationChannels } from './notification-channel.js';
 import type { NotificationSegment } from './notification-content.js';
 import type { NotificationEvents } from './notification-events.js';
 import type { NotificationTypeDefinition } from './notification-registry.js';
@@ -21,11 +22,21 @@ const fakeEvents: NotificationEvents = {
   subscribeToUnseenCount: vi.fn(),
 };
 
+/** These tests exercise renderContent/registry construction, never delivery. */
+const fakeChannels: NotificationChannels = {
+  inApp: { deliver: vi.fn() },
+  email: { deliver: vi.fn() },
+};
+
 /** Build a service whose registry holds exactly the supplied types. */
 function serviceWith(
   notificationTypes: NotificationTypeDefinition[],
 ): ReturnType<typeof createNotificationService> {
-  return createNotificationService({ events: fakeEvents, notificationTypes });
+  return createNotificationService({
+    events: fakeEvents,
+    notificationTypes,
+    channels: fakeChannels,
+  });
 }
 
 /**
