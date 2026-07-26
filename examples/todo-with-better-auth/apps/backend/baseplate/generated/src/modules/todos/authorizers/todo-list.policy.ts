@@ -3,7 +3,7 @@ import { createModelPolicy } from '@src/utils/authorizers/create-model-policy.js
 
 export const todoListPolicy = createModelPolicy({
   model: 'todoList',
-  id: ['id'],
+  id: 'id',
   delegate: prisma.todoList,
   roles: (r) => ({
     owner: r.userMatch((session) => ({ ownerId: session.userId })),

@@ -5,7 +5,7 @@ import { todoListPolicy } from './todo-list.policy.js';
 
 export const todoItemPolicy = createModelPolicy({
   model: 'todoItem',
-  id: ['id'],
+  id: 'id',
   delegate: prisma.todoItem,
   roles: (r) => ({
     owner: r.some([

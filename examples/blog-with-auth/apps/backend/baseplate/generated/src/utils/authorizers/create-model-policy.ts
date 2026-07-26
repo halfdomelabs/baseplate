@@ -20,14 +20,11 @@ import type {
 import { ForbiddenError } from '../http-errors.js';
 import { queryHelpers } from '../query-helpers.js';
 
-/** The value types `r.match` compares by `===` (see `LocallyComparable`). */
 type MatchValue = string | number | bigint | boolean | null;
 
 /**
- * Validate an `r.match` object — every value must be a `MatchValue`. Runs on
- * BOTH paths (check and where) so a bypassed caller can't slip a bad value into
- * either. The load-bearing case is `undefined`: `{ userId: undefined }` reaches
- * Prisma as an OMITTED field → matches every row → allow-all. Throws first.
+ * `undefined` must never reach Prisma because Prisma omits that field, which
+ * would widen the authorization filter.
  */
 function validateMatch(match: Record<string, unknown>, role: string): void {
   for (const [key, value] of Object.entries(match)) {
@@ -43,7 +40,6 @@ function validateMatch(match: Record<string, unknown>, role: string): void {
   }
 }
 
-/** Evaluate a validated `r.match` against a loaded row: `row[k] === v` for all k. */
 function evaluateMatch(
   match: Record<string, unknown>,
   row: Record<string, unknown>,
@@ -66,12 +62,6 @@ function isMatchValue(v: unknown): v is MatchValue {
   );
 }
 
-/**
- * Reject `undefined` from a role's `r.where` result — the type forbids it
- * (`WhereResult` is `NonNullable`), but a bypassed caller must fail loud:
- * `undefined` reads as UNRESTRICTED downstream, so a deny would become allow-all.
- * Deny is `false`, never `undefined`.
- */
 function assertNotUndefined<T>(value: T | undefined, role: string): T {
   if (value === undefined) {
     throw new Error(
@@ -82,12 +72,7 @@ function assertNotUndefined<T>(value: T | undefined, role: string): T {
   return value;
 }
 
-/**
- * Memoize a per-request async set (e.g. "the user's roles on this team"),
- * coalescing concurrent callers onto one query and evicting on rejection. Lets N
- * `r.check` roles sharing one resolver key collapse to a single query, then a
- * cheap `.has(role)`. Stored in `authorizerModelCache`.
- */
+/** Memoize an async set for the duration of a request. */
 export async function cachedSet<T>(
   ctx: ServiceContext,
   key: string,
@@ -107,7 +92,6 @@ export async function cachedSet<T>(
   return promise;
 }
 
-/** Does the principal hold any of these global/superuser roles? */
 function hasGlobalRole(
   ctx: ServiceContext,
   globalRoles: readonly string[],
@@ -115,13 +99,7 @@ function hasGlobalRole(
   return globalRoles.length > 0 && ctx.auth.hasSomeRole(globalRoles as never);
 }
 
-/**
- * Cache a boolean role result per request, coalescing concurrent callers: a
- * settled result is returned directly; an in-flight promise for the same key is
- * shared (so N siblings on one parent key collapse to ONE query); a rejection
- * evicts (never caches a failure). Relies on the caches being PER-REQUEST with
- * one principal — the key omits principal identity.
- */
+/** Cache a boolean per request and coalesce concurrent evaluations. */
 function cachedBoolean(
   ctx: ServiceContext,
   key: string,
@@ -165,27 +143,15 @@ export function createModelPolicy<
     // in (no absolute-deny; narrow `superuser` to lock admins out).
     read: ActionGrant<Extract<keyof TRoles, string>>;
   } & Record<string, ActionGrant<Extract<keyof TRoles, string>>>,
-  // Normalize `TId` (a single field name OR an array of them) to the literal
-  // union of field names, for `PolicyRoleMembers`'/`DelegationTarget`'s
-  // `TIdField` — e.g. `'id'` stays `'id'`; `['tenantId', 'userId']` becomes
-  // `'tenantId' | 'userId'`.
   TIdField extends string = TId extends readonly (infer F extends string)[]
     ? F
     : TId & string,
 >(config: {
   model: TModelName;
-  /** Primary key field(s). A single name for a scalar PK, or an array for a composite PK. */
   id: TId;
-  /** The Prisma model delegate — `prisma.blogPost`. The count/existence check is derived from it. */
   delegate: ModelDelegate<TModelName>;
   superuser?: string[];
   roles: (r: RoleBuilder<TModelName>) => TRoles;
-  /**
-   * The whole authorization surface, as ONE map of grants — `read` (required),
-   * CRUD, and custom verbs (`retitle`, `archive`) alike, since a grant is a role
-   * declaration either way. Each derives `.where` and `.check` from the same
-   * `{ roles?, globalRoles? }`.
-   */
   actions: TActions;
 }): {
   readonly model: TModelName;
@@ -195,8 +161,6 @@ export function createModelPolicy<
   };
 } & { readonly [K in keyof TActions]: ActionMembers<TModelName> } {
   const superuser = config.superuser ?? [];
-  // Frozen + copied so a caller's mutation of the original array/config after
-  // construction can't retroactively invalidate the checks just below.
   const idFields: readonly TIdField[] = Object.freeze(
     (Array.isArray(config.id)
       ? config.id.slice()
@@ -214,11 +178,13 @@ export function createModelPolicy<
     where: (where) => ({ kind: 'where', where }),
     userWhere: (userWhere) => ({ kind: 'userWhere', userWhere }),
     via: (target, role, link) => {
+      if (!Object.hasOwn(target.roles, role)) {
+        throw new Error(
+          `r.via('${role}', relation '${link.relation}'): target policy does not define role '${role}'.`,
+        );
+      }
       const mappings = Object.entries(link.keys);
       const targetFields = mappings.map(([, targetField]) => targetField);
-      // Every mapping must have a value, one mapping per target id field (no
-      // dropped/duplicate coverage — a duplicate target field would silently
-      // let one mapping overwrite another's contribution in `buildTargetIds`).
       const isValid =
         targetFields.every((f): f is string => f !== undefined) &&
         targetFields.length === target.idFields.length &&
@@ -240,9 +206,6 @@ export function createModelPolicy<
       };
     },
     all: (parts) => {
-      // Runtime backstop for a bypassed caller: an empty conjunction is vacuous
-      // truth (allow-all). The tuple type makes this a compile error already;
-      // this throws if someone reaches `all` with a widened `[]` at runtime.
       if (parts.length === 0) {
         throw new Error(
           'r.all requires at least one part (empty → allow-all).',
@@ -251,8 +214,6 @@ export function createModelPolicy<
       return { kind: 'all', parts };
     },
     some: (parts) => {
-      // Empty `some` fails SAFE (deny) — but still reject it so a widened `[]`
-      // isn't a silent no-op grant.
       if (parts.length === 0) {
         throw new Error('r.some requires at least one part.');
       }
@@ -264,15 +225,11 @@ export function createModelPolicy<
   };
   const authored = config.roles(builder);
 
-  // Existence check derived from the delegate. The cast narrows Prisma's `count`
-  // overload to the single no-`select` form we use — the one boundary cast, in
-  // shared infra, so no policy author writes it.
   const delegate = config.delegate as unknown as {
     count: (args: {
       where: NonNullable<WhereInput<TModelName>>;
     }) => Promise<number>;
   };
-  /** An id field's value must be a definite scalar — never null/undefined/bigint. */
   function assertIdValue(
     field: string,
     value: unknown,
@@ -286,7 +243,6 @@ export function createModelPolicy<
     }
   }
 
-  /** Project a loaded row down to its OWN id field(s) as a field-name → value map. */
   function buildIds(
     model: Record<string, unknown>,
   ): Record<string, string | number> {
@@ -299,18 +255,7 @@ export function createModelPolicy<
     return ids;
   }
 
-  /**
-   * Project a loaded row down to the TARGET's id field(s), via a `keys`
-   * local→target map — e.g. `{ blogId: 'id' }` on a `BlogPost` row produces
-   * `{ id: row.blogId }`, the shape the target's OWN `checkById` expects.
-   *
-   * An OPTIONAL relation's unset FK (every mapped local value null/undefined)
-   * returns `null` — "relation not set", matching how the `.where` path's
-   * `nestedWhere` behaves (Prisma's own relation filter just doesn't match an
-   * absent relation, it doesn't error). A PARTIALLY-null composite FK (some
-   * columns set, some not) is corrupt data, not an absent relation — that
-   * still throws via `assertIdValue`.
-   */
+  /** Return `null` when every field of an optional foreign key is unset. */
   function buildTargetIds(
     keys: Record<string, string | undefined>,
     model: Record<string, unknown>,
@@ -332,13 +277,6 @@ export function createModelPolicy<
     return ids;
   }
 
-  /**
-   * Validate an id map's key set is EXACTLY a model's declared id fields (no
-   * partial/extra/empty maps) AND that every expected field's value is a
-   * definite scalar — closes the gap where a bypassed-TS caller could pass a
-   * key with an `undefined` value, which Prisma treats as an omitted filter
-   * (silently widening the match to "any row").
-   */
   function assertIdsComplete(
     ids: Record<string, unknown>,
     expectedFields: readonly string[],
@@ -368,12 +306,6 @@ export function createModelPolicy<
       })
       .then((n) => n > 0);
 
-  /**
-   * Deterministic, collision-proof cache key for an id map — sorted `[k, v]`
-   * pairs through `JSON.stringify` so no delimiter choice can let two distinct
-   * id maps encode to the same string (unlike a hand-joined `k=v,k=v` scheme,
-   * where a value containing `,`/`=` can forge another map's key).
-   */
   function idsCacheKey(ids: Record<string, string | number>): string {
     return JSON.stringify(
       Object.keys(ids)
@@ -389,12 +321,6 @@ export function createModelPolicy<
     return `authz:${config.model}:role:${role}:${idsCacheKey(ids)}`;
   }
 
-  // ---- recursive tree walk (leaves + all/some combinators) ----------------
-  // `key` is the hierarchical cache key path (`role#0#1`) so nested parts don't
-  // collide in the role cache. `whereNode`/`checkNode` are the two forms; the
-  // `all`/`some` cases recurse.
-
-  /** Order parts cheapest-first: local leaves (match/hasRole) before probes. */
   function cheapestFirst(
     parts: readonly RoleNode<TModelName>[],
   ): { node: RoleNode<TModelName>; i: number }[] {
@@ -410,7 +336,6 @@ export function createModelPolicy<
       .toSorted((a, b) => cheap(a.node) - cheap(b.node));
   }
 
-  /** The where fragment for a role node. Throws for `check` (no where form). */
   function whereNode(
     ctx: ServiceContext,
     node: RoleNode<TModelName>,
@@ -501,11 +426,7 @@ export function createModelPolicy<
         return evaluateMatch(m, model, key);
       }
       case 'via': {
-        // Delegation: parent's cached checkById, keyed on the TARGET id(s) → N
-        // children of one parent collapse to 1 query, even concurrently.
         const targetIds = buildTargetIds(node.keys, model);
-        // Unset optional relation → deny, matching `nestedWhere`'s "absent
-        // relation doesn't match" semantics on the `.where` path (no query).
         if (targetIds === null) return false;
         return node.target.roles[node.role].checkById(ctx, targetIds);
       }
@@ -611,14 +532,6 @@ export function createModelPolicy<
     };
   }
 
-  // ---- shared enforcement primitives (every action's members derive from these) --
-
-  /**
-   * The ONE instance-enforcement path — every action's `.check` routes through
-   * it, so superuser fold-in can't be forgotten. Enforces "any `roleNames` OR
-   * any `globalRoles`", loading the row lazily; returns the loaded row (so a
-   * loader isn't invoked twice); throws `ForbiddenError` on failure.
-   */
   async function checkRolesOrThrow(
     ctx: ServiceContext,
     roleNames: readonly (keyof TRoles & string)[],
@@ -642,14 +555,6 @@ export function createModelPolicy<
     );
   }
 
-  /**
-   * WHERE form of "any of `roleNames` OR `globalRoles`", AND-composed with an
-   * optional caller filter. `undefined` = unrestricted (no auth filter AND no
-   * caller filter); throws if every role denied unconditionally. Backs every
-   * action's `.where` — the same OR-of-roles its `.check` enforces. The auth
-   * filter and caller filter are joined with `AND` (never a spread), so a caller
-   * cannot overwrite the auth filter.
-   */
   function rolesToWhere(
     ctx: ServiceContext,
     roleNames: readonly string[],
@@ -672,7 +577,6 @@ export function createModelPolicy<
     return { AND: [callerWhere, authWhere] };
   }
 
-  /** Build an action's members from its grant (superuser folded into globals). */
   function buildAction(
     grant: ActionGrant<Extract<keyof TRoles, string>>,
   ): ActionMembers<TModelName> {

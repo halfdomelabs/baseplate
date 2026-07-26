@@ -4,25 +4,13 @@ import type { ServiceContext } from '../service-context.js';
 
 import { ForbiddenError } from '../http-errors.js';
 
-// ============================================================================
-// Field-gate rules (consumed by the GraphQL FieldAuthorizePlugin)
-// ----------------------------------------------------------------------------
-// A field `authorize:` rule is either a GLOBAL role (a string, checked via
-// `ctx.auth.hasSomeRole`) or an INSTANCE check — a `(ctx, model) => boolean`.
-// A policy role's `.check` member satisfies `InstanceRoleCheck` exactly, so a
-// field gate reads `authorize: ['admin', userPolicy.roles.self.check]`.
-// ============================================================================
-
-/** A global-role field-gate rule — a role string. */
 export type GlobalRoleCheck = AuthRole;
 
-/** An instance field-gate rule — satisfied by `policy.roles.<name>.check`. */
 export type InstanceRoleCheck<TInstance> = (
   ctx: ServiceContext,
   instance: TInstance,
 ) => Promise<boolean> | boolean;
 
-/** Throw unless the principal holds one of the global roles. */
 export function checkGlobalAuthorization(
   ctx: ServiceContext,
   authorize: AuthRole[],
@@ -32,11 +20,6 @@ export function checkGlobalAuthorization(
   }
 }
 
-/**
- * OR of field-gate rules: global roles (strings) checked first via
- * `hasSomeRole`, then instance checks (functions) run sequentially with lazy
- * instance loading. Throws `ForbiddenError` if none pass.
- */
 export async function checkInstanceAuthorization<T>(
   ctx: ServiceContext,
   instance: T | (() => Promise<T>),

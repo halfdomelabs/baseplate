@@ -5,7 +5,7 @@ import { blogPolicy } from './blog.policy.js';
 
 export const blogPostPolicy = createModelPolicy({
   model: 'blogPost',
-  id: ['id'],
+  id: 'id',
   delegate: prisma.blogPost,
   roles: (r) => ({
     owner: r.via(blogPolicy, 'owner', {
