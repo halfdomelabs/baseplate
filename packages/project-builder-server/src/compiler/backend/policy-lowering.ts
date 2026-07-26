@@ -48,8 +48,8 @@ import {
 export interface ResolvedViaLink {
   /** The parent policy variable name (e.g., 'todoListPolicy'). */
   targetPolicyVar: string;
-  /** The local FK field backing the relation (e.g., 'todoListId'). */
-  fkFieldName: string;
+  /** Local FK field → target id field (e.g. `{ todoListId: 'id' }`). */
+  keys: Record<string, string>;
   /** The relation field name (e.g., 'todoList'). */
   relationName: string;
 }
@@ -124,14 +124,17 @@ function renderMatchCall(node: AuthorizerExpressionNode): string {
 }
 
 /**
- * Render an `r.via(targetPolicyVar, 'role', { fk: '...', relation: '...' })`
+ * Render an `r.via(targetPolicyVar, 'role', { relation: '...', keys: {...} })`
  * call. `targetPolicyVar` is an identifier (a variable reference), so it is
- * emitted bare; the role/fk/relation are string literals, so they are quoted.
+ * emitted bare; role/relation/keys are string literals, so they are quoted.
+ * `keys` maps each local FK field to the target's corresponding id field —
+ * e.g. `{ blogId: 'id' }` for `BlogPost.blogId → Blog.id`.
  */
 function renderVia(link: ResolvedViaLink, role: string): string {
-  return `r.via(${link.targetPolicyVar}, ${quot(role)}, { fk: ${quot(
-    link.fkFieldName,
-  )}, relation: ${quot(link.relationName)} })`;
+  const keysObject = `{ ${Object.entries(link.keys)
+    .map(([local, target]) => `${quot(local)}: ${quot(target)}`)
+    .join(', ')} }`;
+  return `r.via(${link.targetPolicyVar}, ${quot(role)}, { relation: ${quot(link.relationName)}, keys: ${keysObject} })`;
 }
 
 /**

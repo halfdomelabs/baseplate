@@ -1,7 +1,7 @@
 import type {
   GlobalRoleCheck,
   InstanceRoleCheck,
-} from '@src/utils/authorizers.js';
+} from '@src/utils/authorizers/field-gates.js';
 
 /**
  * Single authorization rule - either a string (global role) or function (instance role).

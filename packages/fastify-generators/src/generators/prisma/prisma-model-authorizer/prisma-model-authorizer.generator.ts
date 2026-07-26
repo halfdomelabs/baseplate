@@ -39,7 +39,7 @@ const actionGrantSchema = z.object({
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
-  idFieldName: z.string().min(1),
+  idFieldNames: z.array(z.string().min(1)).min(1),
   roles: z.array(roleSchema).min(1),
   /** `read` is required; create/update/delete + custom verbs alongside. */
   actions: z.record(z.string(), actionGrantSchema),
@@ -59,20 +59,13 @@ export interface PrismaModelPolicyProvider {
   /** A fragment referencing a role's instance-check member (`policy.roles.owner.check`). */
   getRoleCheckFragment(roleName: string): TsCodeFragment;
   /**
-   * A fragment referencing an action's `.where` member (`policy.read.where`),
-   * consumed by list/count read surfaces: `policy.read.where(ctx, callerWhere?)`.
+   * A fragment referencing an action's `.where` member, consumed by list/count
+   * read surfaces.
    */
   getActionWhereFragment(action: string): TsCodeFragment;
-  /**
-   * A fragment referencing an action's `.whereUnique` member
-   * (`policy.read.whereUnique`), for get-by-id: `policy.read.whereUnique(ctx, { id })`.
-   */
+  /** A fragment referencing an action's `.whereUnique` member. */
   getActionWhereUniqueFragment(action: string): TsCodeFragment;
-  /**
-   * A fragment referencing an action's `.checkGlobalRoles` member
-   * (`policy.create.checkGlobalRoles`), a throwing principal-only global-role
-   * check for row-less mutations: `policy.create.checkGlobalRoles(context)`.
-   */
+  /** A fragment referencing an action's `.checkGlobalRoles` member. */
   getActionCheckGlobalRolesFragment(action: string): TsCodeFragment;
 }
 
@@ -122,7 +115,7 @@ export const prismaModelPolicyGenerator = createGenerator({
           prismaAuthorizerUtilsImports,
           ...dynamicDeps
         }) {
-          const { modelName, idFieldName, roles, actions } = descriptor;
+          const { modelName, idFieldNames, roles, actions } = descriptor;
           const modelVarName = lowercaseFirstChar(modelName);
           const policyName = `${modelVarName}Policy`;
 
@@ -193,10 +186,15 @@ export const prismaModelPolicyGenerator = createGenerator({
               const prismaModelFragment =
                 prismaOutput.getPrismaModelFragment(modelName);
 
+              const idLiteral =
+                idFieldNames.length === 1
+                  ? `'${idFieldNames[0]}'`
+                  : `[${idFieldNames.map((f) => `'${f}'`).join(', ')}]`;
+
               const fileFragment = tsTemplate`
                 export const ${policyName} = ${prismaAuthorizerUtilsImports.createModelPolicy.fragment()}({
                   model: '${modelVarName}',
-                  idField: '${idFieldName}',
+                  id: ${idLiteral},
                   delegate: ${prismaModelFragment},
                   roles: (r) => (${rolesFragment}),
                   actions: ${actionsFragment},
@@ -234,7 +232,7 @@ export const prismaModelPolicyGenerator = createGenerator({
                         `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
                       );
                     }
-                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.where`;
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.actions.${action}.where`;
                   },
                   getActionWhereUniqueFragment(action: string) {
                     if (!(action in actions)) {
@@ -242,7 +240,7 @@ export const prismaModelPolicyGenerator = createGenerator({
                         `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
                       );
                     }
-                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.whereUnique`;
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.actions.${action}.whereUnique`;
                   },
                   getActionCheckGlobalRolesFragment(action: string) {
                     if (!(action in actions)) {
@@ -250,7 +248,7 @@ export const prismaModelPolicyGenerator = createGenerator({
                         `Action '${action}' not found on ${modelName} policy. Available: ${Object.keys(actions).join(', ')}`,
                       );
                     }
-                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.${action}.checkGlobalRoles`;
+                    return tsTemplate`${TsCodeUtils.importFragment(policyName, policyPath)}.actions.${action}.checkGlobalRoles`;
                   },
                 },
               };

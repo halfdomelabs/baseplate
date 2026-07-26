@@ -26,8 +26,6 @@ import { visitAuthorizerExpression } from './authorizer-expression-visitor.js';
  * Information about a model relation for nested authorizer validation.
  */
 export interface RelationValidationInfo {
-  /** Number of foreign key references (must be 1 for nested authorizer support) */
-  referenceCount: number;
   /** Foreign model name (for error messages) */
   foreignModelName: string;
   /** Set of role names defined on the foreign model's authorizer */
@@ -252,15 +250,6 @@ export function validateAuthorizerExpression(
       const availableRelations = [...relationInfo.keys()].join(', ');
       warnings.push({
         message: `Relation '${relationName}' does not exist on model '${modelContext.modelName}'.${availableRelations ? ` Available relations: ${availableRelations}.` : ''}`,
-        start: relationStart,
-        end: relationEnd,
-      });
-      return;
-    }
-
-    if (relation.referenceCount !== 1) {
-      warnings.push({
-        message: `Relation '${relationName}' has ${relation.referenceCount} foreign key references. Nested authorizer checks only support single-key relations.`,
         start: relationStart,
         end: relationEnd,
       });
@@ -528,7 +517,6 @@ export function buildModelExpressionContext(
     const foreignModel = lookupModel(relation.modelRef);
 
     relationInfo.set(relation.name, {
-      referenceCount: relation.references?.length ?? 0,
       foreignModelName: foreignModel?.name ?? relation.modelRef,
       foreignAuthorizerRoleNames: foreignModel
         ? buildAuthorizerRoleNames(foreignModel)
@@ -555,7 +543,6 @@ export function buildModelExpressionContext(
       // For foreign relations, the "foreign model" (for field/role validation)
       // is the OTHER model that has the FK
       relationInfo.set(rel.foreignRelationName, {
-        referenceCount: rel.references?.length ?? 0,
         foreignModelName: otherModel.name,
         foreignAuthorizerRoleNames: buildAuthorizerRoleNames(otherModel),
         ...buildFieldInfo(otherModel),

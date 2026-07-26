@@ -68,15 +68,28 @@ model BlogPost {
 }
 
 model BlogUser {
-  blogId    String   @map("blog_id") @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  blogId    String         @map("blog_id") @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  updatedAt DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  blog      Blog           @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  notes     BlogUserNote[]
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@id([blogId, userId])
   @@map("blog_user")
+}
+
+model BlogUserNote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  blogId    String   @map("blog_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  note      String
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  blogUser  BlogUser @relation(fields: [blogId, userId], references: [blogId, userId], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("blog_user_note")
 }
 
 model Notification {

@@ -15,7 +15,7 @@ builder.queryField('blog', (t) =>
       prisma.blog
         .findUniqueOrThrow({
           ...query,
-          where: blogPolicy.read.whereUnique(ctx, { id }),
+          where: blogPolicy.actions.read.whereUnique(ctx, { id }),
         })
         .catch(throwIfPrismaNotFound('Blog not found')),
   }),
@@ -32,7 +32,7 @@ builder.queryField('blogs', (t) =>
     resolve: async (query, _root, { skip, take }, ctx) =>
       prisma.blog.findMany({
         ...query,
-        where: blogPolicy.read.where(ctx),
+        where: blogPolicy.actions.read.where(ctx),
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),

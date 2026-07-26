@@ -1,9 +1,9 @@
 import { prisma } from '@src/services/prisma.js';
-import { createModelPolicy } from '@src/utils/authorizers.js';
+import { createModelPolicy } from '@src/utils/authorizers/create-model-policy.js';
 
 export const blogPolicy = createModelPolicy({
   model: 'blog',
-  idField: 'id',
+  id: 'id',
   delegate: prisma.blog,
   roles: (r) => ({
     owner: r.userMatch((session) => ({ userId: session.userId })),

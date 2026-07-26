@@ -15,7 +15,7 @@ builder.queryField('todoItem', (t) =>
       prisma.todoItem
         .findUniqueOrThrow({
           ...query,
-          where: todoItemPolicy.read.whereUnique(ctx, { id }),
+          where: todoItemPolicy.actions.read.whereUnique(ctx, { id }),
         })
         .catch(throwIfPrismaNotFound('TodoItem not found')),
   }),
@@ -32,7 +32,7 @@ builder.queryField('todoItems', (t) =>
     resolve: async (query, _root, { skip, take }, ctx) =>
       prisma.todoItem.findMany({
         ...query,
-        where: todoItemPolicy.read.where(ctx),
+        where: todoItemPolicy.actions.read.where(ctx),
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),

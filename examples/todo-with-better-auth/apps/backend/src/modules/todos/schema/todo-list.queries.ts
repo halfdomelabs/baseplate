@@ -21,7 +21,7 @@ builder.queryField('todoList', (t) =>
       prisma.todoList
         .findUniqueOrThrow({
           ...query,
-          where: todoListPolicy.read.whereUnique(ctx, { id }),
+          where: todoListPolicy.actions.read.whereUnique(ctx, { id }),
         })
         .catch(throwIfPrismaNotFound('TodoList not found')),
   }),
@@ -45,7 +45,7 @@ builder.queryField('todoLists', (t) =>
     resolve: async (query, _root, { skip, take, where, orderBy }, ctx) =>
       prisma.todoList.findMany({
         ...query,
-        where: todoListPolicy.read.where(ctx, where ?? undefined),
+        where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
         orderBy: applyStableOrderBy(orderBy, ['id']) ?? undefined,
         skip: skip ?? undefined,
         take: take ?? undefined,
@@ -71,12 +71,12 @@ builder.queryField('todoListsConnection', (t) =>
       authorize: ['admin'],
       totalCount: (_connection, { where }, ctx) =>
         prisma.todoList.count({
-          where: todoListPolicy.read.where(ctx, where ?? undefined),
+          where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
         }),
       resolve: async (query, _root, { where, orderBy }, ctx) =>
         prisma.todoList.findMany({
           ...query,
-          where: todoListPolicy.read.where(ctx, where ?? undefined),
+          where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
           orderBy: applyStableOrderBy(orderBy, ['id']) ?? undefined,
         }),
     },

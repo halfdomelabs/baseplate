@@ -136,13 +136,13 @@ export const prismaDataUpdateGenerator = createGenerator({
 
             // A policy-backed update routes authorization through the policy:
             // - Scalar path (any grant): fold the grant into the `update` call via
-            //   `policy.update.whereUnique` — one query both authorizes and mutates.
+            //   `policy.actions.update.whereUnique` — one query both authorizes and mutates.
             //   Instance grants filter per row (→ 404 on miss); global-only grants
             //   pass admins untouched and throw 403 for others, before the query.
             // - Transform + INSTANCE grant: the row must be fetched anyway, so fold
             //   the grant into that `findUniqueOrThrow`.
             // - Transform + GLOBAL-ONLY grant: a row-less principal check —
-            //   `policy.update.checkGlobalRoles` (zero-query; routing it through a
+            //   `policy.actions.update.checkGlobalRoles` (zero-query; routing it through a
             //   fetch would add a query purely to check a principal).
             const usesAtomicAuth =
               hasAnyGrant && !hasTransformFields && hasPolicy;

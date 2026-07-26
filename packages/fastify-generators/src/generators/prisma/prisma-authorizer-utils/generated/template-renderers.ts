@@ -77,6 +77,7 @@ const prismaPrismaAuthorizerUtilsRenderersTask = createGeneratorTask({
                   prismaQueryFilterUtilsImports,
                   serviceContextImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

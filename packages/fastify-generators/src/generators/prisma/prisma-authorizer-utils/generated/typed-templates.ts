@@ -9,40 +9,100 @@ import { prismaGeneratedImportsProvider } from '#src/generators/prisma/_provider
 import { dataUtilsImportsProvider } from '#src/generators/prisma/data-utils/generated/ts-import-providers.js';
 import { prismaQueryFilterUtilsImportsProvider } from '#src/generators/prisma/prisma-query-filter-utils/generated/ts-import-providers.js';
 
-const utilsAuthorizers = createTsTemplateFile({
+const createModelPolicy = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {
-    authContextImports: authContextImportsProvider,
-    authRolesImports: authRolesImportsProvider,
     dataUtilsImports: dataUtilsImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaQueryFilterUtilsImports: prismaQueryFilterUtilsImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
-  name: 'utils-authorizers',
+  name: 'create-model-policy',
   projectExports: {
-    ActionGrant: { isTypeOnly: true },
-    ActionMembers: { isTypeOnly: true },
     cachedSet: { isTypeOnly: false },
-    checkGlobalAuthorization: { isTypeOnly: false },
-    checkInstanceAuthorization: { isTypeOnly: false },
     createModelPolicy: { isTypeOnly: false },
-    GlobalRoleCheck: { isTypeOnly: true },
-    InstanceRoleCheck: { isTypeOnly: true },
-    PolicyRoleMembers: { isTypeOnly: true },
-    RoleBuilder: { isTypeOnly: true },
   },
+  referencedGeneratorTemplates: { types: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/utils/authorizers.ts',
+      '../templates/src/utils/authorizers/create-model-policy.ts',
     ),
   },
   variables: {},
 });
 
-export const mainGroup = { utilsAuthorizers };
+const fieldGates = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    authRolesImports: authRolesImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'field-gates',
+  projectExports: {
+    checkGlobalAuthorization: { isTypeOnly: false },
+    checkInstanceAuthorization: { isTypeOnly: false },
+    GlobalRoleCheck: { isTypeOnly: true },
+    InstanceRoleCheck: { isTypeOnly: true },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/authorizers/field-gates.ts',
+    ),
+  },
+  variables: {},
+});
+
+const types = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    authContextImports: authContextImportsProvider,
+    dataUtilsImports: dataUtilsImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+    prismaQueryFilterUtilsImports: prismaQueryFilterUtilsImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'types',
+  projectExports: {
+    ActionGrant: { isTypeOnly: true },
+    ActionMembers: { isTypeOnly: true },
+    AllRole: { isTypeOnly: true },
+    AuthenticatedLeaf: { isTypeOnly: true },
+    AuthoredRole: { isTypeOnly: true },
+    CheckRole: { isTypeOnly: true },
+    DelegationTarget: { isTypeOnly: true },
+    Exists: { isTypeOnly: true },
+    HasRoleLeaf: { isTypeOnly: true },
+    LocallyComparable: { isTypeOnly: true },
+    LocalMatch: { isTypeOnly: true },
+    MatchRole: { isTypeOnly: true },
+    ModelDelegate: { isTypeOnly: true },
+    NonEmptyArray: { isTypeOnly: true },
+    PolicyRoleMembers: { isTypeOnly: true },
+    PredicateRole: { isTypeOnly: true },
+    RoleBuilder: { isTypeOnly: true },
+    RoleNode: { isTypeOnly: true },
+    SomeRole: { isTypeOnly: true },
+    ToOneRelationKeys: { isTypeOnly: true },
+    UserMatchRole: { isTypeOnly: true },
+    UserWhereRole: { isTypeOnly: true },
+    ViaLink: { isTypeOnly: true },
+    ViaRole: { isTypeOnly: true },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/authorizers/types.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const mainGroup = { createModelPolicy, fieldGates, types };
 
 export const PRISMA_PRISMA_AUTHORIZER_UTILS_TEMPLATES = { mainGroup };

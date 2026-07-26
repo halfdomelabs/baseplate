@@ -101,7 +101,7 @@ export const prismaDataCreateGenerator = createGenerator({
             const { hasTransformFields } = parts;
 
             // Generate authorization. `create` is a row-less principal check:
-            // when a policy exists it routes through `policy.create.checkGlobalRoles`
+            // when a policy exists it routes through `policy.actions.create.checkGlobalRoles`
             // (single source of truth — the role list lives in the policy);
             // otherwise it falls back to a bare `checkGlobalAuthorization`.
             const hasGlobalGrant =

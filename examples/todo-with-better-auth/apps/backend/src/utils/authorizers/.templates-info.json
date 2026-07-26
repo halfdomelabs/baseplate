@@ -1,0 +1,17 @@
+{
+  "create-model-policy.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
+    "instanceData": {},
+    "template": "create-model-policy"
+  },
+  "field-gates.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
+    "instanceData": {},
+    "template": "field-gates"
+  },
+  "types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
+    "instanceData": {},
+    "template": "types"
+  }
+}

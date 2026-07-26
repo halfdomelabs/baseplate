@@ -9,11 +9,6 @@
     "instanceData": {},
     "template": "app-runtime"
   },
-  "authorizers.ts": {
-    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-authorizer-utils",
-    "instanceData": {},
-    "template": "utils-authorizers"
-  },
   "http-errors.ts": {
     "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
     "instanceData": {},

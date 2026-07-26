@@ -8,10 +8,19 @@ import type {
 
 import { lowerExpressionToRoleTree } from './policy-lowering.js';
 
+// Local `blogId` → target `id` — deliberately NOT an identity mapping, since
+// that's the normal case (`BlogPost.blogId` references `Blog.id`) and the one
+// a naive "assume local name === target name" implementation gets wrong.
 const VIA_BLOG: ResolvedViaLink = {
   targetPolicyVar: 'blogPolicy',
-  fkFieldName: 'blogId',
+  keys: { blogId: 'id' },
   relationName: 'blog',
+};
+
+const VIA_BLOG_USER: ResolvedViaLink = {
+  targetPolicyVar: 'blogUserPolicy',
+  keys: { blogId: 'blogId', userId: 'userId' },
+  relationName: 'blogUser',
 };
 
 function ctxWith(
@@ -89,10 +98,12 @@ describe('lowerExpressionToRoleTree', () => {
   });
 
   describe('r.via — to-one delegation', () => {
-    it('nestedHasRole → r.via with fk/relation', () => {
+    it('nestedHasRole → r.via with relation/keys (local field → TARGET field, not identity)', () => {
       expect(
         lower("hasRole(model.blog, 'owner')", ctxWith({ blog: VIA_BLOG })),
-      ).toBe("r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' })");
+      ).toBe(
+        "r.via(blogPolicy, 'owner', { relation: 'blog', keys: { 'blogId': 'id' } })",
+      );
     });
 
     it('nestedHasSomeRole with multiple roles → r.some of vias', () => {
@@ -102,7 +113,18 @@ describe('lowerExpressionToRoleTree', () => {
           ctxWith({ blog: VIA_BLOG }),
         ),
       ).toBe(
-        "r.some([r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' }), r.via(blogPolicy, 'editor', { fk: 'blogId', relation: 'blog' })])",
+        "r.some([r.via(blogPolicy, 'owner', { relation: 'blog', keys: { 'blogId': 'id' } }), r.via(blogPolicy, 'editor', { relation: 'blog', keys: { 'blogId': 'id' } })])",
+      );
+    });
+
+    it('nestedHasRole through a composite FK → r.via with multi-field keys map', () => {
+      expect(
+        lower(
+          "hasRole(model.blogUser, 'owner')",
+          ctxWith({ blogUser: VIA_BLOG_USER }),
+        ),
+      ).toBe(
+        "r.via(blogUserPolicy, 'owner', { relation: 'blogUser', keys: { 'blogId': 'blogId', 'userId': 'userId' } })",
       );
     });
   });
@@ -157,7 +179,7 @@ describe('lowerExpressionToRoleTree', () => {
           ctxWith({ blog: VIA_BLOG }),
         ),
       ).toBe(
-        "r.some([r.userMatch((session) => ({ ownerId: session.userId })), r.via(blogPolicy, 'owner', { fk: 'blogId', relation: 'blog' })])",
+        "r.some([r.userMatch((session) => ({ ownerId: session.userId })), r.via(blogPolicy, 'owner', { relation: 'blog', keys: { 'blogId': 'id' } })])",
       );
     });
   });

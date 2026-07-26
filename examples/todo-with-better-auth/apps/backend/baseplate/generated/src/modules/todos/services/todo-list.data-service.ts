@@ -47,7 +47,7 @@ export async function createTodoList<TQuery extends DataQuery<'todoList'>>({
   query?: TQuery;
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
-  todoListPolicy.create.checkGlobalRoles(context);
+  todoListPolicy.actions.create.checkGlobalRoles(context);
   const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -87,7 +87,7 @@ export async function updateTodoList<TQuery extends DataQuery<'todoList'>>({
   context: ServiceContext;
 }): Promise<GetResult<'todoList', TQuery>> {
   const existingItem = await prisma.todoList.findUniqueOrThrow({ where });
-  todoListPolicy.update.checkGlobalRoles(context);
+  todoListPolicy.actions.update.checkGlobalRoles(context);
   const { coverPhoto, ownerId, ...rest } = data;
 
   const plan = await prepareTransformers({
@@ -128,7 +128,7 @@ export async function deleteTodoList<TQuery extends DataQuery<'todoList'>>({
 }): Promise<GetResult<'todoList', TQuery>> {
   const result = await prisma.todoList
     .delete({
-      where: todoListPolicy.delete.whereUnique(context, where),
+      where: todoListPolicy.actions.delete.whereUnique(context, where),
       ...query,
     })
     .catch(throwIfPrismaNotFound('TodoList not found'));

@@ -1,9 +1,9 @@
 import { prisma } from '@src/services/prisma.js';
-import { createModelPolicy } from '@src/utils/authorizers.js';
+import { createModelPolicy } from '@src/utils/authorizers/create-model-policy.js';
 
 export const todoListPolicy = createModelPolicy({
   model: 'todoList',
-  idField: 'id',
+  id: 'id',
   delegate: prisma.todoList,
   roles: (r) => ({
     owner: r.userMatch((session) => ({ ownerId: session.userId })),
