@@ -44,7 +44,7 @@ export function AdminLayout({ className }: Props): ReactElement {
         </header>
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <main className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <main className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6">
               <AsyncBoundary>
                 <Outlet />
               </AsyncBoundary>

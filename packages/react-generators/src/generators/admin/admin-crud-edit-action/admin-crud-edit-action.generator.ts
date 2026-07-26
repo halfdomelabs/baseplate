@@ -38,6 +38,7 @@ export const adminCrudEditActionGenerator = createGenerator({
           <Button
             variant="ghost"
             size="icon"
+            nativeButton={false}
             render={
               <Link
                 to="${reactRoutes.getRoutePrefix()}/$id"

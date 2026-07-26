@@ -155,6 +155,7 @@ export function UserTable(
                 <Button
                   variant="ghost"
                   size="icon"
+                  nativeButton={false}
                   render={
                     <Link
                       to="/admin/accounts/users/user/$id"
