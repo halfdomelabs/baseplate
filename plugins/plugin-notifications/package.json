@@ -54,11 +54,11 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "@hookform/resolvers": "5.2.2",
-    "@tanstack/react-router": "1.159.5",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-router": "^1.159.5",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "7.71.1",
+    "react-hook-form": "^7.71.1",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -69,7 +69,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "cpx2": "catalog:",
     "eslint": "catalog:",
     "nodemon": "catalog:",
