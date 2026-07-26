@@ -28,6 +28,7 @@ const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
     (t) => ({
       globalSetupFiles: t.array<string>(),
       setupFiles: t.array<string>(),
+      maxWorkers: t.number(),
     }),
     {
       prefix: 'vitest',
@@ -61,7 +62,7 @@ export const vitestGenerator = createGenerator({
       },
       run({
         eslintConfig,
-        vitestConfigValues: { globalSetupFiles, setupFiles },
+        vitestConfigValues: { globalSetupFiles, setupFiles, maxWorkers },
         renderers,
       }) {
         eslintConfig.enableVitest.set(true);
@@ -84,6 +85,13 @@ export const vitestGenerator = createGenerator({
                 "loadEnv('development', process.cwd(), '')",
                 tsImportBuilder(['loadEnv']).from('vite'),
               ),
+              // TEST_MODE=unit runs have no DB involvement and keep full parallelism.
+              maxWorkers:
+                maxWorkers === undefined
+                  ? undefined
+                  : tsCodeFragment(
+                      `process.env.TEST_MODE === 'unit' ? undefined : ${maxWorkers}`,
+                    ),
             });
 
             await builder.apply(

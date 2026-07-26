@@ -27,6 +27,13 @@ const POSTGRES_MAX_IDENTIFIER_BYTES = 63;
 const TEMPLATE_SUFFIX_BYTES = '_template'.length;
 
 /**
+ * Cap on parallel Vitest workers for DB-backed runs. Each worker clones its own
+ * database from the template, so uncapped worker counts on high-core CI runners
+ * can exhaust `max_connections` or hit clone-lock contention on the template.
+ */
+const DB_BACKED_TEST_MAX_WORKERS = 8;
+
+/**
  * Validates the base test database name derived from the package name.
  *
  * The name is interpolated into `CREATE`/`DROP DATABASE` in the generated test
@@ -122,6 +129,8 @@ export const prismaVitestGenerator = createGenerator({
             vitestConfig.setupFiles.push(
               normalizePathToOutputPath(paths.setupDb),
             );
+
+            vitestConfig.maxWorkers.set(DB_BACKED_TEST_MAX_WORKERS);
           },
         };
       },
