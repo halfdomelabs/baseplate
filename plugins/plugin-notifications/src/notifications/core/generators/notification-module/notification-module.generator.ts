@@ -61,6 +61,13 @@ export const notificationModuleGenerator = createGenerator({
             paths.servicesNotificationService,
           ),
         );
+        appRuntimeConfig.services.set(
+          'notificationEvents',
+          TsCodeUtils.typeImportFragment(
+            'NotificationEvents',
+            paths.servicesNotificationEvents,
+          ),
+        );
         appRuntimeConfig.flattenedModuleFields.set(
           'notificationTypes',
           'notificationTypes',
@@ -81,10 +88,20 @@ export const notificationModuleGenerator = createGenerator({
           ]),
         );
 
+        // Its own entry rather than inlined: both `notifications` and the
+        // in-app channel read the same emitter, and inlining would construct
+        // two.
+        appRuntimeConfig.construction.set('notificationEvents', {
+          dependencies: ['pubsub'],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
+        });
         appRuntimeConfig.construction.set('notifications', {
-          dependencies: ['pubsub', ...(includeEmailChannel ? ['emails'] : [])],
+          dependencies: [
+            'notificationEvents',
+            ...(includeEmailChannel ? ['emails'] : []),
+          ],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
-              events: ${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub),
+              events: notificationEvents,
               notificationTypes,
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
             })`,
