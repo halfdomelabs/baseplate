@@ -12,7 +12,7 @@
       },
       { "path": "src/scripts/send-test-notification.ts" },
       { "path": "src/services/pg-boss.service.int.test.ts" },
-      { "path": "src/utils/app-runtime.test.ts" }
+      { "path": "src/utils/app-runtime.unit.test.ts" }
     ],
     "deleted": [],
     "modified": []

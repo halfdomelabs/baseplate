@@ -1,11 +1,6 @@
 {
   "files": {
-    "added": [
-      { "path": "src/components/notifications/notification-bell.tsx" },
-      { "path": "src/components/notifications/notification-operations.ts" },
-      { "path": "src/components/notifications/notification-panel.tsx" },
-      { "path": "src/services/apollo/apollo.unit.test.ts" }
-    ],
+    "added": [{ "path": "src/services/apollo/apollo.unit.test.ts" }],
     "deleted": [],
     "modified": [{ "diffFile": "package.json.diff", "path": "package.json" }]
   },
