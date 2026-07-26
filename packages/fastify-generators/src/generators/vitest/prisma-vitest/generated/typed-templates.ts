@@ -11,10 +11,13 @@ const dbTestHelper = createTsTemplateFile({
   },
   name: 'db-test-helper',
   projectExports: {
-    createTestDatabase: {},
-    createTestDatabaseFromTemplate: {},
+    acquireWorkerDatabase: {},
+    createTemplateDatabase: {},
     destroyTestDatabase: {},
+    dropStaleTestDatabases: {},
     getTestPrisma: {},
+    getTestWorkerId: {},
+    getWorkerDatabaseName: {},
     replaceDatabase: {},
   },
   source: {
@@ -54,8 +57,23 @@ const prismaTestHelper = createTsTemplateFile({
   variables: { TPL_PRISMA_PATH: {} },
 });
 
+const setupDb = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'setup-db',
+  referencedGeneratorTemplates: { dbTestHelper: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/tests/scripts/setup-db.ts',
+    ),
+  },
+  variables: {},
+});
+
 export const VITEST_PRISMA_VITEST_TEMPLATES = {
   dbTestHelper,
   globalSetupPrisma,
   prismaTestHelper,
+  setupDb,
 };

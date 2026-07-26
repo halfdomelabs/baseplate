@@ -1,23 +1,36 @@
 import type { TestProject } from 'vitest/node';
 
-import { createTestDatabase } from '../helpers/db.test-helper.js';
+import {
+  createTemplateDatabase,
+  dropStaleTestDatabases,
+} from '../helpers/db.test-helper.js';
 
-export default async function setup(project: TestProject): Promise<void> {
+export default async function setup(
+  project: TestProject,
+): Promise<() => Promise<void>> {
   const { TEST_MODE, DATABASE_URL } = project.config.env;
 
   // don't run database set-up if only running unit tests
-  if (TEST_MODE !== 'unit') {
-    if (!DATABASE_URL) {
-      throw new Error('DATABASE_URL is not set');
-    }
-
-    // create separate test DB
-    const testDatabaseUrl = await createTestDatabase(DATABASE_URL);
-
-    // back up original database URL
-    project.config.env.ORIGINAL_DATABASE_URL = project.config.env.DATABASE_URL;
-    project.config.env.DATABASE_URL = testDatabaseUrl;
-
-    console.info('\nDatabase migrations ran!');
+  if (TEST_MODE === 'unit') {
+    return () => Promise.resolve();
   }
+
+  if (!DATABASE_URL) {
+    throw new Error('DATABASE_URL is not set');
+  }
+
+  // Sweep first so a previously crashed run cannot leak worker databases.
+  await dropStaleTestDatabases(DATABASE_URL);
+  await createTemplateDatabase(DATABASE_URL);
+
+  // Workers clone their own database from the template in setup-db.test-helper.
+  // DATABASE_URL is left pointing at the maintenance database, which is the only
+  // connection allowed to issue CREATE/DROP DATABASE.
+  project.config.env.TEST_MAINTENANCE_DATABASE_URL = DATABASE_URL;
+
+  console.info('\nTest database template created and migrations ran!');
+
+  return async () => {
+    await dropStaleTestDatabases(DATABASE_URL, { keepTemplate: true });
+  };
 }

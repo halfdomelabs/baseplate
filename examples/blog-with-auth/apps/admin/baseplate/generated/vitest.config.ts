@@ -8,7 +8,6 @@ export default defineConfig(
       clearMocks: true,
       dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
-      maxWorkers: 1,
       passWithNoTests: true,
     },
   } /* TPL_CONFIG:END */,

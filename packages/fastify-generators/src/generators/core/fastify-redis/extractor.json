@@ -1,15 +1,6 @@
 {
   "name": "core/fastify-redis",
   "templates": {
-    "global-setup-redis": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/tests/scripts/global-setup-redis.ts",
-      "sourceFile": "src/tests/scripts/global-setup-redis.ts",
-      "variables": {}
-    },
     "redis": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -26,6 +17,14 @@
         "RedisRuntime": { "isTypeOnly": true }
       },
       "sourceFile": "src/services/redis.ts",
+      "variables": {}
+    },
+    "setup-redis": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/scripts/setup-redis.ts",
+      "sourceFile": "src/tests/scripts/setup-redis.ts",
       "variables": {}
     }
   }

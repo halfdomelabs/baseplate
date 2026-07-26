@@ -13,10 +13,13 @@ import {
 import { VITEST_PRISMA_VITEST_PATHS } from './template-paths.js';
 
 export const prismaVitestImportsSchema = createTsImportMapSchema({
-  createTestDatabase: {},
-  createTestDatabaseFromTemplate: {},
+  acquireWorkerDatabase: {},
+  createTemplateDatabase: {},
   destroyTestDatabase: {},
+  dropStaleTestDatabases: {},
   getTestPrisma: {},
+  getTestWorkerId: {},
+  getWorkerDatabaseName: {},
   prismaMock: {},
   replaceDatabase: {},
 });
@@ -41,10 +44,13 @@ const vitestPrismaVitestImportsTask = createGeneratorTask({
     return {
       providers: {
         prismaVitestImports: createTsImportMap(prismaVitestImportsSchema, {
-          createTestDatabase: paths.dbTestHelper,
-          createTestDatabaseFromTemplate: paths.dbTestHelper,
+          acquireWorkerDatabase: paths.dbTestHelper,
+          createTemplateDatabase: paths.dbTestHelper,
           destroyTestDatabase: paths.dbTestHelper,
+          dropStaleTestDatabases: paths.dbTestHelper,
           getTestPrisma: paths.dbTestHelper,
+          getTestWorkerId: paths.dbTestHelper,
+          getWorkerDatabaseName: paths.dbTestHelper,
           prismaMock: paths.prismaTestHelper,
           replaceDatabase: paths.dbTestHelper,
         }),
