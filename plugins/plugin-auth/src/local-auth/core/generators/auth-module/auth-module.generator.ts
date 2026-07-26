@@ -171,9 +171,7 @@ export const authModuleGenerator = createGenerator({
           ),
         );
         appRuntimeConfig.construction.set('userSession', {
-          fragment: TsCodeUtils.template`
-            const userSession = new ${TsCodeUtils.importFragment('CookieUserSessionService', paths.userSessionService)}();
-          `,
+          fragment: TsCodeUtils.template`new ${TsCodeUtils.importFragment('CookieUserSessionService', paths.userSessionService)}()`,
         });
       },
     }),

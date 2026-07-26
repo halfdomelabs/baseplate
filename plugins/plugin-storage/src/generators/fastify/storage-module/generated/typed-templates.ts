@@ -397,9 +397,9 @@ const servicesStorage = createTsTemplateFile({
   importMapProviders: {},
   name: 'services-storage',
   projectExports: {
-    StorageService: { isTypeOnly: true },
-    StorageAdapterKey: { isTypeOnly: true },
     createStorageService: { isTypeOnly: false },
+    StorageAdapterKey: { isTypeOnly: true },
+    StorageService: { isTypeOnly: true },
   },
   referencedGeneratorTemplates: { typesAdapter: {}, typesFileCategory: {} },
   source: {
@@ -409,6 +409,28 @@ const servicesStorage = createTsTemplateFile({
     ),
   },
   variables: { TPL_ADAPTERS: {} },
+});
+
+const storageTestHelper = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'storage-test-helper',
+  projectExports: {
+    createFakeStorageAdapter: { isTypeOnly: false },
+    createFakeStorageService: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    servicesStorage: {},
+    typesAdapter: {},
+    typesFileCategory: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/tests/helpers/storage.test-helper.ts',
+    ),
+  },
+  variables: {},
 });
 
 const utilsValidatePendingUpload = createTsTemplateFile({
@@ -442,5 +464,6 @@ export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
   servicesCleanUnusedFiles,
   servicesGetPublicUrl,
   servicesStorage,
+  storageTestHelper,
   utilsValidatePendingUpload,
 };

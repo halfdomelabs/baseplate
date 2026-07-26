@@ -10,7 +10,8 @@ import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appRuntimeTestUtilsProvider } from '../app-runtime/index.js';
+import { appRuntimeConfigValuesProvider } from '../app-runtime/app-runtime.generator.js';
+import { appRuntimeImportsProvider } from '../app-runtime/generated/ts-import-providers.js';
 import { CORE_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -77,13 +78,15 @@ export const serviceContextGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         serviceContextConfigValues: serviceContextConfigValuesProvider,
+        appRuntimeConfigValues: appRuntimeConfigValuesProvider,
         renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.provider,
-        appRuntimeTestUtils: appRuntimeTestUtilsProvider,
+        appRuntimeImports: appRuntimeImportsProvider,
       },
       run({
         serviceContextConfigValues: { contextFields },
+        appRuntimeConfigValues: { services },
         renderers,
-        appRuntimeTestUtils,
+        appRuntimeImports,
       }) {
         return {
           build: async (builder) => {
@@ -168,16 +171,39 @@ export const serviceContextGenerator = createGenerator({
                     ),
                   );
 
+            // `services` is always present, unlike the context fields, so the
+            // parameter is emitted even when no slice registered one - without
+            // it there would be no seam to supply services in tests.
+            const testArgs = TsCodeUtils.template`{
+                ${[...orderedContextArgs.map((arg) => arg.name), 'services'].join(', ')} }: {
+                 ${TsCodeUtils.mergeFragmentsPresorted(
+                   [
+                     ...orderedContextArgs.map(
+                       (arg) =>
+                         TsCodeUtils.template`${arg.name}${
+                           arg.testDefault ? '?' : ''
+                         }: ${arg.type}`,
+                     ),
+                     TsCodeUtils.template`services?: Partial<${appRuntimeImports.AppServices.typeFragment()}>`,
+                   ],
+                   '; ',
+                 )}
+                } = {}`;
+
+            // The cast is only needed when `AppServices` has fields `Partial`
+            // would otherwise widen - with none, `Partial<AppServices>` is
+            // already `AppServices` and the cast is flagged as unnecessary.
+            const suppliedServices =
+              services.size === 0
+                ? TsCodeUtils.template`services ?? {}`
+                : TsCodeUtils.template`(services ?? {}) as ${appRuntimeImports.AppServices.typeFragment()}`;
+
             await builder.apply(
               renderers.testHelper.render({
                 variables: {
-                  TPL_CREATE_TEST_ARGS:
-                    orderedContextArgs.length === 0
-                      ? ''
-                      : TsCodeUtils.template`${createContextArgs(true)} = {}`,
+                  TPL_CREATE_TEST_ARGS: testArgs,
                   TPL_CREATE_TEST_OBJECT: testObject,
-                  TPL_TEST_RUNTIME_SERVICES:
-                    appRuntimeTestUtils.getTestAppServicesFragment(),
+                  TPL_SUPPLIED_SERVICES: suppliedServices,
                 },
               }),
             );

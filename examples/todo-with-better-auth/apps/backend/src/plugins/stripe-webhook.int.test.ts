@@ -5,8 +5,6 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { AppRuntime } from '@src/utils/app-runtime.js';
-
 import { stripeWebhookPlugin } from '@src/plugins/stripe-webhook.js';
 
 vi.mock('@src/services/config.js', () => ({
@@ -83,10 +81,7 @@ function createMockStripe(): Stripe {
 async function buildApp(stripe: Stripe): Promise<FastifyInstance> {
   const fastify = Fastify();
   await fastify.register(rawBodyPlugin, { global: false });
-  const runtime = {
-    services: { stripe },
-  } as unknown as AppRuntime;
-  await fastify.register(stripeWebhookPlugin, { runtime });
+  await fastify.register(stripeWebhookPlugin, { services: { stripe } });
   return fastify;
 }
 

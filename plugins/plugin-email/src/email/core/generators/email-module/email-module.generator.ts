@@ -140,14 +140,10 @@ export const emailModuleGenerator = createGenerator({
         );
         appRuntimeConfig.construction.set('emails', {
           dependencies: ['queues'],
-          fragment: TsCodeUtils.template`
-            const emails = ${TsCodeUtils.importFragment('createEmailService', paths.emailsService)}({ queues });
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailService', paths.emailsService)}({ queues })`,
         });
         appRuntimeConfig.construction.set('emailTransport', {
-          fragment: TsCodeUtils.template`
-            const emailTransport = ${TsCodeUtils.importFragment('createEmailTransport', paths.emailsService)}(${emailAdapter});
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailTransport', paths.emailsService)}(${emailAdapter})`,
         });
       },
     }),

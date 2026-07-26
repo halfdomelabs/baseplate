@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAuthContextFromSessionInfo } from '@src/modules/accounts/auth/utils/auth-context.utils.js';
 import { prisma } from '@src/services/prisma.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
+import {
+  createFakeStorageAdapter,
+  createFakeStorageService,
+} from '@src/tests/helpers/storage.test-helper.js';
 
 import { createUser, deleteUser, updateUser } from './user.data-service.js';
 
@@ -18,24 +22,21 @@ const getFileMetadata = vi.fn().mockImplementation((path: string) => {
 // Create a test user ID for file uploads
 const TEST_USER_ID = '00000000-0000-0000-0000-000000000001';
 
-const baseContext = createTestServiceContext({
+// File transformers validate pending uploads through the storage service, so
+// it's backed by the metadata mock above; every other service still throws.
+const context = createTestServiceContext({
   auth: createAuthContextFromSessionInfo({
     type: 'user',
     id: 'test-session',
     userId: TEST_USER_ID,
     roles: ['public', 'user', 'admin'],
   }),
-});
-
-// Overrides the throwing `storage` stub with adapters backed by the mock
-// above; file transformers validate pending uploads through this service.
-const context = {
-  ...baseContext,
   services: {
-    ...baseContext.services,
-    storage: { getAdapterOrThrow: () => ({ getFileMetadata }) },
+    storage: createFakeStorageService({
+      adapter: createFakeStorageAdapter({ getFileMetadata }),
+    }),
   },
-} as unknown as typeof baseContext;
+});
 
 describe('createUser', () => {
   beforeEach(async () => {

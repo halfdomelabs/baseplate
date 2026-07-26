@@ -1,16 +1,14 @@
 // @ts-nocheck
 
-import type { PluginRuntimeWithServices } from '%appModuleSetupImports';
+import type { AppServices } from '%appRuntimeImports';
 
 import { toWebHeaders } from '$headersUtils';
 import fp from 'fastify-plugin';
 
 export const betterAuthPlugin = fp<{
-  runtime: PluginRuntimeWithServices<'betterAuth'>;
+  services: Pick<AppServices, 'betterAuth'>;
 }>(
-  (fastify, { runtime }, done) => {
-    const auth = runtime.services.betterAuth;
-
+  (fastify, { services }, done) => {
     fastify.all('/auth/*', async (request, reply) => {
       const url = new URL(request.url, `http://${request.headers.host}`);
 
@@ -20,7 +18,7 @@ export const betterAuthPlugin = fp<{
         ...(request.body ? { body: JSON.stringify(request.body) } : {}),
       });
 
-      const response = await auth.handler(req);
+      const response = await services.betterAuth.handler(req);
 
       reply.status(response.status);
       for (const [key, value] of response.headers.entries())

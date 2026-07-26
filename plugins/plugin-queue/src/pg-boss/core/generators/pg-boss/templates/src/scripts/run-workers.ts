@@ -22,10 +22,11 @@ let runtime: AppRuntime | undefined;
 async function main(): Promise<void> {
   logger.info('Starting queue worker process...');
 
-  const appRuntime = createAppRuntime();
+  // The dedicated worker process is the one that owns background loops.
+  const appRuntime = createAppRuntime({ backgroundServices: true });
   runtime = appRuntime;
 
-  const activeQueueNames = appRuntime.queues
+  const activeQueueNames = appRuntime.services.queues
     .listQueues()
     .map((queue) => queue.name);
 
@@ -38,8 +39,8 @@ async function main(): Promise<void> {
     'Active queues from registry',
   );
 
-  await appRuntime.queues.startWorkers({
-    createContext: () => createSystemServiceContext(appRuntime),
+  await appRuntime.services.queues.startWorkers({
+    createContext: () => createSystemServiceContext(appRuntime.services),
   });
 
   logger.info('Queue worker process started successfully', {

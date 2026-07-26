@@ -1,14 +1,12 @@
 import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import { describe, expect, it } from 'vitest';
 
-import type {
-  AppRuntimeConstructionEntry,
-  AppRuntimeFieldEntry,
-} from './app-runtime.generator.js';
+import type { AppRuntimeConstructionEntry } from './app-runtime.generator.js';
 
 import {
   sortConstructionEntries,
   validateConstructionBindings,
+  validateConstructionTypes,
 } from './app-runtime.generator.js';
 
 function buildConstruction(
@@ -98,12 +96,10 @@ describe('sortConstructionEntries', () => {
 function validate({
   services = [],
   construction = [],
-  runtimeFields = [],
   flattenedModuleFields = [],
 }: {
   services?: string[];
   construction?: string[];
-  runtimeFields?: string[];
   flattenedModuleFields?: [string, string][];
 }): void {
   validateConstructionBindings({
@@ -112,12 +108,6 @@ function validate({
       construction.map((key): [string, AppRuntimeConstructionEntry] => [
         key,
         { fragment: tsCodeFragment(`const ${key} = build();`) },
-      ]),
-    ),
-    runtimeFields: new Map(
-      runtimeFields.map((key): [string, AppRuntimeFieldEntry] => [
-        key,
-        { type: tsCodeFragment('unknown') },
       ]),
     ),
     flattenedModuleFields: new Map(flattenedModuleFields),
@@ -130,7 +120,6 @@ describe('validateConstructionBindings', () => {
       validate({
         services: ['emails', 'queues'],
         construction: ['emails', 'queues'],
-        runtimeFields: ['queues'],
       });
     }).not.toThrow();
   });
@@ -152,9 +141,9 @@ describe('validateConstructionBindings', () => {
     );
   });
 
-  it('throws naming a runtime field with no construction entry', () => {
+  it('throws naming a runtime-internal service with no construction entry', () => {
     expect(() => {
-      validate({ runtimeFields: ['redis'] });
+      validate({ services: ['redis'] });
     }).toThrow(/declares 'redis' but no slice registers a construction entry/);
   });
 
@@ -184,5 +173,36 @@ describe('validateConstructionBindings', () => {
         flattenedModuleFields: [['queues', 'queueBindings']],
       });
     }).not.toThrow();
+  });
+});
+
+describe('validateConstructionTypes', () => {
+  function check(construction: string[], services: string[] = []): void {
+    validateConstructionTypes({
+      construction: buildConstruction(
+        Object.fromEntries(construction.map((key) => [key, {}])),
+      ),
+      services: new Map(services.map((key) => [key, tsCodeFragment(key)])),
+    });
+  }
+
+  it('accepts a constructed object declared on services', () => {
+    expect(() => {
+      check(['emails', 'redis'], ['emails', 'redis']);
+    }).not.toThrow();
+  });
+
+  it('throws naming a constructed object missing from services', () => {
+    expect(() => {
+      check(['stripe'], []);
+    }).toThrow(
+      /slice 'stripe' registers a construction entry but no services type/,
+    );
+  });
+
+  it('reports every untyped construction at once, sorted', () => {
+    expect(() => {
+      check(['stripe', 'redis'], []);
+    }).toThrow(/slice 'redis', 'stripe' registers a construction entry/);
   });
 });

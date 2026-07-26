@@ -277,14 +277,13 @@ export const yogaPluginGenerator = createGenerator({
               paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
             },
             run({ appRuntimeConfig, paths }) {
-              appRuntimeConfig.runtimeFields.set('pubsub', {
-                type: TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
-              });
+              appRuntimeConfig.services.set(
+                'pubsub',
+                TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
+              );
               appRuntimeConfig.construction.set('pubsub', {
                 dependencies: ['redis'],
-                fragment: TsCodeUtils.template`
-                  const pubsub = ${TsCodeUtils.importFragment('createGraphqlPubSub', paths.pubsub)}(redis);
-                `,
+                fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createGraphqlPubSub', paths.pubsub)}(redis)`,
               });
             },
           }),

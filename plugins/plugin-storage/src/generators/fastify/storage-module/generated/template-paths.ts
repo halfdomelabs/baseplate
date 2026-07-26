@@ -1,3 +1,4 @@
+import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -18,6 +19,7 @@ export interface FastifyStorageModulePaths {
   servicesGetPublicUrl: string;
   servicesStorage: string;
   servicesUploadFile: string;
+  storageTestHelper: string;
   typesAdapter: string;
   typesFileCategory: string;
   utilsCreateFileCategory: string;
@@ -31,10 +33,14 @@ const fastifyStorageModulePaths = createProviderType<FastifyStorageModulePaths>(
 );
 
 const fastifyStorageModulePathsTask = createGeneratorTask({
-  dependencies: { appModule: appModuleProvider },
+  dependencies: {
+    appModule: appModuleProvider,
+    packageInfo: packageInfoProvider,
+  },
   exports: { fastifyStorageModulePaths: fastifyStorageModulePaths.export() },
-  run({ appModule }) {
+  run({ appModule, packageInfo }) {
     const moduleRoot = appModule.getModuleFolder();
+    const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
@@ -55,6 +61,7 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           servicesGetPublicUrl: `${moduleRoot}/services/get-public-url.ts`,
           servicesStorage: `${moduleRoot}/services/storage.service.ts`,
           servicesUploadFile: `${moduleRoot}/services/upload-file.ts`,
+          storageTestHelper: `${srcRoot}/tests/helpers/storage.test-helper.ts`,
           typesAdapter: `${moduleRoot}/types/adapter.ts`,
           typesFileCategory: `${moduleRoot}/types/file-category.ts`,
           utilsCreateFileCategory: `${moduleRoot}/utils/create-file-category.ts`,

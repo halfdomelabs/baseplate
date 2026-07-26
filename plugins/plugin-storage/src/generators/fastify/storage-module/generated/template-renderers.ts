@@ -91,6 +91,16 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  storageTestHelper: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.storageTestHelper
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   utilsValidatePendingUpload: {
     render: (
       options: Omit<
@@ -224,6 +234,15 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: FASTIFY_STORAGE_MODULE_TEMPLATES.servicesStorage,
                 destination: paths.servicesStorage,
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          storageTestHelper: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.storageTestHelper,
+                destination: paths.storageTestHelper,
                 generatorPaths: paths,
                 ...options,
               }),

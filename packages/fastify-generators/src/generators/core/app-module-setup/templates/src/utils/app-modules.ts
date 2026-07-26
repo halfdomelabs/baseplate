@@ -4,31 +4,16 @@ import type { AppServices } from '%appRuntimeImports';
 import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
 /**
- * The view of `AppRuntime` module-contributed plugins receive as the
- * `runtime` option.
- */
-export interface PluginRuntime {
-  readonly services: Readonly<AppServices>;
-}
-
-/**
- * A {@link PluginRuntime} narrowed to only the named services, for plugins
- * that want an honest signature instead of accepting every service.
- */
-export type PluginRuntimeWithServices<K extends keyof AppServices> = Omit<
-  PluginRuntime,
-  'services'
-> & { readonly services: Readonly<Pick<AppServices, K>> };
-
-/**
  * A Fastify plugin registered through `AppModule.plugins`, receiving the
- * {@link PluginRuntime} as its options. Plugins that don't need any services
- * can ignore the option; plugins that do should narrow it with
- * {@link PluginRuntimeWithServices} rather than accepting the full runtime.
+ * services as its options. Plugins that don't need any can ignore the option;
+ * plugins that do should narrow it to what they use - declare
+ * `{ services: Pick<AppServices, 'stripe'> }` rather than accepting
+ * every service. Disposal is not reachable from here: the runtime that owns
+ * the graph disposes it.
  */
 export type AppPlugin =
-  | FastifyPluginCallback<{ runtime: PluginRuntime }>
-  | FastifyPluginAsync<{ runtime: PluginRuntime }>;
+  | FastifyPluginCallback<{ services: AppServices }>
+  | FastifyPluginAsync<{ services: AppServices }>;
 
 /**
  * A raw, unflattened module declaration. Feature modules declare this via

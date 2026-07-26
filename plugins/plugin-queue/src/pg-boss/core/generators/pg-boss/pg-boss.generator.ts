@@ -43,11 +43,11 @@ export const pgBossGenerator = createGenerator({
             'pgBossPlugin',
             tsImportBuilder(['pgBossPlugin']).from(paths.pgBossPlugin),
           ),
-          options: tsCodeFragment('{ runtime }'),
+          options: tsCodeFragment('{ services }'),
         });
         fastifyServerConfig.runtimeConstructionOptions.set(
           tsCodeFragment(
-            '{ disableQueueMaintenance: !config.ENABLE_EMBEDDED_WORKERS }',
+            '{ backgroundServices: config.ENABLE_EMBEDDED_WORKERS }',
           ),
         );
       },
@@ -61,23 +61,18 @@ export const pgBossGenerator = createGenerator({
       run({ appRuntimeConfig, queuesImports, paths }) {
         appRuntimeConfig.services.set(
           'queues',
-          queuesImports.QueueService.typeFragment(),
-        );
-        appRuntimeConfig.runtimeFields.set('queues', {
-          type: queuesImports.QueueRuntime.typeFragment(),
-        });
-        appRuntimeConfig.constructionOptions.set(
-          'disableQueueMaintenance?',
-          tsCodeFragment('boolean'),
+          queuesImports.QueueRuntime.typeFragment(),
         );
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
+        // `supervise`/`schedule` are constructor options and any enqueue calls
+        // `boss.start()`, so the loops need gating at construction rather than
+        // at worker startup.
+        appRuntimeConfig.usesBackgroundServices.set(true);
         appRuntimeConfig.construction.set('queues', {
-          fragment: TsCodeUtils.template`
-            const queues = ${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
-              disableMaintenance: options.disableQueueMaintenance,
-            });
-            disposers.push({ name: 'queues', dispose: () => queues.stopWorkers() });
-          `,
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
+            disableMaintenance: !options.backgroundServices,
+          })`,
+          disposeFragment: tsCodeFragment('(queues) => queues.stopWorkers()'),
         });
       },
     }),

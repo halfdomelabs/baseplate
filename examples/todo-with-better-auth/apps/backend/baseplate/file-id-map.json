@@ -158,6 +158,7 @@
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-get-public-url": "src/modules/storage/services/get-public-url.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-storage": "src/modules/storage/services/storage.service.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-upload-file": "src/modules/storage/services/upload-file.ts",
+  "@baseplate-dev/plugin-storage#fastify/storage-module:storage-test-helper": "src/tests/helpers/storage.test-helper.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:types-adapter": "src/modules/storage/types/adapter.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:types-file-category": "src/modules/storage/types/file-category.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:utils-create-file-category": "src/modules/storage/utils/create-file-category.ts",

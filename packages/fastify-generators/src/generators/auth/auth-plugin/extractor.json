@@ -6,9 +6,9 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
       "importMapProviders": {
-        "appModuleSetupImportsProvider": {
-          "importName": "appModuleSetupImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
+        "appRuntimeImportsProvider": {
+          "importName": "appRuntimeImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-runtime/generated/ts-import-providers.ts"
         },
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",

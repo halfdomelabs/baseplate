@@ -11,8 +11,6 @@ const appModules = createTsTemplateFile({
     AppPlugin: { isTypeOnly: true },
     defineAppModule: {},
     flattenAppModule: {},
-    PluginRuntime: { isTypeOnly: true },
-    PluginRuntimeWithServices: { isTypeOnly: true },
   },
   source: {
     path: path.join(

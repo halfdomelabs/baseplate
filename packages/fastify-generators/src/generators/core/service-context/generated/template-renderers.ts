@@ -66,6 +66,9 @@ const coreServiceContextRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_SERVICE_CONTEXT_TEMPLATES.testHelper,
                 destination: paths.testHelper,
+                importMapProviders: {
+                  appRuntimeImports,
+                },
                 generatorPaths: paths,
                 ...options,
               }),

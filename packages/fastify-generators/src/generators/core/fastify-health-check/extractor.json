@@ -13,7 +13,11 @@
       },
       "pathRootRelativePath": "{src-root}/plugins/health-check.ts",
       "sourceFile": "src/plugins/health-check.ts",
-      "variables": { "TPL_HEALTH_CHECKS": {} }
+      "variables": {
+        "TPL_HEALTH_CHECKS": {},
+        "TPL_PLUGIN_PARAMS": {},
+        "TPL_SERVICES_FIELD": {}
+      }
     }
   }
 }

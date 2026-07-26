@@ -259,13 +259,12 @@ export const prismaGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
       },
       run({ fastifyHealthCheckConfig, prismaImports }) {
-        fastifyHealthCheckConfig.healthChecks.set(
-          'prisma',
-          tsCodeFragment(
+        fastifyHealthCheckConfig.healthChecks.set('prisma', {
+          check: tsCodeFragment(
             '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
             prismaImports.prisma.declaration(),
           ),
-        );
+        });
       },
     }),
     schema: createGeneratorTask({

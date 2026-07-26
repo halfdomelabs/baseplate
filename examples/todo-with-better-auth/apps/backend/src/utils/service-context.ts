@@ -1,5 +1,4 @@
 import type { AuthContext } from '../modules/accounts/auth/types/auth-context.types.js';
-import type { AppRuntime } from './app-runtime.js';
 import type { AppServices } from './runtime-services.js';
 
 import { createSystemAuthContext } from '../modules/accounts/auth/utils/auth-context.utils.js';
@@ -19,7 +18,7 @@ export interface ExecutionContext {
 }
 
 export interface ServiceContext extends ExecutionContext {
-  readonly services: Readonly<AppServices>;
+  readonly services: AppServices;
 }
 
 /**
@@ -31,7 +30,7 @@ export interface ServiceContext extends ExecutionContext {
  * is known.
  */
 export type ServiceContextWith<K extends keyof AppServices> =
-  ExecutionContext & { readonly services: Readonly<Pick<AppServices, K>> };
+  ExecutionContext & { readonly services: Pick<AppServices, K> };
 
 export function createServiceContext(
   /* TPL_CREATE_CONTEXT_ARGS:START */ {
@@ -39,7 +38,7 @@ export function createServiceContext(
   }: {
     auth: AuthContext;
   } /* TPL_CREATE_CONTEXT_ARGS:END */,
-  services: Readonly<AppServices>,
+  services: AppServices,
 ): ServiceContext {
   return /* TPL_CONTEXT_OBJECT:START */ {
     auth,
@@ -50,23 +49,23 @@ export function createServiceContext(
 }
 
 /**
- * Creates a service context for the system user, delivering services from
- * the given runtime.
+ * Creates a service context for the system user, delivering the given
+ * services.
  */
 export function createSystemServiceContext(
-  runtime: AppRuntime,
+  services: AppServices,
 ): ServiceContext {
   return createServiceContext(
     /* TPL_SYSTEM_CONTEXT_OBJECT:START */ {
       auth: createSystemAuthContext(),
     } /* TPL_SYSTEM_CONTEXT_OBJECT:END */,
-    runtime.services,
+    services,
   );
 }
 
 /**
  * Runs `fn` with a system service context, constructing a fresh
- * {@link AppRuntime} around the call and guaranteeing disposal - including
+ * `AppRuntime` around the call and guaranteeing disposal - including
  * when `fn` throws. Safe on every execution path, including prisma-only
  * scripts, because construction performs no I/O.
  */
@@ -75,7 +74,7 @@ export async function withScriptContext<T>(
 ): Promise<T> {
   const runtime = createAppRuntime();
   try {
-    return await fn(createSystemServiceContext(runtime));
+    return await fn(createSystemServiceContext(runtime.services));
   } finally {
     await runtime.dispose();
   }

@@ -15,9 +15,7 @@
       "projectExports": {
         "AppPlugin": { "isTypeOnly": true },
         "defineAppModule": {},
-        "flattenAppModule": {},
-        "PluginRuntime": { "isTypeOnly": true },
-        "PluginRuntimeWithServices": { "isTypeOnly": true }
+        "flattenAppModule": {}
       },
       "sourceFile": "src/utils/app-modules.ts",
       "variables": {

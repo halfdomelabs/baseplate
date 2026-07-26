@@ -2,12 +2,12 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
-import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/generated/ts-import-providers.js';
+import { appRuntimeImportsProvider } from '#src/generators/core/app-runtime/generated/ts-import-providers.js';
 
 const authPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
-    appModuleSetupImports: appModuleSetupImportsProvider,
+    appRuntimeImports: appRuntimeImportsProvider,
     authContextImports: authContextImportsProvider,
   },
   name: 'auth-plugin',

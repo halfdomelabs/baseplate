@@ -90,7 +90,7 @@ export const fastifyStripeGenerator = createGenerator({
               '@/src/plugins/stripe-webhook.js',
             ),
           ),
-          options: tsCodeFragment('{ runtime }'),
+          options: tsCodeFragment('{ services }'),
         });
       },
     ),
@@ -108,9 +108,7 @@ export const fastifyStripeGenerator = createGenerator({
           ),
         );
         appRuntimeConfig.construction.set('stripe', {
-          fragment: TsCodeUtils.template`
-            const stripe = new ${tsCodeFragment('Stripe', tsImportBuilder().default('Stripe').from('stripe'))}(${configServiceImports.config.fragment()}.STRIPE_SECRET_KEY);
-          `,
+          fragment: TsCodeUtils.template`new ${tsCodeFragment('Stripe', tsImportBuilder().default('Stripe').from('stripe'))}(${configServiceImports.config.fragment()}.STRIPE_SECRET_KEY)`,
         });
       },
     }),

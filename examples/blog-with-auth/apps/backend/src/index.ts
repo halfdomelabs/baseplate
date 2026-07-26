@@ -7,7 +7,7 @@ import { createAppRuntime } from './utils/app-runtime.js';
 async function startServer(): Promise<void> {
   const runtime = createAppRuntime(
     /* TPL_RUNTIME_OPTIONS:START */ {
-      disableQueueMaintenance: !config.ENABLE_EMBEDDED_WORKERS,
+      backgroundServices: config.ENABLE_EMBEDDED_WORKERS,
     } /* TPL_RUNTIME_OPTIONS:END */,
   );
   const fastify = await buildServer({

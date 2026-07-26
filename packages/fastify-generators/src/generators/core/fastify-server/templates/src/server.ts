@@ -11,6 +11,8 @@ export async function buildServer(
   options: FastifyServerOptions & { runtime: AppRuntime },
 ): Promise<FastifyInstance> {
   const { runtime, ...fastifyOptions } = options;
+  // `runtime` owns disposal below; plugins only ever receive `services`.
+  const { services } = runtime;
   const fastify = Fastify({
     genReqId: () => nanoid(),
     forceCloseConnections: 'idle',
@@ -31,7 +33,7 @@ export async function buildServer(
   // register app plugins
   const { plugins = [] } = flattenAppModule(TPL_ROOT_MODULE);
   for (const plugin of plugins) {
-    await fastify.register(plugin, { runtime });
+    await fastify.register(plugin, { services });
   }
 
   return fastify;

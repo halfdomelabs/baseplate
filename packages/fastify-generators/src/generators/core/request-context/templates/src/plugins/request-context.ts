@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppRuntime } from '%appRuntimeImports';
+import type { AppServices } from '%appRuntimeImports';
 import type { FastifyRequest } from 'fastify';
 
 import {
@@ -30,8 +30,8 @@ declare module 'fastify' {
   }
 }
 
-export const requestContextPlugin = fp<{ runtime: AppRuntime }>(
-  async (fastify, opts) => {
+export const requestContextPlugin = fp<{ services: AppServices }>(
+  async (fastify, { services }) => {
     await fastify.register(fastifyRequestContext);
 
     fastify.decorateRequest('reqInfo');
