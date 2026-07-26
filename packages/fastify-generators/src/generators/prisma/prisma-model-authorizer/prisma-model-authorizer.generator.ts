@@ -193,12 +193,15 @@ export const prismaModelPolicyGenerator = createGenerator({
               const prismaModelFragment =
                 prismaOutput.getPrismaModelFragment(modelName);
 
-              const idFieldsLiteral = `[${idFieldNames.map((f) => `'${f}'`).join(', ')}]`;
+              const idLiteral =
+                idFieldNames.length === 1
+                  ? `'${idFieldNames[0]}'`
+                  : `[${idFieldNames.map((f) => `'${f}'`).join(', ')}]`;
 
               const fileFragment = tsTemplate`
                 export const ${policyName} = ${prismaAuthorizerUtilsImports.createModelPolicy.fragment()}({
                   model: '${modelVarName}',
-                  id: ${idFieldsLiteral},
+                  id: ${idLiteral},
                   delegate: ${prismaModelFragment},
                   roles: (r) => (${rolesFragment}),
                   actions: ${actionsFragment},

@@ -26,7 +26,8 @@ vi.mock('@src/services/prisma.js', () => ({
 }));
 
 const { prisma } = await import('@src/services/prisma.js');
-const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
+const { createModelPolicy } =
+  await import('@src/utils/authorizers/create-model-policy.js');
 const { blogPolicy } = await import('./blog.policy.js');
 const { blogPostPolicy } = await import('./blog-post.policy.js');
 const { blogUserPolicy } = await import('./blog-user.policy.js');
@@ -38,7 +39,7 @@ const { blogUserNotePolicy } = await import('./blog-user-note.policy.js');
 // in the generated policy, so the example stays exactly what the generator emits.
 const blogPostPolicyExtended = createModelPolicy({
   model: 'blogPost',
-  id: ['id'],
+  id: 'id',
   delegate: prisma.blogPost,
   superuser: ['admin'],
   roles: (r) => ({
@@ -244,7 +245,7 @@ describe('r.via: null FK on an optional relation denies rather than throwing', (
   });
 });
 
-describe('r.via: construction-time keys validation (bypassed-TS callers)', () => {
+describe('r.via: construction-time validation (bypassed-TS callers)', () => {
   // These deliberately bypass the compile-time check (via `as never`) to
   // prove the RUNTIME validation independently catches what TypeScript can't
   // see — a hand-authored policy built from untyped/dynamic input, or a
@@ -284,6 +285,28 @@ describe('r.via: construction-time keys validation (bypassed-TS callers)', () =>
         actions: { read: {} },
       }),
     ).toThrow(/keys.*target|target.*id fields/i);
+  });
+
+  it('an unknown target role is rejected by TypeScript and at runtime', () => {
+    expect(() =>
+      createModelPolicy({
+        model: 'blogPost',
+        id: 'id',
+        delegate: prisma.blogPost,
+        roles: (r) => ({
+          owner: r.via(
+            blogPolicy,
+            // @ts-expect-error -- blogPolicy does not define this role
+            'missingRole',
+            {
+              relation: 'blog',
+              keys: { blogId: 'id' },
+            },
+          ),
+        }),
+        actions: { read: {} },
+      }),
+    ).toThrow(/does not define role 'missingRole'/);
   });
 });
 
@@ -380,14 +403,15 @@ describe('r.match: where-form equals the match object (duality by construction)'
 });
 
 describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', async () => {
-  const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
+  const { createModelPolicy } =
+    await import('@src/utils/authorizers/create-model-policy.js');
 
   it('an object value in a match → throws (scalar-equality only)', async () => {
     // TypeScript forbids this via `LocalMatch`, but a caller bypassing types
     // (`as never`) must still be caught at runtime, not silently mis-decided.
     const policy = createModelPolicy({
       model: 'blogPost',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.match(() => ({ title: { some: 'x' } }) as never),
@@ -409,7 +433,7 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
     // throws before that object can reach the DB.
     const policy = createModelPolicy({
       model: 'blogPost',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.match(() => ({ publisherId: undefined })),
@@ -425,7 +449,7 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
     // error at authoring; this covers the bypassed-types path.)
     const policy = createModelPolicy({
       model: 'blogPost',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({
         bad: r.where(() => undefined as never),
@@ -652,11 +676,12 @@ describe('r.all: conjunction of local match AND cached via', () => {
   it('r.all([]) → throws at construction (empty conjunction is allow-all)', async () => {
     // The tuple type makes `r.all([])` a compile error; this covers the bypassed
     // runtime path — an empty conjunction must never silently become allow-all.
-    const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
+    const { createModelPolicy } =
+      await import('@src/utils/authorizers/create-model-policy.js');
     expect(() =>
       createModelPolicy({
         model: 'blogPost',
-        id: ['id'],
+        id: 'id',
         delegate: prisma.blogPost,
         roles: (r) => ({ bad: r.all([] as never) }),
         actions: { read: { roles: ['bad'] } },
@@ -666,13 +691,14 @@ describe('r.all: conjunction of local match AND cached via', () => {
 });
 
 describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
-  const { createModelPolicy } = await import('@src/utils/authorizers/create-model-policy.js');
+  const { createModelPolicy } =
+    await import('@src/utils/authorizers/create-model-policy.js');
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function buildPolicy() {
     return createModelPolicy({
       model: 'blogPost',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({
         // `owner || admin` — the || case: r.some of a match leaf and a hasRole leaf.
@@ -779,7 +805,7 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
   it('r.authenticated: logged-in grants, anonymous denies (both paths)', async () => {
     const policy = createModelPolicy({
       model: 'blogPost',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blogPost,
       roles: (r) => ({ loggedIn: r.authenticated() }),
       actions: { read: { roles: ['loggedIn'] } },
@@ -806,7 +832,7 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     expect(() =>
       createModelPolicy({
         model: 'blogPost',
-        id: ['id'],
+        id: 'id',
         delegate: prisma.blogPost,
         roles: (r) => ({ bad: r.some([] as never) }),
         actions: { read: { roles: ['bad'] } },
@@ -838,7 +864,7 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
   function buildTeamPolicy() {
     return createModelPolicy({
       model: 'blog',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blog,
       roles: (r) => ({
         teamAdmin: r.check((ctx, m) =>
@@ -926,7 +952,7 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
     // any other where path.
     const policy = createModelPolicy({
       model: 'blog',
-      id: ['id'],
+      id: 'id',
       delegate: prisma.blog,
       roles: (r) => ({ teamAdmin: r.check(() => Promise.resolve(true)) }),
       actions: { read: { roles: ['teamAdmin'] } },
