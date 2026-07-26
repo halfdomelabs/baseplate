@@ -3,9 +3,7 @@
   "templates": {
     "auth-plugin": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
       "importMapProviders": {
         "appRuntimeImportsProvider": {

@@ -58,6 +58,8 @@ export function createAppRuntime(
 ): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
+
+  /* TPL_PROVIDE_HELPER:START */
   const overrides = options.overrides ?? {};
 
   /**
@@ -89,6 +91,7 @@ export function createAppRuntime(
     }
     return value;
   }
+  /* TPL_PROVIDE_HELPER:END */
 
   /* TPL_SERVICE_CONSTRUCTION:START */
   const { queues: queueBindings = [], storageCategories = [] } =

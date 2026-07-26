@@ -13,7 +13,11 @@ const healthCheck = createTsTemplateFile({
       '../templates/src/plugins/health-check.ts',
     ),
   },
-  variables: { TPL_HEALTH_CHECKS: {} },
+  variables: {
+    TPL_HEALTH_CHECKS: {},
+    TPL_PLUGIN_PARAMS: {},
+    TPL_SERVICES_FIELD: {},
+  },
 });
 
 export const CORE_FASTIFY_HEALTH_CHECK_TEMPLATES = { healthCheck };

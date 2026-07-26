@@ -35,37 +35,8 @@ export interface AppRuntime {
 export function createAppRuntime(TPL_OPTIONS_PARAM): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
   let disposePromise: Promise<void> | undefined;
-  const overrides = options.overrides ?? {};
 
-  /**
-   * Returns the service for `key`: the supplied override if there is one,
-   * otherwise the constructed value.
-   *
-   * An override skips construction entirely and is borrowed - only a value
-   * this function constructs registers a disposer, so the runtime never
-   * disposes what a caller owns.
-   *
-   * @param key The service being provided.
-   * @param create Builds the object when it is not overridden.
-   * @param dispose Releases a constructed object, if it holds resources.
-   * @returns The override or the newly constructed object.
-   */
-  function provide<K extends keyof AppServices>(
-    key: K,
-    create: () => AppServices[K],
-    dispose?: (value: AppServices[K]) => Promise<void>,
-  ): AppServices[K] {
-    const overridden = overrides[key];
-    if (overridden !== undefined) {
-      return overridden;
-    }
-
-    const value = create();
-    if (dispose) {
-      disposers.push({ name: key, dispose: () => dispose(value) });
-    }
-    return value;
-  }
+  TPL_PROVIDE_HELPER;
 
   TPL_SERVICE_CONSTRUCTION;
 

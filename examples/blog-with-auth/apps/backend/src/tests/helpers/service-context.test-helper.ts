@@ -22,16 +22,20 @@ export function createTestServiceContext(
   } = {} /* TPL_CREATE_TEST_ARGS:END */,
 ): ServiceContext {
   // Symbol keys fall through so inspection and test-runner diffing don't throw.
-  const suppliedServices = new Proxy((services ?? {}) as AppServices, {
-    get(target, key): unknown {
-      if (typeof key === 'string' && !(key in target)) {
-        throw new Error(
-          `${key} was not supplied to createTestServiceContext. Pass it via the \`services\` option.`,
-        );
-      }
-      return target[key as keyof AppServices];
+  const suppliedServices = new Proxy(
+    /* TPL_SUPPLIED_SERVICES:START */ (services ??
+      {}) as AppServices /* TPL_SUPPLIED_SERVICES:END */,
+    {
+      get(target, key): unknown {
+        if (typeof key === 'string' && !(key in target)) {
+          throw new Error(
+            `${key} was not supplied to createTestServiceContext. Pass it via the \`services\` option.`,
+          );
+        }
+        return target[key as keyof AppServices];
+      },
     },
-  });
+  );
 
   return createServiceContext(
     /* TPL_CREATE_TEST_OBJECT:START */ {

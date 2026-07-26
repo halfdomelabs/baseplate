@@ -86,7 +86,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 31,
+  "schemaVersion": 32,
   "settings": {
     "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

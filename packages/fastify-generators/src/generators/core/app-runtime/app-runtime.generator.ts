@@ -243,10 +243,11 @@ const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
     {
       prefix: 'app-runtime',
       configScope: packageScope,
+      configValuesScope: packageScope,
     },
   );
 
-export { appRuntimeConfigProvider };
+export { appRuntimeConfigProvider, appRuntimeConfigValuesProvider };
 
 /**
  * Generates the app runtime composition root: `createAppRuntime()` and the
@@ -377,24 +378,72 @@ export const appRuntimeGenerator = createGenerator({
                 backgroundServices?: boolean;`
               : undefined;
 
-            const optionsParam = TsCodeUtils.template`
+            // `provide`/`overrides` construct and borrow services, so they have
+            // nothing to do when no slice registers one - omitted rather than
+            // emitted-but-dead, since a project with no services would
+            // otherwise get an unreachable `overridden !== undefined` check.
+            const overridesOption =
+              services.size === 0
+                ? undefined
+                : TsCodeUtils.template`
+                /**
+                 * Services to use instead of constructing them. An overridden key's
+                 * construction is skipped entirely and downstream construction consumes the
+                 * override. Overrides are borrowed: the runtime never disposes them.
+                 */
+                overrides?: Partial<AppServices>;`;
+
+            const optionsParam =
+              (backgroundServicesOption ?? overridesOption)
+                ? TsCodeUtils.template`
               options: {
                 ${TsCodeUtils.mergeFragmentsPresorted(
                   [
                     ...(backgroundServicesOption
                       ? [backgroundServicesOption]
                       : []),
-                    TsCodeUtils.template`
-                /**
-                 * Services to use instead of constructing them. An overridden key's
-                 * construction is skipped entirely and downstream construction consumes the
-                 * override. Overrides are borrowed: the runtime never disposes them.
-                 */
-                overrides?: Partial<AppServices>;`,
+                    ...(overridesOption ? [overridesOption] : []),
                   ],
                   '\n',
                 )}
-              } = {},`;
+              } = {},`
+                : '';
+
+            const provideHelper =
+              services.size === 0
+                ? ''
+                : TsCodeUtils.template`
+              const overrides = options.overrides ?? {};
+
+              /**
+               * Returns the service for \`key\`: the supplied override if there is one,
+               * otherwise the constructed value.
+               *
+               * An override skips construction entirely and is borrowed - only a value
+               * this function constructs registers a disposer, so the runtime never
+               * disposes what a caller owns.
+               *
+               * @param key The service being provided.
+               * @param create Builds the object when it is not overridden.
+               * @param dispose Releases a constructed object, if it holds resources.
+               * @returns The override or the newly constructed object.
+               */
+              function provide<K extends keyof AppServices>(
+                key: K,
+                create: () => AppServices[K],
+                dispose?: (value: AppServices[K]) => Promise<void>,
+              ): AppServices[K] {
+                const overridden = overrides[key];
+                if (overridden !== undefined) {
+                  return overridden;
+                }
+
+                const value = create();
+                if (dispose) {
+                  disposers.push({ name: key, dispose: () => dispose(value) });
+                }
+                return value;
+              }`;
 
             await builder.apply(
               renderers.runtimeServices.render({
@@ -405,6 +454,7 @@ export const appRuntimeGenerator = createGenerator({
               renderers.appRuntime.render({
                 variables: {
                   TPL_OPTIONS_PARAM: optionsParam,
+                  TPL_PROVIDE_HELPER: provideHelper,
                   TPL_SERVICE_CONSTRUCTION: constructionStatements,
                   TPL_SERVICES_OBJECT: servicesObject,
                 },

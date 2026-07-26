@@ -14,7 +14,7 @@ import { createServiceContext } from '$serviceContext';
  */
 export function createTestServiceContext(TPL_CREATE_TEST_ARGS): ServiceContext {
   // Symbol keys fall through so inspection and test-runner diffing don't throw.
-  const suppliedServices = new Proxy((services ?? {}) as AppServices, {
+  const suppliedServices = new Proxy(TPL_SUPPLIED_SERVICES, {
     get(target, key): unknown {
       if (typeof key === 'string' && !(key in target)) {
         throw new Error(

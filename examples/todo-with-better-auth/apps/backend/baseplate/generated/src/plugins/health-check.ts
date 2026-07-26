@@ -7,8 +7,12 @@ import type { AppServices } from '../utils/runtime-services.js';
 import { prisma } from '../services/prisma.js';
 
 const healthCheckPluginCallback: FastifyPluginCallback<{
-  services: AppServices;
-}> = (fastify, { services }, done) => {
+  /* TPL_SERVICES_FIELD:START */ services /* TPL_SERVICES_FIELD:END */: AppServices;
+}> = (
+  fastify,
+  /* TPL_PLUGIN_PARAMS:START */ { services } /* TPL_PLUGIN_PARAMS:END */,
+  done,
+) => {
   fastify.get(
     '/healthz',
     { logLevel: 'warn' },

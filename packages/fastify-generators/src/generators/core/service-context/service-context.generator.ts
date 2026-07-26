@@ -10,6 +10,7 @@ import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import { appRuntimeConfigValuesProvider } from '../app-runtime/app-runtime.generator.js';
 import { appRuntimeImportsProvider } from '../app-runtime/generated/ts-import-providers.js';
 import { CORE_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
@@ -77,11 +78,13 @@ export const serviceContextGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         serviceContextConfigValues: serviceContextConfigValuesProvider,
+        appRuntimeConfigValues: appRuntimeConfigValuesProvider,
         renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.provider,
         appRuntimeImports: appRuntimeImportsProvider,
       },
       run({
         serviceContextConfigValues: { contextFields },
+        appRuntimeConfigValues: { services },
         renderers,
         appRuntimeImports,
       }) {
@@ -187,11 +190,20 @@ export const serviceContextGenerator = createGenerator({
                  )}
                 } = {}`;
 
+            // The cast is only needed when `AppServices` has fields `Partial`
+            // would otherwise widen - with none, `Partial<AppServices>` is
+            // already `AppServices` and the cast is flagged as unnecessary.
+            const suppliedServices =
+              services.size === 0
+                ? TsCodeUtils.template`services ?? {}`
+                : TsCodeUtils.template`(services ?? {}) as ${appRuntimeImports.AppServices.typeFragment()}`;
+
             await builder.apply(
               renderers.testHelper.render({
                 variables: {
                   TPL_CREATE_TEST_ARGS: testArgs,
                   TPL_CREATE_TEST_OBJECT: testObject,
+                  TPL_SUPPLIED_SERVICES: suppliedServices,
                 },
               }),
             );

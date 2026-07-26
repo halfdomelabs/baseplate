@@ -65,13 +65,13 @@ export const fastifyRedisGenerator = createGenerator({
         fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
       },
       run({ fastifyHealthCheckConfig }) {
-        fastifyHealthCheckConfig.healthChecks.set(
-          'redis',
-          tsCodeFragment(
+        fastifyHealthCheckConfig.healthChecks.set('redis', {
+          check: tsCodeFragment(
             `// check Redis is operating
           await services.redis.healthCheck();`,
           ),
-        );
+          usesServices: true,
+        });
       },
     }),
     appRuntimeConfig: createGeneratorTask({
