@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.13
+
+### Patch Changes
+
+- [#950](https://github.com/halfdomelabs/baseplate/pull/950) [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3) Thanks [@kingston](https://github.com/kingston)! - Refined the ESLint config for generated apps, and brought the internal monorepo configs in line with it. `eslint-plugin-unicorn` now uses its `unopinionated` preset while retaining `consistent-function-scoping`, `filename-case`, and `no-for-loop`, with `filename-case` applying to all generated apps rather than only React ones; `@typescript-eslint/switch-exhaustiveness-check` catches new union members silently falling into a generic `default` case; `react/prop-types` is disabled as redundant with TypeScript prop typing; `@typescript-eslint/explicit-function-return-type` no longer applies to React components (it remains load-bearing elsewhere) and `@typescript-eslint/prefer-destructuring` was removed. Unused ESLint disable directives and inline configs are now reported.
+
 ## 0.6.12
 
 ## 0.6.11

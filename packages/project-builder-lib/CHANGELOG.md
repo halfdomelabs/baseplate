@@ -1,5 +1,22 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.6.13
+
+### Patch Changes
+
+- [#950](https://github.com/halfdomelabs/baseplate/pull/950) [`9619580`](https://github.com/halfdomelabs/baseplate/commit/9619580e79c50556f649801bd9f04e4f7b221cc3) Thanks [@kingston](https://github.com/kingston)! - Added opt-in pagination, sorting, and filtering to generated GraphQL queries, configurable per model in the GraphQL section of the model editor. Enabling "Connection" generates a Relay-style `<model>sConnection(first, after, last, before)` query backed by Pothos's `t.prismaConnection`; `orderBy` adds multi-field sorting over the fields you mark sortable, with the model's ID field(s) appended as a stable cursor tiebreaker; `where` adds filtering over the fields you mark filterable, composing with row-level authorization and capped in depth and breadth; and to-many relation fields gain optional `skip`/`take` args (e.g. `user.todoLists(skip, take)`).
+
+- [#922](https://github.com/halfdomelabs/baseplate/pull/922) [`f596b4b`](https://github.com/halfdomelabs/baseplate/commit/f596b4b43bd9f0ecb7d5379739b0e36a01c40c70) Thanks [@kingston](https://github.com/kingston)! - Add a stage-patch-entity MCP action that stages a partial entity update, replacing only the provided root-level fields while preserving the rest of the entity. This complements stage-update-entity, which replaces the whole entity.
+
+- [#924](https://github.com/halfdomelabs/baseplate/pull/924) [`d0f8726`](https://github.com/halfdomelabs/baseplate/commit/d0f87265f16bfbde6c1525b0655850e906a7c3ed) Thanks [@kingston](https://github.com/kingston)! - Consolidated model authorization into a single generated policy per model. Each model emits one `createModelPolicy` file that declares its roles once and derives both the boolean instance check and the Prisma `where` filter from the same declaration, with action helpers grouped under `policy.actions`; reads filter through the policy, and authorized updates and deletes compose the grant into the query as one atomic operation, hiding an unauthorized row as a 404. Role predicates support scalar matches, relation filters, cached delegation to a parent model's policy via `r.via`, global-role and authenticated checks, and `and`/`or` combinations, and both policies and `r.via` delegation work with composite primary keys and multi-column foreign keys. The `r.userMatch`/`r.userWhere` verbs key a predicate on the authenticated user's id and only run for an authenticated principal, so an anonymous caller is denied without a per-role null guard.
+
+- [#940](https://github.com/halfdomelabs/baseplate/pull/940) [`13b78ca`](https://github.com/halfdomelabs/baseplate/commit/13b78caae04ad84441ca48d98a0b9e17135485d9) Thanks [@kingston](https://github.com/kingston)! - Web app per-app plugin settings (upload components, notifications) are now contributed by their plugins through a generic extension point and stored under `pluginData` on the web app config, instead of hardcoded flags on the core web app schema. The web app settings page renders these toggles only when the owning plugin is enabled. Existing projects are migrated automatically, preserving any enabled toggles; the unused `includeAuth` flag is removed.
+
+- Updated dependencies [[`80c1474`](https://github.com/halfdomelabs/baseplate/commit/80c1474f8903f0609f8d7484b0d0be8b59d4f6c0), [`03cc94e`](https://github.com/halfdomelabs/baseplate/commit/03cc94e0308d441404b4e84457e678b4d19c47b8), [`47765e5`](https://github.com/halfdomelabs/baseplate/commit/47765e58ebd1979f94f0b1889efe539bcfe3e7f1), [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289)]:
+  - @baseplate-dev/utils@0.6.13
+  - @baseplate-dev/ui-components@0.6.13
+  - @baseplate-dev/sync@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

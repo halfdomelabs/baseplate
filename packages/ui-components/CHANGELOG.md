@@ -1,5 +1,18 @@
 # @baseplate-dev/ui-components
 
+## 0.6.13
+
+### Patch Changes
+
+- [#939](https://github.com/halfdomelabs/baseplate/pull/939) [`03cc94e`](https://github.com/halfdomelabs/baseplate/commit/03cc94e0308d441404b4e84457e678b4d19c47b8) Thanks [@kingston](https://github.com/kingston)! - Improve disabled state for multi-select combobox chips: badges now hide their remove buttons and render as muted gray text when the field is disabled.
+
+- [#937](https://github.com/halfdomelabs/baseplate/pull/937) [`47765e5`](https://github.com/halfdomelabs/baseplate/commit/47765e58ebd1979f94f0b1889efe539bcfe3e7f1) Thanks [@kingston](https://github.com/kingston)! - Upgrade @base-ui/react from 1.4.1 to 1.6.0, bringing focus-return fixes, RTL fixes across Combobox/Menu/NavigationMenu/Popover/ScrollArea, and improved keyboard navigation across components.
+
+- [#919](https://github.com/halfdomelabs/baseplate/pull/919) [`9548f2d`](https://github.com/halfdomelabs/baseplate/commit/9548f2d12af830e28187efed4b5a27d42020b289) Thanks [@kingston](https://github.com/kingston)! - Upgrade insecure dependencies flagged by pnpm audit. Generated projects now use axios 1.18.1 (was 1.16.1) and better-auth 1.6.23 (was 1.6.11), addressing multiple axios advisories (prototype pollution, DoS, proxy handling) and a stored XSS advisory in better-auth. Transitive dependencies (js-yaml, brace-expansion, protobufjs, esbuild, body-parser) were also updated to patched versions in the monorepo and example lockfiles.
+
+- Updated dependencies [[`80c1474`](https://github.com/halfdomelabs/baseplate/commit/80c1474f8903f0609f8d7484b0d0be8b59d4f6c0)]:
+  - @baseplate-dev/utils@0.6.13
+
 ## 0.6.12
 
 ### Patch Changes

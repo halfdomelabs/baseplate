@@ -1,5 +1,11 @@
 # @baseplate-dev/utils
 
+## 0.6.13
+
+### Patch Changes
+
+- [#943](https://github.com/halfdomelabs/baseplate/pull/943) [`80c1474`](https://github.com/halfdomelabs/baseplate/commit/80c1474f8903f0609f8d7484b0d0be8b59d4f6c0) Thanks [@kingston](https://github.com/kingston)! - Published packages now declare their runtime `dependencies` with caret (`^`) version ranges instead of exact pins, matching standard npm ecosystem convention and allowing consumers to dedupe transitive dependencies. `devDependencies` remain exact-pinned for reproducibility.
+
 ## 0.6.12
 
 ## 0.6.11
