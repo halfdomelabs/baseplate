@@ -57,3 +57,4 @@ This is a pnpm monorepo managed with Turborepo. Key directories:
 This project uses Baseplate for code generation. The project definition is stored in `baseplate/project-definition.json`.
 
 - See `.agents/baseplate.md` for how to use the Baseplate MCP server, modify data models, and manage plugins
+- See `.agents/authorization.md` for the authorization model and the expression DSL used by model roles

@@ -15,6 +15,18 @@ const agentsMd = createTextTemplateFile({
   },
 });
 
+const authorizationMd = createTextTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  name: 'authorization-md',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/package/agents/authorization.md',
+    ),
+  },
+  variables: {},
+});
+
 const baseplateMd = createTextTemplateFile({
   fileOptions: { kind: 'singleton' },
   name: 'baseplate-md',
@@ -42,6 +54,7 @@ const claudeMd = createTextTemplateFile({
 
 export const DEV_AGENTS_CORE_DEV_AGENTS_CONFIG_TEMPLATES = {
   agentsMd,
+  authorizationMd,
   baseplateMd,
   claudeMd,
 };

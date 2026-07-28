@@ -129,6 +129,9 @@ export const devAgentsConfigGenerator = createGenerator({
               }),
             );
 
+            // Always generate .agents/authorization.md
+            await builder.apply(renderers.authorizationMd.render({}));
+
             // Conditionally generate Claude-specific files
             if (descriptor.enabledAgents.includes('claude-code')) {
               await builder.apply(renderers.claudeMd.render({}));

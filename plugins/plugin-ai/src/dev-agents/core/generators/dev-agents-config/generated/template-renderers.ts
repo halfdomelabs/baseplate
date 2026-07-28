@@ -18,6 +18,16 @@ export interface DevAgentsCoreDevAgentsConfigRenderers {
       >,
     ) => BuilderAction;
   };
+  authorizationMd: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof DEV_AGENTS_CORE_DEV_AGENTS_CONFIG_TEMPLATES.authorizationMd
+        >,
+        'destination' | 'template'
+      >,
+    ) => BuilderAction;
+  };
   baseplateMd: {
     render: (
       options: Omit<
@@ -60,6 +70,15 @@ const devAgentsCoreDevAgentsConfigRenderersTask = createGeneratorTask({
               renderTextTemplateFileAction({
                 template: DEV_AGENTS_CORE_DEV_AGENTS_CONFIG_TEMPLATES.agentsMd,
                 destination: paths.agentsMd,
+                ...options,
+              }),
+          },
+          authorizationMd: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template:
+                  DEV_AGENTS_CORE_DEV_AGENTS_CONFIG_TEMPLATES.authorizationMd,
+                destination: paths.authorizationMd,
                 ...options,
               }),
           },
