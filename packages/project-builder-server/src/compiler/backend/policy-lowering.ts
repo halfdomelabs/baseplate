@@ -10,8 +10,9 @@
  * - `fieldComparison ===`  → `r.match({ field: value })` (scalar-equality fast path)
  * - `fieldComparison !==`  → `r.where(...)` (match is equality-only; where is the fallback)
  * - `hasRole` / `hasSomeRole` / `isAuthenticated` → `r.hasRole(...)` (global leaf)
- * - `nestedHasRole`        → `r.via(target, role, { fk, relation })`
- * - `nestedHasSomeRole`    → `r.some([ r.via(...), ... ])`
+ * - `nestedHasRole`        → `r.via(target, role, { fk, relation })` (to-one)
+ *                            or `r.viaMany(target, role, relation)` (to-many)
+ * - `nestedHasSomeRole`    → `r.some([ r.via(...)/r.viaMany(...), ... ])`
  * - `binaryLogical &&`     → `r.all([...])`
  * - `binaryLogical ||`     → `r.some([...])`
  * - `relationFilter`       → `r.where(...)` (membership stays where)
@@ -46,6 +47,8 @@ import {
  * A resolved to-one delegation link (parent policy + FK/relation), for `r.via`.
  */
 export interface ResolvedViaLink {
+  /** Delegation across a local (belongs-to) relation. */
+  cardinality: 'one';
   /** The parent policy variable name (e.g., 'todoListPolicy'). */
   targetPolicyVar: string;
   /** Local FK field → target id field (e.g. `{ todoListId: 'id' }`). */
@@ -55,12 +58,29 @@ export interface ResolvedViaLink {
 }
 
 /**
+ * A resolved to-many delegation link, for `r.viaMany`. A reverse (has-many)
+ * relation has no local FK, so the relation name alone identifies it — there is
+ * no `keys` mapping to resolve.
+ */
+export interface ResolvedViaManyLink {
+  /** Delegation across a reverse (has-many) relation. */
+  cardinality: 'many';
+  /** The target policy variable name (e.g., 'blogUserPolicy'). */
+  targetPolicyVar: string;
+  /** The reverse relation field name (e.g., 'members'). */
+  relationName: string;
+}
+
+/** A resolved delegation link of either cardinality. */
+export type ResolvedDelegationLink = ResolvedViaLink | ResolvedViaManyLink;
+
+/**
  * Context for lowering — resolved relation links for `via` delegation, and the
  * query-filter codegen context (for the `r.where` fallback paths).
  */
 export interface PolicyLoweringContext {
-  /** relation name → resolved `via` link. */
-  resolvedVia: Map<string, ResolvedViaLink>;
+  /** relation name → resolved delegation link (`via` or `viaMany`). */
+  resolvedVia: Map<string, ResolvedDelegationLink>;
   /**
    * The query-filter codegen context, used to render the `where` body for the
    * fallback kinds (`!==` comparisons, relation filters).
@@ -138,6 +158,23 @@ function renderVia(link: ResolvedViaLink, role: string): string {
 }
 
 /**
+ * Render an `r.viaMany(targetPolicyVar, 'role', 'relation')` call — existential
+ * delegation across a to-many relation ("SOME related row grants the role").
+ * No `keys`: a reverse relation has no local FK, so the relation name alone
+ * identifies the link.
+ */
+function renderViaMany(link: ResolvedViaManyLink, role: string): string {
+  return `r.viaMany(${link.targetPolicyVar}, ${quot(role)}, ${quot(link.relationName)})`;
+}
+
+/** Render a delegation of either cardinality. */
+function renderDelegation(link: ResolvedDelegationLink, role: string): string {
+  return link.cardinality === 'many'
+    ? renderViaMany(link, role)
+    : renderVia(link, role);
+}
+
+/**
  * Build the lowering visitor. Each node returns a `r.*(...)` builder-call string.
  */
 function createPolicyLoweringVisitor(
@@ -192,7 +229,7 @@ function createPolicyLoweringVisitor(
           `No resolved via link for relation '${node.relationName}'`,
         );
       }
-      return renderVia(link, node.role);
+      return renderDelegation(link, node.role);
     },
     nestedHasSomeRole(node) {
       const link = ctx.resolvedVia.get(node.relationName);
@@ -201,7 +238,7 @@ function createPolicyLoweringVisitor(
           `No resolved via link for relation '${node.relationName}'`,
         );
       }
-      const vias = node.roles.map((role) => renderVia(link, role));
+      const vias = node.roles.map((role) => renderDelegation(link, role));
       return vias.length === 1 ? vias[0] : `r.some([${vias.join(', ')}])`;
     },
     relationFilter(node) {

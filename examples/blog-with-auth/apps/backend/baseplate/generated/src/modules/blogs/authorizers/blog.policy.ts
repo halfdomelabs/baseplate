@@ -1,6 +1,8 @@
 import { prisma } from '@src/services/prisma.js';
 import { createModelPolicy } from '@src/utils/authorizers/create-model-policy.js';
 
+import { blogUserPolicy } from './blog-user.policy.js';
+
 export const blogPolicy = createModelPolicy({
   model: 'blog',
   id: 'id',
@@ -10,9 +12,10 @@ export const blogPolicy = createModelPolicy({
     viewer: r.userWhere((session) => ({
       members: { some: { userId: session.userId } },
     })),
+    member: r.viaMany(blogUserPolicy, 'owner', 'members'),
   }),
   actions: {
-    read: { globalRoles: ['public'] },
+    read: { roles: ['member'], globalRoles: ['public'] },
     update: { roles: ['owner'], globalRoles: ['admin'] },
     delete: { roles: ['owner'], globalRoles: ['admin'] },
   },

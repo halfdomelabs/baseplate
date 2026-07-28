@@ -26,7 +26,7 @@ import { lowercaseFirstChar } from '@baseplate-dev/utils';
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 import type {
   PolicyLoweringContext,
-  ResolvedViaLink,
+  ResolvedDelegationLink,
 } from './policy-lowering.js';
 import type {
   QueryFilterCodeContext,
@@ -53,54 +53,86 @@ interface LoweredRole {
 }
 
 /**
- * Resolve `via` delegation links for a model's nested role refs. Mirrors the old
+ * Resolve delegation links for a model's nested role refs. Mirrors the old
  * authorizer resolution, but the target is the parent POLICY var (`blogPolicy`),
  * not an authorizer var.
+ *
+ * Searches local relations first (FK on this model → `r.via`), then reverse
+ * relations (FK on another model pointing here via `foreignRelationName` →
+ * `r.viaMany`). Local-first precedence matches `buildModelExpressionContext`,
+ * so a name collision resolves the same way the editor validated it.
  */
 function resolveViaLinks(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
   nestedRoleRefs: { relationName: string }[],
-): { resolvedVia: Map<string, ResolvedViaLink>; foreignModelNames: string[] } {
-  const resolvedVia = new Map<string, ResolvedViaLink>();
+): {
+  resolvedVia: Map<string, ResolvedDelegationLink>;
+  foreignModelNames: string[];
+} {
+  const resolvedVia = new Map<string, ResolvedDelegationLink>();
   const foreignModelNames: string[] = [];
+
+  function trackForeignModel(name: string): void {
+    if (!foreignModelNames.includes(name)) {
+      foreignModelNames.push(name);
+    }
+  }
 
   for (const { relationName } of nestedRoleRefs) {
     if (resolvedVia.has(relationName)) continue;
 
     const relation = model.model.relations.find((r) => r.name === relationName);
-    if (!relation) {
-      throw new Error(
-        `Relation '${relationName}' not found on model '${model.name}'`,
+
+    if (relation) {
+      const keys = Object.fromEntries(
+        relation.references.map((ref) => [
+          appBuilder.nameFromId(ref.localRef),
+          appBuilder.nameFromId(ref.foreignRef),
+        ]),
       );
+      if (Object.entries(keys).some(([local, target]) => !local || !target)) {
+        throw new Error(
+          `Could not resolve FK field for relation '${relationName}' on model '${model.name}'`,
+        );
+      }
+
+      const foreignModel = ModelUtils.byIdOrThrow(
+        appBuilder.projectDefinition,
+        relation.modelRef,
+      );
+
+      resolvedVia.set(relationName, {
+        cardinality: 'one',
+        targetPolicyVar: `${lowercaseFirstChar(foreignModel.name)}Policy`,
+        keys,
+        relationName,
+      });
+      trackForeignModel(foreignModel.name);
+      continue;
     }
 
-    const keys = Object.fromEntries(
-      relation.references.map((ref) => [
-        appBuilder.nameFromId(ref.localRef),
-        appBuilder.nameFromId(ref.foreignRef),
-      ]),
+    // Reverse (has-many) relation: another model's FK points here. No local FK
+    // to map, so the relation name alone identifies the link.
+    const reverseHolder = appBuilder.projectDefinition.models.find(
+      (otherModel) =>
+        otherModel.model.relations.some(
+          (r) =>
+            r.modelRef === model.id && r.foreignRelationName === relationName,
+        ),
     );
-    if (Object.entries(keys).some(([local, target]) => !local || !target)) {
+    if (!reverseHolder) {
       throw new Error(
-        `Could not resolve FK field for relation '${relationName}' on model '${model.name}'`,
+        `Relation '${relationName}' not found on model '${model.name}' or as a reverse relation`,
       );
     }
-
-    const foreignModel = ModelUtils.byIdOrThrow(
-      appBuilder.projectDefinition,
-      relation.modelRef,
-    );
 
     resolvedVia.set(relationName, {
-      targetPolicyVar: `${lowercaseFirstChar(foreignModel.name)}Policy`,
-      keys,
+      cardinality: 'many',
+      targetPolicyVar: `${lowercaseFirstChar(reverseHolder.name)}Policy`,
       relationName,
     });
-
-    if (!foreignModelNames.includes(foreignModel.name)) {
-      foreignModelNames.push(foreignModel.name);
-    }
+    trackForeignModel(reverseHolder.name);
   }
 
   return { resolvedVia, foreignModelNames };
@@ -258,7 +290,7 @@ export function buildPoliciesForFeature(
         allNestedRefs.length > 0
           ? resolveViaLinks(appBuilder, model, allNestedRefs)
           : {
-              resolvedVia: new Map<string, ResolvedViaLink>(),
+              resolvedVia: new Map<string, ResolvedDelegationLink>(),
               foreignModelNames: [] as string[],
             };
 

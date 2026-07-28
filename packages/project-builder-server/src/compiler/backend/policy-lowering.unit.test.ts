@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 
 import type {
   PolicyLoweringContext,
+  ResolvedDelegationLink,
   ResolvedViaLink,
+  ResolvedViaManyLink,
 } from './policy-lowering.js';
 
 import { lowerExpressionToRoleTree } from './policy-lowering.js';
@@ -12,19 +14,29 @@ import { lowerExpressionToRoleTree } from './policy-lowering.js';
 // that's the normal case (`BlogPost.blogId` references `Blog.id`) and the one
 // a naive "assume local name === target name" implementation gets wrong.
 const VIA_BLOG: ResolvedViaLink = {
+  cardinality: 'one',
   targetPolicyVar: 'blogPolicy',
   keys: { blogId: 'id' },
   relationName: 'blog',
 };
 
 const VIA_BLOG_USER: ResolvedViaLink = {
+  cardinality: 'one',
   targetPolicyVar: 'blogUserPolicy',
   keys: { blogId: 'blogId', userId: 'userId' },
   relationName: 'blogUser',
 };
 
+// Reverse (has-many) link: Blog.members → BlogUser. No `keys` — a reverse
+// relation has no local FK, so the relation name alone identifies it.
+const VIA_MANY_MEMBERS: ResolvedViaManyLink = {
+  cardinality: 'many',
+  targetPolicyVar: 'blogUserPolicy',
+  relationName: 'members',
+};
+
 function ctxWith(
-  via: Record<string, ResolvedViaLink> = {},
+  via: Record<string, ResolvedDelegationLink> = {},
 ): PolicyLoweringContext {
   return { resolvedVia: new Map(Object.entries(via)) };
 }
@@ -125,6 +137,41 @@ describe('lowerExpressionToRoleTree', () => {
         ),
       ).toBe(
         "r.via(blogUserPolicy, 'owner', { relation: 'blogUser', keys: { 'blogId': 'blogId', 'userId': 'userId' } })",
+      );
+    });
+  });
+
+  describe('r.viaMany — to-many (reverse relation) delegation', () => {
+    it('nestedHasRole on a reverse relation → r.viaMany (relation name only, no keys)', () => {
+      expect(
+        lower(
+          "hasRole(model.members, 'owner')",
+          ctxWith({ members: VIA_MANY_MEMBERS }),
+        ),
+      ).toBe("r.viaMany(blogUserPolicy, 'owner', 'members')");
+    });
+
+    it('nestedHasSomeRole on a reverse relation → r.some of viaMany', () => {
+      expect(
+        lower(
+          "hasSomeRole(model.members, ['owner', 'editor'])",
+          ctxWith({ members: VIA_MANY_MEMBERS }),
+        ),
+      ).toBe(
+        "r.some([r.viaMany(blogUserPolicy, 'owner', 'members'), r.viaMany(blogUserPolicy, 'editor', 'members')])",
+      );
+    });
+
+    it('mixed cardinalities in one expression each render their own form', () => {
+      // The same expression can delegate to-one and to-many; cardinality is
+      // per-link, resolved from the schema, not per-expression.
+      expect(
+        lower(
+          "hasRole(model.blog, 'owner') || hasRole(model.members, 'owner')",
+          ctxWith({ blog: VIA_BLOG, members: VIA_MANY_MEMBERS }),
+        ),
+      ).toBe(
+        "r.some([r.via(blogPolicy, 'owner', { relation: 'blog', keys: { 'blogId': 'id' } }), r.viaMany(blogUserPolicy, 'owner', 'members')])",
       );
     });
   });

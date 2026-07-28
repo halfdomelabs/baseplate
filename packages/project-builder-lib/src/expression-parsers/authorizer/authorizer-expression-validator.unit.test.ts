@@ -471,6 +471,16 @@ describe('validateAuthorizerExpression', () => {
             direction: 'local' as const,
           },
         ],
+        // Reverse (has-many) relation: TodoItem's FK points at Todo. Roles come
+        // from the FK holder, which is what hasRole delegates to.
+        [
+          'items',
+          {
+            foreignModelName: 'TodoItem',
+            foreignAuthorizerRoleNames: new Set(['assignee']),
+            direction: 'foreign' as const,
+          },
+        ],
       ]),
     };
 
@@ -493,6 +503,53 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toEqual([]);
+    });
+
+    it('should validate nested hasRole on a reverse (has-many) relation', () => {
+      // ENG-1211: hasRole delegates across BOTH directions — a has-many
+      // relation means "SOME related row grants the role" (lowered to
+      // r.viaMany). Only exists()/all() are direction-restricted.
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'items',
+        relationStart: 8,
+        relationEnd: 19,
+        role: 'assignee',
+        roleStart: 21,
+        roleEnd: 31,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toEqual([]);
+    });
+
+    it('should warn for an unknown role on a reverse (has-many) relation', () => {
+      const ast: NestedHasRoleNode = {
+        type: 'nestedHasRole',
+        relationName: 'items',
+        relationStart: 8,
+        relationEnd: 19,
+        role: 'nope',
+        roleStart: 21,
+        roleEnd: 27,
+      };
+
+      const warnings = validateAuthorizerExpression(
+        ast,
+        modelContextWithRelations,
+        defaultPluginStore,
+        defaultDefinition,
+      );
+
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain("'nope'");
+      expect(warnings[0].message).toContain('TodoItem');
     });
 
     it('should warn for nonexistent relation', () => {
