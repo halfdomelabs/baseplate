@@ -233,13 +233,6 @@ export function createAuthorizerCompletions(
     (r) => r.direction === 'foreign',
   );
 
-  const localRelationCompletions: Completion[] = localRelations.map((rel) => ({
-    label: rel.relationName,
-    type: 'property',
-    detail: `→ ${rel.foreignModelName}`,
-    info: 'Belongs-to relation (use with hasRole/hasSomeRole)',
-  }));
-
   const foreignRelationCompletions: Completion[] = foreignRelations.map(
     (rel) => ({
       label: rel.relationName,
@@ -251,11 +244,25 @@ export function createAuthorizerCompletions(
 
   // hasRole/hasSomeRole accept BOTH directions: a belongs-to relation delegates
   // to-one, a has-many relation delegates existentially ("some related row
-  // grants the role").
+  // grants the role"). Relations whose target declares no authorizer roles are
+  // omitted — every role on them would fail nested-role validation.
   const delegationRelationCompletions: Completion[] = [
-    ...localRelationCompletions,
-    ...foreignRelationCompletions,
-  ];
+    ...localRelations,
+    ...foreignRelations,
+  ]
+    .filter((rel) => rel.foreignAuthorizerRoleNames.length > 0)
+    .map((rel) => ({
+      label: rel.relationName,
+      type: 'property',
+      detail:
+        rel.direction === 'foreign'
+          ? `→ ${rel.foreignModelName}[]`
+          : `→ ${rel.foreignModelName}`,
+      info:
+        rel.direction === 'foreign'
+          ? 'Has-many relation (delegates to any related record)'
+          : 'Belongs-to relation (delegates to the related record)',
+    }));
 
   // Build role lookup maps
   const foreignRolesByRelation = new Map<string, string[]>();

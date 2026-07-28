@@ -1,11 +1,20 @@
+import type { ModelConfig } from '@baseplate-dev/project-builder-lib';
+
+import { CompletionContext } from '@codemirror/autocomplete';
 import { javascript } from '@codemirror/lang-javascript';
 import { ensureSyntaxTree } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { describe, expect, it } from 'vitest';
 
-import type { ExpressionCompletionContext } from './authorizer-expression-autocomplete.js';
+import type {
+  ExpressionCompletionContext,
+  RelationAutocompleteInfo,
+} from './authorizer-expression-autocomplete.js';
 
-import { resolveExpressionCompletionContext } from './authorizer-expression-autocomplete.js';
+import {
+  createAuthorizerCompletions,
+  resolveExpressionCompletionContext,
+} from './authorizer-expression-autocomplete.js';
 
 /**
  * Create an EditorState with JavaScript language support and ensure the
@@ -194,5 +203,68 @@ describe('resolveExpressionCompletionContext', () => {
     it('should return none for whitespace only', () => {
       expect(resolve(' |')).toEqual({ type: 'none' });
     });
+  });
+});
+
+describe('createAuthorizerCompletions — relation suggestions', () => {
+  const RELATIONS: RelationAutocompleteInfo[] = [
+    {
+      relationName: 'blog',
+      foreignModelName: 'Blog',
+      foreignAuthorizerRoleNames: ['owner'],
+      direction: 'local',
+    },
+    // Has-many: hasRole delegates existentially across it (ENG-1211).
+    {
+      relationName: 'members',
+      foreignModelName: 'BlogUser',
+      foreignAuthorizerRoleNames: ['owner'],
+      direction: 'foreign',
+    },
+    // No authorizer roles on either side — every role would fail nested-role
+    // validation, so neither may be offered for hasRole/hasSomeRole.
+    {
+      relationName: 'publisher',
+      foreignModelName: 'User',
+      foreignAuthorizerRoleNames: [],
+      direction: 'local',
+    },
+    {
+      relationName: 'tags',
+      foreignModelName: 'Tag',
+      foreignAuthorizerRoleNames: [],
+      direction: 'foreign',
+    },
+  ];
+
+  const modelConfig = {
+    model: { fields: [{ name: 'id', type: 'uuid' }] },
+  } as unknown as ModelConfig;
+
+  /** Labels offered at the `model.` position inside `funcName(...)`. */
+  function relationLabelsFor(funcName: string): string[] {
+    const complete = createAuthorizerCompletions(modelConfig, [], RELATIONS);
+    const code = `${funcName}(model.`;
+    const context = new CompletionContext(createState(code), code.length, true);
+    const result = complete(context);
+    return (result?.options ?? []).map((o) => o.label);
+  }
+
+  it('hasRole offers BOTH belongs-to and has-many relations', () => {
+    const labels = relationLabelsFor('hasRole');
+    expect(labels).toContain('blog');
+    expect(labels).toContain('members');
+  });
+
+  it('hasRole omits relations whose target declares no authorizer roles', () => {
+    const labels = relationLabelsFor('hasRole');
+    expect(labels).not.toContain('publisher');
+    expect(labels).not.toContain('tags');
+  });
+
+  it('exists offers has-many relations only', () => {
+    const labels = relationLabelsFor('exists');
+    expect(labels).toContain('members');
+    expect(labels).not.toContain('blog');
   });
 });
