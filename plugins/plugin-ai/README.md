@@ -13,6 +13,7 @@ Generates AI agent configuration files (AGENTS.md, CLAUDE.md, .agents/) for your
 ## Supported Agents
 
 - Claude Code
+- Codex
 - Cursor
 - Gemini CLI
 - GitHub Copilot (VS Code)
