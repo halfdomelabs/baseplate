@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.14
+
+### Patch Changes
+
+- [#953](https://github.com/halfdomelabs/baseplate/pull/953) [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef) Thanks [@kingston](https://github.com/kingston)! - Add `r.viaMany` to model authorizers for delegating a role across a to-many relation — a row holds the role if some related row grants it, emitted as `{ relation: { some: … } }` and checked with a single query. The relation is constrained at the type level to relations that actually point at the target policy's model, so a mismatched pairing is a compile error rather than a filter against the wrong model.
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.6.14
+  - @baseplate-dev/sync@0.6.14
+  - @baseplate-dev/utils@0.6.14
+
 ## 0.6.13
 
 ### Patch Changes

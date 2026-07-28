@@ -1,5 +1,12 @@
 # @baseplate-dev/project-builder-test
 
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-dev@0.6.14
+
 ## 0.6.13
 
 ### Patch Changes

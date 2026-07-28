@@ -1,5 +1,7 @@
 # @baseplate-dev/utils
 
+## 0.6.14
+
 ## 0.6.13
 
 ### Patch Changes

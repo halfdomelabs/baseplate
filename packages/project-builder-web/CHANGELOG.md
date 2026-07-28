@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-web
 
+## 0.6.14
+
+### Patch Changes
+
+- [#953](https://github.com/halfdomelabs/baseplate/pull/953) [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef) Thanks [@kingston](https://github.com/kingston)! - Support one-to-many relations in model authorizer expressions, so `hasRole(model.members, 'owner')` now delegates to a role on a has-many relation ("some related record grants the role") instead of failing to build, and the expression editor suggests has-many relations for `hasRole`/`hasSomeRole` alongside belongs-to ones.
+
+- Updated dependencies [[`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef), [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef)]:
+  - @baseplate-dev/project-builder-lib@0.6.14
+  - @baseplate-dev/ui-components@0.6.14
+  - @baseplate-dev/utils@0.6.14
+
 ## 0.6.13
 
 ### Patch Changes

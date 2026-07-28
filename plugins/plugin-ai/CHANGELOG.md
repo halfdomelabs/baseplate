@@ -1,5 +1,20 @@
 # @baseplate-dev/plugin-ai
 
+## 0.6.14
+
+### Patch Changes
+
+- [#953](https://github.com/halfdomelabs/baseplate/pull/953) [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef) Thanks [@kingston](https://github.com/kingston)! - Generate an `.agents/authorization.md` guide in new projects documenting the authorization model and the expression DSL used by model roles, and link to it from `AGENTS.md`, `CLAUDE.md`, and `.agents/baseplate.md`.
+
+- [#955](https://github.com/halfdomelabs/baseplate/pull/955) [`bed8665`](https://github.com/halfdomelabs/baseplate/commit/bed86650991076505cc2c70bd13f4e737187c000) Thanks [@kingston](https://github.com/kingston)! - Add Codex MCP setup guidance to generated AI development agent configuration.
+
+- Updated dependencies [[`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef), [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef)]:
+  - @baseplate-dev/project-builder-lib@0.6.14
+  - @baseplate-dev/core-generators@0.6.14
+  - @baseplate-dev/sync@0.6.14
+  - @baseplate-dev/ui-components@0.6.14
+  - @baseplate-dev/utils@0.6.14
+
 ## 0.6.13
 
 ### Patch Changes
