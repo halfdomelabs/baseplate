@@ -210,6 +210,14 @@ export function createModelPolicy<
         relation: link.relation,
       };
     },
+    viaMany: (target, role, relation) => {
+      if (!Object.hasOwn(target.roles, role)) {
+        throw new Error(
+          `r.viaMany('${role}', relation '${relation}'): target policy does not define role '${role}'.`,
+        );
+      }
+      return { kind: 'viaMany', target, role, relation };
+    },
     all: (parts) => {
       if (parts.length === 0) {
         throw new Error(
@@ -369,6 +377,9 @@ export function createModelPolicy<
       case 'via': {
         return node.target.roles[node.role].nestedWhere(ctx, node.relation);
       }
+      case 'viaMany': {
+        return node.target.roles[node.role].nestedWhereMany(ctx, node.relation);
+      }
       case 'where': {
         return assertNotUndefined(node.where(ctx), key);
       }
@@ -434,6 +445,21 @@ export function createModelPolicy<
         const targetIds = buildTargetIds(node.keys, model);
         if (targetIds === null) return false;
         return node.target.roles[node.role].checkById(ctx, targetIds);
+      }
+      case 'viaMany': {
+        // No local FK to read, so don't load or iterate the relation. Probe THIS
+        // model by its own id(s) with the same nested filter the where form
+        // uses — one query, and the two forms provably cannot drift.
+        const where = whereNode(ctx, node, key);
+        // No `true` guard here, unlike `where`/`userWhere`: `nestedWhereMany`
+        // folds an unrestricted target to `{ some: {} }`, so this can only be
+        // `false` or an object. Don't "restore" the guard — returning `true`
+        // would be exactly the vacuous grant that fold exists to prevent.
+        if (where === false) return false;
+        const ids = buildIds(model);
+        return cachedBoolean(ctx, roleCacheKey(ids, key), () =>
+          exists(ctx, ids, where),
+        );
       }
       case 'where': {
         const where = assertNotUndefined(node.where(ctx), key);
@@ -533,6 +559,14 @@ export function createModelPolicy<
         if (w === false) return false;
         // via is to-one only → direct nesting `{ relation: w }`, no `{ some }`.
         return { [relationField]: w };
+      },
+      nestedWhereMany: (ctx, relationField) => {
+        const w = roleWhere(ctx, roleName);
+        // Total deny stays a deny. But an UNRESTRICTED role must still require a
+        // related row — `{ some: {} }`, never `true`, or a host with no related
+        // rows would be granted the role vacuously.
+        if (w === false) return false;
+        return { [relationField]: { some: w === true ? {} : w } };
       },
     };
   }
