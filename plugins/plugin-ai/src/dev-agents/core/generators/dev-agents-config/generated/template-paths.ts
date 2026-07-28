@@ -3,6 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface DevAgentsCoreDevAgentsConfigPaths {
   agentsMd: string;
+  authorizationMd: string;
   baseplateMd: string;
   claudeMd: string;
 }
@@ -25,6 +26,7 @@ const devAgentsCoreDevAgentsConfigPathsTask = createGeneratorTask({
       providers: {
         devAgentsCoreDevAgentsConfigPaths: {
           agentsMd: `${packageRoot}/AGENTS.md`,
+          authorizationMd: `${packageRoot}/.agents/authorization.md`,
           baseplateMd: `${packageRoot}/.agents/baseplate.md`,
           claudeMd: `${packageRoot}/CLAUDE.md`,
         },

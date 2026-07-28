@@ -304,6 +304,11 @@
             "expression": "exists(model.members, { userId: userId })\n",
             "id": "model-authorizer-role:VosO0z22wzt0",
             "name": "viewer"
+          },
+          {
+            "expression": "hasRole(model.members, 'owner')",
+            "id": "model-authorizer-role:tyNu9gUr6iAH",
+            "name": "member"
           }
         ]
       },
@@ -320,6 +325,7 @@
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["public"],
+          "instanceRoles": ["member"],
           "list": { "enabled": true }
         }
       },

@@ -228,5 +228,4 @@ Add <ComponentName> component
 ## Important Notes
 
 - Never manually edit files in `generated/` directories — they are auto-generated.
-- Only modify: template source files in `templates/`, `extractor.json`, and the main `*.generator.ts`.
 - If you hit more than two cycles of type/lint errors after extraction, stop and ask the user for help.

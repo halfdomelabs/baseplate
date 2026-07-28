@@ -89,8 +89,10 @@ export function referencesOnlyGuaranteedAuthField(
  *
  * NOTE: in the unified policy world this is only invoked on LEAF nodes the
  * lowering explicitly delegates (`!==` comparisons, relation filters). The
- * combinator/role cases (`binaryLogical`, `hasRole`, `nestedHasRole`) are kept
- * here for completeness / standalone use, but the lowering handles those itself.
+ * combinator/role cases (`binaryLogical`, `hasRole`) are kept here for
+ * completeness / standalone use, but the lowering handles those itself.
+ * `nestedHasRole`/`nestedHasSomeRole` have NO where form — they need a resolved
+ * delegation link, so they throw rather than emit an unresolvable call.
  */
 function createQueryFilterCodeVisitor(
   codeContext?: QueryFilterCodeContext,
@@ -116,17 +118,17 @@ function createQueryFilterCodeVisitor(
       return 'ctx.auth.isAuthenticated';
     },
     nestedHasRole(node) {
-      const resolved = getResolvedQueryFilter(codeContext, node.relationName);
-      return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, ${quot(
-        resolved.relationFieldName,
-      )}, [${quot(node.role)}])`;
+      // Delegation has no standalone where form — the policy lowering renders
+      // these directly as `r.via`/`r.viaMany`, which need the resolved link
+      // (FK keys, cardinality) this context doesn't carry.
+      throw new Error(
+        `nestedHasRole on relation '${node.relationName}' has no where form — it is lowered to r.via/r.viaMany by policy-lowering.`,
+      );
     },
     nestedHasSomeRole(node) {
-      const resolved = getResolvedQueryFilter(codeContext, node.relationName);
-      const roles = node.roles.map((r) => quot(r)).join(', ');
-      return `${resolved.foreignQueryFilterVar}.buildNestedWhere(ctx, ${quot(
-        resolved.relationFieldName,
-      )}, [${roles}])`;
+      throw new Error(
+        `nestedHasSomeRole on relation '${node.relationName}' has no where form — it is lowered to r.via/r.viaMany by policy-lowering.`,
+      );
     },
     relationFilter(node) {
       return generateRelationFilterWhereCode(node, options);
@@ -169,24 +171,6 @@ function collectLogicalOperands(
     ...collectLogicalOperands(node.left, operator),
     ...collectLogicalOperands(node.right, operator),
   ];
-}
-
-function getResolvedQueryFilter(
-  codeContext: QueryFilterCodeContext | undefined,
-  relationName: string,
-): ResolvedNestedQueryFilter {
-  if (!codeContext) {
-    throw new Error(
-      `Nested query filter references relation '${relationName}' but no code context was provided`,
-    );
-  }
-  const resolved = codeContext.resolvedFilters.get(relationName);
-  if (!resolved) {
-    throw new Error(
-      `Nested query filter references relation '${relationName}' which was not resolved`,
-    );
-  }
-  return resolved;
 }
 
 /**

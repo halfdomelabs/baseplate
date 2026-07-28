@@ -68,6 +68,15 @@ Each model has:
 
 Common field types: `string`, `int`, `float`, `boolean`, `datetime`, `json`, `enum`
 
+## Authorization
+
+Models declare authorization as named roles whose `expression` is a JS-like
+boolean DSL (`model.userId === userId`, `hasRole(model.blog, 'owner')`,
+`exists(model.members, { userId: userId })`).
+
+See [authorization.md](authorization.md) for the full grammar, delegation across
+relations, and how to edit roles and grants.
+
 ## Tips
 
 - **Prefer MCP tools over editing `project-definition.json` directly** — The MCP server validates changes and maintains referential integrity

@@ -1,4 +1,9 @@
 {
+  "authorization.md": {
+    "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
+    "instanceData": { "variables": {} },
+    "template": "authorization-md"
+  },
   "baseplate.md": {
     "generator": "@baseplate-dev/plugin-ai#dev-agents/core/dev-agents-config",
     "instanceData": {

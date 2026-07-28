@@ -125,6 +125,13 @@ export abstract class RefExpressionParser<
   abstract readonly name: string;
 
   /**
+   * One-line summary of the expression language, surfaced to MCP consumers by
+   * `get-entity-schema` so an agent editing this field knows it is a DSL rather
+   * than free-form text. Point at fuller docs rather than restating the grammar.
+   */
+  readonly description?: string;
+
+  /**
    * Creates a new Zod schema instance for validating the expression value.
    *
    * @returns A fresh Zod schema that validates the raw expression value

@@ -27,6 +27,37 @@ export type ToOneRelationKeys<M extends ModelPropName> = {
     : K;
 }[RelationKeys<M>];
 
+export type ToManyRelationKeys<M extends ModelPropName> = {
+  [K in RelationKeys<M>]: ObjectsOf<M>[K] extends readonly unknown[]
+    ? K
+    : never;
+}[RelationKeys<M>];
+
+/**
+ * The model a relation points at, as a `ModelPropName`. Every Prisma payload
+ * carries its own PascalCase `name` (`$BlogUserPayload` → `"BlogUser"`), so the
+ * relation's target model is recoverable from the type alone — uncapitalized
+ * back to the camelCase prop name policies are keyed by.
+ */
+type RelationModel<M extends ModelPropName, K extends RelationKeys<M>> = (
+  ObjectsOf<M>[K] extends readonly (infer E)[] ? E : ObjectsOf<M>[K]
+) extends { name: infer N extends string }
+  ? Uncapitalize<N> & ModelPropName
+  : never;
+
+/**
+ * To-many relations of `M` that point at model `TTarget` — the relations a
+ * `viaMany` delegating to a `TTarget` policy may legally name. Without this, any
+ * to-many relation type-checks and a mismatched pairing (`members` vs `posts`)
+ * silently filters the wrong model.
+ */
+export type ToManyRelationKeysOf<
+  M extends ModelPropName,
+  TTarget extends ModelPropName,
+> = {
+  [K in ToManyRelationKeys<M>]: RelationModel<M, K> extends TTarget ? K : never;
+}[ToManyRelationKeys<M>];
+
 export interface ViaLink<
   M extends ModelPropName,
   R extends ToOneRelationKeys<M>,
@@ -47,7 +78,10 @@ export type Exists<TModelName extends ModelPropName> = (
 export interface DelegationTarget<
   TIdField extends string = string,
   TRoleName extends string = string,
+  TModel extends ModelPropName = ModelPropName,
 > {
+  /** The model this policy governs — lets `viaMany` verify the relation matches. */
+  readonly model: TModel;
   idFields: readonly TIdField[];
   roles: Record<
     TRoleName,
@@ -57,6 +91,10 @@ export interface DelegationTarget<
         ids: Record<TIdField, string | number>,
       ) => Promise<boolean>;
       nestedWhere: (
+        ctx: ServiceContext,
+        relationField: string,
+      ) => WhereResult<ModelPropName>;
+      nestedWhereMany: (
         ctx: ServiceContext,
         relationField: string,
       ) => WhereResult<ModelPropName>;
@@ -117,6 +155,22 @@ export interface ViaRole<TModelName extends ModelPropName> {
   relation: string;
 }
 
+/**
+ * Existential delegation across a to-many relation: "I hold this role iff SOME
+ * related row grants `role`". The to-many counterpart of {@link ViaRole}.
+ *
+ * Unlike `via` there is no local FK to read off the row, so both the `where`
+ * and `check` forms go through `{ relation: { some: <target role where> } }` —
+ * `check` probes the host by its own id(s) with that same filter, so the two
+ * forms are one query and cannot drift.
+ */
+export interface ViaManyRole<TModelName extends ModelPropName> {
+  kind: 'viaMany';
+  target: DelegationTarget;
+  role: string;
+  relation: ToManyRelationKeys<TModelName>;
+}
+
 export interface HasRoleLeaf {
   kind: 'hasRole';
   roles: readonly string[];
@@ -149,6 +203,7 @@ export type RoleNode<TModelName extends ModelPropName> =
   | PredicateRole<TModelName>
   | UserWhereRole<TModelName>
   | ViaRole<TModelName>
+  | ViaManyRole<TModelName>
   | HasRoleLeaf
   | AuthenticatedLeaf
   | AllRole<TModelName>
@@ -189,6 +244,19 @@ export interface RoleBuilder<TModelName extends ModelPropName> {
     role: NoInfer<TTargetRoleName>,
     link: ViaLink<TModelName, R, TTargetIdField>,
   ) => ViaRole<TModelName>;
+  /**
+   * Existential delegation across a to-many relation — "SOME related row grants
+   * `role`". No `keys`: there is no local FK, so the relation name alone
+   * identifies the link. `relation` is constrained to relations that actually
+   * point at the target policy's model — but only when the target's model is
+   * statically known; a target passed as a bare `DelegationTarget` widens to
+   * `ModelPropName` and accepts any to-many relation.
+   */
+  viaMany: <TTargetRoleName extends string, TTargetModel extends ModelPropName>(
+    target: DelegationTarget<string, TTargetRoleName, TTargetModel>,
+    role: NoInfer<TTargetRoleName>,
+    relation: ToManyRelationKeysOf<TModelName, NoInfer<TTargetModel>>,
+  ) => ViaManyRole<TModelName>;
   hasRole: (...roles: string[]) => HasRoleLeaf;
   authenticated: () => AuthenticatedLeaf;
   all: (parts: NonEmptyArray<RoleNode<TModelName>>) => AllRole<TModelName>;
@@ -272,6 +340,16 @@ export interface PolicyRoleMembers<
     ids: Record<TIdField, string | number>,
   ) => Promise<void>;
   nestedWhere: (
+    ctx: ServiceContext,
+    relationField: string,
+  ) => WhereResult<TModelName>;
+  /**
+   * Existential form of {@link nestedWhere} — nests this role's where under a
+   * to-many relation as `{ relation: { some: … } }`. An unrestricted role folds
+   * to `{ some: {} }`, never `true`: a host with no related rows must not be
+   * granted the role vacuously.
+   */
+  nestedWhereMany: (
     ctx: ServiceContext,
     relationField: string,
   ) => WhereResult<TModelName>;

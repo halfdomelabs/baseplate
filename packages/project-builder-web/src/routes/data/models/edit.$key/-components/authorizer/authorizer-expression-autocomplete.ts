@@ -233,21 +233,36 @@ export function createAuthorizerCompletions(
     (r) => r.direction === 'foreign',
   );
 
-  const localRelationCompletions: Completion[] = localRelations.map((rel) => ({
-    label: rel.relationName,
-    type: 'property',
-    detail: `→ ${rel.foreignModelName}`,
-    info: 'Relation (use with hasRole/hasSomeRole)',
-  }));
-
   const foreignRelationCompletions: Completion[] = foreignRelations.map(
     (rel) => ({
       label: rel.relationName,
       type: 'property',
-      detail: `→ ${rel.foreignModelName}`,
-      info: 'Relation (use with exists/all)',
+      detail: `→ ${rel.foreignModelName}[]`,
+      info: 'Has-many relation (use with hasRole/hasSomeRole, exists/all)',
     }),
   );
+
+  // hasRole/hasSomeRole accept BOTH directions: a belongs-to relation delegates
+  // to-one, a has-many relation delegates existentially ("some related row
+  // grants the role"). Relations whose target declares no authorizer roles are
+  // omitted — every role on them would fail nested-role validation.
+  const delegationRelationCompletions: Completion[] = [
+    ...localRelations,
+    ...foreignRelations,
+  ]
+    .filter((rel) => rel.foreignAuthorizerRoleNames.length > 0)
+    .map((rel) => ({
+      label: rel.relationName,
+      type: 'property',
+      detail:
+        rel.direction === 'foreign'
+          ? `→ ${rel.foreignModelName}[]`
+          : `→ ${rel.foreignModelName}`,
+      info:
+        rel.direction === 'foreign'
+          ? 'Has-many relation (delegates to any related record)'
+          : 'Belongs-to relation (delegates to the related record)',
+    }));
 
   // Build role lookup maps
   const foreignRolesByRelation = new Map<string, string[]>();
@@ -385,15 +400,22 @@ export function createAuthorizerCompletions(
     { label: 'false', type: 'keyword' },
   ];
 
-  // Add per-relation snippets (local → hasRole/hasSomeRole, foreign → exists/all)
-  for (const rel of localRelations) {
+  // Add per-relation snippets. hasRole/hasSomeRole work across BOTH directions:
+  // a belongs-to relation delegates to-one, a has-many relation delegates
+  // existentially ("some related row grants the role"). exists/all stay
+  // has-many only.
+  for (const rel of [...localRelations, ...foreignRelations]) {
     if (rel.foreignAuthorizerRoleNames.length > 0) {
+      const isToMany = rel.direction === 'foreign';
+      const subject = isToMany
+        ? `any related ${rel.foreignModelName}`
+        : `the related ${rel.foreignModelName}`;
       topLevelCompletions.push(
         snippetCompletion(`hasRole(model.${rel.relationName}, '\${role}')`, {
           label: `hasRole(model.${rel.relationName})`,
           type: 'method',
           detail: `→ ${rel.foreignModelName} authorizer`,
-          info: `Check if user has a role on the related ${rel.foreignModelName}`,
+          info: `Check if user has a role on ${subject}`,
           boost: -1,
         }),
         snippetCompletion(
@@ -402,7 +424,7 @@ export function createAuthorizerCompletions(
             label: `hasSomeRole(model.${rel.relationName})`,
             type: 'method',
             detail: `→ ${rel.foreignModelName} authorizer`,
-            info: `Check if user has any role on the related ${rel.foreignModelName}`,
+            info: `Check if user has any role on ${subject}`,
             boost: -2,
           },
         ),
@@ -499,11 +521,12 @@ export function createAuthorizerCompletions(
       case 'modelRelation': {
         const word = context.matchBefore(/model\.\w*/);
         if (!word) return null;
-        // hasRole/hasSomeRole use local (belongs-to) relations; exists/all use foreign (has-many)
+        // exists/all require a has-many relation; hasRole/hasSomeRole delegate
+        // across either direction (to-one via, or existential to-many).
         const options =
           ctxType.funcName === 'exists' || ctxType.funcName === 'all'
             ? foreignRelationCompletions
-            : localRelationCompletions;
+            : delegationRelationCompletions;
         return { from: word.from + 6, options };
       }
 

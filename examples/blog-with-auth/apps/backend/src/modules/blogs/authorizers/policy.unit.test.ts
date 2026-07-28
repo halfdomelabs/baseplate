@@ -492,15 +492,174 @@ describe('r.match: runtime guard rejects a non-scalar value (bypassed TS)', asyn
 });
 
 describe('delegation: nestedWhere nests to-one directly', () => {
-  it('emits { relation: w } (via is to-one only — no { some } wrapping)', () => {
+  it('emits { relation: w } (r.via is to-one — no { some } wrapping)', () => {
     const ctx = makeCtx(USER_ID);
     // blog.owner.where(ctx) = { userId }
     const nested = blogPolicy.roles.owner.nestedWhere(ctx, 'blog');
     expect(nested).toEqual({ blog: { userId: USER_ID } });
-    // NOTE: to-many `via` is deliberately disallowed (type-level) — it can't be
-    // parent-key-cached, so it would just be a slower `r.where({rel:{some}})`.
-    // The `{ some }` form, when wanted, is authored directly as a relation
-    // predicate in `r.where`, not via delegation.
+  });
+});
+
+describe('r.viaMany — existential delegation across a to-many relation', () => {
+  // Host = Blog, target = BlogUser via Blog.members. Delegates to BlogUser's
+  // own `owner` role rather than restating its rule inline.
+  const blogViaMembers = createModelPolicy({
+    model: 'blog',
+    id: 'id',
+    delegate: prisma.blog,
+    roles: (r) => ({
+      member: r.viaMany(blogUserPolicy, 'owner', 'members'),
+    }),
+    actions: { read: { roles: ['member'] } },
+  });
+
+  it('where → { relation: { some: <target role where> } }', () => {
+    const ctx = makeCtx(USER_ID);
+    expect(blogViaMembers.actions.read.where(ctx)).toEqual({
+      members: { some: { userId: USER_ID } },
+    });
+  });
+
+  it('check probes the HOST by its own id with the nested filter (1 query, no relation load)', async () => {
+    const ctx = makeCtx(USER_ID);
+    blogCount.mockResolvedValueOnce(1);
+    const granted = await blogViaMembers.roles.member.check(ctx, {
+      id: 'blog-1',
+    } as never);
+    expect(granted).toBe(true);
+    // One probe on the host delegate, keyed by the host's own id — never an
+    // N+1 walk over `members`.
+    expect(blogCount).toHaveBeenCalledTimes(1);
+    expect(blogCount).toHaveBeenCalledWith({
+      where: {
+        AND: [{ id: 'blog-1' }, { members: { some: { userId: USER_ID } } }],
+      },
+    });
+  });
+
+  it('nestedWhereMany nests the target role under { some } directly', () => {
+    const ctx = makeCtx(USER_ID);
+    expect(blogUserPolicy.roles.owner.nestedWhereMany(ctx, 'members')).toEqual({
+      members: { some: { userId: USER_ID } },
+    });
+  });
+
+  it('caches per host id — two checks on the same row, one probe', async () => {
+    const ctx = makeCtx(USER_ID);
+    blogCount.mockResolvedValue(1);
+    const row = { id: 'blog-1' } as never;
+    await blogViaMembers.roles.member.check(ctx, row);
+    await blogViaMembers.roles.member.check(ctx, row);
+    expect(blogCount).toHaveBeenCalledTimes(1);
+  });
+
+  it('composes inside r.some — grants via the viaMany branch', async () => {
+    const ctx = makeCtx(USER_ID);
+    const host = createModelPolicy({
+      model: 'blog',
+      id: 'id',
+      delegate: prisma.blog,
+      roles: (r) => ({
+        // First branch can't match (blog-1 is not owned by USER_ID here), so
+        // the grant must come from the viaMany branch.
+        readable: r.some([
+          r.match(() => ({ name: 'NOPE' })),
+          r.viaMany(blogUserPolicy, 'owner', 'members'),
+        ]),
+      }),
+      actions: { read: { roles: ['readable'] } },
+    });
+    blogCount.mockResolvedValueOnce(1);
+    await expect(
+      host.roles.readable.check(ctx, { id: 'blog-1', name: 'Blog' } as never),
+    ).resolves.toBe(true);
+  });
+
+  it('check denies when no related row grants the role', async () => {
+    const ctx = makeCtx(USER_ID);
+    blogCount.mockResolvedValueOnce(0);
+    await expect(
+      blogViaMembers.roles.member.check(ctx, { id: 'blog-1' } as never),
+    ).resolves.toBe(false);
+  });
+
+  it('UNRESTRICTED target role still requires a related row ({ some: {} }, never true)', () => {
+    // The subtle one: a host with NO related rows must not be granted the role
+    // vacuously. `true` would widen to allow-all; `{ some: {} }` keeps it
+    // existential.
+    const ctx = makeCtx(USER_ID);
+    const openTarget = createModelPolicy({
+      model: 'blogUser',
+      id: ['blogId', 'userId'],
+      delegate: prisma.blogUser,
+      roles: (r) => ({ anyone: r.authenticated() }),
+      actions: { read: { roles: ['anyone'] } },
+    });
+    const host = createModelPolicy({
+      model: 'blog',
+      id: 'id',
+      delegate: prisma.blog,
+      roles: (r) => ({ member: r.viaMany(openTarget, 'anyone', 'members') }),
+      actions: { read: { roles: ['member'] } },
+    });
+    expect(host.actions.read.where(ctx)).toEqual({ members: { some: {} } });
+  });
+
+  it('total-deny target role → denies outright (short-circuits, no query)', () => {
+    const ctx = makeCtx(USER_ID);
+    const denyTarget = createModelPolicy({
+      model: 'blogUser',
+      id: ['blogId', 'userId'],
+      delegate: prisma.blogUser,
+      roles: (r) => ({ nobody: r.where(() => false) }),
+      actions: { read: { roles: ['nobody'] } },
+    });
+    const host = createModelPolicy({
+      model: 'blog',
+      id: 'id',
+      delegate: prisma.blog,
+      roles: (r) => ({ member: r.viaMany(denyTarget, 'nobody', 'members') }),
+      actions: { read: { roles: ['member'] } },
+    });
+    // A total deny never reaches Prisma: the read filter throws rather than
+    // emitting a `{ some: false }` the query layer would have to interpret.
+    expect(() => host.actions.read.where(ctx)).toThrow(/Forbidden/);
+    expect(blogCount).not.toHaveBeenCalled();
+  });
+
+  it('rejects a relation pointing at a different model (compile time)', () => {
+    // `posts` is BlogPost[], but the target policy governs blogUser. The guard
+    // is the compiler: the `@ts-expect-error` fails the build if the mismatch
+    // ever starts type-checking again. The runtime assertion below only pins
+    // what it emits today — a wrong-model filter — which is why the compile-time
+    // constraint is the thing that matters.
+    const host = createModelPolicy({
+      model: 'blog',
+      id: 'id',
+      delegate: prisma.blog,
+      roles: (r) => ({
+        // @ts-expect-error 'posts' is not a to-many relation to blogUser
+        member: r.viaMany(blogUserPolicy, 'owner', 'posts'),
+      }),
+      actions: { read: { roles: ['member'] } },
+    });
+    expect(host.actions.read.where(makeCtx(USER_ID))).toEqual({
+      posts: { some: { userId: USER_ID } },
+    });
+  });
+
+  it('rejects a role the target policy does not define (construction time)', () => {
+    expect(() =>
+      createModelPolicy({
+        model: 'blog',
+        id: 'id',
+        delegate: prisma.blog,
+        roles: (r) => ({
+          member: r.viaMany(blogUserPolicy, 'nope' as never, 'members'),
+        }),
+        actions: { read: { roles: ['member'] } },
+      }),
+    ).toThrow(/does not define role 'nope'/);
   });
 });
 
