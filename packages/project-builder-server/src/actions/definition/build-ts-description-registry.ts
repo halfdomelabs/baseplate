@@ -58,7 +58,11 @@ export function buildTsDescriptionRegistry(
 
             break;
           }
-          // No default
+          case 'ref-context': {
+            // Slot-scoping machinery, not a user-facing annotation — nothing
+            // to render.
+            break;
+          }
         }
       }
 
