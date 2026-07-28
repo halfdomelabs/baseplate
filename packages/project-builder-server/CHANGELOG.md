@@ -1,5 +1,21 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.14
+
+### Patch Changes
+
+- [#953](https://github.com/halfdomelabs/baseplate/pull/953) [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef) Thanks [@kingston](https://github.com/kingston)! - Support one-to-many relations in model authorizer expressions, so `hasRole(model.members, 'owner')` now delegates to a role on a has-many relation ("some related record grants the role") instead of failing to build, and the expression editor suggests has-many relations for `hasRole`/`hasSomeRole` alongside belongs-to ones.
+
+- [#953](https://github.com/halfdomelabs/baseplate/pull/953) [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef) Thanks [@kingston](https://github.com/kingston)! - Annotate expression fields in the entity schema returned by `get-entity-schema`, so authorization expressions are identified as a DSL with a short syntax summary and a pointer to the full grammar instead of appearing as a plain string.
+
+- Updated dependencies [[`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef), [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef), [`e7ee500`](https://github.com/halfdomelabs/baseplate/commit/e7ee500e5a2d78778bd3bdb79b4f2f40b5f040ef)]:
+  - @baseplate-dev/project-builder-lib@0.6.14
+  - @baseplate-dev/fastify-generators@0.6.14
+  - @baseplate-dev/core-generators@0.6.14
+  - @baseplate-dev/react-generators@0.6.14
+  - @baseplate-dev/sync@0.6.14
+  - @baseplate-dev/utils@0.6.14
+
 ## 0.6.13
 
 ### Patch Changes
