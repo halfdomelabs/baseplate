@@ -40,6 +40,14 @@ export function buildTsDescriptionRegistry(
           descriptions.push(
             `@entity(${meta.type.name}) - Entity type '${meta.type.name}'. IDs are auto-generated; omit the id field.`,
           );
+        } else if (meta.kind === 'expression') {
+          // Expression fields are a DSL, not free-form text — say so, and let
+          // the parser point at its own docs.
+          descriptions.push(
+            `@expression(${meta.parser.name}) - A structured expression, not free-form text.${
+              meta.parser.description ? ` ${meta.parser.description}` : ''
+            }`,
+          );
         }
       }
 

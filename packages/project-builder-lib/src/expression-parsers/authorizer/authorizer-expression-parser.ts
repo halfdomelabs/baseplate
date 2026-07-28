@@ -57,6 +57,12 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
 > {
   readonly name = 'authorizer-expression';
 
+  readonly description =
+    'JS-like boolean DSL over `model.<field>`, `userId`, and `isAuthenticated` — ' +
+    "e.g. `model.userId === userId`, `hasRole(model.blog, 'owner')`, " +
+    '`exists(model.members, { userId: userId })`. See .agents/authorization.md ' +
+    'for the full grammar.';
+
   /**
    * Creates a Zod schema for validating expression strings.
    * Requires a non-empty string value.

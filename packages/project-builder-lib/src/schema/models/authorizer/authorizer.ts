@@ -29,16 +29,20 @@ export const createAuthorizerRoleSchema = definitionSchemaWithSlots(
          */
         name: VALIDATORS.CAMEL_CASE_STRING,
         /**
-         * TypeScript expression that evaluates to a boolean.
+         * Authorization expression — a JS-like boolean DSL, not arbitrary
+         * TypeScript. See `.agents/authorization.md` for the full grammar.
          *
-         * Available context variables:
-         * - `model` - The model instance being authorized
-         * - `userId` - The authenticated user's ID (implicit auth context)
-         * - `hasRole()` / `hasSomeRole()` - Role checking functions
+         * Available context:
+         * - `model.<field>` — the row being authorized (scalars and relations)
+         * - `userId` / `isAuthenticated` — the principal
+         * - `hasRole()` / `hasSomeRole()` — global roles, or role delegation
+         *   across a relation in the two-argument form
+         * - `exists()` / `all()` — quantify over a has-many relation
          *
-         * @example 'model.id === userId'
-         * @example 'hasRole("admin")'
-         * @example 'model.authorId === userId || hasRole("admin")'
+         * @example 'model.userId === userId'
+         * @example "hasRole('admin')"
+         * @example "hasRole(model.blog, 'owner')"
+         * @example 'exists(model.members, { userId: userId })'
          */
         expression: ctx.withExpression(authorizerExpressionRef, {
           model: modelSlot,
