@@ -32,22 +32,33 @@ export function buildTsDescriptionRegistry(
       // Check for ref/entity metadata from definitionRefRegistry
       const metaList = definitionRefRegistry.getAll(visitedSchema);
       for (const meta of metaList) {
-        if (meta.kind === 'reference') {
-          descriptions.push(
-            `@ref(${meta.type.name}) - Reference to a '${meta.type.name}' entity. Use entity name, not ID.`,
-          );
-        } else if (meta.kind === 'entity') {
-          descriptions.push(
-            `@entity(${meta.type.name}) - Entity type '${meta.type.name}'. IDs are auto-generated; omit the id field.`,
-          );
-        } else if (meta.kind === 'expression') {
-          // Expression fields are a DSL, not free-form text — say so, and let
-          // the parser point at its own docs.
-          descriptions.push(
-            `@expression(${meta.parser.name}) - A structured expression, not free-form text.${
-              meta.parser.description ? ` ${meta.parser.description}` : ''
-            }`,
-          );
+        switch (meta.kind) {
+          case 'reference': {
+            descriptions.push(
+              `@ref(${meta.type.name}) - Reference to a '${meta.type.name}' entity. Use entity name, not ID.`,
+            );
+
+            break;
+          }
+          case 'entity': {
+            descriptions.push(
+              `@entity(${meta.type.name}) - Entity type '${meta.type.name}'. IDs are auto-generated; omit the id field.`,
+            );
+
+            break;
+          }
+          case 'expression': {
+            // Expression fields are a DSL, not free-form text — say so, and let
+            // the parser point at its own docs.
+            descriptions.push(
+              `@expression(${meta.parser.name}) - A structured expression, not free-form text.${
+                meta.parser.description ? ` ${meta.parser.description}` : ''
+              }`,
+            );
+
+            break;
+          }
+          // No default
         }
       }
 
