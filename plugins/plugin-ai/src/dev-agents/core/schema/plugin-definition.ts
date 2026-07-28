@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 export const DEV_AGENT_VALUES = [
   'claude-code',
+  'codex',
   'cursor',
   'gemini',
   'copilot',
@@ -14,6 +15,7 @@ export type DevAgentValue = (typeof DEV_AGENT_VALUES)[number];
 
 const DEV_AGENT_LABELS: Record<DevAgentValue, string> = {
   'claude-code': 'Claude Code',
+  codex: 'Codex',
   cursor: 'Cursor',
   gemini: 'Gemini CLI',
   copilot: 'GitHub Copilot',

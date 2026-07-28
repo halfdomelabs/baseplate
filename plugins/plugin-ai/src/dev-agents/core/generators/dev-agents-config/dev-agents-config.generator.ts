@@ -37,6 +37,14 @@ const MCP_SETUP_COMMANDS: Record<DevAgentValue, string> = {
     'claude mcp add baseplate -- pnpm baseplate mcp',
     '```',
   ].join('\n'),
+  codex: [
+    '**Codex:** Add to `.codex/config.toml`:',
+    '```toml',
+    '[mcp_servers.baseplate]',
+    'command = "pnpm"',
+    'args = ["run", "baseplate", "mcp"]',
+    '```',
+  ].join('\n'),
   cursor: [
     '**Cursor:** Add to `.cursor/mcp.json`:',
     '```json',
