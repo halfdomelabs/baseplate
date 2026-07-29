@@ -15,7 +15,7 @@ import {
 builder.queryField('todoList', (t) =>
   t.prismaField({
     type: 'TodoList',
-    authorize: ['admin'],
+    authorize: ['user'],
     args: { id: t.arg({ required: true, type: 'Uuid' }) },
     resolve: async (query, _root, { id }, ctx) =>
       prisma.todoList
@@ -41,7 +41,7 @@ builder.queryField('todoLists', (t) =>
       }),
       orderBy: t.arg({ type: [todoListOrderByInputType] }),
     },
-    authorize: ['admin'],
+    authorize: ['user'],
     resolve: async (query, _root, { skip, take, where, orderBy }, ctx) =>
       prisma.todoList.findMany({
         ...query,
@@ -70,7 +70,7 @@ builder.queryField('todoListsConnection', (t) =>
         }),
         orderBy: t.arg({ type: [todoListOrderByInputType] }),
       },
-      authorize: ['admin'],
+      authorize: ['user'],
       totalCount: (_connection, { where }, ctx) =>
         prisma.todoList.count({
           where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
