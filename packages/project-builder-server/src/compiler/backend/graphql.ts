@@ -34,9 +34,7 @@ function buildObjectTypeFile(
   const { graphql } = model;
   const { objectType, mutations, queries } = graphql;
 
-  // Offset and cursor pagination are independent, but both read rows through
-  // the same object type, where/orderBy inputs, and role checks.
-  const hasListSurface = queries.list.enabled || queries.connection.enabled;
+  const hasListSurface = ModelUtils.hasListSurface(queries);
   const buildQuery = queries.get.enabled || hasListSurface;
   const buildMutations =
     mutations.create.enabled ||
@@ -260,7 +258,7 @@ function buildQueriesFileForModel(
   const { graphql } = model;
   const { queries } = graphql;
 
-  const hasListSurface = queries.list.enabled || queries.connection.enabled;
+  const hasListSurface = ModelUtils.hasListSurface(queries);
 
   if (!queries.get.enabled && !hasListSurface) {
     return undefined;
@@ -532,8 +530,7 @@ export function buildGraphqlForFeature(
 
   const hasWhereFiltering = appBuilder.projectDefinition.models.some(
     (model) =>
-      (model.graphql.queries.list.enabled ||
-        model.graphql.queries.connection.enabled) &&
+      ModelUtils.hasListSurface(model.graphql.queries) &&
       model.graphql.queries.where.enabled,
   );
 

@@ -1161,6 +1161,7 @@
           "defaultSort": [{ "direction": "asc", "ref": "position" }],
           "fields": ["position", "name", "createdAt"]
         },
+        "pagination": { "defaultPageSize": 25, "maxPageSize": 100 },
         "queries": {
           "connection": { "enabled": true },
           "get": { "enabled": true },

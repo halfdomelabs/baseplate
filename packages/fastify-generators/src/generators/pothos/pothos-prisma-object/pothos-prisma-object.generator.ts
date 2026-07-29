@@ -367,7 +367,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
                       ${orderByArg}
                     }`;
                         options.query = paginated
-                          ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: ${buildTakeValue('args.take', defaultPageSize)}, orderBy: ${orderByFragment} })`
+                          ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: ${buildTakeValue('args.take', { defaultPageSize, maxPageSize })}, orderBy: ${orderByFragment} })`
                           : tsTemplate`(args) => ({ orderBy: ${orderByFragment} })`;
                       } else {
                         // No caller args, so the sort is fully known here — emit

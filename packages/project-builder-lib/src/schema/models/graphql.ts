@@ -177,15 +177,28 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
        * Page-size limits shared by every paginated surface — the list query,
        * the connection query, and paginated list relations. Both are optional;
        * leaving them unset keeps the offset surfaces unbounded and lets the
-       * connection fall back to Pothos' own defaults (20 / 100).
+       * connection fall back to Pothos' own defaults (20 / 100). Setting only a
+       * max also applies it as the default, since the cap on an offset surface
+       * would otherwise be bypassed by omitting the argument.
        */
       pagination: ctx.withDefault(
-        z.object({
-          /** Page size applied when the caller requests no explicit size. */
-          defaultPageSize: z.number().int().positive().optional(),
-          /** Largest page a caller may request. */
-          maxPageSize: z.number().int().positive().optional(),
-        }),
+        z
+          .object({
+            /** Page size applied when the caller requests no explicit size. */
+            defaultPageSize: z.number().int().positive().optional(),
+            /** Largest page a caller may request. */
+            maxPageSize: z.number().int().positive().optional(),
+          })
+          .refine(
+            ({ defaultPageSize, maxPageSize }) =>
+              defaultPageSize === undefined ||
+              maxPageSize === undefined ||
+              defaultPageSize <= maxPageSize,
+            {
+              message: 'Default page size cannot exceed max page size',
+              path: ['defaultPageSize'],
+            },
+          ),
         {},
       ),
       queries: ctx.withDefault(

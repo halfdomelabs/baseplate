@@ -80,11 +80,10 @@ export function GraphQLListBehaviorSection({
     control,
     name: 'graphql.queries.where.enabled',
   });
-  // Ordering, filtering, and page size apply to both root queries, so either
-  // one alone is enough to make them configurable. Relations expose these too,
-  // but they are configured per-relation on the parent model.
-  const hasListSurface =
-    (isListEnabled ?? false) || (isConnectionEnabled ?? false);
+  const hasListSurface = ModelUtils.hasListSurface({
+    list: { enabled: isListEnabled ?? false },
+    connection: { enabled: isConnectionEnabled ?? false },
+  });
   const exposedFields =
     useWatch({ control, name: 'graphql.objectType.fields' }) ?? [];
   const queryGlobalRoles = useWatch({
@@ -336,7 +335,9 @@ export function GraphQLListBehaviorSection({
             <p className="text-sm font-semibold">Pagination</p>
             <p className="text-xs text-muted-foreground">
               Limits how many {listQueryName} a single page may return, so large
-              objects aren&apos;t fetched en masse. Leave blank for no limit.
+              objects aren&apos;t fetched en masse. Leave blank to use the
+              defaults — unbounded for <code>{listQueryName}</code>, 20 per page
+              (100 max) for <code>{listQueryName}Connection</code>.
             </p>
           </div>
           <div className="grid max-w-lg grid-cols-2 gap-4">
@@ -347,9 +348,9 @@ export function GraphQLListBehaviorSection({
               label="Default page size"
               type="number"
               min={1}
-              placeholder="Unlimited"
+              placeholder="Default"
               registerOptions={{ setValueAs: toOptionalNumber }}
-              description="Applied when the caller requests no size"
+              description="Applied when the caller requests no size. Falls back to the max if only that is set."
             />
             <InputFieldController
               control={control}
@@ -358,7 +359,7 @@ export function GraphQLListBehaviorSection({
               label="Max page size"
               type="number"
               min={1}
-              placeholder="Unlimited"
+              placeholder="Default"
               registerOptions={{ setValueAs: toOptionalNumber }}
               description="Largest page a caller may request"
             />

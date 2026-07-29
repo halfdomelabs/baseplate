@@ -157,7 +157,10 @@ export const pothosPrismaListQueryGenerator = createGenerator({
               ? tsTemplate`orderBy: ${orderByValue}, `
               : '';
 
-            const takeValue = buildTakeValue('take', defaultPageSize);
+            const takeValue = buildTakeValue('take', {
+              defaultPageSize,
+              maxPageSize,
+            });
 
             const resolveFunction: TsCodeFragment = modelPolicy
               ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment}skip: skip ?? undefined, take: ${takeValue} })`

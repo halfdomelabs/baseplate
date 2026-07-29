@@ -39,17 +39,18 @@ export function buildTakeArgFragment(maxPageSize?: number): TsCodeFragment {
 /**
  * Builds the value assigned to Prisma's `take`.
  *
- * A cap alone is bypassed by omitting the argument entirely, so a default page
- * size is what actually bounds the query; without one the surface stays
- * unbounded.
+ * The arg validator only constrains an explicit `take`, so a cap alone is
+ * bypassed by omitting the argument; the cap therefore doubles as the default.
+ * With neither limit set the surface stays unbounded.
  *
  * @param argExpression - Expression holding the caller's requested size.
- * @param defaultPageSize - Size applied when the caller supplies none.
+ * @param pageSize - Page-size limits configured for the surface.
  * @returns The expression to assign to `take`.
  */
 export function buildTakeValue(
   argExpression: string,
-  defaultPageSize?: number,
+  { defaultPageSize, maxPageSize }: PageSizeOptions = {},
 ): string {
-  return `${argExpression} ?? ${defaultPageSize?.toString() ?? 'undefined'}`;
+  const fallback = defaultPageSize ?? maxPageSize;
+  return `${argExpression} ?? ${fallback?.toString() ?? 'undefined'}`;
 }

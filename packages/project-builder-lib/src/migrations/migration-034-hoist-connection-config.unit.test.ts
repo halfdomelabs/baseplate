@@ -92,6 +92,51 @@ describe('migration034HoistConnectionConfig', () => {
     });
   });
 
+  it('forces connection off when the list it depended on is disabled', () => {
+    // The old gate was `list.enabled && list.connection.enabled`, so this
+    // generated nothing. Hoisting verbatim would add a root field on upgrade.
+    const result = migrate({
+      models: [
+        {
+          graphql: {
+            queries: {
+              list: {
+                enabled: false,
+                connection: { enabled: true },
+                where: { enabled: true },
+                orderBy: { enabled: true },
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(result.models?.[0].graphql?.queries).toEqual({
+      list: { enabled: false },
+      connection: { enabled: false },
+      where: { enabled: true },
+      orderBy: { enabled: true },
+    });
+  });
+
+  it('forces connection off when list.enabled is absent', () => {
+    const result = migrate({
+      models: [
+        {
+          graphql: {
+            queries: { list: { connection: { enabled: true } } },
+          },
+        },
+      ],
+    });
+
+    expect(result.models?.[0].graphql?.queries).toEqual({
+      list: {},
+      connection: { enabled: false },
+    });
+  });
+
   it('preserves sibling query config such as roles and get', () => {
     const result = migrate({
       models: [

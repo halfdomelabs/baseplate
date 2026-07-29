@@ -29,14 +29,28 @@ describe('buildTakeArgFragment', () => {
 
 describe('buildTakeValue', () => {
   it('falls back to the default page size when the caller supplies none', () => {
-    expect(buildTakeValue('take', 25)).toBe('take ?? 25');
+    expect(buildTakeValue('take', { defaultPageSize: 25 })).toBe('take ?? 25');
   });
 
-  it('stays unbounded when no default is set', () => {
+  it('falls back to the max when only a cap is set', () => {
+    // The arg validator only constrains an explicit `take`, so without this the
+    // caller omits the arg and the cap is bypassed entirely.
+    expect(buildTakeValue('take', { maxPageSize: 50 })).toBe('take ?? 50');
+  });
+
+  it('prefers the default over the max when both are set', () => {
+    expect(
+      buildTakeValue('take', { defaultPageSize: 25, maxPageSize: 50 }),
+    ).toBe('take ?? 25');
+  });
+
+  it('stays unbounded when neither limit is set', () => {
     expect(buildTakeValue('take')).toBe('take ?? undefined');
   });
 
   it('uses the given argument expression for relation fields', () => {
-    expect(buildTakeValue('args.take', 25)).toBe('args.take ?? 25');
+    expect(buildTakeValue('args.take', { defaultPageSize: 25 })).toBe(
+      'args.take ?? 25',
+    );
   });
 });
