@@ -9,9 +9,8 @@ import path from 'node:path/posix';
  * @returns Common ancestor path
  */
 export function getCommonPathPrefix(paths: string[]): string {
-  const first = paths.at(0);
+  const [first, ...rest] = paths;
   if (first === undefined) return '';
-  const rest = paths.slice(1);
   if (rest.length === 0) return path.dirname(first);
 
   const firstParts = path.dirname(first).split(path.sep);

@@ -135,15 +135,9 @@ export default createTypescriptMorpher({
       // Replace array with object
       let descriptorText = '';
       if (buildTasksNode.isKind(SyntaxKind.MethodDeclaration)) {
-        const params = buildTasksNode.getParameters();
-        if (params.length > 0) {
-          descriptorText = params[0].getText();
-        }
+        descriptorText = buildTasksNode.getParameters()[0]?.getText() ?? '';
       } else if (arrowFunction.isKind(SyntaxKind.ArrowFunction)) {
-        const params = arrowFunction.getParameters();
-        if (params.length > 0) {
-          descriptorText = params[0].getText();
-        }
+        descriptorText = arrowFunction.getParameters()[0]?.getText() ?? '';
       }
 
       const newText = `buildTasks: (${descriptorText}) => ({
