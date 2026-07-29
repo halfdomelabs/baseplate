@@ -497,8 +497,7 @@ export function createFieldMap<S extends FieldMapSchema>(
     getValues: () => {
       const values = {} as FieldMapValues<S>;
 
-      for (const key of Object.keys(schema)) {
-        const container = schema[key];
+      for (const [key, container] of Object.entries(schema)) {
         (values as Record<string, unknown>)[key] = container.getValue();
       }
 

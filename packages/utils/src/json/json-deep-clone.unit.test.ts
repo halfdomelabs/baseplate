@@ -138,9 +138,9 @@ describe('jsonDeepClone', () => {
       expect(result).not.toBe(original);
       expect(result.users).not.toBe(original.users);
       expect(result.users[0]).not.toBe(original.users[0]);
-      expect(result.users[0].profile).not.toBe(original.users[0].profile);
-      expect(result.users[0].profile.settings).not.toBe(
-        original.users[0].profile.settings,
+      expect(result.users[0]?.profile).not.toBe(original.users[0]?.profile);
+      expect(result.users[0]?.profile.settings).not.toBe(
+        original.users[0]?.profile.settings,
       );
       expect(result.metadata).not.toBe(original.metadata);
       expect(result.metadata.tags).not.toBe(original.metadata.tags);
