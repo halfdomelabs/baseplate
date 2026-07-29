@@ -34,8 +34,8 @@ function ModelEditGraphQLPage(): React.JSX.Element {
       <form onSubmit={onSubmit} className="space-y-4 p-4">
         <SectionList>
           <GraphQLObjectTypeSection control={control} />
-          <GraphQLSortingFilteringSection control={control} />
           <GraphQLRootFieldsSection control={control} />
+          <GraphQLSortingFilteringSection control={control} />
           <GraphQLAuthSection
             control={control}
             setValue={setValue}

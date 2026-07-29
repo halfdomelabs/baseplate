@@ -17,8 +17,12 @@ import {
   SectionListSectionTitle,
   SelectField,
 } from '@baseplate-dev/ui-components';
+import { lowerFirst } from 'es-toolkit';
+import { pluralize } from 'inflection';
 import { useController, useWatch } from 'react-hook-form';
 import { MdAdd, MdClose, MdWarning } from 'react-icons/md';
+
+import { useOriginalModel } from '../../../-hooks/use-original-model.js';
 
 const DIRECTION_OPTIONS = [
   { label: 'Ascending', value: 'asc' },
@@ -39,6 +43,10 @@ export function GraphQLSortingFilteringSection({
   control,
 }: GraphQLSortingFilteringSectionProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
+  const { name: modelName } = useOriginalModel();
+
+  // Mirrors the query name the generator derives from the model name.
+  const listQueryName = pluralize(lowerFirst(modelName));
 
   const isObjectTypeEnabled = useWatch({
     control,
@@ -114,31 +122,22 @@ export function GraphQLSortingFilteringSection({
         <SectionListSectionHeader className="sticky top-2">
           <SectionListSectionTitle>Sorting & Filtering</SectionListSectionTitle>
           <SectionListSectionDescription>
-            Choose which fields callers can sort and filter by. These apply to
-            the list query and to any list relation that enables ordering.
+            Shared by every query that returns a list of {modelName} — the{' '}
+            <code>{listQueryName}</code> query and any {modelName} list relation
+            on another model. Turn each one on individually under Root Fields
+            and in the settings for that relation.
           </SectionListSectionDescription>
         </SectionListSectionHeader>
       </div>
       <SectionListSectionContent className="space-y-6">
         <div className="space-y-2">
-          <MultiComboboxField
-            label="Sortable Fields"
-            description="Fields callers may use as `orderBy` sort keys."
-            placeholder="Select fields..."
-            options={fieldOptions}
-            value={sortableFields}
-            onChange={onSortableFieldsChange}
-            noResultsText="No fields exposed"
-            disabled={!isObjectTypeEnabled}
-          />
-        </div>
-
-        <div className="space-y-2">
           <div>
             <p className="text-sm font-medium">Default Sort</p>
             <p className="text-xs text-muted-foreground">
-              Applied when a caller supplies no `orderBy`. Fields need not be
-              sortable — a model can default to a sort key it does not expose.
+              The order results come back in when nothing else is requested.
+              Without one, rows come back in an arbitrary order. Works on its
+              own — a model can have a default sort without letting callers
+              choose their own.
             </p>
           </div>
           {defaultSort.map((entry, index) => (
@@ -184,6 +183,11 @@ export function GraphQLSortingFilteringSection({
               </Button>
             </div>
           ))}
+          {defaultSort.length === 0 && (
+            <p className="text-xs text-muted-foreground italic">
+              No default sort — {listQueryName} come back in an arbitrary order.
+            </p>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -207,8 +211,21 @@ export function GraphQLSortingFilteringSection({
 
         <div className="space-y-2">
           <MultiComboboxField
+            label="Sortable Fields"
+            description="Fields the caller can choose to sort by, overriding the default sort. Only used where ordering is turned on."
+            placeholder="Select fields..."
+            options={fieldOptions}
+            value={sortableFields}
+            onChange={onSortableFieldsChange}
+            noResultsText="No fields exposed"
+            disabled={!isObjectTypeEnabled}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <MultiComboboxField
             label="Filterable Fields"
-            description="Fields callers may use as `where` filter operands."
+            description="Fields the caller can narrow results by, e.g. only rows where status matches. Only used where filtering is turned on."
             placeholder="Select fields..."
             options={fieldOptions}
             value={filterableFields}
