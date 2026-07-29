@@ -866,6 +866,9 @@
           "foreignRelations": [{ "ref": "attachments" }],
           "localRelations": [{ "ref": "todoList" }]
         },
+        "orderBy": {
+          "defaultSort": [{ "direction": "asc", "ref": "position" }]
+        },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
@@ -1146,13 +1149,17 @@
           "fields": [
             { "ref": "id" },
             { "ref": "ownerId" },
-            { "ref": "position", "sortable": true },
-            { "filterable": true, "ref": "name", "sortable": true },
+            { "ref": "position" },
+            { "ref": "name" },
             { "ref": "updatedAt" },
-            { "ref": "createdAt", "sortable": true },
-            { "filterable": true, "ref": "status" }
+            { "ref": "createdAt" },
+            { "ref": "status" }
           ],
           "localRelations": [{ "ref": "owner" }, { "ref": "coverPhoto" }]
+        },
+        "orderBy": {
+          "defaultSort": [{ "direction": "asc", "ref": "position" }],
+          "fields": ["position", "name", "createdAt"]
         },
         "queries": {
           "get": { "enabled": true },
@@ -1164,7 +1171,8 @@
             "orderBy": { "enabled": true },
             "where": { "enabled": true }
           }
-        }
+        },
+        "where": { "fields": ["name", "status"] }
       },
       "id": "model:ONd_Fbo61Tx7",
       "model": {

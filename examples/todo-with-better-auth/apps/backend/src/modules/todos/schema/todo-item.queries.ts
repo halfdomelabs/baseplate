@@ -33,6 +33,7 @@ builder.queryField('todoItems', (t) =>
       prisma.todoItem.findMany({
         ...query,
         where: todoItemPolicy.actions.read.where(ctx),
+        orderBy: [{ position: 'asc' }, { id: 'asc' }],
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),
