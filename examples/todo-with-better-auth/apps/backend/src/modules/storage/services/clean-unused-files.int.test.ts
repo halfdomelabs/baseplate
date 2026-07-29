@@ -78,11 +78,16 @@ function createTestContext(): ServiceContextWith<'storage'> {
 /**
  * Helper to create a file record with a specific age and upload state.
  *
+ * Orphan cleanup keys off `updatedAt`, so both timestamps are backdated.
+ * Prisma's `@updatedAt` overwrites the column on every write, so `updatedAt`
+ * is set via raw SQL after the create rather than in the create itself.
+ *
  * @param options - File creation options
  * @param options.daysOld - How many days old the file should be
  * @param options.pendingUpload - Whether the file is still pending upload
  * @param options.adapter - The storage adapter name (defaults to 'uploads')
  * @param options.category - The file category name (defaults to 'TODO_LIST_COVER_PHOTO')
+ * @param options.updatedDaysOld - Age of `updatedAt` if it should differ from `daysOld`
  * @returns The created file's ID
  */
 async function createFileWithAge({
@@ -90,12 +95,18 @@ async function createFileWithAge({
   pendingUpload,
   adapter = 'uploads',
   category = 'TODO_LIST_COVER_PHOTO',
+  updatedDaysOld,
 }: {
   daysOld: number;
   pendingUpload: boolean;
   adapter?: string;
   category?: string;
+  updatedDaysOld?: number;
 }): Promise<string> {
+  const createdAt = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000);
+  const updatedAt = new Date(
+    Date.now() - (updatedDaysOld ?? daysOld) * 24 * 60 * 60 * 1000,
+  );
   const file = await prisma.file.create({
     data: {
       filename: `test-${Date.now()}.jpg`,
@@ -106,9 +117,10 @@ async function createFileWithAge({
       adapter,
       storagePath: `/test/path-${Date.now()}.jpg`,
       pendingUpload,
-      createdAt: new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000),
+      createdAt,
     },
   });
+  await prisma.$executeRaw`UPDATE "file" SET "updated_at" = ${updatedAt} WHERE "id" = ${file.id}::uuid`;
   return file.id;
 }
 
@@ -202,10 +214,10 @@ describe('cleanUnusedFiles integration tests', () => {
   });
 
   describe('confirmed files with no relations (orphaned)', () => {
-    it('should delete file after owning entity is deleted', async () => {
+    it('should delete file after owning entity is deleted and grace period passes', async () => {
       const userId = await createTestUser();
       const fileId = await createFileWithAge({
-        daysOld: 0,
+        daysOld: 2,
         pendingUpload: false,
       });
 
@@ -225,17 +237,46 @@ describe('cleanUnusedFiles integration tests', () => {
       // Delete TodoList
       await prisma.todoList.delete({ where: { id: todoList.id } });
 
-      // Now file should be deleted (orphaned)
+      // Now file should be deleted (orphaned and past the grace period)
       expect(await cleanUnusedFiles(createTestContext())).toBe(1);
       expect(await countFiles()).toBe(0);
+    });
+
+    it('should NOT delete a recently confirmed file that was never attached', async () => {
+      // Reproduces the foot-gun: confirming an upload without assigning it in
+      // the same transaction previously made the file immediately collectable.
+      await createFileWithAge({ daysOld: 0, pendingUpload: false });
+
+      expect(await cleanUnusedFiles(createTestContext())).toBe(0);
+      expect(await countFiles()).toBe(1);
+    });
+
+    it('should delete a never-attached file once it is past the grace period', async () => {
+      await createFileWithAge({ daysOld: 2, pendingUpload: false });
+
+      expect(await cleanUnusedFiles(createTestContext())).toBe(1);
+      expect(await countFiles()).toBe(0);
+    });
+
+    it('should base the grace period on updatedAt, not createdAt', async () => {
+      // An old upload confirmed just now must still get a full grace period.
+      await createFileWithAge({
+        daysOld: 30,
+        updatedDaysOld: 0,
+        pendingUpload: false,
+      });
+
+      expect(await cleanUnusedFiles(createTestContext())).toBe(0);
+      expect(await countFiles()).toBe(1);
     });
   });
 
   describe('confirmed files with active relations', () => {
     it('should NOT delete file when entity with reference exists', async () => {
       const userId = await createTestUser();
+      // Past the grace period, so the relation check is what protects the file.
       const fileId = await createFileWithAge({
-        daysOld: 0,
+        daysOld: 2,
         pendingUpload: false,
       });
 
@@ -299,8 +340,8 @@ describe('cleanUnusedFiles integration tests', () => {
           coverPhotoId: activeFileId,
         },
       });
-      // 4. Confirmed file without relation (orphaned, should be deleted)
-      await createFileWithAge({ daysOld: 0, pendingUpload: false });
+      // 4. Confirmed file without relation, past grace period (should be deleted)
+      await createFileWithAge({ daysOld: 2, pendingUpload: false });
 
       expect(await countFiles()).toBe(4);
 
@@ -311,6 +352,9 @@ describe('cleanUnusedFiles integration tests', () => {
     });
 
     it('should NOT delete orphaned files in categories with disableAutoCleanup', async () => {
+      // Include a cleanup-enabled category alongside the protected one, so the
+      // orphan branch is actually built and the per-category filter is what
+      // spares the protected file — not the "no categories to clean" shortcut.
       fileCategoriesOverride = [
         {
           name: 'NO_CLEANUP_CATEGORY',
@@ -320,20 +364,34 @@ describe('cleanUnusedFiles integration tests', () => {
           referencedByRelations: ['todoListCoverPhoto'],
           disableAutoCleanup: true,
         },
+        {
+          name: 'TODO_LIST_COVER_PHOTO',
+          adapter: 'uploads',
+          maxFileSize: 1024 * 1024,
+          allowedMimeTypes: ['image/jpeg'],
+          referencedByRelations: ['todoListCoverPhoto'],
+        },
       ];
 
-      // Create an orphaned confirmed file in the no-cleanup category
+      // Both orphaned and past the grace period; only the category differs.
       await createFileWithAge({
-        daysOld: 0,
+        daysOld: 2,
         pendingUpload: false,
         category: 'NO_CLEANUP_CATEGORY',
+      });
+      await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: false,
+        category: 'TODO_LIST_COVER_PHOTO',
       });
 
       const deletedCount = await cleanUnusedFiles(createTestContext());
 
-      // File should NOT be deleted because the category has disableAutoCleanup
-      expect(deletedCount).toBe(0);
+      // Only the cleanup-enabled file is removed
+      expect(deletedCount).toBe(1);
       expect(await countFiles()).toBe(1);
+      const [remaining] = await prisma.file.findMany();
+      expect(remaining.category).toBe('NO_CLEANUP_CATEGORY');
     });
 
     it('should only delete file when ALL relations are empty (multi-relation)', async () => {
@@ -351,7 +409,7 @@ describe('cleanUnusedFiles integration tests', () => {
       ];
 
       const fileId = await createFileWithAge({
-        daysOld: 0,
+        daysOld: 2,
         pendingUpload: false,
         category: 'MULTI_RELATION',
       });
