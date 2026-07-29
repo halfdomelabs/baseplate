@@ -54,8 +54,9 @@ export function logError(
   }
 
   if (CombinedGraphQLErrors.is(error)) {
-    if (error.errors.length > 0) {
-      annotateGraphQLError(error.errors[0], context);
+    const firstError = error.errors[0];
+    if (firstError) {
+      annotateGraphQLError(firstError, context);
     }
     // it's more useful to log the current stack trace than the one from
     // CombinedGraphQLErrors which is always the same

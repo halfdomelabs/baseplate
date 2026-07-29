@@ -40,8 +40,9 @@ export const queryHelpers = {
       (c): c is NonNullable<WhereInput<TModelName>> => c !== false,
     );
 
-    if (filtered.length === 0) return false;
-    if (filtered.length === 1) return filtered[0];
+    const firstClause = filtered[0];
+    if (firstClause === undefined) return false;
+    if (filtered.length === 1) return firstClause;
     return { OR: filtered };
   },
 
@@ -63,8 +64,9 @@ export const queryHelpers = {
       (c): c is NonNullable<WhereInput<TModelName>> => c !== true,
     );
 
-    if (filtered.length === 0) return true;
-    if (filtered.length === 1) return filtered[0];
+    const firstClause = filtered[0];
+    if (firstClause === undefined) return true;
+    if (filtered.length === 1) return firstClause;
     return { AND: filtered };
   },
 };

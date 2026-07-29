@@ -50,18 +50,17 @@ export async function prepareTransformers<
 ): Promise<TransformPlan<TTransformers>> {
   const { transformers, serviceContext } = config;
 
-  const entries = Object.entries(transformers);
   const results = await Promise.all(
-    entries.map(async ([, boundTransformer]) =>
-      boundTransformer.process({ serviceContext }),
-    ),
+    Object.entries(transformers).map(async ([key, boundTransformer]) => {
+      const result = await boundTransformer.process({ serviceContext });
+      return { key, result };
+    }),
   );
 
   const transformed = {} as InferUnresolvedTransformed<TTransformers>;
   const afterExecute: AfterExecuteHook[] = [];
 
-  for (const [index, result] of results.entries()) {
-    const key = entries[index][0];
+  for (const { key, result } of results) {
     (transformed as Record<string, unknown>)[key] = result.data;
 
     if (result.afterExecute) {
