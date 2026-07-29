@@ -102,7 +102,7 @@ export const pgBossGenerator = createGenerator({
         });
 
         node.packages.addProdPackages({
-          'pg-boss': '11.1.1',
+          'pg-boss': '12.26.3',
         });
       },
     }),

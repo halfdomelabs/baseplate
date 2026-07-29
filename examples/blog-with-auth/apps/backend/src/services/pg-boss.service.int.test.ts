@@ -37,6 +37,11 @@ function createDeferred<T = void>(): {
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
+// Jobs that become runnable without being written (a retry off its backoff, an
+// elapsed delay) emit no NOTIFY and are only found by the backstop poll. Tests
+// covering those would otherwise idle for the production interval.
+const FAST_POLL = { notifyPollingIntervalSeconds: 0.5 };
+
 describe('pg-boss service integration tests', () => {
   let runtime: QueueRuntime | undefined;
 
@@ -121,6 +126,110 @@ describe('pg-boss service integration tests', () => {
       assert.isDefined(processedJob);
       expect(processedJob.data).toEqual({ id: 123 });
     });
+
+    it('should pick up a job without waiting out the poll interval', async () => {
+      const queueName = 'test-notify-latency';
+      const deferred = createDeferred();
+      let processedAt: number | undefined;
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          processedAt = Date.now();
+          deferred.resolve(undefined);
+        },
+      });
+
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const enqueuedAt = Date.now();
+      await runtime.enqueue(token, { value: 'notify' });
+      await deferred.promise;
+
+      // With LISTEN/NOTIFY the worker wakes on the insert rather than on its
+      // next poll. The bound is deliberately loose - this proves notify is
+      // active, not that it hits any particular latency, so it stays stable on
+      // a loaded CI database.
+      assert.isDefined(processedAt);
+      expect(processedAt - enqueuedAt).toBeLessThan(1500);
+    });
+  });
+
+  describe('bulk enqueueing', () => {
+    it('should enqueue and process many jobs in one call', async () => {
+      const queueName = 'test-bulk-queue';
+      const jobCount = 5;
+      const deferred = createDeferred();
+      const processedValues: number[] = [];
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          processedValues.push(job.data.index);
+          if (processedValues.length === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+      });
+
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const jobIds = await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      expect(jobIds).toHaveLength(jobCount);
+
+      await deferred.promise;
+
+      // Jobs are fetched in batches, so arrival order is not guaranteed.
+      expect(processedValues.toSorted((a, b) => a - b)).toEqual([
+        0, 1, 2, 3, 4,
+      ]);
+    });
+
+    it('should drop deduplicated jobs from a bulk enqueue', async () => {
+      const queueName = 'test-bulk-dedup-queue';
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          // Never started - this test only asserts on what was written.
+        },
+        options: { deduplication: true },
+      });
+
+      runtime = createQueueRuntime([binding]);
+
+      // An `exclusive` queue admits one job per singletonKey, so the three
+      // sharing a key collapse to one and the returned ids come back short.
+      const jobIds = await runtime.enqueueBulk(token, [
+        { data: { value: 'a' }, options: { singletonKey: 'shared' } },
+        { data: { value: 'b' }, options: { singletonKey: 'shared' } },
+        { data: { value: 'c' }, options: { singletonKey: 'shared' } },
+      ]);
+
+      expect(jobIds.length).toBeLessThan(3);
+      expect(jobIds).toHaveLength(1);
+    });
+
+    it('should not hit the database for an empty bulk enqueue', async () => {
+      const queueName = 'test-bulk-empty-queue';
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          // Never started.
+        },
+      });
+
+      runtime = createQueueRuntime([binding]);
+
+      await expect(runtime.enqueueBulk(token, [])).resolves.toEqual([]);
+    });
   });
 
   describe('error handling and retries', () => {
@@ -156,7 +265,7 @@ describe('pg-boss service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createQueueRuntime([binding], FAST_POLL);
       await runtime.startWorkers({ createContext: createTestServiceContext });
 
       // Enqueue a job
@@ -172,7 +281,60 @@ describe('pg-boss service integration tests', () => {
       // Check attempt numbers
       expect(attempts[0].attemptNumber).toBe(1);
       expect(attempts[1].attemptNumber).toBe(2);
-    });
+    }, 10_000);
+
+    it('should retry only the failing job of a batch', async () => {
+      const queueName = 'test-mixed-batch-queue';
+      const deferred = createDeferred();
+      const attempts: { index: number; attemptNumber: number }[] = [];
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          attempts.push({
+            index: job.data.index,
+            attemptNumber: job.attemptNumber,
+          });
+
+          if (job.data.index === 1 && job.attemptNumber === 1) {
+            throw new Error('Simulated failure');
+          }
+
+          if (job.data.index === 1) {
+            deferred.resolve(undefined);
+          }
+        },
+        options: {
+          defaultJobOptions: {
+            attempts: 3,
+            backoff: { type: 'fixed', delaySeconds: 1 },
+          },
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      // Workers fetch in batches, so these arrive at the handler together. The
+      // handler settles each job individually, which has to hold even though
+      // one member of the batch fails: the successful jobs must not be retried
+      // and the failed one must not be marked complete.
+      await runtime.enqueueBulk(token, [
+        { data: { index: 0 } },
+        { data: { index: 1 } },
+        { data: { index: 2 } },
+      ]);
+
+      await deferred.promise;
+
+      expect(attempts.filter((attempt) => attempt.index === 0)).toHaveLength(1);
+      expect(attempts.filter((attempt) => attempt.index === 2)).toHaveLength(1);
+      expect(
+        attempts
+          .filter((attempt) => attempt.index === 1)
+          .map((attempt) => attempt.attemptNumber),
+      ).toEqual([1, 2]);
+    }, 15_000);
   });
 
   describe('worker lifecycle', () => {
@@ -189,7 +351,7 @@ describe('pg-boss service integration tests', () => {
         },
       });
 
-      runtime = createQueueRuntime([binding]);
+      runtime = createQueueRuntime([binding], FAST_POLL);
       await runtime.startWorkers({
         createContext: createTestServiceContext,
       });
@@ -212,7 +374,7 @@ describe('pg-boss service integration tests', () => {
       assert.isDefined(processedAt);
       const actualDelay = processedAt - enqueuedAt;
       expect(actualDelay).toBeGreaterThanOrEqual(900); // Allow some tolerance
-    }, 10_000); // pg-boss's poll interval can push this past the default 5000ms timeout
+    }, 10_000);
   });
 
   describe('cleanup', () => {
