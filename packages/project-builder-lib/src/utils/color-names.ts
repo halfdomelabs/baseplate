@@ -19,8 +19,10 @@ export function convertColorNameToOklch(color: string): string {
   if (fixedColorMapping) {
     return fixedColorMapping;
   }
-  const [paletteName, shadeName] = color.split('-');
+  const colorComponents = color.split('-');
+  const [paletteName, shadeName] = colorComponents;
   if (
+    colorComponents.length === 2 &&
     paletteName !== undefined &&
     shadeName !== undefined &&
     Object.prototype.hasOwnProperty.call(COLOR_PALETTES, paletteName)
