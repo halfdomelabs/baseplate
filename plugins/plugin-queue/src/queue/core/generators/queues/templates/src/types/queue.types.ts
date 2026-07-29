@@ -7,6 +7,13 @@ import type {
 } from '%serviceContextImports';
 
 /**
+ * Jobs from one queue a single worker process runs at once when the binding
+ * does not set `concurrency`. Applied by every backend so a handler's
+ * concurrency does not depend on which one is deployed.
+ */
+export const DEFAULT_QUEUE_CONCURRENCY = 10;
+
+/**
  * An inert reference to a queue, carrying only its name and payload type.
  * Produced by {@link defineQueue}. Importing a token pulls in no handler or
  * adapter code - it is the leaf of the import graph, safe for enqueue-side
@@ -64,6 +71,16 @@ export interface QueueHandlerBindingConfig<T> {
      * on an already-deployed queue has no effect until that queue is recreated.
      */
     deduplication?: boolean;
+
+    /**
+     * How many of this queue's jobs one worker process may run at once.
+     * Defaults to {@link DEFAULT_QUEUE_CONCURRENCY}. Set this to 1 for a
+     * handler that is not safe to run against itself.
+     *
+     * This bounds one process, not the deployment - N processes each run up to
+     * this many, so it is not a global limit on a horizontally scaled worker.
+     */
+    concurrency?: number;
 
     /**
      * Default options to apply to all jobs in this queue.

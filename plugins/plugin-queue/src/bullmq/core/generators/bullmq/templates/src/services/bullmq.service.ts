@@ -18,6 +18,7 @@ import type { Redis } from 'ioredis';
 import { config } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
+import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
 import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
 /**
@@ -367,6 +368,8 @@ export function createQueueRuntime(
         {
           connection: getRedisClient(),
           prefix: config.REDIS_KEY_PREFIX,
+          concurrency:
+            binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
         },
       );
 

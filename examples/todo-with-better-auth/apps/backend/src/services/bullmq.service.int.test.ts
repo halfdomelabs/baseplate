@@ -210,7 +210,80 @@ describe('BullMQ service integration tests', () => {
       expect(processedAt - enqueuedAt).toBeGreaterThanOrEqual(900);
     }, 10_000);
 
-    it('should not hit the queue for an empty bulk enqueue', async () => {
+    it('should run jobs concurrently up to the queue concurrency', async () => {
+      const queueName = 'test-bulk-concurrency-queue';
+      const jobCount = 3;
+      const deferred = createDeferred();
+      let running = 0;
+      let peakRunning = 0;
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          running += 1;
+          peakRunning = Math.max(peakRunning, running);
+          // Hold the slot so overlapping handlers are observable; with
+          // concurrency 1 each job would wait out the one before it.
+          await sleep(150);
+          running -= 1;
+
+          if (peakRunning === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      await deferred.promise;
+
+      expect(peakRunning).toBe(jobCount);
+    }, 10_000);
+
+    it('should serialize jobs when concurrency is 1', async () => {
+      const queueName = 'test-bulk-serial-queue';
+      const jobCount = 3;
+      const deferred = createDeferred();
+      let running = 0;
+      let peakRunning = 0;
+      let completed = 0;
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          running += 1;
+          peakRunning = Math.max(peakRunning, running);
+          await sleep(50);
+          running -= 1;
+          completed += 1;
+
+          if (completed === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+        options: { concurrency: 1 },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      await deferred.promise;
+
+      expect(peakRunning).toBe(1);
+    }, 10_000);
+
+    it('should return an empty array without enqueueing', async () => {
       const queueName = 'test-bulk-empty-queue';
 
       const token = defineQueue<{ value: string }>(queueName);

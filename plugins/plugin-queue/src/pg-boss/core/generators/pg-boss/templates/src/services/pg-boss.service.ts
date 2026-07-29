@@ -16,6 +16,7 @@ import type { JobInsert, JobWithMetadata, SendOptions } from 'pg-boss';
 import { config } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
+import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
 import { PgBoss } from 'pg-boss';
 
 /**
@@ -24,17 +25,17 @@ import { PgBoss } from 'pg-boss';
 const DELETE_AFTER_DAYS = TPL_DELETE_AFTER_DAYS;
 
 /**
- * Jobs fetched per poll. The handler runs a batch concurrently, so this also
- * caps how many jobs one worker processes at a time.
- */
-const WORKER_BATCH_SIZE = 10;
-
-/**
  * How long a worker may wait before finding a job that became runnable without
  * being written - a retry coming off its backoff, or an elapsed `delaySeconds`.
  * NOTIFY does not cover those, so this is their worst-case start latency.
  */
 const NOTIFY_POLLING_INTERVAL_SECONDS = 5;
+
+/**
+ * Idle poll used when NOTIFY is unavailable. pg-boss rejects a notify interval
+ * below this, so a shorter one drags the base poll down with it.
+ */
+const BASE_POLLING_INTERVAL_SECONDS = 2;
 
 /**
  * Awaits every promise and returns the rejection reasons, if any, instead of
@@ -173,6 +174,10 @@ async function setupRepeatableJobs(
  * loops. Set this in every process except one, when running pg-boss across
  * multiple processes (e.g. API + standalone worker), so only one process
  * performs maintenance.
+ * @param options.useListenNotify Enables the LISTEN/NOTIFY listener, which
+ * holds one dedicated session-pinned connection. Only worth enabling in a
+ * process that runs workers; it does not affect enqueue-side NOTIFY. Defaults
+ * to the inverse of `disableMaintenance`.
  * @param options.notifyPollingIntervalSeconds Overrides
  * {@link NOTIFY_POLLING_INTERVAL_SECONDS}. Intended for tests that would
  * otherwise wait out a poll for a retried or delayed job.
@@ -183,11 +188,16 @@ export function createQueueRuntime(
   bindings: QueueHandlerBinding[],
   options: {
     disableMaintenance?: boolean;
+    useListenNotify?: boolean;
     notifyPollingIntervalSeconds?: number;
   } = {},
 ): QueueRuntime {
-  const pollingIntervalSeconds =
+  const notifyPollingIntervalSeconds =
     options.notifyPollingIntervalSeconds ?? NOTIFY_POLLING_INTERVAL_SECONDS;
+  const basePollingIntervalSeconds = Math.min(
+    notifyPollingIntervalSeconds,
+    BASE_POLLING_INTERVAL_SECONDS,
+  );
 
   const seenNames = new Set<string>();
   for (const binding of bindings) {
@@ -205,9 +215,7 @@ export function createQueueRuntime(
 
   const boss = new PgBoss({
     connectionString: config.DATABASE_URL,
-    // Holds a dedicated session-pinned connection, so only the process running
-    // workers opens one. Enqueue-side NOTIFY is unaffected by this.
-    useListenNotify: !options.disableMaintenance,
+    useListenNotify: options.useListenNotify ?? !options.disableMaintenance,
     ...(options.disableMaintenance && {
       supervise: false,
       schedule: false,
@@ -387,13 +395,12 @@ export function createQueueRuntime(
         name,
         {
           includeMetadata: true,
-          // pg-boss would otherwise relax this to 30s on a notify-enabled
-          // queue, which only suits jobs that NOTIFY actually covers. It must
-          // not drop below the base poll, so both move together.
-          pollingIntervalSeconds: Math.min(pollingIntervalSeconds, 2),
-          notifyPollingIntervalSeconds: pollingIntervalSeconds,
-          batchSize: WORKER_BATCH_SIZE,
-          burstWhenBatchFull: true,
+          pollingIntervalSeconds: basePollingIntervalSeconds,
+          notifyPollingIntervalSeconds,
+          // Independent pollers rather than a larger batchSize, which would
+          // hand the handler a batch and wait for all of it before refetching.
+          localConcurrency:
+            binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
         },
         async (jobs: JobWithMetadata[]) => {
           const jobPromises = jobs.map(async (job) => {

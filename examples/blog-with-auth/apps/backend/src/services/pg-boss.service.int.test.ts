@@ -143,17 +143,21 @@ describe('pg-boss service integration tests', () => {
       runtime = createQueueRuntime([binding]);
       await runtime.startWorkers({ createContext: createTestServiceContext });
 
+      // Let the worker get past its startup fetch and settle into the 2s idle
+      // poll. Enqueueing immediately would be caught by that first fetch, which
+      // passes whether or not NOTIFY is doing anything.
+      await sleep(2200);
+
       const enqueuedAt = Date.now();
       await runtime.enqueue(token, { value: 'notify' });
       await deferred.promise;
 
-      // With LISTEN/NOTIFY the worker wakes on the insert rather than on its
-      // next poll. The bound is deliberately loose - this proves notify is
-      // active, not that it hits any particular latency, so it stays stable on
-      // a loaded CI database.
+      // Mid-cycle the next poll is up to 2s out, so a sub-second pickup can
+      // only come from NOTIFY. Loose enough to stay stable on a loaded CI
+      // database.
       assert.isDefined(processedAt);
-      expect(processedAt - enqueuedAt).toBeLessThan(1500);
-    });
+      expect(processedAt - enqueuedAt).toBeLessThan(1000);
+    }, 10_000);
   });
 
   describe('bulk enqueueing', () => {
@@ -212,11 +216,112 @@ describe('pg-boss service integration tests', () => {
         { data: { value: 'c' }, options: { singletonKey: 'shared' } },
       ]);
 
-      expect(jobIds.length).toBeLessThan(3);
       expect(jobIds).toHaveLength(1);
     });
 
-    it('should not hit the database for an empty bulk enqueue', async () => {
+    // enqueueBulk maps options through pg-boss's flat JobInsert shape rather
+    // than the SendOptions `enqueue` uses, so the mapping needs its own cover.
+    it('should apply per-job options in a bulk enqueue', async () => {
+      const queueName = 'test-bulk-options-queue';
+      const deferred = createDeferred();
+      let processedAt: number | undefined;
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          processedAt = Date.now();
+          deferred.resolve(undefined);
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const enqueuedAt = Date.now();
+      await runtime.enqueueBulk(token, [
+        { data: { value: 'delayed' }, options: { delaySeconds: 1 } },
+      ]);
+
+      await deferred.promise;
+
+      assert.isDefined(processedAt);
+      expect(processedAt - enqueuedAt).toBeGreaterThanOrEqual(900);
+    }, 10_000);
+
+    it('should run jobs concurrently up to the queue concurrency', async () => {
+      const queueName = 'test-bulk-concurrency-queue';
+      const jobCount = 3;
+      const deferred = createDeferred();
+      let running = 0;
+      let peakRunning = 0;
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          running += 1;
+          peakRunning = Math.max(peakRunning, running);
+          // Hold the slot so overlapping handlers are observable; at
+          // concurrency 1 each job would wait out the one before it.
+          await sleep(150);
+          running -= 1;
+
+          if (peakRunning === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      await deferred.promise;
+
+      expect(peakRunning).toBe(jobCount);
+    }, 15_000);
+
+    it('should serialize jobs when concurrency is 1', async () => {
+      const queueName = 'test-bulk-serial-queue';
+      const jobCount = 3;
+      const deferred = createDeferred();
+      let running = 0;
+      let peakRunning = 0;
+      let completed = 0;
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          running += 1;
+          peakRunning = Math.max(peakRunning, running);
+          await sleep(50);
+          running -= 1;
+          completed += 1;
+
+          if (completed === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+        options: { concurrency: 1 },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      await deferred.promise;
+
+      expect(peakRunning).toBe(1);
+    }, 15_000);
+
+    it('should return an empty array without enqueueing', async () => {
       const queueName = 'test-bulk-empty-queue';
 
       const token = defineQueue<{ value: string }>(queueName);

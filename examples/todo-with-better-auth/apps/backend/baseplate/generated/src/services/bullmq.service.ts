@@ -16,6 +16,7 @@ import type {
 import type { ServiceContext } from '../utils/service-context.js';
 import type { RedisRuntime } from './redis.js';
 
+import { DEFAULT_QUEUE_CONCURRENCY } from '../types/queue.types.js';
 import { config } from './config.js';
 import { logError } from './error-logger.js';
 import { logger } from './logger.js';
@@ -367,6 +368,8 @@ export function createQueueRuntime(
         {
           connection: getRedisClient(),
           prefix: config.REDIS_KEY_PREFIX,
+          concurrency:
+            binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
         },
       );
 
