@@ -53,6 +53,7 @@ function CrudTableActionsForm({
 
   function handleDeleteAction(actionIdx: number): void {
     const action = fields[actionIdx];
+    if (!action) return;
     requestConfirm({
       title: 'Delete Action',
       content: `Are you sure you want to delete the "${action.type}" action?`,

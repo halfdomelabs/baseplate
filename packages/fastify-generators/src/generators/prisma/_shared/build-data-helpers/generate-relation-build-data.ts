@@ -75,14 +75,15 @@ function generateUniqueWhereFragment(
     );
   }
 
-  return TsCodeUtils.mergeFragmentsAsObject(
-    Object.fromEntries(
-      foreignKeyFields.map((fkField, index) => [
-        referencedFields[index],
-        fkField,
-      ]),
-    ),
-  );
+  const entries = foreignKeyFields.map((fkField, index): [string, string] => {
+    const referencedField = referencedFields[index];
+    if (referencedField === undefined) {
+      throw new Error(`Missing referenced field at index ${index}`);
+    }
+    return [referencedField, fkField];
+  });
+
+  return TsCodeUtils.mergeFragmentsAsObject(Object.fromEntries(entries));
 }
 
 /**

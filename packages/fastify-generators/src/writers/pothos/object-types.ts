@@ -41,15 +41,15 @@ export function writePothosSimpleObjectFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
 ): TsCodeFragment {
-  const pothosFields: TsCodeFragment[] = fields.map((field) => {
-    if (field.type === 'scalar') {
-      return writePothosObjectFieldFromDtoScalarField(field, options);
-    }
-    return writeSimplePothosObjectFieldFromDtoNestedField(field, options);
-  });
+  const pothosFields: [string, TsCodeFragment][] = fields.map((field) => [
+    field.name,
+    field.type === 'scalar'
+      ? writePothosObjectFieldFromDtoScalarField(field, options)
+      : writeSimplePothosObjectFieldFromDtoNestedField(field, options),
+  ]);
 
   return TsCodeUtils.mergeFragmentsAsObject(
-    Object.fromEntries(pothosFields.map((field, i) => [fields[i].name, field])),
+    Object.fromEntries(pothosFields),
     // TODO: Re-enable sort once we have better ways of sorting Prisma fields
     { wrapWithParenthesis: true, disableSort: true },
   );

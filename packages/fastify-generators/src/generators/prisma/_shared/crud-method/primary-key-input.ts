@@ -57,9 +57,10 @@ export function getModelIdFieldName(model: PrismaOutputModel): string {
     throw new Error(`Model ${model.name} has no primary key`);
   }
 
-  if (idFields.length === 1) {
+  const firstIdField = idFields[0];
+  if (idFields.length === 1 && firstIdField !== undefined) {
     // handle trivial one primary key case
-    return idFields[0];
+    return firstIdField;
   }
 
   // handle multiple primary key case
@@ -83,10 +84,10 @@ export function generateGetWhereUniqueFragment(
     throw new Error(`Model ${model.name} has no primary key`);
   }
 
-  if (idFields.length === 1) {
+  const firstIdField = idFields[0];
+  if (idFields.length === 1 && firstIdField !== undefined) {
     // Single primary key: (result) => ({ id: result.id })
-    const idField = idFields[0];
-    return `(result) => ({ ${idField}: result.${idField} })`;
+    return `(result) => ({ ${firstIdField}: result.${firstIdField} })`;
   }
 
   // Compound primary key: (result) => ({ field1_field2: { field1: result.field1, field2: result.field2 } })

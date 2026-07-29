@@ -312,9 +312,13 @@ export const prismaGenerator = createGenerator({
           },
           build: (builder) => {
             const schemaText = schemaFile.toText();
-            const [[, formattedSchemaText]] = formatPrismaSchema([
+            const formattedSchemaEntry = formatPrismaSchema([
               ['prisma/schema.prisma', schemaText],
-            ]);
+            ])[0];
+            if (!formattedSchemaEntry) {
+              throw new Error('Failed to format Prisma schema');
+            }
+            const [, formattedSchemaText] = formattedSchemaEntry;
             builder.writeFile({
               id: 'prisma-schema',
               destination: 'prisma/schema.prisma',

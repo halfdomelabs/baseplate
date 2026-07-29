@@ -109,7 +109,7 @@ export function ServiceMethodAuthSection({
     delete: deleteGlobalRoles,
   };
 
-  const instanceRolesMap: Record<string, string[]> = {
+  const instanceRolesMap: Record<'update' | 'delete', string[]> = {
     update: updateInstanceRoles,
     delete: deleteInstanceRoles,
   };

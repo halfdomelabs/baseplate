@@ -23,12 +23,13 @@ export function generatePalette(baseColor: string): ColorPalette {
 
   return Object.fromEntries(
     PALETTE_SHADES.map((shade) => {
-      const shadeRgb: Rgb = {
-        mode: 'rgb',
-        r: newPalette[getPaletteKey(shade, 'r')],
-        g: newPalette[getPaletteKey(shade, 'g')],
-        b: newPalette[getPaletteKey(shade, 'b')],
-      };
+      const r = newPalette[getPaletteKey(shade, 'r')];
+      const g = newPalette[getPaletteKey(shade, 'g')];
+      const b = newPalette[getPaletteKey(shade, 'b')];
+      if (r === undefined || g === undefined || b === undefined) {
+        throw new Error(`Generated palette is missing shade ${shade}`);
+      }
+      const shadeRgb: Rgb = { mode: 'rgb', r, g, b };
       return [shade, formatHex(shadeRgb)];
     }),
   ) as ColorPalette;
