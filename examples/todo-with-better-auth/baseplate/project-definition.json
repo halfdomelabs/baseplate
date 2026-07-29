@@ -1418,7 +1418,7 @@
           ],
           "foreignRelations": [
             { "ref": "roles" },
-            { "paginated": true, "ref": "todoLists" },
+            { "orderable": true, "paginated": true, "ref": "todoLists" },
             { "ref": "userProfile" },
             { "ref": "customer" }
           ]

@@ -54,6 +54,14 @@ function buildObjectTypeFile(
 
   const filterableFieldEntries = fields.filter((entry) => entry.filterable);
   const sortableFieldEntries = fields.filter((entry) => entry.sortable);
+  const relationModels = ModelUtils.getRelationsToModel(
+    appBuilder.projectDefinition,
+    model.id,
+  );
+  const requiresOrderByInputForRelation =
+    ModelUtils.getModelIdsRequiringOrderByInput(
+      appBuilder.projectDefinition,
+    ).has(model.id);
 
   if (
     queries.list.enabled &&
@@ -89,6 +97,25 @@ function buildObjectTypeFile(
     }
   }
 
+  const getOrderByInputRefForRelation = (ref: string): string => {
+    const relationModel = relationModels.find(
+      ({ relation }) => relation.foreignId === ref,
+    );
+    if (!relationModel) {
+      throw new Error(
+        `Foreign relation '${appBuilder.nameFromId(ref)}' on model '${model.name}' is marked orderable but its target model could not be resolved.`,
+      );
+    }
+    // The OrderByInput type is emitted while building the target's own object
+    // type file, so a disabled target would leave this reference dangling.
+    if (!relationModel.model.graphql.objectType.enabled) {
+      throw new Error(
+        `Foreign relation '${appBuilder.nameFromId(ref)}' on model '${model.name}' is marked orderable but its target model '${relationModel.model.name}' does not have its GraphQL object type enabled.`,
+      );
+    }
+    return getPothosPrismaOrderByInputTypeOutputName(relationModel.model.name);
+  };
+
   const toExposedField = (entry: {
     ref: string;
     globalRoles: string[];
@@ -122,6 +149,9 @@ function buildObjectTypeFile(
           ...foreignRelations.map((entry) => ({
             ...toExposedField(entry),
             paginated: entry.paginated,
+            orderByInputRef: entry.orderable
+              ? getOrderByInputRefForRelation(entry.ref)
+              : undefined,
           })),
           ...localRelations.map(toExposedField),
         ],
@@ -138,7 +168,8 @@ function buildObjectTypeFile(
             })
           : undefined,
       orderByInput:
-        queries.list.enabled && queries.list.orderBy.enabled
+        (queries.list.enabled && queries.list.orderBy.enabled) ||
+        requiresOrderByInputForRelation
           ? pothosPrismaOrderByInputGenerator({
               modelName: model.name,
               order: 3,

@@ -97,6 +97,15 @@ export const pothosPrismaOrderByInputGenerator = createGenerator({
                 field.type === 'scalar' && sortableFields.includes(field.name),
             );
 
+            if (sortableScalarFields.length === 0) {
+              throw new Error(
+                `Model ${model.name} has no sortable fields but an OrderByInput type was ` +
+                  `requested. GraphQL input types must declare at least one field. Mark a ` +
+                  `scalar field on ${model.name} as sortable, or disable ordering on the ` +
+                  `list query and any relations targeting this model.`,
+              );
+            }
+
             const nonSortableField = sortableScalarFields.find((field) =>
               NON_SORTABLE_SCALAR_TYPES.has(field.scalarType),
             );

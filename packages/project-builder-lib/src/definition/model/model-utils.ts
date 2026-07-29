@@ -151,6 +151,42 @@ function isFieldSafeToFilter(
   );
 }
 
+/**
+ * Returns the IDs of models that need an `OrderByInput` GraphQL type because
+ * some *other* model exposes a list relation to them marked `orderable`.
+ *
+ * The `orderable` flag lives on the *referenced* model's foreign relation
+ * entry (e.g. `User.todoLists`), but the input type belongs to the model the
+ * relation is declared on (`TodoList`, whose `owner` relation carries the
+ * matching globally-unique `foreignId`) — that is the model whose rows are
+ * being sorted.
+ *
+ * @param projectDefinition - The project definition.
+ * @returns The set of model IDs requiring an `OrderByInput` type.
+ */
+function getModelIdsRequiringOrderByInput(
+  projectDefinition: ProjectDefinition,
+): Set<string> {
+  const orderableForeignIds = new Set(
+    projectDefinition.models
+      .filter((m) => m.graphql.objectType.enabled)
+      .flatMap((m) =>
+        m.graphql.objectType.foreignRelations
+          .filter((entry) => entry.orderable)
+          .map((entry) => entry.ref),
+      ),
+  );
+  return new Set(
+    projectDefinition.models
+      .filter((m) =>
+        m.model.relations.some((relation) =>
+          orderableForeignIds.has(relation.foreignId),
+        ),
+      )
+      .map((m) => m.id),
+  );
+}
+
 export const ModelUtils = {
   byId,
   byIdOrThrow,
@@ -158,6 +194,7 @@ export const ModelUtils = {
   byNameOrThrow,
   getScalarFieldById,
   getRelationsToModel,
+  getModelIdsRequiringOrderByInput,
   getModelsForFeature,
   getModelIdFields,
   hasService,

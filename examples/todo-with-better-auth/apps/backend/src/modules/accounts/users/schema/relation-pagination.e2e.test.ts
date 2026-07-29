@@ -165,4 +165,41 @@ describe('User.todoLists', () => {
 
     await fastify.close();
   });
+
+  it('orders related records by the requested fields', async () => {
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner4@example.com' },
+    });
+    await Promise.all([
+      prisma.todoList.create({
+        data: { ownerId: owner.id, position: 3, name: 'Third' },
+      }),
+      prisma.todoList.create({
+        data: { ownerId: owner.id, position: 1, name: 'First' },
+      }),
+      prisma.todoList.create({
+        data: { ownerId: owner.id, position: 2, name: 'Second' },
+      }),
+    ]);
+
+    const fastify = await buildApp(['public', 'user'], owner.id);
+
+    const result = await queryGraphql(
+      fastify,
+      `query ($id: Uuid!, $orderBy: [TodoListOrderByInput!]) {
+        user(id: $id) {
+          todoLists(orderBy: $orderBy) { position }
+        }
+      }`,
+      { id: owner.id, orderBy: [{ position: 'ASC' }] },
+    );
+
+    expect(result.errors).toBeUndefined();
+    const user = result.data?.user as { todoLists: { position: number }[] };
+    expect(user.todoLists.map((todoList) => todoList.position)).toEqual([
+      1, 2, 3,
+    ]);
+
+    await fastify.close();
+  });
 });
