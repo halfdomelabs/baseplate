@@ -91,24 +91,24 @@ describe('resolveCoarseAuthorizeRoles', () => {
     ).toEqual(['public']);
   });
 
-  // e.g. `auth.hasRole('system')` — only that global role can satisfy it.
+  // e.g. `hasRole('moderator')` — only that global role can satisfy it.
   it('gates on the floor global roles for a role-check instance role', () => {
     expect(
       resolve(
-        { instanceRoles: ['systemOnly'] },
+        { instanceRoles: ['moderatorOnly'] },
         {
           instanceRoleFloor: () => ({
             kind: 'globalRoles',
-            roles: ['system'],
+            roles: ['moderator'],
           }),
         },
       ),
-    ).toEqual(['system']);
+    ).toEqual(['moderator']);
   });
 
-  // An unresolvable expression could be satisfied by anyone, so stay open
-  // rather than silently locking callers out.
-  it('falls back to the widest gate when an instance role cannot be resolved', () => {
+  // A grant naming a role the model does not declare could be satisfied by
+  // anyone, so stay open rather than silently locking callers out.
+  it('falls back to the widest gate for a role the model does not declare', () => {
     expect(
       resolve(
         { instanceRoles: ['unknown'] },
@@ -187,5 +187,13 @@ describe('deriveInstanceRoleFloor', () => {
     expect(
       deriveInstanceRoleFloor("model.id === userId && hasRole('admin')"),
     ).toEqual({ kind: 'globalRoles', roles: ['admin'] });
+  });
+
+  // A malformed expression is an authoring error the validator should already
+  // surface, so fail loudly with the expression rather than guessing a gate.
+  it('throws naming the expression when it cannot be parsed', () => {
+    expect(() => deriveInstanceRoleFloor('model.ownerId ===')).toThrow(
+      /model\.ownerId ===/,
+    );
   });
 });

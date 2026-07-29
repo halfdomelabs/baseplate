@@ -1,11 +1,9 @@
 /**
  * Derives the coarse GraphQL `authorize` gate for a field's role grant.
  *
- * The gate is a flat list of global role names checked before the resolver
- * runs, so it cannot evaluate a per-row (instance) grant. When a grant names
- * instance roles, the gate must therefore admit everyone the model policy's
- * `where`/`whereUnique` might still grant — and no one it provably can't —
- * leaving the row-level filtering to the policy.
+ * The gate is a flat list of global role names checked before the resolver runs,
+ * so it cannot evaluate a per-row (instance) grant — row-level filtering is left
+ * to the model policy's `where`/`whereUnique`.
  */
 
 import type { ModelConfig } from '@baseplate-dev/project-builder-lib';
@@ -79,8 +77,6 @@ function stronger(
   a: InstanceRoleFloor,
   b: InstanceRoleFloor,
 ): InstanceRoleFloor {
-  // A role requirement is the narrowest gate; prefer it over a bare session
-  // requirement, and a session requirement over anonymous.
   if (a.kind === 'globalRoles') return a;
   if (b.kind === 'globalRoles') return b;
   if (a.kind === 'authenticated' || b.kind === 'authenticated') {
@@ -92,11 +88,21 @@ function stronger(
 /**
  * Derives the weakest principal that could satisfy an authorizer expression,
  * used to size the gate for a grant that names instance roles.
+ *
+ * @throws if the expression cannot be parsed.
  */
-export function deriveInstanceRoleFloor(
-  expression: string,
-): InstanceRoleFloor | undefined {
-  const parsed = parseAuthorizerExpression(expression);
+export function deriveInstanceRoleFloor(expression: string): InstanceRoleFloor {
+  let parsed;
+  try {
+    parsed = parseAuthorizerExpression(expression);
+  } catch (error) {
+    throw new Error(
+      `Could not derive an authorize gate from authorizer expression \`${expression}\`: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      { cause: error },
+    );
+  }
 
   return visitAuthorizerExpression<InstanceRoleFloor>(parsed.ast, {
     // Only an `auth.*` reference binds the expression to a session; comparing
@@ -132,7 +138,10 @@ export function deriveInstanceRoleFloor(
 interface RoleGateResolvers {
   /** Resolve a global role id ref to its name. */
   globalRoleName: (roleRef: string) => string;
-  /** The floor for one of the model's authorizer roles. */
+  /**
+   * The floor for one of the model's authorizer roles, or `undefined` when the
+   * model declares no role by that name.
+   */
   instanceRoleFloor: (roleName: string) => InstanceRoleFloor | undefined;
   /** Roles a logged-in caller may hold. */
   authenticatedRoleNames: () => string[];
@@ -168,8 +177,8 @@ export function resolveCoarseAuthorizeRoles(
     resolvers.instanceRoleFloor(roleName),
   );
 
-  // An unresolvable expression could be satisfied by anyone, so fall back to
-  // the widest gate rather than silently locking callers out.
+  // A grant naming a role the model does not declare could be satisfied by
+  // anyone, so widen rather than silently locking callers out.
   const floorRoleNames = floors.flatMap((floor) => {
     switch (floor?.kind) {
       case 'globalRoles': {
