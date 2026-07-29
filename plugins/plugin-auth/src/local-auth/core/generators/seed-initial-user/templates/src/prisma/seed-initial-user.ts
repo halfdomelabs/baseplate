@@ -6,7 +6,8 @@ import type { User } from '%prismaGeneratedImports';
 import { createUserWithEmailAndPassword } from '%authEmailPasswordImports';
 import { prisma } from '%prismaImports';
 
-const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD } = process.env;
+const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD, INITIAL_USER_NAME } =
+  process.env;
 const INITIAL_USER_ROLES: AuthRole[] = TPL_INITIAL_USER_ROLES;
 
 export async function seedInitialUser(): Promise<User | undefined> {
@@ -26,6 +27,7 @@ export async function seedInitialUser(): Promise<User | undefined> {
       input: {
         email: INITIAL_USER_EMAIL,
         password: INITIAL_USER_PASSWORD,
+        name: INITIAL_USER_NAME ? INITIAL_USER_NAME : 'Admin',
       },
     });
     console.info(`Created initial user with email ${INITIAL_USER_EMAIL}!`);

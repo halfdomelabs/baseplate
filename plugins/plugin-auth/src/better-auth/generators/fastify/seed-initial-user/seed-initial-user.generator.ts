@@ -47,6 +47,10 @@ export const betterAuthSeedInitialUserGenerator = createGenerator({
           name: 'INITIAL_USER_PASSWORD',
           exampleValue: 'password',
         });
+        prismaSeed.addSeedEnvField({
+          name: 'INITIAL_USER_NAME',
+          exampleValue: 'Admin',
+        });
       },
     }),
     main: createGeneratorTask({
