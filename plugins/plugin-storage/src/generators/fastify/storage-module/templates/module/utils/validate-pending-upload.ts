@@ -31,7 +31,8 @@ export interface ValidatedPendingUpload {
  * - File was actually uploaded to storage
  *
  * Returns a `confirmUpload` callback that should be called inside your
- * transaction after creating/updating the parent entity.
+ * transaction after creating/updating the parent entity. A confirmed file that
+ * is never attached is reclaimed by the cleanup job after the expiry threshold.
  *
  * @param options - Validation options
  * @param options.fileId - The file ID to validate

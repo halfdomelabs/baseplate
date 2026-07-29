@@ -1,26 +1,17 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import {
-  packageInfoProvider,
-  packageScope,
-  tsCodeFragment,
-  TsCodeUtils,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { packageScope, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
 import { createPothosTypeReference } from '#src/writers/pothos/options.js';
 
-import {
-  pothosConfigProvider,
-  pothosImportsProvider,
-} from '../pothos/index.js';
+import { pothosConfigProvider } from '../pothos/index.js';
+import { POTHOS_POTHOS_SORT_ORDER_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -35,10 +26,11 @@ export const pothosSortOrderProvider =
 /**
  * Generates a single, app-wide `src/plugins/graphql/sort-order.ts` file
  * defining the `SortOrder` enum (shared by every model's `OrderByInput`
- * type) plus the `applyStableOrderBy` helper that appends a model's ID
- * field(s) as a tiebreaker so paginated results stay stable when the
- * caller's sort has ties. The `SortOrder` enum is registered into
- * `pothosConfig.enums`, so consumers resolve it via
+ * type) plus the `applyStableOrderBy` helper that resolves a caller's sort,
+ * a model's default sort, and its ID field(s) into a stable `orderBy`. The
+ * file's content is static — every project gets the same helper — so it's
+ * rendered from a template rather than built dynamically. The `SortOrder`
+ * enum is registered into `pothosConfig.enums`, so consumers resolve it via
  * `pothosSchemaBaseTypesProvider.enumRefOrThrow('SortOrder')`.
  */
 export const pothosSortOrderGenerator = createGenerator({
@@ -46,32 +38,28 @@ export const pothosSortOrderGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: GENERATED_TEMPLATES.paths.task,
+    imports: GENERATED_TEMPLATES.imports.task,
+    renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        packageInfo: packageInfoProvider,
-        typescriptFile: typescriptFileProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+        renderers: GENERATED_TEMPLATES.renderers.provider,
         pothosConfig: pothosConfigProvider,
-        pothosImports: pothosImportsProvider,
       },
       exports: {
         pothosSortOrder: pothosSortOrderProvider.export(packageScope),
       },
-      run({ packageInfo, typescriptFile, pothosConfig, pothosImports }) {
-        const sortOrderPath = path.posix.join(
-          packageInfo.getPackageSrcPath(),
-          'plugins',
-          'graphql',
-          'sort-order.ts',
-        );
+      run({ paths, renderers, pothosConfig }) {
+        const sortOrderPath = paths.sortOrder;
 
         pothosConfig.schemaFiles.push(sortOrderPath);
 
-        const exportName = 'sortOrderEnum';
         pothosConfig.enums.set(
           'SortOrder',
           createPothosTypeReference({
             name: 'SortOrder',
-            exportName,
+            exportName: 'sortOrderEnum',
             moduleSpecifier: sortOrderPath,
           }),
         );
@@ -88,55 +76,8 @@ export const pothosSortOrderGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            const enumFragment = TsCodeUtils.formatFragment(
-              `export const ${exportName} = BUILDER.enumType('SortOrder', {
-                values: { ASC: { value: 'asc' }, DESC: { value: 'desc' } },
-              });`,
-              { BUILDER: pothosImports.builder.fragment() },
-            );
-
-            const helperFragment = tsCodeFragment(
-              `/**
- * Appends a model's ID field(s) to \`orderBy\` as a tiebreaker, if not
- * already present. Prisma's cursor pagination only guarantees stable,
- * non-skipping/non-repeating pages when \`orderBy\` produces a total
- * order — ties on the caller's sort fields let the database return them
- * in a different order between paged queries. Returns \`undefined\` for
- * an empty result so callers can pass it straight through to Prisma's
- * \`orderBy\` option.
- */
-export function applyStableOrderBy<T extends Record<string, 'asc' | 'desc'>>(
-  orderBy: T[] | null | undefined,
-  idFields: string[],
-): (T | Record<string, 'asc'>)[] | undefined {
-  // Every field on an OrderByInput is optional, so \`[{}]\` is a valid input.
-  // An empty clause reaching Prisma throws at runtime, so drop it here.
-  const clauses = (orderBy ?? []).filter(
-    (clause) => Object.keys(clause).length > 0,
-  );
-  const specifiedFields = new Set(
-    clauses.flatMap((clause) => Object.keys(clause)),
-  );
-  const tiebreakers = idFields
-    .filter((field) => !specifiedFields.has(field))
-    .map((field) => ({ [field]: 'asc' as const }));
-  const result = [...clauses, ...tiebreakers];
-  return result.length > 0 ? result : undefined;
-}`,
-            );
-
             await builder.apply(
-              typescriptFile.renderTemplateFragment({
-                id: 'sort-order',
-                destination: sortOrderPath,
-                fragment: TsCodeUtils.mergeFragments(
-                  new Map([
-                    ['enum', enumFragment],
-                    ['helper', helperFragment],
-                  ]),
-                  '\n\n',
-                ),
-              }),
+              renderers.mainGroupGroup.render({ variables: {} }),
             );
           },
         };

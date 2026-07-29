@@ -666,7 +666,7 @@ export function createModelPolicy<
       check: (ctx, instance) =>
         checkRolesOrThrow(ctx, roleNames, globalRoles, instance),
       where: (ctx, callerWhere) =>
-        rolesToWhere(ctx, roleNames, globalRoles, callerWhere),
+        rolesToWhere(ctx, roleNames, globalRoles, callerWhere) ?? {},
       whereUnique: (ctx, unique) => {
         // Auth filter alone (no caller filter — the unique selector rides
         // separately). `undefined` = unrestricted → return the selector as-is;

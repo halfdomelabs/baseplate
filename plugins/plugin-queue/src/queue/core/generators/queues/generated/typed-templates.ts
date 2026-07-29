@@ -14,6 +14,7 @@ const queueTypes = createTsTemplateFile({
   name: 'queue-types',
   projectExports: {
     bindQueueHandler: {},
+    DEFAULT_QUEUE_CONCURRENCY: {},
     defineQueue: {},
     EnqueueOptions: { isTypeOnly: true },
     QueueHandlerBinding: { isTypeOnly: true },

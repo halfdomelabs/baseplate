@@ -71,6 +71,9 @@ export const pgBossGenerator = createGenerator({
         appRuntimeConfig.construction.set('queue', {
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createQueueRuntime', paths.pgBossService)}(queueBindings, {
             disableMaintenance: !options.backgroundServices,
+            // Only the worker process benefits from the listener's dedicated
+            // connection, and it is what LISTEN/NOTIFY exists to wake.
+            useListenNotify: options.backgroundServices,
           })`,
           disposeFragment: tsCodeFragment('(queue) => queue.stopWorkers()'),
         });
@@ -102,7 +105,7 @@ export const pgBossGenerator = createGenerator({
         });
 
         node.packages.addProdPackages({
-          'pg-boss': '11.1.1',
+          'pg-boss': '12.26.3',
         });
       },
     }),

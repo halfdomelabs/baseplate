@@ -1,4 +1,6 @@
-import PgBoss from 'pg-boss';
+import type { JobInsert, JobWithMetadata, SendOptions } from 'pg-boss';
+
+import { PgBoss } from 'pg-boss';
 
 import type {
   EnqueueOptions,
@@ -12,6 +14,7 @@ import type {
 } from '../types/queue.types.js';
 import type { ServiceContext } from '../utils/service-context.js';
 
+import { DEFAULT_QUEUE_CONCURRENCY } from '../types/queue.types.js';
 import { config } from './config.js';
 import { logError } from './error-logger.js';
 import { logger } from './logger.js';
@@ -20,6 +23,19 @@ import { logger } from './logger.js';
  * Days to retain completed jobs.
  */
 const DELETE_AFTER_DAYS = /* TPL_DELETE_AFTER_DAYS:START */ 7; /* TPL_DELETE_AFTER_DAYS:END */
+
+/**
+ * How long a worker may wait before finding a job that became runnable without
+ * being written - a retry coming off its backoff, or an elapsed `delaySeconds`.
+ * NOTIFY does not cover those, so this is their worst-case start latency.
+ */
+const NOTIFY_POLLING_INTERVAL_SECONDS = 5;
+
+/**
+ * Idle poll used when NOTIFY is unavailable. pg-boss rejects a notify interval
+ * below this, so a shorter one drags the base poll down with it.
+ */
+const BASE_POLLING_INTERVAL_SECONDS = 2;
 
 /**
  * Awaits every promise and returns the rejection reasons, if any, instead of
@@ -63,8 +79,8 @@ function assertSingletonKeyIfDeduplicated(
   }
 }
 
-function mapEnqueueOptions(options?: EnqueueOptions): PgBoss.SendOptions {
-  const pgBossOptions: PgBoss.SendOptions = {};
+function mapEnqueueOptions(options?: EnqueueOptions): SendOptions {
+  const pgBossOptions: SendOptions = {};
 
   if (options?.singletonKey !== undefined) {
     pgBossOptions.singletonKey = options.singletonKey;
@@ -86,16 +102,34 @@ function mapEnqueueOptions(options?: EnqueueOptions): PgBoss.SendOptions {
   }
 
   if (options?.backoff) {
-    const { type, delaySeconds } = options.backoff;
+    const { type, delaySeconds, maxDelaySeconds } = options.backoff;
 
     pgBossOptions.retryBackoff = type === 'exponential';
     pgBossOptions.retryDelay = delaySeconds;
+
+    if (type === 'exponential' && maxDelaySeconds !== undefined) {
+      pgBossOptions.retryDelayMax = maxDelaySeconds;
+    }
   }
 
   return pgBossOptions;
 }
 
-function mapPgBossJob<T>(pgJob: PgBoss.JobWithMetadata<T>): QueueJob<T> {
+/**
+ * Maps a job to pg-boss's bulk-insert shape, which is flat rather than the
+ * `{ data, options }` pairing `send()` takes.
+ * @param data The job payload.
+ * @param options The resolved per-job options.
+ * @returns The job in {@link JobInsert} shape.
+ */
+function mapJobInsert(data: unknown, options?: EnqueueOptions): JobInsert {
+  return {
+    ...mapEnqueueOptions(options),
+    data: data as object,
+  };
+}
+
+function mapPgBossJob<T>(pgJob: JobWithMetadata<T>): QueueJob<T> {
   return {
     id: pgJob.id,
     name: pgJob.name,
@@ -140,13 +174,31 @@ async function setupRepeatableJobs(
  * loops. Set this in every process except one, when running pg-boss across
  * multiple processes (e.g. API + standalone worker), so only one process
  * performs maintenance.
+ * @param options.useListenNotify Enables the LISTEN/NOTIFY listener, which
+ * holds one dedicated session-pinned connection. Only worth enabling in a
+ * process that runs workers; it does not affect enqueue-side NOTIFY. Defaults
+ * to the inverse of `disableMaintenance`.
+ * @param options.notifyPollingIntervalSeconds Overrides
+ * {@link NOTIFY_POLLING_INTERVAL_SECONDS}. Intended for tests that would
+ * otherwise wait out a poll for a retried or delayed job.
  * @returns A {@link QueueRuntime} for enqueueing jobs and running workers.
  * @throws If two bindings share the same token name.
  */
 export function createQueueRuntime(
   bindings: QueueHandlerBinding[],
-  options: { disableMaintenance?: boolean } = {},
+  options: {
+    disableMaintenance?: boolean;
+    useListenNotify?: boolean;
+    notifyPollingIntervalSeconds?: number;
+  } = {},
 ): QueueRuntime {
+  const notifyPollingIntervalSeconds =
+    options.notifyPollingIntervalSeconds ?? NOTIFY_POLLING_INTERVAL_SECONDS;
+  const basePollingIntervalSeconds = Math.min(
+    notifyPollingIntervalSeconds,
+    BASE_POLLING_INTERVAL_SECONDS,
+  );
+
   const seenNames = new Set<string>();
   for (const binding of bindings) {
     if (seenNames.has(binding.token.name)) {
@@ -163,6 +215,7 @@ export function createQueueRuntime(
 
   const boss = new PgBoss({
     connectionString: config.DATABASE_URL,
+    useListenNotify: options.useListenNotify ?? !options.disableMaintenance,
     ...(options.disableMaintenance && {
       supervise: false,
       schedule: false,
@@ -170,6 +223,14 @@ export function createQueueRuntime(
   });
   boss.on('error', (error: Error) => {
     logError(error, { source: 'pg-boss' });
+  });
+  // pg-boss warns and falls back to polling when the LISTEN/NOTIFY listener
+  // can't be established (e.g. PgBouncer in transaction pooling mode).
+  boss.on('warning', (warning) => {
+    logger.warn(
+      { source: 'pg-boss', data: warning.data },
+      `pg-boss warning: ${warning.message}`,
+    );
   });
 
   let startPromise: Promise<void> | undefined;
@@ -188,22 +249,33 @@ export function createQueueRuntime(
     if (createdQueues.has(name)) {
       return;
     }
+    const deleteAfterSeconds = DELETE_AFTER_DAYS * 24 * 60 * 60;
+
     await ensureStarted();
     await boss.createQueue(name, {
-      deleteAfterSeconds: DELETE_AFTER_DAYS * 24 * 60 * 60,
+      deleteAfterSeconds,
+      notify: true,
       // pg-boss only deduplicates by singletonKey when the queue uses a
       // policy that enforces it; the default `standard` policy ignores
       // singletonKey entirely. The policy is fixed at creation time.
       ...(binding.options?.deduplication && { policy: 'exclusive' }),
     });
+    // createQueue is a no-op on an existing queue, so the settings above never
+    // reach one an earlier deploy created. `policy` is omitted here because
+    // updateQueue rejects it as immutable.
+    await boss.updateQueue(name, { deleteAfterSeconds, notify: true });
     createdQueues.add(name);
   }
 
-  async function enqueue<T>(
-    token: QueueToken<T>,
-    data: T,
-    enqueueOptions?: EnqueueOptions,
-  ): Promise<string | undefined> {
+  /**
+   * Resolves the binding for a token and ensures its queue exists.
+   * @param token The token being enqueued to.
+   * @returns The token's handler binding.
+   * @throws If no handler is bound for the token.
+   */
+  async function resolveBindingForEnqueue(
+    token: QueueToken<unknown>,
+  ): Promise<QueueHandlerBinding> {
     const binding = bindingsByName.get(token.name);
     if (!binding) {
       throw new Error(
@@ -213,16 +285,41 @@ export function createQueueRuntime(
 
     await ensureQueueCreated(binding);
 
+    return binding;
+  }
+
+  /**
+   * Layers a job's own options over the queue's defaults and validates the
+   * result against the queue's deduplication setting.
+   * @param binding The queue's handler binding.
+   * @param enqueueOptions The per-job options, if any.
+   * @returns The resolved options for this job.
+   */
+  function resolveEnqueueOptions(
+    binding: QueueHandlerBinding,
+    enqueueOptions?: EnqueueOptions,
+  ): EnqueueOptions {
     const mergedOptions: EnqueueOptions = {
       ...binding.options?.defaultJobOptions,
       ...enqueueOptions,
     };
 
     assertSingletonKeyIfDeduplicated(
-      token.name,
+      binding.token.name,
       binding,
       mergedOptions.singletonKey,
     );
+
+    return mergedOptions;
+  }
+
+  async function enqueue<T>(
+    token: QueueToken<T>,
+    data: T,
+    enqueueOptions?: EnqueueOptions,
+  ): Promise<string | undefined> {
+    const binding = await resolveBindingForEnqueue(token);
+    const mergedOptions = resolveEnqueueOptions(binding, enqueueOptions);
 
     const pgBossOptions = mapEnqueueOptions(mergedOptions);
     // Returns null when a job with the same singletonKey is already pending
@@ -231,6 +328,27 @@ export function createQueueRuntime(
     const jobId = await boss.send(token.name, data as object, pgBossOptions);
 
     return jobId ?? undefined;
+  }
+
+  async function enqueueBulk<T>(
+    token: QueueToken<T>,
+    jobs: { data: T; options?: EnqueueOptions }[],
+  ): Promise<string[]> {
+    if (jobs.length === 0) {
+      return [];
+    }
+
+    const binding = await resolveBindingForEnqueue(token);
+
+    const inserts = jobs.map((job) =>
+      mapJobInsert(job.data, resolveEnqueueOptions(binding, job.options)),
+    );
+
+    // Deduplicated jobs are dropped silently, so the ids come back short and
+    // unaligned with `jobs`. `returnId` defaults to false, omitting RETURNING.
+    const jobIds = await boss.insert(token.name, inserts, { returnId: true });
+
+    return jobIds ?? [];
   }
 
   async function cleanupOrphanedSchedules(
@@ -275,8 +393,16 @@ export function createQueueRuntime(
 
       await boss.work(
         name,
-        { includeMetadata: true },
-        async (jobs: PgBoss.JobWithMetadata[]) => {
+        {
+          includeMetadata: true,
+          pollingIntervalSeconds: basePollingIntervalSeconds,
+          notifyPollingIntervalSeconds,
+          // Independent pollers rather than a larger batchSize, which would
+          // hand the handler a batch and wait for all of it before refetching.
+          localConcurrency:
+            binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
+        },
+        async (jobs: JobWithMetadata[]) => {
           const jobPromises = jobs.map(async (job) => {
             // A fresh context per job: execution-scoped caches (auth,
             // authorizer model lookups) must not leak across unrelated jobs.
@@ -388,6 +514,7 @@ export function createQueueRuntime(
 
   return {
     enqueue,
+    enqueueBulk,
     startWorkers,
     stopWorkers,
     listQueues,

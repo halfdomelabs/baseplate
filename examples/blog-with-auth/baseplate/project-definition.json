@@ -145,11 +145,13 @@
             { "ref": "createdAt" }
           ]
         },
+        "orderBy": { "fields": [] },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
           "list": { "enabled": true }
-        }
+        },
+        "where": { "fields": [] }
       },
       "id": "model:H8WxIUcjt9dy",
       "model": {
@@ -322,12 +324,14 @@
           "enabled": true,
           "fields": [{ "ref": "name" }, { "ref": "userId" }, { "ref": "id" }]
         },
+        "orderBy": { "fields": [] },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["public"],
           "instanceRoles": ["member"],
           "list": { "enabled": true }
-        }
+        },
+        "where": { "fields": [] }
       },
       "id": "model:h7nbXcuLcUmy",
       "model": {
@@ -425,11 +429,13 @@
             { "ref": "metadata" }
           ]
         },
+        "orderBy": { "fields": [] },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
           "list": { "enabled": true }
-        }
+        },
+        "where": { "fields": [] }
       },
       "id": "model:ZYGsFp93vRhv",
       "model": {
@@ -693,7 +699,9 @@
             { "ref": "createdAt" }
           ],
           "localRelations": [{ "ref": "actor" }]
-        }
+        },
+        "orderBy": { "fields": [] },
+        "where": { "fields": [] }
       },
       "id": "model:Mt6G8hOGtKtI",
       "model": {
@@ -921,11 +929,13 @@
           ],
           "foreignRelations": [{ "ref": "roles" }]
         },
+        "orderBy": { "fields": [] },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user", "admin"],
           "list": { "enabled": true }
-        }
+        },
+        "where": { "fields": [] }
       },
       "id": "model:jZxZ8T0aLW5C",
       "model": {
@@ -1091,7 +1101,9 @@
         "objectType": {
           "enabled": true,
           "fields": [{ "ref": "userId" }, { "ref": "role" }]
-        }
+        },
+        "orderBy": { "fields": [] },
+        "where": { "fields": [] }
       },
       "id": "model:3BNvsyfylc9c",
       "model": {
@@ -1337,7 +1349,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 32,
+  "schemaVersion": 33,
   "settings": {
     "general": {
       "name": "blog-with-auth",

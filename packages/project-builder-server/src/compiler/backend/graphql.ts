@@ -52,8 +52,34 @@ function buildObjectTypeFile(
     appBuilder.projectDefinition,
   );
 
-  const filterableFieldEntries = fields.filter((entry) => entry.filterable);
-  const sortableFieldEntries = fields.filter((entry) => entry.sortable);
+  // The shared `orderBy`/`where` config stores bare field refs, but the
+  // filterable safety check below needs each field's read roles, which live on
+  // the object type's own entry.
+  const exposedFieldsByRef = new Map(fields.map((entry) => [entry.ref, entry]));
+  const resolveExposedFields = (
+    refs: string[],
+    capability: string,
+  ): typeof fields =>
+    refs.map((ref) => {
+      const entry = exposedFieldsByRef.get(ref);
+      if (!entry) {
+        throw new Error(
+          `Model '${model.name}' lists field '${appBuilder.nameFromId(ref)}' as ${capability} ` +
+            `but does not expose it on its GraphQL object type. Expose the field or remove ` +
+            `it from the ${capability} list.`,
+        );
+      }
+      return entry;
+    });
+
+  const filterableFieldEntries = resolveExposedFields(
+    graphql.where.fields,
+    'filterable',
+  );
+  const sortableFieldEntries = resolveExposedFields(
+    graphql.orderBy.fields,
+    'sortable',
+  );
   const relationModels = ModelUtils.getRelationsToModel(
     appBuilder.projectDefinition,
     model.id,
@@ -97,24 +123,35 @@ function buildObjectTypeFile(
     }
   }
 
+  // A list relation sorts the *target* model's rows, so both its OrderByInput
+  // and its default sort come from that model rather than this one.
+  const findRelationTargetModel = (ref: string): ModelConfig | undefined =>
+    relationModels.find(({ relation }) => relation.foreignId === ref)?.model;
+
   const getOrderByInputRefForRelation = (ref: string): string => {
-    const relationModel = relationModels.find(
-      ({ relation }) => relation.foreignId === ref,
-    );
-    if (!relationModel) {
+    const target = findRelationTargetModel(ref);
+    if (!target) {
       throw new Error(
         `Foreign relation '${appBuilder.nameFromId(ref)}' on model '${model.name}' is marked orderable but its target model could not be resolved.`,
       );
     }
     // The OrderByInput type is emitted while building the target's own object
     // type file, so a disabled target would leave this reference dangling.
-    if (!relationModel.model.graphql.objectType.enabled) {
+    if (!target.graphql.objectType.enabled) {
       throw new Error(
-        `Foreign relation '${appBuilder.nameFromId(ref)}' on model '${model.name}' is marked orderable but its target model '${relationModel.model.name}' does not have its GraphQL object type enabled.`,
+        `Foreign relation '${appBuilder.nameFromId(ref)}' on model '${model.name}' is marked orderable but its target model '${target.name}' does not have its GraphQL object type enabled.`,
       );
     }
-    return getPothosPrismaOrderByInputTypeOutputName(relationModel.model.name);
+    return getPothosPrismaOrderByInputTypeOutputName(target.name);
   };
+
+  const toDefaultSort = (
+    target: ModelConfig,
+  ): { fieldName: string; direction: 'asc' | 'desc' }[] =>
+    target.graphql.orderBy.defaultSort.map((entry) => ({
+      fieldName: appBuilder.nameFromId(entry.ref),
+      direction: entry.direction,
+    }));
 
   const toExposedField = (entry: {
     ref: string;
@@ -146,13 +183,20 @@ function buildObjectTypeFile(
         modelName: model.name,
         exposedFields: [
           ...fields.map(toExposedField),
-          ...foreignRelations.map((entry) => ({
-            ...toExposedField(entry),
-            paginated: entry.paginated,
-            orderByInputRef: entry.orderable
-              ? getOrderByInputRefForRelation(entry.ref)
-              : undefined,
-          })),
+          ...foreignRelations.map((entry) => {
+            // Resolved for every list relation, not just orderable ones: a
+            // target with a default sort orders the relation even when it
+            // exposes no `orderBy` argument.
+            const target = findRelationTargetModel(entry.ref);
+            return {
+              ...toExposedField(entry),
+              paginated: entry.paginated,
+              orderByInputRef: entry.orderable
+                ? getOrderByInputRefForRelation(entry.ref)
+                : undefined,
+              defaultSort: target ? toDefaultSort(target) : [],
+            };
+          }),
           ...localRelations.map(toExposedField),
         ],
         order: 1,
@@ -243,6 +287,11 @@ function buildQueriesFileForModel(
       ? getPothosPrismaOrderByInputTypeOutputName(model.name)
       : undefined;
 
+  const defaultSort = graphql.orderBy.defaultSort.map((entry) => ({
+    fieldName: appBuilder.nameFromId(entry.ref),
+    direction: entry.direction,
+  }));
+
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
@@ -266,6 +315,7 @@ function buildQueriesFileForModel(
             policyRef,
             whereInputRef,
             orderByInputRef,
+            defaultSort,
             children: {
               authorize,
             },
@@ -291,6 +341,7 @@ function buildQueriesFileForModel(
               policyRef,
               whereInputRef,
               orderByInputRef,
+              defaultSort,
               children: {
                 authorize,
               },

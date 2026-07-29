@@ -106,6 +106,7 @@
   "@baseplate-dev/fastify-generators#prisma/prisma-model-policy:prisma-model-policy:TodoItem": "src/modules/todos/authorizers/todo-item.policy.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-model-policy:prisma-model-policy:TodoList": "src/modules/todos/authorizers/todo-list.policy.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-model-policy:prisma-model-policy:User": "src/modules/accounts/users/authorizers/user.policy.ts",
+  "@baseplate-dev/fastify-generators#prisma/prisma-model-policy:prisma-model-policy:UserProfile": "src/modules/accounts/users/authorizers/user-profile.policy.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-query-filter-utils:utils-query-helpers": "src/utils/query-helpers.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:client": "src/generated/prisma/client.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.ts",

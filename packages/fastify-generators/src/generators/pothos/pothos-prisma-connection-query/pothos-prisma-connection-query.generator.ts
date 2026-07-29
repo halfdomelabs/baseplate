@@ -16,7 +16,9 @@ import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-a
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
+  buildOrderByValueFragment,
   buildWhereArgFragment,
+  defaultSortSchema,
   getCallerWhereArg,
 } from '#src/writers/pothos/index.js';
 
@@ -54,6 +56,11 @@ const descriptorSchema = z.object({
    * cursor pagination doesn't skip or repeat rows when the sort has ties.
    */
   orderByInputRef: z.string().optional(),
+  /**
+   * Sort applied when the caller supplies no `orderBy`. Applies whether or not
+   * an `orderBy` arg is exposed.
+   */
+  defaultSort: defaultSortSchema,
 });
 
 export const pothosPrismaConnectionQueryGenerator = createGenerator({
@@ -67,6 +74,7 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
     policyRef,
     whereInputRef,
     orderByInputRef,
+    defaultSort,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -138,10 +146,16 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
                 ? `{ ${resolveArgNames.join(', ')} }`
                 : '{}';
             const callerWhereArg = getCallerWhereArg(!!whereInputType);
-            const orderByFragment =
-              orderByInputType && sortOrder
-                ? tsTemplate`orderBy: ${sortOrder.getApplyStableOrderByFragment()}(orderBy, ${JSON.stringify(idFields)}) ?? undefined, `
-                : '';
+            const orderByValue = buildOrderByValueFragment({
+              argExpression: orderByInputType ? 'orderBy' : undefined,
+              applyStableOrderByFragment:
+                sortOrder?.getApplyStableOrderByFragment(),
+              idFieldNames: idFields,
+              defaultSort,
+            });
+            const orderByFragment = orderByValue
+              ? tsTemplate`orderBy: ${orderByValue}, `
+              : '';
 
             const resolveFunction: TsCodeFragment = modelPolicy
               ? tsTemplate`async (query, _root, ${resolveArgsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment} })`
@@ -149,7 +163,7 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
                 ? tsTemplate`async (query, _root, ${resolveArgsPattern}) => ${prismaModelFragment}.findMany({ ...query, where: where ?? undefined, ${orderByFragment} })`
                 : orderByInputType
                   ? tsTemplate`async (query, _root, ${resolveArgsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${orderByFragment} })`
-                  : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
+                  : tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query, ${orderByFragment} })`;
 
             const totalCountFunction: TsCodeFragment = modelPolicy
               ? tsTemplate`(_connection, ${totalCountArgsPattern}, ctx) => ${prismaModelFragment}.count({ where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}) })`

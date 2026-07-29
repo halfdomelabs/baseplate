@@ -66,10 +66,13 @@ export interface FileCategory<
   readonly referencedByRelations?: readonly TReferencedByRelation[];
 
   /**
-   * If true, files in this category will not be automatically cleaned up
-   * when they become orphaned. Required when `referencedByRelations` is
-   * empty or omitted. Useful for categories where files are managed
-   * manually or should persist indefinitely.
+   * If true, confirmed files in this category will not be automatically
+   * cleaned up when they become orphaned. Required when
+   * `referencedByRelations` is empty or omitted. Useful for categories where
+   * files are managed manually or should persist indefinitely.
+   *
+   * Only governs orphan cleanup — abandoned pending uploads are always
+   * reclaimed once past the expiry threshold.
    */
   readonly disableAutoCleanup?: boolean;
 }

@@ -5,6 +5,13 @@ import type {
 } from '../utils/service-context.js';
 
 /**
+ * Jobs from one queue a single worker process runs at once when the binding
+ * does not set `concurrency`. Applied by every backend so a handler's
+ * concurrency does not depend on which one is deployed.
+ */
+export const DEFAULT_QUEUE_CONCURRENCY = 10;
+
+/**
  * An inert reference to a queue, carrying only its name and payload type.
  * Produced by {@link defineQueue}. Importing a token pulls in no handler or
  * adapter code - it is the leaf of the import graph, safe for enqueue-side
@@ -57,11 +64,21 @@ export interface QueueHandlerBindingConfig<T> {
      * Deduplicate jobs in this queue by `singletonKey`, which every enqueue must
      * then supply. See `EnqueueOptions.singletonKey`.
      *
-     * Must be set before the queue is first created: pg-boss fixes a queue's
-     * deduplication behavior at creation time, so enabling this on an
-     * already-deployed queue has no effect until that queue is recreated.
+     * Must be set before the queue is first created: pg-boss implements this
+     * with a queue policy, which is immutable after creation, so enabling this
+     * on an already-deployed queue has no effect until that queue is recreated.
      */
     deduplication?: boolean;
+
+    /**
+     * How many of this queue's jobs one worker process may run at once.
+     * Defaults to {@link DEFAULT_QUEUE_CONCURRENCY}. Set this to 1 for a
+     * handler that is not safe to run against itself.
+     *
+     * This bounds one process, not the deployment - N processes each run up to
+     * this many, so it is not a global limit on a horizontally scaled worker.
+     */
+    concurrency?: number;
 
     /**
      * Default options to apply to all jobs in this queue.
@@ -213,8 +230,8 @@ export interface EnqueueOptions {
     delaySeconds: number;
     /**
      * The maximum delay in seconds for exponential backoff (optional).
-     * Note: pg-boss does not support max delay for exponential backoff.
-     * This field is included for future compatibility but is not currently implemented.
+     * Ignored when `type` is `fixed`, and honoured only by the pg-boss
+     * backend - BullMQ has no equivalent and grows unbounded.
      */
     maxDelaySeconds?: number;
   };
@@ -293,6 +310,24 @@ export interface QueueRuntime {
   ): Promise<string | undefined>;
 
   /**
+   * Enqueues many jobs for the given token in a single round trip.
+   *
+   * The whole call is atomic on both backends - either every job is written or
+   * none is - but that atomicity does not extend to surrounding application
+   * writes, so a failure after this resolves cannot un-enqueue the jobs.
+   * @param token The queue token to enqueue jobs for.
+   * @param jobs The jobs to enqueue, each with its own payload and options.
+   * @returns The IDs of the jobs that were created. Deduplicated jobs are
+   * dropped, so this may be shorter than `jobs` and is **not** positionally
+   * aligned with it; do not pair `ids[i]` with `jobs[i]`.
+   * @throws If no handler is bound for the token.
+   */
+  enqueueBulk<T>(
+    token: QueueToken<T>,
+    jobs: { data: T; options?: EnqueueOptions }[],
+  ): Promise<string[]>;
+
+  /**
    * Starts workers for every bound queue.
    * @param options Provides the service context each job handler runs with.
    */
@@ -317,7 +352,7 @@ export interface QueueRuntime {
 /**
  * The producer-only view of {@link QueueRuntime}, for code that only enqueues jobs.
  */
-export type QueueService = Pick<QueueRuntime, 'enqueue'>;
+export type QueueService = Pick<QueueRuntime, 'enqueue' | 'enqueueBulk'>;
 
 /**
  * The worker-lifecycle view of {@link QueueRuntime}, for worker entrypoints and

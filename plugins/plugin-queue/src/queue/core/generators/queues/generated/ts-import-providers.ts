@@ -14,6 +14,7 @@ import { QUEUE_CORE_QUEUES_PATHS } from './template-paths.js';
 
 export const queuesImportsSchema = createTsImportMapSchema({
   bindQueueHandler: {},
+  DEFAULT_QUEUE_CONCURRENCY: {},
   defineQueue: {},
   EnqueueOptions: { isTypeOnly: true },
   QueueHandlerBinding: { isTypeOnly: true },
@@ -48,6 +49,7 @@ const queueCoreQueuesImportsTask = createGeneratorTask({
       providers: {
         queuesImports: createTsImportMap(queuesImportsSchema, {
           bindQueueHandler: paths.queueTypes,
+          DEFAULT_QUEUE_CONCURRENCY: paths.queueTypes,
           defineQueue: paths.queueTypes,
           EnqueueOptions: paths.queueTypes,
           QueueHandlerBinding: paths.queueTypes,

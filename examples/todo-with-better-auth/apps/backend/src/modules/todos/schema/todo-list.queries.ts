@@ -46,7 +46,9 @@ builder.queryField('todoLists', (t) =>
       prisma.todoList.findMany({
         ...query,
         where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
-        orderBy: applyStableOrderBy(orderBy, ['id']) ?? undefined,
+        orderBy:
+          applyStableOrderBy(orderBy, ['id'], [{ position: 'asc' }]) ??
+          undefined,
         skip: skip ?? undefined,
         take: take ?? undefined,
       }),
@@ -77,7 +79,9 @@ builder.queryField('todoListsConnection', (t) =>
         prisma.todoList.findMany({
           ...query,
           where: todoListPolicy.actions.read.where(ctx, where ?? undefined),
-          orderBy: applyStableOrderBy(orderBy, ['id']) ?? undefined,
+          orderBy:
+            applyStableOrderBy(orderBy, ['id'], [{ position: 'asc' }]) ??
+            undefined,
         }),
     },
     { name: 'TodoListConnection' },

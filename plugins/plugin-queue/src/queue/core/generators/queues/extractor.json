@@ -17,6 +17,7 @@
       "pathRootRelativePath": "{src-root}/types/queue.types.ts",
       "projectExports": {
         "bindQueueHandler": {},
+        "DEFAULT_QUEUE_CONCURRENCY": {},
         "defineQueue": {},
         "EnqueueOptions": { "isTypeOnly": true },
         "QueueHandlerBinding": { "isTypeOnly": true },
