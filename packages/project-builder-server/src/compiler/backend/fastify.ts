@@ -1,4 +1,7 @@
-import type { BackendAppConfig } from '@baseplate-dev/project-builder-lib';
+import type {
+  BackendAppConfig,
+  ModelConfig,
+} from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
@@ -37,17 +40,19 @@ export function buildFastify(
 ): GeneratorBundle {
   const { projectDefinition, appCompiler } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
+  // Both pagination surfaces expose the same where/orderBy args, so either one
+  // alone still needs the filter and sort-order helpers.
+  const hasListSurface = (model: ModelConfig): boolean =>
+    model.graphql.queries.list.enabled ||
+    model.graphql.queries.connection.enabled;
   const hasWhereFiltering = projectDefinition.models.some(
-    (model) =>
-      model.graphql.queries.list.enabled &&
-      model.graphql.queries.list.where.enabled,
+    (model) => hasListSurface(model) && model.graphql.queries.where.enabled,
   );
   const modelIdsRequiringOrderByInput =
     ModelUtils.getModelIdsRequiringOrderByInput(projectDefinition);
   const hasOrderBy = projectDefinition.models.some(
     (model) =>
-      (model.graphql.queries.list.enabled &&
-        model.graphql.queries.list.orderBy.enabled) ||
+      (hasListSurface(model) && model.graphql.queries.orderBy.enabled) ||
       modelIdsRequiringOrderByInput.has(model.id) ||
       model.graphql.orderBy.defaultSort.length > 0,
   );

@@ -34,7 +34,10 @@ function buildObjectTypeFile(
   const { graphql } = model;
   const { objectType, mutations, queries } = graphql;
 
-  const buildQuery = queries.get.enabled || queries.list.enabled;
+  // Offset and cursor pagination are independent, but both read rows through
+  // the same object type, where/orderBy inputs, and role checks.
+  const hasListSurface = queries.list.enabled || queries.connection.enabled;
+  const buildQuery = queries.get.enabled || hasListSurface;
   const buildMutations =
     mutations.create.enabled ||
     mutations.update.enabled ||
@@ -90,8 +93,8 @@ function buildObjectTypeFile(
     ).has(model.id);
 
   if (
-    queries.list.enabled &&
-    queries.list.where.enabled &&
+    hasListSurface &&
+    queries.where.enabled &&
     isAuthEnabled &&
     filterableFieldEntries.length > 0
   ) {
@@ -195,6 +198,10 @@ function buildObjectTypeFile(
                 ? getOrderByInputRefForRelation(entry.ref)
                 : undefined,
               defaultSort: target ? toDefaultSort(target) : [],
+              // Page size bounds the rows the relation returns, so it comes
+              // from the target model just like the sort config above.
+              defaultPageSize: target?.graphql.pagination.defaultPageSize,
+              maxPageSize: target?.graphql.pagination.maxPageSize,
             };
           }),
           ...localRelations.map(toExposedField),
@@ -202,7 +209,7 @@ function buildObjectTypeFile(
         order: 1,
       }),
       whereInput:
-        queries.list.enabled && queries.list.where.enabled
+        hasListSurface && queries.where.enabled
           ? pothosPrismaWhereInputGenerator({
               modelName: model.name,
               order: 2,
@@ -212,7 +219,7 @@ function buildObjectTypeFile(
             })
           : undefined,
       orderByInput:
-        (queries.list.enabled && queries.list.orderBy.enabled) ||
+        (hasListSurface && queries.orderBy.enabled) ||
         requiresOrderByInputForRelation
           ? pothosPrismaOrderByInputGenerator({
               modelName: model.name,
@@ -253,11 +260,13 @@ function buildQueriesFileForModel(
   const { graphql } = model;
   const { queries } = graphql;
 
-  if (!queries.get.enabled && !queries.list.enabled) {
+  const hasListSurface = queries.list.enabled || queries.connection.enabled;
+
+  if (!queries.get.enabled && !hasListSurface) {
     return undefined;
   }
 
-  const { get, list } = queries;
+  const { get, list, connection } = queries;
 
   const authConfig =
     appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
@@ -278,14 +287,16 @@ function buildQueriesFileForModel(
     isAuthEnabled && model.authorizer.roles.length > 0 ? model.name : undefined;
 
   const whereInputRef =
-    list.enabled && list.where.enabled
+    hasListSurface && queries.where.enabled
       ? getPothosPrismaWhereInputTypeOutputName(model.name)
       : undefined;
 
   const orderByInputRef =
-    list.enabled && list.orderBy.enabled
+    hasListSurface && queries.orderBy.enabled
       ? getPothosPrismaOrderByInputTypeOutputName(model.name)
       : undefined;
+
+  const { defaultPageSize, maxPageSize } = graphql.pagination;
 
   const defaultSort = graphql.orderBy.defaultSort.map((entry) => ({
     fieldName: appBuilder.nameFromId(entry.ref),
@@ -316,6 +327,8 @@ function buildQueriesFileForModel(
             whereInputRef,
             orderByInputRef,
             defaultSort,
+            defaultPageSize,
+            maxPageSize,
             children: {
               authorize,
             },
@@ -333,20 +346,21 @@ function buildQueriesFileForModel(
               },
             })
           : undefined,
-      connectionQuery:
-        list.enabled && list.connection.enabled
-          ? pothosPrismaConnectionQueryGenerator({
-              order: 3,
-              modelName: model.name,
-              policyRef,
-              whereInputRef,
-              orderByInputRef,
-              defaultSort,
-              children: {
-                authorize,
-              },
-            })
-          : undefined,
+      connectionQuery: connection.enabled
+        ? pothosPrismaConnectionQueryGenerator({
+            order: 3,
+            modelName: model.name,
+            policyRef,
+            whereInputRef,
+            orderByInputRef,
+            defaultSort,
+            defaultPageSize,
+            maxPageSize,
+            children: {
+              authorize,
+            },
+          })
+        : undefined,
     },
   });
 }
@@ -518,8 +532,9 @@ export function buildGraphqlForFeature(
 
   const hasWhereFiltering = appBuilder.projectDefinition.models.some(
     (model) =>
-      model.graphql.queries.list.enabled &&
-      model.graphql.queries.list.where.enabled,
+      (model.graphql.queries.list.enabled ||
+        model.graphql.queries.connection.enabled) &&
+      model.graphql.queries.where.enabled,
   );
 
   return [

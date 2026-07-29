@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  InputFieldController,
   Label,
   SectionListSection,
   SectionListSectionContent,
@@ -28,6 +29,16 @@ import { MdInfo, MdSettings, MdWarning } from 'react-icons/md';
 
 interface GraphQLRootFieldsSectionProps {
   control: Control<ModelConfigInput>;
+}
+
+/**
+ * Parses an optional numeric input. `valueAsNumber` yields NaN for an empty
+ * field, which would fail validation instead of clearing the limit.
+ */
+function toOptionalNumber(value: unknown): number | undefined {
+  return value === '' || value === null || value === undefined
+    ? undefined
+    : Number(value);
 }
 
 export function GraphQLRootFieldsSection({
@@ -79,13 +90,20 @@ export function GraphQLRootFieldsSection({
               label="Get By ID"
               description="Fetch a single record, e.g. post(id: ID!)"
             />
+            <ToggleItem
+              control={control}
+              name="graphql.queries.list.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="List"
+              description="Offset pagination, e.g. posts(skip: 10, take: 5)"
+            />
             <div className="flex items-start gap-1">
               <ToggleItem
                 control={control}
-                name="graphql.queries.list.enabled"
+                name="graphql.queries.connection.enabled"
                 disabled={!isObjectTypeEnabled}
-                label="List"
-                description="Query multiple records, e.g. posts(where: ...)"
+                label="Connection"
+                description="Cursor pagination, e.g. postsConnection(first, after)"
               />
               <ListQuerySettingsDialog
                 control={control}
@@ -142,14 +160,22 @@ function ListQuerySettingsDialog({
     control,
     name: 'graphql.queries.list.enabled',
   });
+  const isConnectionEnabled = useWatch({
+    control,
+    name: 'graphql.queries.connection.enabled',
+  });
   const isWhereFilteringEnabled = useWatch({
     control,
-    name: 'graphql.queries.list.where.enabled',
+    name: 'graphql.queries.where.enabled',
   });
   const isOrderByEnabled = useWatch({
     control,
-    name: 'graphql.queries.list.orderBy.enabled',
+    name: 'graphql.queries.orderBy.enabled',
   });
+  // where/orderBy and the page-size limits apply to both pagination surfaces,
+  // so either one alone is enough to make them configurable.
+  const hasListSurface =
+    (isListEnabled ?? false) || (isConnectionEnabled ?? false);
   // The field lists themselves live in the Sorting & Filtering section since
   // relations share them; the dialog only needs to know whether they are empty
   // so it can warn next to the switch that requires them.
@@ -174,10 +200,10 @@ function ListQuerySettingsDialog({
       </DialogTrigger>
       <DialogContent width="lg">
         <DialogHeader>
-          <DialogTitle>Configure List Query</DialogTitle>
+          <DialogTitle>Configure Queries</DialogTitle>
           <DialogDescription>
-            Enable additional list query capabilities and choose which fields
-            each one may operate on.
+            Enable additional query capabilities and set page-size limits. These
+            apply to both the list and connection queries.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -190,15 +216,8 @@ function ListQuerySettingsDialog({
           />
           <ToggleItem
             control={control}
-            name="graphql.queries.list.connection.enabled"
-            disabled={!isListEnabled}
-            label="Connection"
-            description="Cursor-based pagination, e.g. postsConnection(first, after)"
-          />
-          <ToggleItem
-            control={control}
-            name="graphql.queries.list.where.enabled"
-            disabled={!isListEnabled}
+            name="graphql.queries.where.enabled"
+            disabled={!hasListSurface}
             label="Where Filtering"
             description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
           />
@@ -214,8 +233,8 @@ function ListQuerySettingsDialog({
           )}
           <ToggleItem
             control={control}
-            name="graphql.queries.list.orderBy.enabled"
-            disabled={!isListEnabled}
+            name="graphql.queries.orderBy.enabled"
+            disabled={!hasListSurface}
             label="Order By"
             description="Sort records by field values, e.g. posts(orderBy: [{ createdAt: DESC }])"
           />
@@ -229,6 +248,37 @@ function ListQuerySettingsDialog({
               </AlertDescription>
             </Alert>
           )}
+          <div className="space-y-1">
+            <Label>Page Size</Label>
+            <p className="text-xs text-muted-foreground">
+              Limits how many records a single page may return, so large objects
+              aren&apos;t fetched en masse. Leave blank for no limit.
+            </p>
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <InputFieldController
+                control={control}
+                name="graphql.pagination.defaultPageSize"
+                disabled={!hasListSurface}
+                label="Default"
+                type="number"
+                min={1}
+                placeholder="Unlimited"
+                registerOptions={{ setValueAs: toOptionalNumber }}
+                description="Applied when the caller requests no size"
+              />
+              <InputFieldController
+                control={control}
+                name="graphql.pagination.maxPageSize"
+                disabled={!hasListSurface}
+                label="Maximum"
+                type="number"
+                min={1}
+                placeholder="Unlimited"
+                registerOptions={{ setValueAs: toOptionalNumber }}
+                description="Largest page a caller may request"
+              />
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <DialogClose render={<Button />}>Done</DialogClose>
@@ -250,9 +300,9 @@ function ToggleItem({
     | 'graphql.queries.get.enabled'
     | 'graphql.queries.list.enabled'
     | 'graphql.queries.list.count.enabled'
-    | 'graphql.queries.list.connection.enabled'
-    | 'graphql.queries.list.where.enabled'
-    | 'graphql.queries.list.orderBy.enabled'
+    | 'graphql.queries.connection.enabled'
+    | 'graphql.queries.where.enabled'
+    | 'graphql.queries.orderBy.enabled'
     | 'graphql.mutations.create.enabled'
     | 'graphql.mutations.update.enabled'
     | 'graphql.mutations.delete.enabled';

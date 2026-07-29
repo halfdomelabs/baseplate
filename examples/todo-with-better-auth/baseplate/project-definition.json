@@ -1162,15 +1162,13 @@
           "fields": ["position", "name", "createdAt"]
         },
         "queries": {
+          "connection": { "enabled": true },
           "get": { "enabled": true },
           "globalRoles": ["admin"],
           "instanceRoles": ["owner"],
-          "list": {
-            "connection": { "enabled": true },
-            "enabled": true,
-            "orderBy": { "enabled": true },
-            "where": { "enabled": true }
-          }
+          "list": { "enabled": true },
+          "orderBy": { "enabled": true },
+          "where": { "enabled": true }
         },
         "where": { "fields": ["name", "status"] }
       },
@@ -1312,13 +1310,11 @@
         },
         "orderBy": { "fields": ["createdAt"] },
         "queries": {
+          "connection": { "enabled": true },
           "get": { "enabled": true },
           "globalRoles": ["user"],
-          "list": {
-            "connection": { "enabled": true },
-            "enabled": true,
-            "orderBy": { "enabled": true }
-          }
+          "list": { "enabled": true },
+          "orderBy": { "enabled": true }
         }
       },
       "id": "model:nmsOHh3rZMmE",
@@ -2070,7 +2066,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 33,
+  "schemaVersion": 34,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",
