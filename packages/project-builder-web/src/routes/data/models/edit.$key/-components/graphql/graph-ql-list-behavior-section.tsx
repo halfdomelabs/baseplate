@@ -264,10 +264,14 @@ export function GraphQLListBehaviorSection({
               !isObjectTypeEnabled || availableDefaultSortOptions.length === 0
             }
             onClick={() => {
+              const firstOption = availableDefaultSortOptions[0];
+              if (!firstOption) {
+                return;
+              }
               onDefaultSortChange([
                 ...defaultSort,
                 {
-                  ref: availableDefaultSortOptions[0].value,
+                  ref: firstOption.value,
                   direction: 'asc',
                 },
               ]);

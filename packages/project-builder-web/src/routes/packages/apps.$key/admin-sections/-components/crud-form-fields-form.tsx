@@ -56,6 +56,7 @@ function CrudFormFieldsForm({
 
   function handleDeleteField(fieldIdx: number): void {
     const field = formFields[fieldIdx];
+    if (!field) return;
     requestConfirm({
       title: 'Delete Field',
       content: `Are you sure you want to delete the field "${field.label || 'Untitled'}"?`,

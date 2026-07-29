@@ -47,20 +47,14 @@ export async function loadPluginModule(
     registeredEntries.set(remoteName, remoteEntry);
   }
 
-  const wrappedModules = await Promise.all(
-    pluginMetadata.webModulePaths.map((path) =>
-      loadRemote<{ default?: PluginModule } | PluginModule>(
+  return Promise.all(
+    pluginMetadata.webModulePaths.map(async (path) => {
+      const mod = await loadRemote<{ default?: PluginModule } | PluginModule>(
         `${remoteName}/${path}`,
-      ),
-    ),
+      );
+      const unwrapped = ((mod as { default?: PluginModule } | null)?.default ??
+        mod) as PluginModule;
+      return { directory: path, module: unwrapped };
+    }),
   );
-
-  return wrappedModules.map((mod, index) => {
-    const unwrapped = ((mod as { default?: PluginModule } | null)?.default ??
-      mod) as PluginModule;
-    return {
-      directory: pluginMetadata.webModulePaths[index],
-      module: unwrapped,
-    };
-  });
 }

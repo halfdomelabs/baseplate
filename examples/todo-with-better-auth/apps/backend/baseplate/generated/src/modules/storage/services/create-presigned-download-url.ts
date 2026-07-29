@@ -33,9 +33,8 @@ export async function createPresignedDownloadUrl(
   );
 
   const isAuthorizedToRead =
-    context.auth.roles.includes('system') ||
-    !category.authorize?.presignedRead ||
-    (await category.authorize.presignedRead(file, context));
+    context.auth.hasSomeRole(['system']) ||
+    ((await category.authorize?.presignedRead?.(file, context)) ?? false);
 
   if (!isAuthorizedToRead) {
     throw new ForbiddenError('You are not authorized to read this file');

@@ -24,7 +24,7 @@ describe('migration033HoistSortFilterConfig', () => {
       ],
     });
 
-    const graphql = result.models?.[0].graphql;
+    const graphql = result.models?.[0]?.graphql;
     expect(graphql?.orderBy).toEqual({ fields: ['position', 'name'] });
     expect(graphql?.where).toEqual({ fields: ['name', 'status'] });
   });
@@ -45,7 +45,7 @@ describe('migration033HoistSortFilterConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
+    expect(result.models?.[0]?.graphql?.objectType?.fields).toEqual([
       { ref: 'name' },
       { ref: 'id' },
     ]);
@@ -71,7 +71,7 @@ describe('migration033HoistSortFilterConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.objectType?.fields).toEqual([
+    expect(result.models?.[0]?.graphql?.objectType?.fields).toEqual([
       { ref: 'email', globalRoles: ['admin'], instanceRoles: ['self'] },
     ]);
   });
@@ -95,7 +95,7 @@ describe('migration033HoistSortFilterConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual(queries);
+    expect(result.models?.[0]?.graphql?.queries).toEqual(queries);
   });
 
   it('emits empty field lists when no flags are set', () => {
@@ -107,7 +107,7 @@ describe('migration033HoistSortFilterConfig', () => {
       ],
     });
 
-    const graphql = result.models?.[0].graphql;
+    const graphql = result.models?.[0]?.graphql;
     expect(graphql?.orderBy).toEqual({ fields: [] });
     expect(graphql?.where).toEqual({ fields: [] });
   });

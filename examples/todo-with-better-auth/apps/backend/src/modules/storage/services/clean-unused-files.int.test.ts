@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  assert,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import type { ServiceContextWith } from '@src/utils/service-context.js';
 
@@ -391,6 +399,7 @@ describe('cleanUnusedFiles integration tests', () => {
       expect(deletedCount).toBe(1);
       expect(await countFiles()).toBe(1);
       const [remaining] = await prisma.file.findMany();
+      assert.isDefined(remaining);
       expect(remaining.category).toBe('NO_CLEANUP_CATEGORY');
     });
 

@@ -19,6 +19,7 @@ export const fastifyTypescriptTask = createGeneratorTask({
       module: 'node16',
       moduleResolution: 'node16',
       strict: true,
+      noUncheckedIndexedAccess: true,
       removeComments: true,
       forceConsistentCasingInFileNames: true,
       resolveJsonModule: true,

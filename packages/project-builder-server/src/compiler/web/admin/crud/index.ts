@@ -104,14 +104,15 @@ export function compileAdminCrudSection(
     crudSection.modelRef,
   );
   const idFieldRefs = model.model.primaryKeyFieldRefs;
-  if (idFieldRefs.length !== 1) {
+  const idFieldRef = idFieldRefs[0];
+  if (idFieldRefs.length !== 1 || !idFieldRef) {
     throw new Error(
       `Section ${crudSection.name} has ${idFieldRefs.length} primary keys, but only one is allowed`,
     );
   }
-  const idField = builder.nameFromId(idFieldRefs[0]);
+  const idField = builder.nameFromId(idFieldRef);
   const idFieldType = model.model.fields.find(
-    (field) => field.id === idFieldRefs[0],
+    (field) => field.id === idFieldRef,
   )?.type;
   if (!idFieldType || (idFieldType !== 'uuid' && idFieldType !== 'string')) {
     throw new Error(

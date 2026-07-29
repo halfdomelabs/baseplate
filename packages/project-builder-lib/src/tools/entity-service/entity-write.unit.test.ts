@@ -35,9 +35,9 @@ describe('createEntity', () => {
     // New definition should have the feature
     const newFeatures = newDef.features as Record<string, unknown>[];
     expect(newFeatures).toHaveLength(1);
-    expect(newFeatures[0].name).toBe('payments');
+    expect(newFeatures[0]?.name).toBe('payments');
     // Should have an assigned ID
-    expect(newFeatures[0].id).toEqual(expect.stringContaining('feature:'));
+    expect(newFeatures[0]?.id).toEqual(expect.stringContaining('feature:'));
   });
 
   it('should create a nested entity under a parent', () => {
@@ -112,13 +112,13 @@ describe('updateEntity', () => {
       string,
       unknown
     >[];
-    expect(origFeatures[0].name).toBe('billing');
+    expect(origFeatures[0]?.name).toBe('billing');
 
     // New definition should have updated name
     const newFeatures = newDef.features as Record<string, unknown>[];
-    expect(newFeatures[0].name).toBe('payments');
+    expect(newFeatures[0]?.name).toBe('payments');
     // ID should be preserved
-    expect(newFeatures[0].id).toBe(feature.id);
+    expect(newFeatures[0]?.id).toBe(feature.id);
   });
 
   it('should throw for nonexistent entity ID', () => {
@@ -178,14 +178,14 @@ describe('patchEntity', () => {
       string,
       unknown
     >[];
-    expect(origModels[0].name).toBe('BlogPost');
+    expect(origModels[0]?.name).toBe('BlogPost');
 
     const newModels = newDef.models as Record<string, unknown>[];
-    expect(newModels[0].name).toBe('Article');
-    expect(newModels[0].id).toBe(model.id);
+    expect(newModels[0]?.name).toBe('Article');
+    expect(newModels[0]?.id).toBe(model.id);
     // Omitted root fields should be preserved
-    expect(newModels[0].featureRef).toBe(feature.name);
-    expect(newModels[0].model).toEqual(origModels[0].model);
+    expect(newModels[0]?.featureRef).toBe(feature.name);
+    expect(newModels[0]?.model).toEqual(origModels[0]?.model);
   });
 
   it('should preserve the entity ID even if the patch supplies one', () => {
@@ -202,8 +202,8 @@ describe('patchEntity', () => {
     );
 
     const newFeatures = newDef.features as Record<string, unknown>[];
-    expect(newFeatures[0].id).toBe(feature.id);
-    expect(newFeatures[0].name).toBe('payments');
+    expect(newFeatures[0]?.id).toBe(feature.id);
+    expect(newFeatures[0]?.name).toBe('payments');
   });
 
   it('should replace nested fields wholesale rather than deep-merging', () => {
@@ -241,9 +241,9 @@ describe('patchEntity', () => {
     const newModels = newDef.models as {
       model: { fields: Record<string, unknown>[] };
     }[];
-    expect(newModels[0].model.fields).toHaveLength(1);
+    expect(newModels[0]?.model.fields).toHaveLength(1);
     // Newly supplied nested entities should get IDs assigned
-    expect(newModels[0].model.fields[0].id).toEqual(
+    expect(newModels[0]?.model.fields[0]?.id).toEqual(
       expect.stringContaining('model-scalar-field:'),
     );
   });
@@ -302,7 +302,7 @@ describe('deleteEntity', () => {
     // New definition should have one fewer feature
     const newFeatures = newDef.features as Record<string, unknown>[];
     expect(newFeatures).toHaveLength(1);
-    expect(newFeatures[0].name).toBe('auth');
+    expect(newFeatures[0]?.name).toBe('auth');
   });
 
   it('should delete the only entity in an array', () => {

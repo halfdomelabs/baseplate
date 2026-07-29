@@ -81,16 +81,15 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         );
       }
 
-      if (relation.references.length !== 1) {
+      const reference = relation.references[0];
+      if (relation.references.length !== 1 || !reference) {
         throw new Error(`Only relations with a single reference are supported`);
       }
 
-      const localField = definitionContainer.nameFromId(
-        relation.references[0].localRef,
-      );
+      const localField = definitionContainer.nameFromId(reference.localRef);
 
       const localFieldType = model.model.fields.find(
-        (f) => f.id === relation.references[0].localRef,
+        (f) => f.id === reference.localRef,
       )?.type;
 
       if (

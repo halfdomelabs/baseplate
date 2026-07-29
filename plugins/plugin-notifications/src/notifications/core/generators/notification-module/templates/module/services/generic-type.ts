@@ -14,8 +14,14 @@ export const GENERIC_NOTIFICATION_TYPE = defineNotificationType({
   version: 1,
   paramsSchema: genericParamsSchema,
   channels: ['inApp'],
-  render: ([event]) => ({
-    body: event.params.text,
-    actionUrl: event.params.actionUrl,
-  }),
+  render: (events) => {
+    const event = events[0];
+    if (!event) {
+      throw new Error('Expected at least one event to render');
+    }
+    return {
+      body: event.params.text,
+      actionUrl: event.params.actionUrl,
+    };
+  },
 });

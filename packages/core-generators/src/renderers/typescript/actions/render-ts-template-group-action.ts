@@ -113,6 +113,9 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
 
   for (const [key, templateEntry] of Object.entries(group)) {
     const destination = paths[key];
+    if (destination === undefined) {
+      throw new Error(`Missing destination path for template "${key}"`);
+    }
 
     const templateSpecificProviders = templateEntry.importMapProviders
       ? mapValues(

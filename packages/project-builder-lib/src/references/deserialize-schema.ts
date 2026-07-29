@@ -59,7 +59,7 @@ function resolveReferencesToIds<T>(
       `Found multiple duplicate entity IDs: ${duplicateEntityIds
         .map(
           (ents) =>
-            `${ents[0].id} (${ents.map((e) => e.path.join('.')).join(',')})`,
+            `${ents[0]?.id} (${ents.map((e) => e.path.join('.')).join(',')})`,
         )
         .join(', ')}`,
     );

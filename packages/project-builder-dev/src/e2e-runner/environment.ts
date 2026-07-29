@@ -91,6 +91,9 @@ export function createEnvironmentHelpers({
         isEnabled: isOraEnabled,
       }).start();
       const [file, ...commandArguments] = parseCommandString(command);
+      if (!file) {
+        throw new Error(`Could not parse command: ${command}`);
+      }
       const controller = new AbortController();
 
       const removeListener = onProcessExit(() => {
@@ -161,6 +164,9 @@ export function createEnvironmentHelpers({
         reject: false,
       };
       const [file, ...commandArguments] = parseCommandString(command);
+      if (!file) {
+        throw new Error(`Could not parse command: ${command}`);
+      }
       const childProcess = execa(
         file,
         commandArguments,

@@ -70,7 +70,7 @@ describe('sortEntityArrays', () => {
     const model = (
       sorted.models as { model: { fields: { name: string }[] } }[]
     )[0];
-    const fieldNames = model.model.fields.map((f) => f.name);
+    const fieldNames = model?.model.fields.map((f) => f.name);
     // Fields don't have sortByName, so they keep original order
     expect(fieldNames).toEqual(['id', 'zebra', 'alpha']);
   });
@@ -128,7 +128,7 @@ describe('sortEntityArrays', () => {
       createTestModel({ name: 'Bravo', featureRef: testFeature.name }),
       createTestModel({ name: 'Charlie', featureRef: testFeature.name }),
     ];
-    const modelsCBA = [modelsABC[2], modelsABC[1], modelsABC[0]];
+    const modelsCBA = modelsABC.toReversed();
 
     const container1 = createTestProjectDefinitionContainer({
       features: [testFeature],

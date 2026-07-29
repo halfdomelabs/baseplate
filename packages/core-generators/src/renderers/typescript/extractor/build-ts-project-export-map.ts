@@ -163,6 +163,11 @@ export function buildTsProjectExportMap(
       }
 
       const outputRelativePath = outputRelativePaths[0];
+      if (outputRelativePath === undefined) {
+        throw new Error(
+          `Template ${templateName} is missing an output relative path`,
+        );
+      }
 
       const templateProjectExportsMap = new Map<string, TsProjectExport>();
 

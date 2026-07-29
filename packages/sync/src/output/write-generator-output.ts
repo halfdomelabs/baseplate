@@ -235,12 +235,12 @@ export async function writeGeneratorOutput(
       fileIdToRelativePathMap,
     };
   } catch (error) {
-    if (
-      error instanceof PrepareGeneratorFilesError &&
-      error.causes[0].cause instanceof FormatterError
-    ) {
-      const formatterError = error.causes[0].cause;
-      logger.info(`File Dump:\n${formatterError.fileContents}`);
+    const firstCause =
+      error instanceof PrepareGeneratorFilesError
+        ? error.causes[0]?.cause
+        : undefined;
+    if (firstCause instanceof FormatterError) {
+      logger.info(`File Dump:\n${firstCause.fileContents}`);
     }
     throw error;
   }

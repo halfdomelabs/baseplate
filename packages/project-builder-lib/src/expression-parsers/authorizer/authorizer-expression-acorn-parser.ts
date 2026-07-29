@@ -88,7 +88,7 @@ export function parseAuthorizerExpression(
   }
   const expressionStatement = program.body[0];
 
-  if (expressionStatement.type !== 'ExpressionStatement') {
+  if (expressionStatement?.type !== 'ExpressionStatement') {
     throw new AuthorizerExpressionParseError(
       'Line must be an expression statement, e.g. model.id === auth.userId',
       expressionStatement,
@@ -345,10 +345,10 @@ function parseHasRoleArgs(
   if (node.arguments.length === 1) {
     // Global role check: hasRole('admin')
     const arg = node.arguments[0];
-    if (arg.type !== 'Literal' || typeof arg.value !== 'string') {
+    if (arg?.type !== 'Literal' || typeof arg.value !== 'string') {
       throw new AuthorizerExpressionParseError(
         `${funcName} argument must be a string literal`,
-        arg,
+        arg ?? node,
       );
     }
 
@@ -367,10 +367,10 @@ function parseHasRoleArgs(
 
     const relation = parseModelRelationArg(relationArg as Expression, funcName);
 
-    if (roleArg.type !== 'Literal' || typeof roleArg.value !== 'string') {
+    if (roleArg?.type !== 'Literal' || typeof roleArg.value !== 'string') {
       throw new AuthorizerExpressionParseError(
         `${funcName} second argument must be a string literal (role name)`,
-        roleArg,
+        roleArg ?? node,
       );
     }
 
@@ -510,10 +510,10 @@ function parseRelationFilterArgs(
 
   const relation = parseModelRelationArg(relationArg as Expression, funcName);
 
-  if (conditionsArg.type !== 'ObjectExpression') {
+  if (conditionsArg?.type !== 'ObjectExpression') {
     throw new AuthorizerExpressionParseError(
       `${funcName} second argument must be an object literal (e.g., { userId: userId })`,
-      conditionsArg,
+      conditionsArg ?? node,
     );
   }
 

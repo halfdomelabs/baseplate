@@ -205,8 +205,8 @@ function walkNode(
   }
 
   // Step 3: Run cleanup functions in reverse order (innermost first).
-  for (let i = cleanups.length - 1; i >= 0; i--) {
-    cleanups[i]();
+  for (const cleanup of cleanups.toReversed()) {
+    cleanup();
   }
 
   visited.delete(schema);

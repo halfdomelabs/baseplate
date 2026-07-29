@@ -41,7 +41,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result.length).toBe(2);
-      expect(result[0].getModuleSpecifier().getLiteralValue()).toBe('react');
+      expect(result[0]?.getModuleSpecifier().getLiteralValue()).toBe('react');
     });
 
     it('should return an empty array when there are only side effect imports', () => {

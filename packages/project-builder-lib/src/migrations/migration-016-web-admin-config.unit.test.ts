@@ -158,7 +158,7 @@ describe('migration016WebAdminConfig', () => {
       configWithExistingAdminApp,
     );
 
-    expect(result.apps?.[0].adminApp).toEqual({
+    expect(result.apps?.[0]?.adminApp).toEqual({
       enabled: true,
       pathPrefix: '/custom-admin',
       sections: [],

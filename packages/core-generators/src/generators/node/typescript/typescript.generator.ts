@@ -144,6 +144,7 @@ export const DEFAULT_TYPESCRIPT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   module: 'node16',
   moduleResolution: 'node16',
   strict: true,
+  noUncheckedIndexedAccess: true,
   removeComments: true,
   forceConsistentCasingInFileNames: true,
   resolveJsonModule: true,

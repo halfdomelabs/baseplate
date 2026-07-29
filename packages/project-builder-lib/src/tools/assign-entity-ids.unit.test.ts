@@ -70,17 +70,17 @@ describe('assignEntityIds', () => {
     expect(result.id).toMatch(/^model:/);
 
     // Nested field ID should also be replaced
-    expect(result.model.fields[0].id).not.toBe('user-field-id');
-    expect(result.model.fields[0].id).toMatch(/^model-scalar-field:/);
+    expect(result.model.fields[0]?.id).not.toBe('user-field-id');
+    expect(result.model.fields[0]?.id).toMatch(/^model-scalar-field:/);
 
     // Non-ID data should be preserved
     expect(result.name).toBe('Post');
-    expect(result.model.fields[0].name).toBe('title');
+    expect(result.model.fields[0]?.name).toBe('title');
   });
 
   it('preserves IDs when isExistingId returns true', () => {
     const existingModelId = model.id;
-    const existingFieldId = model.model.fields[0].id;
+    const existingFieldId = model.model.fields[0]?.id;
 
     const entityData = {
       id: existingModelId,
@@ -120,11 +120,11 @@ describe('assignEntityIds', () => {
 
     // Existing IDs should be preserved
     expect(result.id).toBe(existingModelId);
-    expect(result.model.fields[0].id).toBe(existingFieldId);
+    expect(result.model.fields[0]?.id).toBe(existingFieldId);
 
     // New field ID should be replaced
-    expect(result.model.fields[1].id).not.toBe('brand-new-field');
-    expect(result.model.fields[1].id).toMatch(/^model-scalar-field:/);
+    expect(result.model.fields[1]?.id).not.toBe('brand-new-field');
+    expect(result.model.fields[1]?.id).toMatch(/^model-scalar-field:/);
   });
 
   it('assigns IDs when entity has no ID', () => {
@@ -159,6 +159,6 @@ describe('assignEntityIds', () => {
     };
 
     expect(result.id).toMatch(/^model:/);
-    expect(result.model.fields[0].id).toMatch(/^model-scalar-field:/);
+    expect(result.model.fields[0]?.id).toMatch(/^model-scalar-field:/);
   });
 });

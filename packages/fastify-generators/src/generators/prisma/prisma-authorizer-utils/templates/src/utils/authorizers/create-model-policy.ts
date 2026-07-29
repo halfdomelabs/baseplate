@@ -4,6 +4,7 @@ import type {
   ActionGrant,
   ActionMembers,
   AuthoredRole,
+  DelegationTarget,
   Exists,
   ModelDelegate,
   PolicyRoleMembers,
@@ -72,6 +73,24 @@ function assertNotUndefined<T>(value: T | undefined, role: string): T {
     );
   }
   return value;
+}
+
+/**
+ * Look up a role's members on a delegation target. `via`/`viaMany` validate the
+ * role exists at construction time (see `RoleBuilder.via`/`viaMany`), so a miss
+ * here means the target policy changed shape after construction.
+ */
+function getTargetRole(
+  target: DelegationTarget,
+  role: string,
+): DelegationTarget['roles'][string] {
+  const members = target.roles[role];
+  if (!members) {
+    throw new Error(
+      `Delegation target '${target.model}' does not define role '${role}'.`,
+    );
+  }
+  return members;
 }
 
 /** Memoize an async set for the duration of a request. */
@@ -375,10 +394,16 @@ export function createModelPolicy<
         return m;
       }
       case 'via': {
-        return node.target.roles[node.role].nestedWhere(ctx, node.relation);
+        return getTargetRole(node.target, node.role).nestedWhere(
+          ctx,
+          node.relation,
+        );
       }
       case 'viaMany': {
-        return node.target.roles[node.role].nestedWhereMany(ctx, node.relation);
+        return getTargetRole(node.target, node.role).nestedWhereMany(
+          ctx,
+          node.relation,
+        );
       }
       case 'where': {
         return assertNotUndefined(node.where(ctx), key);
@@ -444,7 +469,7 @@ export function createModelPolicy<
       case 'via': {
         const targetIds = buildTargetIds(node.keys, model);
         if (targetIds === null) return false;
-        return node.target.roles[node.role].checkById(ctx, targetIds);
+        return getTargetRole(node.target, node.role).checkById(ctx, targetIds);
       }
       case 'viaMany': {
         // No local FK to read, so don't load or iterate the relation. Probe THIS
@@ -510,16 +535,32 @@ export function createModelPolicy<
     }
   }
 
+  /**
+   * Look up a role node authored via `config.roles`. Callers only ever pass a
+   * role name sourced from `TRoles` (`Object.keys(authored)` or a
+   * `keyof TRoles`-constrained action grant), so a miss means the caller
+   * passed a role this policy never authored.
+   */
+  function getAuthoredRole(role: string): RoleNode<TModelName> {
+    const node = authored[role];
+    if (!node) {
+      throw new Error(
+        `createModelPolicy('${config.model}') has no role '${role}'.`,
+      );
+    }
+    return node;
+  }
+
   const roleWhere = (
     ctx: ServiceContext,
     role: string,
-  ): WhereResult<TModelName> => whereNode(ctx, authored[role], role);
+  ): WhereResult<TModelName> => whereNode(ctx, getAuthoredRole(role), role);
 
   const checkRole = (
     ctx: ServiceContext,
     role: string,
     model: GetResult<TModelName>,
-  ): Promise<boolean> => checkNode(ctx, authored[role], role, model);
+  ): Promise<boolean> => checkNode(ctx, getAuthoredRole(role), role, model);
 
   function checkRoleById(
     ctx: ServiceContext,
@@ -625,7 +666,7 @@ export function createModelPolicy<
       check: (ctx, instance) =>
         checkRolesOrThrow(ctx, roleNames, globalRoles, instance),
       where: (ctx, callerWhere) =>
-        rolesToWhere(ctx, roleNames, globalRoles, callerWhere),
+        rolesToWhere(ctx, roleNames, globalRoles, callerWhere) ?? {},
       whereUnique: (ctx, unique) => {
         // Auth filter alone (no caller filter — the unique selector rides
         // separately). `undefined` = unrestricted → return the selector as-is;

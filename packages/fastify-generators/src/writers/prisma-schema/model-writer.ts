@@ -81,8 +81,8 @@ function formatAttributeArguments(
           if (typeof argument === 'string' || Array.isArray(argument)) {
             return formatAttributeArgument(argument);
           }
-          return Object.keys(argument).map(
-            (key) => `${key}: ${formatAttributeArgument(argument[key])}`,
+          return Object.entries(argument).map(
+            ([key, value]) => `${key}: ${formatAttributeArgument(value)}`,
           );
         });
 
@@ -176,6 +176,9 @@ export class PrismaModelBlockWriter {
     if (idAttribute) {
       const args = parseArguments(idAttribute, ['fields']);
       const { fields } = args;
+      if (fields === undefined) {
+        throw new Error(`@@id attribute on ${this.name} has no fields`);
+      }
       return Array.isArray(fields) ? fields : [fields];
     }
 

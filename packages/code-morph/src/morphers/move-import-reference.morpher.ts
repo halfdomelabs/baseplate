@@ -30,6 +30,17 @@ export default createTypescriptMorpher({
     const [fromImportPackage, fromImportName] = fromImport.split(':');
     const [toImportPackage, toImportName] = toImport.split(':');
 
+    if (!fromImportPackage || !fromImportName) {
+      throw new Error(
+        `Invalid fromImport "${fromImport}", expected "package:name"`,
+      );
+    }
+    if (!toImportPackage || !toImportName) {
+      throw new Error(
+        `Invalid toImport "${toImport}", expected "package:name"`,
+      );
+    }
+
     let hasImport = false;
 
     // remove the named import from the fromImportPackage

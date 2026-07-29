@@ -30,10 +30,14 @@ export function createTsImportMap<
   return Object.fromEntries(
     Object.entries(importSchema).map(([key, value]) => {
       const name = value.exportedAs ?? key;
+      const importInput = imports[key];
+      if (importInput === undefined) {
+        throw new Error(`Missing import input for ${key}`);
+      }
       const moduleSpecifier =
-        typeof imports[key] === 'string'
-          ? imports[key]
-          : imports[key].moduleSpecifier;
+        typeof importInput === 'string'
+          ? importInput
+          : importInput.moduleSpecifier;
 
       const makeDeclaration = (
         alias?: string,

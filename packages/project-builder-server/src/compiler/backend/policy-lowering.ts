@@ -239,7 +239,10 @@ function createPolicyLoweringVisitor(
         );
       }
       const vias = node.roles.map((role) => renderDelegation(link, role));
-      return vias.length === 1 ? vias[0] : `r.some([${vias.join(', ')}])`;
+      const singleVia = vias[0];
+      return vias.length === 1 && singleVia !== undefined
+        ? singleVia
+        : `r.some([${vias.join(', ')}])`;
     },
     relationFilter(node) {
       // Membership (some/every) stays as `r.where`.

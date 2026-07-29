@@ -71,12 +71,52 @@ export default createPluginModule({
               }),
           );
 
-          // Build referencedByRelations per category (across all features)
-          const relationsByCategory = new Map<string, string[]>();
+          // Aggregated across all features, matching referencedByRelations.
+          const referencedByCategory = new Map<
+            string,
+            {
+              relationName: string;
+              modelName: string;
+              fieldName: string;
+              foreignKeyFieldName: string;
+              fieldRoles?: { globalRoles: string[]; instanceRoles: string[] };
+            }[]
+          >();
           for (const t of transformers) {
-            const existing = relationsByCategory.get(t.category.name) ?? [];
-            existing.push(t.relation.foreignRelationName);
-            relationsByCategory.set(t.category.name, existing);
+            // Absent when the relation isn't exposed in GraphQL. Left undefined
+            // rather than empty so the generator can tell "no gate to mirror"
+            // (→ no read rule) from "exposed with no roles" (→ ungated read).
+            const exposedRelation =
+              t.model.graphql.objectType.localRelations.find(
+                (r) => r.ref === t.transformer.fileRelationRef,
+              );
+            // The FK column backing the relation, e.g. `avatarId`. Read from the
+            // relation rather than derived from its name, which need not match.
+            const firstReference = t.relation.references[0];
+            if (!firstReference) {
+              throw new Error(
+                `Relation ${t.relation.name} on model ${t.model.name} has no references`,
+              );
+            }
+            const foreignKeyFieldName = definitionContainer.nameFromId(
+              firstReference.localRef,
+            );
+            const existing = referencedByCategory.get(t.category.name) ?? [];
+            existing.push({
+              relationName: t.relation.foreignRelationName,
+              modelName: t.model.name,
+              fieldName: t.relation.name,
+              foreignKeyFieldName,
+              fieldRoles: exposedRelation && {
+                globalRoles: exposedRelation.globalRoles.map((r) =>
+                  definitionContainer.nameFromId(r),
+                ),
+                instanceRoles: exposedRelation.instanceRoles.map((r) =>
+                  definitionContainer.nameFromId(r),
+                ),
+              },
+            });
+            referencedByCategory.set(t.category.name, existing);
           }
 
           // Group by feature for generator registration
@@ -106,8 +146,7 @@ export default createPluginModule({
                     definitionContainer.nameFromId(r),
                   ),
                 },
-                referencedByRelations:
-                  relationsByCategory.get(t.category.name) ?? [],
+                referencedBy: referencedByCategory.get(t.category.name) ?? [],
                 disableAutoCleanup: t.category.disableAutoCleanup,
               }));
 
@@ -140,7 +179,7 @@ export default createPluginModule({
                       definitionContainer.nameFromId(r),
                     ),
                   },
-                  referencedByRelations: [],
+                  referencedBy: [],
                   disableAutoCleanup: true,
                 })),
               }),

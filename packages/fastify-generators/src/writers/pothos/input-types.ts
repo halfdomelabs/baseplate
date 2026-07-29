@@ -40,17 +40,17 @@ export function writePothosInputFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
 ): TsCodeFragment {
-  const pothosFields: TsCodeFragment[] = fields.map((field) => {
-    if (field.type === 'scalar') {
-      return writePothosInputFieldFromDtoScalarField(field, options);
-    }
-    return writePothosInputFieldFromDtoNestedField(field, options);
-  });
+  const pothosFields: [string, TsCodeFragment][] = fields.map((field) => [
+    field.name,
+    field.type === 'scalar'
+      ? writePothosInputFieldFromDtoScalarField(field, options)
+      : writePothosInputFieldFromDtoNestedField(field, options),
+  ]);
 
-  return TsCodeUtils.mergeFragmentsAsObject(
-    Object.fromEntries(pothosFields.map((field, i) => [fields[i].name, field])),
-    { wrapWithParenthesis: true, disableSort: true },
-  );
+  return TsCodeUtils.mergeFragmentsAsObject(Object.fromEntries(pothosFields), {
+    wrapWithParenthesis: true,
+    disableSort: true,
+  });
 }
 
 export function writePothosInputDefinitionFromDtoFields(

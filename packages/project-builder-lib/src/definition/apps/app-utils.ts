@@ -21,11 +21,11 @@ function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
     (a): a is BackendAppConfig => a.type === 'backend',
   );
 
-  if (backendApps.length > 1 || backendApps.length === 0) {
+  const backendApp = backendApps[0];
+
+  if (backendApps.length > 1 || !backendApp) {
     throw new Error(`Only one backend app is supported and must exist`);
   }
-
-  const backendApp = backendApps[0];
 
   return backendApp;
 }

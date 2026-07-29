@@ -47,7 +47,7 @@ export default createTypescriptMorpher({
       .filter((call) => {
         const text = call.getText();
         return taskBuilderVars.some((v) => {
-          const varName = v.getDeclarations()[0].getName();
+          const varName = v.getDeclarations()[0]?.getName();
           return text.startsWith(`${varName}(`);
         });
       });
@@ -55,7 +55,7 @@ export default createTypescriptMorpher({
     // For each taskBuilder.addTask call, replace it with the inner configuration
     for (const call of addTaskCalls) {
       const configVar = taskBuilderVars.find((v) => {
-        const varName = v.getDeclarations()[0].getName();
+        const varName = v.getDeclarations()[0]?.getName();
         return call.getText().startsWith(`${varName}(`);
       });
 
@@ -63,7 +63,7 @@ export default createTypescriptMorpher({
 
       const configFunction = configVar
         .getDeclarations()[0]
-        .getInitializer()
+        ?.getInitializer()
         ?.asKind(SyntaxKind.CallExpression)
         ?.getArguments()[0]
         ?.asKind(SyntaxKind.ArrowFunction);
@@ -91,11 +91,12 @@ export default createTypescriptMorpher({
 
         if (buildTasksMethod) {
           const parameters = buildTasksMethod.getParameters();
+          const descriptorParameter = parameters[1];
           if (
             parameters.length === 2 &&
-            parameters[1].getName() === 'descriptor'
+            descriptorParameter?.getName() === 'descriptor'
           ) {
-            parameters[1].remove();
+            descriptorParameter.remove();
           }
         }
       }

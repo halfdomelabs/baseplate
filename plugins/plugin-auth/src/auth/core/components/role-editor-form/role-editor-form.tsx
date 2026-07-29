@@ -56,6 +56,7 @@ export function RoleEditorForm({
 
   function handleDeleteRole(roleIdx: number): void {
     const role = roles[roleIdx];
+    if (!role) return;
     requestConfirm({
       title: 'Delete Role',
       content: `Are you sure you want to delete the role "${role.name}"?`,

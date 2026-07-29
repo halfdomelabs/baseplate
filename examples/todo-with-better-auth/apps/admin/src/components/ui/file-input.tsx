@@ -219,8 +219,9 @@ export function FileInput({
 
   const onDropAccepted = useCallback(
     (acceptedFiles: File[]) => {
-      setDropzoneError(undefined);
       const file = acceptedFiles[0];
+      if (!file) return;
+      setDropzoneError(undefined);
       uploadFile(file);
     },
     [uploadFile],

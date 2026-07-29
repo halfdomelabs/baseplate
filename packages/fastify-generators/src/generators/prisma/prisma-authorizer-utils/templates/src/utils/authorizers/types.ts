@@ -292,13 +292,16 @@ export interface ActionMembers<TModelName extends ModelPropName> {
   /**
    * The grant as a Prisma filter, AND-composed with an optional caller filter
    * (`{ AND: [callerWhere, authWhere] }`, never a spread). `read`'s primary form;
-   * also bulk mutations / editable-rows lists. Unrestricted + no caller filter →
-   * `undefined`.
+   * also bulk mutations / editable-rows lists.
+   *
+   * Always returns a filter — never `undefined`, which Prisma would read as
+   * "no filter" if spread into a query. Unrestricted + no caller filter → `{}`
+   * (Prisma-equivalent to omitting `where`); total-deny throws `ForbiddenError`.
    */
   where: (
     ctx: ServiceContext,
     callerWhere?: WhereInput<TModelName>,
-  ) => WhereInput<TModelName> | undefined;
+  ) => WhereInput<TModelName>;
   /**
    * The grant composed into a unique selector for ATOMIC authorized
    * `update`/`delete`: one query, returns the row, no TOCTOU. No match

@@ -54,14 +54,14 @@ describe('pathMapEntriesToRegexes', () => {
     const regexes = pathMapEntriesToRegexes(entries);
 
     // Assert
-    expect(regexes[0].test('@src/foo')).toBe(true);
-    expect(regexes[0].test('@src/foo/bar')).toBe(true);
-    expect(regexes[0].test('@src')).toBe(false);
+    expect(regexes[0]?.test('@src/foo')).toBe(true);
+    expect(regexes[0]?.test('@src/foo/bar')).toBe(true);
+    expect(regexes[0]?.test('@src')).toBe(false);
 
-    expect(regexes[1].test('@utils/abc')).toBe(true);
-    expect(regexes[1].test('@utils')).toBe(false);
+    expect(regexes[1]?.test('@utils/abc')).toBe(true);
+    expect(regexes[1]?.test('@utils')).toBe(false);
 
-    expect(regexes[2].test('no-star')).toBe(true);
-    expect(regexes[2].test('no-star/else')).toBe(false);
+    expect(regexes[2]?.test('no-star')).toBe(true);
+    expect(regexes[2]?.test('no-star/else')).toBe(false);
   });
 });

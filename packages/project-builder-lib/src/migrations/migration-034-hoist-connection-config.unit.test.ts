@@ -23,7 +23,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: { enabled: true },
       connection: { enabled: true },
       where: { enabled: true },
@@ -48,7 +48,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: { enabled: true, count: { enabled: true } },
       connection: { enabled: true },
     });
@@ -67,7 +67,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: { enabled: true },
       where: { enabled: true },
     });
@@ -86,7 +86,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: { enabled: false },
       connection: { enabled: false },
     });
@@ -112,7 +112,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: { enabled: false },
       connection: { enabled: false },
       where: { enabled: true },
@@ -131,7 +131,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       list: {},
       connection: { enabled: false },
     });
@@ -152,7 +152,7 @@ describe('migration034HoistConnectionConfig', () => {
       ],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       globalRoles: ['admin'],
       get: { enabled: true },
       list: { enabled: true },
@@ -189,7 +189,7 @@ describe('migration034HoistConnectionConfig', () => {
       models: [{ graphql: { queries: { get: { enabled: true } } } }],
     });
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       get: { enabled: true },
     });
   });

@@ -47,6 +47,7 @@ function CrudTableColumnsForm({
 
   function handleDeleteColumn(columnIdx: number): void {
     const column = fields[columnIdx];
+    if (!column) return;
     requestConfirm({
       title: 'Delete Column',
       content: `Are you sure you want to delete the column "${column.label || 'Untitled'}"?`,

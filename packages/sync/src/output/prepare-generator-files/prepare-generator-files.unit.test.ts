@@ -83,7 +83,7 @@ describe('prepareGeneratorFiles', () => {
     expect(error).toBeInstanceOf(PrepareGeneratorFilesError);
     const { causes } = error as PrepareGeneratorFilesError;
     expect(causes.length).toEqual(1);
-    expect(causes[0].relativePath).toEqual('invalid-file.txt');
+    expect(causes[0]?.relativePath).toEqual('invalid-file.txt');
   });
 
   it('should handle empty files map', async () => {

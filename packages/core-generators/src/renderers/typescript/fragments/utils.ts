@@ -115,7 +115,13 @@ function sortKeyedFragments(
     { compareFunc },
   );
 
-  return sortedFragmentKeys.map((key) => fragmentsByKey[key]);
+  return sortedFragmentKeys.map((key) => {
+    const fragment = fragmentsByKey[key];
+    if (!fragment) {
+      throw new Error(`Missing hoisted fragment for key ${key}`);
+    }
+    return fragment;
+  });
 }
 
 /**
