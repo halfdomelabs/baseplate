@@ -1,4 +1,6 @@
-import { builder } from './builder.js';
+// @ts-nocheck
+
+import { builder } from '%pothosImports';
 
 export const sortOrderEnum = builder.enumType('SortOrder', {
   values: { ASC: { value: 'asc' }, DESC: { value: 'desc' } },

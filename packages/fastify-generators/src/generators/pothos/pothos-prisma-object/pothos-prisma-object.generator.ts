@@ -20,7 +20,9 @@ import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
+  buildOrderByValueFragment,
   createPothosTypeReference,
+  defaultSortSchema,
   writePothosExposeFieldFromDtoScalarField,
 } from '#src/writers/pothos/index.js';
 
@@ -41,6 +43,11 @@ const exposedFieldSchema = z.object({
   instanceRoles: z.array(z.string().min(1)).default([]),
   paginated: z.boolean().default(false),
   orderByInputRef: z.string().min(1).optional(),
+  /**
+   * Default sort for a list relation, taken from the *target* model. Applies
+   * whether or not the relation exposes an `orderBy` arg.
+   */
+  defaultSort: defaultSortSchema,
 });
 
 const descriptorSchema = z.object({
@@ -165,6 +172,12 @@ export const pothosPrismaObjectGenerator = createGenerator({
             }),
           );
 
+          const fieldDefaultSortMap = new Map(
+            exposedFields
+              .filter((f) => f.defaultSort.length > 0)
+              .map((f) => [f.name, f.defaultSort]),
+          );
+
           /**
            * Build an authorize TsCodeFragment for a field, if it has auth config.
            */
@@ -244,6 +257,11 @@ export const pothosPrismaObjectGenerator = createGenerator({
                   const authorize = buildAuthorizeFragment(field.name);
                   const paginated = fieldPaginatedMap.get(field.name) ?? false;
                   const orderByInput = fieldOrderByInputMap.get(field.name);
+                  // Only a list relation returns rows to sort; a to-one
+                  // relation inherits its target's default sort meaninglessly.
+                  const defaultSort = field.isList
+                    ? (fieldDefaultSortMap.get(field.name) ?? [])
+                    : [];
 
                   if (paginated && !field.isList) {
                     throw new Error(
@@ -270,7 +288,8 @@ export const pothosPrismaObjectGenerator = createGenerator({
                     authorize ||
                     field.isNullable ||
                     paginated ||
-                    orderByInput
+                    orderByInput ||
+                    defaultSort.length > 0
                   ) {
                     // Relation with options (nullable, authorize, pagination, and/or ordering)
                     const options: Record<string, string | TsCodeFragment> = {};
@@ -288,39 +307,52 @@ export const pothosPrismaObjectGenerator = createGenerator({
                       );
                     }
 
-                    if (paginated || orderByInput) {
+                    if (paginated || orderByInput || defaultSort.length > 0) {
                       const relatedModel = prismaOutput.getPrismaModel(
                         field.nestedType.name,
                       );
                       const idFieldNames = relatedModel.idFields ?? [
                         getModelIdFieldName(relatedModel),
                       ];
-                      // Ordering falls back to the ID field(s) so paginated
-                      // results stay stable when no sort is requested.
+                      // Falls back to the ID field(s) so paginated results stay
+                      // stable when neither a caller sort nor a default applies.
                       const orderByFragment =
-                        orderByInput && sortOrder
-                          ? tsTemplate`${sortOrder.getApplyStableOrderByFragment()}(args.orderBy, ${JSON.stringify(idFieldNames)}) ?? undefined`
-                          : TsCodeUtils.mergeFragmentsAsObject(
-                              Object.fromEntries(
-                                idFieldNames.map((name) => [name, quot('asc')]),
-                              ),
-                            );
-                      const orderByArg = orderByInput
-                        ? tsTemplate`orderBy: t.arg({ type: [${orderByInput.getTypeReference().fragment}] }),`
-                        : '';
+                        buildOrderByValueFragment({
+                          argExpression: orderByInput
+                            ? 'args.orderBy'
+                            : undefined,
+                          applyStableOrderByFragment:
+                            sortOrder?.getApplyStableOrderByFragment(),
+                          idFieldNames,
+                          defaultSort,
+                        }) ??
+                        TsCodeUtils.mergeFragmentsAsObject(
+                          Object.fromEntries(
+                            idFieldNames.map((name) => [name, quot('asc')]),
+                          ),
+                        );
 
-                      options.args = paginated
-                        ? tsTemplate`{
+                      if (paginated || orderByInput) {
+                        const orderByArg = orderByInput
+                          ? tsTemplate`orderBy: t.arg({ type: [${orderByInput.getTypeReference().fragment}] }),`
+                          : '';
+                        options.args = paginated
+                          ? tsTemplate`{
                       skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                       take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
                       ${orderByArg}
                     }`
-                        : tsTemplate`{
+                          : tsTemplate`{
                       ${orderByArg}
                     }`;
-                      options.query = paginated
-                        ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: ${orderByFragment} })`
-                        : tsTemplate`(args) => ({ orderBy: ${orderByFragment} })`;
+                        options.query = paginated
+                          ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: ${orderByFragment} })`
+                          : tsTemplate`(args) => ({ orderBy: ${orderByFragment} })`;
+                      } else {
+                        // No caller args, so the sort is fully known here — emit
+                        // a static query object rather than an unused `args`.
+                        options.query = tsTemplate`{ orderBy: ${orderByFragment} }`;
+                      }
                     }
                     fragment = tsTemplate`t.relation(${quot(field.name)}, ${TsCodeUtils.mergeFragmentsAsObject(options)})`;
                   } else {

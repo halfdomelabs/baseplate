@@ -15,7 +15,9 @@ import { prismaModelPolicyProvider } from '#src/generators/prisma/prisma-model-a
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
+  buildOrderByValueFragment,
   buildWhereArgFragment,
+  defaultSortSchema,
   getCallerWhereArg,
 } from '#src/writers/pothos/index.js';
 
@@ -49,6 +51,11 @@ const descriptorSchema = z.object({
    * `orderBy` arg is added and passed as the caller-supplied sort order.
    */
   orderByInputRef: z.string().optional(),
+  /**
+   * Sort applied when the caller supplies no `orderBy`. Applies whether or not
+   * an `orderBy` arg is exposed.
+   */
+  defaultSort: defaultSortSchema,
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -62,6 +69,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
     policyRef,
     whereInputRef,
     orderByInputRef,
+    defaultSort,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -132,10 +140,16 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             const noPolicyWhere = whereInputType
               ? 'where: where ?? undefined, '
               : '';
-            const orderByFragment =
-              orderByInputType && sortOrder
-                ? tsTemplate`orderBy: ${sortOrder.getApplyStableOrderByFragment()}(orderBy, ${JSON.stringify(idFields)}) ?? undefined, `
-                : '';
+            const orderByValue = buildOrderByValueFragment({
+              argExpression: orderByInputType ? 'orderBy' : undefined,
+              applyStableOrderByFragment:
+                sortOrder?.getApplyStableOrderByFragment(),
+              idFieldNames: idFields,
+              defaultSort,
+            });
+            const orderByFragment = orderByValue
+              ? tsTemplate`orderBy: ${orderByValue}, `
+              : '';
 
             const resolveFunction: TsCodeFragment = modelPolicy
               ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment}skip: skip ?? undefined, take: take ?? undefined })`

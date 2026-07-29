@@ -1080,6 +1080,9 @@
             }
           ]
         },
+        "orderBy": {
+          "defaultSort": [{ "direction": "asc", "ref": "position" }]
+        },
         "queries": {
           "get": {
             "enabled": true
@@ -1453,32 +1456,13 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "id"
-            },
-            {
-              "ref": "ownerId"
-            },
-            {
-              "ref": "position",
-              "sortable": true
-            },
-            {
-              "filterable": true,
-              "ref": "name",
-              "sortable": true
-            },
-            {
-              "ref": "updatedAt"
-            },
-            {
-              "ref": "createdAt",
-              "sortable": true
-            },
-            {
-              "filterable": true,
-              "ref": "status"
-            }
+            { "ref": "id" },
+            { "ref": "ownerId" },
+            { "ref": "position" },
+            { "ref": "name" },
+            { "ref": "updatedAt" },
+            { "ref": "createdAt" },
+            { "ref": "status" }
           ],
           "localRelations": [
             {
@@ -1488,6 +1472,10 @@
               "ref": "coverPhoto"
             }
           ]
+        },
+        "orderBy": {
+          "defaultSort": [{ "direction": "asc", "ref": "position" }],
+          "fields": ["position", "name", "createdAt"]
         },
         "queries": {
           "get": {
@@ -1507,7 +1495,8 @@
               "enabled": true
             }
           }
-        }
+        },
+        "where": { "fields": ["name", "status"] }
       },
       "id": "model:ONd_Fbo61Tx7",
       "model": {
@@ -1679,19 +1668,10 @@
         "objectType": {
           "enabled": true,
           "fields": [
-            {
-              "ref": "todoListId"
-            },
-            {
-              "ref": "userId"
-            },
-            {
-              "ref": "createdAt",
-              "sortable": true
-            },
-            {
-              "ref": "updatedAt"
-            }
+            { "ref": "todoListId" },
+            { "ref": "userId" },
+            { "ref": "createdAt" },
+            { "ref": "updatedAt" }
           ],
           "localRelations": [
             {
@@ -1702,6 +1682,7 @@
             }
           ]
         },
+        "orderBy": { "fields": ["createdAt"] },
         "queries": {
           "get": {
             "enabled": true
@@ -2699,7 +2680,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 32,
+  "schemaVersion": 33,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",
