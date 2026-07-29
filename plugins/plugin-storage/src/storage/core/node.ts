@@ -71,12 +71,36 @@ export default createPluginModule({
               }),
           );
 
-          // Build referencedByRelations per category (across all features)
-          const relationsByCategory = new Map<string, string[]>();
+          // Aggregated across all features, matching referencedByRelations.
+          const referencedByCategory = new Map<
+            string,
+            {
+              relationName: string;
+              modelName: string;
+              fieldName: string;
+              fieldGlobalRoles: string[];
+              fieldInstanceRoles: string[];
+            }[]
+          >();
           for (const t of transformers) {
-            const existing = relationsByCategory.get(t.category.name) ?? [];
-            existing.push(t.relation.foreignRelationName);
-            relationsByCategory.set(t.category.name, existing);
+            // Absent when the relation isn't exposed → no field-level gate.
+            const exposedRelation =
+              t.model.graphql.objectType.localRelations.find(
+                (r) => r.ref === t.transformer.fileRelationRef,
+              );
+            const existing = referencedByCategory.get(t.category.name) ?? [];
+            existing.push({
+              relationName: t.relation.foreignRelationName,
+              modelName: t.model.name,
+              fieldName: t.relation.name,
+              fieldGlobalRoles: (exposedRelation?.globalRoles ?? []).map((r) =>
+                definitionContainer.nameFromId(r),
+              ),
+              fieldInstanceRoles: (exposedRelation?.instanceRoles ?? []).map(
+                (r) => definitionContainer.nameFromId(r),
+              ),
+            });
+            referencedByCategory.set(t.category.name, existing);
           }
 
           // Group by feature for generator registration
@@ -106,8 +130,7 @@ export default createPluginModule({
                     definitionContainer.nameFromId(r),
                   ),
                 },
-                referencedByRelations:
-                  relationsByCategory.get(t.category.name) ?? [],
+                referencedBy: referencedByCategory.get(t.category.name) ?? [],
                 disableAutoCleanup: t.category.disableAutoCleanup,
               }));
 
@@ -140,7 +163,7 @@ export default createPluginModule({
                       definitionContainer.nameFromId(r),
                     ),
                   },
-                  referencedByRelations: [],
+                  referencedBy: [],
                   disableAutoCleanup: true,
                 })),
               }),

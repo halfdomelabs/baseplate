@@ -961,10 +961,10 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     expect(
       policy.actions.update.where(ctxWithRoles(USER_ID, ['user'])),
     ).toEqual({ publisherId: USER_ID });
-    // Admin → hasRole('admin') folds to true → unrestricted (undefined).
+    // Admin → hasRole('admin') folds to true → unrestricted (`{}`).
     expect(
       policy.actions.update.where(ctxWithRoles(USER_ID, ['admin'])),
-    ).toBeUndefined();
+    ).toEqual({});
   });
 
   it('nested some([all([...]), hasRole]) check: the inner AND path grants', async () => {
@@ -986,10 +986,10 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
     // `delete` grant is only `nested` = some([ all([match,match]), hasRole ]).
     // As admin, BOTH parts contribute → a real 2-element OR: the inner AND and
     // the admin short-circuit (`true`). queryHelpers.or short-circuits on `true`
-    // → unrestricted (undefined).
+    // → unrestricted (`{}`).
     expect(
       policy.actions.delete.where(ctxWithRoles(USER_ID, ['admin'])),
-    ).toBeUndefined();
+    ).toEqual({});
     // As non-admin: admin leaf drops → single-element OR unwraps → the inner AND.
     expect(
       policy.actions.delete.where(ctxWithRoles(USER_ID, ['user'])),
@@ -1017,10 +1017,10 @@ describe('r.some (OR) + r.hasRole leaf + nesting', async () => {
         id: 'p1',
       } as never),
     ).toBe(false);
-    // where: authenticated → unrestricted (undefined); anonymous → deny (throws)
-    expect(
-      policy.actions.read.where(ctxWithRoles(USER_ID, ['user'])),
-    ).toBeUndefined();
+    // where: authenticated → unrestricted (`{}`); anonymous → deny (throws)
+    expect(policy.actions.read.where(ctxWithRoles(USER_ID, ['user']))).toEqual(
+      {},
+    );
     expect(() =>
       policy.actions.read.where(ctxWithRoles(undefined, [])),
     ).toThrow(/Forbidden/);
@@ -1084,6 +1084,14 @@ describe('r.check + cachedSet: batch scoped-RBAC (team roles)', async () => {
   }
 
   beforeEach(() => findMemberships.mockReset());
+
+  it('closed action (`roles: []`) still throws — `{}` never leaks as allow-all', () => {
+    // The empty grant folds through queryHelpers.or([]) → false → Forbidden,
+    // so it must NOT surface as the unrestricted `{}`.
+    expect(() =>
+      buildTeamPolicy().actions.read.where(makeCtx(USER_ID)),
+    ).toThrow(/Forbidden/);
+  });
 
   it('3 DISTINCT role checks on one team → ONE membership query', async () => {
     findMemberships.mockResolvedValue([{ role: 'EDITOR' }]);
