@@ -58,6 +58,9 @@ export async function executeCommand(
   options: ExecOptions,
 ): Promise<ExecuteCommandResult> {
   const [file, ...commandArguments] = parseCommandString(command);
+  if (file === undefined) {
+    throw new Error(`Could not parse command: ${command}`);
+  }
   const result = await execa(file, commandArguments, {
     all: true,
     cwd: options.cwd,

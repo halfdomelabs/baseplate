@@ -20,7 +20,8 @@ function byUniqueTypeOrThrow(
   type: string,
 ): BaseLibraryDefinition {
   const config = projectDefinition.libraries.filter((lib) => lib.type === type);
-  if (config.length === 0) {
+  const library = config[0];
+  if (!library) {
     throw new Error(`Unable to find library with type ${type}`);
   }
   if (config.length > 1) {
@@ -28,7 +29,7 @@ function byUniqueTypeOrThrow(
       `Multiple libraries with type ${type} found and only one is expected (${config.map((lib) => lib.name).join(', ')})`,
     );
   }
-  return config[0];
+  return library;
 }
 
 /**

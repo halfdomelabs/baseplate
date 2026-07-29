@@ -63,8 +63,8 @@ describe('flattenImportsAndHoistedFragments', () => {
     ];
 
     const result = flattenImportsAndHoistedFragments(fragments);
-    expect(result.hoistedFragments[0].key).toBe('nested-type');
-    expect(result.hoistedFragments[1].key).toBe('root-type');
+    expect(result.hoistedFragments[0]?.key).toBe('nested-type');
+    expect(result.hoistedFragments[1]?.key).toBe('root-type');
   });
 
   it('should deduplicate hoisted fragments by key', () => {
@@ -93,8 +93,8 @@ describe('flattenImportsAndHoistedFragments', () => {
 
     const result = flattenImportsAndHoistedFragments(fragments);
     expect(result.hoistedFragments).toHaveLength(1);
-    expect(result.hoistedFragments[0].key).toBe('duplicate-key');
-    expect(result.hoistedFragments[0].contents).toBe(
+    expect(result.hoistedFragments[0]?.key).toBe('duplicate-key');
+    expect(result.hoistedFragments[0]?.contents).toBe(
       'type DuplicateKey = number;',
     );
   });

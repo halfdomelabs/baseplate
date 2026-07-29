@@ -83,7 +83,7 @@ describe('notificationModuleGenerator channel wiring', () => {
   it('declares the emails dependency and assembles both channels when enabled', async () => {
     const { dependencies, fragmentContents } = await runAppRuntimeConfig(true);
 
-    expect(dependencies).toContain('pubsub');
+    expect(dependencies).toContain('notificationEvents');
     expect(dependencies).toContain('email');
     expect(fragmentContents).toContain('inApp');
     expect(fragmentContents).toContain('email');
@@ -93,7 +93,7 @@ describe('notificationModuleGenerator channel wiring', () => {
   it('omits the emails dependency and the email channel when disabled', async () => {
     const { dependencies, fragmentContents } = await runAppRuntimeConfig(false);
 
-    expect(dependencies).toEqual(['pubsub']);
+    expect(dependencies).toEqual(['notificationEvents']);
     expect(fragmentContents).toContain('inApp');
     expect(fragmentContents).not.toContain('email');
     expect(fragmentContents).not.toContain('createEmailChannel');

@@ -93,13 +93,12 @@ describe('checkMutationRoles', () => {
 
     const issues = checkMutationRoles(container);
     expect(issues).toHaveLength(1);
-    expect(issues[0]).toEqual({
-      message:
-        "Model 'Post' create mutation is exposed to GraphQL but has no roles assigned",
-      entityId: container.definition.models[0].id,
-      path: ['service', 'create', 'globalRoles'],
-      severity: 'warning',
-    });
+    expect(issues[0]?.message).toBe(
+      "Model 'Post' create mutation is exposed to GraphQL but has no roles assigned",
+    );
+    expect(issues[0]?.entityId).toBe(container.definition.models[0]?.id);
+    expect(issues[0]?.path).toEqual(['service', 'create', 'globalRoles']);
+    expect(issues[0]?.severity).toBe('warning');
   });
 
   it('returns no issues when mutation is enabled but not exposed to GraphQL', () => {

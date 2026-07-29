@@ -244,14 +244,20 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
             const foreignRoleByName = new Map(
               foreignModel.authorizer.roles.map((r) => [r.name, r]),
             );
-            for (let i = 0; i < node.roles.length; i++) {
-              const foreignRole = foreignRoleByName.get(node.roles[i]);
-              if (foreignRole) {
+            for (const [i, roleName] of node.roles.entries()) {
+              const foreignRole = foreignRoleByName.get(roleName);
+              const roleStart = node.rolesStart[i];
+              const roleEnd = node.rolesEnd[i];
+              if (
+                foreignRole &&
+                roleStart !== undefined &&
+                roleEnd !== undefined
+              ) {
                 deps.push({
                   entityType: modelAuthorizerRoleEntityType,
                   entityId: foreignRole.id,
-                  start: node.rolesStart[i] + 1,
-                  end: node.rolesEnd[i] - 1,
+                  start: roleStart + 1,
+                  end: roleEnd - 1,
                 });
               }
             }
@@ -336,11 +342,11 @@ export class AuthorizerExpressionParser extends RefExpressionParser<
     // an object with a name property.
     for (let len = modelPath.length; len > 0; len--) {
       let current: unknown = definition;
-      for (let i = 0; i < len; i++) {
+      for (const part of modelPath.slice(0, len)) {
         if (current === null || current === undefined) {
           break;
         }
-        current = (current as Record<string | number, unknown>)[modelPath[i]];
+        current = (current as Record<string | number, unknown>)[part];
       }
       if (
         current !== null &&

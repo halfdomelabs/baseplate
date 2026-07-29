@@ -3,6 +3,7 @@ import {
   ToposortCyclicalDependencyError,
   ToposortUnknownNodeError,
 } from './errors.js';
+import { atNodeIndex } from './node-index.js';
 
 /**
  * Creates a map of inbound edges from node indices to their source indices
@@ -40,7 +41,7 @@ function makeNodeOutDegrees(
   const nodeOutDegrees = Array.from({ length: nodeLength }, () => 0);
   for (const [, sources] of inboundEdgesMap.entries()) {
     for (const source of sources) {
-      nodeOutDegrees[source]++;
+      nodeOutDegrees[source] = atNodeIndex(nodeOutDegrees, source) + 1;
     }
   }
   return nodeOutDegrees;
@@ -68,7 +69,7 @@ function detectCycle<T>(
 
       if (cyclePath) {
         // A cycle was found, convert indices to nodes and return immediately.
-        return cyclePath.map((idx) => nodes[idx]);
+        return cyclePath.map((idx) => atNodeIndex(nodes, idx));
       }
     }
   }
@@ -156,7 +157,7 @@ export function toposortLocal<T>(
 ): T[] {
   const { compareFunc = defaultCompareFunc } = options;
   const compareIdx = (a: number, b: number): number =>
-    compareFunc(nodes[a], nodes[b]);
+    compareFunc(atNodeIndex(nodes, a), atNodeIndex(nodes, b));
 
   // Map each node to its index
   const nodeIndexMap = new Map<T, number>(
@@ -186,17 +187,18 @@ export function toposortLocal<T>(
     const current = zeroOutDegreeStack.pop();
     if (current === undefined) break;
     visited.add(current);
-    reverseResult.push(nodes[current]);
+    reverseResult.push(atNodeIndex(nodes, current));
 
     // Process all outgoing edges from the current node
     const incomingEdges = inboundEdgesMap.get(current);
     const newZeroOutDegreeNodes: number[] = [];
     if (incomingEdges) {
       for (const source of incomingEdges) {
-        nodeOutDegrees[source]--;
+        const remainingOutDegree = atNodeIndex(nodeOutDegrees, source) - 1;
+        nodeOutDegrees[source] = remainingOutDegree;
 
         // If the target node now has no incoming edges, add it to the queue
-        if (nodeOutDegrees[source] === 0) {
+        if (remainingOutDegree === 0) {
           newZeroOutDegreeNodes.push(source);
         }
       }

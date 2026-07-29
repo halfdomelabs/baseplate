@@ -88,10 +88,15 @@ function createDeleteRemovedFragment(
   const relationFields = relation.fields ?? [];
 
   // For simple single ID (not part of relation FK)
-  if (idFields.length === 1 && !relationFields.includes(idFields[0])) {
+  const firstIdField = idFields[0];
+  if (
+    idFields.length === 1 &&
+    firstIdField !== undefined &&
+    !relationFields.includes(firstIdField)
+  ) {
     return tsTemplate`async (tx, removedItems) => {
       await tx.${modelVar}.deleteMany({
-        where: { OR: removedItems.map((i) => ({ ${idFields[0]}: i.${idFields[0]} })) },
+        where: { OR: removedItems.map((i) => ({ ${firstIdField}: i.${firstIdField} })) },
       });
     }`;
   }

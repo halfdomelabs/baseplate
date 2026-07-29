@@ -112,10 +112,12 @@ async function getMorpherOptions(
     const extractedOptions: Record<string, string> = {};
     for (const option of options.options) {
       const [key, ...values] = option.split('=');
-      if (key in morpher.options) {
+      if (!key) continue;
+      const morpherOption = morpher.options[key];
+      if (morpherOption) {
         const newValue = values.join('=');
-        if (morpher.options[key].validation) {
-          const result = morpher.options[key].validation.safeParse(newValue);
+        if (morpherOption.validation) {
+          const result = morpherOption.validation.safeParse(newValue);
           if (!result.success) throw new Error(result.error.message);
         }
         extractedOptions[key] = newValue;
@@ -172,7 +174,7 @@ function getMorpherCommand(
  */
 async function main(): Promise<void> {
   program
-    .name(process.argv[1])
+    .name(process.argv[1] ?? 'run-morpher')
     .option('-d,--dry-run', 'Dry run the migration')
     .option(
       '-o,--options [options...]',

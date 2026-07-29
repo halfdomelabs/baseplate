@@ -250,15 +250,15 @@ describe('indexTemplateConfigs', () => {
     const result = await indexTemplateConfigs(packageMap);
 
     expect(result.extractorEntries).toHaveLength(1);
-    expect(result.extractorEntries[0].generatorName).toBe(
+    expect(result.extractorEntries[0]?.generatorName).toBe(
       'nested-pkg#auth/auth-module',
     );
-    expect(result.extractorEntries[0].generatorDirectory).toBe(
+    expect(result.extractorEntries[0]?.generatorDirectory).toBe(
       '/packages/nested/src/generators/auth/auth-module',
     );
 
     expect(result.providerEntries).toHaveLength(1);
-    expect(result.providerEntries[0].packagePathSpecifier).toBe(
+    expect(result.providerEntries[0]?.packagePathSpecifier).toBe(
       'nested-pkg:src/providers/deep/nested/config.ts',
     );
   });

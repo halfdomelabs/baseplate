@@ -7,6 +7,7 @@ import { EMAIL_PLUGIN_CONFIG_MIGRATIONS } from './migrations.js';
 describe('EMAIL_PLUGIN_CONFIG_MIGRATIONS', () => {
   it('backfills emailFeatureRef by creating an emails feature when none exists', () => {
     const migration = EMAIL_PLUGIN_CONFIG_MIGRATIONS[0];
+    if (!migration) throw new Error('Migration not found');
     const projectDefinition: Partial<ProjectDefinition> = {
       features: [],
     };
@@ -17,8 +18,8 @@ describe('EMAIL_PLUGIN_CONFIG_MIGRATIONS', () => {
     );
 
     expect(projectDefinition.features).toHaveLength(1);
-    const [emailsFeature] = projectDefinition.features ?? [];
-    expect(emailsFeature.name).toBe('emails');
+    const emailsFeature = (projectDefinition.features ?? [])[0];
+    expect(emailsFeature?.name).toBe('emails');
     // Migrations run on the raw, name-keyed definition (before reference
     // deserialization resolves names to ids), so the stored ref must stay
     // the feature's name, not the id ensureFeatureByNameRecursively returns.
@@ -30,6 +31,7 @@ describe('EMAIL_PLUGIN_CONFIG_MIGRATIONS', () => {
 
   it('reuses an existing emails feature instead of creating a duplicate', () => {
     const migration = EMAIL_PLUGIN_CONFIG_MIGRATIONS[0];
+    if (!migration) throw new Error('Migration not found');
     const projectDefinition: Partial<ProjectDefinition> = {
       features: [{ id: 'feature:existing', name: 'emails' }],
     };

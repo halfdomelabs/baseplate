@@ -74,6 +74,7 @@ export const reactTypescriptGenerator = createGenerator({
 
                 /* Linting */
                 strict: true,
+                noUncheckedIndexedAccess: true,
                 noUnusedLocals: true,
                 noUnusedParameters: true,
                 noFallthroughCasesInSwitch: true,
@@ -124,6 +125,7 @@ export const reactTypescriptGenerator = createGenerator({
 
                   /* Linting */
                   strict: true,
+                  noUncheckedIndexedAccess: true,
                   noUnusedLocals: true,
                   noUnusedParameters: true,
                   noFallthroughCasesInSwitch: true,

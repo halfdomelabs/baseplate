@@ -86,10 +86,16 @@ export async function executeGeneratorEntry(
     generatorTaskMetadatas.push(metadata);
     for (const runStep of sortedRunSteps) {
       const [action, taskId] = runStep.split('|');
+      if (taskId === undefined) {
+        throw new Error(`Invalid run step: ${runStep}`);
+      }
       try {
-        const { task, generatorId } = taskEntriesById[taskId];
-        const { dependencies = {}, exports = {}, outputs = {} } = task;
         const entry = taskEntriesById[taskId];
+        if (!entry) {
+          throw new Error(`Could not find task entry for ${taskId}`);
+        }
+        const { task, generatorId } = entry;
+        const { dependencies = {}, exports = {}, outputs = {} } = task;
         if (action === 'init') {
           // run through init step
 
@@ -99,12 +105,12 @@ export async function executeGeneratorEntry(
               if (!dependency) {
                 return;
               }
-              const dependencyId = dependencyMap[taskId][key]?.id;
+              const dependencyId = dependencyMap[taskId]?.[key]?.id;
 
               const provider =
                 dependencyId === undefined
                   ? undefined
-                  : providerMapById[dependencyId][dependency.name];
+                  : providerMapById[dependencyId]?.[dependency.name];
               const { isReadOnly } = dependency;
               const { optional } =
                 dependency.type === 'dependency'
@@ -114,6 +120,11 @@ export async function executeGeneratorEntry(
               // check dependency comes from a previous phase
               if (phase !== undefined && dependencyId) {
                 const dependencyTask = taskEntriesById[dependencyId];
+                if (!dependencyTask) {
+                  throw new Error(
+                    `Could not find task entry for dependency ${dependencyId} of ${taskId}`,
+                  );
+                }
                 if (dependencyTask.task.phase !== phase) {
                   if (!isReadOnly) {
                     throw new Error(
@@ -160,24 +171,24 @@ export async function executeGeneratorEntry(
             );
           }
           if (providers) {
-            const missingProvider = Object.keys(exports).find(
-              (key) => !(key in providers),
-            );
-            if (missingProvider) {
-              throw new Error(
-                `Task ${taskId} did not output provider ${missingProvider}`,
-              );
-            }
             providerMapById[taskId] = Object.fromEntries(
-              Object.entries(exports).map(([key, value]) => [
-                value.name,
-                providers[key],
-              ]),
+              Object.entries(exports).map(([key, value]) => {
+                const provider = providers[key];
+                if (!provider) {
+                  throw new Error(
+                    `Task ${taskId} did not output provider ${key}`,
+                  );
+                }
+                return [value.name, provider];
+              }),
             );
           }
         } else if (action === 'build') {
           // run through build step
           const generator = taskInstanceById[taskId];
+          if (!generator) {
+            throw new Error(`Task ${taskId} was not initialized before build`);
+          }
 
           const outputBuilder = new GeneratorTaskOutputBuilder({
             generatorInfo: entry.generatorInfo,
@@ -196,21 +207,18 @@ export async function executeGeneratorEntry(
 
             const outputKeys = Object.keys(outputs);
             if (outputKeys.length > 0) {
-              const missingProvider = Object.keys(outputs).find(
-                (key) => !(key in outputResult),
-              );
-              if (missingProvider) {
-                throw new Error(
-                  `Task ${taskId} did not export provider ${missingProvider}`,
-                );
-              }
               providerMapById[taskId] = {
                 ...providerMapById[taskId],
                 ...Object.fromEntries(
-                  Object.entries(outputs).map(([key, value]) => [
-                    value.name,
-                    outputResult[key],
-                  ]),
+                  Object.entries(outputs).map(([key, value]) => {
+                    const provider = outputResult[key];
+                    if (!provider) {
+                      throw new Error(
+                        `Task ${taskId} did not export provider ${key}`,
+                      );
+                    }
+                    return [value.name, provider];
+                  }),
                 ),
               };
             }
@@ -266,10 +274,11 @@ export async function executeGeneratorEntry(
           throw new Error(`Unknown action ${action}`);
         }
       } catch (error) {
-        const { generatorInfo } = taskEntriesById[taskId];
+        const generatorName =
+          taskEntriesById[taskId]?.generatorInfo.name ?? taskId;
         throw enhanceErrorWithContext(
           error,
-          `Error in the ${action} step of the ${generatorInfo.name} generator task`,
+          `Error in the ${action} step of the ${generatorName} generator task`,
         );
       }
     }

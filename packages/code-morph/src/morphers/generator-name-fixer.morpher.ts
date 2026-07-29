@@ -40,7 +40,7 @@ export default createTypescriptMorpher({
 
     // Get the first argument which should be an object
     const firstArg = createGeneratorCall.getArguments()[0];
-    if (!firstArg.isKind(SyntaxKind.ObjectLiteralExpression)) {
+    if (!firstArg?.isKind(SyntaxKind.ObjectLiteralExpression)) {
       return;
     }
 

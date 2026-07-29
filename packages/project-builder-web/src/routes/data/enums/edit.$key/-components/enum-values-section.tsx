@@ -51,10 +51,11 @@ export function EnumValuesSection({
           name={`values.${i}.friendlyName`}
           label="Friendly Name"
           onFocus={() => {
-            if (!values[i].friendlyName && values[i].name) {
+            const value = values[i];
+            if (value && !value.friendlyName && value.name) {
               setValue(
                 `values.${i}.friendlyName`,
-                underscoreToTitleCase(values[i].name),
+                underscoreToTitleCase(value.name),
               );
             }
           }}

@@ -75,6 +75,7 @@ it('should handle fastify request errors', async () => {
     });
 
     const report = sentryTestCollector.reports()[0];
+    if (!report) throw new Error('Expected a Sentry report');
 
     expect(report.event.level).toBe('error');
     expect(report.event.exception?.values?.[0]?.value).toBe('test error');
@@ -100,6 +101,7 @@ describe('logErrorToSentry', () => {
 
     expect(sentryTestCollector.reports()).toHaveLength(1);
     const report = sentryTestCollector.reports()[0];
+    if (!report) throw new Error('Expected a Sentry report');
     expect(report.event.level).toBe('error');
     expect(report.event.exception?.values?.[0]?.value).toBe('test error');
   });

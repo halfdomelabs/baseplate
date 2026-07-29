@@ -458,8 +458,8 @@ export const TsCodeUtils = {
     for (const [i, str] of strings.entries()) {
       result.push(str);
 
-      if (i < expressions.length) {
-        const expr = expressions[i];
+      const expr = expressions[i];
+      if (expr !== undefined) {
         result.push(typeof expr === 'string' ? expr : expr.contents);
       }
     }
@@ -575,18 +575,20 @@ export const TsCodeUtils = {
    */
   extractTemplateSnippet(template: string, key: string): string {
     const startDivision = template.split(`// ${key}:START`);
-    if (startDivision.length !== 2) {
+    const afterStart = startDivision[1];
+    if (startDivision.length !== 2 || afterStart === undefined) {
       throw new Error(
         `Could not find start divider // ${key}:START in template file`,
       );
     }
-    const endDivision = startDivision[1].split(`// ${key}:END`);
-    if (endDivision.length !== 2) {
+    const endDivision = afterStart.split(`// ${key}:END`);
+    const beforeEnd = endDivision[0];
+    if (endDivision.length !== 2 || beforeEnd === undefined) {
       throw new Error(
         `Could not find end divider // ${key}:END in template file`,
       );
     }
-    return endDivision[0].trim();
+    return beforeEnd.trim();
   },
 };
 

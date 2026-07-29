@@ -77,10 +77,14 @@ export default createPluginModule({
             definition,
             pluginKey,
           ) as StoragePluginDefinition;
+          const fileRelationRef = fileRelationIds[0];
+          if (!fileRelationRef) {
+            throw new Error('No non-transformed file relations available');
+          }
           return {
             id: modelTransformerEntityType.generateNewId(),
             type: 'file' as const,
-            fileRelationRef: fileRelationIds[0],
+            fileRelationRef,
             categoryRef: storageDefinition.fileCategories[0]?.id ?? '',
           };
         },

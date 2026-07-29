@@ -134,7 +134,7 @@ describe('mergeDataWithSchema — withByKeyMergeRule', () => {
       current,
       desired,
     ) as typeof current;
-    expect(result[0].value).toBe(99);
+    expect(result[0]?.value).toBe(99);
   });
 
   it('keeps items not in desired (add-only semantics)', () => {
@@ -171,8 +171,8 @@ describe('mergeDataWithSchema — withByKeyMergeRule', () => {
     expect(result).toHaveLength(4);
     // Current order preserved: c, a (updated), b, then new d appended
     expect(result.map((i) => i.key)).toEqual(['c', 'a', 'b', 'd']);
-    expect(result[1].value).toBe(10); // a was updated
-    expect(result[3].value).toBe(4); // d is new
+    expect(result[1]?.value).toBe(10); // a was updated
+    expect(result[3]?.value).toBe(4); // d is new
   });
 });
 
@@ -330,9 +330,9 @@ describe('mergeDataWithSchema — model schema integration', () => {
 
     // Both fields are kept — email is preserved from current
     expect(userModel?.model.fields).toHaveLength(2);
-    expect(userModel?.model.fields[0].name).toBe('id');
-    expect(userModel?.model.fields[1].name).toBe('email');
-    expect(userModel?.model.fields[1].id).toBe(emailField.id);
+    expect(userModel?.model.fields[0]?.name).toBe('id');
+    expect(userModel?.model.fields[1]?.name).toBe('email');
+    expect(userModel?.model.fields[1]?.id).toBe(emailField.id);
   });
 
   it('updates an existing field', () => {
@@ -441,7 +441,7 @@ describe('mergeDataWithSchema — model schema integration', () => {
     expect(result.definition.models).toHaveLength(2);
     const postModel = result.definition.models.find((m) => m.name === 'Post');
     expect(postModel?.model.fields).toHaveLength(2);
-    expect(postModel?.model.fields[0].id).toBeTruthy();
+    expect(postModel?.model.fields[0]?.id).toBeTruthy();
     // Existing model preserved
     const userModel = result.definition.models.find((m) => m.name === 'User');
     expect(userModel?.id).toBe(currentModel.id);
@@ -580,9 +580,9 @@ describe('mergeDataWithSchema — model schema integration', () => {
       'Post',
       'Comment',
     ]);
-    expect(result.definition.models[0].id).toBe(userModel.id);
-    expect(result.definition.models[1].id).toBe(postModel.id);
-    expect(result.definition.models[2].id).toBeTruthy();
+    expect(result.definition.models[0]?.id).toBe(userModel.id);
+    expect(result.definition.models[1]?.id).toBe(postModel.id);
+    expect(result.definition.models[2]?.id).toBeTruthy();
   });
 
   it('keeps current models not in desired', () => {
@@ -636,6 +636,6 @@ describe('mergeDataWithSchema — model schema integration', () => {
       'User',
       'Post',
     ]);
-    expect(result.definition.models[1].id).toBe(postModel.id);
+    expect(result.definition.models[1]?.id).toBe(postModel.id);
   });
 });

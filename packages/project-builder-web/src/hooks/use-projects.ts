@@ -23,7 +23,8 @@ export const useProjects = create<ProjectsStore>((set) => ({
       ...(projects.some((p) => p.id === state.currentProjectId)
         ? undefined
         : {
-            currentProjectId: projects.length === 1 ? projects[0].id : null,
+            currentProjectId:
+              projects.length === 1 ? (projects[0]?.id ?? null) : null,
           }),
     }));
   },
@@ -38,7 +39,7 @@ export const useProjects = create<ProjectsStore>((set) => ({
   resetCurrentProjectId: () => {
     set((state) => ({
       currentProjectId:
-        state.projects.length === 1 ? state.projects[0].id : null,
+        state.projects.length === 1 ? (state.projects[0]?.id ?? null) : null,
     }));
   },
 }));

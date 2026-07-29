@@ -120,7 +120,7 @@ describe('renderTsTemplateToTsCodeFragment', () => {
       moduleSpecifier: './my-class',
     });
     expect(result.hoistedFragments).toHaveLength(1);
-    expect(result.hoistedFragments?.[0].key).toBe('helper');
+    expect(result.hoistedFragments?.[0]?.key).toBe('helper');
   });
 
   it('should throw error for invalid variable keys', () => {

@@ -125,7 +125,7 @@ function getRelationDefaultsFromModel(
         existingReferences[i]?.localRef ??
         editedModel.model.fields.find((f) => f.name === bestGuessLocalName)?.id;
       return {
-        localRef: bestGuessLocal,
+        localRef: bestGuessLocal ?? '',
         foreignRef: primaryKey.id,
       };
     });

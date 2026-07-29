@@ -24,7 +24,7 @@ export function normalizePrismaWhitespace(text: string): string {
   let prevWasSpace = false;
 
   while (i < text.length) {
-    const ch = text[i];
+    const ch = text[i] ?? '';
 
     // Newline: reset spacing state and emit as-is
     if (ch === '\n' || ch === '\r') {
@@ -73,7 +73,7 @@ export function normalizePrismaWhitespace(text: string): string {
       result += ch;
       i++;
       while (i < text.length) {
-        const inner = text[i];
+        const inner = text[i] ?? '';
         // Stop at newline (malformed string, but don't cross line boundaries)
         if (inner === '\n' || inner === '\r') break;
         result += inner;
@@ -81,7 +81,7 @@ export function normalizePrismaWhitespace(text: string): string {
         if (inner === '\\') {
           // Escaped character — include next char unconditionally
           if (i < text.length && text[i] !== '\n' && text[i] !== '\r') {
-            result += text[i];
+            result += text[i] ?? '';
             i++;
           }
         } else if (inner === '"') {
@@ -141,9 +141,13 @@ export const prismaMergeAlgorithm: StringMergeAlgorithm = async (input) => {
     }
 
     // Re-format the merged result to restore canonical Prisma alignment
-    const [[, formattedText]] = formatPrismaSchema([
+    const formattedEntry = formatPrismaSchema([
       [input.filePath, diff3Result.mergedText],
-    ]);
+    ])[0];
+    if (!formattedEntry) {
+      return null;
+    }
+    const [, formattedText] = formattedEntry;
 
     return {
       mergedText: `${formattedText.trimEnd()}\n`,

@@ -207,7 +207,7 @@ describe('diffDefinition', () => {
 
     // The label should use the entity type name ("model" → "Model")
     const entry = diff.entries[0];
-    expect(entry.label).toMatch(/^Model: /);
+    expect(entry?.label).toMatch(/^Model: /);
   });
 
   it('detects changes to non-entity fields', () => {

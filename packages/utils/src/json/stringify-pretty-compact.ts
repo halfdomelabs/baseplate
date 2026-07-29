@@ -95,8 +95,9 @@ function prettify(
     tokens[']'] = ' ]';
   }
 
+  // Outside of strings `stringOrChar` only matches keys of `tokens`.
   return str.replaceAll(stringOrChar, (match, string) =>
-    string ? match : tokens[match],
+    string ? match : (tokens[match] ?? match),
   );
 }
 

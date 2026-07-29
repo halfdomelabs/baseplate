@@ -80,6 +80,10 @@ export function AuthDefinitionEditor({
       'accounts/users',
     );
 
+    if (!defaultImplementation) {
+      throw new Error('No auth implementation plugins are available');
+    }
+
     return {
       implementationPluginKey: defaultImplementation.key,
       authFeatureRef: defaultAuthFeatureRef,

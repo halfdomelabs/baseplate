@@ -5,6 +5,7 @@ import {
   ToposortCyclicalDependencyError,
   ToposortUnknownNodeError,
 } from './errors.js';
+import { atNodeIndex } from './node-index.js';
 
 /**
  * Creates a map of outgoing edges from node indices to their target indices
@@ -42,7 +43,7 @@ function makeNodeInDegrees(
   const nodeInDegrees = Array.from({ length: nodeLength }, () => 0);
   for (const [, targets] of outgoingEdgesMap.entries()) {
     for (const target of targets) {
-      nodeInDegrees[target]++;
+      nodeInDegrees[target] = atNodeIndex(nodeInDegrees, target) + 1;
     }
   }
   return nodeInDegrees;
@@ -101,7 +102,7 @@ function detectCycle<T>(
 
       if (cycleFound) {
         // Convert path indices to actual nodes
-        return path.map((idx) => nodes[idx]);
+        return path.map((idx) => atNodeIndex(nodes, idx));
       }
     }
   }
@@ -155,7 +156,9 @@ export function toposort<T>(
 
   // Create a queue of nodes with no incoming edges (in-degree == 0)
   const zeroInDegreeQueue = compareFunc
-    ? new TinyQueue<number>([], (a, b) => compareFunc(nodes[a], nodes[b]))
+    ? new TinyQueue<number>([], (a, b) =>
+        compareFunc(atNodeIndex(nodes, a), atNodeIndex(nodes, b)),
+      )
     : ([] as number[]);
 
   for (const [i, nodeInDegree] of nodeInDegrees.entries()) {
@@ -172,16 +175,17 @@ export function toposort<T>(
     const current = zeroInDegreeQueue.pop();
     if (current === undefined) break;
     visited.add(current);
-    result.push(nodes[current]);
+    result.push(atNodeIndex(nodes, current));
 
     // Process all outgoing edges from the current node
     const outgoingEdges = outgoingEdgesMap.get(current);
     if (outgoingEdges) {
       for (const target of outgoingEdges) {
-        nodeInDegrees[target]--;
+        const remainingInDegree = atNodeIndex(nodeInDegrees, target) - 1;
+        nodeInDegrees[target] = remainingInDegree;
 
         // If the target node now has no incoming edges, add it to the queue
-        if (nodeInDegrees[target] === 0) {
+        if (remainingInDegree === 0) {
           zeroInDegreeQueue.push(target);
         }
       }

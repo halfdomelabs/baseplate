@@ -1,5 +1,5 @@
 import { vol } from 'memfs';
-import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createGenerator } from './create-generator.js';
 
@@ -54,7 +54,9 @@ describe('createGenerator', () => {
 
     // Check extractor.json
     const extractorFile = files['/generators/email/sendgrid/extractor.json'];
-    assert.isNotNull(extractorFile);
+    if (typeof extractorFile !== 'string') {
+      throw new TypeError('Expected extractor.json to be written');
+    }
     const extractorJson = JSON.parse(extractorFile) as {
       name: string;
       templates: Record<string, string>;

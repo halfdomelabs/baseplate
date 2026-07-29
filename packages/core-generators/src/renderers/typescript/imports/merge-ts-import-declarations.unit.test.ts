@@ -202,7 +202,11 @@ describe('mergeTsImportDeclarations', () => {
     ];
 
     const result = mergeTsImportDeclarationsSorted(input);
-    expect(result[0].namedImports?.map((d) => d.name)).toEqual(['a', 'b', 'z']);
+    expect(result[0]?.namedImports?.map((d) => d.name)).toEqual([
+      'a',
+      'b',
+      'z',
+    ]);
   });
 
   it('should remove type imports that exist as regular imports', () => {

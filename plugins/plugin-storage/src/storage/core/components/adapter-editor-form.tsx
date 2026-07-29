@@ -54,6 +54,7 @@ function AdapterEditorForm({ className, control }: Props): React.JSX.Element {
 
   function handleDeleteAdapter(adapterIdx: number): void {
     const adapter = adapters[adapterIdx];
+    if (!adapter) return;
     requestConfirm({
       title: 'Delete Adapter',
       content: `Are you sure you want to delete the adapter "${adapter.name}"?`,

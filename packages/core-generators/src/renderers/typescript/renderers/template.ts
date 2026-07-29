@@ -64,10 +64,10 @@ export function addSimpleReplacementComments(
   const replacementVariables: Record<string, string> = {};
 
   for (const [key, value] of Object.entries(variables)) {
-    if (!(key in variableMetadata)) {
+    const metadata = variableMetadata[key];
+    if (!metadata) {
       continue;
     }
-    const metadata = variableMetadata[key];
     if (metadata.type === 'replacement') {
       const contents = typeof value === 'string' ? value : value.contents;
       // Only add as replacement if it's a simple value
@@ -179,12 +179,13 @@ export function renderTsTemplateToTsCodeFragment(
   renderedTemplate = renderedTemplate.replace(
     blockRegex,
     (match, leading: string, key: string) => {
-      if (!(key in variables)) {
+      const value = variables[key];
+      if (value === undefined) {
         throw new Error(`Template variable not found: ${key}`);
       }
 
       const marker = `__BLOCK_MARKER_${blockMarkers.size}__`; // Unique marker
-      blockMarkers.set(marker, { key, leading, value: variables[key] });
+      blockMarkers.set(marker, { key, leading, value });
       variableKeys.delete(key); // Mark as used
 
       return `${leading}${marker}`; // Replace with marker, preserving leading whitespace
@@ -196,12 +197,13 @@ export function renderTsTemplateToTsCodeFragment(
   renderedTemplate = renderedTemplate.replace(
     tsxRegex,
     (match, key: string) => {
-      if (!(key in variables)) {
+      const value = variables[key];
+      if (value === undefined) {
         throw new Error(`Template variable not found: ${key}`);
       }
 
       const marker = `__TSX_MARKER_${tsxMarkers.size}__`; // Unique marker
-      tsxMarkers.set(marker, { key, value: variables[key] });
+      tsxMarkers.set(marker, { key, value });
       variableKeys.delete(key); // Mark as used
 
       return marker; // Replace with marker, preserving leading whitespace
@@ -216,12 +218,13 @@ export function renderTsTemplateToTsCodeFragment(
   renderedTemplate = renderedTemplate.replace(
     commentRegex,
     (match, key: string) => {
-      if (!(key in variables)) {
+      const value = variables[key];
+      if (value === undefined) {
         throw new Error(`Template variable not found: ${key}`);
       }
 
       const marker = `__COMMENT_MARKER_${commentMarkers.size}__`; // Unique marker
-      commentMarkers.set(marker, { key, value: variables[key] });
+      commentMarkers.set(marker, { key, value });
       variableKeys.delete(key); // Mark as used
 
       return marker; // Replace with marker
@@ -234,12 +237,12 @@ export function renderTsTemplateToTsCodeFragment(
   renderedTemplate = renderedTemplate.replace(
     inlineRegex,
     (match, key: string, followingCharacter: string) => {
-      if (!(key in variables)) {
+      const value = variables[key];
+      if (value === undefined) {
         throw new Error(`Template variable not found: ${key}`);
       }
       // HACK: handle specific scenario where the variable is followed by a comma and the variable
       // value itself is an empty string which would result in invalid syntax, e.g. { TEST, } => { , }
-      const value = variables[key];
       const contents = typeof value === 'string' ? value : value.contents;
       const shouldRemoveComma =
         followingCharacter === ',' && contents.trim() === '';

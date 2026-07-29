@@ -27,9 +27,10 @@ function formatMessage(messageOrObj: unknown, message?: string): string {
 }
 
 export function createTestLogger(): TestLogger {
-  let [errorOutput, warnOutput, infoOutput, debugOutput] = Array.from({
-    length: 4,
-  }).fill('') as string[];
+  let errorOutput = '';
+  let warnOutput = '';
+  let infoOutput = '';
+  let debugOutput = '';
 
   return {
     error: (messageOrObj: unknown, message?: string) => {

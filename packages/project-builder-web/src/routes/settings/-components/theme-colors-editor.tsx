@@ -130,7 +130,7 @@ function ColorSectionGrid({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {section.entries.map(([themeKey, config], idx) => {
           const lastGroupKey =
-            idx > 0 ? section.entries[idx - 1][1].groupKey : undefined;
+            idx > 0 ? section.entries[idx - 1]?.[1].groupKey : undefined;
           const shouldStartNewColumn = lastGroupKey !== config.groupKey;
           return (
             <div

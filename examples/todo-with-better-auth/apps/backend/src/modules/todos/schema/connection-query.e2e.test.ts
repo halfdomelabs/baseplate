@@ -364,7 +364,7 @@ describe('todoListSharesConnection', () => {
       edges: { node: { todoListId: string; userId: string } }[];
     };
     expect(connection.edges).toHaveLength(1);
-    expect(connection.edges[0].node).toEqual({
+    expect(connection.edges[0]?.node).toEqual({
       todoListId: list.id,
       userId: sharee.id,
     });

@@ -60,7 +60,9 @@ describe('createIssueFixSetter', () => {
     });
 
     const model = container.definition.models[0];
+    if (!model) throw new Error('Expected model');
     const field = model.model.fields[0];
+    if (!field) throw new Error('Expected field');
 
     const result = createIssueFixSetter(
       {
@@ -81,7 +83,9 @@ describe('createIssueFixSetter', () => {
     }
 
     const fixedDefinition = produce(container.definition, result);
-    expect(fixedDefinition.models[0].model.fields[0].name).toBe('renamedField');
+    expect(fixedDefinition.models[0]?.model.fields[0]?.name).toBe(
+      'renamedField',
+    );
     // Original should be unchanged
     expect(field.name).toBe('id');
   });

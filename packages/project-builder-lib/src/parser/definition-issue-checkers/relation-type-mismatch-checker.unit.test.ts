@@ -86,15 +86,14 @@ describe('checkRelationTypeMismatch', () => {
 
     const issues = checkRelationTypeMismatch(container);
     expect(issues).toHaveLength(1);
-    expect(issues[0]).toMatchObject({
-      message:
-        "Relation 'user' type mismatch: 'userId' is 'int' but 'id' on 'User' is 'uuid'",
-      entityId: container.definition.models[1].id,
-      path: ['model', 'relations', 0],
-      severity: 'warning',
-    });
-    expect(issues[0].fix).toBeDefined();
-    expect(issues[0].fix?.label).toBe("Change 'userId' type to 'uuid'");
+    expect(issues[0]?.message).toBe(
+      "Relation 'user' type mismatch: 'userId' is 'int' but 'id' on 'User' is 'uuid'",
+    );
+    expect(issues[0]?.entityId).toBe(container.definition.models[1]?.id);
+    expect(issues[0]?.path).toEqual(['model', 'relations', 0]);
+    expect(issues[0]?.severity).toBe('warning');
+    expect(issues[0]?.fix).toBeDefined();
+    expect(issues[0]?.fix?.label).toBe("Change 'userId' type to 'uuid'");
   });
 
   it('fix changes local field type to match foreign field type', () => {
@@ -133,7 +132,7 @@ describe('checkRelationTypeMismatch', () => {
     const issues = checkRelationTypeMismatch(container);
     expect(issues).toHaveLength(1);
 
-    const { fix } = issues[0];
+    const fix = issues[0]?.fix;
     if (!fix?.applySetter) {
       throw new Error('Expected fix.applySetter to be defined');
     }

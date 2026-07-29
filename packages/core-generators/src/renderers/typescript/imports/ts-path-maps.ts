@@ -15,13 +15,14 @@ export function generatePathMapEntries(
   paths: Record<string, string[]>,
 ): TsPathMapEntry[] {
   return Object.entries(paths).flatMap(([alias, targets]) => {
-    if (targets.length !== 1) {
+    const target = targets[0];
+    if (targets.length !== 1 || target === undefined) {
       throw new Error('We do not support tsconfig paths with multiple values');
     }
     return [
       {
         from: alias,
-        to: `./${path.posix.join(baseUrl ?? '.', targets[0]).replaceAll('\\', '/')}`,
+        to: `./${path.posix.join(baseUrl ?? '.', target).replaceAll('\\', '/')}`,
       },
     ];
   });
@@ -38,7 +39,9 @@ export function pathMapEntriesToRegexes(entries: TsPathMapEntry[]): RegExp[] {
   return entries.map(({ from }) => {
     if (from.includes('*')) {
       const [prefix, suffix] = from.split('*');
-      return new RegExp(`^${escapeRegExp(prefix)}.*${escapeRegExp(suffix)}$`);
+      return new RegExp(
+        `^${escapeRegExp(prefix ?? '')}.*${escapeRegExp(suffix ?? '')}$`,
+      );
     }
     return new RegExp(`^${escapeRegExp(from)}$`);
   });

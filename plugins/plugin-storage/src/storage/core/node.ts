@@ -92,8 +92,14 @@ export default createPluginModule({
               );
             // The FK column backing the relation, e.g. `avatarId`. Read from the
             // relation rather than derived from its name, which need not match.
+            const firstReference = t.relation.references[0];
+            if (!firstReference) {
+              throw new Error(
+                `Relation ${t.relation.name} on model ${t.model.name} has no references`,
+              );
+            }
             const foreignKeyFieldName = definitionContainer.nameFromId(
-              t.relation.references[0].localRef,
+              firstReference.localRef,
             );
             const existing = referencedByCategory.get(t.category.name) ?? [];
             existing.push({

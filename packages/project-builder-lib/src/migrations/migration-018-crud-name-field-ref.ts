@@ -107,7 +107,7 @@ export const migration018CrudNameFieldRef = createSchemaMigration<
 
         return {
           ...section,
-          nameFieldRef: selectedField.name,
+          nameFieldRef: selectedField?.name ?? '',
         };
       });
 

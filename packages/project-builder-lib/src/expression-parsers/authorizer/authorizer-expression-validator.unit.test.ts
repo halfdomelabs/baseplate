@@ -140,8 +140,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'nonexistent'");
-      expect(warnings[0].message).toContain("'Post'");
+      expect(warnings[0]?.message).toContain("'nonexistent'");
+      expect(warnings[0]?.message).toContain("'Post'");
     });
 
     it('should validate valid auth field reference (userId)', () => {
@@ -202,8 +202,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'invalidField'");
-      expect(warnings[0].message).toContain('userId');
+      expect(warnings[0]?.message).toContain("'invalidField'");
+      expect(warnings[0]?.message).toContain('userId');
     });
   });
 
@@ -258,8 +258,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('auto-assigned');
+      expect(warnings[0]?.message).toContain("'system'");
+      expect(warnings[0]?.message).toContain('auto-assigned');
     });
 
     it('should warn for role that does not exist in project', () => {
@@ -278,8 +278,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'superuser'");
-      expect(warnings[0].message).toContain('not defined');
+      expect(warnings[0]?.message).toContain("'superuser'");
+      expect(warnings[0]?.message).toContain('not defined');
     });
   });
 
@@ -318,15 +318,15 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(2);
-      expect(warnings[0].message).toContain("'superuser'");
-      expect(warnings[0].message).toContain('not defined');
-      expect(warnings[0].start).toBe(12);
-      expect(warnings[0].end).toBe(23);
+      expect(warnings[0]?.message).toContain("'superuser'");
+      expect(warnings[0]?.message).toContain('not defined');
+      expect(warnings[0]?.start).toBe(12);
+      expect(warnings[0]?.end).toBe(23);
 
-      expect(warnings[1].message).toContain("'moderator'");
-      expect(warnings[1].message).toContain('not defined');
-      expect(warnings[1].start).toBe(25);
-      expect(warnings[1].end).toBe(36);
+      expect(warnings[1]?.message).toContain("'moderator'");
+      expect(warnings[1]?.message).toContain('not defined');
+      expect(warnings[1]?.start).toBe(25);
+      expect(warnings[1]?.end).toBe(36);
     });
 
     it('should warn for auto-assigned role in hasSomeRole', () => {
@@ -368,10 +368,10 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'system'");
-      expect(warnings[0].message).toContain('auto-assigned');
-      expect(warnings[0].start).toBe(21);
-      expect(warnings[0].end).toBe(29);
+      expect(warnings[0]?.message).toContain("'system'");
+      expect(warnings[0]?.message).toContain('auto-assigned');
+      expect(warnings[0]?.start).toBe(21);
+      expect(warnings[0]?.end).toBe(29);
     });
 
     it('should warn only for invalid roles in mixed list', () => {
@@ -390,9 +390,9 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'superuser'");
-      expect(warnings[0].start).toBe(21);
-      expect(warnings[0].end).toBe(32);
+      expect(warnings[0]?.message).toContain("'superuser'");
+      expect(warnings[0]?.start).toBe(21);
+      expect(warnings[0]?.end).toBe(32);
     });
   });
 
@@ -444,8 +444,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'user'");
-      expect(warnings[0].message).toContain('isAuthenticated');
+      expect(warnings[0]?.message).toContain("'user'");
+      expect(warnings[0]?.message).toContain('isAuthenticated');
     });
   });
 
@@ -548,8 +548,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'nope'");
-      expect(warnings[0].message).toContain('TodoItem');
+      expect(warnings[0]?.message).toContain("'nope'");
+      expect(warnings[0]?.message).toContain('TodoItem');
     });
 
     it('should warn for nonexistent relation', () => {
@@ -571,8 +571,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'nonexistent'");
-      expect(warnings[0].message).toContain("'Todo'");
+      expect(warnings[0]?.message).toContain("'nonexistent'");
+      expect(warnings[0]?.message).toContain("'Todo'");
     });
 
     it('should validate valid nested hasRole through a composite FK relation', () => {
@@ -615,8 +615,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'superuser'");
-      expect(warnings[0].message).toContain("'TodoList'");
+      expect(warnings[0]?.message).toContain("'superuser'");
+      expect(warnings[0]?.message).toContain("'TodoList'");
     });
 
     it('should validate valid nested hasSomeRole', () => {
@@ -659,8 +659,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'badRole'");
-      expect(warnings[0].message).toContain("'TodoList'");
+      expect(warnings[0]?.message).toContain("'badRole'");
+      expect(warnings[0]?.message).toContain("'TodoList'");
     });
 
     it('should skip validation when no relationInfo provided', () => {
@@ -781,8 +781,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'nonexistent'");
-      expect(warnings[0].message).toContain("'Brand'");
+      expect(warnings[0]?.message).toContain("'nonexistent'");
+      expect(warnings[0]?.message).toContain("'Brand'");
     });
 
     it('should warn for nonexistent condition field on foreign model', () => {
@@ -816,8 +816,8 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'badField'");
-      expect(warnings[0].message).toContain("'BrandMember'");
+      expect(warnings[0]?.message).toContain("'badField'");
+      expect(warnings[0]?.message).toContain("'BrandMember'");
     });
 
     it('should warn for incompatible literal type in condition', () => {
@@ -850,9 +850,9 @@ describe('validateAuthorizerExpression', () => {
       );
 
       expect(warnings).toHaveLength(1);
-      expect(warnings[0].message).toContain("'number'");
-      expect(warnings[0].message).toContain("'userId'");
-      expect(warnings[0].message).toContain("'string'");
+      expect(warnings[0]?.message).toContain("'number'");
+      expect(warnings[0]?.message).toContain("'userId'");
+      expect(warnings[0]?.message).toContain("'string'");
     });
 
     it('should skip validation when no relationInfo provided', () => {
