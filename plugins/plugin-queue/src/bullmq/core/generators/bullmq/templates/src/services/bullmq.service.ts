@@ -18,6 +18,7 @@ import type { Redis } from 'ioredis';
 import { config } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
+import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
 import { Queue as BullMQQueueBase, Worker as BullMQWorker } from 'bullmq';
 
 /**
@@ -215,28 +216,56 @@ export function createQueueRuntime(
     return bullQueue;
   }
 
-  async function enqueue<T>(
-    token: QueueToken<T>,
-    data: T,
-    options?: EnqueueOptions,
-  ): Promise<string | undefined> {
+  /**
+   * Resolves the handler binding for a token.
+   * @param token The token being enqueued to.
+   * @returns The token's handler binding.
+   * @throws If no handler is bound for the token.
+   */
+  function resolveBindingForEnqueue(
+    token: QueueToken<unknown>,
+  ): QueueHandlerBinding {
     const binding = bindingsByName.get(token.name);
     if (!binding) {
       throw new Error(
         `No handler bound for queue "${token.name}". Bind one with bindQueueHandler().`,
       );
     }
+    return binding;
+  }
 
+  /**
+   * Layers a job's own options over the queue's defaults and validates the
+   * result against the queue's deduplication setting.
+   * @param binding The queue's handler binding.
+   * @param options The per-job options, if any.
+   * @returns The resolved options for this job.
+   */
+  function resolveEnqueueOptions(
+    binding: QueueHandlerBinding,
+    options?: EnqueueOptions,
+  ): EnqueueOptions {
     const mergedOptions: EnqueueOptions = {
       ...binding.options?.defaultJobOptions,
       ...options,
     };
 
     assertSingletonKeyIfDeduplicated(
-      token.name,
+      binding.token.name,
       binding,
       mergedOptions.singletonKey,
     );
+
+    return mergedOptions;
+  }
+
+  async function enqueue<T>(
+    token: QueueToken<T>,
+    data: T,
+    options?: EnqueueOptions,
+  ): Promise<string | undefined> {
+    const binding = resolveBindingForEnqueue(token);
+    const mergedOptions = resolveEnqueueOptions(binding, options);
 
     const bullMQOptions = mapEnqueueOptions(mergedOptions);
     // When a job is deduplicated, BullMQ does not store it and instead returns
@@ -250,6 +279,29 @@ export function createQueueRuntime(
     );
 
     return job.id;
+  }
+
+  async function enqueueBulk<T>(
+    token: QueueToken<T>,
+    jobs: { data: T; options?: EnqueueOptions }[],
+  ): Promise<string[]> {
+    if (jobs.length === 0) {
+      return [];
+    }
+
+    const binding = resolveBindingForEnqueue(token);
+
+    const addedJobs = await getBullQueue(binding).addBulk(
+      jobs.map((job) => ({
+        name: token.name,
+        data: job.data,
+        opts: mapEnqueueOptions(resolveEnqueueOptions(binding, job.options)),
+      })),
+    );
+
+    // As with `enqueue`, a deduplicated job yields the id of the job already in
+    // flight, so an id here is not proof of creation.
+    return addedJobs.map((job) => job.id).filter((id) => id !== undefined);
   }
 
   async function startWorkers(options: {
@@ -316,6 +368,8 @@ export function createQueueRuntime(
         {
           connection: getRedisClient(),
           prefix: config.REDIS_KEY_PREFIX,
+          concurrency:
+            binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
         },
       );
 
@@ -399,6 +453,7 @@ export function createQueueRuntime(
 
   return {
     enqueue,
+    enqueueBulk,
     startWorkers,
     stopWorkers,
     listQueues,
