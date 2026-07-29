@@ -622,9 +622,6 @@ export function createModelPolicy<
     return {
       check: (ctx, instance) =>
         checkRolesOrThrow(ctx, roleNames, globalRoles, instance),
-      // `{}` — never `undefined` — so a caller can't spread an absent filter
-      // into a query and silently widen it. Total-deny still throws inside
-      // rolesToWhere.
       where: (ctx, callerWhere) =>
         rolesToWhere(ctx, roleNames, globalRoles, callerWhere) ?? {},
       whereUnique: (ctx, unique) => {

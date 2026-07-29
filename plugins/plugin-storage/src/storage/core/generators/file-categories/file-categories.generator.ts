@@ -28,18 +28,10 @@ import {
   storageModuleImportsProvider,
 } from '#src/generators/index.js';
 
-/**
- * A model relation pointing at this category's files. `relationName` is the
- * File-side name (drives orphan cleanup); `modelName`/`fieldName` identify the
- * owning side, whose policy and field permissions gate reads.
- */
-const referencedBySchema = z.object({
-  relationName: z.string(),
-  modelName: z.string(),
-  fieldName: z.string(),
-  fieldGlobalRoles: z.array(z.string()).default([]),
-  fieldInstanceRoles: z.array(z.string()).default([]),
-});
+import {
+  buildAuthorizeFragment,
+  referencedBySchema,
+} from './build-presigned-read.js';
 
 const descriptorSchema = z.object({
   featureId: z.string(),
@@ -57,8 +49,6 @@ const descriptorSchema = z.object({
     }),
   ),
 });
-
-type ReferencedBy = z.infer<typeof referencedBySchema>;
 
 export interface FileCategoriesProvider {
   getFileCategoryImportFragment(name: string): TsCodeFragment;
@@ -124,156 +114,13 @@ export const fileCategoriesGenerator = createGenerator({
             string,
             PrismaModelPolicyProvider | undefined
           >;
-          const getModelPolicy = (
-            modelName: string,
-          ): PrismaModelPolicyProvider | undefined =>
-            modelPolicies[`modelPolicy_${modelName}`];
-
-          /**
-           * A read rule for one referencing relation: load the owning row under
-           * that model's `read` grant, then apply the relation's own field
-           * permissions. Returns undefined when the model has no policy.
-           */
-          function buildReferenceReadFragment(
-            ref: ReferencedBy,
-          ): TsCodeFragment | undefined {
-            const modelPolicy = getModelPolicy(ref.modelName);
-            if (!modelPolicy) return undefined;
-
-            const isGated =
-              ref.fieldGlobalRoles.length > 0 ||
-              ref.fieldInstanceRoles.length > 0;
-
-            // Without a field gate only existence matters, so narrow the row to
-            // its id(s). A gate's instance checks receive the row, so it must be
-            // loaded whole.
-            const { idFields } = prismaOutput.getPrismaModel(ref.modelName);
-            const selectFragment =
-              !isGated && idFields?.length
-                ? tsTemplate`
-            select: ${TsCodeUtils.mergeFragmentsAsObject(
-              Object.fromEntries(
-                idFields.toSorted(compareStrings).map((f) => [f, 'true']),
-              ),
-            )},`
-                : '';
-
-            const rowFragment = tsTemplate`await ${prismaOutput.getPrismaModelFragment(
-              ref.modelName,
-            )}.findFirst({
-            where: ${modelPolicy.getActionWhereFragment('read')}(context, {
-              ${ref.fieldName}Id: file.id,
-            }),${selectFragment}
-          })`;
-
-            if (!isGated) {
-              return tsTemplate`((${rowFragment}) !== null)`;
-            }
-
-            // Mirrors the GraphQL field gate: global roles and instance checks
-            // are OR-ed against each other, then AND-ed with reading the row.
-            const gateFragments: TsCodeFragment[] = [
-              ...(ref.fieldGlobalRoles.length > 0
-                ? [
-                    tsTemplate`context.auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      ref.fieldGlobalRoles.map(quot).toSorted(),
-                    )})`,
-                  ]
-                : []),
-              ...ref.fieldInstanceRoles
-                .toSorted(compareStrings)
-                .map(
-                  (roleName) =>
-                    tsTemplate`await ${modelPolicy.getRoleCheckFragment(roleName)}(context, row)`,
-                ),
-            ];
-
-            return tsTemplate`(await (async () => {
-            const row = ${rowFragment};
-            if (!row) return false;
-            return ${TsCodeUtils.mergeFragments(
-              new Map(gateFragments.map((f, i) => [String(i), f])),
-              ' || ',
-            )};
-          })())`;
-          }
-
-          /**
-           * `presignedRead` for a category: readable if ANY referencing relation
-           * grants it. Omitted entirely when nothing is derivable, which the
-           * runtime treats as deny.
-           */
-          function buildPresignedReadFragment(
-            referencedBy: ReferencedBy[],
-          ): TsCodeFragment | undefined {
-            const refFragments = referencedBy
-              .toSorted((a, b) =>
-                compareStrings(
-                  `${a.modelName}.${a.fieldName}`,
-                  `${b.modelName}.${b.fieldName}`,
-                ),
-              )
-              .map((ref) => ({
-                ref,
-                fragment: buildReferenceReadFragment(ref),
-              }))
-              .filter(
-                (
-                  entry,
-                ): entry is { ref: ReferencedBy; fragment: TsCodeFragment } =>
-                  entry.fragment !== undefined,
-              );
-
-            if (refFragments.length === 0) return undefined;
-
-            if (refFragments.length === 1) {
-              return tsTemplate`async (file, context) =>
-              ${refFragments[0].fragment}`;
-            }
-
-            // With several referencing models, a model that grants nothing throws
-            // ForbiddenError from `.where`. Swallow only that — it means "this
-            // model grants no access", not "the request fails" — so another
-            // model's grant still applies.
-            const guarded = refFragments.map(
-              ({ fragment }) => tsTemplate`(await (async () => {
-              try {
-                return ${fragment};
-              } catch (error) {
-                if (error instanceof ${errorHandlerServiceImports.ForbiddenError.fragment()}) {
-                  return false;
-                }
-                throw error;
-              }
-            })())`,
-            );
-
-            return tsTemplate`async (file, context) =>
-            ${TsCodeUtils.mergeFragments(
-              new Map(guarded.map((f, i) => [String(i), f])),
-              ' || ',
-            )}`;
-          }
-
-          /** The category's `authorize` object, omitted when it would be empty. */
-          function buildAuthorizeFragment(category: {
-            authorize: { uploadRoles: string[] };
-            referencedBy: ReferencedBy[];
-          }): TsCodeFragment | undefined {
-            const members: Record<string, TsCodeFragment | undefined> = {
-              upload:
-                category.authorize.uploadRoles.length > 0
-                  ? tsTemplate`({ auth }) => auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                      category.authorize.uploadRoles.map(quot).toSorted(),
-                    )})`
-                  : undefined,
-              presignedRead: buildPresignedReadFragment(category.referencedBy),
-            };
-            if (Object.values(members).every((m) => m === undefined)) {
-              return undefined;
-            }
-            return TsCodeUtils.mergeFragmentsAsObject(members);
-          }
+          const presignedReadContext = {
+            prismaOutput,
+            getModelPolicy: (modelName: string) =>
+              modelPolicies[`modelPolicy_${modelName}`],
+            forbiddenErrorFragment: () =>
+              errorHandlerServiceImports.ForbiddenError.fragment(),
+          };
 
           const fileCategoryPath = posixJoin(
             appModule.getModuleFolder(),
@@ -321,7 +168,10 @@ export const fileCategoriesGenerator = createGenerator({
                         category.allowedMimeTypes.map(quot).toSorted(),
                       )
                     : undefined,
-                  authorize: buildAuthorizeFragment(category),
+                  authorize: buildAuthorizeFragment(
+                    category,
+                    presignedReadContext,
+                  ),
                   adapter: quot(category.adapter),
                   referencedByRelations:
                     category.referencedBy.length > 0

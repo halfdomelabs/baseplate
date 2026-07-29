@@ -78,27 +78,37 @@ export default createPluginModule({
               relationName: string;
               modelName: string;
               fieldName: string;
-              fieldGlobalRoles: string[];
-              fieldInstanceRoles: string[];
+              foreignKeyFieldName: string;
+              fieldRoles?: { globalRoles: string[]; instanceRoles: string[] };
             }[]
           >();
           for (const t of transformers) {
-            // Absent when the relation isn't exposed → no field-level gate.
+            // Absent when the relation isn't exposed in GraphQL. Left undefined
+            // rather than empty so the generator can tell "no gate to mirror"
+            // (→ no read rule) from "exposed with no roles" (→ ungated read).
             const exposedRelation =
               t.model.graphql.objectType.localRelations.find(
                 (r) => r.ref === t.transformer.fileRelationRef,
               );
+            // The FK column backing the relation, e.g. `avatarId`. Read from the
+            // relation rather than derived from its name, which need not match.
+            const foreignKeyFieldName = definitionContainer.nameFromId(
+              t.relation.references[0].localRef,
+            );
             const existing = referencedByCategory.get(t.category.name) ?? [];
             existing.push({
               relationName: t.relation.foreignRelationName,
               modelName: t.model.name,
               fieldName: t.relation.name,
-              fieldGlobalRoles: (exposedRelation?.globalRoles ?? []).map((r) =>
-                definitionContainer.nameFromId(r),
-              ),
-              fieldInstanceRoles: (exposedRelation?.instanceRoles ?? []).map(
-                (r) => definitionContainer.nameFromId(r),
-              ),
+              foreignKeyFieldName,
+              fieldRoles: exposedRelation && {
+                globalRoles: exposedRelation.globalRoles.map((r) =>
+                  definitionContainer.nameFromId(r),
+                ),
+                instanceRoles: exposedRelation.instanceRoles.map((r) =>
+                  definitionContainer.nameFromId(r),
+                ),
+              },
             });
             referencedByCategory.set(t.category.name, existing);
           }
