@@ -128,7 +128,7 @@ function isStyleImport(
   styleExtensions: string[] = [],
 ): boolean {
   // Handle query parameters
-  const [cleanedValue] = moduleName.split('?');
+  const cleanedValue = moduleName.split('?')[0] ?? '';
   return styleExtensions.some((extension) => cleanedValue.endsWith(extension));
 }
 

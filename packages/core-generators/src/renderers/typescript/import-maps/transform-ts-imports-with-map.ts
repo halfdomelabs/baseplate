@@ -62,7 +62,8 @@ export function transformTsImportsWithMap(
 
     return (
       importDeclaration.namedImports?.map((namedImport) => {
-        if (!(namedImport.name in importMap)) {
+        const entry = importMap[namedImport.name];
+        if (!entry) {
           if (wildcardImport) {
             return {
               moduleSpecifier: wildcardImport.moduleSpecifier,
@@ -78,8 +79,6 @@ export function transformTsImportsWithMap(
           }
           throw new Error(`Import map entry not found for ${namedImport.name}`);
         }
-
-        const entry = importMap[namedImport.name];
 
         return importDeclaration.isTypeOnly || namedImport.isTypeOnly
           ? entry.typeDeclaration()

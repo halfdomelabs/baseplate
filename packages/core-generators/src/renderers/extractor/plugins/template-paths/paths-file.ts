@@ -103,12 +103,13 @@ function createPathsTask(
   for (const [, pathRootRelativePath] of pathMap) {
     // Extract all the path roots used of the form {path-root-name}/...
     const pathRootMatches = PATH_ROOT_REGEX.exec(pathRootRelativePath);
-    if (!pathRootMatches) {
+    const pathRootName = pathRootMatches?.[1];
+    if (pathRootName === undefined) {
       throw new Error(
         `Path root relative path ${pathRootRelativePath} does not contain a path root`,
       );
     }
-    pathRootsUsed.add(pathRootMatches[1]);
+    pathRootsUsed.add(pathRootName);
   }
 
   const pathProviders = allPathProviders

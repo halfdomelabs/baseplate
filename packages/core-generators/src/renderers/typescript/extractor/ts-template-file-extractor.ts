@@ -144,11 +144,13 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
             outputRelativePaths,
           ] of generatorOutputRelativePathMap) {
             // We skip templates that have multiple output relative paths
-            if (outputRelativePaths.length !== 1) continue;
-            internalOutputRelativePaths.set(
-              outputRelativePaths[0],
-              templateName,
-            );
+            const outputRelativePath = outputRelativePaths[0];
+            if (
+              outputRelativePaths.length !== 1 ||
+              outputRelativePath === undefined
+            )
+              continue;
+            internalOutputRelativePaths.set(outputRelativePath, templateName);
           }
 
           const writeContext: WriteTsTemplateFileContext = {

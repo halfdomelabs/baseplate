@@ -78,6 +78,11 @@ export const fileDataFieldGenerator = createGenerator({
         }
 
         const fileIdFieldName = relation.fields[0];
+        if (!fileIdFieldName) {
+          throw new Error(
+            `Could not find file ID field for relation ${relationName} in model ${modelName}`,
+          );
+        }
 
         // Get the file category fragment
         const fileCategoryFragment =

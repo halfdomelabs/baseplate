@@ -67,9 +67,7 @@ export function QueueDefinitionEditor({
     }
 
     const implementationKey =
-      availableImplementations.length > 0
-        ? (pgBossImplementation ?? availableImplementations[0]).key
-        : '';
+      (pgBossImplementation ?? availableImplementations[0])?.key ?? '';
 
     return {
       implementationPluginKey: implementationKey,

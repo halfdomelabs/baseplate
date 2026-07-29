@@ -57,7 +57,8 @@ export async function runTemplateExtractorsForProject(
   const appDirectories = Object.values(syncMetadata.packages)
     .filter((packageInfo) => packageInfo.name.includes(app))
     .map((packageInfo) => packageInfo.path);
-  if (appDirectories.length === 0) {
+  const appDirectory = appDirectories[0];
+  if (!appDirectory) {
     throw new Error(`No app directories found for ${app}`);
   }
   if (appDirectories.length > 1) {
@@ -67,7 +68,7 @@ export async function runTemplateExtractorsForProject(
   }
   await runTemplateFileExtractors(
     TEMPLATE_EXTRACTORS,
-    appDirectories[0],
+    appDirectory,
     generatorPackageMap,
     logger,
     options,

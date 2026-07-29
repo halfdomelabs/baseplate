@@ -373,8 +373,9 @@ const preloadQuery = useMemo(
                 const linkFragments = linksToFormat.map((link) =>
                   tsCodeFragment(link.name, link.nameImport),
                 );
-                if (linkFragments.length === 1) {
-                  return linkFragments[0];
+                const singleLinkFragment = linkFragments[0];
+                if (linkFragments.length === 1 && singleLinkFragment) {
+                  return singleLinkFragment;
                 }
                 return TsCodeUtils.templateWithImports([
                   tsImportBuilder(['ApolloLink']).from('@apollo/client'),

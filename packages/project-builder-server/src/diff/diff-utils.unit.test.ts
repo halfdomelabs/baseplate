@@ -282,7 +282,7 @@ describe('diff-utils', () => {
       const result = await compareFiles('/test', generatorOutput, ['**/*.ts']);
 
       expect(result.totalFiles).toBe(1);
-      expect(result.diffs[0].path).toBe('file.ts');
+      expect(result.diffs[0]?.path).toBe('file.ts');
     });
 
     it('should detect added files (working file that generator should create)', async () => {

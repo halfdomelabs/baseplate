@@ -17,6 +17,7 @@ export function setConfigValue(
 ): Record<string, unknown> {
   if (keys.length === 0) return obj;
   const [head, ...rest] = keys;
+  if (head === undefined) return obj;
   const existing = obj[head];
   const next =
     rest.length > 0

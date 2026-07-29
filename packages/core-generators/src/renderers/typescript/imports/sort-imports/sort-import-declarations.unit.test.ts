@@ -79,7 +79,7 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports);
 
-    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
+    expect(sorted[0]?.map((i) => i.moduleSpecifier)).toEqual([
       './style3.css',
       './style1.css',
       './style3.css',
@@ -95,7 +95,7 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports, { ignoreCase: false });
 
-    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
+    expect(sorted[0]?.map((i) => i.moduleSpecifier)).toEqual([
       'Alpha',
       'Gamma',
       'beta',
@@ -111,7 +111,7 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports, { ignoreCase: false });
 
-    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
+    expect(sorted[0]?.map((i) => i.moduleSpecifier)).toEqual([
       'Zebra',
       'alpha',
       'beta',
@@ -129,8 +129,8 @@ describe('sortImportDeclarations', () => {
       groups: ['sibling', ['builtin', 'external']],
     });
 
-    expect(sorted[0][0].moduleSpecifier).toBe('./local');
-    expect(sorted[1].map((i) => i.moduleSpecifier)).toEqual(['fs', 'react']);
+    expect(sorted[0]?.[0]?.moduleSpecifier).toBe('./local');
+    expect(sorted[1]?.map((i) => i.moduleSpecifier)).toEqual(['fs', 'react']);
   });
 
   it('should handle empty import arrays', () => {

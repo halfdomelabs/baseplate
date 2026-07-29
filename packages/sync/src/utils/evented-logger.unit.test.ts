@@ -197,7 +197,7 @@ describe('createEventedLogger', () => {
 
       logger.error(error);
 
-      expect(messages[0].metadata?.err).toMatchObject({
+      expect(messages[0]?.metadata?.err).toMatchObject({
         type: 'Error',
         message: 'Test error',
         statusCode: 500,
@@ -219,7 +219,7 @@ describe('createEventedLogger', () => {
 
       logger.error(error);
 
-      expect(messages[0].metadata?.err).toMatchObject({
+      expect(messages[0]?.metadata?.err).toMatchObject({
         type: 'Error',
         message: 'Main error',
         cause: {

@@ -102,6 +102,9 @@ export const gitMergeDriverAlgorithmGenerator =
 
       try {
         const [file, ...commandArguments] = parseCommandString(command);
+        if (file === undefined) {
+          throw new Error(`Could not parse command: ${command}`);
+        }
 
         await execa(file, commandArguments);
         // Exit code 0 implies success (no conflicts reported by driver)

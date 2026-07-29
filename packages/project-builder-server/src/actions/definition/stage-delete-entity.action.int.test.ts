@@ -89,7 +89,7 @@ describe('stage-delete-entity', () => {
       models: { model: { fields: { name: string }[] } }[];
     };
     const blogPost = definition.models[0];
-    const fieldNames = blogPost.model.fields.map((f) => f.name);
+    const fieldNames = blogPost?.model.fields.map((f) => f.name) ?? [];
     expect(fieldNames).not.toContain('title');
     expect(fieldNames).toContain('content');
   });

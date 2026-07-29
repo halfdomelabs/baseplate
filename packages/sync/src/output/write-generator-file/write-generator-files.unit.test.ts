@@ -81,8 +81,8 @@ describe('writeGeneratorFiles', () => {
     expect(error).toBeInstanceOf(WriteGeneratorFilesError);
     const { errors } = error as WriteGeneratorFilesError;
     expect(errors.length).toBe(2);
-    expect(errors[0].relativePath).toBe('file1.txt');
-    expect(errors[1].relativePath).toBe('file2.txt');
+    expect(errors[0]?.relativePath).toBe('file1.txt');
+    expect(errors[1]?.relativePath).toBe('file2.txt');
 
     // Verify files remain unchanged
     expect(vol.toJSON()).toEqual({

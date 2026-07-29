@@ -58,6 +58,7 @@ function FileCategoryEditorForm({
 
   function handleDeleteCategory(categoryIdx: number): void {
     const category = categories[categoryIdx];
+    if (!category) return;
     requestConfirm({
       title: 'Delete File Category',
       content: `Are you sure you want to delete the file category "${category.name}"?`,

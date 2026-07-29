@@ -72,14 +72,16 @@ describe('saveSnapshot', () => {
     // Verify manifest was written and parsed correctly
     const manifest = readManifestFromVol(result.snapshotPath);
     expect(manifest.files.modified).toHaveLength(1);
-    expect(manifest.files.modified[0].path).toBe('src/index.ts');
+    const modifiedFile = manifest.files.modified[0];
+    expect(modifiedFile?.path).toBe('src/index.ts');
+    if (!modifiedFile) throw new Error('Expected a modified file entry');
 
     // Verify diff file was written
     const files = vol.toJSON();
     const diffFilePath = path.join(
       result.snapshotPath,
       DIFFS_DIRNAME,
-      manifest.files.modified[0].diffFile,
+      modifiedFile.diffFile,
     );
     expect(files[diffFilePath]).toBeDefined();
   });
@@ -129,8 +131,8 @@ describe('saveSnapshot', () => {
 
     const manifest = readManifestFromVol(result.snapshotPath);
     expect(manifest.files.added).toHaveLength(1);
-    expect(manifest.files.added[0].path).toBe('src/custom.ts');
-    expect(manifest.files.added[0].contentFile).toBeUndefined();
+    expect(manifest.files.added[0]?.path).toBe('src/custom.ts');
+    expect(manifest.files.added[0]?.contentFile).toBeUndefined();
 
     // Verify no content file was written in diffs/
     const files = vol.toJSON();
@@ -165,10 +167,10 @@ describe('saveSnapshot', () => {
 
     const manifest = readManifestFromVol(result.snapshotPath);
     expect(manifest.files.added).toHaveLength(1);
-    expect(manifest.files.added[0].path).toBe('src/custom.ts');
+    expect(manifest.files.added[0]?.path).toBe('src/custom.ts');
 
     // Verify content file was written
-    const { contentFile } = manifest.files.added[0];
+    const contentFile = manifest.files.added[0]?.contentFile;
     if (!contentFile) {
       throw new Error('Expected contentFile to be defined');
     }

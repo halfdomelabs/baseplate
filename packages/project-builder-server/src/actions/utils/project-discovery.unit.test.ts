@@ -228,7 +228,7 @@ describe('project-discovery', () => {
       );
 
       expect(projects).toHaveLength(1);
-      expect(projects[0].name).toBe('valid');
+      expect(projects[0]?.name).toBe('valid');
     });
 
     it('throws on duplicate project names', async () => {
