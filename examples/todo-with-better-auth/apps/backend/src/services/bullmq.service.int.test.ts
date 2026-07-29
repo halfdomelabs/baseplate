@@ -148,6 +148,84 @@ describe('BullMQ service integration tests', () => {
     });
   });
 
+  describe('bulk enqueueing', () => {
+    it('should enqueue and process many jobs in one call', async () => {
+      const queueName = 'test-bulk-queue';
+      const jobCount = 5;
+      const deferred = createDeferred();
+      const processedValues: number[] = [];
+
+      const token = defineQueue<{ index: number }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          processedValues.push(job.data.index);
+          if (processedValues.length === jobCount) {
+            deferred.resolve(undefined);
+          }
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const jobIds = await runtime.enqueueBulk(
+        token,
+        Array.from({ length: jobCount }, (_, index) => ({ data: { index } })),
+      );
+
+      expect(jobIds).toHaveLength(jobCount);
+
+      await deferred.promise;
+
+      // Workers process jobs concurrently, so arrival order is not guaranteed.
+      expect(processedValues.toSorted((a, b) => a - b)).toEqual([
+        0, 1, 2, 3, 4,
+      ]);
+    });
+
+    it('should apply per-job options in a bulk enqueue', async () => {
+      const queueName = 'test-bulk-options-queue';
+      const deferred = createDeferred();
+      let processedAt: number | undefined;
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          processedAt = Date.now();
+          deferred.resolve(undefined);
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const enqueuedAt = Date.now();
+      await runtime.enqueueBulk(token, [
+        { data: { value: 'delayed' }, options: { delaySeconds: 1 } },
+      ]);
+
+      await deferred.promise;
+
+      assert.isDefined(processedAt);
+      expect(processedAt - enqueuedAt).toBeGreaterThanOrEqual(900);
+    }, 10_000);
+
+    it('should not hit the queue for an empty bulk enqueue', async () => {
+      const queueName = 'test-bulk-empty-queue';
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          // Never started.
+        },
+      });
+
+      runtime = createTestQueueRuntime([binding]);
+
+      await expect(runtime.enqueueBulk(token, [])).resolves.toEqual([]);
+    });
+  });
+
   describe('error handling and retries', () => {
     it('should retry failed jobs with correct attempt numbers', async () => {
       const queueName = 'test-retry-queue';
