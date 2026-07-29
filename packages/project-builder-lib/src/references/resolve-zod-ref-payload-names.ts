@@ -67,7 +67,11 @@ export function resolveZodRefPayloadNames<T>(
   }
 
   for (const id of orderedEntities) {
-    const { nameResolver, ...rest } = entitiesById[id];
+    const entity = entitiesById[id];
+    if (!entity) {
+      throw new Error(`Could not find entity for id: ${id}`);
+    }
+    const { nameResolver, ...rest } = entity;
     if (typeof nameResolver === 'string') {
       resolvedEntitiesById.set(rest.id, {
         ...rest,

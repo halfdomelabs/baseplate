@@ -170,7 +170,7 @@ describe('resolveZodRefPayloadNames', () => {
       allowInvalidReferences: true,
     });
     expect(resolved.entities).toHaveLength(1);
-    expect(resolved.entities[0].name).toBe('Child of non-existent');
+    expect(resolved.entities[0]?.name).toBe('Child of non-existent');
   });
 
   it('should skip reference name resolution when skipReferenceNameResolution is true', () => {
@@ -197,7 +197,7 @@ describe('resolveZodRefPayloadNames', () => {
       skipReferenceNameResolution: true,
     });
     expect(resolved.entities).toHaveLength(1);
-    expect(resolved.entities[0].name).toBe('Child of parent-1');
+    expect(resolved.entities[0]?.name).toBe('Child of parent-1');
   });
 
   it('should preserve references in the output', () => {

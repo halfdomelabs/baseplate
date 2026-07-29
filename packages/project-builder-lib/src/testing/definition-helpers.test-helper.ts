@@ -46,7 +46,7 @@ const TEST_WORDS = [
 let testWordCounter = 0;
 
 function getTestWord(): string {
-  const word = TEST_WORDS[testWordCounter % TEST_WORDS.length];
+  const word = TEST_WORDS[testWordCounter % TEST_WORDS.length] ?? 'alpha';
   testWordCounter++;
   return word;
 }

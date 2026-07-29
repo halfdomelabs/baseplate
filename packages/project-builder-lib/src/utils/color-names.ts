@@ -19,15 +19,16 @@ export function convertColorNameToOklch(color: string): string {
   if (fixedColorMapping) {
     return fixedColorMapping;
   }
-  const colorComponents = color.split('-');
-  if (colorComponents.length === 2) {
-    const paletteName = colorComponents[0];
-    if (Object.prototype.hasOwnProperty.call(COLOR_PALETTES, paletteName)) {
-      const palette = COLOR_PALETTES[colorComponents[0] as ColorPaletteName];
-      const shade = palette[colorComponents[1] as PaletteShade];
-      if (shade) {
-        return shade;
-      }
+  const [paletteName, shadeName] = color.split('-');
+  if (
+    paletteName !== undefined &&
+    shadeName !== undefined &&
+    Object.prototype.hasOwnProperty.call(COLOR_PALETTES, paletteName)
+  ) {
+    const palette = COLOR_PALETTES[paletteName as ColorPaletteName];
+    const shade = palette[shadeName as PaletteShade];
+    if (shade) {
+      return shade;
     }
   }
   return color;

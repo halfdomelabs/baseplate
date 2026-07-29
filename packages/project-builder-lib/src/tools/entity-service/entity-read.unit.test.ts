@@ -31,8 +31,8 @@ describe('listEntities', () => {
     const result = listEntities({ entityTypeName: 'feature' }, context);
 
     expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('billing');
-    expect(result[1].name).toBe('auth');
+    expect(result[0]?.name).toBe('billing');
+    expect(result[1]?.name).toBe('auth');
   });
 
   it('should return empty array when no entities exist', () => {

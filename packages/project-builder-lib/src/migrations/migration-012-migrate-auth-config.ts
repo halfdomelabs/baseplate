@@ -75,10 +75,13 @@ export const migration012MigrateAuthConfig = createSchemaMigration<
         config: auth0Config,
       });
     } else {
-      plugins[pluginIndex] = {
-        ...plugins[pluginIndex],
-        config: auth0Config,
-      };
+      const existingPlugin = plugins[pluginIndex];
+      if (existingPlugin) {
+        plugins[pluginIndex] = {
+          ...existingPlugin,
+          config: auth0Config,
+        };
+      }
     }
 
     return {

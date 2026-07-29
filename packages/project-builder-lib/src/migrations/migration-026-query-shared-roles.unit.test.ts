@@ -20,7 +20,7 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       globalRoles: ['role-user', 'role-admin'],
       instanceRoles: [],
       get: { enabled: true },
@@ -45,7 +45,7 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries?.globalRoles).toEqual([
+    expect(result.models?.[0]?.graphql?.queries?.globalRoles).toEqual([
       'role-admin',
       'role-user',
     ]);
@@ -68,8 +68,8 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries?.globalRoles).toEqual([]);
-    expect(result.models?.[0].graphql?.queries?.instanceRoles).toEqual([]);
+    expect(result.models?.[0]?.graphql?.queries?.globalRoles).toEqual([]);
+    expect(result.models?.[0]?.graphql?.queries?.instanceRoles).toEqual([]);
   });
 
   it('handles missing roles fields', () => {
@@ -89,7 +89,7 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries?.globalRoles).toEqual([]);
+    expect(result.models?.[0]?.graphql?.queries?.globalRoles).toEqual([]);
   });
 
   it('preserves count config', () => {
@@ -113,7 +113,7 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries?.list).toEqual({
+    expect(result.models?.[0]?.graphql?.queries?.list).toEqual({
       enabled: true,
       count: { enabled: true },
     });
@@ -180,11 +180,11 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.objectType).toEqual({
+    expect(result.models?.[0]?.graphql?.objectType).toEqual({
       enabled: true,
       fields: [],
     });
-    expect(result.models?.[0].graphql?.mutations).toEqual({
+    expect(result.models?.[0]?.graphql?.mutations).toEqual({
       create: { enabled: true },
     });
   });
@@ -215,10 +215,10 @@ describe('migration026QuerySharedRoles', () => {
 
     const result = migration026QuerySharedRoles.migrate(config);
 
-    expect(result.models?.[0].graphql?.queries?.globalRoles).toEqual([
+    expect(result.models?.[0]?.graphql?.queries?.globalRoles).toEqual([
       'role-admin',
     ]);
-    expect(result.models?.[1].graphql?.queries?.globalRoles).toEqual([
+    expect(result.models?.[1]?.graphql?.queries?.globalRoles).toEqual([
       'role-user',
       'role-admin',
     ]);

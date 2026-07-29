@@ -21,7 +21,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].devPort).toBe(5001); // portOffset + 1
+    expect(result.apps?.[0]?.devPort).toBe(5001); // portOffset + 1
   });
 
   it('assigns port to single web app', () => {
@@ -42,7 +42,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].devPort).toBe(5030); // portOffset + 30
+    expect(result.apps?.[0]?.devPort).toBe(5030); // portOffset + 30
   });
 
   it('assigns ports to multiple web apps alphabetically', () => {
@@ -132,7 +132,7 @@ describe('migration023AssignAppPorts', () => {
 
     const result = migration023AssignAppPorts.migrate(config);
 
-    expect(result.apps?.[0].devPort).toBe(9999); // Unchanged
+    expect(result.apps?.[0]?.devPort).toBe(9999); // Unchanged
   });
 
   it('handles missing apps array', () => {
