@@ -38,8 +38,8 @@ function sortAndValidateMigrations(
       `All migrations for plugin ${pluginKey} must have a positive version`,
     );
   }
-  for (let i = 0; i < sortedMigrations.length - 1; i++) {
-    if (sortedMigrations[i].version === sortedMigrations[i + 1].version) {
+  for (const [i, migration] of sortedMigrations.slice(0, -1).entries()) {
+    if (migration.version === sortedMigrations[i + 1]?.version) {
       throw new Error(
         `All migrations for plugin ${pluginKey} must have a unique version`,
       );

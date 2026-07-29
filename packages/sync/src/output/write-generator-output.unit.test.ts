@@ -74,7 +74,7 @@ describe('writeGeneratorOutput', () => {
     expect(result.fileIdToRelativePathMap.get('test-2')).toBe(
       'nested/file.txt',
     );
-    expect(mockedExecuteCommand.mock.calls[0][0]).toBe('echo "test"');
+    expect(mockedExecuteCommand.mock.calls[0]?.[0]).toBe('echo "test"');
   });
 
   it('should handle merge conflicts and return failed commands', async () => {

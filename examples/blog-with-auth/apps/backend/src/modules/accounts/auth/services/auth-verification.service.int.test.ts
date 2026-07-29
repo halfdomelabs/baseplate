@@ -45,6 +45,7 @@ describe('auth-verification service', () => {
       const [selector, verifier] = token.split('.');
       expect(selector).toBeTruthy();
       expect(verifier).toBeTruthy();
+      if (!selector) throw new Error('Expected a token selector');
 
       // Record should exist in DB with the selector as identifier
       const record = await prisma.authVerification.findUniqueOrThrow({
@@ -112,6 +113,7 @@ describe('auth-verification service', () => {
       });
 
       const selector = token.split('.')[0];
+      if (!selector) throw new Error('Expected a token selector');
       const tamperedToken = `${selector}.wrongverifier`;
 
       const result = await validateAuthVerification({

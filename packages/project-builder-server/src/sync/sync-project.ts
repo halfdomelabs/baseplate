@@ -164,10 +164,7 @@ export async function syncProject({
             order: index,
             // Keep the result from the previous sync if it exists so we can
             // keep any errored commands from the previous sync.
-            result:
-              app.id in metadata.packages
-                ? metadata.packages[app.id].result
-                : undefined,
+            result: metadata.packages[app.id]?.result,
           },
         ]),
       ),
@@ -253,7 +250,7 @@ export async function syncProject({
     const metadata = await syncMetadataController?.getMetadata();
 
     const packageSyncResults = Object.fromEntries(
-      filteredApps.map((app) => [app.id, metadata?.packages[app.id].result]),
+      filteredApps.map((app) => [app.id, metadata?.packages[app.id]?.result]),
     );
 
     if (wasCancelled) {

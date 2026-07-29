@@ -115,8 +115,8 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
       ),
       /**
        * Sorting configuration shared by every surface that exposes an
-       * `orderBy` argument — the list query and `orderable` list relations.
-       * Each surface opts in separately (`queries.list.orderBy.enabled`,
+       * `orderBy` argument — the list and connection queries, and `orderable`
+       * list relations. Each surface opts in separately (`queries.orderBy.enabled`,
        * `objectType.foreignRelations[].orderable`) but they all sort by the
        * same fields.
        */
@@ -154,9 +154,9 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
         {},
       ),
       /**
-       * Filtering configuration for surfaces that expose a `where` argument.
-       * Currently only the list query (`queries.list.where.enabled`), but
-       * shaped like `orderBy` so relation-level filtering can reuse it.
+       * Filtering configuration for surfaces that expose a `where` argument —
+       * the list and connection queries (`queries.where.enabled`). Shaped like
+       * `orderBy` so relation-level filtering can reuse it.
        */
       where: ctx.withDefault(
         z.object({
@@ -171,6 +171,34 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
             )
             .apply(withDefault([])),
         }),
+        {},
+      ),
+      /**
+       * Page-size limits shared by every paginated surface — the list query,
+       * the connection query, and paginated list relations. Both are optional;
+       * leaving them unset keeps the offset surfaces unbounded and lets the
+       * connection fall back to Pothos' own defaults (20 / 100). Setting only a
+       * max also applies it as the default, since the cap on an offset surface
+       * would otherwise be bypassed by omitting the argument.
+       */
+      pagination: ctx.withDefault(
+        z
+          .object({
+            /** Page size applied when the caller requests no explicit size. */
+            defaultPageSize: z.number().int().positive().optional(),
+            /** Largest page a caller may request. */
+            maxPageSize: z.number().int().positive().optional(),
+          })
+          .refine(
+            ({ defaultPageSize, maxPageSize }) =>
+              defaultPageSize === undefined ||
+              maxPageSize === undefined ||
+              defaultPageSize <= maxPageSize,
+            {
+              message: 'Default page size cannot exceed max page size',
+              path: ['defaultPageSize'],
+            },
+          ),
         {},
       ),
       queries: ctx.withDefault(
@@ -192,6 +220,7 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
             }),
             {},
           ),
+          /** Offset pagination (`skip`/`take`). */
           list: ctx.withDefault(
             z.object({
               enabled: ctx.withDefault(z.boolean(), false),
@@ -201,24 +230,33 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                 }),
                 {},
               ),
-              connection: ctx.withDefault(
-                z.object({
-                  enabled: ctx.withDefault(z.boolean(), false),
-                }),
-                {},
-              ),
-              where: ctx.withDefault(
-                z.object({
-                  enabled: ctx.withDefault(z.boolean(), false),
-                }),
-                {},
-              ),
-              orderBy: ctx.withDefault(
-                z.object({
-                  enabled: ctx.withDefault(z.boolean(), false),
-                }),
-                {},
-              ),
+            }),
+            {},
+          ),
+          /**
+           * Cursor pagination (Relay connection). Independent of `list` — a
+           * model may expose either, both, or neither.
+           */
+          connection: ctx.withDefault(
+            z.object({
+              enabled: ctx.withDefault(z.boolean(), false),
+            }),
+            {},
+          ),
+          /**
+           * `where`/`orderBy` arguments, shared by the list and connection
+           * queries. The fields each may operate on live in the model-level
+           * `where.fields` / `orderBy.fields` lists.
+           */
+          where: ctx.withDefault(
+            z.object({
+              enabled: ctx.withDefault(z.boolean(), false),
+            }),
+            {},
+          ),
+          orderBy: ctx.withDefault(
+            z.object({
+              enabled: ctx.withDefault(z.boolean(), false),
             }),
             {},
           ),

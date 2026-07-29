@@ -49,6 +49,9 @@ export function renderTextTemplateGroupAction<
     execute: async (builder) => {
       for (const [key, template] of Object.entries(group)) {
         const destination = paths[key];
+        if (destination === undefined) {
+          throw new Error(`Missing destination path for template "${key}"`);
+        }
         try {
           await builder.apply(
             renderTextTemplateFileAction({

@@ -133,9 +133,10 @@ export function buildPresignedReadFragment(
 
   if (refFragments.length === 0) return undefined;
 
-  if (refFragments.length === 1) {
+  const onlyFragment = refFragments[0];
+  if (refFragments.length === 1 && onlyFragment) {
     return tsTemplate`async (file, context) =>
-              ${refFragments[0]}`;
+              ${onlyFragment}`;
   }
 
   // With several referencing models, a model that grants nothing throws

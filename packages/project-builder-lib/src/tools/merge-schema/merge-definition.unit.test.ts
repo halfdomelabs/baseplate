@@ -160,7 +160,7 @@ describe('mergeDefinitionContainer', () => {
 
     // Features should still be there
     expect(result.definition.features).toHaveLength(1);
-    expect(result.definition.features[0].name).toBe(testFeature.name);
+    expect(result.definition.features[0]?.name).toBe(testFeature.name);
     // Settings should be preserved
     expect(result.definition.settings.general.name).toBe('test-project');
   });

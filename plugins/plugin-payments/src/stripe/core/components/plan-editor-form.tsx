@@ -59,6 +59,7 @@ export function PlanEditorForm({ control }: Props): React.JSX.Element {
 
   function handleDeletePlan(planIdx: number): void {
     const plan = plans[planIdx];
+    if (!plan) return;
     requestConfirm({
       title: 'Delete Plan',
       content: `Are you sure you want to delete the plan "${plan.displayName}"?`,

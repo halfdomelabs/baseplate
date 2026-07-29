@@ -38,7 +38,7 @@ export function getSortedRunSteps(
 
     return [
       [entryInit, entryBuild],
-      ...Object.values(dependencyMap[entry.id])
+      ...Object.values(dependencyMap[entry.id] ?? {})
         .filter(notEmpty)
         .flatMap((dependent): [string, string][] => {
           const dependentInit = `init|${dependent.id}`;

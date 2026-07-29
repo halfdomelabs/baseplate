@@ -65,7 +65,9 @@ export const apolloSentryGenerator = createGenerator({
                 `
                 if (CombinedGraphQLErrors.is(error) && error.errors.length === 1) {
                   const graphqlError = error.errors[0];
-                  configureSentryScopeForGraphqlError(scope, graphqlError);
+                  if (graphqlError) {
+                    configureSentryScopeForGraphqlError(scope, graphqlError);
+                  }
                 }
 
                 if (error instanceof GraphQLError) {

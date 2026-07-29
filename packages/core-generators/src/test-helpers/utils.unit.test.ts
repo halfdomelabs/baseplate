@@ -42,7 +42,7 @@ describe('normalizeImports', () => {
 
     const normalized = normalizeImports(imports);
 
-    expect(normalized[0].namedImports).toEqual([
+    expect(normalized[0]?.namedImports).toEqual([
       { name: 'z' },
       { name: 'ZodError' },
       { name: 'ZodSchema' },
@@ -79,8 +79,8 @@ describe('normalizeImports', () => {
 
     const normalized = normalizeImports(imports);
 
-    expect(normalized[0].isTypeOnly).toBe(true);
-    expect(normalized[1].isTypeOnly).toBe(false);
+    expect(normalized[0]?.isTypeOnly).toBe(true);
+    expect(normalized[1]?.isTypeOnly).toBe(false);
   });
 });
 
@@ -127,8 +127,8 @@ describe('normalizeFragment', () => {
 
     const normalized = normalizeFragment(fragment);
 
-    expect(normalized.imports?.[0].moduleSpecifier).toBe('@prisma/client');
-    expect(normalized.imports?.[1].moduleSpecifier).toBe('zod');
+    expect(normalized.imports?.[0]?.moduleSpecifier).toBe('@prisma/client');
+    expect(normalized.imports?.[1]?.moduleSpecifier).toBe('zod');
   });
 
   it('normalizes hoisted fragments by default', () => {
@@ -141,8 +141,8 @@ describe('normalizeFragment', () => {
 
     const normalized = normalizeFragment(fragment);
 
-    expect(normalized.hoistedFragments?.[0].key).toBe('a');
-    expect(normalized.hoistedFragments?.[1].key).toBe('b');
+    expect(normalized.hoistedFragments?.[0]?.key).toBe('a');
+    expect(normalized.hoistedFragments?.[1]?.key).toBe('b');
   });
 
   it('ignores hoisted fragments when compareHoistedFragments is false', () => {

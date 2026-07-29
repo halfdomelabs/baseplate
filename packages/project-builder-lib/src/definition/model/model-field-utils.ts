@@ -17,7 +17,7 @@ function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
     (primaryKeyFieldRefs.length === 1 &&
       primaryKeyFieldRefs.includes(fieldId)) ||
     uniqueConstraints.some(
-      (c) => c.fields.length === 1 && c.fields[0].fieldRef === fieldId,
+      (c) => c.fields.length === 1 && c.fields[0]?.fieldRef === fieldId,
     )
   );
 }

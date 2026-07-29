@@ -62,7 +62,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
       dataInput,
     );
 
-    expect(parsedData.data.ref).toEqual(parsedData.data.entity[0].id);
+    expect(parsedData.data.ref).toEqual(parsedData.data.entity[0]?.id);
   });
 
   it('should work with optional references', () => {
@@ -167,7 +167,9 @@ describe('deserializeSchemaWithTransformedReferences', () => {
       dataInput,
     );
 
-    expect(parsedData.data.ref).toEqual(parsedData.data.entity[2].id);
-    expect(parsedData.data.nestedRef.ref).toEqual(parsedData.data.entity[1].id);
+    expect(parsedData.data.ref).toEqual(parsedData.data.entity[2]?.id);
+    expect(parsedData.data.nestedRef.ref).toEqual(
+      parsedData.data.entity[1]?.id,
+    );
   });
 });

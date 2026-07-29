@@ -159,8 +159,8 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
         ]),
       });
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('model-scalar-field:author');
-      expect(deps[1].entityId).toBe('model-scalar-field:creator');
+      expect(deps[0]?.entityId).toBe('model-scalar-field:author');
+      expect(deps[1]?.entityId).toBe('model-scalar-field:creator');
     });
 
     it('should skip unknown fields', () => {
@@ -199,10 +199,10 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
         ],
       );
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('model-local-relation:todoList');
-      expect(deps[0].entityType).toBe(modelLocalRelationEntityType);
-      expect(deps[1].entityId).toBe('model-authorizer-role:owner');
-      expect(deps[1].entityType).toBe(modelAuthorizerRoleEntityType);
+      expect(deps[0]?.entityId).toBe('model-local-relation:todoList');
+      expect(deps[0]?.entityType).toBe(modelLocalRelationEntityType);
+      expect(deps[1]?.entityId).toBe('model-authorizer-role:owner');
+      expect(deps[1]?.entityType).toBe(modelAuthorizerRoleEntityType);
     });
 
     it('should resolve relation in exists filter', () => {
@@ -228,8 +228,8 @@ describe('AuthorizerExpressionParser.getReferencedEntities', () => {
         ],
       );
       expect(deps).toHaveLength(2);
-      expect(deps[0].entityId).toBe('model-local-relation:members');
-      expect(deps[1].entityId).toBe('model-scalar-field:memberId');
+      expect(deps[0]?.entityId).toBe('model-local-relation:members');
+      expect(deps[1]?.entityId).toBe('model-scalar-field:memberId');
     });
   });
 

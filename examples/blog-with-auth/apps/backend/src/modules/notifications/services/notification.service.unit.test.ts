@@ -79,7 +79,7 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `${event.params.name} commented` }),
+        render: ([event]) => ({ body: `${event?.params.name} commented` }),
       }),
     ]);
 
@@ -100,14 +100,14 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v1: ${event.params.name}` }),
+        render: ([event]) => ({ body: `v1: ${event?.params.name}` }),
       }),
       defineNotificationType({
         key: 'test.versioned',
         version: 2,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v2: ${event.params.name}` }),
+        render: ([event]) => ({ body: `v2: ${event?.params.name}` }),
       }),
     ]);
 
@@ -127,7 +127,7 @@ describe('renderContent (versioned render-at-read)', () => {
         channels: ['inApp'],
         render: ([event]) => ({
           body: 'commented on your post',
-          actionUrl: `/posts/${event.params.postId}`,
+          actionUrl: `/posts/${event?.params.postId}`,
         }),
       }),
     ]);
@@ -153,7 +153,7 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: event.params.title }),
+        render: ([event]) => ({ body: event?.params.title ?? '' }),
       }),
     ]);
 

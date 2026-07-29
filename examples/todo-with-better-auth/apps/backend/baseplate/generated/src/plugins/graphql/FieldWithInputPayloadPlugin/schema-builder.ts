@@ -48,8 +48,8 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     string,
     PayloadFieldRef<SchemaTypes, unknown>
   > => {
-    for (const key of Object.keys(payload)) {
-      payload[key].onFirstUse((cfg) => {
+    for (const [key, fieldRef] of Object.entries(payload)) {
+      fieldRef.onFirstUse((cfg) => {
         if (cfg.kind === 'Object' && !cfg.resolve) {
           cfg.resolve = (parent) => (parent as Record<string, unknown>)[key];
         }

@@ -3,7 +3,8 @@
   "extends": "@tsconfig/node22/tsconfig.json",
   "display": "Node.JS Base Config",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "noUncheckedIndexedAccess": true
   },
   "watchOptions": {
     "watchFile": "usefseventsonparentdirectory"

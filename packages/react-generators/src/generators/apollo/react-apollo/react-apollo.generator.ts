@@ -373,8 +373,9 @@ const preloadQuery = useMemo(
                 const linkFragments = linksToFormat.map((link) =>
                   tsCodeFragment(link.name, link.nameImport),
                 );
-                if (linkFragments.length === 1) {
-                  return linkFragments[0];
+                const singleLinkFragment = linkFragments[0];
+                if (linkFragments.length === 1 && singleLinkFragment) {
+                  return singleLinkFragment;
                 }
                 return TsCodeUtils.templateWithImports([
                   tsImportBuilder(['ApolloLink']).from('@apollo/client'),
@@ -556,8 +557,9 @@ const preloadQuery = useMemo(
             }
 
             if (CombinedGraphQLErrors.is(error)) {
-              if (error.errors.length > 0) {
-                annotateGraphQLError(error.errors[0], context);
+              const firstError = error.errors[0];
+              if (firstError) {
+                annotateGraphQLError(firstError, context);
               }
               // it's more useful to log the current stack trace than the one from
               // CombinedGraphQLErrors which is always the same

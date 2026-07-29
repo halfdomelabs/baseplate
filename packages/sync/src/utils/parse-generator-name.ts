@@ -27,15 +27,17 @@ interface ParsedGeneratorName {
  */
 export function parseGeneratorName(generatorName: string): ParsedGeneratorName {
   const match = generatorNameRegex.exec(generatorName);
-  if (!match) {
+  const packageName = match?.[1];
+  const generatorBasename = match?.[3];
+  if (packageName === undefined || generatorBasename === undefined) {
     throw new Error(
       `Invalid generator name: ${generatorName}. Should be of form "package#group/name"`,
     );
   }
 
   return {
-    packageName: match[1],
-    generatorPath: `${match.at(2) ?? ''}${match[3]}`,
-    generatorBasename: match[3],
+    packageName,
+    generatorPath: `${match?.at(2) ?? ''}${generatorBasename}`,
+    generatorBasename,
   };
 }

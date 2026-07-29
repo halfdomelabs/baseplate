@@ -467,10 +467,11 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private async getPackageInfo(packageId: string): Promise<PackageSyncInfo> {
     const metadata = await this.syncMetadataController.getMetadata();
-    if (!(packageId in metadata.packages)) {
+    const packageInfo = metadata.packages[packageId];
+    if (!packageInfo) {
       throw new Error(`Package ${packageId} not found`);
     }
-    return metadata.packages[packageId];
+    return packageInfo;
   }
 
   /**
@@ -490,6 +491,9 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     const packageInfo = await this.getPackageInfo(packageId);
     const absolutePath = path.join(packageInfo.path, relativePath);
     const [command, ...args] = parseCommandString(editor);
+    if (!command) {
+      throw new Error(`Invalid editor command: ${editor}`);
+    }
     const result = execa(command, [...args, absolutePath], {
       cwd: this.directory,
       detached: true,

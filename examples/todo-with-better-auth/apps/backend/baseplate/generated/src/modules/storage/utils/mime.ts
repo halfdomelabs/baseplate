@@ -4,7 +4,8 @@ import path from 'node:path';
 export function getMimeTypeFromContentType(contentType: string): string {
   // MIME media types are case-insensitive, so normalize to lowercase to match
   // the `mime-types` lookup table and category allow-lists.
-  return contentType.split(';')[0].trim().toLowerCase();
+  const mimeType = contentType.split(';')[0] ?? contentType;
+  return mimeType.trim().toLowerCase();
 }
 
 /**
@@ -39,9 +40,10 @@ export function getEncodingFromContentType(
 ): string | undefined {
   // Match charset in content type, e.g., text/html; charset=UTF-8
   const match = /charset\s*=\s*["']?([^;"'\s]+)/i.exec(contentType);
-  if (!match) return undefined;
+  const matchedCharset = match?.[1];
+  if (!matchedCharset) return undefined;
 
-  const charset = match[1].trim().toLowerCase();
+  const charset = matchedCharset.trim().toLowerCase();
 
   // Node.js uses Buffer.isEncoding for valid encodings
   return Buffer.isEncoding(charset) ? charset : 'utf-8';
@@ -111,8 +113,8 @@ export function validateFileExtensionWithMimeType(
   if (!extension) return;
 
   // Nothing to conflict with if the database cannot correlate the type.
-  if (!(mimeType in mime.extensions)) return;
   const expectedExtensions = mime.extensions[mimeType];
+  if (!expectedExtensions) return;
 
   // An unrecognized extension is a database gap, not a conflict (e.g. `.jfif`).
   if (!mime.lookup(extension)) return;

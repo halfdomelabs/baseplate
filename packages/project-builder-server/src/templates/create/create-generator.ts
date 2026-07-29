@@ -30,6 +30,11 @@ interface ParsedGeneratorName {
  */
 function parseGeneratorName(name: string): ParsedGeneratorName {
   const [category, kebabName] = name.split('/');
+  if (!category || !kebabName) {
+    throw new Error(
+      `Invalid generator name "${name}", expected "category/kebab-name"`,
+    );
+  }
   return {
     category,
     kebabName,

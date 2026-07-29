@@ -88,13 +88,16 @@ export const migration021MigrateBullmqToPlugin = createSchemaMigration<
           },
         });
       } else {
-        plugins[queuePluginIndex] = {
-          ...plugins[queuePluginIndex],
-          config: {
-            ...(plugins[queuePluginIndex].config as object),
-            implementationPluginKey: 'baseplate-dev_plugin-queue_bullmq',
-          },
-        };
+        const existingQueuePlugin = plugins[queuePluginIndex];
+        if (existingQueuePlugin) {
+          plugins[queuePluginIndex] = {
+            ...existingQueuePlugin,
+            config: {
+              ...(existingQueuePlugin.config as object),
+              implementationPluginKey: 'baseplate-dev_plugin-queue_bullmq',
+            },
+          };
+        }
       }
 
       // Add bullmq child plugin if not exists

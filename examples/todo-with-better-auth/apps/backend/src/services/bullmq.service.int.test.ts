@@ -346,8 +346,8 @@ describe('BullMQ service integration tests', () => {
       expect(attempts).toHaveLength(2);
 
       // Check attempt numbers
-      expect(attempts[0].attemptNumber).toBe(1);
-      expect(attempts[1].attemptNumber).toBe(2);
+      expect(attempts[0]?.attemptNumber).toBe(1);
+      expect(attempts[1]?.attemptNumber).toBe(2);
     });
   });
 

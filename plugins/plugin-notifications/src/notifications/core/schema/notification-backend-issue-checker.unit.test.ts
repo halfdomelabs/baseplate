@@ -61,7 +61,7 @@ describe('createNotificationsBackendSubscriptionsChecker', () => {
       severity: 'error',
       path: ['enableSubscriptions'],
     });
-    expect(issues[0].message).toContain('backend');
+    expect(issues[0]?.message).toContain('backend');
   });
 
   it('offers a fix that enables subscriptions for the offending app', () => {
@@ -69,9 +69,9 @@ describe('createNotificationsBackendSubscriptionsChecker', () => {
       backendApp({ name: 'backend', enableSubscriptions: false }),
     ]);
 
-    const [issue] = check(container);
+    const issue = check(container)[0];
     const draft = structuredClone(container.definition);
-    issue.fix?.applySetter?.(draft);
+    issue?.fix?.applySetter?.(draft);
 
     const app = draft.apps.find((a) => a.id === 'app:backend');
     expect(app).toMatchObject({ type: 'backend', enableSubscriptions: true });

@@ -66,13 +66,14 @@ export async function deleteTemplate(
     extractorConfigSchema,
   );
 
-  if (!(templateName in templateExtractorJson.templates)) {
+  const templateEntry = templateExtractorJson.templates[templateName];
+  if (!templateEntry) {
     throw new Error(
       `Template '${templateName}' not found in generator '${generatorName}'`,
     );
   }
 
-  const templatePath = templateExtractorJson.templates[templateName].sourceFile;
+  const templatePath = templateEntry.sourceFile;
 
   const updatedTemplates = templateExtractorJson.templates;
   // oxlint-disable-next-line typescript/no-dynamic-delete -- easiest way of deleting without reordering the keys

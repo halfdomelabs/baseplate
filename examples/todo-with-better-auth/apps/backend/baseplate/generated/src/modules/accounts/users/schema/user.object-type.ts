@@ -20,12 +20,12 @@ export const userObjectType = builder.prismaObject('User', {
     todoLists: t.relation('todoLists', {
       args: {
         skip: t.arg.int({ validate: z.int().min(0) }),
-        take: t.arg.int({ validate: z.int().min(0) }),
+        take: t.arg.int({ validate: z.int().min(0).max(100) }),
         orderBy: t.arg({ type: [todoListOrderByInputType] }),
       },
       query: (args) => ({
         skip: args.skip ?? undefined,
-        take: args.take ?? undefined,
+        take: args.take ?? 25,
         orderBy:
           applyStableOrderBy(args.orderBy, ['id'], [{ position: 'asc' }]) ??
           undefined,

@@ -57,13 +57,13 @@ export async function deleteTemplate(
 
   // Verify template exists in extractor.json
   const config = await readExtractorConfig(generatorDirectory);
-  if (!config || !(templateName in config.templates)) {
+  const templateConfig = config?.templates[templateName];
+  if (!templateConfig) {
     throw new Error(
       `Template '${templateName}' not found in generator at ${generatorDirectory}`,
     );
   }
 
-  const templateConfig = config.templates[templateName];
   const templatePath = templateConfig.sourceFile;
 
   // Remove from extractor.json

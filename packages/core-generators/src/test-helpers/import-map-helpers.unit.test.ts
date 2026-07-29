@@ -54,10 +54,10 @@ describe('createTestTsImportMap', () => {
 
     expect(fragment.contents).toBe('scalarField');
     expect(fragment.imports).toHaveLength(1);
-    expect(fragment.imports?.[0].moduleSpecifier).toBe(
+    expect(fragment.imports?.[0]?.moduleSpecifier).toBe(
       'data-utils/scalarField',
     );
-    expect(fragment.imports?.[0].namedImports).toEqual([
+    expect(fragment.imports?.[0]?.namedImports).toEqual([
       { name: 'scalarField' },
     ]);
   });
@@ -72,8 +72,8 @@ describe('createTestTsImportMap', () => {
     const fragment = importMap.MyType.typeFragment();
 
     expect(fragment.imports).toHaveLength(1);
-    expect(fragment.imports?.[0].isTypeOnly).toBe(true);
-    expect(fragment.imports?.[0].moduleSpecifier).toBe('types/MyType');
+    expect(fragment.imports?.[0]?.isTypeOnly).toBe(true);
+    expect(fragment.imports?.[0]?.moduleSpecifier).toBe('types/MyType');
   });
 
   it('handles wildcard exports', () => {

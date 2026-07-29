@@ -64,6 +64,11 @@ export async function tryCreateExtractorJson(
   }
 
   const generatorFile = matchingFiles[0];
+  if (generatorFile === undefined) {
+    throw new Error(
+      `No generator file found matching pattern: ${generatorPath}/${generatorBasename}.generator.ts`,
+    );
+  }
   const generatorDirectory = path.dirname(generatorFile);
   const extractorJsonPath = path.join(
     generatorDirectory,

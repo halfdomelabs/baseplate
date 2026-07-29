@@ -26,9 +26,7 @@ export function addSyncCommand(program: Command): void {
         },
       ) => {
         const context = await createServiceActionContext();
-        const projectWithDefault =
-          project ??
-          (context.projects.length > 0 ? context.projects[0].name : undefined);
+        const projectWithDefault = project ?? context.projects[0]?.name;
 
         if (!projectWithDefault) {
           throw new Error('No project specified');

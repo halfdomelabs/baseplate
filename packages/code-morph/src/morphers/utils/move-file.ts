@@ -32,12 +32,9 @@ export function moveFile(
       ModuleResolutionKind.NodeNext;
   const resolveModuleOptions: ResolveModuleOptions = {
     moduleResolution: isNode16 ? 'node16' : 'node',
-    pathMapEntries: Object.entries(
-      project.getCompilerOptions().paths ?? {},
-    ).map(([from, to]) => ({
-      from,
-      to: to[0],
-    })),
+    pathMapEntries: Object.entries(project.getCompilerOptions().paths ?? {})
+      .map(([from, to]) => ({ from, to: to[0] }))
+      .filter((entry): entry is { from: string; to: string } => !!entry.to),
   };
 
   const referencingFiles = sourceFile.getReferencingSourceFiles();

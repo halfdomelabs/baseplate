@@ -44,8 +44,8 @@ describe('migration022RenamePackagesToLibraries', () => {
 
     const result = migration022RenamePackagesToLibraries.migrate(oldConfig);
 
-    expect(result.libraries?.[0].id).toBe('library:my-lib');
-    expect(result.libraries?.[1].id).toBe('library:another-lib');
+    expect(result.libraries?.[0]?.id).toBe('library:my-lib');
+    expect(result.libraries?.[1]?.id).toBe('library:another-lib');
   });
 
   it('renames packagesFolder to librariesFolder with default libs', () => {
@@ -260,8 +260,8 @@ describe('migration022RenamePackagesToLibraries', () => {
     expect(result.libraries).toHaveLength(2);
 
     // IDs updated
-    expect(result.libraries?.[0].id).toBe('library:shared-utils');
-    expect(result.libraries?.[1].id).toBe('library:common-types');
+    expect(result.libraries?.[0]?.id).toBe('library:shared-utils');
+    expect(result.libraries?.[1]?.id).toBe('library:common-types');
 
     // packagesFolder renamed to librariesFolder with new default
     expect(result.settings?.monorepo).not.toHaveProperty('packagesFolder');

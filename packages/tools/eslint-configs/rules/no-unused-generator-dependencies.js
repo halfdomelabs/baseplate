@@ -46,12 +46,12 @@ export default {
           isCreateGeneratorTaskCall = true;
         }
 
+        const firstArgument = node.arguments[0];
         if (
           isCreateGeneratorTaskCall &&
-          node.arguments.length > 0 &&
-          node.arguments[0].type === 'ObjectExpression'
+          firstArgument?.type === 'ObjectExpression'
         ) {
-          const taskConfig = node.arguments[0];
+          const taskConfig = firstArgument;
           let dependenciesNode = null;
           let runFunctionNode = null;
 
@@ -76,11 +76,9 @@ export default {
           if (dependenciesNode && runFunctionNode) {
             const destructuredRunParams = new Set();
             // Check if the run function has parameters and if the first one is an ObjectPattern (destructuring)
-            if (
-              runFunctionNode.params.length > 0 &&
-              runFunctionNode.params[0].type === 'ObjectPattern'
-            ) {
-              for (const paramProp of runFunctionNode.params[0].properties) {
+            const firstParam = runFunctionNode.params[0];
+            if (firstParam?.type === 'ObjectPattern') {
+              for (const paramProp of firstParam.properties) {
                 // Ensure it's a simple property (e.g., { foo }) not a rest element or nested destructuring
                 if (
                   paramProp.type === 'Property' &&

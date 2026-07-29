@@ -6,15 +6,6 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   Label,
   SectionListSection,
   SectionListSectionContent,
@@ -24,7 +15,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
-import { MdInfo, MdSettings, MdWarning } from 'react-icons/md';
+import { MdInfo } from 'react-icons/md';
 
 interface GraphQLRootFieldsSectionProps {
   control: Control<ModelConfigInput>;
@@ -36,6 +27,10 @@ export function GraphQLRootFieldsSection({
   const isObjectTypeEnabled = useWatch({
     control,
     name: 'graphql.objectType.enabled',
+  });
+  const isListEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.enabled',
   });
 
   const controllerConfig = useWatch({ control, name: 'service' }) ?? {};
@@ -79,19 +74,31 @@ export function GraphQLRootFieldsSection({
               label="Get By ID"
               description="Fetch a single record, e.g. post(id: ID!)"
             />
-            <div className="flex items-start gap-1">
+            <ToggleItem
+              control={control}
+              name="graphql.queries.list.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="List"
+              description="Offset pagination, e.g. posts(skip: 10, take: 5)"
+            />
+            {/* Counts the list query's rows; a connection reports its own
+                totalCount, so this follows List rather than standing alone. */}
+            <div className="ml-6 border-l pl-4">
               <ToggleItem
                 control={control}
-                name="graphql.queries.list.enabled"
-                disabled={!isObjectTypeEnabled}
-                label="List"
-                description="Query multiple records, e.g. posts(where: ...)"
-              />
-              <ListQuerySettingsDialog
-                control={control}
-                disabled={!isObjectTypeEnabled}
+                name="graphql.queries.list.count.enabled"
+                disabled={!isObjectTypeEnabled || !isListEnabled}
+                label="Count"
+                description="Count matching records, e.g. postsCount(...)"
               />
             </div>
+            <ToggleItem
+              control={control}
+              name="graphql.queries.connection.enabled"
+              disabled={!isObjectTypeEnabled}
+              label="Connection"
+              description="Cursor pagination, e.g. postsConnection(first, after)"
+            />
           </div>
           {hasAnyMutation && (
             <div className="space-y-4">
@@ -131,113 +138,6 @@ export function GraphQLRootFieldsSection({
   );
 }
 
-function ListQuerySettingsDialog({
-  control,
-  disabled,
-}: {
-  control: Control<ModelConfigInput>;
-  disabled: boolean;
-}): React.JSX.Element {
-  const isListEnabled = useWatch({
-    control,
-    name: 'graphql.queries.list.enabled',
-  });
-  const isWhereFilteringEnabled = useWatch({
-    control,
-    name: 'graphql.queries.list.where.enabled',
-  });
-  const isOrderByEnabled = useWatch({
-    control,
-    name: 'graphql.queries.list.orderBy.enabled',
-  });
-  // The field lists themselves live in the Sorting & Filtering section since
-  // relations share them; the dialog only needs to know whether they are empty
-  // so it can warn next to the switch that requires them.
-  const hasSortableFields =
-    (useWatch({ control, name: 'graphql.orderBy.fields' }) ?? []).length > 0;
-  const hasFilterableFields =
-    (useWatch({ control, name: 'graphql.where.fields' }) ?? []).length > 0;
-
-  return (
-    <Dialog>
-      <DialogTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            disabled={disabled}
-            title="Configure list query"
-          />
-        }
-      >
-        <MdSettings />
-      </DialogTrigger>
-      <DialogContent width="lg">
-        <DialogHeader>
-          <DialogTitle>Configure List Query</DialogTitle>
-          <DialogDescription>
-            Enable additional list query capabilities and choose which fields
-            each one may operate on.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          <ToggleItem
-            control={control}
-            name="graphql.queries.list.count.enabled"
-            disabled={!isListEnabled}
-            label="Count"
-            description="Count matching records, e.g. postsCount(...)"
-          />
-          <ToggleItem
-            control={control}
-            name="graphql.queries.list.connection.enabled"
-            disabled={!isListEnabled}
-            label="Connection"
-            description="Cursor-based pagination, e.g. postsConnection(first, after)"
-          />
-          <ToggleItem
-            control={control}
-            name="graphql.queries.list.where.enabled"
-            disabled={!isListEnabled}
-            label="Where Filtering"
-            description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
-          />
-          {isWhereFilteringEnabled && !hasFilterableFields && (
-            <Alert variant="warning">
-              <MdWarning />
-              <AlertTitle>No filterable fields selected</AlertTitle>
-              <AlertDescription>
-                Choose filterable fields in the Sorting &amp; Filtering section
-                — sync will otherwise fail.
-              </AlertDescription>
-            </Alert>
-          )}
-          <ToggleItem
-            control={control}
-            name="graphql.queries.list.orderBy.enabled"
-            disabled={!isListEnabled}
-            label="Order By"
-            description="Sort records by field values, e.g. posts(orderBy: [{ createdAt: DESC }])"
-          />
-          {isOrderByEnabled && !hasSortableFields && (
-            <Alert variant="warning">
-              <MdWarning />
-              <AlertTitle>No sortable fields selected</AlertTitle>
-              <AlertDescription>
-                Choose sortable fields in the Sorting &amp; Filtering section —
-                sync will otherwise fail.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-        <DialogFooter>
-          <DialogClose render={<Button />}>Done</DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function ToggleItem({
   control,
   name,
@@ -250,9 +150,7 @@ function ToggleItem({
     | 'graphql.queries.get.enabled'
     | 'graphql.queries.list.enabled'
     | 'graphql.queries.list.count.enabled'
-    | 'graphql.queries.list.connection.enabled'
-    | 'graphql.queries.list.where.enabled'
-    | 'graphql.queries.list.orderBy.enabled'
+    | 'graphql.queries.connection.enabled'
     | 'graphql.mutations.create.enabled'
     | 'graphql.mutations.update.enabled'
     | 'graphql.mutations.delete.enabled';

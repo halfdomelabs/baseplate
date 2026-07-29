@@ -153,7 +153,7 @@ describe('plugin-loader', () => {
 
       // Assert
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('override-plugin');
+      expect(result[0]?.name).toBe('override-plugin');
     });
 
     it('should throw PluginLoaderError when no plugins found', async () => {
@@ -203,9 +203,9 @@ describe('plugin-loader', () => {
 
       // Assert
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('no-package-plugin');
+      expect(result[0]?.name).toBe('no-package-plugin');
       // Should use default web build directory
-      expect(result[0].webBuildDirectory).toBe(
+      expect(result[0]?.webBuildDirectory).toBe(
         path.join(mockPackageDirectory, 'dist/web'),
       );
     });

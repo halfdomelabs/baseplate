@@ -106,6 +106,7 @@ export class ConflictFileMonitor {
             // strip the file from the list of conflicts
             for (let i = filesWithConflicts.length - 1; i >= 0; i--) {
               const conflictFile = filesWithConflicts[i];
+              if (!conflictFile) continue;
               // if the file is a generated-deleted or working-deleted conflict and it exists, consider it still unresolved
               if (
                 (conflictFile.conflictType === 'generated-deleted' ||

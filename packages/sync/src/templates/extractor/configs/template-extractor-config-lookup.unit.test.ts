@@ -136,10 +136,10 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       const results = lookup.getProviderConfigsByType('ts-imports', schema);
 
       expect(results).toHaveLength(2);
-      expect(results[0].config.type).toBe('ts-imports');
-      expect(results[0].config.includeTypes).toBe(true);
-      expect(results[1].config.type).toBe('ts-imports');
-      expect(results[1].config.includeTypes).toBe(false);
+      expect(results[0]?.config.type).toBe('ts-imports');
+      expect(results[0]?.config.includeTypes).toBe(true);
+      expect(results[1]?.config.type).toBe('ts-imports');
+      expect(results[1]?.config.includeTypes).toBe(false);
     });
 
     it('should return empty array for non-existent type', () => {
@@ -163,10 +163,10 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       );
 
       expect(results).toHaveLength(2);
-      expect(results[0].name).toBe('template1');
-      expect(results[0].config.sourceFile).toBe('template1.ts');
-      expect(results[1].name).toBe('template2');
-      expect(results[1].config.sourceFile).toBe('template2.ts');
+      expect(results[0]?.name).toBe('template1');
+      expect(results[0]?.config.sourceFile).toBe('template1.ts');
+      expect(results[1]?.name).toBe('template2');
+      expect(results[1]?.config.sourceFile).toBe('template2.ts');
     });
   });
 

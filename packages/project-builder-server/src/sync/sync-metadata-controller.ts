@@ -109,7 +109,8 @@ export class SyncMetadataController extends TypedEventEmitter<{
     update: (metadata: PackageSyncInfo) => PackageSyncInfo,
   ): Promise<void> {
     const metadata = await this.getMetadata();
-    if (!(packageId in metadata.packages)) {
+    const packageMetadata = metadata.packages[packageId];
+    if (!packageMetadata) {
       throw new Error(`No package metadata found for ${packageId}`);
     }
 
@@ -117,7 +118,7 @@ export class SyncMetadataController extends TypedEventEmitter<{
       ...metadata,
       packages: {
         ...metadata.packages,
-        [packageId]: update(metadata.packages[packageId]),
+        [packageId]: update(packageMetadata),
       },
     };
 

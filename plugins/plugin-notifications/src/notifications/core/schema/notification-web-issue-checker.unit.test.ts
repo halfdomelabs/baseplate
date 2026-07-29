@@ -54,7 +54,7 @@ function containerWith(
     if (app.type !== 'web') continue;
     (app as { pluginData?: Record<string, unknown> }).pluginData = {
       [PLUGIN_KEY]: {
-        includeNotifications: overrides[index].includeNotifications ?? false,
+        includeNotifications: overrides[index]?.includeNotifications ?? false,
       },
     };
   }
@@ -76,7 +76,7 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
       severity: 'warning',
       path: ['enableSubscriptions'],
     });
-    expect(issues[0].message).toContain('admin');
+    expect(issues[0]?.message).toContain('admin');
   });
 
   it('offers a fix that enables subscriptions for the offending app', () => {
@@ -84,9 +84,9 @@ describe('createNotificationsWebSubscriptionsChecker', () => {
       { name: 'admin', includeNotifications: true, enableSubscriptions: false },
     ]);
 
-    const [issue] = check(container);
+    const issue = check(container)[0];
     const draft = structuredClone(container.definition);
-    issue.fix?.applySetter?.(draft);
+    issue?.fix?.applySetter?.(draft);
 
     const app = draft.apps.find((a) => a.id === 'app:admin');
     expect(app).toMatchObject({ type: 'web', enableSubscriptions: true });

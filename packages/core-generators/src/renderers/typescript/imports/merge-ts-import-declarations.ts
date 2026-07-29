@@ -61,8 +61,14 @@ function assertNoConflictingImportEntries(entries: NamedImportEntry[]): void {
     const nameSet = new Set(entries.map((e) => e.alias));
 
     if (nameSet.size !== 1) {
+      const firstEntry = entries[0];
+      if (!firstEntry) {
+        throw new Error(
+          `No entries found for named import "${name.toString()}"`,
+        );
+      }
       throw new ImportConflictError(
-        `Conflicting aliases for named import "${name.toString()}" from "${entries[0].moduleSpecifier}" (${entries.map((e) => e.alias).join(', ')})`,
+        `Conflicting aliases for named import "${name.toString()}" from "${firstEntry.moduleSpecifier}" (${entries.map((e) => e.alias).join(', ')})`,
       );
     }
   }

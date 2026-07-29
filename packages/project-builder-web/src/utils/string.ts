@@ -47,7 +47,7 @@ export function ellipsisStringFromMiddle(str: string, maxLength = 20): string {
   }
 
   // Check if first and last tokens exceed maxLength
-  const firstToken = tokens[0];
+  const firstToken = tokens[0] ?? '';
   const lastToken = (tokens.at(-1) ?? '').replace(/^[_\s-]+/, '');
   const lastTokenLength = lastToken.length;
   if (firstToken.length + lastTokenLength + 3 > maxLength) {
@@ -57,15 +57,14 @@ export function ellipsisStringFromMiddle(str: string, maxLength = 20): string {
   let reconstructed = firstToken;
 
   // Keep adding tokens until the length exceeds maxLength
-  for (let i = 1; i < tokens.length - 1; i++) {
-    const nextTokenLength = tokens[i].length;
+  for (const nextToken of tokens.slice(1, -1)) {
     if (
-      reconstructed.length + nextTokenLength + lastTokenLength + 3 >
+      reconstructed.length + nextToken.length + lastTokenLength + 3 >
       maxLength
     ) {
       break;
     }
-    reconstructed += tokens[i];
+    reconstructed += nextToken;
   }
 
   // trim any separators from the end of the last token

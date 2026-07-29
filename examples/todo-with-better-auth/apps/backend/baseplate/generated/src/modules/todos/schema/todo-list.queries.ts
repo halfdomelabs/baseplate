@@ -32,7 +32,7 @@ builder.queryField('todoLists', (t) =>
     type: ['TodoList'],
     args: {
       skip: t.arg.int({ validate: z.int().min(0) }),
-      take: t.arg.int({ validate: z.int().min(0) }),
+      take: t.arg.int({ validate: z.int().min(0).max(100) }),
       where: t.arg({
         type: todoListWhereInputType,
         validate: z.custom((where) => validateWhereComplexity(where, 4, 25), {
@@ -50,7 +50,7 @@ builder.queryField('todoLists', (t) =>
           applyStableOrderBy(orderBy, ['id'], [{ position: 'asc' }]) ??
           undefined,
         skip: skip ?? undefined,
-        take: take ?? undefined,
+        take: take ?? 25,
       }),
   }),
 );
@@ -60,6 +60,8 @@ builder.queryField('todoListsConnection', (t) =>
     {
       type: 'TodoList',
       cursor: 'id',
+      defaultSize: 25,
+      maxSize: 100,
       args: {
         where: t.arg({
           type: todoListWhereInputType,

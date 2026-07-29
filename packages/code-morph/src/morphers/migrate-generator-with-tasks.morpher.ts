@@ -49,6 +49,7 @@ export default createTypescriptMorpher({
     }
 
     const callExpression = callExpressions[0];
+    if (!callExpression) return;
     const [firstArg] = callExpression.getArguments();
 
     if (!Node.isObjectLiteralExpression(firstArg)) {

@@ -114,7 +114,7 @@ function detectRoleStringContext(
 function extractNestedRelationName(textBetween: string): string | null {
   // Match pattern: (model.relationName, followed by quote
   const match = /^\(\s*model\.(\w+)\s*,\s*['"]?$/.exec(textBetween);
-  if (match) return match[1];
+  if (match?.[1]) return match[1];
 
   // Also match inside array: (model.relationName, ['
   const arrayMatch = /^\(\s*model\.(\w+)\s*,\s*\[?\s*['"]?$/.exec(textBetween);
@@ -131,9 +131,8 @@ function detectConditionContext(
   const conditionMatch = /(?:exists|all)\(\s*model\.(\w+)\s*,\s*\{[^}]*$/.exec(
     textBeforeCursor,
   );
-  if (!conditionMatch) return null;
-
-  const relationName = conditionMatch[1];
+  const relationName = conditionMatch?.[1];
+  if (relationName === undefined) return null;
 
   // Check if we're typing a value (after ':') or a key
   const afterLastSeparator = textBeforeCursor.slice(
@@ -144,7 +143,7 @@ function detectConditionContext(
   );
   const valueMatch = /(\w+)\s*:\s*\w*$/.exec(afterLastSeparator);
 
-  if (valueMatch) {
+  if (valueMatch?.[1]) {
     return { type: 'conditionValue', relationName, fieldName: valueMatch[1] };
   }
   return { type: 'conditionKey', relationName };

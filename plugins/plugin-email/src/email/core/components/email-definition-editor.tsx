@@ -85,9 +85,7 @@ export function EmailDefinitionEditor({
     }
 
     const implementationKey =
-      availableImplementations.length > 0
-        ? (postmarkImplementation ?? availableImplementations[0]).key
-        : '';
+      (postmarkImplementation ?? availableImplementations[0])?.key ?? '';
 
     return {
       emailFeatureRef: FeatureUtils.getFeatureIdByNameOrDefault(

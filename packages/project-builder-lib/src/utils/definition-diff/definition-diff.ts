@@ -126,13 +126,14 @@ export class DefinitionDiffKeyedArrayField<
           break;
         }
         case 'update': {
-          if (index === -1) {
+          const existingItem = items[index];
+          if (index === -1 || !existingItem) {
             throw new Error(
               `Cannot apply patch. Item with key "${key}" not found.`,
             );
           }
           // Preserve existing id if present.
-          items[index] = toMerged(items[index], item);
+          items[index] = toMerged(existingItem, item);
           break;
         }
         case 'remove': {
@@ -168,8 +169,9 @@ export class DefinitionDiffReplacementField<
   }
 
   apply(current: T, diff: DefinitionDiffOperation[]): T {
-    if (diff.length === 0) return current;
-    return diff[0].item as T;
+    const firstOperation = diff[0];
+    if (!firstOperation) return current;
+    return firstOperation.item as T;
   }
 
   getActionVerb(isNew: boolean): string {

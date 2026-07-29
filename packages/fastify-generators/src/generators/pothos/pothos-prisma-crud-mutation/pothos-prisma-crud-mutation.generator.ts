@@ -94,11 +94,12 @@ function handleInjectedArg(
         typeof prismaWhereUniqueInputKind
       >;
       const { idFields } = typedArg.metadata;
+      const firstIdField = idFields[0];
       return {
         fragment:
-          idFields.length === 1
+          idFields.length === 1 && firstIdField !== undefined
             ? TsCodeUtils.mergeFragmentsAsObject({
-                [idFields[0]]: 'id',
+                [firstIdField]: 'id',
               })
             : TsCodeUtils.mergeFragmentsAsObject({
                 [idFields.join('_')]: 'id',

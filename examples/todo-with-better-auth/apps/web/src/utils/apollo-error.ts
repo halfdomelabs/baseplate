@@ -39,6 +39,13 @@ export function getApolloErrorCode<T extends readonly string[]>(
 }
 
 /**
+ * A matched error code paired with its data, parsed by that code's schema.
+ */
+export type ApolloErrorData<T extends Record<string, z.ZodType>> = {
+  [K in keyof T]: { code: K; data: z.output<T[K]> | undefined };
+}[keyof T];
+
+/**
  * Matches an Apollo error against a `{ code: schema }` map and returns the
  * matched code with its data parsed by that code's schema.
  *
@@ -48,9 +55,7 @@ export function getApolloErrorCode<T extends readonly string[]>(
 export function getApolloErrorData<T extends Record<string, z.ZodType>>(
   error: unknown,
   schemas: T,
-):
-  | { [K in keyof T]: { code: K; data: z.output<T[K]> | undefined } }[keyof T]
-  | null {
+): ApolloErrorData<T> | null {
   const details = getApolloErrorDetails(
     error,
     Object.keys(schemas) as (keyof T & string)[],
@@ -58,9 +63,15 @@ export function getApolloErrorData<T extends Record<string, z.ZodType>>(
   if (!details) {
     return null;
   }
-  const parsed = schemas[details.code].safeParse(details.data ?? {});
+  const schema = schemas[details.code];
+  if (!schema) {
+    return null;
+  }
+  const parsed = schema.safeParse(details.data ?? {});
+  // The code and its schema are looked up from the same key, but TypeScript
+  // cannot correlate them across the mapped type.
   return {
     code: details.code,
     data: parsed.success ? parsed.data : undefined,
-  };
+  } as ApolloErrorData<T>;
 }

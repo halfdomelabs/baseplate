@@ -134,8 +134,8 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was not updated
     const noUpdateMetadata = await syncMetadataController.getMetadata();
     const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
-    expect(noUpdatePackageInfo.status).toBe('conflicts');
-    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
+    expect(noUpdatePackageInfo?.status).toBe('conflicts');
+    expect(noUpdatePackageInfo?.result?.filesWithConflicts).toHaveLength(1);
 
     // Simulate resolving the conflict
     await vol.promises.writeFile(
@@ -156,8 +156,8 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was updated
     const updatedMetadata = await syncMetadataController.getMetadata();
     const updatedPackageInfo = updatedMetadata.packages['test-package'];
-    expect(updatedPackageInfo.status).toBe('success');
-    expect(updatedPackageInfo.result?.filesWithConflicts).toHaveLength(0);
+    expect(updatedPackageInfo?.status).toBe('success');
+    expect(updatedPackageInfo?.result?.filesWithConflicts).toHaveLength(0);
 
     // Verify watchers were removed
     const watchedPaths = getMockFsWatchedFiles();
@@ -210,8 +210,8 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was not updated
     const noUpdateMetadata = await syncMetadataController.getMetadata();
     const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
-    expect(noUpdatePackageInfo.status).toBe('conflicts');
-    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
+    expect(noUpdatePackageInfo?.status).toBe('conflicts');
+    expect(noUpdatePackageInfo?.result?.filesWithConflicts).toHaveLength(1);
 
     // Simulate file deletion
     await vol.promises.unlink(path.join(testPackagePath, 'delete.txt'));
@@ -227,9 +227,9 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was updated
     const updatedMetadata = await syncMetadataController.getMetadata();
     expect(
-      updatedMetadata.packages['test-package'].result?.filesWithConflicts,
+      updatedMetadata.packages['test-package']?.result?.filesWithConflicts,
     ).toHaveLength(0);
-    expect(updatedMetadata.packages['test-package'].status).toBe('success');
+    expect(updatedMetadata.packages['test-package']?.status).toBe('success');
   });
 
   it('should handle file changes for working-deleted conflicts and update metadata when conflicts are resolved', async () => {
@@ -278,8 +278,8 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was not updated
     const noUpdateMetadata = await syncMetadataController.getMetadata();
     const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
-    expect(noUpdatePackageInfo.status).toBe('conflicts');
-    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
+    expect(noUpdatePackageInfo?.status).toBe('conflicts');
+    expect(noUpdatePackageInfo?.result?.filesWithConflicts).toHaveLength(1);
 
     // Simulate file deletion
     await vol.promises.unlink(path.join(testPackagePath, 'delete.txt'));
@@ -295,9 +295,9 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was updated
     const updatedMetadata = await syncMetadataController.getMetadata();
     expect(
-      updatedMetadata.packages['test-package'].result?.filesWithConflicts,
+      updatedMetadata.packages['test-package']?.result?.filesWithConflicts,
     ).toHaveLength(0);
-    expect(updatedMetadata.packages['test-package'].status).toBe('success');
+    expect(updatedMetadata.packages['test-package']?.status).toBe('success');
   });
 
   it('should stop monitoring when stop is called', async () => {

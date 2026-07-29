@@ -21,8 +21,11 @@ import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   buildOrderByValueFragment,
+  buildTakeArgFragment,
+  buildTakeValue,
   createPothosTypeReference,
   defaultSortSchema,
+  pageSizeSchema,
   writePothosExposeFieldFromDtoScalarField,
 } from '#src/writers/pothos/index.js';
 
@@ -48,6 +51,11 @@ const exposedFieldSchema = z.object({
    * whether or not the relation exposes an `orderBy` arg.
    */
   defaultSort: defaultSortSchema,
+  /**
+   * Page-size limits for a paginated list relation, taken from the *target*
+   * model since they bound the rows the relation returns.
+   */
+  ...pageSizeSchema,
 });
 
 const descriptorSchema = z.object({
@@ -156,6 +164,17 @@ export const pothosPrismaObjectGenerator = createGenerator({
               .map((f) => [f.name, f.paginated]),
           );
 
+          // Build lookup: fieldName → page-size limits
+          const fieldPageSizeMap = new Map(
+            exposedFields.map((f) => [
+              f.name,
+              {
+                defaultPageSize: f.defaultPageSize,
+                maxPageSize: f.maxPageSize,
+              },
+            ]),
+          );
+
           const fieldOrderByInputMap = new Map(
             exposedFields.flatMap((field) => {
               if (!field.orderByInputRef) {
@@ -257,6 +276,8 @@ export const pothosPrismaObjectGenerator = createGenerator({
                   const authorize = buildAuthorizeFragment(field.name);
                   const paginated = fieldPaginatedMap.get(field.name) ?? false;
                   const orderByInput = fieldOrderByInputMap.get(field.name);
+                  const { defaultPageSize, maxPageSize } =
+                    fieldPageSizeMap.get(field.name) ?? {};
                   // Only a list relation returns rows to sort; a to-one
                   // relation inherits its target's default sort meaninglessly.
                   const defaultSort = field.isList
@@ -339,14 +360,14 @@ export const pothosPrismaObjectGenerator = createGenerator({
                         options.args = paginated
                           ? tsTemplate`{
                       skip: t.arg.int({ validate: ${zFragment}.int().min(0) }),
-                      take: t.arg.int({ validate: ${zFragment}.int().min(0) }),
+                      take: ${buildTakeArgFragment(maxPageSize)},
                       ${orderByArg}
                     }`
                           : tsTemplate`{
                       ${orderByArg}
                     }`;
                         options.query = paginated
-                          ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: args.take ?? undefined, orderBy: ${orderByFragment} })`
+                          ? tsTemplate`(args) => ({ skip: args.skip ?? undefined, take: ${buildTakeValue('args.take', { defaultPageSize, maxPageSize })}, orderBy: ${orderByFragment} })`
                           : tsTemplate`(args) => ({ orderBy: ${orderByFragment} })`;
                       } else {
                         // No caller args, so the sort is fully known here — emit

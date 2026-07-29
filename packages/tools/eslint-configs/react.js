@@ -36,8 +36,10 @@ export function generateReactEslintConfig(options) {
         globals: { ...globals.browser },
       },
       extends: [
-        reactPlugin.configs.flat.recommended,
-        reactPlugin.configs.flat['jsx-runtime'],
+        ...[
+          reactPlugin.configs.flat.recommended,
+          reactPlugin.configs.flat['jsx-runtime'],
+        ].filter((config) => config !== undefined),
         reactJsxA11yPlugin.flatConfigs.recommended,
       ],
       settings: {

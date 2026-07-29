@@ -45,7 +45,9 @@ export function createApolloClient(/* TPL_CREATE_ARGS:INLINE */): ApolloClient {
       // we just record the first error (usually only one) in order to avoid over-reporting
       // e.g. if a sub-resolver fails for each item in a large array
       const graphQLError = error.errors[0];
-      logError(new GraphQLError(graphQLError.message, graphQLError));
+      if (graphQLError) {
+        logError(new GraphQLError(graphQLError.message, graphQLError));
+      }
     } else if (ServerError.is(error)) {
       // report and log network errors with a status code
       // we don't care about connection errors, e.g. client doesn't have internet

@@ -56,7 +56,11 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
   }
 
   keyFromId(id: string): string {
-    return id.split(':')[1];
+    const key = id.split(':')[1];
+    if (key === undefined) {
+      throw new Error(`Invalid ${this.prefix} id: ${id}`);
+    }
+    return key;
   }
 
   isId(id: string): boolean {

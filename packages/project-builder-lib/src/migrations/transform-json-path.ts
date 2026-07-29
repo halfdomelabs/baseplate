@@ -25,6 +25,9 @@ export function transformJsonPath(
     }
 
     const [currentPart, ...remainingParts] = parts;
+    if (currentPart === undefined) {
+      return transformFn(structuredClone(current));
+    }
 
     if (currentPart === '*') {
       // If the current path part is a wildcard
@@ -80,7 +83,7 @@ export function renameObjectKeysTransform(
       throw new TypeError(`Expected an object, got ${typeof data}`);
     }
     return Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [renames[key] || key, value]),
+      Object.entries(data).map(([key, value]) => [renames[key] ?? key, value]),
     );
   };
 }

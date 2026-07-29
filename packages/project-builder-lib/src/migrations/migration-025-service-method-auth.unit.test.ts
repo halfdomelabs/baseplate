@@ -26,14 +26,14 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toEqual([
+    expect(result.models?.[0]?.service?.create?.globalRoles).toEqual([
       'role-admin',
     ]);
-    expect(result.models?.[0].service?.update?.globalRoles).toEqual([
+    expect(result.models?.[0]?.service?.update?.globalRoles).toEqual([
       'role-admin',
       'role-user',
     ]);
-    expect(result.models?.[0].service?.delete?.globalRoles).toEqual([
+    expect(result.models?.[0]?.service?.delete?.globalRoles).toEqual([
       'role-admin',
     ]);
   });
@@ -56,7 +56,7 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].graphql?.mutations).toEqual({
+    expect(result.models?.[0]?.graphql?.mutations).toEqual({
       create: { enabled: true },
       update: { enabled: false },
       delete: { enabled: true },
@@ -81,9 +81,9 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toBeUndefined();
-    expect(result.models?.[0].service?.update?.globalRoles).toBeUndefined();
-    expect(result.models?.[0].service?.delete?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.create?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.update?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.delete?.globalRoles).toBeUndefined();
   });
 
   it('handles models without graphql config', () => {
@@ -93,7 +93,7 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0]).toEqual({ name: 'User' });
+    expect(result.models?.[0]?.name).toBe('User');
   });
 
   it('handles models without mutations', () => {
@@ -152,20 +152,20 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create).toEqual({
+    expect(result.models?.[0]?.service?.create).toEqual({
       enabled: true,
       fields: ['f1', 'f2'],
       globalRoles: ['role-admin'],
     });
     // update and delete had empty roles, so globalRoles should not be added
-    expect(result.models?.[0].service?.update).toEqual({
+    expect(result.models?.[0]?.service?.update).toEqual({
       enabled: true,
       fields: ['f1'],
     });
-    expect(result.models?.[0].service?.delete).toEqual({
+    expect(result.models?.[0]?.service?.delete).toEqual({
       enabled: false,
     });
-    expect(result.models?.[0].service?.transformers).toEqual([
+    expect(result.models?.[0]?.service?.transformers).toEqual([
       { type: 'test' },
     ]);
   });
@@ -190,11 +190,11 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].graphql?.objectType).toEqual({
+    expect(result.models?.[0]?.graphql?.objectType).toEqual({
       enabled: true,
       fields: [],
     });
-    expect(result.models?.[0].graphql?.queries).toEqual({
+    expect(result.models?.[0]?.graphql?.queries).toEqual({
       get: { enabled: true, roles: ['role-admin'] },
     });
   });
@@ -227,13 +227,13 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toEqual([
+    expect(result.models?.[0]?.service?.create?.globalRoles).toEqual([
       'role-admin',
     ]);
-    expect(result.models?.[1].service?.create?.globalRoles).toEqual([
+    expect(result.models?.[1]?.service?.create?.globalRoles).toEqual([
       'role-user',
     ]);
-    expect(result.models?.[1].service?.delete?.globalRoles).toEqual([
+    expect(result.models?.[1]?.service?.delete?.globalRoles).toEqual([
       'role-admin',
     ]);
   });
@@ -256,8 +256,8 @@ describe('migration025ServiceMethodAuth', () => {
 
     const result = migration025ServiceMethodAuth.migrate(config);
 
-    expect(result.models?.[0].service?.create?.globalRoles).toBeUndefined();
-    expect(result.models?.[0].service?.update?.globalRoles).toBeUndefined();
-    expect(result.models?.[0].service?.delete?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.create?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.update?.globalRoles).toBeUndefined();
+    expect(result.models?.[0]?.service?.delete?.globalRoles).toBeUndefined();
   });
 });

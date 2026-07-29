@@ -184,10 +184,10 @@ export function validateAuthorizerExpression(
       }
     },
     hasSomeRole(node) {
-      for (let i = 0; i < node.roles.length; i++) {
-        const role = node.roles[i];
+      for (const [i, role] of node.roles.entries()) {
         const start = node.rolesStart[i];
         const end = node.rolesEnd[i];
+        if (start === undefined || end === undefined) continue;
         if (allRoleNames.has(role)) {
           warnIfAutoAssignedRole(role, start, end);
         } else {

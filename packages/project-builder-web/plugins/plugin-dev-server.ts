@@ -121,6 +121,11 @@ export function pluginDevServerPlugin(): Plugin {
           const pluginKey = urlMatch[2];
           const assetPath = urlMatch[3];
 
+          if (pluginKey === undefined || assetPath === undefined) {
+            next();
+            return;
+          }
+
           const pluginMatch = plugins.find((plugin) =>
             pluginKey.startsWith(plugin.id),
           );
