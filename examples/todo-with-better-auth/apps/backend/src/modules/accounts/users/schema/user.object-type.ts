@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 import { builder } from '@src/plugins/graphql/builder.js';
+import { applyStableOrderBy } from '@src/plugins/graphql/sort-order.js';
 
+import { todoListOrderByInputType } from '../../../todos/schema/todo-list.object-type.js';
 import { userPolicy } from '../authorizers/user.policy.js';
 
 export const userObjectType = builder.prismaObject('User', {
@@ -19,11 +21,12 @@ export const userObjectType = builder.prismaObject('User', {
       args: {
         skip: t.arg.int({ validate: z.int().min(0) }),
         take: t.arg.int({ validate: z.int().min(0) }),
+        orderBy: t.arg({ type: [todoListOrderByInputType] }),
       },
       query: (args) => ({
         skip: args.skip ?? undefined,
         take: args.take ?? undefined,
-        orderBy: { id: 'asc' },
+        orderBy: applyStableOrderBy(args.orderBy, ['id']) ?? undefined,
       }),
     }),
     userProfile: t.relation('userProfile', { nullable: true }),

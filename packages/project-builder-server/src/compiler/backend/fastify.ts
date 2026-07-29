@@ -19,7 +19,7 @@ import {
   readmeGenerator,
   yogaPluginGenerator,
 } from '@baseplate-dev/fastify-generators';
-import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+import { FeatureUtils, ModelUtils } from '@baseplate-dev/project-builder-lib';
 import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
@@ -42,10 +42,13 @@ export function buildFastify(
       model.graphql.queries.list.enabled &&
       model.graphql.queries.list.where.enabled,
   );
+  const modelIdsRequiringOrderByInput =
+    ModelUtils.getModelIdsRequiringOrderByInput(projectDefinition);
   const hasOrderBy = projectDefinition.models.some(
     (model) =>
-      model.graphql.queries.list.enabled &&
-      model.graphql.queries.list.orderBy.enabled,
+      (model.graphql.queries.list.enabled &&
+        model.graphql.queries.list.orderBy.enabled) ||
+      modelIdsRequiringOrderByInput.has(model.id),
   );
 
   // add graphql scalars

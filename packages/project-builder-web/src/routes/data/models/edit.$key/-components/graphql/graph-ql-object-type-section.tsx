@@ -18,13 +18,12 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
+  SwitchField,
   SwitchFieldController,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@baseplate-dev/ui-components';
 import { useController, useWatch } from 'react-hook-form';
-import { HiMiniLockClosed, HiMiniQueueList } from 'react-icons/hi2';
+import { HiMiniLockClosed } from 'react-icons/hi2';
+import { MdSettings } from 'react-icons/md';
 
 interface GraphQLObjectTypeSectionProps {
   control: Control<ModelConfigInput>;
@@ -35,6 +34,7 @@ interface FieldEntry {
   globalRoles?: string[];
   instanceRoles?: string[];
   paginated?: boolean;
+  orderable?: boolean;
 }
 
 /**
@@ -86,15 +86,16 @@ function updateEntryRoles(
 }
 
 /**
- * Toggles the paginated flag on a specific field entry.
+ * Toggles a boolean flag on a specific field entry.
  */
-function updateEntryPaginated(
+function updateEntryFlag(
   entries: FieldEntry[],
   ref: string,
-  paginated: boolean,
+  key: 'paginated' | 'orderable',
+  value: boolean,
 ): FieldEntry[] {
   return entries.map((entry) =>
-    entry.ref === ref ? { ...entry, paginated } : entry,
+    entry.ref === ref ? { ...entry, [key]: value } : entry,
   );
 }
 
@@ -136,7 +137,7 @@ interface FieldEntryRowProps extends RoleOptions {
   allItems: { id: string }[];
   disabled: boolean;
   showAuth: boolean;
-  showPagination: boolean;
+  showRelationOptions: boolean;
   onChange: (entries: FieldEntry[]) => void;
 }
 
@@ -149,7 +150,7 @@ function FieldEntryRow({
   allItems,
   disabled,
   showAuth,
-  showPagination,
+  showRelationOptions,
   roleOptions,
   instanceRoleOptions,
   onChange,
@@ -181,12 +182,19 @@ function FieldEntryRow({
             e.stopPropagation();
           }}
         >
-          {showPagination && (
-            <PaginationToggle
-              paginated={entry?.paginated ?? false}
+          {showRelationOptions && (
+            <RelationOptionsPopover
+              entry={entry ?? { ref: entryRef }}
               disabled={!isChecked}
-              onChange={(paginated) => {
-                onChange(updateEntryPaginated(entries, entryRef, paginated));
+              onPaginatedChange={(paginated) => {
+                onChange(
+                  updateEntryFlag(entries, entryRef, 'paginated', paginated),
+                );
+              }}
+              onOrderableChange={(orderable) => {
+                onChange(
+                  updateEntryFlag(entries, entryRef, 'orderable', orderable),
+                );
               }}
             />
           )}
@@ -228,7 +236,7 @@ interface FieldEntryListProps extends RoleOptions {
   entries: FieldEntry[];
   disabled: boolean;
   showAuth: boolean;
-  showPagination?: boolean;
+  showRelationOptions?: boolean;
   idPrefix: string;
   onChange: (entries: FieldEntry[]) => void;
   getId?: (item: { id: string; name: string }) => string;
@@ -241,7 +249,7 @@ function FieldEntryList({
   entries,
   disabled,
   showAuth,
-  showPagination = false,
+  showRelationOptions = false,
   idPrefix,
   roleOptions,
   instanceRoleOptions,
@@ -266,7 +274,7 @@ function FieldEntryList({
               allItems={items.map((i) => ({ id: getId(i) }))}
               disabled={disabled}
               showAuth={showAuth}
-              showPagination={showPagination}
+              showRelationOptions={showRelationOptions}
               roleOptions={roleOptions}
               instanceRoleOptions={instanceRoleOptions}
               onChange={onChange}
@@ -278,42 +286,74 @@ function FieldEntryList({
   );
 }
 
-interface PaginationToggleProps {
-  paginated: boolean;
+interface RelationOptionsPopoverProps {
+  entry: FieldEntry;
   disabled?: boolean;
-  onChange: (paginated: boolean) => void;
+  onPaginatedChange: (paginated: boolean) => void;
+  onOrderableChange: (orderable: boolean) => void;
 }
 
-function PaginationToggle({
-  paginated,
+function RelationOptionsPopover({
+  entry,
   disabled,
-  onChange,
-}: PaginationToggleProps): React.ReactElement {
+  onPaginatedChange,
+  onOrderableChange,
+}: RelationOptionsPopoverProps): React.ReactElement {
+  const paginated = entry.paginated ?? false;
+  const orderable = entry.orderable ?? false;
+  const enabledNames = [
+    paginated ? 'Pagination' : undefined,
+    orderable ? 'Ordering' : undefined,
+  ].filter((name) => name !== undefined);
+
   return (
-    <Tooltip>
-      <TooltipTrigger
+    <Popover>
+      <PopoverTrigger
+        disabled={disabled}
         render={
           <button
             type="button"
-            aria-pressed={paginated}
             disabled={disabled}
-            className="flex h-6 items-center justify-center rounded px-1.5 hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-            onClick={() => {
-              onChange(!paginated);
-            }}
+            title="Configure relation arguments"
+            className="flex h-6 cursor-pointer items-center justify-end gap-1.5 rounded px-1.5 text-xs hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
           />
         }
       >
-        <HiMiniQueueList
-          className={paginated ? 'text-primary' : 'text-muted-foreground'}
+        <MdSettings
+          className={
+            enabledNames.length > 0 ? 'text-primary' : 'text-muted-foreground'
+          }
         />
-      </TooltipTrigger>
-      <TooltipContent>
-        {paginated
-          ? 'Paginated with skip/take args'
-          : 'Enable skip/take pagination args'}
-      </TooltipContent>
-    </Tooltip>
+        {enabledNames.length > 0 && (
+          <Badge
+            variant="outline"
+            className="block max-w-48 truncate text-xs font-normal"
+          >
+            {enabledNames.join(', ')}
+          </Badge>
+        )}
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 space-y-4">
+        <div className="space-y-1">
+          <p className="py-1 text-sm font-medium">Relation Arguments</p>
+          <p className="text-xs text-muted-foreground">
+            Choose which arguments this list relation accepts.
+          </p>
+        </div>
+        <SwitchField
+          label="Pagination"
+          description="Limit results with skip/take args, e.g. posts(skip: 10, take: 5)"
+          value={paginated}
+          onChange={onPaginatedChange}
+        />
+        <SwitchField
+          label="Ordering"
+          description="Sort results with an orderBy arg using the related model's sortable fields."
+          value={orderable}
+          onChange={onOrderableChange}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -534,7 +574,7 @@ export function GraphQLObjectTypeSection({
             entries={foreignRelationsValue}
             disabled={!isObjectTypeEnabled}
             showAuth={!!isObjectTypeEnabled && hasAuthOptions}
-            showPagination={!!isObjectTypeEnabled}
+            showRelationOptions={!!isObjectTypeEnabled}
             idPrefix="foreign-rel"
             roleOptions={roleOptions}
             instanceRoleOptions={instanceRoleOptions}
