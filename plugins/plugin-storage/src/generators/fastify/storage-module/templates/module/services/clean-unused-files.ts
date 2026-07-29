@@ -7,7 +7,7 @@ import { logger } from '%loggerServiceImports';
 import { prisma } from '%prismaImports';
 import { groupBy } from 'es-toolkit';
 
-/** How long to keep files that were uploaded but never referenced */
+/** Grace period before an unreferenced file becomes eligible for cleanup */
 const UNREFERENCED_UPLOAD_EXPIRY_TIME_MS = 1000 * 60 * 60 * 24; // 1 day
 /** Maximum number of files to delete in a single operation */
 const CLEAN_JOB_LIMIT = 100;
@@ -16,9 +16,12 @@ const CLEAN_JOB_LIMIT = 100;
  * Finds and deletes unused files from storage and the database.
  *
  * Files are considered unused if:
- * 1. They belong to a cleanup-enabled category and have no references in ANY
- *    of the known file relations (orphaned files).
- * 2. They are pending uploads older than the expiry threshold (abandoned uploads).
+ * 1. They belong to a cleanup-enabled category, have no references in ANY of
+ *    the known file relations, and are past the expiry threshold (orphaned).
+ * 2. They are pending uploads past the expiry threshold (abandoned uploads).
+ *
+ * The orphan check ages on `updatedAt`, so the grace period restarts when an
+ * upload is confirmed.
  *
  * Deletion is performed in two phases per adapter: storage objects are deleted
  * first, then DB records. If storage deletion fails, the error is logged and
@@ -55,6 +58,7 @@ export async function cleanUnusedFiles(
                     },
                   },
                   { pendingUpload: false },
+                  { updatedAt: { lt: cutoffDate } },
                   // ALL known relations must be empty
                   ...allFileRelations.map((rel) => ({
                     [rel]: { none: {} },
