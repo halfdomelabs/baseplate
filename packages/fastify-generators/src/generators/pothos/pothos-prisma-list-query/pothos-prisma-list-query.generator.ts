@@ -16,9 +16,12 @@ import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   buildOrderByValueFragment,
+  buildTakeArgFragment,
+  buildTakeValue,
   buildWhereArgFragment,
   defaultSortSchema,
   getCallerWhereArg,
+  pageSizeSchema,
 } from '#src/writers/pothos/index.js';
 
 import { pothosTypeOutputProvider } from '../_providers/index.js';
@@ -56,6 +59,7 @@ const descriptorSchema = z.object({
    * an `orderBy` arg is exposed.
    */
   defaultSort: defaultSortSchema,
+  ...pageSizeSchema,
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -70,6 +74,8 @@ export const pothosPrismaListQueryGenerator = createGenerator({
     whereInputRef,
     orderByInputRef,
     defaultSort,
+    defaultPageSize,
+    maxPageSize,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -151,13 +157,18 @@ export const pothosPrismaListQueryGenerator = createGenerator({
               ? tsTemplate`orderBy: ${orderByValue}, `
               : '';
 
+            const takeValue = buildTakeValue('take', {
+              defaultPageSize,
+              maxPageSize,
+            });
+
             const resolveFunction: TsCodeFragment = modelPolicy
-              ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment}skip: skip ?? undefined, take: take ?? undefined })`
-              : tsTemplate`async (query, _root, ${argsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${noPolicyWhere}${orderByFragment}skip: skip ?? undefined, take: take ?? undefined })`;
+              ? tsTemplate`async (query, _root, ${argsPattern}, ctx) => ${prismaModelFragment}.findMany({ ...query, where: ${modelPolicy.getActionWhereFragment('read')}(ctx${callerWhereArg}), ${orderByFragment}skip: skip ?? undefined, take: ${takeValue} })`
+              : tsTemplate`async (query, _root, ${argsPattern}) => ${prismaModelFragment}.findMany({ ...query, ${noPolicyWhere}${orderByFragment}skip: skip ?? undefined, take: ${takeValue} })`;
 
             const argFragments: Record<string, TsCodeFragment> = {
               skip: tsTemplate`t.arg.int({ validate: ${zFragment}.int().min(0) })`,
-              take: tsTemplate`t.arg.int({ validate: ${zFragment}.int().min(0) })`,
+              take: buildTakeArgFragment(maxPageSize),
               ...(whereInputType && whereComplexityValidator
                 ? {
                     where: buildWhereArgFragment({

@@ -9,6 +9,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
+  InputFieldController,
   MultiComboboxField,
   SectionListSection,
   SectionListSectionContent,
@@ -16,6 +17,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   SelectField,
+  SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { lowerFirst } from 'es-toolkit';
 import { pluralize } from 'inflection';
@@ -29,19 +31,29 @@ const DIRECTION_OPTIONS = [
   { label: 'Descending', value: 'desc' },
 ];
 
-interface GraphQLSortingFilteringSectionProps {
+interface GraphQLListBehaviorSectionProps {
   control: Control<ModelConfigInput>;
 }
 
 /**
- * Model-level sorting and filtering configuration. Both the list query and
- * `orderable` list relations sort by the same fields, so the field lists live
- * here rather than inside the list query dialog, which only owns the
- * per-surface enable switches.
+ * Parses an optional numeric input. `valueAsNumber` yields NaN for an empty
+ * field, which would fail validation instead of clearing the limit.
  */
-export function GraphQLSortingFilteringSection({
+function toOptionalNumber(value: unknown): number | undefined {
+  return value === '' || value === null || value === undefined
+    ? undefined
+    : Number(value);
+}
+
+/**
+ * Model-level configuration shared by every surface that returns a list of this
+ * model — the list and connection queries, and list relations on other models.
+ * Ordering, filtering, and page size all live here because each applies to all
+ * of those surfaces; only the root fields themselves are toggled per-query.
+ */
+export function GraphQLListBehaviorSection({
   control,
-}: GraphQLSortingFilteringSectionProps): React.JSX.Element {
+}: GraphQLListBehaviorSectionProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   const { name: modelName } = useOriginalModel();
 
@@ -51,6 +63,26 @@ export function GraphQLSortingFilteringSection({
   const isObjectTypeEnabled = useWatch({
     control,
     name: 'graphql.objectType.enabled',
+  });
+  const isListEnabled = useWatch({
+    control,
+    name: 'graphql.queries.list.enabled',
+  });
+  const isConnectionEnabled = useWatch({
+    control,
+    name: 'graphql.queries.connection.enabled',
+  });
+  const isOrderByEnabled = useWatch({
+    control,
+    name: 'graphql.queries.orderBy.enabled',
+  });
+  const isWhereFilteringEnabled = useWatch({
+    control,
+    name: 'graphql.queries.where.enabled',
+  });
+  const hasListSurface = ModelUtils.hasListSurface({
+    list: { enabled: isListEnabled ?? false },
+    connection: { enabled: isConnectionEnabled ?? false },
   });
   const exposedFields =
     useWatch({ control, name: 'graphql.objectType.fields' }) ?? [];
@@ -120,16 +152,53 @@ export function GraphQLSortingFilteringSection({
     <SectionListSection>
       <div>
         <SectionListSectionHeader className="sticky top-2">
-          <SectionListSectionTitle>Sorting & Filtering</SectionListSectionTitle>
+          <SectionListSectionTitle>List Behavior</SectionListSectionTitle>
           <SectionListSectionDescription>
             Shared by every query that returns a list of {modelName} — the{' '}
-            <code>{listQueryName}</code> query and any {modelName} list relation
-            on another model. Turn each one on individually under Root Fields
-            and in the settings for that relation.
+            <code>{listQueryName}</code> and{' '}
+            <code>{listQueryName}Connection</code> queries, and any {modelName}{' '}
+            list relation on another model.
           </SectionListSectionDescription>
         </SectionListSectionHeader>
       </div>
-      <SectionListSectionContent className="space-y-6">
+      <SectionListSectionContent className="space-y-8">
+        <div className="space-y-4">
+          <p className="text-sm font-semibold">Ordering</p>
+          <div className="space-y-1">
+            <SwitchFieldController
+              control={control}
+              name="graphql.queries.orderBy.enabled"
+              disabled={!isObjectTypeEnabled || !hasListSurface}
+              label="Order By"
+            />
+            <p className="text-xs text-muted-foreground">
+              Let callers choose the sort, e.g.{' '}
+              <code>
+                {listQueryName}(orderBy: [{'{'} createdAt: DESC {'}'}])
+              </code>
+            </p>
+          </div>
+          {(isOrderByEnabled ?? false) && sortableFields.length === 0 && (
+            <Alert variant="warning">
+              <MdWarning />
+              <AlertTitle>No sortable fields selected</AlertTitle>
+              <AlertDescription>
+                Choose sortable fields below — sync will otherwise fail.
+              </AlertDescription>
+            </Alert>
+          )}
+          <MultiComboboxField
+            label="Sortable Fields"
+            description="Fields the caller can choose to sort by, overriding the default sort. Only used where ordering is turned on."
+            placeholder="Select fields..."
+            options={fieldOptions}
+            value={sortableFields}
+            onChange={onSortableFieldsChange}
+            noResultsText="No fields exposed"
+            disabled={!isObjectTypeEnabled}
+          />
+        </div>
+
         <div className="space-y-2">
           <div>
             <p className="text-sm font-medium">Default Sort</p>
@@ -213,20 +282,33 @@ export function GraphQLSortingFilteringSection({
           </Button>
         </div>
 
-        <div className="space-y-2">
-          <MultiComboboxField
-            label="Sortable Fields"
-            description="Fields the caller can choose to sort by, overriding the default sort. Only used where ordering is turned on."
-            placeholder="Select fields..."
-            options={fieldOptions}
-            value={sortableFields}
-            onChange={onSortableFieldsChange}
-            noResultsText="No fields exposed"
-            disabled={!isObjectTypeEnabled}
-          />
-        </div>
-
-        <div className="space-y-2">
+        <div className="space-y-4">
+          <p className="text-sm font-semibold">Filtering</p>
+          <div className="space-y-1">
+            <SwitchFieldController
+              control={control}
+              name="graphql.queries.where.enabled"
+              disabled={!isObjectTypeEnabled || !hasListSurface}
+              label="Where Filtering"
+            />
+            <p className="text-xs text-muted-foreground">
+              Let callers narrow results by field value, e.g.{' '}
+              <code>
+                {listQueryName}(where: {'{'} title: {'{'} contains: ... {'}'}{' '}
+                {'}'})
+              </code>
+            </p>
+          </div>
+          {(isWhereFilteringEnabled ?? false) &&
+            filterableFields.length === 0 && (
+              <Alert variant="warning">
+                <MdWarning />
+                <AlertTitle>No filterable fields selected</AlertTitle>
+                <AlertDescription>
+                  Choose filterable fields below — sync will otherwise fail.
+                </AlertDescription>
+              </Alert>
+            )}
           <MultiComboboxField
             label="Filterable Fields"
             description="Fields the caller can narrow results by, e.g. only rows where status matches. Only used where filtering is turned on."
@@ -250,6 +332,42 @@ export function GraphQLSortingFilteringSection({
               </AlertDescription>
             </Alert>
           )}
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-semibold">Pagination</p>
+            <p className="text-xs text-muted-foreground">
+              Limits how many {listQueryName} a single page may return, so large
+              objects aren&apos;t fetched en masse. Leave blank to use the
+              defaults — unbounded for <code>{listQueryName}</code>, 20 per page
+              (100 max) for <code>{listQueryName}Connection</code>.
+            </p>
+          </div>
+          <div className="grid max-w-lg grid-cols-2 gap-4">
+            <InputFieldController
+              control={control}
+              name="graphql.pagination.defaultPageSize"
+              disabled={!isObjectTypeEnabled}
+              label="Default page size"
+              type="number"
+              min={1}
+              placeholder="Default"
+              registerOptions={{ setValueAs: toOptionalNumber }}
+              description="Applied when the caller requests no size. Falls back to the max if only that is set."
+            />
+            <InputFieldController
+              control={control}
+              name="graphql.pagination.maxPageSize"
+              disabled={!isObjectTypeEnabled}
+              label="Max page size"
+              type="number"
+              min={1}
+              placeholder="Default"
+              registerOptions={{ setValueAs: toOptionalNumber }}
+              description="Largest page a caller may request"
+            />
+          </div>
         </div>
       </SectionListSectionContent>
     </SectionListSection>

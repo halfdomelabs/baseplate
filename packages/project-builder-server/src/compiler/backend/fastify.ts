@@ -39,15 +39,15 @@ export function buildFastify(
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
   const hasWhereFiltering = projectDefinition.models.some(
     (model) =>
-      model.graphql.queries.list.enabled &&
-      model.graphql.queries.list.where.enabled,
+      ModelUtils.hasListSurface(model.graphql.queries) &&
+      model.graphql.queries.where.enabled,
   );
   const modelIdsRequiringOrderByInput =
     ModelUtils.getModelIdsRequiringOrderByInput(projectDefinition);
   const hasOrderBy = projectDefinition.models.some(
     (model) =>
-      (model.graphql.queries.list.enabled &&
-        model.graphql.queries.list.orderBy.enabled) ||
+      (ModelUtils.hasListSurface(model.graphql.queries) &&
+        model.graphql.queries.orderBy.enabled) ||
       modelIdsRequiringOrderByInput.has(model.id) ||
       model.graphql.orderBy.defaultSort.length > 0,
   );

@@ -187,8 +187,27 @@ function getModelIdsRequiringOrderByInput(
   );
 }
 
+/**
+ * Whether the model exposes any root query returning a list of its rows.
+ *
+ * Offset and cursor pagination are independent surfaces, but both read through
+ * the same object type, `where`/`orderBy` inputs, and role checks — so either
+ * one alone requires all of them. Gate shared generation on this rather than on
+ * a single surface's flag.
+ *
+ * @param queries - The model's `graphql.queries` config.
+ * @returns Whether a list-returning root query is enabled.
+ */
+function hasListSurface(queries: {
+  list: { enabled: boolean };
+  connection: { enabled: boolean };
+}): boolean {
+  return queries.list.enabled || queries.connection.enabled;
+}
+
 export const ModelUtils = {
   byId,
+  hasListSurface,
   byIdOrThrow,
   byName,
   byNameOrThrow,

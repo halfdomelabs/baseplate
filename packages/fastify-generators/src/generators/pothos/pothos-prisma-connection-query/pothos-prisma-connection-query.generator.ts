@@ -20,6 +20,7 @@ import {
   buildWhereArgFragment,
   defaultSortSchema,
   getCallerWhereArg,
+  pageSizeSchema,
 } from '#src/writers/pothos/index.js';
 
 import { pothosTypeOutputProvider } from '../_providers/index.js';
@@ -61,6 +62,7 @@ const descriptorSchema = z.object({
    * an `orderBy` arg is exposed.
    */
   defaultSort: defaultSortSchema,
+  ...pageSizeSchema,
 });
 
 export const pothosPrismaConnectionQueryGenerator = createGenerator({
@@ -75,6 +77,8 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
     whereInputRef,
     orderByInputRef,
     defaultSort,
+    defaultPageSize,
+    maxPageSize,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
@@ -196,6 +200,13 @@ export const pothosPrismaConnectionQueryGenerator = createGenerator({
             const options = {
               type: quot(modelName),
               cursor: quot(cursorFieldName),
+              // Omitted when unset so the relay plugin's own defaults apply.
+              ...(defaultPageSize === undefined
+                ? {}
+                : { defaultSize: defaultPageSize.toString() }),
+              ...(maxPageSize === undefined
+                ? {}
+                : { maxSize: maxPageSize.toString() }),
               ...(hasArgs
                 ? {
                     args: TsCodeUtils.mergeFragmentsAsObject(argFragments, {
