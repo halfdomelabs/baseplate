@@ -7,9 +7,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useModelForm } from '../-hooks/use-model-form.js';
 import { OriginalModelProvider } from '../-hooks/use-original-model.js';
 import { GraphQLAuthSection } from './-components/graphql/graph-ql-auth-section.js';
+import { GraphQLListBehaviorSection } from './-components/graphql/graph-ql-list-behavior-section.js';
 import { GraphQLObjectTypeSection } from './-components/graphql/graph-ql-object-type-section.js';
 import { GraphQLRootFieldsSection } from './-components/graphql/graph-ql-root-fields-section.js';
-import { GraphQLSortingFilteringSection } from './-components/graphql/graph-ql-sorting-filtering-section.js';
 
 export const Route = createFileRoute('/data/models/edit/$key/graphql')({
   component: ModelEditGraphQLPage,
@@ -35,7 +35,7 @@ function ModelEditGraphQLPage(): React.JSX.Element {
         <SectionList>
           <GraphQLObjectTypeSection control={control} />
           <GraphQLRootFieldsSection control={control} />
-          <GraphQLSortingFilteringSection control={control} />
+          <GraphQLListBehaviorSection control={control} />
           <GraphQLAuthSection
             control={control}
             setValue={setValue}
