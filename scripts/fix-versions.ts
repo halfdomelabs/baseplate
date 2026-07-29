@@ -84,9 +84,14 @@ if (uniqueVersions.size > 1) {
   process.exit(0);
 }
 
-const [currentVersion] = [...uniqueVersions];
-const [major] = currentVersion.split('.').map(Number);
-if (major > 1) {
+const currentVersion = [...uniqueVersions][0];
+if (currentVersion === undefined) {
+  console.warn('fix-versions: no workspace package versions found — skipping');
+  process.exit(0);
+}
+
+const major = currentVersion.split('.').map(Number)[0];
+if (major !== undefined && major > 1) {
   throw new Error(
     `fix-versions: major version is ${major} (> 1) — this script should have been removed by now. Current version: ${currentVersion}`,
   );

@@ -22,7 +22,7 @@ builder.mutationField('updateBlog', (t) =>
       data: t.input.field({ required: true, type: updateBlogDataInputType }),
     },
     payload: { blog: t.payload.field({ type: blogObjectType }) },
-    authorize: ['public', 'user', 'system', 'admin'],
+    authorize: ['user'],
     resolve: async (root, { input: { id, data } }, context, info) => {
       const blog = await updateBlog({
         where: { id },
@@ -39,7 +39,7 @@ builder.mutationField('deleteBlog', (t) =>
   t.fieldWithInputPayload({
     input: { id: t.input.field({ required: true, type: 'Uuid' }) },
     payload: { blog: t.payload.field({ type: blogObjectType }) },
-    authorize: ['public', 'user', 'system', 'admin'],
+    authorize: ['user'],
     resolve: async (root, { input: { id } }, context, info) => {
       const blog = await deleteBlog({
         where: { id },

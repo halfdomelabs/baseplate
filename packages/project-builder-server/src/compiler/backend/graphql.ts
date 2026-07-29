@@ -7,7 +7,6 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 import {
   getPothosPrismaOrderByInputTypeOutputName,
   getPothosPrismaWhereInputTypeOutputName,
-  pothosAuthorizeFieldGenerator,
   pothosEnumsFileGenerator,
   pothosPrismaConnectionQueryGenerator,
   pothosPrismaCountQueryGenerator,
@@ -26,6 +25,11 @@ import { notEmpty, uppercaseFirstChar } from '@baseplate-dev/utils';
 import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
+
+import {
+  deriveMutationAuthorize,
+  deriveQueryAuthorize,
+} from './authorize-gate.js';
 
 function buildObjectTypeFile(
   appBuilder: BackendAppEntryBuilder,
@@ -231,26 +235,6 @@ function buildObjectTypeFile(
   });
 }
 
-function deriveQueryAuthorize(
-  appBuilder: BackendAppEntryBuilder,
-  queries: ModelConfig['graphql']['queries'],
-  isAuthEnabled: boolean,
-): GeneratorBundle | undefined {
-  if (!isAuthEnabled) {
-    return undefined;
-  }
-
-  const { globalRoles } = queries;
-
-  if (globalRoles.length === 0) {
-    return undefined;
-  }
-
-  return pothosAuthorizeFieldGenerator({
-    roles: globalRoles.map((r) => appBuilder.nameFromId(r)),
-  });
-}
-
 function buildQueriesFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
@@ -273,7 +257,7 @@ function buildQueriesFileForModel(
     appBuilder.projectDefinition,
   );
 
-  const authorize = deriveQueryAuthorize(appBuilder, queries, isAuthEnabled);
+  const authorize = deriveQueryAuthorize(appBuilder, model, isAuthEnabled);
 
   // The policy encodes the whole read grant (global + instance roles); reads
   // filter through `policy.actions.read.where`. A policy exists whenever the model
@@ -363,51 +347,6 @@ function buildQueriesFileForModel(
   });
 }
 
-/**
- * Derives the GraphQL mutation authorize config from service-level roles.
- * - No roles → no auth (public)
- * - Only global roles → pass those roles directly
- * - Instance roles present → use all auth roles as coarse gate
- *   (any authenticated user can call, service handles fine-grained auth)
- */
-function deriveMutationAuthorize(
-  appBuilder: BackendAppEntryBuilder,
-  serviceMethod: {
-    globalRoles: string[];
-    instanceRoles?: string[];
-  },
-  isAuthEnabled: boolean,
-): GeneratorBundle | undefined {
-  if (!isAuthEnabled) {
-    return undefined;
-  }
-
-  const { globalRoles, instanceRoles = [] } = serviceMethod;
-
-  if (globalRoles.length === 0 && instanceRoles.length === 0) {
-    return undefined;
-  }
-
-  if (instanceRoles.length > 0) {
-    // Instance roles present → coarse gate with all auth roles
-    const authConfig =
-      appBuilder.definitionContainer.pluginStore.use(authConfigSpec);
-    const allRoles =
-      authConfig.getAuthConfig(appBuilder.projectDefinition)?.roles ?? [];
-    if (allRoles.length === 0) {
-      return undefined;
-    }
-    return pothosAuthorizeFieldGenerator({
-      roles: allRoles.map((r) => r.name),
-    });
-  }
-
-  // Only global roles → pass them through
-  return pothosAuthorizeFieldGenerator({
-    roles: globalRoles.map((r) => appBuilder.nameFromId(r)),
-  });
-}
-
 function buildMutationsFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
@@ -450,6 +389,7 @@ function buildMutationsFileForModel(
             children: {
               authorize: deriveMutationAuthorize(
                 appBuilder,
+                model,
                 service.create,
                 isAuthEnabled,
               ),
@@ -464,6 +404,7 @@ function buildMutationsFileForModel(
             children: {
               authorize: deriveMutationAuthorize(
                 appBuilder,
+                model,
                 service.update,
                 isAuthEnabled,
               ),
@@ -478,6 +419,7 @@ function buildMutationsFileForModel(
             children: {
               authorize: deriveMutationAuthorize(
                 appBuilder,
+                model,
                 service.delete,
                 isAuthEnabled,
               ),

@@ -155,11 +155,8 @@ describe('todoListsConnection', () => {
     await fastify.close();
   });
 
-  it('rejects non-admin access', async () => {
-    const owner = await prisma.user.create({
-      data: { name: 'Owner', email: 'owner2@example.com' },
-    });
-    const fastify = await buildApp(['public', 'user'], owner.id);
+  it('rejects unauthenticated access', async () => {
+    const fastify = await buildApp(['public']);
 
     const result = await queryGraphql(
       fastify,
@@ -167,6 +164,33 @@ describe('todoListsConnection', () => {
     );
 
     expect(result.errors).toBeDefined();
+    await fastify.close();
+  });
+
+  // Read is granted to the `owner` instance role, so the gate admits any
+  // authenticated caller and the policy filters non-owners down to no rows.
+  it('returns no rows for an authenticated non-owner', async () => {
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner2@example.com' },
+    });
+    const stranger = await prisma.user.create({
+      data: { name: 'Stranger', email: 'stranger2@example.com' },
+    });
+    await prisma.todoList.create({
+      data: { ownerId: owner.id, position: 0, name: 'Private List' },
+    });
+    const fastify = await buildApp(['public', 'user'], stranger.id);
+
+    const result = await queryGraphql(
+      fastify,
+      `query { todoListsConnection(first: 1) { totalCount edges { node { id } } } }`,
+    );
+
+    expect(result.errors).toBeUndefined();
+    expect(result.data?.todoListsConnection).toEqual({
+      totalCount: 0,
+      edges: [],
+    });
     await fastify.close();
   });
 });

@@ -282,12 +282,13 @@ async function createGithubRelease(): Promise<void> {
     const publishedPackages = JSON.parse(
       publishedPackagesEnv,
     ) as PublishedPackage[];
-    if (publishedPackages.length === 0) {
+    const firstPackage = publishedPackages[0];
+    if (firstPackage === undefined) {
       console.error('Error: PUBLISHED_PACKAGES is empty.');
       process.exit(1);
     }
 
-    version = publishedPackages[0].version;
+    version = firstPackage.version;
   }
 
   const tag = `baseplate@${version}`;
