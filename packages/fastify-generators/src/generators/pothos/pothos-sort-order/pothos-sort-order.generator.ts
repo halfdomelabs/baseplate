@@ -97,23 +97,30 @@ export const pothosSortOrderGenerator = createGenerator({
 
             const helperFragment = tsCodeFragment(
               `/**
- * Appends a model's ID field(s) to \`orderBy\` as a tiebreaker, if not
- * already present. Prisma's cursor pagination only guarantees stable,
- * non-skipping/non-repeating pages when \`orderBy\` produces a total
- * order — ties on the caller's sort fields let the database return them
- * in a different order between paged queries. Returns \`undefined\` for
- * an empty result so callers can pass it straight through to Prisma's
- * \`orderBy\` option.
+ * Resolves a Prisma \`orderBy\`, falling back to \`defaultSort\` when the caller
+ * supplies none and appending the model's ID field(s) as a tiebreaker.
+ *
+ * The tiebreaker keeps cursor pagination stable: Prisma only guarantees
+ * non-skipping/non-repeating pages when \`orderBy\` is a total order.
+ *
+ * @param orderBy - The caller-supplied sort clauses, if any.
+ * @param idFields - The model's ID field(s), appended as a tiebreaker.
+ * @param defaultSort - Used when the caller supplies no sort.
+ * @returns The resolved clauses, or \`undefined\` when empty.
  */
 export function applyStableOrderBy<T extends Record<string, 'asc' | 'desc'>>(
   orderBy: T[] | null | undefined,
   idFields: string[],
-): (T | Record<string, 'asc'>)[] | undefined {
-  // Every field on an OrderByInput is optional, so \`[{}]\` is a valid input.
-  // An empty clause reaching Prisma throws at runtime, so drop it here.
-  const clauses = (orderBy ?? []).filter(
+  defaultSort: Record<string, 'asc' | 'desc'>[] = [],
+): (T | Record<string, 'asc' | 'desc'>)[] | undefined {
+  // Every field on an OrderByInput is optional, so \`[{}]\` is a valid input,
+  // and an empty clause reaching Prisma throws at runtime.
+  const callerClauses = (orderBy ?? []).filter(
     (clause) => Object.keys(clause).length > 0,
   );
+  const clauses = callerClauses.length > 0 ? callerClauses : defaultSort;
+  // Derived after the fallback so a default sorting on an ID field doesn't
+  // get a duplicate tiebreaker appended.
   const specifiedFields = new Set(
     clauses.flatMap((clause) => Object.keys(clause)),
   );

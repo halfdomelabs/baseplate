@@ -48,7 +48,8 @@ export function buildFastify(
     (model) =>
       (model.graphql.queries.list.enabled &&
         model.graphql.queries.list.orderBy.enabled) ||
-      modelIdsRequiringOrderByInput.has(model.id),
+      modelIdsRequiringOrderByInput.has(model.id) ||
+      model.graphql.orderBy.defaultSort.length > 0,
   );
 
   // add graphql scalars

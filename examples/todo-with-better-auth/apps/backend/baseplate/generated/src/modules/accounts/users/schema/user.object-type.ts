@@ -26,7 +26,9 @@ export const userObjectType = builder.prismaObject('User', {
       query: (args) => ({
         skip: args.skip ?? undefined,
         take: args.take ?? undefined,
-        orderBy: applyStableOrderBy(args.orderBy, ['id']) ?? undefined,
+        orderBy:
+          applyStableOrderBy(args.orderBy, ['id'], [{ position: 'asc' }]) ??
+          undefined,
       }),
     }),
     userProfile: t.relation('userProfile', { nullable: true }),

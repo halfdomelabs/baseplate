@@ -29,6 +29,7 @@ import { migration029AdminRoleAndAutoAssigned } from './migration-029-admin-role
 import { migration030RemoveThemeHoverColors } from './migration-030-remove-theme-hover-colors.js';
 import { migration031UuidDefaultGeneration } from './migration-031-uuid-default-generation.js';
 import { migration032WebAppPluginData } from './migration-032-web-app-plugin-data.js';
+import { migration033HoistSortFilterConfig } from './migration-033-hoist-sort-filter-config.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -59,6 +60,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration030RemoveThemeHoverColors,
   migration031UuidDefaultGeneration,
   migration032WebAppPluginData,
+  migration033HoistSortFilterConfig,
 ];
 
 export function isMigrateableProjectDefinition(

@@ -1305,11 +1305,12 @@
           "fields": [
             { "ref": "todoListId" },
             { "ref": "userId" },
-            { "ref": "createdAt", "sortable": true },
+            { "ref": "createdAt" },
             { "ref": "updatedAt" }
           ],
           "localRelations": [{ "ref": "todoList" }, { "ref": "user" }]
         },
+        "orderBy": { "fields": ["createdAt"] },
         "queries": {
           "get": { "enabled": true },
           "globalRoles": ["user"],
@@ -2069,7 +2070,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 32,
+  "schemaVersion": 33,
   "settings": {
     "general": {
       "name": "todo-with-better-auth",

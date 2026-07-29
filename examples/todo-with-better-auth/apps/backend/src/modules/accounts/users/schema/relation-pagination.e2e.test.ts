@@ -202,4 +202,58 @@ describe('User.todoLists', () => {
 
     await fastify.close();
   });
+
+  it("falls back to the model's default sort when no orderBy is given", async () => {
+    const owner = await prisma.user.create({
+      data: { name: 'Owner', email: 'owner5@example.com' },
+    });
+    // Ids are assigned descending relative to position, so a result in
+    // position order cannot be explained by the id tiebreaker alone.
+    await Promise.all([
+      prisma.todoList.create({
+        data: {
+          id: '00000000-0000-0000-0000-0000000000a1',
+          ownerId: owner.id,
+          position: 3,
+          name: 'Third',
+        },
+      }),
+      prisma.todoList.create({
+        data: {
+          id: '00000000-0000-0000-0000-0000000000a3',
+          ownerId: owner.id,
+          position: 1,
+          name: 'First',
+        },
+      }),
+      prisma.todoList.create({
+        data: {
+          id: '00000000-0000-0000-0000-0000000000a2',
+          ownerId: owner.id,
+          position: 2,
+          name: 'Second',
+        },
+      }),
+    ]);
+
+    const fastify = await buildApp(['public', 'user'], owner.id);
+
+    const result = await queryGraphql(
+      fastify,
+      `query ($id: Uuid!) {
+        user(id: $id) {
+          todoLists { position }
+        }
+      }`,
+      { id: owner.id },
+    );
+
+    expect(result.errors).toBeUndefined();
+    const user = result.data?.user as { todoLists: { position: number }[] };
+    expect(user.todoLists.map((todoList) => todoList.position)).toEqual([
+      1, 2, 3,
+    ]);
+
+    await fastify.close();
+  });
 });
