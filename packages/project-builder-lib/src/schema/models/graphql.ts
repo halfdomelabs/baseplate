@@ -58,20 +58,6 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
                   ),
                   [],
                 ),
-                /**
-                 * Whether this field is exposed as a `where` filter operand
-                 * when the model's list query has where filtering enabled.
-                 * Opt-in: an author must explicitly choose which exposed
-                 * fields are filterable.
-                 */
-                filterable: ctx.withDefault(z.boolean(), false),
-                /**
-                 * Whether this field is exposed as an `orderBy` sort key
-                 * when the model's list query has sorting enabled. Opt-in:
-                 * an author must explicitly choose which exposed fields are
-                 * sortable.
-                 */
-                sortable: ctx.withDefault(z.boolean(), false),
               }),
             )
             .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
@@ -123,6 +109,66 @@ export const createModelGraphqlSchema = definitionSchemaWithSlots(
               }),
             )
             .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
+            .apply(withDefault([])),
+        }),
+        {},
+      ),
+      /**
+       * Sorting configuration shared by every surface that exposes an
+       * `orderBy` argument — the list query and `orderable` list relations.
+       * Each surface opts in separately (`queries.list.orderBy.enabled`,
+       * `objectType.foreignRelations[].orderable`) but they all sort by the
+       * same fields.
+       */
+      orderBy: ctx.withDefault(
+        z.object({
+          /** Fields exposed as `orderBy` sort keys. */
+          fields: z
+            .array(
+              ctx.withRef({
+                type: modelScalarFieldEntityType,
+                onDelete: 'DELETE_PARENT',
+                parentSlot: modelSlot,
+              }),
+            )
+            .apply(withDefault([])),
+          /**
+           * Applied when a caller supplies no `orderBy`. Ordered, so multi-key
+           * defaults sort by the first entry first. Not restricted to
+           * `fields` — a model can default to a sort key it does not expose.
+           */
+          defaultSort: z
+            .array(
+              z.object({
+                ref: ctx.withRef({
+                  type: modelScalarFieldEntityType,
+                  onDelete: 'DELETE_PARENT',
+                  parentSlot: modelSlot,
+                }),
+                direction: ctx.withDefault(z.enum(['asc', 'desc']), 'asc'),
+              }),
+            )
+            .apply(withByKeyMergeRule({ getKey: (item) => item.ref }))
+            .apply(withDefault([])),
+        }),
+        {},
+      ),
+      /**
+       * Filtering configuration for surfaces that expose a `where` argument.
+       * Currently only the list query (`queries.list.where.enabled`), but
+       * shaped like `orderBy` so relation-level filtering can reuse it.
+       */
+      where: ctx.withDefault(
+        z.object({
+          /** Fields exposed as `where` filter operands. */
+          fields: z
+            .array(
+              ctx.withRef({
+                type: modelScalarFieldEntityType,
+                onDelete: 'DELETE_PARENT',
+                parentSlot: modelSlot,
+              }),
+            )
             .apply(withDefault([])),
         }),
         {},

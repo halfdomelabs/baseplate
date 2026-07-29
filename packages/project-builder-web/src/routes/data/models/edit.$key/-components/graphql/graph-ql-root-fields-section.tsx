@@ -2,8 +2,6 @@ import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { ModelUtils } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Alert,
   AlertDescription,
@@ -18,7 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
   Label,
-  MultiComboboxField,
   SectionListSection,
   SectionListSectionContent,
   SectionListSectionDescription,
@@ -26,7 +23,7 @@ import {
   SectionListSectionTitle,
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
-import { useController, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { MdInfo, MdSettings, MdWarning } from 'react-icons/md';
 
 interface GraphQLRootFieldsSectionProps {
@@ -141,8 +138,6 @@ function ListQuerySettingsDialog({
   control: Control<ModelConfigInput>;
   disabled: boolean;
 }): React.JSX.Element {
-  const { definitionContainer } = useProjectDefinition();
-
   const isListEnabled = useWatch({
     control,
     name: 'graphql.queries.list.enabled',
@@ -155,74 +150,13 @@ function ListQuerySettingsDialog({
     control,
     name: 'graphql.queries.list.orderBy.enabled',
   });
-  const queryGlobalRoles = useWatch({
-    control,
-    name: 'graphql.queries.globalRoles',
-  });
-  const queryInstanceRoles = useWatch({
-    control,
-    name: 'graphql.queries.instanceRoles',
-  });
-  const {
-    field: { value: exposedFields = [], onChange: onExposedFieldsChange },
-  } = useController({ control, name: 'graphql.objectType.fields' });
-
-  const fieldOptions = exposedFields.map((entry) => ({
-    label: definitionContainer.nameFromId(entry.ref),
-    value: entry.ref,
-  }));
-
-  const filterableFieldRefs = exposedFields
-    .filter((entry) => entry.filterable)
-    .map((entry) => entry.ref);
-
-  const onFilterableFieldRefsChange = (refs: string[]): void => {
-    const refSet = new Set(refs);
-    onExposedFieldsChange(
-      exposedFields.map((entry) => ({
-        ...entry,
-        filterable: refSet.has(entry.ref),
-      })),
-    );
-  };
-
-  const sortableFieldRefs = exposedFields
-    .filter((entry) => entry.sortable)
-    .map((entry) => entry.ref);
-
-  const onSortableFieldRefsChange = (refs: string[]): void => {
-    const refSet = new Set(refs);
-    onExposedFieldsChange(
-      exposedFields.map((entry) => ({
-        ...entry,
-        sortable: refSet.has(entry.ref),
-      })),
-    );
-  };
-
-  // A selected field is only safe to filter on if its read access is no
-  // narrower than the list query's own roles — see
-  // ModelUtils.isFieldSafeToFilter. Surfaced as a warning rather than
-  // hidden from the options, so an author isn't left wondering why a field
-  // they expect to see is missing from the picker. Rendered inside the
-  // dialog, next to the picker that produced it, since that's where the
-  // author is actually looking when they select an unsafe field.
-  const unsafeFilterableFieldNames = exposedFields
-    .filter(
-      (entry) =>
-        entry.filterable &&
-        !ModelUtils.isFieldSafeToFilter(
-          {
-            globalRoles: entry.globalRoles ?? [],
-            instanceRoles: entry.instanceRoles ?? [],
-          },
-          {
-            globalRoles: queryGlobalRoles ?? [],
-            instanceRoles: queryInstanceRoles ?? [],
-          },
-        ),
-    )
-    .map((entry) => definitionContainer.nameFromId(entry.ref));
+  // The field lists themselves live in the Sorting & Filtering section since
+  // relations share them; the dialog only needs to know whether they are empty
+  // so it can warn next to the switch that requires them.
+  const hasSortableFields =
+    (useWatch({ control, name: 'graphql.orderBy.fields' }) ?? []).length > 0;
+  const hasFilterableFields =
+    (useWatch({ control, name: 'graphql.where.fields' }) ?? []).length > 0;
 
   return (
     <Dialog>
@@ -268,33 +202,16 @@ function ListQuerySettingsDialog({
             label="Where Filtering"
             description="Filter records by field values, e.g. posts(where: { title: { contains: ... } })"
           />
-          <div className="ml-6 space-y-2">
-            <MultiComboboxField
-              label="Filterable Fields"
-              description="Choose which exposed fields can be used as `where` filter operands."
-              placeholder="Select fields..."
-              options={fieldOptions}
-              value={filterableFieldRefs}
-              onChange={onFilterableFieldRefsChange}
-              noResultsText="No fields exposed"
-              disabled={!isListEnabled || !isWhereFilteringEnabled}
-            />
-            {isWhereFilteringEnabled &&
-              unsafeFilterableFieldNames.length > 0 && (
-                <Alert variant="warning">
-                  <MdWarning />
-                  <AlertTitle>Field roles narrower than the query</AlertTitle>
-                  <AlertDescription>
-                    {unsafeFilterableFieldNames.join(', ')}{' '}
-                    {unsafeFilterableFieldNames.length === 1 ? 'is' : 'are'}{' '}
-                    filterable but readable by fewer roles than the query
-                    itself, letting a caller infer its value without permission
-                    to read it. Match the roles or unselect it above — sync will
-                    otherwise fail.
-                  </AlertDescription>
-                </Alert>
-              )}
-          </div>
+          {isWhereFilteringEnabled && !hasFilterableFields && (
+            <Alert variant="warning">
+              <MdWarning />
+              <AlertTitle>No filterable fields selected</AlertTitle>
+              <AlertDescription>
+                Choose filterable fields in the Sorting &amp; Filtering section
+                — sync will otherwise fail.
+              </AlertDescription>
+            </Alert>
+          )}
           <ToggleItem
             control={control}
             name="graphql.queries.list.orderBy.enabled"
@@ -302,18 +219,16 @@ function ListQuerySettingsDialog({
             label="Order By"
             description="Sort records by field values, e.g. posts(orderBy: [{ createdAt: DESC }])"
           />
-          <div className="ml-6">
-            <MultiComboboxField
-              label="Sortable Fields"
-              description="Choose which exposed fields can be used as `orderBy` sort keys."
-              placeholder="Select fields..."
-              options={fieldOptions}
-              value={sortableFieldRefs}
-              onChange={onSortableFieldRefsChange}
-              noResultsText="No fields exposed"
-              disabled={!isListEnabled || !isOrderByEnabled}
-            />
-          </div>
+          {isOrderByEnabled && !hasSortableFields && (
+            <Alert variant="warning">
+              <MdWarning />
+              <AlertTitle>No sortable fields selected</AlertTitle>
+              <AlertDescription>
+                Choose sortable fields in the Sorting &amp; Filtering section —
+                sync will otherwise fail.
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
         <DialogFooter>
           <DialogClose render={<Button />}>Done</DialogClose>

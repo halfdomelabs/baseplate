@@ -1,0 +1,26 @@
+{
+  "name": "pothos/pothos-sort-order",
+  "templates": {
+    "sort-order": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main-group",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/sort-order.ts",
+      "projectExports": {
+        "applyStableOrderBy": {
+          "isTypeOnly": false,
+          "name": "applyStableOrderBy"
+        },
+        "sortOrderEnum": { "isTypeOnly": false, "name": "sortOrderEnum" }
+      },
+      "sourceFile": "src/plugins/graphql/sort-order.ts",
+      "variables": {}
+    }
+  }
+}
