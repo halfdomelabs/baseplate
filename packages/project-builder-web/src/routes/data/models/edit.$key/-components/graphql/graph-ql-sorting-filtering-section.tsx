@@ -142,7 +142,7 @@ export function GraphQLSortingFilteringSection({
             </p>
           </div>
           {defaultSort.map((entry, index) => (
-            <div key={entry.ref} className="flex items-end gap-2">
+            <div key={entry.ref} className="flex items-center gap-2">
               <SelectField
                 className="flex-1"
                 options={fieldOptions.filter(
@@ -171,7 +171,7 @@ export function GraphQLSortingFilteringSection({
               />
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-lg"
                 title="Remove sort key"
                 disabled={!isObjectTypeEnabled}
                 onClick={() => {
