@@ -107,6 +107,33 @@ const servicesNotificationRegistry = createTsTemplateFile({
   variables: {},
 });
 
+const servicesNotificationRenderer = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
+  },
+  name: 'services-notification-renderer',
+  projectExports: {
+    createNotificationRenderer: { isTypeOnly: false },
+    NotificationRenderer: { isTypeOnly: true },
+    RENDER_SOURCE_SELECT: { isTypeOnly: false },
+    RenderSource: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: {
+    servicesNotificationContent: {},
+    servicesNotificationRegistry: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/notification-renderer.ts',
+    ),
+  },
+  variables: {},
+});
+
 const servicesNotificationService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -122,6 +149,7 @@ const servicesNotificationService = createTsTemplateFile({
     servicesNotificationContent: {},
     servicesNotificationEvents: {},
     servicesNotificationRegistry: {},
+    servicesNotificationRenderer: {},
   },
   source: {
     path: path.join(
@@ -139,6 +167,7 @@ export const mainGroup = {
   servicesNotificationContent,
   servicesNotificationEvents,
   servicesNotificationRegistry,
+  servicesNotificationRenderer,
   servicesNotificationService,
 };
 
@@ -149,7 +178,7 @@ const schemaNotificationContentField = createTsTemplateFile({
   name: 'schema-notification-content-field',
   referencedGeneratorTemplates: {
     schemaNotificationContentObjectTypes: {},
-    servicesNotificationService: {},
+    servicesNotificationRenderer: {},
   },
   source: {
     path: path.join(
@@ -175,6 +204,23 @@ const schemaNotificationContentObjectTypes = createTsTemplateFile({
   variables: {},
 });
 
+const schemaNotificationFeedQueries = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: {
+    pothosImports: pothosImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'schema-notification-feed-queries',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/notification-feed.queries.ts',
+    ),
+  },
+  variables: {},
+});
+
 const schemaNotificationMutations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'schema',
@@ -190,23 +236,6 @@ const schemaNotificationMutations = createTsTemplateFile({
     ),
   },
   variables: { TPL_NOTIFICATION_OBJECT_TYPE: {} },
-});
-
-const schemaNotificationQueries = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'schema',
-  importMapProviders: {
-    pothosImports: pothosImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
-  name: 'schema-notification-queries',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/schema/notification.queries.ts',
-    ),
-  },
-  variables: {},
 });
 
 const schemaNotificationSubscriptions = createTsTemplateFile({
@@ -226,8 +255,8 @@ const schemaNotificationSubscriptions = createTsTemplateFile({
 export const schemaGroup = {
   schemaNotificationContentField,
   schemaNotificationContentObjectTypes,
+  schemaNotificationFeedQueries,
   schemaNotificationMutations,
-  schemaNotificationQueries,
   schemaNotificationSubscriptions,
 };
 

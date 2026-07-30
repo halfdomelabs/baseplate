@@ -240,6 +240,17 @@ type NotificationContent {
   segments: [NotificationSegment!]!
 }
 
+type NotificationFeedConnection {
+  edges: [NotificationFeedEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type NotificationFeedEdge {
+  cursor: String!
+  node: Notification!
+}
+
 type NotificationLinkSegment {
   href: String!
   value: String!
@@ -252,6 +263,13 @@ type NotificationTextSegment {
   value: String!
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
 type Query {
   article(id: Uuid!): Article!
   articles(skip: Int, take: Int): [Article!]!
@@ -262,7 +280,7 @@ type Query {
 
   """Get the current user session"""
   currentUserSession: UserSessionPayload
-  notifications(skip: Int, take: Int): [Notification!]!
+  notificationFeed(after: String, before: String, first: Int, last: Int): NotificationFeedConnection!
   unseenNotificationCount: Int!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!

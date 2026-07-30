@@ -4,8 +4,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 export interface NotificationsCoreNotificationModulePaths {
   schemaNotificationContentField: string;
   schemaNotificationContentObjectTypes: string;
+  schemaNotificationFeedQueries: string;
   schemaNotificationMutations: string;
-  schemaNotificationQueries: string;
   schemaNotificationSubscriptions: string;
   servicesEmailChannel: string;
   servicesGenericType: string;
@@ -14,6 +14,7 @@ export interface NotificationsCoreNotificationModulePaths {
   servicesNotificationContent: string;
   servicesNotificationEvents: string;
   servicesNotificationRegistry: string;
+  servicesNotificationRenderer: string;
   servicesNotificationService: string;
 }
 
@@ -36,8 +37,8 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
         notificationsCoreNotificationModulePaths: {
           schemaNotificationContentField: `${moduleRoot}/schema/notification-content.field.ts`,
           schemaNotificationContentObjectTypes: `${moduleRoot}/schema/notification-content.object-types.ts`,
+          schemaNotificationFeedQueries: `${moduleRoot}/schema/notification-feed.queries.ts`,
           schemaNotificationMutations: `${moduleRoot}/schema/notification.mutations.ts`,
-          schemaNotificationQueries: `${moduleRoot}/schema/notification.queries.ts`,
           schemaNotificationSubscriptions: `${moduleRoot}/schema/notification.subscriptions.ts`,
           servicesEmailChannel: `${moduleRoot}/services/email-channel.ts`,
           servicesGenericType: `${moduleRoot}/services/generic-type.ts`,
@@ -46,6 +47,7 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           servicesNotificationContent: `${moduleRoot}/services/notification-content.ts`,
           servicesNotificationEvents: `${moduleRoot}/services/notification-events.ts`,
           servicesNotificationRegistry: `${moduleRoot}/services/notification-registry.ts`,
+          servicesNotificationRenderer: `${moduleRoot}/services/notification-renderer.ts`,
           servicesNotificationService: `${moduleRoot}/services/notification.service.ts`,
         },
       },

@@ -10,6 +10,7 @@ import { rootModule } from '../modules/index.js';
 import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
 import { createInAppChannel } from '../modules/notifications/services/in-app-channel.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
+import { createNotificationRenderer } from '../modules/notifications/services/notification-renderer.js';
 import { createNotificationService } from '../modules/notifications/services/notification.service.js';
 import { createGraphqlPubSub } from '../plugins/graphql/pubsub.js';
 import { createQueueRuntime } from '../services/pg-boss.service.js';
@@ -139,7 +140,7 @@ export function createAppRuntime(
   const notification = provide('notification', () =>
     createNotificationService({
       events: notificationEvents,
-      notificationTypes,
+      renderer: createNotificationRenderer({ notificationTypes }),
       channels: {
         email: createEmailChannel({ email }),
         inApp: createInAppChannel({ events: notificationEvents }),

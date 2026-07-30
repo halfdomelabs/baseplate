@@ -100,9 +100,11 @@ export const notificationModuleGenerator = createGenerator({
             'notificationEvents',
             ...(includeEmailChannel ? ['email'] : []),
           ],
+          // The renderer is constructed inline rather than as its own entry:
+          // only the service consumes it, and it holds no resource to dispose.
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: notificationEvents,
-              notificationTypes,
+              renderer: ${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes }),
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
             })`,
         });

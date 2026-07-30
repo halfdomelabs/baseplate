@@ -50,7 +50,7 @@ export function NotificationBell({
   const [open, setOpen] = useState(false);
 
   const { data, loading, refetch } = useQuery(notificationFeedQuery, {
-    variables: { take: FEED_PAGE_SIZE },
+    variables: { first: FEED_PAGE_SIZE },
     skip: !isAuthenticated,
   });
 
@@ -62,7 +62,10 @@ export function NotificationBell({
       // Instant badge from the pushed count...
       if (subData) {
         client.cache.updateQuery(
-          { query: notificationFeedQuery, variables: { take: FEED_PAGE_SIZE } },
+          {
+            query: notificationFeedQuery,
+            variables: { first: FEED_PAGE_SIZE },
+          },
           (existing) =>
             existing
               ? {
@@ -80,8 +83,8 @@ export function NotificationBell({
   if (!isAuthenticated) return null;
 
   const unseenCount = data?.unseenNotificationCount ?? 0;
-  const items = (data?.notifications ?? []).map((item) =>
-    readFragment(notificationItemFragment, item),
+  const items = (data?.notificationFeed.edges ?? []).map((edge) =>
+    readFragment(notificationItemFragment, edge.node),
   );
 
   return (

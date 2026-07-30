@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { notificationContentType } from '$schemaNotificationContentObjectTypes';
-import { RENDER_SOURCE_SELECT } from '$servicesNotificationService';
+import { RENDER_SOURCE_SELECT } from '$servicesNotificationRenderer';
 import { builder } from '%pothosImports';
 
 /**

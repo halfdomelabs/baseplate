@@ -14,7 +14,6 @@ import type {
 export interface NotificationEvent<
   P extends NotificationParams = NotificationParams,
 > {
-  recipientId: string;
   params: P;
   actorId?: string;
   entityType?: string;
@@ -45,9 +44,12 @@ export interface NotificationTypeDefinition<
   channels: readonly NotificationChannelKey[];
   /**
    * Render content from a batch of events, in `ctx.locale`.
+   *
+   * Typed as a non-empty tuple: a render always has at least one event, so
+   * `render: ([event]) => …` destructures without an undefined check.
    */
   render(
-    events: NotificationEvent<P>[],
+    events: [NotificationEvent<P>, ...NotificationEvent<P>[]],
     ctx: RenderContext,
   ): NotificationContent;
 }

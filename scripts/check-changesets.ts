@@ -206,10 +206,11 @@ async function getLastPackageTag(): Promise<string | null> {
       'git tag --list "@baseplate-dev/project-builder-cli@*" --sort=-v:refname',
     );
 
-    const tags = stdout.trim().split('\n').filter(Boolean);
-
     // Most recent tag first, due to the --sort=-v:refname above.
-    const lastTag = tags[0];
+    const lastTag = stdout
+      .trim()
+      .split('\n')
+      .find((tag) => tag !== '');
 
     if (lastTag === undefined) {
       console.info(
