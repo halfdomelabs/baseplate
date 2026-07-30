@@ -10,10 +10,6 @@ import type {
 /**
  * A single event feeding a render. Array-shaped so the future digest engine can
  * pass N ("and N others") additively; today `render` always gets one.
- *
- * Carries no `recipientId`: the feed renders at read time, where the row's
- * recipient is already the authenticated caller, so a renderer that branched on
- * it would be reading a value the read path cannot supply.
  */
 export interface NotificationEvent<
   P extends NotificationParams = NotificationParams,
