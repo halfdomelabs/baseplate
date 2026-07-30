@@ -482,6 +482,39 @@ describe('pg-boss service integration tests', () => {
     }, 10_000);
   });
 
+  describe('repeatable jobs', () => {
+    it('should not pile up multiple pending instances of a repeatable job', async () => {
+      const queueName = 'test-repeatable-exclusive-queue';
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          // Never started - this test only asserts on what was written.
+        },
+        repeatable: {
+          pattern: '*/5 * * * * *',
+        },
+      });
+
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      // Simulates what would happen if several cron ticks dispatched to this
+      // queue while no worker was around to drain them: without exclusive
+      // policy, every dispatch would insert its own pending job row.
+      const jobIds = await runtime.enqueueBulk(token, [
+        { data: {} },
+        { data: {} },
+        { data: {} },
+      ]);
+
+      // An exclusive-policy queue admits only one pending job at a time, so
+      // the pile-up collapses to a single row instead of draining as a
+      // backlog once a worker reconnects.
+      expect(jobIds).toHaveLength(1);
+    });
+  });
+
   describe('cleanup', () => {
     it('should clean up orphaned schedules', async () => {
       const orphanedQueue = 'orphaned-repeatable-queue';
