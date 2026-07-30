@@ -1,5 +1,25 @@
 # @baseplate-dev/plugin-queue
 
+## 0.6.15
+
+### Patch Changes
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
+- [#966](https://github.com/halfdomelabs/baseplate/pull/966) [`dac747d`](https://github.com/halfdomelabs/baseplate/commit/dac747d5085f82de33bc4cc66ef0709fc405cccd) Thanks [@kingston](https://github.com/kingston)! - Fixed repeatable pg-boss jobs (e.g. scheduled cleanup jobs) being able to pile up and run back-to-back after a worker process was offline for a while, by giving repeatable-job queues pg-boss's exclusive policy so at most one pending instance can exist at a time.
+
+- [#970](https://github.com/halfdomelabs/baseplate/pull/970) [`4ed5ae3`](https://github.com/halfdomelabs/baseplate/commit/4ed5ae379ec7097d072612fa9c29738947b11334) Thanks [@kingston](https://github.com/kingston)! - pg-boss repeatable-job queues now log an error on worker startup if their policy hasn't been migrated to `exclusive` (e.g. an existing deployment predating that fix). A new `src/scripts/migrate-queue-policies.ts` script (run via `pnpm script:run`) lets operators review a dry-run plan — including how many pending/active jobs would be lost — and explicitly opt in per queue with `--yes` before applying the fix.
+
+- [#958](https://github.com/halfdomelabs/baseplate/pull/958) [`3184ab4`](https://github.com/halfdomelabs/baseplate/commit/3184ab40137515c7c96249793ca882526055292d) Thanks [@kingston](https://github.com/kingston)! - Upgrade pg-boss to v12 and enable LISTEN/NOTIFY so queue workers pick up newly enqueued jobs the moment they are written instead of waiting for the next poll, and add a new `enqueueBulk` method to the queue service for enqueueing many jobs in a single round trip on both the pg-boss and BullMQ backends. Queue handlers now run up to 10 jobs concurrently per worker process on both backends, where they previously ran one at a time; set `concurrency` on a queue's binding options to change this, or to 1 for handlers that are not safe to run against themselves. Generated apps run pg-boss's schema migration automatically on first start after this upgrade.
+
+- Updated dependencies [[`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`8b2dfd7`](https://github.com/halfdomelabs/baseplate/commit/8b2dfd7aa799b51dfa02deeaf7592af8ea29ed7e), [`05cfe52`](https://github.com/halfdomelabs/baseplate/commit/05cfe5202692c8f3f3876d2e1c994c267d18d622), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73), [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`15f4f2c`](https://github.com/halfdomelabs/baseplate/commit/15f4f2c6742bdde2b6a5f0b5f5063e01a053123e)]:
+  - @baseplate-dev/fastify-generators@0.6.15
+  - @baseplate-dev/project-builder-lib@0.6.15
+  - @baseplate-dev/core-generators@0.6.15
+  - @baseplate-dev/sync@0.6.15
+  - @baseplate-dev/utils@0.6.15
+  - @baseplate-dev/ui-components@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @baseplate-dev/fastify-generators
 
+## 0.6.15
+
+### Patch Changes
+
+- [#956](https://github.com/halfdomelabs/baseplate/pull/956) [`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5) Thanks [@kingston](https://github.com/kingston)! - GraphQL list relation fields can now opt into orderBy arguments using the related model's sortable fields, and requesting ordering on a model with no sortable fields now fails with a clear error instead of generating an invalid schema.
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
+- [#967](https://github.com/halfdomelabs/baseplate/pull/967) [`8b2dfd7`](https://github.com/halfdomelabs/baseplate/commit/8b2dfd7aa799b51dfa02deeaf7592af8ea29ed7e) Thanks [@kingston](https://github.com/kingston)! - Fix login and change-password failing with an internal server error instead of an invalid credentials message when the account has no stored password, which affected logging in with an unrecognized email address and changing the password on accounts linked only to a social provider
+
+- [#961](https://github.com/halfdomelabs/baseplate/pull/961) [`05cfe52`](https://github.com/halfdomelabs/baseplate/commit/05cfe5202692c8f3f3876d2e1c994c267d18d622) Thanks [@kingston](https://github.com/kingston)! - Model policy actions now always return a where clause from `.where()`, using an empty clause for unrestricted grants instead of `undefined`, so an authorization filter can no longer be spread into a query as "no filter" and silently widen it. Denied grants continue to throw.
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Generated projects now enable the `noUncheckedIndexedAccess` TypeScript compiler option, so indexed access such as `array[0]` or `record[key]` is typed as possibly undefined and must be handled explicitly. Existing projects will see new type errors on their next sync and should add the appropriate guards, defaults, or narrowing.
+
+- [#959](https://github.com/halfdomelabs/baseplate/pull/959) [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73) Thanks [@kingston](https://github.com/kingston)! - Sortable and filterable field selections have moved out of the list query settings into a new model-level Sorting & Filtering section, since list queries and list relations sort by the same fields, and models can now define a default sort that orders results whenever a caller supplies no orderBy — including on relations and queries that expose no orderBy argument at all. Existing projects migrate automatically.
+
+- [#963](https://github.com/halfdomelabs/baseplate/pull/963) [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c) Thanks [@kingston](https://github.com/kingston)! - Support configuring a default and maximum page size for paginated GraphQL endpoints so large objects can't be fetched en masse, applied to list queries, connection queries, and paginated list relations alike; setting only a maximum also applies it as the default, since a cap alone would be bypassed by omitting the argument. Cursor pagination can now be enabled independently of offset pagination — a model can expose a list query, a connection query, or both, with where filtering and ordering available to either.
+
+- [#971](https://github.com/halfdomelabs/baseplate/pull/971) [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 7.9.1 in generated projects (`prisma`, `@prisma/client`, and `@prisma/adapter-pg` from 7.9.0 → 7.9.1) to resolve a high-severity `find-my-way` advisory reached transitively through the Prisma CLI.
+
+- [#972](https://github.com/halfdomelabs/baseplate/pull/972) [`15f4f2c`](https://github.com/halfdomelabs/baseplate/commit/15f4f2c6742bdde2b6a5f0b5f5063e01a053123e) Thanks [@kingston](https://github.com/kingston)! - Generated apps now use `@types/node` 24, matching the Node 24 runtime they already declare.
+
+- Updated dependencies [[`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2)]:
+  - @baseplate-dev/core-generators@0.6.15
+  - @baseplate-dev/sync@0.6.15
+  - @baseplate-dev/utils@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes

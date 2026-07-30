@@ -1,5 +1,23 @@
 # @baseplate-dev/plugin-email
 
+## 0.6.15
+
+### Patch Changes
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Generated projects now enable the `noUncheckedIndexedAccess` TypeScript compiler option, so indexed access such as `array[0]` or `record[key]` is typed as possibly undefined and must be handled explicitly. Existing projects will see new type errors on their next sync and should add the appropriate guards, defaults, or narrowing.
+
+- Updated dependencies [[`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`8b2dfd7`](https://github.com/halfdomelabs/baseplate/commit/8b2dfd7aa799b51dfa02deeaf7592af8ea29ed7e), [`dac747d`](https://github.com/halfdomelabs/baseplate/commit/dac747d5085f82de33bc4cc66ef0709fc405cccd), [`4ed5ae3`](https://github.com/halfdomelabs/baseplate/commit/4ed5ae379ec7097d072612fa9c29738947b11334), [`05cfe52`](https://github.com/halfdomelabs/baseplate/commit/05cfe5202692c8f3f3876d2e1c994c267d18d622), [`3184ab4`](https://github.com/halfdomelabs/baseplate/commit/3184ab40137515c7c96249793ca882526055292d), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73), [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`15f4f2c`](https://github.com/halfdomelabs/baseplate/commit/15f4f2c6742bdde2b6a5f0b5f5063e01a053123e)]:
+  - @baseplate-dev/fastify-generators@0.6.15
+  - @baseplate-dev/project-builder-lib@0.6.15
+  - @baseplate-dev/core-generators@0.6.15
+  - @baseplate-dev/plugin-queue@0.6.15
+  - @baseplate-dev/react-generators@0.6.15
+  - @baseplate-dev/sync@0.6.15
+  - @baseplate-dev/utils@0.6.15
+  - @baseplate-dev/ui-components@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes

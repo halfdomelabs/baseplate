@@ -1,5 +1,29 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.15
+
+### Patch Changes
+
+- [#956](https://github.com/halfdomelabs/baseplate/pull/956) [`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5) Thanks [@kingston](https://github.com/kingston)! - GraphQL list relation fields can now opt into orderBy arguments using the related model's sortable fields, and requesting ordering on a model with no sortable fields now fails with a clear error instead of generating an invalid schema.
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
+- [#969](https://github.com/halfdomelabs/baseplate/pull/969) [`b936ed2`](https://github.com/halfdomelabs/baseplate/commit/b936ed2aef5c421de9e18f28ba488e4df59f5d61) Thanks [@kingston](https://github.com/kingston)! - The dev MCP server now starts even when a plugin directory cannot be scanned, such as when a package.json still has unresolved merge conflict markers during an upgrade. Discovery failures are reported as warnings and listed by the list-plugins action rather than aborting startup, and a package.json containing conflict markers now reports that the conflict needs resolving instead of a generic JSON parse error.
+
+- [#959](https://github.com/halfdomelabs/baseplate/pull/959) [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73) Thanks [@kingston](https://github.com/kingston)! - Sortable and filterable field selections have moved out of the list query settings into a new model-level Sorting & Filtering section, since list queries and list relations sort by the same fields, and models can now define a default sort that orders results whenever a caller supplies no orderBy — including on relations and queries that expose no orderBy argument at all. Existing projects migrate automatically.
+
+- [#963](https://github.com/halfdomelabs/baseplate/pull/963) [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c) Thanks [@kingston](https://github.com/kingston)! - Support configuring a default and maximum page size for paginated GraphQL endpoints so large objects can't be fetched en masse, applied to list queries, connection queries, and paginated list relations alike; setting only a maximum also applies it as the default, since a cap alone would be bypassed by omitting the argument. Cursor pagination can now be enabled independently of offset pagination — a model can expose a list query, a connection query, or both, with where filtering and ordering available to either.
+
+- [#965](https://github.com/halfdomelabs/baseplate/pull/965) [`e2ca87e`](https://github.com/halfdomelabs/baseplate/commit/e2ca87e9add6d849081ec73aa99c85a24e3b4817) Thanks [@kingston](https://github.com/kingston)! - Read queries now honour a model's `instanceRoles` when deriving the GraphQL `authorize` gate, so an ownership-style read permission no longer rejects the owner or fails to build the schema. Gates derived from instance roles now emit just the role that covers them (typically `user`) instead of listing every configured role, which also stops instance-gated mutations from admitting unauthenticated callers via `public`.
+
+- Updated dependencies [[`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`8b2dfd7`](https://github.com/halfdomelabs/baseplate/commit/8b2dfd7aa799b51dfa02deeaf7592af8ea29ed7e), [`05cfe52`](https://github.com/halfdomelabs/baseplate/commit/05cfe5202692c8f3f3876d2e1c994c267d18d622), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73), [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`e12d469`](https://github.com/halfdomelabs/baseplate/commit/e12d4699363b6d8c24c060929bec7b117933c8c2), [`15f4f2c`](https://github.com/halfdomelabs/baseplate/commit/15f4f2c6742bdde2b6a5f0b5f5063e01a053123e)]:
+  - @baseplate-dev/fastify-generators@0.6.15
+  - @baseplate-dev/project-builder-lib@0.6.15
+  - @baseplate-dev/core-generators@0.6.15
+  - @baseplate-dev/react-generators@0.6.15
+  - @baseplate-dev/sync@0.6.15
+  - @baseplate-dev/utils@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes
