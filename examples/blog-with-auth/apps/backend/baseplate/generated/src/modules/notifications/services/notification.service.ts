@@ -18,71 +18,12 @@ import type {
   NotificationEvent,
   NotificationTypeDefinition,
 } from './notification-registry.js';
+import type {
+  NotificationRenderer,
+  RenderSource,
+} from './notification-renderer.js';
 
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
-import {
-  isSafeUrl,
-  notificationSegmentsSchema,
-  segmentsToText,
-  toSegments,
-} from './notification-content.js';
-
-/** Default render locale until i18n lands. */
-const DEFAULT_LOCALE = 'en';
-
-/** Columns `renderContent` reads; the GraphQL field spreads this into its `select`. */
-export const RENDER_SOURCE_SELECT = {
-  id: true,
-  type: true,
-  templateVersion: true,
-  params: true,
-  segments: true,
-  fallbackText: true,
-  actionUrl: true,
-  actorId: true,
-  entityType: true,
-  entityId: true,
-} satisfies Prisma.NotificationSelect;
-
-/** Row shape `renderContent` accepts (feed/notify rows are supersets). */
-export type RenderSource = Prisma.NotificationGetPayload<{
-  select: typeof RENDER_SOURCE_SELECT;
-}>;
-
-/**
- * The frozen snapshot persisted at notify time — the recovery content used when
- * the row's renderer is gone or its params no longer validate. Parsed, not cast:
- * the DB guarantees no shape.
- */
-function frozenContent(row: RenderSource): RenderedContent {
-  const parsed = notificationSegmentsSchema.safeParse(row.segments);
-  return {
-    segments: parsed.success ? parsed.data : [],
-    fallbackText: row.fallbackText,
-    actionUrl: row.actionUrl,
-  };
-}
-
-/** Registry key: a row's renderer is pinned by BOTH its type and its version. */
-function registryKey(key: string, version: number): string {
-  return `${key}@${version}`;
-}
-
-/** Project a renderer's output into the served content (one render, all fields). */
-function toRenderedContent(
-  content: ReturnType<NotificationTypeDefinition['render']>,
-): RenderedContent {
-  const segments = toSegments(content.body);
-  const actionUrl =
-    content.actionUrl && isSafeUrl(content.actionUrl)
-      ? content.actionUrl
-      : null;
-  return {
-    segments,
-    fallbackText: segmentsToText(segments),
-    actionUrl,
-  };
-}
 
 /** Actor columns from the input (human actors; live name/avatar via the relation). */
 function actorColumns(actorId: string | undefined): {
@@ -147,13 +88,9 @@ export interface NotificationService {
     options?: NotifyTextOptions,
   ): Promise<Notification>;
   /**
-   * Render a row's content at read time, ATOMICALLY: segments, fallbackText and
-   * actionUrl all come from a single invocation of the renderer that CREATED
-   * the row — resolved by `(type, templateVersion)` against the per-runtime
-   * registry, never "whatever is deployed now". A copy/param refactor bumps the
-   * version, so history can't be silently rewritten. Falls back to the frozen
-   * snapshot (and logs) when the pinned renderer is gone or params no longer
-   * satisfy it.
+   * Render a row's content at read time. Delegates to the injected
+   * {@link NotificationRenderer}; see its docs for the version-pinning and
+   * fallback rules.
    */
   renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
   /**
@@ -189,78 +126,16 @@ async function getUnseenCount(userId: string): Promise<number> {
 }
 
 /**
- * Creates the {@link NotificationService}. `events` is a runtime resource
- * injected once at construction — feature code never touches pubsub directly.
+ * Creates the {@link NotificationService}. `events` and `renderer` are runtime
+ * resources injected once at construction — feature code never touches pubsub
+ * directly, and rendering stays a pure, separately-testable concern.
  */
 export function createNotificationService(deps: {
   events: NotificationEvents;
-  notificationTypes: NotificationTypeDefinition[];
+  renderer: NotificationRenderer;
   channels: NotificationChannels;
 }): NotificationService {
-  const { events, notificationTypes, channels } = deps;
-
-  // Per-runtime registry: collected from `AppModule.notificationTypes` at
-  // construction. Duplicate `(key, version)` pairs fail HERE — deterministically
-  // at runtime construction — instead of at whatever import happened to load a
-  // colliding definition first.
-  const registry = new Map<string, NotificationTypeDefinition>();
-  for (const type of notificationTypes) {
-    const id = registryKey(type.key, type.version);
-    if (registry.has(id)) {
-      throw new Error(`Notification type "${id}" is already defined`);
-    }
-    registry.set(id, type);
-  }
-
-  /** Render a row's content at read time; see {@link NotificationService.renderContent}. */
-  function renderContent(
-    row: RenderSource,
-    ctx?: RenderContext,
-  ): RenderedContent {
-    const type = registry.get(registryKey(row.type, row.templateVersion));
-    if (!type) {
-      logError(
-        new Error(
-          `No renderer for notification "${row.type}@${row.templateVersion}"`,
-        ),
-        { source: 'notification-render', notificationId: row.id },
-      );
-      return frozenContent(row);
-    }
-
-    const params = type.paramsSchema.safeParse(row.params ?? {});
-    if (!params.success) {
-      logError(params.error, {
-        source: 'notification-render',
-        reason: 'params-drift',
-        notificationId: row.id,
-        type: `${row.type}@${row.templateVersion}`,
-      });
-      return frozenContent(row);
-    }
-
-    const event: NotificationEvent = {
-      recipientId: '', // not needed to render the body
-      params: params.data,
-      actorId: row.actorId ?? undefined,
-      entityType: row.entityType ?? undefined,
-      entityId: row.entityId ?? undefined,
-    };
-
-    try {
-      return toRenderedContent(
-        type.render([event], ctx ?? { locale: DEFAULT_LOCALE }),
-      );
-    } catch (error) {
-      logError(error, {
-        source: 'notification-render',
-        reason: 'render-threw',
-        notificationId: row.id,
-        type: `${row.type}@${row.templateVersion}`,
-      });
-      return frozenContent(row);
-    }
-  }
+  const { events, renderer, channels } = deps;
 
   /** Deliver to each of the type's channels; a channel that throws is logged, not rethrown. */
   async function dispatchToChannels(
@@ -299,7 +174,6 @@ export function createNotificationService(deps: {
     const params = type.paramsSchema.parse(input.params);
 
     const event: NotificationEvent<P> = {
-      recipientId: input.recipientId,
       params,
       actorId: input.actorId,
       entityType: input.entityType,
@@ -307,9 +181,7 @@ export function createNotificationService(deps: {
     };
 
     // Freeze a default-locale snapshot as the read-time recovery content.
-    const frozen = toRenderedContent(
-      type.render([event], { locale: DEFAULT_LOCALE }),
-    );
+    const frozen = renderer.renderForWrite(type, event);
 
     const row = await prisma.notification.create({
       data: {
@@ -430,7 +302,7 @@ export function createNotificationService(deps: {
   return {
     notify,
     notifyText,
-    renderContent,
+    renderContent: (row, ctx) => renderer.renderContent(row, ctx),
     getUnseenCount,
     markAsRead,
     markAllAsSeen,

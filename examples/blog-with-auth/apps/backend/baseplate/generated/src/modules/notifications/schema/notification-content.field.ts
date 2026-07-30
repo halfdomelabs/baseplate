@@ -1,6 +1,6 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 
-import { RENDER_SOURCE_SELECT } from '../services/notification.service.js';
+import { RENDER_SOURCE_SELECT } from '../services/notification-renderer.js';
 import { notificationContentType } from './notification-content.object-types.js';
 import { notificationObjectType } from './notification.object-type.js';
 

@@ -3,52 +3,34 @@ import { z } from 'zod';
 
 import type { Prisma } from '@src/generated/prisma/client.js';
 
-import type { NotificationChannels } from './notification-channel.js';
 import type { NotificationSegment } from './notification-content.js';
-import type { NotificationEvents } from './notification-events.js';
 import type { NotificationTypeDefinition } from './notification-registry.js';
-import type { RenderSource } from './notification.service.js';
+import type { RenderSource } from './notification-renderer.js';
 
 import { defineNotificationType } from './notification-registry.js';
-import { createNotificationService } from './notification.service.js';
+import { createNotificationRenderer } from './notification-renderer.js';
 
 vi.mock('@src/services/error-logger.js', () => ({ logError: vi.fn() }));
 
 const FROZEN: NotificationSegment[] = [{ type: 'text', value: 'FROZEN v1' }];
 
-/** `renderContent` never touches pubsub, so a stub `NotificationEvents` suffices. */
-const fakeEvents: NotificationEvents = {
-  publishUnseenCount: vi.fn(),
-  subscribeToUnseenCount: vi.fn(),
-};
-
-/** These tests exercise renderContent/registry construction, never delivery. */
-const fakeChannels: NotificationChannels = {
-  inApp: { deliver: vi.fn() },
-  email: { deliver: vi.fn() },
-};
-
-/** Build a service whose registry holds exactly the supplied types. */
-function serviceWith(
+/** Build a renderer whose registry holds exactly the supplied types. */
+function rendererWith(
   notificationTypes: NotificationTypeDefinition[],
-): ReturnType<typeof createNotificationService> {
-  return createNotificationService({
-    events: fakeEvents,
-    notificationTypes,
-    channels: fakeChannels,
-  });
+): ReturnType<typeof createNotificationRenderer> {
+  return createNotificationRenderer({ notificationTypes });
 }
 
 /**
- * The service's `renderContent`, wrapped so tests can call it directly.
+ * The renderer's `renderContent`, wrapped so tests can call it directly.
  * Wrapped (not destructured) because `renderContent` is an interface method;
  * pulling it off the object bare would trip `@typescript-eslint/unbound-method`.
  */
 function renderWith(
   notificationTypes: NotificationTypeDefinition[],
-): ReturnType<typeof createNotificationService>['renderContent'] {
-  const service = serviceWith(notificationTypes);
-  return (row, ctx) => service.renderContent(row, ctx);
+): ReturnType<typeof createNotificationRenderer>['renderContent'] {
+  const renderer = rendererWith(notificationTypes);
+  return (row, ctx) => renderer.renderContent(row, ctx);
 }
 
 /** A persisted row whose frozen columns act as the recovery content. */
@@ -79,7 +61,7 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `${event?.params.name} commented` }),
+        render: ([event]) => ({ body: `${event.params.name} commented` }),
       }),
     ]);
 
@@ -100,14 +82,14 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v1: ${event?.params.name}` }),
+        render: ([event]) => ({ body: `v1: ${event.params.name}` }),
       }),
       defineNotificationType({
         key: 'test.versioned',
         version: 2,
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v2: ${event?.params.name}` }),
+        render: ([event]) => ({ body: `v2: ${event.params.name}` }),
       }),
     ]);
 
@@ -127,7 +109,7 @@ describe('renderContent (versioned render-at-read)', () => {
         channels: ['inApp'],
         render: ([event]) => ({
           body: 'commented on your post',
-          actionUrl: `/posts/${event?.params.postId}`,
+          actionUrl: `/posts/${event.params.postId}`,
         }),
       }),
     ]);
@@ -153,7 +135,7 @@ describe('renderContent (versioned render-at-read)', () => {
         version: 1,
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: event?.params.title ?? '' }),
+        render: ([event]) => ({ body: event.params.title }),
       }),
     ]);
 
@@ -206,7 +188,7 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 });
 
-describe('createNotificationService (registry construction invariant)', () => {
+describe('createNotificationRenderer (registry construction invariant)', () => {
   it('throws at construction when a (key, version) pair is registered twice', () => {
     const first = defineNotificationType({
       key: 'test.dup',
@@ -225,14 +207,14 @@ describe('createNotificationService (registry construction invariant)', () => {
 
     // The collision surfaces deterministically at runtime construction — citing
     // the duplicated identifier — not at whatever import happened to load first.
-    expect(() => serviceWith([first, second])).toThrow(
+    expect(() => rendererWith([first, second])).toThrow(
       'Notification type "test.dup@1" is already defined',
     );
   });
 
   it('allows the same key across different versions', () => {
     expect(() =>
-      serviceWith([
+      rendererWith([
         defineNotificationType({
           key: 'test.multiversion',
           version: 1,

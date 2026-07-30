@@ -9,15 +9,15 @@
     "instanceData": {},
     "template": "schema-notification-content-object-types"
   },
+  "notification-feed.queries.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "schema-notification-feed-queries"
+  },
   "notification.mutations.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
     "template": "schema-notification-mutations"
-  },
-  "notification.queries.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "schema-notification-queries"
   },
   "notification.subscriptions.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",

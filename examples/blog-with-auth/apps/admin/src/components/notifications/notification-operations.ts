@@ -32,11 +32,26 @@ export const notificationItemFragment = graphql(`
   }
 `);
 
-/** The feed + unseen badge count, loaded when the panel opens. */
+/**
+ * The feed + unseen badge count, loaded when the panel opens.
+ *
+ * A cursor connection: the feed is a live list, so offset paging would skip or
+ * repeat rows when a notification arrives between fetches. The widget reads
+ * only the first page; `pageInfo` is selected so a "view all" surface can page
+ * with `after` without changing this document.
+ */
 export const notificationFeedQuery = graphql(`
-  query NotificationFeed($take: Int) {
-    notifications(take: $take) {
-      ...NotificationItem
+  query NotificationFeed($first: Int, $after: String) {
+    notificationFeed(first: $first, after: $after) {
+      edges {
+        node {
+          ...NotificationItem
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
     unseenNotificationCount
   }

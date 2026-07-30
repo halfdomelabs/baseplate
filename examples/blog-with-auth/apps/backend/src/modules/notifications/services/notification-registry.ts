@@ -10,11 +10,14 @@ import type {
 /**
  * A single event feeding a render. Array-shaped so the future digest engine can
  * pass N ("and N others") additively; today `render` always gets one.
+ *
+ * Carries no `recipientId`: the feed renders at read time, where the row's
+ * recipient is already the authenticated caller, so a renderer that branched on
+ * it would be reading a value the read path cannot supply.
  */
 export interface NotificationEvent<
   P extends NotificationParams = NotificationParams,
 > {
-  recipientId: string;
   params: P;
   actorId?: string;
   entityType?: string;
@@ -45,9 +48,12 @@ export interface NotificationTypeDefinition<
   channels: readonly NotificationChannelKey[];
   /**
    * Render content from a batch of events, in `ctx.locale`.
+   *
+   * Typed as a non-empty tuple: a render always has at least one event, so
+   * `render: ([event]) => …` destructures without an undefined check.
    */
   render(
-    events: NotificationEvent<P>[],
+    events: [NotificationEvent<P>, ...NotificationEvent<P>[]],
     ctx: RenderContext,
   ): NotificationContent;
 }

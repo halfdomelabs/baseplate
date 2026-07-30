@@ -5,9 +5,9 @@ import { GENERIC_NOTIFICATION_TYPE } from './services/generic-type.js';
 /* TPL_IMPORTS:START */
 import './schema/notification-content.field.js';
 import './schema/notification-content.object-types.js';
+import './schema/notification-feed.queries.js';
 import './schema/notification.mutations.js';
 import './schema/notification.object-type.js';
-import './schema/notification.queries.js';
 import './schema/notification.subscriptions.js';
 /* TPL_IMPORTS:END */
 

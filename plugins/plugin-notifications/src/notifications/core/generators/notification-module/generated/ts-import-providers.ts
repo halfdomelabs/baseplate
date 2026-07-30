@@ -14,7 +14,11 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.j
 
 export const notificationModuleImportsSchema = createTsImportMapSchema({
   createNotificationEvents: {},
+  createNotificationRenderer: {},
   NotificationEvents: { isTypeOnly: true },
+  NotificationRenderer: { isTypeOnly: true },
+  RENDER_SOURCE_SELECT: {},
+  RenderSource: { isTypeOnly: true },
 });
 
 export type NotificationModuleImportsProvider = TsImportMapProviderFromSchema<
@@ -41,7 +45,11 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
           notificationModuleImportsSchema,
           {
             createNotificationEvents: paths.servicesNotificationEvents,
+            createNotificationRenderer: paths.servicesNotificationRenderer,
             NotificationEvents: paths.servicesNotificationEvents,
+            NotificationRenderer: paths.servicesNotificationRenderer,
+            RENDER_SOURCE_SELECT: paths.servicesNotificationRenderer,
+            RenderSource: paths.servicesNotificationRenderer,
           },
         ),
       },

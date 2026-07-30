@@ -76,7 +76,7 @@ Baseplate consists of two main tiers:
 
 - Run `pnpm check` during development to validate affected packages (formatting, linting, type checking, testing)
 - Only run `pnpm check:full` as a final pass when completely done — it runs everything including knip and metadata sync and is much slower
-- For new or modified features, generate a patch changeset in the .changeset/ directory. Focus the description entirely on user-facing changes rather than internal refactors. The text can be a short paragraph of ideally one or two sentences but must be written as a single, continuous line/block with no internal newlines. Do not reference Linear tickets.
+- For new or modified features, generate a patch changeset in the .changeset/ directory. **One or two sentences, hard limit.** Describe only what changes for someone using the generated code — not the refactor that got you there, not the rationale, not the file names, not the internal symbols. If several things changed, summarise the outcome rather than listing each one; a changeset is a release note, not a summary of the diff. Write it as a single continuous line with no internal newlines, and do not reference Linear tickets.
 
   ```markdown
   ---
@@ -85,6 +85,10 @@ Baseplate consists of two main tiers:
 
   Description of the feature or change
   ```
+
+  Good: `The notification feed is now cursor-paginated, so rows are no longer skipped or repeated when a notification arrives between page fetches.`
+
+  Too long: the same thing plus the module that was split out, the file the query moved to, the index that changed, and the type signature that was tightened. Those belong in the PR description.
 
 - IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
 - IMPORTANT: If you notice you are looping, encountering contradictory instructions, or something seems off, stop and flag it to the user immediately. See .agents/code-style.md for the full list of glitch indicators.

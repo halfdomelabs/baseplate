@@ -83,6 +83,8 @@ describe('notificationModuleGenerator channel wiring', () => {
   it('declares the emails dependency and assembles both channels when enabled', async () => {
     const { dependencies, fragmentContents } = await runAppRuntimeConfig(true);
 
+    // `notificationEvents` (not `pubsub`) is the direct dependency: the events
+    // emitter is its own construction entry, and it is what depends on pubsub.
     expect(dependencies).toContain('notificationEvents');
     expect(dependencies).toContain('email');
     expect(fragmentContents).toContain('inApp');
@@ -97,5 +99,17 @@ describe('notificationModuleGenerator channel wiring', () => {
     expect(fragmentContents).toContain('inApp');
     expect(fragmentContents).not.toContain('email');
     expect(fragmentContents).not.toContain('createEmailChannel');
+  });
+
+  it('constructs the renderer inline and injects it into the service', async () => {
+    // The renderer owns the type registry and holds no I/O, so it is built
+    // inline rather than as its own construction entry — it has nothing to
+    // dispose and no other slice consumes it.
+    const { dependencies, fragmentContents } = await runAppRuntimeConfig(false);
+
+    expect(fragmentContents).toContain('createNotificationRenderer');
+    expect(fragmentContents).toContain('notificationTypes');
+    expect(fragmentContents).toContain('renderer:');
+    expect(dependencies).not.toContain('notificationRenderer');
   });
 });
