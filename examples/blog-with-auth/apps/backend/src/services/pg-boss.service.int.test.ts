@@ -1,17 +1,23 @@
+import { PgBoss } from 'pg-boss';
 import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 
+import type { MockLogger } from '@src/tests/helpers/logger.test-helper.js';
 import type { QueueJob, QueueRuntime } from '@src/types/queue.types.js';
 
 import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 import { bindQueueHandler, defineQueue } from '@src/types/queue.types.js';
 
+import { config } from './config.js';
+import { logger as mockedLogger } from './logger.js';
 import { createQueueRuntime } from './pg-boss.service.js';
 
 // Mock the logger module to avoid log output during tests
 vi.mock('@src/services/logger.js', () => ({
   logger: createMockLogger(),
 }));
+
+const logger = mockedLogger as unknown as MockLogger;
 
 /**
  * Note: These integration tests require a real Postgres instance to run
@@ -41,6 +47,39 @@ const sleep = (ms: number): Promise<void> =>
 // elapsed delay) emit no NOTIFY and are only found by the backstop poll. Tests
 // covering those would otherwise idle for the production interval.
 const FAST_POLL = { notifyPollingIntervalSeconds: 0.5 };
+
+// Mirrors the state of an existing deployment created before repeatable
+// queues required an exclusive policy: a bound repeatable queue whose
+// underlying pg-boss queue still has the old `standard` policy.
+async function seedStandardPolicyQueue(
+  queueName: string,
+  jobCount: number,
+): Promise<void> {
+  const boss = new PgBoss({ connectionString: config.DATABASE_URL });
+  boss.on('error', () => {
+    // Swallowed - only used to seed state before the runtime under test
+    // takes over the connection.
+  });
+  await boss.start();
+  await boss.deleteQueue(queueName);
+  await boss.createQueue(queueName, { policy: 'standard' });
+  for (let i = 0; i < jobCount; i++) {
+    await boss.send(queueName, {});
+  }
+  await boss.stop();
+}
+
+function bindRepeatableQueue(
+  queueName: string,
+): ReturnType<typeof bindQueueHandler> {
+  const token = defineQueue<Record<string, never>>(queueName);
+  return bindQueueHandler(token, {
+    handler: async () => {
+      // Never started - these tests only assert on plan/apply results.
+    },
+    repeatable: { pattern: '*/5 * * * * *' },
+  });
+}
 
 describe('pg-boss service integration tests', () => {
   let runtime: QueueRuntime | undefined;
@@ -480,6 +519,123 @@ describe('pg-boss service integration tests', () => {
       const actualDelay = processedAt - enqueuedAt;
       expect(actualDelay).toBeGreaterThanOrEqual(900); // Allow some tolerance
     }, 10_000);
+  });
+
+  describe('repeatable jobs', () => {
+    it('should not pile up multiple pending instances of a repeatable job', async () => {
+      const queueName = 'test-repeatable-exclusive-queue';
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: async () => {
+          // Never started - this test only asserts on what was written.
+        },
+        repeatable: {
+          pattern: '*/5 * * * * *',
+        },
+      });
+
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      // Simulates what would happen if several cron ticks dispatched to this
+      // queue while no worker was around to drain them: without exclusive
+      // policy, every dispatch would insert its own pending job row.
+      const jobIds = await runtime.enqueueBulk(token, [
+        { data: {} },
+        { data: {} },
+        { data: {} },
+      ]);
+
+      // An exclusive-policy queue admits only one pending job at a time, so
+      // the pile-up collapses to a single row instead of draining as a
+      // backlog once a worker reconnects.
+      expect(jobIds).toHaveLength(1);
+    });
+  });
+
+  describe('policy migration', () => {
+    it('reports a mismatch and its job count without mutating the queue', async () => {
+      const queueName = 'test-policy-plan-queue';
+      await seedStandardPolicyQueue(queueName, 2);
+
+      const binding = bindRepeatableQueue(queueName);
+      runtime = createQueueRuntime([binding]);
+
+      const plan = await runtime.planQueuePolicyFixes?.([queueName]);
+
+      expect(plan).toEqual([
+        {
+          queueName,
+          currentState: 'standard',
+          desiredState: 'exclusive',
+          jobsAtRisk: { pending: 2, active: 0 },
+        },
+      ]);
+
+      // Still unmutated - planning must not have applied anything.
+      const rawBoss = new PgBoss({ connectionString: config.DATABASE_URL });
+      await rawBoss.start();
+      const queue = await rawBoss.getQueue(queueName);
+      await rawBoss.stop();
+      expect(queue?.policy).toBe('standard');
+    });
+
+    it('logs an error for a mismatched queue on worker startup', async () => {
+      const queueName = 'test-policy-log-queue';
+      await seedStandardPolicyQueue(queueName, 0);
+
+      const binding = bindRepeatableQueue(queueName);
+      runtime = createQueueRuntime([binding]);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const mismatchLog = logger.error.mock.calls.find(
+        (call) =>
+          (call[0] as { queueName?: string } | undefined)?.queueName ===
+          queueName,
+      );
+      assert.isDefined(mismatchLog);
+      expect((mismatchLog[0] as { event?: string }).event).toBe(
+        'queue-policy-mismatch',
+      );
+    });
+
+    it('applies a fix and is idempotent on a second plan', async () => {
+      const queueName = 'test-policy-apply-queue';
+      await seedStandardPolicyQueue(queueName, 1);
+
+      const binding = bindRepeatableQueue(queueName);
+      runtime = createQueueRuntime([binding]);
+
+      const plan = await runtime.planQueuePolicyFixes?.([queueName]);
+      assert.isDefined(plan);
+
+      const results = await runtime.applyQueuePolicyFixes?.(plan);
+
+      expect(results).toEqual([
+        { queueName, previousState: 'standard', newState: 'exclusive' },
+      ]);
+
+      const planAfterFix = await runtime.planQueuePolicyFixes?.([queueName]);
+      expect(planAfterFix).toEqual([]);
+    });
+
+    it('does not touch queues outside an explicit queueNames list', async () => {
+      const targetQueue = 'test-policy-scope-target';
+      const otherQueue = 'test-policy-scope-other';
+      await seedStandardPolicyQueue(targetQueue, 0);
+      await seedStandardPolicyQueue(otherQueue, 0);
+
+      const bindings = [
+        bindRepeatableQueue(targetQueue),
+        bindRepeatableQueue(otherQueue),
+      ];
+      runtime = createQueueRuntime(bindings);
+
+      const plan = await runtime.planQueuePolicyFixes?.([targetQueue]);
+
+      expect(plan?.map((p) => p.queueName)).toEqual([targetQueue]);
+    });
   });
 
   describe('cleanup', () => {

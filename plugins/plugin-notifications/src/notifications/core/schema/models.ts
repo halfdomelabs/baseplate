@@ -144,6 +144,9 @@ export function createNotificationsPartialDefinition(
           primaryKeyFieldRefs: ['id'],
           // The two hot access paths: the feed (recipient + newest-first) and
           // the unread count (recipient + unread). Without these both seq-scan.
+          // The feed sorts by `id` alone — a uuidv7 is both time-ordered and
+          // unique, so it is a total order on its own, which is what cursor
+          // pagination needs.
           indexes: [
             { fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'id' }] },
             { fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'readAt' }] },

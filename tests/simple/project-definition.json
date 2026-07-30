@@ -30,7 +30,9 @@
           "enabled": true,
           "fields": [{ "ref": "id" }, { "ref": "title" }, { "ref": "content" }]
         },
-        "queries": { "get": { "enabled": true }, "list": { "enabled": true } }
+        "orderBy": { "fields": [] },
+        "queries": { "get": { "enabled": true }, "list": { "enabled": true } },
+        "where": { "fields": [] }
       },
       "id": "model:f114nGvsZGt9",
       "model": {
@@ -86,7 +88,7 @@
       "version": "0.1.0"
     }
   ],
-  "schemaVersion": 32,
+  "schemaVersion": 34,
   "settings": {
     "general": { "name": "simple", "packageScope": "", "portOffset": 3000 },
     "infrastructure": { "redis": { "enabled": false } }

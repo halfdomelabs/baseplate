@@ -8,11 +8,31 @@ import {
   findNearestPackageJson,
   readJsonWithSchema,
 } from '@baseplate-dev/utils/node';
+import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { z } from 'zod';
 
 import { UserVisibleError } from '#src/utils/errors.js';
+
+/**
+ * Matches a git conflict marker at the start of a line, e.g. `<<<<<<< CURRENT`.
+ * Includes `|||||||`, which only appears in diff3-style merges.
+ */
+const CONFLICT_MARKER_REGEX = /^(?:<{7}|\|{7}|={7}|>{7})(?:\s|$)/m;
+
+/**
+ * Checks whether a file contains unresolved git conflict markers, used to give
+ * a more actionable error than a raw JSON parse failure. Returns false if the
+ * file cannot be read, so the caller falls back to its generic error.
+ */
+async function hasConflictMarkers(filePath: string): Promise<boolean> {
+  try {
+    return CONFLICT_MARKER_REGEX.test(await fs.readFile(filePath, 'utf8'));
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Finds the available plugins in the project.
@@ -47,7 +67,13 @@ export async function discoverPlugins(
       dependencies: z.record(z.string(), z.string()).optional(),
       devDependencies: z.record(z.string(), z.string()).optional(),
     }),
-  ).catch(() => {
+  ).catch(async () => {
+    if (await hasConflictMarkers(packageJsonPath)) {
+      throw new UserVisibleError(
+        `The root package.json file at ${packageJsonPath} has unresolved merge conflicts.`,
+        'Resolve the conflict markers in the package.json file and try again.',
+      );
+    }
     throw new UserVisibleError(
       `Could not read the root package.json file for the Baseplate project at ${packageJsonPath}.`,
       'Make sure the package.json file is a valid JSON file.',

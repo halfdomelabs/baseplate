@@ -10,6 +10,25 @@ import path from 'node:path';
 
 import { queuesImportsProvider } from '#src/queue/core/generators/queues/generated/ts-import-providers.js';
 
+const migrateQueuePolicies = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    appRuntimeImports: appRuntimeImportsProvider,
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    loggerServiceImports: loggerServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
+  name: 'migrate-queue-policies',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/scripts/migrate-queue-policies.ts',
+    ),
+  },
+  variables: {},
+});
+
 const pgBossPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -72,6 +91,11 @@ const runWorkers = createTsTemplateFile({
   variables: {},
 });
 
-export const mainGroup = { pgBossPlugin, pgBossService, runWorkers };
+export const mainGroup = {
+  migrateQueuePolicies,
+  pgBossPlugin,
+  pgBossService,
+  runWorkers,
+};
 
 export const PG_BOSS_CORE_PG_BOSS_TEMPLATES = { mainGroup };

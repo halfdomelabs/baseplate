@@ -1,5 +1,23 @@
 # @baseplate-dev/project-builder-common
 
+## 0.6.15
+
+### Patch Changes
+
+- Updated dependencies [[`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`8b2dfd7`](https://github.com/halfdomelabs/baseplate/commit/8b2dfd7aa799b51dfa02deeaf7592af8ea29ed7e), [`dac747d`](https://github.com/halfdomelabs/baseplate/commit/dac747d5085f82de33bc4cc66ef0709fc405cccd), [`4ed5ae3`](https://github.com/halfdomelabs/baseplate/commit/4ed5ae379ec7097d072612fa9c29738947b11334), [`05cfe52`](https://github.com/halfdomelabs/baseplate/commit/05cfe5202692c8f3f3876d2e1c994c267d18d622), [`05bc90b`](https://github.com/halfdomelabs/baseplate/commit/05bc90b2d45cfb0cf286f756a065c3b71c9e4132), [`3184ab4`](https://github.com/halfdomelabs/baseplate/commit/3184ab40137515c7c96249793ca882526055292d), [`b936ed2`](https://github.com/halfdomelabs/baseplate/commit/b936ed2aef5c421de9e18f28ba488e4df59f5d61), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73), [`6311dc5`](https://github.com/halfdomelabs/baseplate/commit/6311dc55a27daefb120fb88957be724ab27a074c), [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c), [`fb42641`](https://github.com/halfdomelabs/baseplate/commit/fb42641e235085cca019992f8615c2b9be0fdacb), [`e2ca87e`](https://github.com/halfdomelabs/baseplate/commit/e2ca87e9add6d849081ec73aa99c85a24e3b4817)]:
+  - @baseplate-dev/project-builder-lib@0.6.15
+  - @baseplate-dev/project-builder-server@0.6.15
+  - @baseplate-dev/plugin-auth@0.6.15
+  - @baseplate-dev/plugin-email@0.6.15
+  - @baseplate-dev/plugin-notifications@0.6.15
+  - @baseplate-dev/plugin-payments@0.6.15
+  - @baseplate-dev/plugin-queue@0.6.15
+  - @baseplate-dev/plugin-storage@0.6.15
+  - @baseplate-dev/sync@0.6.15
+  - @baseplate-dev/plugin-observability@0.6.15
+  - @baseplate-dev/plugin-rate-limit@0.6.15
+  - @baseplate-dev/plugin-ai@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes

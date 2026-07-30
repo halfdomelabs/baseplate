@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
+import { errorHandlerServiceImportsProvider } from '../../core/error-handler-service/generated/ts-import-providers.js';
 import { AUTH_PASSWORD_HASHER_SERVICE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -24,10 +25,11 @@ export const passwordHasherServiceGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         typescriptFile: typescriptFileProvider,
         paths: AUTH_PASSWORD_HASHER_SERVICE_GENERATED.paths.provider,
       },
-      run({ typescriptFile, paths }) {
+      run({ errorHandlerServiceImports, typescriptFile, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -36,6 +38,9 @@ export const passwordHasherServiceGenerator = createGenerator({
                   AUTH_PASSWORD_HASHER_SERVICE_GENERATED.templates
                     .passwordHasherService,
                 destination: paths.passwordHasherService,
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                },
               }),
             );
           },

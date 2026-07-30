@@ -1,5 +1,20 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.6.15
+
+### Patch Changes
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
+- [#969](https://github.com/halfdomelabs/baseplate/pull/969) [`b936ed2`](https://github.com/halfdomelabs/baseplate/commit/b936ed2aef5c421de9e18f28ba488e4df59f5d61) Thanks [@kingston](https://github.com/kingston)! - The default plugins package is now loaded on demand rather than when the CLI starts, so it is no longer pulled in by commands that never use it.
+
+- Updated dependencies [[`403874a`](https://github.com/halfdomelabs/baseplate/commit/403874a10f67120eb36badc93920359cb267dcb5), [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b), [`b936ed2`](https://github.com/halfdomelabs/baseplate/commit/b936ed2aef5c421de9e18f28ba488e4df59f5d61), [`9cdfaa9`](https://github.com/halfdomelabs/baseplate/commit/9cdfaa9e3702c8a569c5dac739877dc8330a8f73), [`9139686`](https://github.com/halfdomelabs/baseplate/commit/91396867ec7832068aa6a5d19d038dcd1f04ec5c), [`e2ca87e`](https://github.com/halfdomelabs/baseplate/commit/e2ca87e9add6d849081ec73aa99c85a24e3b4817)]:
+  - @baseplate-dev/project-builder-lib@0.6.15
+  - @baseplate-dev/project-builder-server@0.6.15
+  - @baseplate-dev/project-builder-web@0.6.15
+  - @baseplate-dev/utils@0.6.15
+  - @baseplate-dev/project-builder-common@0.6.15
+
 ## 0.6.14
 
 ### Patch Changes

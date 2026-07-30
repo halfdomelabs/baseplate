@@ -1,4 +1,9 @@
 {
+  "migrate-queue-policies.ts": {
+    "generator": "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss",
+    "instanceData": {},
+    "template": "migrate-queue-policies"
+  },
   "run-workers.ts": {
     "generator": "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss",
     "instanceData": {},

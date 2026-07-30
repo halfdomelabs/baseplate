@@ -8,6 +8,16 @@ import type { z } from 'zod';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 /**
+ * A plugin directory that could not be scanned during discovery.
+ */
+export interface PluginDiscoveryError {
+  /** The directory that failed to be scanned. */
+  directory: string;
+  /** The reason discovery failed. */
+  reason: string;
+}
+
+/**
  * The context provided to a service action.
  *
  * @remarks All properties must be serializable for worker thread communication. (except logger which we proxy)
@@ -19,6 +29,15 @@ export interface ServiceActionContext {
   userConfig: BaseplateUserConfig;
   /** The plugins available to the project builder. */
   plugins: PluginMetadataWithPaths[];
+  /**
+   * Directories that failed plugin discovery at startup, e.g. an unparseable
+   * package.json. The plugin list is incomplete when this is non-empty.
+   *
+   * @remarks Only populated by the dev CLI, which discovers plugins from
+   * directories at startup. Discovery failures during an action surface as the
+   * action's own error instead.
+   */
+  pluginDiscoveryErrors?: PluginDiscoveryError[];
   /** The logger to write to when executing the service action. */
   logger: Logger;
   /** The version of @baseplate-dev/project-builder-cli. */

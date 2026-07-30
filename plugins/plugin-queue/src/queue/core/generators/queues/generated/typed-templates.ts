@@ -24,6 +24,8 @@ const queueTypes = createTsTemplateFile({
     QueueIntrospection: { isTypeOnly: true },
     QueueJob: { isTypeOnly: true },
     QueueJobHandler: { isTypeOnly: true },
+    QueuePolicyFixPlan: { isTypeOnly: true },
+    QueuePolicyFixResult: { isTypeOnly: true },
     QueueRuntime: { isTypeOnly: true },
     QueueService: { isTypeOnly: true },
     QueueToken: { isTypeOnly: true },

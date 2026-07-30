@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.6.15
+
+### Patch Changes
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - The shared TypeScript configurations now enable `noUncheckedIndexedAccess`, so packages extending them will see indexed access typed as possibly undefined.
+
 ## 0.6.14
 
 ## 0.6.13
