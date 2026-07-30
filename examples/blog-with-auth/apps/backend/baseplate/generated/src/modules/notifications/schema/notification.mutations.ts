@@ -1,7 +1,7 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
-import { notificationObjectType } from './notification.object-type.js';
+import { notificationFeedItemObjectType } from './notification-feed-item.object-type.js';
 
 /**
  * Mark a notification read (and therefore seen). Returns the updated notification
@@ -15,7 +15,7 @@ builder.mutationField('markNotificationRead', (t) =>
     payload: {
       changed: t.payload.field({ type: 'Boolean' }),
       notification: t.payload.field({
-        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
+        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationFeedItemObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
         nullable: true,
       }),
       unseenCount: t.payload.field({ type: 'Int' }),
@@ -24,7 +24,7 @@ builder.mutationField('markNotificationRead', (t) =>
       const userId = context.auth.userIdOrThrow();
       const { changed, unseenCount } =
         await context.services.notification.markAsRead(userId, input.id);
-      const notification = await prisma.notification.findFirst({
+      const notification = await prisma.notificationFeedItem.findFirst({
         where: { id: input.id, recipientId: userId },
       });
       return { changed, notification, unseenCount };

@@ -54,9 +54,6 @@ export interface NotificationTypeDefinition<
   ): NotificationContent;
 }
 
-/**
- * Declares a notification type.
- */
 export function defineNotificationType<P extends NotificationParams>(
   definition: NotificationTypeDefinition<P>,
 ): NotificationTypeDefinition<P> {

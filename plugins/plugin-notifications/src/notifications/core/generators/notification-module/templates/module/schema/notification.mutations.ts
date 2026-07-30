@@ -24,7 +24,7 @@ builder.mutationField('markNotificationRead', (t) =>
       const userId = context.auth.userIdOrThrow();
       const { changed, unseenCount } =
         await context.services.notification.markAsRead(userId, input.id);
-      const notification = await prisma.notification.findFirst({
+      const notification = await prisma.notificationFeedItem.findFirst({
         where: { id: input.id, recipientId: userId },
       });
       return { changed, notification, unseenCount };

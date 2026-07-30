@@ -18,17 +18,17 @@ const DEFAULT_PAGE_SIZE = 20;
 builder.queryField('notificationFeed', (t) =>
   t.prismaConnection(
     {
-      type: 'Notification',
+      type: 'NotificationFeedItem',
       cursor: 'id',
       maxSize: MAX_PAGE_SIZE,
       defaultSize: DEFAULT_PAGE_SIZE,
       authorize: ['user'],
       totalCount: (_root, _args, context) =>
-        prisma.notification.count({
+        prisma.notificationFeedItem.count({
           where: { recipientId: context.auth.userIdOrThrow() },
         }),
       resolve: (query, _root, _args, context) =>
-        prisma.notification.findMany({
+        prisma.notificationFeedItem.findMany({
           ...query,
           where: { recipientId: context.auth.userIdOrThrow() },
           orderBy: { id: 'desc' },

@@ -11,6 +11,9 @@
         "path": "src/modules/notifications/schema/notification-feed.e2e.test.ts"
       },
       {
+        "path": "src/modules/notifications/services/notification-outbox.int.test.ts"
+      },
+      {
         "path": "src/modules/notifications/services/notification-renderer.unit.test.ts"
       },
       { "path": "src/scripts/send-test-notification.ts" },

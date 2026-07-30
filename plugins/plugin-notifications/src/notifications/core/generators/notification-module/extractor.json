@@ -1,6 +1,85 @@
 {
   "name": "notifications/core/notification-module",
   "templates": {
+    "queues-notification-delivery": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-delivery.queue.ts",
+      "projectExports": {
+        "notificationDeliveryQueue": { "isTypeOnly": false },
+        "NotificationDeliveryJobData": { "isTypeOnly": true }
+      },
+      "sourceFile": "module/queues/notification-delivery.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-delivery-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-delivery.worker.ts",
+      "projectExports": {
+        "notificationDeliveryWorker": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["queues-notification-delivery"],
+      "sourceFile": "module/queues/notification-delivery.worker.ts",
+      "variables": {}
+    },
+    "queues-notification-outbox-sweep": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.queue.ts",
+      "projectExports": {
+        "notificationOutboxSweepQueue": { "isTypeOnly": false }
+      },
+      "sourceFile": "module/queues/notification-outbox-sweep.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-outbox-sweep-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.worker.ts",
+      "projectExports": {
+        "notificationOutboxSweepWorker": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["queues-notification-outbox-sweep"],
+      "sourceFile": "module/queues/notification-outbox-sweep.worker.ts",
+      "variables": {}
+    },
     "schema-notification-content-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -98,7 +177,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/email-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "referencedGeneratorTemplates": [
+        "services-notification-channel",
+        "services-notification-renderer"
+      ],
       "sourceFile": "module/services/email-channel.ts",
       "variables": { "TPL_NOTIFICATION_EMAIL": {} }
     },
@@ -116,12 +198,7 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
-      "importMapProviders": {
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        }
-      },
+      "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/in-app-channel.ts",
       "referencedGeneratorTemplates": [
         "services-notification-channel",
@@ -136,7 +213,10 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-content"],
+      "referencedGeneratorTemplates": [
+        "services-notification-content",
+        "services-notification-renderer"
+      ],
       "sourceFile": "module/services/notification-channel.ts",
       "variables": { "TPL_CHANNEL_ENTRIES": {} }
     },
@@ -233,10 +313,15 @@
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/notification.service.ts",
       "referencedGeneratorTemplates": [
+        "queues-notification-delivery",
         "services-generic-type",
         "services-notification-channel",
         "services-notification-content",
@@ -245,7 +330,7 @@
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/notification.service.ts",
-      "variables": {}
+      "variables": { "TPL_USER_DELEGATE": {} }
     }
   }
 }

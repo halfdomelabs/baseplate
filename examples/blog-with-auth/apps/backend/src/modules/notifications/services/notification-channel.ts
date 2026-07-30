@@ -1,15 +1,25 @@
-import type { RenderedContent } from './notification-content.js';
+import type { RenderSource } from './notification-renderer.js';
 
-/** A resolved notification handed to a channel for delivery. */
-export interface ResolvedNotification extends RenderedContent {
-  notificationId: string;
-  type: string;
+/** One recipient's share of a delivery, as handed to a channel. */
+export interface ChannelDelivery {
   recipientId: string;
+  /** Today always one; a future digest can deliver several as one call. */
+  notifications: RenderSource[];
+  /** Unseen count after this delivery, computed once for the whole chunk. */
+  unseenCount: number;
+  /**
+   * Contact details read at delivery time, so an address changed since enqueue
+   * is respected. Passed in because the user model is app-configurable —
+   * channels cannot query it themselves.
+   */
+  recipient: { email: string | null };
+  actor: { name: string | null } | null;
 }
 
 /** A delivery channel (in-app, email, slack...). */
 export interface NotificationChannel {
-  deliver(notification: ResolvedNotification): Promise<void>;
+  /** Sync or async: not every channel does I/O. */
+  deliver(delivery: ChannelDelivery): void | Promise<void>;
 }
 
 /**

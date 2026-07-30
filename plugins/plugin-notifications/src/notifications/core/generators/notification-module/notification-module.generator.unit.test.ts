@@ -48,7 +48,10 @@ async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
   dependencies: string[];
   fragmentContents: string;
 }> {
-  const bundle = notificationModuleGenerator({ includeEmailChannel });
+  const bundle = notificationModuleGenerator({
+    includeEmailChannel,
+    userModelName: 'User',
+  });
   const appRuntimeConfig = createAppRuntimeConfigStub();
 
   const runner = createTaskTestRunner(bundle.tasks.appRuntimeConfig);
@@ -95,10 +98,28 @@ describe('notificationModuleGenerator channel wiring', () => {
   it('omits the emails dependency and the email channel when disabled', async () => {
     const { dependencies, fragmentContents } = await runAppRuntimeConfig(false);
 
-    expect(dependencies).toEqual(['notificationEvents']);
+    expect(dependencies).toEqual(['notificationEvents', 'queue']);
     expect(fragmentContents).toContain('inApp');
     expect(fragmentContents).not.toContain('email');
     expect(fragmentContents).not.toContain('createEmailChannel');
+  });
+
+  it('injects the queue so the outbox can hand off delivery', async () => {
+    // The service enqueues delivery jobs, so it cannot be constructed before
+    // the queue exists — the dependency is what orders the two.
+    const { dependencies, fragmentContents } = await runAppRuntimeConfig(false);
+
+    expect(dependencies).toContain('queue');
+    expect(fragmentContents).toContain('queue,');
+  });
+
+  it('passes the renderer to the email channel for delivery-time rendering', async () => {
+    // The email channel renders when the job runs, not when the notification is
+    // written, so a copy fix reaches mail that has not gone out yet.
+    const { fragmentContents } = await runAppRuntimeConfig(true);
+
+    expect(fragmentContents).toContain('createEmailChannel');
+    expect(fragmentContents).toMatch(/createEmailChannel\(\{[^}]*renderer:/);
   });
 
   it('constructs the renderer inline and injects it into the service', async () => {

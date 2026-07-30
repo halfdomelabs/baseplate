@@ -3,24 +3,19 @@
 import type { NotificationChannel } from '$servicesNotificationChannel';
 import type { NotificationEvents } from '$servicesNotificationEvents';
 
-import { prisma } from '%prismaImports';
-
 /**
- * The in-app channel: signals that the recipient's notifications changed, with
- * the new unseen (badge) count. The count is queried inline (not via the
- * service's `getUnseenCount`) so this leaf never imports the service — the
- * channel dictionary can't cycle back.
+ * The in-app channel: broadcasts the recipient's new unseen (badge) count.
+ *
+ * Runs in the delivery worker, so the badge lands just after the mutation that
+ * triggered it.
  */
 export function createInAppChannel(deps: {
   events: NotificationEvents;
 }): NotificationChannel {
   const { events } = deps;
   return {
-    deliver: async (notification) => {
-      const count = await prisma.notification.count({
-        where: { recipientId: notification.recipientId, seenAt: null },
-      });
-      events.publishUnseenCount(notification.recipientId, count);
+    deliver: ({ recipientId, unseenCount }) => {
+      events.publishUnseenCount(recipientId, unseenCount);
     },
   };
 }

@@ -74,7 +74,7 @@ async function fetchFeed(
 }
 
 async function createNotification(recipientId: string): Promise<string> {
-  const row = await prisma.notification.create({
+  const row = await prisma.notificationFeedItem.create({
     data: {
       type: 'generic',
       templateVersion: 1,
@@ -93,7 +93,7 @@ describe('notificationFeed', () => {
   let fastify: FastifyInstance;
 
   beforeEach(async () => {
-    await prisma.notification.deleteMany();
+    await prisma.notificationFeedItem.deleteMany();
     await prisma.user.deleteMany();
     const user = await prisma.user.create({
       data: { email: 'feed@example.com' },

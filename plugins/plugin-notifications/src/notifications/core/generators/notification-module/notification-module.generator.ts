@@ -8,6 +8,7 @@ import {
   appRuntimeConfigProvider,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
+  prismaOutputProvider,
   yogaPluginConfigProvider,
 } from '@baseplate-dev/fastify-generators';
 import { transactionalLibConfigProvider } from '@baseplate-dev/plugin-email';
@@ -21,6 +22,8 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED } from './generated/in
 const descriptorSchema = z.object({
   /** Generate the email delivery channel (only when the email plugin is enabled). */
   includeEmailChannel: z.boolean().optional(),
+  /** The app's user model; delivery reads recipient addresses from it. */
+  userModelName: z.string(),
 });
 
 /**
@@ -45,7 +48,7 @@ export const notificationModuleGenerator = createGenerator({
   name: 'notifications/core/notification-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeEmailChannel }) => ({
+  buildTasks: ({ includeEmailChannel, userModelName }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
     appRuntimeConfig: createGeneratorTask({
@@ -77,9 +80,15 @@ export const notificationModuleGenerator = createGenerator({
         // composition root), not inside the service. Keyed by channel so the
         // registry is the installed subset of `installedChannelKeys`, never a
         // separately-branched list.
+        // Reused wherever a renderer is needed; each use renders its own
+        // `createNotificationRenderer(...)` call rather than a shared binding.
+        const rendererFragment = TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes })`;
+
         const channelFactories: Record<string, TsCodeFragment> = {
           inApp: TsCodeUtils.template`${TsCodeUtils.importFragment('createInAppChannel', paths.servicesInAppChannel)}({ events: notificationEvents })`,
-          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email })`,
+          // Takes the renderer: the email channel renders at DELIVERY time, so
+          // a copy fix reaches any email that has not gone out yet.
+          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email, renderer: ${rendererFragment} })`,
         };
         const channelEntries = Object.fromEntries(
           installedChannelKeys(includeEmailChannel ?? false).map((key) => [
@@ -95,17 +104,22 @@ export const notificationModuleGenerator = createGenerator({
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
         });
+        // The renderer is constructed inline rather than as its own entry:
+        // only the service and its channels consume it, and it holds no
+        // resource to dispose.
         appRuntimeConfig.construction.set('notification', {
           dependencies: [
             'notificationEvents',
+            // The outbox hands delivery to the queue, so the service cannot be
+            // constructed before it.
+            'queue',
             ...(includeEmailChannel ? ['email'] : []),
           ],
-          // The renderer is constructed inline rather than as its own entry:
-          // only the service consumes it, and it holds no resource to dispose.
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: notificationEvents,
-              renderer: ${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes }),
+              renderer: ${rendererFragment},
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
+              queue,
             })`,
         });
       },
@@ -144,7 +158,12 @@ export const notificationModuleGenerator = createGenerator({
         yogaPluginConfig: yogaPluginConfigProvider,
         notificationObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(`prisma-object-type:${NOTIFICATION_MODELS.notification}`),
+          .reference(
+            `prisma-object-type:${NOTIFICATION_MODELS.notificationFeedItem}`,
+          ),
+        // Delivery resolves recipient addresses itself, so it needs the app's
+        // user delegate — the model name is configurable.
+        prismaOutput: prismaOutputProvider,
         paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
         // Only needed for the email channel's component import; optional so the
         // module builds when the email plugin isn't enabled.
@@ -159,15 +178,35 @@ export const notificationModuleGenerator = createGenerator({
         yogaPluginConfig,
         notificationObjectType,
         paths,
+        prismaOutput,
         transactionalLibConfig,
       }) {
-        // Register each schema file with the Pothos builder + the module index.
         const { schemaGroup } =
           NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.templates;
         for (const template of Object.keys(schemaGroup)) {
           const renderedPath = paths[template as keyof typeof schemaGroup];
           appModule.moduleImports.push(renderedPath);
           pothosSchema.registerSchemaFile(renderedPath);
+        }
+
+        // Bind both workers so the app's queue runtime starts them. The
+        // delivery worker drains the outbox; the sweep worker re-drives
+        // deliveries whose enqueue failed after the transaction committed.
+        for (const worker of [
+          [
+            'notificationDeliveryWorker',
+            paths.queuesNotificationDeliveryWorker,
+          ],
+          [
+            'notificationOutboxSweepWorker',
+            paths.queuesNotificationOutboxSweepWorker,
+          ],
+        ] as const) {
+          appModule.moduleFields.set(
+            'queues',
+            worker[0],
+            TsCodeUtils.importFragment(worker[0], worker[1]),
+          );
         }
 
         // Contribute the built-in `generic` type (backing `notifyText`) as a
@@ -191,7 +230,6 @@ export const notificationModuleGenerator = createGenerator({
           );
         }
 
-        // Contribute the real-time channel to the pubsub type map.
         yogaPluginConfig.publishArgs.set(
           'notificationsChanged',
           tsCodeFragment('[userId: string, payload: { count: number }]'),
@@ -216,9 +254,15 @@ export const notificationModuleGenerator = createGenerator({
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
                   },
+                  servicesNotificationService: {
+                    TPL_USER_DELEGATE:
+                      prismaOutput.getPrismaModelFragment(userModelName),
+                  },
                 },
               }),
             );
+
+            await builder.apply(renderers.queuesGroup.render({}));
 
             if (includeEmailChannel) {
               if (!transactionalLibConfig) {

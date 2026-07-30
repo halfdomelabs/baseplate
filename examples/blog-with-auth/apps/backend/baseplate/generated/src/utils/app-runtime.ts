@@ -142,9 +142,13 @@ export function createAppRuntime(
       events: notificationEvents,
       renderer: createNotificationRenderer({ notificationTypes }),
       channels: {
-        email: createEmailChannel({ email }),
+        email: createEmailChannel({
+          email,
+          renderer: createNotificationRenderer({ notificationTypes }),
+        }),
         inApp: createInAppChannel({ events: notificationEvents }),
       },
+      queue,
     }),
   );
 
