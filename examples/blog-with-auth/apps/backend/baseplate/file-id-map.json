@@ -156,6 +156,7 @@
   "@baseplate-dev/plugin-observability#core/fastify-sentry:instrument": "src/instrument.ts",
   "@baseplate-dev/plugin-observability#core/fastify-sentry:sentry": "src/services/sentry.ts",
   "@baseplate-dev/plugin-observability#pothos/pothos-sentry:use-sentry": "src/plugins/graphql/use-sentry.ts",
+  "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:migrate-queue-policies": "src/scripts/migrate-queue-policies.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:pg-boss-plugin": "src/plugins/pg-boss.plugin.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:pg-boss-service": "src/services/pg-boss.service.ts",
   "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss:run-workers": "src/scripts/run-workers.ts",

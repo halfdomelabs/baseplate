@@ -5,6 +5,8 @@ import type {
   QueueHandlerBinding,
   QueueInfo,
   QueueJob,
+  QueuePolicyFixPlan,
+  QueuePolicyFixResult,
   QueueRuntime,
   QueueToken,
   RepeatableConfig,
@@ -242,6 +244,26 @@ export function createQueueRuntime(
     return startPromise;
   }
 
+  /**
+   * The pg-boss policy a queue should have, given its binding. Shared by
+   * queue creation and the policy-mismatch check/fix so they can't drift
+   * apart on what "correct" means for a given binding.
+   *
+   * pg-boss only enforces at-most-one-pending-job when the queue uses a
+   * policy that requires it; the default `standard` policy has no such
+   * constraint. Deduplicated queues need this so singletonKey is actually
+   * enforced, and repeatable queues need it so a pile-up of dispatched
+   * instances (e.g. from worker downtime) collapses to one instead of
+   * draining back-to-back once a worker reconnects.
+   * @param binding The queue's handler binding.
+   * @returns The queue's desired policy.
+   */
+  function resolveDesiredQueuePolicy(binding: QueueHandlerBinding): string {
+    return binding.options?.deduplication === true || !!binding.repeatable
+      ? 'exclusive'
+      : 'standard';
+  }
+
   async function ensureQueueCreated(
     binding: QueueHandlerBinding,
   ): Promise<void> {
@@ -255,20 +277,13 @@ export function createQueueRuntime(
     await boss.createQueue(name, {
       deleteAfterSeconds,
       notify: true,
-      // pg-boss only enforces at-most-one-pending-job when the queue uses a
-      // policy that requires it; the default `standard` policy has no such
-      // constraint. Deduplicated queues need this so singletonKey is
-      // actually enforced, and repeatable queues need it so a pile-up of
-      // dispatched instances (e.g. from worker downtime) collapses to one
-      // instead of draining back-to-back once a worker reconnects. The
-      // policy is fixed at creation time.
-      ...((binding.options?.deduplication === true || !!binding.repeatable) && {
-        policy: 'exclusive',
-      }),
+      // The policy is fixed at creation time.
+      policy: resolveDesiredQueuePolicy(binding),
     });
     // createQueue is a no-op on an existing queue, so the settings above never
     // reach one an earlier deploy created. `policy` is omitted here because
-    // updateQueue rejects it as immutable.
+    // updateQueue rejects it as immutable - see planQueuePolicyFixes/
+    // applyQueuePolicyFixes for surfacing and fixing that gap.
     await boss.updateQueue(name, { deleteAfterSeconds, notify: true });
     createdQueues.add(name);
   }
@@ -374,6 +389,139 @@ export function createQueueRuntime(
     }
   }
 
+  /**
+   * Checks a single binding's queue for a policy mismatch, without changing
+   * anything. `policy` is fixed at creation time (`updateQueue` rejects it as
+   * immutable), so a queue created under an older policy stays mismatched
+   * until explicitly fixed - see {@link applyQueuePolicyFix}.
+   * @param binding The queue's handler binding.
+   * @returns A plan to fix the mismatch, or undefined if the queue's policy
+   * already matches (or the queue does not exist yet).
+   */
+  async function planQueuePolicyFix(
+    binding: QueueHandlerBinding,
+  ): Promise<QueuePolicyFixPlan | undefined> {
+    const { name } = binding.token;
+    const desiredPolicy = resolveDesiredQueuePolicy(binding);
+
+    await ensureStarted();
+    const queue = await boss.getQueue(name);
+    if (!queue || queue.policy === desiredPolicy) {
+      return undefined;
+    }
+
+    // getQueue's counts are only as fresh as the last periodic stats
+    // computation (which may never have run, e.g. a migration-only process
+    // that disables maintenance) - force a live recount from the job table
+    // so the reported blast radius is trustworthy before anything destructive
+    // happens.
+    const [stats] = await boss.getQueueStats(name, { force: true });
+
+    return {
+      queueName: name,
+      currentState: queue.policy ?? 'standard',
+      desiredState: desiredPolicy,
+      jobsAtRisk: {
+        pending: stats?.queuedCount ?? queue.queuedCount,
+        active: stats?.activeCount ?? queue.activeCount,
+      },
+    };
+  }
+
+  async function planQueuePolicyFixes(
+    queueNames?: string[],
+  ): Promise<QueuePolicyFixPlan[]> {
+    // An explicit queueNames list is honored as-is (the caller named it, so
+    // check it regardless of its binding config); scanning every queue
+    // narrows to ones where a policy even applies, to avoid a pointless
+    // getQueue round trip per queue with nothing to check.
+    const targetBindings = queueNames
+      ? bindings.filter((binding) => queueNames.includes(binding.token.name))
+      : bindings.filter(
+          (binding) => !!binding.repeatable || binding.options?.deduplication,
+        );
+
+    const plans = await Promise.all(
+      targetBindings.map((binding) => planQueuePolicyFix(binding)),
+    );
+
+    return plans.filter((plan) => plan !== undefined);
+  }
+
+  /**
+   * Logs (but does not fix) every repeatable/deduplicated queue whose policy
+   * no longer matches what it should be, so the gap is visible in production
+   * rather than silently leaving affected queues exposed to job pile-up.
+   */
+  async function logMismatchedQueuePolicies(): Promise<void> {
+    const plans = await planQueuePolicyFixes();
+
+    for (const plan of plans) {
+      logError(
+        new Error(
+          `Queue "${plan.queueName}" has policy "${plan.currentState}" but should have "${plan.desiredState}". Run the migrate-queue-policies script to fix this.`,
+        ),
+        {
+          queueName: plan.queueName,
+          currentPolicy: plan.currentState,
+          expectedPolicy: plan.desiredState,
+          event: 'queue-policy-mismatch',
+        },
+      );
+    }
+  }
+
+  /**
+   * Applies a single previously reviewed {@link QueuePolicyFixPlan}.
+   * `policy` cannot be updated in place, so this deletes and recreates the
+   * queue - which discards any of its pending/active jobs. Only call this
+   * for a plan the caller has already reviewed and decided to apply.
+   * @param plan The plan to apply, as produced by {@link planQueuePolicyFix}.
+   * @returns The outcome of applying the plan.
+   */
+  async function applyQueuePolicyFix(
+    plan: QueuePolicyFixPlan,
+  ): Promise<QueuePolicyFixResult> {
+    const { queueName } = plan;
+    const deleteAfterSeconds = DELETE_AFTER_DAYS * 24 * 60 * 60;
+
+    await boss.deleteQueue(queueName);
+    await boss.createQueue(queueName, {
+      deleteAfterSeconds,
+      notify: true,
+      policy: plan.desiredState,
+    });
+
+    logger.info(
+      {
+        queueName,
+        previousPolicy: plan.currentState,
+        newPolicy: plan.desiredState,
+        event: 'queue-policy-fixed',
+      },
+      `Fixed queue "${queueName}" policy: "${plan.currentState}" -> "${plan.desiredState}"`,
+    );
+
+    return {
+      queueName,
+      previousState: plan.currentState,
+      newState: plan.desiredState,
+    };
+  }
+
+  async function applyQueuePolicyFixes(
+    plans: QueuePolicyFixPlan[],
+  ): Promise<QueuePolicyFixResult[]> {
+    const results: QueuePolicyFixResult[] = [];
+    for (const plan of plans) {
+      // Sequential: deleteQueue+createQueue on the same queue name racing
+      // with another in-flight pair is not a scenario worth risking for a
+      // rarely-run, operator-initiated migration.
+      results.push(await applyQueuePolicyFix(plan));
+    }
+    return results;
+  }
+
   async function startWorkers(workerOptions: {
     createContext: () => ServiceContext;
   }): Promise<void> {
@@ -381,6 +529,7 @@ export function createQueueRuntime(
 
     const activeQueueNames = bindings.map((binding) => binding.token.name);
     await cleanupOrphanedSchedules(activeQueueNames);
+    await logMismatchedQueuePolicies();
 
     const startedQueueNames: string[] = [];
 
@@ -525,5 +674,7 @@ export function createQueueRuntime(
     stopWorkers,
     listQueues,
     getScheduledJobs,
+    planQueuePolicyFixes,
+    applyQueuePolicyFixes,
   };
 }
