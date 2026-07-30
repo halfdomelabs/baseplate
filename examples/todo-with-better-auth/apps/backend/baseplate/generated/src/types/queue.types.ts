@@ -291,6 +291,60 @@ export interface ScheduledJob {
 }
 
 /**
+ * A queue whose backend-level configuration (e.g. a pg-boss policy) no
+ * longer matches what it should be, discovered by {@link QueueRuntime.planQueuePolicyFixes}.
+ *
+ * Backend-specific config that governs job admission (e.g. pg-boss's
+ * `policy`) can be immutable after a queue is created, so an app upgrade
+ * that changes what a queue should be configured with does not retroactively
+ * apply to already-deployed queues. Fixing this may require destructively
+ * recreating the queue, so a plan is always produced and reviewed before any
+ * fix is applied.
+ */
+export interface QueuePolicyFixPlan {
+  /**
+   * The name of the queue that needs fixing.
+   */
+  queueName: string;
+  /**
+   * The queue's current backend-level configuration state (e.g. `'standard'`
+   * for a pg-boss policy).
+   */
+  currentState: string;
+  /**
+   * The backend-level configuration state the queue should have.
+   */
+  desiredState: string;
+  /**
+   * The number of jobs that would be lost by applying this fix, since
+   * correcting the configuration may require deleting and recreating the
+   * queue.
+   */
+  jobsAtRisk: {
+    pending: number;
+    active: number;
+  };
+}
+
+/**
+ * The result of applying a {@link QueuePolicyFixPlan}.
+ */
+export interface QueuePolicyFixResult {
+  /**
+   * The name of the queue that was fixed.
+   */
+  queueName: string;
+  /**
+   * The queue's backend-level configuration state before the fix was applied.
+   */
+  previousState: string;
+  /**
+   * The queue's backend-level configuration state after the fix was applied.
+   */
+  newState: string;
+}
+
+/**
  * The full runtime surface for queues: enqueueing jobs, running workers, and
  * introspecting registered queues.
  */
@@ -347,6 +401,32 @@ export interface QueueRuntime {
    * Gets all scheduled/repeatable jobs.
    */
   getScheduledJobs(): Promise<ScheduledJob[]>;
+
+  /**
+   * Checks queues for backend-level configuration that no longer matches
+   * what they should be (e.g. a pg-boss queue created under an older policy)
+   * and reports what fixing each one would cost, without changing anything.
+   *
+   * Optional: only meaningful for backends where such configuration can go
+   * stale after an app upgrade and cannot be updated in place.
+   * @param queueNames Restricts the check to these queues. Checks every
+   * queue with a bound handler if omitted.
+   * @returns A plan per queue that needs fixing. Empty if none do.
+   */
+  planQueuePolicyFixes?(queueNames?: string[]): Promise<QueuePolicyFixPlan[]>;
+
+  /**
+   * Applies previously reviewed {@link QueuePolicyFixPlan}s, which may
+   * destructively recreate the affected queues.
+   *
+   * Optional: only meaningful for backends where {@link planQueuePolicyFixes}
+   * is meaningful.
+   * @param plans The plans to apply, as returned by {@link planQueuePolicyFixes}.
+   * @returns The outcome of applying each plan.
+   */
+  applyQueuePolicyFixes?(
+    plans: QueuePolicyFixPlan[],
+  ): Promise<QueuePolicyFixResult[]>;
 }
 
 /**
