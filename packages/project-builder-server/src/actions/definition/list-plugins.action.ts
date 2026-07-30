@@ -25,8 +25,19 @@ const pluginInfoSchema = z.object({
     ),
 });
 
+const pluginDiscoveryErrorSchema = z.object({
+  directory: z.string().describe('The directory that could not be scanned.'),
+  reason: z.string().describe('Why plugin discovery failed.'),
+});
+
 const listPluginsOutputSchema = z.object({
   plugins: z.array(pluginInfoSchema).describe('Available plugins.'),
+  discoveryErrors: z
+    .array(pluginDiscoveryErrorSchema)
+    .optional()
+    .describe(
+      'Directories that failed plugin discovery. When present, the plugin list is incomplete.',
+    ),
 });
 
 export const listPluginsAction = createServiceAction({
@@ -44,6 +55,11 @@ export const listPluginsAction = createServiceAction({
         : '';
       console.info(
         `  ${status} ${plugin.displayName} [${plugin.key}]${managed}`,
+      );
+    }
+    for (const error of output.discoveryErrors ?? []) {
+      console.warn(
+        `  ! Plugin discovery failed for ${error.directory}: ${error.reason}`,
       );
     }
   },
@@ -66,6 +82,11 @@ export const listPluginsAction = createServiceAction({
         managedBy: plugin.managedBy,
       }));
 
-    return { plugins };
+    return {
+      plugins,
+      discoveryErrors: context.pluginDiscoveryErrors?.length
+        ? context.pluginDiscoveryErrors
+        : undefined,
+    };
   },
 });

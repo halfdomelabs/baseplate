@@ -2,7 +2,10 @@ import type {
   PluginMetadataWithPaths,
   ProjectInfo,
 } from '@baseplate-dev/project-builder-lib';
-import type { ServiceActionContext } from '@baseplate-dev/project-builder-server/actions';
+import type {
+  PluginDiscoveryError,
+  ServiceActionContext,
+} from '@baseplate-dev/project-builder-server/actions';
 
 import { discoverPlugins } from '@baseplate-dev/project-builder-server/plugins';
 import { getUserConfig } from '@baseplate-dev/project-builder-server/user-config';
@@ -19,17 +22,27 @@ export async function createServiceActionContext(
   const devConfig = await loadDevConfig();
   const projects = project ? [project] : await listProjects({});
 
-  // Discover plugins from cwd, then each configured plugin root directory
+  // Discover plugins from cwd, then each configured plugin root directory.
+  // A failure in any single directory is non-fatal so the server still starts
+  // with whatever plugins could be loaded; the errors are surfaced to clients
+  // via context.pluginDiscoveryErrors.
+  const pluginDiscoveryErrors: PluginDiscoveryError[] = [];
+  const discoverPluginsSafely = async (
+    dir: string,
+  ): Promise<PluginMetadataWithPaths[]> => {
+    try {
+      return await discoverPlugins(dir, logger);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      logger.warn(`Could not discover plugins from ${dir}: ${reason}`);
+      pluginDiscoveryErrors.push({ directory: dir, reason });
+      return [];
+    }
+  };
+
   const allPluginArrays = await Promise.all([
-    discoverPlugins(process.cwd(), logger),
-    ...devConfig.pluginRootDirectories.map(async (dir) => {
-      try {
-        return await discoverPlugins(dir, logger);
-      } catch {
-        logger.warn(`Could not discover plugins from ${dir}`);
-        return [] as PluginMetadataWithPaths[];
-      }
-    }),
+    discoverPluginsSafely(process.cwd()),
+    ...devConfig.pluginRootDirectories.map((dir) => discoverPluginsSafely(dir)),
   ]);
 
   // Deduplicate by fullyQualifiedName (cwd takes precedence)
@@ -51,6 +64,7 @@ export async function createServiceActionContext(
     logger,
     userConfig,
     plugins,
+    pluginDiscoveryErrors,
     cliVersion,
     sessionId: 'default',
   };
