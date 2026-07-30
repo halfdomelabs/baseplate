@@ -201,10 +201,7 @@ export async function authenticateUserWithEmailAndPassword({
   });
 
   // check for password match
-  const isValid = await verifyPasswordHash(
-    userAccount?.password ?? '',
-    password,
-  );
+  const isValid = await verifyPasswordHash(userAccount?.password, password);
   if (!isValid || !userAccount) {
     // Track failed attempt
     await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
@@ -263,7 +260,7 @@ export async function changeUserPassword({
 
   // Verify current password
   const isValid = await verifyPasswordHash(
-    userAccount?.password ?? '',
+    userAccount?.password,
     currentPassword,
   );
   if (!isValid || !userAccount) {

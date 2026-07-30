@@ -4,6 +4,8 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
+
 import { AUTH_PASSWORD_HASHER_SERVICE_PATHS } from './template-paths.js';
 import { AUTH_PASSWORD_HASHER_SERVICE_TEMPLATES } from './typed-templates.js';
 
@@ -27,6 +29,7 @@ const authPasswordHasherServiceRenderers =
 
 const authPasswordHasherServiceRenderersTask = createGeneratorTask({
   dependencies: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: AUTH_PASSWORD_HASHER_SERVICE_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
@@ -34,7 +37,7 @@ const authPasswordHasherServiceRenderersTask = createGeneratorTask({
     authPasswordHasherServiceRenderers:
       authPasswordHasherServiceRenderers.export(),
   },
-  run({ paths, typescriptFile }) {
+  run({ errorHandlerServiceImports, paths, typescriptFile }) {
     return {
       providers: {
         authPasswordHasherServiceRenderers: {
@@ -44,6 +47,9 @@ const authPasswordHasherServiceRenderersTask = createGeneratorTask({
                 template:
                   AUTH_PASSWORD_HASHER_SERVICE_TEMPLATES.passwordHasherService,
                 destination: paths.passwordHasherService,
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                },
                 ...options,
               }),
           },

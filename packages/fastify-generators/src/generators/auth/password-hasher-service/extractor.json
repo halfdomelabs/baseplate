@@ -5,7 +5,12 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/password-hasher-service",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{module-root}/services/password-hasher.service.ts",
       "projectExports": { "createPasswordHash": {}, "verifyPasswordHash": {} },
       "sourceFile": "module/services/password-hasher.service.ts",
