@@ -13,8 +13,8 @@
       },
       "pathRootRelativePath": "{module-root}/queues/notification-delivery.queue.ts",
       "projectExports": {
-        "notificationDeliveryQueue": { "isTypeOnly": false },
-        "NotificationDeliveryJobData": { "isTypeOnly": true }
+        "NotificationDeliveryJobData": { "isTypeOnly": true },
+        "notificationDeliveryQueue": { "isTypeOnly": false }
       },
       "sourceFile": "module/queues/notification-delivery.queue.ts",
       "variables": {}
@@ -170,10 +170,6 @@
         "emailModuleImportsProvider": {
           "importName": "emailModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
-        },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/email-channel.ts",
@@ -213,10 +209,7 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
-      "referencedGeneratorTemplates": [
-        "services-notification-content",
-        "services-notification-renderer"
-      ],
+      "referencedGeneratorTemplates": ["services-notification-renderer"],
       "sourceFile": "module/services/notification-channel.ts",
       "variables": { "TPL_CHANNEL_ENTRIES": {} }
     },

@@ -49,10 +49,7 @@ const servicesNotificationChannel = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'services-notification-channel',
-  referencedGeneratorTemplates: {
-    servicesNotificationContent: {},
-    servicesNotificationRenderer: {},
-  },
+  referencedGeneratorTemplates: { servicesNotificationRenderer: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -184,8 +181,8 @@ const queuesNotificationDelivery = createTsTemplateFile({
   importMapProviders: { queuesImports: queuesImportsProvider },
   name: 'queues-notification-delivery',
   projectExports: {
-    notificationDeliveryQueue: { isTypeOnly: false },
     NotificationDeliveryJobData: { isTypeOnly: true },
+    notificationDeliveryQueue: { isTypeOnly: false },
   },
   source: {
     path: path.join(
@@ -347,10 +344,7 @@ export const schemaGroup = {
 
 const servicesEmailChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    emailModuleImports: emailModuleImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
+  importMapProviders: { emailModuleImports: emailModuleImportsProvider },
   name: 'services-email-channel',
   referencedGeneratorTemplates: {
     servicesNotificationChannel: {},

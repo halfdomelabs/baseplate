@@ -153,7 +153,6 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 destination: paths.servicesEmailChannel,
                 importMapProviders: {
                   emailModuleImports,
-                  prismaImports,
                 },
                 generatorPaths: paths,
                 ...options,
