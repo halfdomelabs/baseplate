@@ -1,5 +1,11 @@
 # @baseplate-dev/utils
 
+## 0.6.15
+
+### Patch Changes
+
+- [#962](https://github.com/halfdomelabs/baseplate/pull/962) [`615c8e1`](https://github.com/halfdomelabs/baseplate/commit/615c8e173cede3cfa0298b92d5b84999ffedce5b) Thanks [@kingston](https://github.com/kingston)! - Tightened handling of indexed access across the codebase, fixing latent cases where a missing array element or record entry could surface as an undefined value in a field typed as required, such as unmatched regular expression capture groups and parsed command strings.
+
 ## 0.6.14
 
 ## 0.6.13
