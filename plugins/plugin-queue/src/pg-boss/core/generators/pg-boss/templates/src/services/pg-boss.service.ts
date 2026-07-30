@@ -255,10 +255,16 @@ export function createQueueRuntime(
     await boss.createQueue(name, {
       deleteAfterSeconds,
       notify: true,
-      // pg-boss only deduplicates by singletonKey when the queue uses a
-      // policy that enforces it; the default `standard` policy ignores
-      // singletonKey entirely. The policy is fixed at creation time.
-      ...(binding.options?.deduplication && { policy: 'exclusive' }),
+      // pg-boss only enforces at-most-one-pending-job when the queue uses a
+      // policy that requires it; the default `standard` policy has no such
+      // constraint. Deduplicated queues need this so singletonKey is
+      // actually enforced, and repeatable queues need it so a pile-up of
+      // dispatched instances (e.g. from worker downtime) collapses to one
+      // instead of draining back-to-back once a worker reconnects. The
+      // policy is fixed at creation time.
+      ...((binding.options?.deduplication === true || !!binding.repeatable) && {
+        policy: 'exclusive',
+      }),
     });
     // createQueue is a no-op on an existing queue, so the settings above never
     // reach one an earlier deploy created. `policy` is omitted here because
