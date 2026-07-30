@@ -6,7 +6,8 @@ import type { User } from '%prismaGeneratedImports';
 import { prisma } from '%prismaImports';
 import { hashPassword } from 'better-auth/crypto';
 
-const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD } = process.env;
+const { INITIAL_USER_EMAIL, INITIAL_USER_PASSWORD, INITIAL_USER_NAME } =
+  process.env;
 const INITIAL_USER_ROLES: AuthRole[] = TPL_INITIAL_USER_ROLES;
 
 /**
@@ -33,7 +34,7 @@ export async function seedInitialUser(): Promise<User | undefined> {
 
     user = await prisma.user.create({
       data: {
-        name: INITIAL_USER_EMAIL.split('@')[0] ?? 'Admin',
+        name: INITIAL_USER_NAME ? INITIAL_USER_NAME : 'Admin',
         email: INITIAL_USER_EMAIL,
         emailVerified: true,
         accounts: {

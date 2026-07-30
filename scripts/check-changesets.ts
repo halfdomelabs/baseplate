@@ -208,15 +208,16 @@ async function getLastPackageTag(): Promise<string | null> {
 
     const tags = stdout.trim().split('\n').filter(Boolean);
 
-    if (tags.length === 0) {
+    // Most recent tag first, due to the --sort=-v:refname above.
+    const lastTag = tags[0];
+
+    if (lastTag === undefined) {
       console.info(
         'No previous tags found for @baseplate-dev/project-builder-cli',
       );
       return null;
     }
 
-    // Return the most recent tag (first in the list due to sorting)
-    const lastTag = tags[0];
     console.info(`Last tag for project-builder-cli: ${lastTag}`);
     return lastTag;
   } catch (error) {
