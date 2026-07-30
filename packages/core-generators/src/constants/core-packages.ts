@@ -3,9 +3,9 @@ export const CORE_PACKAGES = {
   typescript: '6.0.3',
 
   // Linting
-  '@eslint/js': '9.39.2',
+  '@eslint/js': '9.39.5',
   '@vitest/eslint-plugin': '1.6.23',
-  eslint: '9.39.2',
+  eslint: '9.39.5',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
   'eslint-plugin-better-tailwindcss': '4.3.2',
