@@ -1,0 +1,12 @@
+{
+  "@baseplate-dev/core-generators#metadata/path-roots:path-roots": ".paths-metadata.json",
+  "@baseplate-dev/core-generators#node/eslint:eslint-config": "eslint.config.js",
+  "@baseplate-dev/core-generators#node/node-git-ignore:gitignore": ".gitignore",
+  "@baseplate-dev/core-generators#node/node-library:index-file": "src/index.ts",
+  "@baseplate-dev/core-generators#node/node-library:tsconfig-build": "tsconfig.build.json",
+  "@baseplate-dev/core-generators#node/node:package-json": "package.json",
+  "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
+  "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
+  "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.json",
+  "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts"
+}

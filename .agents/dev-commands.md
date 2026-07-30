@@ -33,6 +33,11 @@ Example projects (`examples/`) are standalone monorepos not included in the pnpm
 
 Examples run their own stricter generated-app lint/tsconfig, so errors in generated code (e.g. an eslint rule the source packages don't enforce) only surface when the example itself is checked. After changing generators or templates that regenerate example output, run:
 
-- `pnpm check:examples` — runs each example's own `check` (`lint`, `prettier:check`, `test`, `typecheck` over affected packages) via `pnpm run:examples -- pnpm check`.
+- `pnpm check:examples` — first verifies every example is in sync with the generators (`pnpm start diff-examples --fail-on-differences`), then runs each example's own `check` (`lint`, `prettier:check`, `test`, `typecheck` over affected packages) via `pnpm run:examples -- pnpm check`.
+
+The diff step catches generator/template changes that produce output different from what's committed — the same check CI runs in `.github/workflows/verify-examples-sync.yml`, but locally and across all examples in one command instead of failing much later in a PR. If it reports differences:
+
+- `pnpm start diff-examples` — see the diffs (add `--compact` for a summary, or scope with `pnpm start diff <example-name>` for one example).
+- `pnpm start sync-examples --overwrite` — regenerate all examples in place to match the current generator code (or `pnpm start sync <example-name>` for one example), then review and commit the resulting diff.
 
 Assumes example deps are already installed (they use a committed lockfile); run `pnpm run:examples -- pnpm install --frozen-lockfile` once if not. The `test` step needs Docker running (`docker compose up -d` in each example's `docker/` dir). To lint/typecheck only, run: `pnpm run:examples -- sh -c 'pnpm lint && pnpm typecheck'`.

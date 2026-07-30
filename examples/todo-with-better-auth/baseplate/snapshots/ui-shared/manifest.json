@@ -1,0 +1,8 @@
+{
+  "files": {
+    "added": [{ "path": "src/widget.tsx" }],
+    "deleted": [],
+    "modified": [{ "diffFile": "src_index.ts.diff", "path": "src/index.ts" }]
+  },
+  "version": "1"
+}
