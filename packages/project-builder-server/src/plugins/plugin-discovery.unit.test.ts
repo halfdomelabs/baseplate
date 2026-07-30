@@ -122,6 +122,31 @@ describe('discoverPlugins', () => {
     );
   });
 
+  it('should throw a conflict-specific error when package.json has merge conflicts', async () => {
+    // Arrange
+    const projectDir = '/conflicted-project';
+    vol.fromJSON({
+      '/conflicted-project/package.json': [
+        '{',
+        '  "dependencies": {',
+        '<<<<<<< CURRENT',
+        '    "axios": "1.16.1"',
+        '||||||| BASE',
+        '    "axios": "1.16.0"',
+        '=======',
+        '    "axios": "1.17.0"',
+        '>>>>>>> INCOMING',
+        '  }',
+        '}',
+      ].join('\n'),
+    });
+
+    // Act & Assert
+    await expect(discoverPlugins(projectDir, mockLogger)).rejects.toThrow(
+      'has unresolved merge conflicts',
+    );
+  });
+
   it('should handle missing plugin package.json gracefully', async () => {
     // Arrange
     const projectDir = '/project';

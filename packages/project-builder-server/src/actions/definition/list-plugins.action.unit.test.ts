@@ -61,6 +61,49 @@ describe('listPluginsAction', () => {
     });
   });
 
+  test('reports plugin discovery errors so clients can tell the list is incomplete', async ({
+    context,
+  }) => {
+    context.plugins = [createTestPlugin({ key: 'auth', name: 'auth' })];
+    context.pluginDiscoveryErrors = [
+      {
+        directory: '/project',
+        reason:
+          'The root package.json file at /project/package.json has unresolved merge conflicts.',
+      },
+    ];
+
+    const result = await invokeServiceActionForTest(
+      listPluginsAction,
+      { project: 'test-project' },
+      context,
+    );
+
+    expect(result.plugins).toHaveLength(1);
+    expect(result.discoveryErrors).toEqual([
+      {
+        directory: '/project',
+        reason:
+          'The root package.json file at /project/package.json has unresolved merge conflicts.',
+      },
+    ]);
+  });
+
+  test('omits discoveryErrors when discovery fully succeeded', async ({
+    context,
+  }) => {
+    context.plugins = [createTestPlugin({ key: 'auth', name: 'auth' })];
+    context.pluginDiscoveryErrors = [];
+
+    const result = await invokeServiceActionForTest(
+      listPluginsAction,
+      { project: 'test-project' },
+      context,
+    );
+
+    expect(result.discoveryErrors).toBeUndefined();
+  });
+
   test('filters out hidden plugins', async ({ context }) => {
     const plugins = [
       createTestPlugin({ key: 'auth', name: 'auth' }),
