@@ -3,7 +3,10 @@ import {
   libraryTypeSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { nodeLibraryCompilerCreator } from '#src/compiler/index.js';
+import {
+  nodeLibraryCompilerCreator,
+  reactLibraryCompilerCreator,
+} from '#src/compiler/index.js';
 
 /**
  * Core module that registers package compilers.
@@ -18,5 +21,6 @@ export const libraryTypeCoreModule = createPluginModule({
   },
   initialize: ({ libraryType }) => {
     libraryType.compilerCreators.add(nodeLibraryCompilerCreator);
+    libraryType.compilerCreators.add(reactLibraryCompilerCreator);
   },
 });

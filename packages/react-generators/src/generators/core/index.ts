@@ -4,6 +4,7 @@ export * from './react-components/index.js';
 export * from './react-config/index.js';
 export * from './react-error-boundary/index.js';
 export * from './react-error/index.js';
+export * from './react-library/index.js';
 export * from './react-logger/index.js';
 export * from './react-proxy/index.js';
 export * from './react-router/index.js';

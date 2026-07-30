@@ -4,6 +4,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { nodeLibraryWebConfig } from '#src/routes/packages/libs.$key/-components/node-library-edit.js';
+import { reactLibraryWebConfig } from '#src/routes/packages/libs.$key/-components/react-library-edit.js';
 
 /**
  * Core module that registers library type web configurations.
@@ -17,5 +18,6 @@ export const libraryTypeWebConfigsCoreModule = createPluginModule({
   },
   initialize: ({ libraryType }) => {
     libraryType.webConfigs.add(nodeLibraryWebConfig);
+    libraryType.webConfigs.add(reactLibraryWebConfig);
   },
 });

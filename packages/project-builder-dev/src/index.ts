@@ -3,6 +3,7 @@ import { program } from 'commander';
 
 import { addDefinitionCommand } from './commands/definition.js';
 import { addDevServerCommand } from './commands/dev-server.js';
+import { addDiffExamplesCommand } from './commands/diff-examples.js';
 import { addDiffCommand } from './commands/diff.js';
 import { addInitCommand } from './commands/init.js';
 import { addMcpCommand } from './commands/mcp.js';
@@ -25,6 +26,7 @@ export async function runDevCli(): Promise<void> {
 
   addSyncCommand(program);
   addDiffCommand(program);
+  addDiffExamplesCommand(program);
   addDefinitionCommand(program);
   addTemplatesCommand(program);
   addSnapshotCommand(program);

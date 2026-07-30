@@ -1,0 +1,8 @@
+Index: src/index.ts
+===================================================================
+--- src/index.ts
++++ src/index.ts
+@@ -1,2 +1,1 @@
+-// Export your library modules here
+-export const placeholder = 'placeholder';
++export * from './widget.js';

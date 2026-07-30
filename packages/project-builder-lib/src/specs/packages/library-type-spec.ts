@@ -41,6 +41,20 @@ export const nodeLibraryDefinitionSchemaEntry = {
   definitionSchema: createNodeLibrarySchema,
 };
 
+const createReactLibrarySchema = definitionSchemaWithSlots(
+  { librarySlot: libraryEntityType },
+  () =>
+    z.object({
+      ...baseLibraryValidators,
+      type: z.literal('react-library'),
+    }),
+);
+
+export const reactLibraryDefinitionSchemaEntry = {
+  name: 'react-library',
+  definitionSchema: createReactLibrarySchema,
+};
+
 export interface LibraryCompilerCreator<
   T extends BaseLibraryDefinition = BaseLibraryDefinition,
 > {
@@ -102,6 +116,7 @@ export function createLibraryWebConfig<
 export const libraryTypeSpec = createFieldMapSpec('core/library-type', (t) => ({
   schemaCreators: t.namedArrayToMap<LibraryDefinitionSchemaEntry>([
     nodeLibraryDefinitionSchemaEntry,
+    reactLibraryDefinitionSchemaEntry,
   ]),
   // oxlint-disable-next-line typescript/no-explicit-any
   compilerCreators: t.namedArrayToMap<LibraryCompilerCreator<any>>(),
