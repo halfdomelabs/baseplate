@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
+import { withDefault } from '#src/schema/creator/index.js';
 import { definitionSchemaWithSlots } from '#src/schema/creator/schema-creator.js';
+import { libraryEntityType } from '#src/schema/libraries/types.js';
 
 import { baseAppValidators } from '../base.js';
 import { appEntityType, createAppEntryType } from '../types.js';
@@ -40,6 +42,14 @@ export const createWebAppSchema = definitionSchemaWithSlots(
       enableSubscriptions: ctx.withDefault(z.boolean(), false),
       pluginData: pluginDataSchema.optional(),
       adminApp: createAdminAppSchema(ctx, { appSlot }),
+      libraryRefs: z
+        .array(
+          ctx.withRef({
+            type: libraryEntityType,
+            onDelete: 'RESTRICT',
+          }),
+        )
+        .apply(withDefault([])),
     });
   },
 );

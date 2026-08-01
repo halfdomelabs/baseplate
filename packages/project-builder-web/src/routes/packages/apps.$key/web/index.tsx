@@ -15,6 +15,7 @@ import {
   Button,
   FormActionBar,
   InputFieldController,
+  MultiComboboxFieldController,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -40,6 +41,10 @@ function WebAppGeneralForm(): React.JSX.Element {
   const pluginSettingsConfigs = [
     ...pluginContainer.use(webAppSchemaExtensionWebSpec).configs.values(),
   ];
+
+  const reactLibraryOptions = definition.libraries
+    .filter((library) => library.type === 'react-library')
+    .map((library) => ({ value: library.id, label: library.name }));
 
   const handleEnableAdmin = (): void => {
     void saveDefinitionWithFeedback(
@@ -138,6 +143,23 @@ function WebAppGeneralForm(): React.JSX.Element {
                 pluginKey={pluginKey}
               />
             ))}
+          </SectionListSectionContent>
+        </SectionListSection>
+
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>Libraries</SectionListSectionTitle>
+            <SectionListSectionDescription>
+              Import shared React component libraries into this application.
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent>
+            <MultiComboboxFieldController
+              control={control}
+              name="libraryRefs"
+              options={reactLibraryOptions}
+              placeholder="Select libraries to import"
+            />
           </SectionListSectionContent>
         </SectionListSection>
 

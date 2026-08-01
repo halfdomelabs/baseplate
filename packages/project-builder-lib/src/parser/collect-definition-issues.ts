@@ -8,6 +8,7 @@ import { definitionIssueCheckerSpec } from '#src/schema/creator/definition-issue
 import { definitionFieldIssueRegistry } from '#src/schema/creator/definition-issue-registry.js';
 
 import { collectExpressionIssues } from './collect-expression-issues.js';
+import { checkLibraryRefType } from './definition-issue-checkers/library-ref-type-checker.js';
 import { checkMutationRoles } from './definition-issue-checkers/mutation-roles-checker.js';
 import { checkPluginDependencies } from './definition-issue-checkers/plugin-dependency-checker.js';
 import { checkPluginImplementations } from './definition-issue-checkers/plugin-implementation-checker.js';
@@ -23,6 +24,7 @@ const BUILT_IN_CHECKERS: DefinitionIssueChecker[] = [
   checkMutationRoles,
   checkPluginDependencies,
   checkPluginImplementations,
+  checkLibraryRefType,
 ];
 
 /**

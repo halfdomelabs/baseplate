@@ -157,6 +157,7 @@ describe('typescriptGenerator', () => {
         prod: {
           lodash: '^4.17.0',
         },
+        peer: {},
       });
     });
 

@@ -40,11 +40,13 @@ export const reactLibraryGenerator = createGenerator({
       },
       run({ node }) {
         node.packages.addPackages({
-          prod: {
+          peer: {
             react: REACT_PACKAGES.react,
             'react-dom': REACT_PACKAGES['react-dom'],
           },
           dev: {
+            react: REACT_PACKAGES.react,
+            'react-dom': REACT_PACKAGES['react-dom'],
             '@types/react': REACT_PACKAGES['@types/react'],
             '@types/react-dom': REACT_PACKAGES['@types/react-dom'],
           },
