@@ -2,6 +2,16 @@ import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  MultiComboboxFieldController,
+} from '@prisma-crud/ui-shared';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -9,16 +19,6 @@ import { z } from 'zod';
 
 import type { FragmentType } from '@src/gql';
 
-import { Button } from '@src/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@src/components/ui/dialog';
-import { MultiComboboxFieldController } from '@src/components/ui/multi-combobox-field';
 import { graphql, readFragment } from '@src/gql';
 
 const roleFormSchema = z.object({

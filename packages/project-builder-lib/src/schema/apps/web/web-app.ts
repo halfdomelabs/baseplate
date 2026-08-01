@@ -50,6 +50,17 @@ export const createWebAppSchema = definitionSchemaWithSlots(
           }),
         )
         .apply(withDefault([])),
+      /**
+       * Optional reference to a `react-library` package that supplies the
+       * shared `react-components` UI primitive set (Button, Dialog, Toaster,
+       * etc.) instead of generating them locally in this app.
+       */
+      componentsLibraryRef: z.optional(
+        ctx.withRef({
+          type: libraryEntityType,
+          onDelete: 'RESTRICT',
+        }),
+      ),
     });
   },
 );

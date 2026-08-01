@@ -27,6 +27,7 @@ import {
   composeReactGenerators,
   reactApolloGenerator,
   reactComponentsGenerator,
+  reactComponentsImportGenerator,
   reactLibraryImportsGenerator,
   reactRouterGenerator,
   reactRoutesGenerator,
@@ -146,6 +147,26 @@ function buildReact(
     };
   });
 
+  const componentsLibrary = appConfig.componentsLibraryRef
+    ? (() => {
+        const library = LibraryUtils.byId(
+          projectDefinition,
+          appConfig.componentsLibraryRef,
+        );
+        return {
+          packageName: buildPackageName(
+            projectDefinition.settings.general,
+            library.name,
+          ),
+          relativeSourceGlob: LibraryUtils.getLibraryRelativeSourcePath(
+            library,
+            appConfig,
+            projectDefinition.settings.monorepo,
+          ),
+        };
+      })()
+    : undefined;
+
   const rootFeatures = appCompiler.getRootChildren();
   const adminRoutes = buildAdminRoutes(builder);
 
@@ -166,7 +187,9 @@ function buildReact(
           children: routerChildren,
           renderPlaceholderIndex: !adminRoutes,
         }),
-        reactComponents: reactComponentsGenerator({}),
+        reactComponents: componentsLibrary
+          ? reactComponentsImportGenerator(componentsLibrary)
+          : reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({
           lightColorsCss: generateCssBlockFromThemeColors(
             themeConfig.colors.light,

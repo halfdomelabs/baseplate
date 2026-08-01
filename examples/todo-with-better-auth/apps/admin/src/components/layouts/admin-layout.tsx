@@ -1,11 +1,15 @@
 import type React from 'react';
 import type { ReactElement } from 'react';
 
+import {
+  Separator,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@prisma-crud/ui-shared';
 import { Outlet } from '@tanstack/react-router';
 
 import { AsyncBoundary } from '../ui/async-boundary';
-import { Separator } from '../ui/separator';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import { AppBreadcrumbs } from './app-breadcrumbs';
 import { AppSidebar } from './app-sidebar';
 

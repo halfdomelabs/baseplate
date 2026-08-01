@@ -13,6 +13,7 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
+  ComboboxFieldController,
   FormActionBar,
   InputFieldController,
   MultiComboboxFieldController,
@@ -153,12 +154,21 @@ function WebAppGeneralForm(): React.JSX.Element {
               Import shared React component libraries into this application.
             </SectionListSectionDescription>
           </SectionListSectionHeader>
-          <SectionListSectionContent>
+          <SectionListSectionContent className="space-y-6">
             <MultiComboboxFieldController
+              label="Imported Libraries"
               control={control}
               name="libraryRefs"
               options={reactLibraryOptions}
               placeholder="Select libraries to import"
+            />
+            <ComboboxFieldController
+              label="Components Library"
+              description="Source the shared UI components (Button, Dialog, Toaster, etc.) from this library instead of generating them locally."
+              control={control}
+              name="componentsLibraryRef"
+              options={reactLibraryOptions}
+              placeholder="Generate components locally"
             />
           </SectionListSectionContent>
         </SectionListSection>

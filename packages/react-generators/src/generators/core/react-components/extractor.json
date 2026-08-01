@@ -88,9 +88,7 @@
       "pathRootRelativePath": "{components-root}/ui/badge.tsx",
       "projectExports": {
         "Badge": {},
-        "badgeVariants": {},
-        "BadgeWithIcon": {},
-        "BadgeWithIconProps": { "isTypeOnly": true }
+        "badgeVariants": {}
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/badge.tsx",
@@ -122,7 +120,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/button.tsx",
-      "projectExports": { "Button": {}, "LinkButton": {} },
+      "projectExports": { "Button": {} },
       "referencedGeneratorTemplates": ["cn", "styles-button"],
       "sourceFile": "components/ui/button.tsx",
       "variables": {}
@@ -165,7 +163,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/checkbox.tsx",
-      "projectExports": { "Checkbox": {}, "CheckedInput": {} },
+      "projectExports": { "Checkbox": {} },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/checkbox.tsx",
       "variables": {}
@@ -284,8 +282,7 @@
       "pathRootRelativePath": "{components-root}/ui/date-picker-field.tsx",
       "projectExports": {
         "DatePickerField": {},
-        "DatePickerFieldController": {},
-        "ReactDatePickerInput": {}
+        "DatePickerFieldController": {}
       },
       "referencedGeneratorTemplates": [
         "button",
@@ -341,8 +338,7 @@
         "DialogPortal": {},
         "DialogTitle": {},
         "DialogTrigger": {},
-        "DialogWidth": { "isTypeOnly": true },
-        "Modal": {}
+        "DialogWidth": { "isTypeOnly": true }
       },
       "referencedGeneratorTemplates": ["button", "cn"],
       "sourceFile": "components/ui/dialog.tsx",
@@ -472,7 +468,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/input.tsx",
-      "projectExports": { "Input": {}, "TextInput": {} },
+      "projectExports": { "Input": {} },
       "referencedGeneratorTemplates": ["cn", "styles-input"],
       "sourceFile": "components/ui/input.tsx",
       "variables": {}
@@ -614,8 +610,7 @@
         "NavigationMenuLink": {},
         "NavigationMenuList": {},
         "NavigationMenuTrigger": {},
-        "navigationMenuTriggerStyle": {},
-        "NavigationMenuViewport": {}
+        "navigationMenuTriggerStyle": {}
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/navigation-menu.tsx",
@@ -642,7 +637,6 @@
       "pathRootRelativePath": "{components-root}/ui/popover.tsx",
       "projectExports": {
         "Popover": {},
-        "PopoverAnchor": {},
         "PopoverContent": {},
         "PopoverTrigger": {}
       },
@@ -680,9 +674,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/select.tsx",
       "projectExports": {
-        "ReactSelectInput": {},
-        "Select": {},
-        "SelectInput": {}
+        "Select": {}
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/select.tsx",
@@ -896,7 +888,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea.tsx",
-      "projectExports": { "Textarea": {}, "TextAreaInput": {} },
+      "projectExports": { "Textarea": {} },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/textarea.tsx",
       "variables": {}
