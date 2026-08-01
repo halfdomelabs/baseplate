@@ -414,12 +414,10 @@ mcp__baseplate_dev_server__diff_project({
 
 The diff should show no changes or only expected/snapshotted differences.
 
-Also verify the example project still builds and typechecks after the sync:
+Also verify the examples are in sync and pass their own checks (lint, prettier, test, typecheck) after the sync — this catches issues like generated-code lint errors that manual `build`/`typecheck` steps miss:
 
 ```bash
-pnpm run:example blog-with-auth -- pnpm install
-pnpm run:example blog-with-auth -- pnpm typecheck
-pnpm run:example blog-with-auth -- pnpm build
+pnpm check:examples
 ```
 
 ### 10. Sync All Projects
@@ -543,7 +541,7 @@ If you encounter issues with core generator logic (e.g., providers not wiring co
 1. **Start with working code** - Always develop features in a concrete codebase first
 2. **Use snapshots judiciously** - Only for intentional differences, not generator bugs
 3. **Validate frequently** - Run diff commands often during development
-4. **Test generated code** - Ensure example projects build and typecheck after syncing (`pnpm run:example <name> -- pnpm typecheck`)
+4. **Test generated code** - Ensure examples are in sync and pass their own checks after syncing (`pnpm check:examples`)
 5. **Keep commits focused** - Separate generator changes from template changes when possible
 6. **Document template variables** - Use clear, descriptive names for template variables
 7. **Sync all projects when done** - Always run `sync_all_projects` to ensure all examples are updated

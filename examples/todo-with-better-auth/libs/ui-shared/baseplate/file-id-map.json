@@ -8,5 +8,6 @@
   "@baseplate-dev/core-generators#node/prettier:prettier-config": ".prettierrc",
   "@baseplate-dev/core-generators#node/prettier:prettier-ignore": ".prettierignore",
   "@baseplate-dev/core-generators#node/typescript:tsconfig": "tsconfig.json",
-  "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts"
+  "@baseplate-dev/core-generators#node/vitest:vitest-config": "vitest.config.ts",
+  "@baseplate-dev/react-generators#core/react-tailwind:styles-css": "src/styles.css"
 }

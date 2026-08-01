@@ -9,6 +9,16 @@ const diffAllProjectsInputSchema = z.object({
     .describe('Filter files by glob patterns.'),
 });
 
+const changedFileSchema = z.object({
+  packageName: z
+    .string()
+    .describe('The name of the package the file belongs to.'),
+  path: z.string().describe('The package-relative path of the file.'),
+  type: z
+    .enum(['added', 'modified', 'deleted'])
+    .describe('The type of difference for this file.'),
+});
+
 const projectDiffResultSchema = z.object({
   projectName: z.string().describe('The name of the project.'),
   status: z
@@ -19,6 +29,9 @@ const projectDiffResultSchema = z.object({
     .number()
     .optional()
     .describe('Total number of files with differences.'),
+  changedFiles: z
+    .array(changedFileSchema)
+    .describe('The files with differences, if any.'),
 });
 
 const diffAllProjectsOutputSchema = z.object({
@@ -56,6 +69,11 @@ export const diffAllProjectsAction = createServiceAction({
       status: 'success' | 'error';
       message: string;
       totalDiffs: number | undefined;
+      changedFiles: {
+        packageName: string;
+        path: string;
+        type: 'added' | 'modified' | 'deleted';
+      }[];
     }[] = [];
 
     let errorCount = 0;
@@ -74,6 +92,13 @@ export const diffAllProjectsAction = createServiceAction({
             ? `Found differences in ${result.totalDiffs} file(s)`
             : 'No differences found',
           totalDiffs: result.totalDiffs,
+          changedFiles: result.packageResults.flatMap((pkg) =>
+            pkg.diffSummary.diffs.map((diff) => ({
+              packageName: pkg.name,
+              path: diff.path,
+              type: diff.type,
+            })),
+          ),
         });
 
         if (result.hasDifferences) {
@@ -90,6 +115,7 @@ export const diffAllProjectsAction = createServiceAction({
           status: 'error',
           message: `Failed to diff: ${error instanceof Error ? error.message : String(error)}`,
           totalDiffs: undefined,
+          changedFiles: [],
         });
 
         errorCount++;
@@ -130,6 +156,9 @@ export const diffAllProjectsAction = createServiceAction({
     for (const result of output.results) {
       const icon = result.status === 'success' ? '✓' : '✗';
       console.info(`  ${icon} ${result.projectName}: ${result.message}`);
+      for (const file of result.changedFiles) {
+        console.info(`      ${file.type} ${file.packageName}/${file.path}`);
+      }
     }
   },
 });

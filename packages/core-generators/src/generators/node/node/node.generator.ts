@@ -42,6 +42,7 @@ const descriptorSchema = z.object({
     .object({
       prod: z.record(z.string(), z.string()).default({}),
       dev: z.record(z.string(), z.string()).default({}),
+      peer: z.record(z.string(), z.string()).default({}),
     })
     .prefault({}),
 });
@@ -211,6 +212,10 @@ export const nodeGenerator = createGenerator({
               scripts: Object.fromEntries(packageJsonValues.scripts),
               dependencies: packageJsonValues.packages.prod,
               devDependencies: packageJsonValues.packages.dev,
+              peerDependencies:
+                Object.keys(packageJsonValues.packages.peer).length > 0
+                  ? packageJsonValues.packages.peer
+                  : undefined,
               engines: {
                 node: `^${descriptor.nodeVersion}`,
                 // use major/minor version of PNPM

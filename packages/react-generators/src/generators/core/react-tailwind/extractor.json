@@ -14,6 +14,9 @@
         },
         "TPL_LIGHT_COLORS": {
           "description": "Light colors to apply to the app"
+        },
+        "TPL_SOURCE_DIRECTIVES": {
+          "description": "Tailwind @source directives for scanning imported library source files"
         }
       }
     }

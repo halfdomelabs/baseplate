@@ -11,16 +11,23 @@ import {
   vitestGenerator,
 } from '@baseplate-dev/core-generators';
 import {
+  generateCssBlockFromThemeColors,
+  generateDefaultTheme,
   LibraryCompiler,
   reactLibraryDefinitionSchemaEntry,
 } from '@baseplate-dev/project-builder-lib';
-import { reactLibraryGenerator } from '@baseplate-dev/react-generators';
+import {
+  reactLibraryGenerator,
+  reactTailwindGenerator,
+} from '@baseplate-dev/react-generators';
 
 class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> {
   compile(): PackageEntry {
     const { packageConfig, definitionContainer } = this;
     const projectDefinition = definitionContainer.definition;
     const generalSettings = projectDefinition.settings.general;
+    const themeConfig =
+      projectDefinition.settings.theme ?? generateDefaultTheme();
 
     const packageName = this.getPackageName();
     const packageDirectory = this.getPackageDirectory();
@@ -34,6 +41,15 @@ class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition>
         library: nodeLibraryGenerator({ includePlaceholderIndexFile: true }),
         vitest: vitestGenerator({ includeTestHelpers: false }),
         reactLibrary: reactLibraryGenerator({}),
+        reactTailwind: reactTailwindGenerator({
+          includeViteIntegration: false,
+          lightColorsCss: generateCssBlockFromThemeColors(
+            themeConfig.colors.light,
+          ),
+          darkColorsCss: generateCssBlockFromThemeColors(
+            themeConfig.colors.dark,
+          ),
+        }),
       },
     });
 

@@ -11,9 +11,11 @@ import {
 } from '@baseplate-dev/core-generators';
 import {
   AppUtils,
+  buildPackageName,
   FeatureUtils,
   generateCssBlockFromThemeColors,
   generateDefaultTheme,
+  LibraryUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -25,6 +27,7 @@ import {
   composeReactGenerators,
   reactApolloGenerator,
   reactComponentsGenerator,
+  reactLibraryImportsGenerator,
   reactRouterGenerator,
   reactRoutesGenerator,
   reactTailwindGenerator,
@@ -128,6 +131,21 @@ function buildReact(
     backendApp,
   );
 
+  const importedLibraries = appConfig.libraryRefs.map((id) => {
+    const library = LibraryUtils.byId(projectDefinition, id);
+    return {
+      packageName: buildPackageName(
+        projectDefinition.settings.general,
+        library.name,
+      ),
+      relativeSourceGlob: LibraryUtils.getLibraryRelativeSourcePath(
+        library,
+        appConfig,
+        projectDefinition.settings.monorepo,
+      ),
+    };
+  });
+
   const rootFeatures = appCompiler.getRootChildren();
   const adminRoutes = buildAdminRoutes(builder);
 
@@ -168,6 +186,13 @@ function buildReact(
         apolloError: apolloErrorGenerator({}),
         ...(appConfig.adminApp.enabled
           ? { adminComponents: adminComponentsGenerator({}) }
+          : {}),
+        ...(importedLibraries.length > 0
+          ? {
+              reactLibraryImports: reactLibraryImportsGenerator({
+                libraries: importedLibraries,
+              }),
+            }
           : {}),
       },
     },

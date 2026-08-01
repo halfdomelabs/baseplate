@@ -24,6 +24,7 @@ const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       react: t.scalar<boolean>(),
+      tailwind: t.scalar<boolean>(),
       eslintIgnore: t.array<string>([
         'dist',
         'node_modules',
@@ -84,7 +85,7 @@ export const eslintGenerator = createGenerator({
         node: nodeProvider,
         eslintConfigValues: eslintConfigValuesProvider,
       },
-      run({ node, eslintConfigValues: { react, enableVitest } }) {
+      run({ node, eslintConfigValues: { react, tailwind, enableVitest } }) {
         node.packages.addDevPackages({
           ...extractPackageVersions(CORE_PACKAGES, [
             '@eslint/js',
@@ -102,6 +103,10 @@ export const eslintGenerator = createGenerator({
                 'eslint-plugin-jsx-a11y',
                 'eslint-plugin-react',
                 'eslint-plugin-react-hooks',
+              ])
+            : {}),
+          ...(tailwind
+            ? extractPackageVersions(CORE_PACKAGES, [
                 'eslint-plugin-better-tailwindcss',
                 'tailwindcss',
               ])
@@ -125,6 +130,7 @@ export const eslintGenerator = createGenerator({
       run({
         eslintConfigValues: {
           react,
+          tailwind,
           eslintIgnore,
           tsDefaultProjectFiles,
           enableVitest,
@@ -165,7 +171,7 @@ export const eslintGenerator = createGenerator({
                     '\n\n',
                   ),
                   TPL_GLOBALS: react ? 'browser' : 'node',
-                  TPL_TAILWIND_CONFIG: react ? TAILWIND_ESLINT_CONFIG : '',
+                  TPL_TAILWIND_CONFIG: tailwind ? TAILWIND_ESLINT_CONFIG : '',
                 },
               }),
             );
