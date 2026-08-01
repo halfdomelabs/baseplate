@@ -15,6 +15,8 @@ const descriptorSchema = z.object({});
  *
  * This generator layers JSX compilation and React dependencies on top of
  * a node-library package, so it can be composed alongside `nodeLibraryGenerator`.
+ * Tailwind support is composed separately by the compiler via `reactTailwindGenerator`
+ * (with `includeViteIntegration: false`, since a library has no Vite build).
  */
 export const reactLibraryGenerator = createGenerator({
   name: 'core/react-library',

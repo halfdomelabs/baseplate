@@ -12,6 +12,10 @@ const stylesCss = createTextTemplateFile({
     TPL_DARK_COLORS: { description: 'Dark colors to apply to the app' },
     TPL_GLOBAL_STYLES: { description: 'Global styles to apply to the app' },
     TPL_LIGHT_COLORS: { description: 'Light colors to apply to the app' },
+    TPL_SOURCE_DIRECTIVES: {
+      description:
+        'Tailwind @source directives for scanning imported library source files',
+    },
   },
 });
 
