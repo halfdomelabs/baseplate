@@ -18,6 +18,7 @@ const DELIVERY_CHUNK_SIZE = 100;
 
 /** One chunk of one channel's fan-out, as handed to the delivery worker. */
 export interface DeliverChunkInput {
+  /** Carried for logging; not read for delivery. */
   requestId: string;
   channel: string;
   /** The rows this job settles. */
@@ -309,14 +310,13 @@ export function createNotificationOutbox(deps: {
       try {
         await channelImpl.deliver({
           recipientId: row.recipientId,
-          // An array so a future digest can carry several rows in one call.
-          notifications: [row],
+          notification: row,
           recipient,
           actor: row.actorId ? (actors.get(row.actorId) ?? null) : null,
         });
-        // Settled immediately, so a later throw cannot re-send this row. If
-        // this write itself fails the row stays pending and may send twice —
-        // irreducible, and the alternative (settle first) loses notifications.
+        // Settled before the next row, so a later throw cannot re-send this
+        // one. If this write itself fails the row stays pending and may send
+        // twice.
         await updatePendingDelivery(notificationId, channel, {
           status: 'delivered',
           deliveredAt: new Date(),
@@ -325,6 +325,7 @@ export function createNotificationOutbox(deps: {
       } catch (error) {
         logError(error, {
           source: 'notification-delivery',
+          requestId: input.requestId,
           channel,
           notificationId,
         });
@@ -344,8 +345,8 @@ export function createNotificationOutbox(deps: {
     }
 
     // Thrown after the loop, so one bad row cannot strand the rest of the
-    // chunk, and only while a retry can still help — on the final attempt the
-    // rows are already settled, so failing the job would just noise the DLQ.
+    // chunk. On the final attempt the rows are already settled, so the job
+    // succeeds rather than landing in the DLQ.
     if (firstError && !input.isFinalAttempt) throw firstError;
 
     return { delivered, errored, skipped };

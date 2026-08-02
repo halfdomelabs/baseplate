@@ -98,7 +98,7 @@ model Notification {
   templateVersion Int                    @default(1) @map("template_version")
   recipientId     String                 @map("recipient_id") @db.Uuid
   requestId       String?                @map("request_id") @db.Uuid
-  inApp           Boolean                @default(false) @map("in_app")
+  inApp           Boolean                @default(true) @map("in_app")
   segments        Json
   fallbackText    String                 @map("fallback_text")
   params          Json?

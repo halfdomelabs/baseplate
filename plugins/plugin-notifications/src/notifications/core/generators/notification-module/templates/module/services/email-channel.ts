@@ -15,11 +15,10 @@ export function createEmailChannel(deps: {
 }): NotificationChannel {
   const { email, renderer } = deps;
   return {
-    deliver: async ({ notifications, recipient, actor }) => {
-      const [first] = notifications;
-      if (!first || !recipient.email) return;
+    deliver: async ({ notification, recipient, actor }) => {
+      if (!recipient.email) return;
 
-      const content = renderer.renderContent(first);
+      const content = renderer.renderContent(notification);
 
       await email.send(TPL_NOTIFICATION_EMAIL, {
         to: recipient.email,

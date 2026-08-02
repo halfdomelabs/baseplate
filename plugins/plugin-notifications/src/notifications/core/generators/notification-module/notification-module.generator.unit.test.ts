@@ -35,6 +35,8 @@ const PATHS_STUB = {
     '@/src/modules/notifications/services/notification.service.ts',
   servicesNotificationEvents:
     '@/src/modules/notifications/services/notification-events.ts',
+  servicesNotificationRenderer:
+    '@/src/modules/notifications/services/notification-renderer.ts',
   servicesEmailChannel: '@/src/modules/notifications/services/email-channel.ts',
 } as unknown as Parameters<
   ReturnType<
@@ -55,6 +57,7 @@ interface CapturedEntry {
 async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
   service: CapturedEntry;
   outbox: CapturedEntry;
+  renderer: CapturedEntry;
 }> {
   const bundle = notificationModuleGenerator({
     includeEmailChannel,
@@ -82,6 +85,7 @@ async function runAppRuntimeConfig(includeEmailChannel: boolean): Promise<{
   return {
     service: read('notification'),
     outbox: read('notificationOutbox'),
+    renderer: read('notificationRenderer'),
   };
 }
 
@@ -110,7 +114,7 @@ describe('notificationModuleGenerator channel wiring', () => {
   it('omits the emails dependency and the email channel when disabled', async () => {
     const { outbox } = await runAppRuntimeConfig(false);
 
-    expect(outbox.dependencies).toEqual(['queue']);
+    expect(outbox.dependencies).toEqual(['queue', 'notificationRenderer']);
     expect(outbox.fragmentContents).not.toContain('email');
     expect(outbox.fragmentContents).not.toContain('createEmailChannel');
   });
@@ -124,6 +128,7 @@ describe('notificationModuleGenerator channel wiring', () => {
     // emitter is its own construction entry, and it is what depends on pubsub.
     expect(service.dependencies).toEqual([
       'notificationEvents',
+      'notificationRenderer',
       'notificationOutbox',
     ]);
     expect(service.fragmentContents).toContain('outbox: notificationOutbox');
@@ -165,15 +170,19 @@ describe('notificationModuleGenerator channel wiring', () => {
     );
   });
 
-  it('constructs the renderer inline and injects it into the service', async () => {
-    // The renderer owns the type registry and holds no I/O, so it is built
-    // inline rather than as its own construction entry — it has nothing to
-    // dispose and no other slice consumes it.
-    const { service } = await runAppRuntimeConfig(false);
+  it('shares one renderer between the service and the email channel', async () => {
+    // Both render through the same type registry, so a second instance would
+    // let the read path and the delivery path resolve a type differently.
+    const { service, outbox, renderer } = await runAppRuntimeConfig(true);
 
-    expect(service.fragmentContents).toContain('createNotificationRenderer');
-    expect(service.fragmentContents).toContain('notificationTypes');
-    expect(service.fragmentContents).toContain('renderer:');
-    expect(service.dependencies).not.toContain('notificationRenderer');
+    expect(renderer.fragmentContents).toContain('createNotificationRenderer');
+    expect(renderer.fragmentContents).toContain('notificationTypes');
+    expect(service.dependencies).toContain('notificationRenderer');
+    expect(outbox.dependencies).toContain('notificationRenderer');
+    // Referenced by name, never re-constructed at the use site.
+    expect(service.fragmentContents).not.toContain(
+      'createNotificationRenderer',
+    );
+    expect(outbox.fragmentContents).not.toContain('createNotificationRenderer');
   });
 });

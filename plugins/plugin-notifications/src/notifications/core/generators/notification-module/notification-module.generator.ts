@@ -86,6 +86,13 @@ export const notificationModuleGenerator = createGenerator({
           ),
         );
         appRuntimeConfig.services.set(
+          'notificationRenderer',
+          TsCodeUtils.typeImportFragment(
+            'NotificationRenderer',
+            paths.servicesNotificationRenderer,
+          ),
+        );
+        appRuntimeConfig.services.set(
           'notificationOutbox',
           TsCodeUtils.typeImportFragment(
             'NotificationOutbox',
@@ -101,14 +108,10 @@ export const notificationModuleGenerator = createGenerator({
         // composition root), not inside the service. Keyed by channel so the
         // registry is the installed subset of `installedChannelKeys`, never a
         // separately-branched list.
-        // Reused wherever a renderer is needed; each use renders its own
-        // `createNotificationRenderer(...)` call rather than a shared binding.
-        const rendererFragment = TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes })`;
-
         const channelFactories: Record<string, TsCodeFragment> = {
           // Takes the renderer: the email channel renders at DELIVERY time, so
           // a copy fix reaches any email that has not gone out yet.
-          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email, renderer: ${rendererFragment} })`,
+          email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email, renderer: notificationRenderer })`,
         };
         const channelEntries = Object.fromEntries(
           installedChannelKeys(includeEmailChannel ?? false).map((key) => [
@@ -124,23 +127,35 @@ export const notificationModuleGenerator = createGenerator({
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
         });
+        // Its own entry for the same reason: the service renders at read time
+        // and the email channel at delivery time, and both must resolve a type
+        // through the same registry.
+        appRuntimeConfig.construction.set('notificationRenderer', {
+          dependencies: [],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes })`,
+        });
         // Its own service so the workers are handed it directly: feature code
         // gets `notification`, workers get the outbox.
         appRuntimeConfig.construction.set('notificationOutbox', {
-          dependencies: ['queue', ...(includeEmailChannel ? ['email'] : [])],
+          dependencies: [
+            'queue',
+            'notificationRenderer',
+            ...(includeEmailChannel ? ['email'] : []),
+          ],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationOutbox', paths.servicesNotificationOutbox)}({
               channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
               queue,
             })`,
         });
-        // The renderer is constructed inline rather than as its own entry:
-        // only the service and its channels consume it, and it holds no
-        // resource to dispose.
         appRuntimeConfig.construction.set('notification', {
-          dependencies: ['notificationEvents', 'notificationOutbox'],
+          dependencies: [
+            'notificationEvents',
+            'notificationRenderer',
+            'notificationOutbox',
+          ],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: notificationEvents,
-              renderer: ${rendererFragment},
+              renderer: notificationRenderer,
               outbox: notificationOutbox,
             })`,
         });
@@ -212,22 +227,22 @@ export const notificationModuleGenerator = createGenerator({
         // Bind both workers so the app's queue runtime starts them: delivery
         // sends, and the sweep re-runs interrupted fan-outs then audits for
         // deliveries whose jobs were lost.
-        for (const worker of [
-          [
+        appModule.moduleFields.set(
+          'queues',
+          'notificationDeliveryWorker',
+          TsCodeUtils.importFragment(
             'notificationDeliveryWorker',
             paths.queuesNotificationDeliveryWorker,
-          ],
-          [
+          ),
+        );
+        appModule.moduleFields.set(
+          'queues',
+          'notificationOutboxSweepWorker',
+          TsCodeUtils.importFragment(
             'notificationOutboxSweepWorker',
             paths.queuesNotificationOutboxSweepWorker,
-          ],
-        ] as const) {
-          appModule.moduleFields.set(
-            'queues',
-            worker[0],
-            TsCodeUtils.importFragment(worker[0], worker[1]),
-          );
-        }
+          ),
+        );
 
         // Contribute the built-in `generic` type (backing `notifyText`) as a
         // module declaration; the runtime collects it into the per-runtime

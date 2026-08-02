@@ -737,7 +737,7 @@
             "id": "model-scalar-field:tQhFu9rMDHak",
             "isOptional": false,
             "name": "inApp",
-            "options": { "default": "false" },
+            "options": { "default": "true" },
             "type": "boolean"
           },
           {

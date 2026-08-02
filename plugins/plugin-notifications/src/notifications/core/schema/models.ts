@@ -66,10 +66,14 @@ export function createNotificationsPartialDefinition(
             // whether this row appears in the feed. Rows are written for every
             // channel, so an email-only notification is `false` here and is
             // filtered out of the feed and the badge.
+            //
+            // Defaults to `true` only so that rows predating this column keep
+            // showing in the feed when a project adds it; the fan-out always
+            // writes the value explicitly.
             {
               name: 'inApp',
               type: 'boolean',
-              options: { default: 'false' },
+              options: { default: 'true' },
             },
 
             // Frozen fallback snapshot (see header): the feed renders from

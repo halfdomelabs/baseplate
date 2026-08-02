@@ -219,16 +219,13 @@ export function createNotificationService(deps: {
   const { events, renderer, outbox } = deps;
 
   /**
-   * How a type reaches one recipient, split by mechanism: in-app is a flag on
-   * the row plus an inline publish, outbound channels are queued jobs.
-   *
-   * The preference seam: per-user opt-outs slot in here (default-allow today),
-   * so client input can never widen the set.
+   * How a type is delivered, split by mechanism: in-app is a flag on the row
+   * plus an inline publish, outbound channels are queued jobs.
    */
-  function resolveRouting(
-    _recipientId: string,
-    type: NotificationTypeDefinition,
-  ): { inApp: boolean; outbound: NotificationChannelKey[] } {
+  function resolveRouting(type: NotificationTypeDefinition): {
+    inApp: boolean;
+    outbound: NotificationChannelKey[];
+  } {
     return {
       inApp: type.channels.includes('inApp'),
       outbound: outbox.installedChannels(type.channels),
@@ -279,14 +276,7 @@ export function createNotificationService(deps: {
 
     // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
-    // Per recipient, not unioned across them: once preferences land, two people
-    // can resolve to different channels for the same notification.
-    const routingByRecipient = new Map(
-      recipientIds.map((recipientId) => [
-        recipientId,
-        resolveRouting(recipientId, type),
-      ]),
-    );
+    const routing = resolveRouting(type);
 
     // Copied onto every row, so the request and its rows cannot disagree.
     const contentColumns = {
@@ -327,7 +317,7 @@ export function createNotificationService(deps: {
               ...contentColumns,
               requestId: request.id,
               recipientId,
-              inApp: routingByRecipient.get(recipientId)?.inApp ?? false,
+              inApp: routing.inApp,
             })),
             // A concurrent replay must short-circuit, not raise P2002.
             skipDuplicates: true,
@@ -354,13 +344,11 @@ export function createNotificationService(deps: {
         // One row per (recipient, outbound channel), so one bounced address
         // fails its own row instead of a whole chunk.
         const deliveryData = rows.flatMap((row) =>
-          (routingByRecipient.get(row.recipientId)?.outbound ?? []).map(
-            (channel) => ({
-              notificationId: row.id,
-              requestId: request.id,
-              channel,
-            }),
-          ),
+          routing.outbound.map((channel) => ({
+            notificationId: row.id,
+            requestId: request.id,
+            channel,
+          })),
         );
         for (const batch of chunk(deliveryData, WRITE_CHUNK_SIZE)) {
           await tx.notificationDelivery.createMany({
@@ -378,9 +366,8 @@ export function createNotificationService(deps: {
         };
       }, FANOUT_TRANSACTION_OPTIONS);
 
-    // In-app is published inline, not queued: it is a flag on a row plus a
-    // pubsub message, so making it wait on a worker would delay the badge for
-    // no durability gain — the row is already committed.
+    // In-app is published inline rather than queued: the row is already
+    // committed, so the badge only needs the pubsub message.
     await publishUnseenCounts(inAppRecipientIds);
 
     try {

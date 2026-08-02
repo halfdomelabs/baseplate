@@ -27,21 +27,26 @@ const EMAIL_ONLY_TYPE: NotificationTypeDefinition<{ text: string }> = {
 
 /** Records every delivery the channel receives, so tests can assert on shape. */
 function createRecordingChannel(): NotificationChannel & {
-  deliveries: { recipientId: string; count: number; email: string | null }[];
+  deliveries: {
+    recipientId: string;
+    notificationId: string;
+    email: string | null;
+  }[];
 } {
   const deliveries: {
     recipientId: string;
-    count: number;
+    notificationId: string;
     email: string | null;
   }[] = [];
   return {
     deliveries,
-    deliver: ({ recipientId, notifications, recipient }) => {
+    deliver: ({ recipientId, notification, recipient }) => {
       deliveries.push({
         recipientId,
-        count: notifications.length,
+        notificationId: notification.id,
         email: recipient.email,
       });
+      return Promise.resolve();
     },
   };
 }
@@ -384,10 +389,7 @@ describe('notification outbox', () => {
     expect(request.fanoutStatus).toBe('done');
   });
 
-  it('delivers each recipient their notifications as one batched call', async () => {
-    // The digest seam: the channel's unit of work is (recipient, events[]), so
-    // a digest can collapse N events into one delivery without reopening this
-    // layer. Today N is 1, and this locks the shape that keeps it extensible.
+  it('delivers each recipient their own notification with resolved contact details', async () => {
     const a = await createUser(0);
     const b = await createUser(1);
     const channel = createRecordingChannel();
@@ -413,9 +415,10 @@ describe('notification outbox', () => {
     });
 
     expect(result.delivered).toBe(2);
-    // One call per recipient, each carrying that recipient's rows as an array.
     expect(channel.deliveries).toHaveLength(2);
-    expect(channel.deliveries.every((d) => d.count === 1)).toBe(true);
+    expect(channel.deliveries.map((d) => d.notificationId).toSorted()).toEqual(
+      notificationIds.toSorted(),
+    );
     // Contact details are resolved by the service, not looked up per channel.
     expect(channel.deliveries.map((d) => d.email).toSorted()).toEqual([
       'outbox-0@example.com',
@@ -440,6 +443,7 @@ describe('notification outbox', () => {
       deliver: ({ recipientId }) => {
         attempted.push(recipientId);
         if (attempted.length === 2) throw new Error('smtp rejected');
+        return Promise.resolve();
       },
     };
     const service = createService({ queue: createFakeQueue(), channel });

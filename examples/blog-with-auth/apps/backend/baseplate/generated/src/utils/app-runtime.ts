@@ -117,6 +117,10 @@ export function createAppRuntime(
     createEmailTransport(postmarkEmailAdapter),
   );
 
+  const notificationRenderer = provide('notificationRenderer', () =>
+    createNotificationRenderer({ notificationTypes }),
+  );
+
   const pubsub = provide('pubsub', () => createGraphqlPubSub(redis));
 
   const notificationEvents = provide('notificationEvents', () =>
@@ -140,10 +144,7 @@ export function createAppRuntime(
   const notificationOutbox = provide('notificationOutbox', () =>
     createNotificationOutbox({
       channels: {
-        email: createEmailChannel({
-          email,
-          renderer: createNotificationRenderer({ notificationTypes }),
-        }),
+        email: createEmailChannel({ email, renderer: notificationRenderer }),
       },
       queue,
     }),
@@ -152,7 +153,7 @@ export function createAppRuntime(
   const notification = provide('notification', () =>
     createNotificationService({
       events: notificationEvents,
-      renderer: createNotificationRenderer({ notificationTypes }),
+      renderer: notificationRenderer,
       outbox: notificationOutbox,
     }),
   );
@@ -169,6 +170,7 @@ export function createAppRuntime(
     notification,
     notificationEvents,
     notificationOutbox,
+    notificationRenderer,
     pubsub,
     queue,
     redis,

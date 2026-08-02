@@ -18,10 +18,11 @@ risks first, then explain the smallest reasonable correction.
    - Target: current `HEAD` **plus** staged, unstaged, and related untracked files.
 3. Enumerate the surface before deep review: changed-file status, diff stat, commits in scope when
    useful, and untracked files that appear related.
-4. **Ignore everything under `baseplate/generated/**`** (e.g. `examples/_/baseplate/generated/`,
-`examples/_/apps/\*/baseplate/generated/`). These are sync bookkeeping artifacts, not authored or
-reviewable code. Exclude them from the diff surface up front — `git diff <base> -- . ':(exclude)**/baseplate/generated/**'`
-   — so diff stats and file counts reflect real changes. Never report findings against them.
+4. **Ignore everything under `baseplate/generated/`** (e.g. `examples/<name>/baseplate/generated/`,
+   `examples/<name>/apps/<app>/baseplate/generated/`). These are sync bookkeeping artifacts, not
+   authored or reviewable code. Exclude them from the diff surface up front —
+   `git diff <base> -- . ':(exclude)**/baseplate/generated/**'` — so diff stats and file counts
+   reflect real changes. Never report findings against them.
 5. Exclude pre-existing problems unless the diff introduces, worsens, or exposes them.
 
 Do not mutate code during a review unless the user separately asks for fixes.

@@ -3,8 +3,7 @@ import type { RenderSource } from './notification-renderer.js';
 /** One recipient's share of a delivery, as handed to a channel. */
 export interface ChannelDelivery {
   recipientId: string;
-  /** Today always one; a future digest can deliver several as one call. */
-  notifications: RenderSource[];
+  notification: RenderSource;
   /** Contact details, resolved by the service. */
   recipient: { email: string | null };
   actor: { name: string | null } | null;
@@ -12,8 +11,7 @@ export interface ChannelDelivery {
 
 /** A delivery channel (in-app, email, slack...). */
 export interface NotificationChannel {
-  /** Sync or async: not every channel does I/O. */
-  deliver(delivery: ChannelDelivery): void | Promise<void>;
+  deliver(delivery: ChannelDelivery): Promise<void>;
 }
 
 /** The installed delivery channels, assembled in the composition root. */
