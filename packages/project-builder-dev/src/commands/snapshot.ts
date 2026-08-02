@@ -51,7 +51,7 @@ export function addSnapshotCommand(program: Command): void {
             context,
           );
         } catch (error) {
-          logger.error('Failed to add files to snapshot:', error);
+          logger.error(error, 'Failed to add files to snapshot');
           throw error;
         }
       },
@@ -75,7 +75,7 @@ export function addSnapshotCommand(program: Command): void {
           context,
         );
       } catch (error) {
-        logger.error('Failed to remove files from snapshot:', error);
+        logger.error(error, 'Failed to remove files from snapshot');
         throw error;
       }
     });
