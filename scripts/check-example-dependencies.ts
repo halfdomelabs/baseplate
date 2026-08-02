@@ -46,6 +46,20 @@ const SNAPSHOT_PATH = path.join(
   'scripts/example-dependencies-snapshot.json',
 );
 
+/** Placeholder reason recorded for entries `--write` has not seen before. */
+const UNREVIEWED_REASON = 'TODO: explain why this dependency is unused.';
+
+/**
+ * Orders entries deterministically.
+ *
+ * `compareStrings` from `@baseplate-dev/utils` is the repo convention, but this
+ * script runs standalone via `--experimental-strip-types` and does not resolve
+ * workspace packages.
+ */
+function compareEntries(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 /**
  * Lists the example projects to scan.
  *
@@ -59,7 +73,7 @@ async function listExamples(): Promise<string[]> {
   return entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .toSorted((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    .toSorted(compareEntries);
 }
 
 /**
@@ -120,42 +134,69 @@ async function checkExampleDependencies(): Promise<void> {
   const perExample = await Promise.all(
     scanned.map((example) => findUnusedDependencies(example)),
   );
-  const found = perExample
-    .flat()
-    .toSorted((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const found = perExample.flat().toSorted(compareEntries);
+
+  const parsed: unknown = JSON.parse(await readFile(SNAPSHOT_PATH, 'utf8'));
+  if (Array.isArray(parsed) || typeof parsed !== 'object' || parsed === null) {
+    throw new Error(
+      'Snapshot must be an object of "<example>/<workspace> <dependency>": "<reason>".\n' +
+        'An older array-format snapshot can be re-recorded with: pnpm check:example-deps --write',
+    );
+  }
+  const snapshot = parsed as Record<string, string>;
 
   if (isWrite) {
-    await writeFile(SNAPSHOT_PATH, `${JSON.stringify(found, null, 2)}\n`);
+    // Carry forward existing reasons so re-recording never silently drops the
+    // rationale for an entry that is still present.
+    const recorded = Object.fromEntries(
+      found.map((entry) => [entry, snapshot[entry] ?? UNREVIEWED_REASON]),
+    );
+    await writeFile(SNAPSHOT_PATH, `${JSON.stringify(recorded, null, 2)}\n`);
     console.info(`Recorded ${found.length} unused example dependencies.`);
     return;
   }
 
-  const snapshot = JSON.parse(
-    await readFile(SNAPSHOT_PATH, 'utf8'),
-  ) as string[];
   // When scoped to one example, only that example's entries are comparable.
-  const expected = only
-    ? snapshot.filter((entry) => entry.startsWith(`${only}/`))
-    : snapshot;
+  const expected = Object.keys(snapshot)
+    .filter((entry) => !only || entry.startsWith(`${only}/`))
+    .toSorted(compareEntries);
 
   const added = found.filter((entry) => !expected.includes(entry));
   const removed = expected.filter((entry) => !found.includes(entry));
 
   if (added.length === 0 && removed.length === 0) {
+    // `--write` fills new entries with a placeholder; fail until a human
+    // replaces it, so re-recording cannot silently accept a regression.
+    const unreviewed = expected.filter(
+      (entry) => snapshot[entry] === UNREVIEWED_REASON,
+    );
+    if (unreviewed.length > 0) {
+      throw new Error(
+        `Example dependencies are recorded without a reason.\n${unreviewed
+          .map((entry) => `  ? ${entry}`)
+          .join(
+            '\n',
+          )}\n\nReplace the placeholder in ${path.relative(REPO_ROOT, SNAPSHOT_PATH)} with why the\n` +
+          `dependency is unused, or remove it from the generator that declares it.`,
+      );
+    }
+
     console.info(`Example dependencies match snapshot (${found.length}).`);
     return;
   }
 
   const changes = [
     ...added.map((entry) => `  + ${entry}`),
-    ...removed.map((entry) => `  - ${entry}`),
+    ...removed.map((entry) => `  - ${entry} (was: ${snapshot[entry]})`),
   ].join('\n');
 
   throw new Error(
     `Example dependencies changed.\n${changes}\n\n` +
       'A new entry means a generator declares a dependency nothing imports;\n' +
       'remove it from the generator rather than from the example.\n' +
-      'If the change is intentional, re-record with: pnpm check:example-deps --write',
+      'If the dependency genuinely cannot be seen as imported (loaded by\n' +
+      'string, build-only), add it to the snapshot with a reason explaining\n' +
+      'why. Re-record every entry with --write only when re-baselining.',
   );
 }
 
