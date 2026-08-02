@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import type { AppServices } from '%appRuntimeImports';
+import type { RuntimeServices } from '%appRuntimeImports';
 import type {
-  ServiceContext,
-  ServiceContextWith,
+  SystemServiceContext,
+  SystemServiceContextWith,
 } from '%serviceContextImports';
 
 /**
@@ -98,20 +98,20 @@ export interface QueueHandlerBindingConfig<T> {
  * A handler function bound to a queue, receiving each job and the worker's
  * service context, narrowed to the service keys the handler declares it uses.
  * @template T The type of the data in the job payload.
- * @template K The `AppServices` keys this handler's context is narrowed to. Defaults to none.
+ * @template K The service keys this handler's context is narrowed to. Defaults to none.
  */
-export type QueueJobHandler<T, K extends keyof AppServices = never> = (
+export type QueueJobHandler<T, K extends keyof RuntimeServices = never> = (
   job: QueueJob<T>,
-  ctx: ServiceContextWith<K>,
+  ctx: SystemServiceContextWith<K>,
 ) => unknown;
 
 /**
  * The configuration accepted by {@link bindQueueHandler}: a handler or
  * lazyHandler (exactly one), plus the shared binding options.
  * @template T The type of the data in the job payload.
- * @template K The `AppServices` keys the handler's context is narrowed to.
+ * @template K The service keys the handler's context is narrowed to.
  */
-export type QueueHandlerBindingInput<T, K extends keyof AppServices> =
+export type QueueHandlerBindingInput<T, K extends keyof RuntimeServices> =
   | (Omit<QueueHandlerBindingConfig<T>, 'token'> & {
       handler: QueueJobHandler<T, K>;
       lazyHandler?: never;
@@ -142,7 +142,7 @@ export interface QueueHandlerBinding extends Omit<
    * a job failure/retry once traffic arrives. A no-op for inline handlers.
    */
   resolve(): Promise<void>;
-  invoke(job: QueueJob<unknown>, ctx: ServiceContext): Promise<unknown>;
+  invoke(job: QueueJob<unknown>, ctx: SystemServiceContext): Promise<unknown>;
 }
 
 /**
@@ -151,14 +151,14 @@ export interface QueueHandlerBinding extends Omit<
  * token never pulls in the handler's dependencies.
  *
  * The handler's `ctx` parameter type determines `K` by inference; annotate it
- * explicitly (e.g. `ctx: ServiceContextWith<'storage'>`) to narrow which
- * services the handler declares it uses. A full {@link ServiceContext} is
+ * explicitly (e.g. `ctx: SystemServiceContextWith<'notificationOutbox'>`) to narrow which
+ * services the handler declares it uses. A {@link SystemServiceContext} is
  * always passed at runtime, so any narrowing is sound.
  * @param token The token to bind a handler to.
  * @param config The binding configuration (handler or lazyHandler, plus options).
  * @returns The erased {@link QueueHandlerBinding} to register on an `AppModule`.
  */
-export function bindQueueHandler<T, K extends keyof AppServices = never>(
+export function bindQueueHandler<T, K extends keyof RuntimeServices = never>(
   token: QueueToken<T>,
   config: QueueHandlerBindingInput<T, K>,
 ): QueueHandlerBinding {
@@ -387,7 +387,9 @@ export interface QueueRuntime {
    * Starts workers for every bound queue.
    * @param options Provides the service context each job handler runs with.
    */
-  startWorkers(options: { createContext: () => ServiceContext }): Promise<void>;
+  startWorkers(options: {
+    createContext: () => SystemServiceContext;
+  }): Promise<void>;
 
   /**
    * Stops all running workers.

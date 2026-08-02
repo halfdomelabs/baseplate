@@ -103,7 +103,9 @@ function validate({
   flattenedModuleFields?: [string, string][];
 }): void {
   validateConstructionBindings({
-    services: new Map(services.map((key) => [key, tsCodeFragment(key)])),
+    services: new Map(
+      services.map((key) => [key, { type: tsCodeFragment(key) }]),
+    ),
     construction: new Map(
       construction.map((key): [string, AppRuntimeConstructionEntry] => [
         key,
@@ -177,12 +179,26 @@ describe('validateConstructionBindings', () => {
 });
 
 describe('validateConstructionTypes', () => {
-  function check(construction: string[], services: string[] = []): void {
+  function check(
+    construction: string[],
+    services: string[] = [],
+    { bare = [], internal = [] }: { bare?: string[]; internal?: string[] } = {},
+  ): void {
     validateConstructionTypes({
       construction: buildConstruction(
-        Object.fromEntries(construction.map((key) => [key, {}])),
+        Object.fromEntries(
+          construction.map((key) => [
+            key,
+            bare.includes(key) ? { bare: true } : {},
+          ]),
+        ),
       ),
-      services: new Map(services.map((key) => [key, tsCodeFragment(key)])),
+      services: new Map(
+        services.map((key) => [
+          key,
+          { type: tsCodeFragment(key), internal: internal.includes(key) },
+        ]),
+      ),
     });
   }
 
@@ -190,6 +206,30 @@ describe('validateConstructionTypes', () => {
     expect(() => {
       check(['emails', 'redis'], ['emails', 'redis']);
     }).not.toThrow();
+  });
+
+  it('accepts a constructed object declared on the internal stratum', () => {
+    expect(() => {
+      check(['emailTransport'], ['emailTransport'], {
+        internal: ['emailTransport'],
+      });
+    }).not.toThrow();
+  });
+
+  it('accepts a bare construction entry with no services type', () => {
+    expect(() => {
+      check(['notificationRenderer'], [], { bare: ['notificationRenderer'] });
+    }).not.toThrow();
+  });
+
+  it('throws when a bare entry also declares a services type', () => {
+    expect(() => {
+      check(['notificationRenderer'], ['notificationRenderer'], {
+        bare: ['notificationRenderer'],
+      });
+    }).toThrow(
+      /slice 'notificationRenderer' registers a `bare` construction entry and a services type/,
+    );
   });
 
   it('throws naming a constructed object missing from services', () => {

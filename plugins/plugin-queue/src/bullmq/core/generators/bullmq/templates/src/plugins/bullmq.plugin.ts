@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppServices } from '%appRuntimeImports';
+import type { RuntimeServices } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 
 import { config } from '%configServiceImports';
@@ -16,7 +16,7 @@ import fastifyPlugin from 'fastify-plugin';
  */
 const bullMQPluginCallback: FastifyPluginCallback<{
   // Not narrowed to `queue`: job handlers run with a full service context.
-  services: AppServices;
+  services: RuntimeServices;
 }> = (fastify, { services }, done) => {
   if (config.ENABLE_EMBEDDED_WORKERS) {
     logger.info(

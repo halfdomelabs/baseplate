@@ -371,13 +371,12 @@ export const storageModuleGenerator = createGenerator({
         paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.services.set(
-          'storage',
-          TsCodeUtils.typeImportFragment(
+        appRuntimeConfig.services.set('storage', {
+          type: TsCodeUtils.typeImportFragment(
             'StorageService',
             paths.servicesStorage,
           ),
-        );
+        });
         appRuntimeConfig.flattenedModuleFields.set(
           'storageCategories',
           'storageCategories',

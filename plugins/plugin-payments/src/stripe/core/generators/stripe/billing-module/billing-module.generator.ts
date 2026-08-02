@@ -63,13 +63,12 @@ export const billingModuleGenerator = createGenerator({
         paths: STRIPE_BILLING_MODULE_GENERATED.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.services.set(
-          'billing',
-          TsCodeUtils.typeImportFragment(
+        appRuntimeConfig.services.set('billing', {
+          type: TsCodeUtils.typeImportFragment(
             'BillingService',
             paths.billingService,
           ),
-        );
+        });
         appRuntimeConfig.construction.set('billing', {
           dependencies: ['stripe'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment(

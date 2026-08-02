@@ -26,9 +26,16 @@
       "generator": "@baseplate-dev/fastify-generators#core/app-runtime",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/runtime-services.ts",
-      "projectExports": { "AppServices": { "isTypeOnly": true } },
+      "projectExports": {
+        "AppServices": { "isTypeOnly": true },
+        "InternalServices": { "isTypeOnly": true },
+        "RuntimeServices": { "isTypeOnly": true }
+      },
       "sourceFile": "src/utils/runtime-services.ts",
-      "variables": { "TPL_SERVICES_FIELDS": {} }
+      "variables": {
+        "TPL_INTERNAL_SERVICES_FIELDS": {},
+        "TPL_SERVICES_FIELDS": {}
+      }
     }
   }
 }

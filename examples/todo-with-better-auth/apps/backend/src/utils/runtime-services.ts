@@ -10,16 +10,15 @@ import type { RedisRuntime } from '../services/redis.js';
 import type { QueueRuntime } from '../types/queue.types.js';
 
 /**
- * Services constructed by {@link createAppRuntime} and delivered on
- * {@link ServiceContext.services}. Fields are `readonly`, so the modifier
- * survives `Pick<AppServices, K>` at every narrowing site.
+ * The public service API, delivered on `ServiceContext.services`. Fields are
+ * `readonly`, so the modifier survives `Pick<AppServices, K>` at every
+ * narrowing site.
  */
 export interface AppServices {
   /* TPL_SERVICES_FIELDS:START */
   readonly betterAuth: Auth;
   readonly billing: BillingService;
   readonly email: EmailService;
-  readonly emailTransport: EmailTransport;
   readonly queue: QueueRuntime;
   readonly redis: RedisRuntime;
   readonly storage: StorageService;
@@ -27,3 +26,19 @@ export interface AppServices {
   readonly userSession: UserSessionService;
   /* TPL_SERVICES_FIELDS:END */
 }
+
+/**
+ * Services consumed only by machinery - workers and scripts - and never by a
+ * request-scoped context. Reached by naming the key in
+ * `SystemServiceContextWith`. A service belongs here only once something
+ * consumes it through a context; anything used purely to construct another
+ * service is injected at its construction site instead.
+ */
+export interface InternalServices {
+  /* TPL_INTERNAL_SERVICES_FIELDS:START */
+  readonly emailTransport: EmailTransport;
+  /* TPL_INTERNAL_SERVICES_FIELDS:END */
+}
+
+/** Every service the runtime constructs, held by `AppRuntime.services`. */
+export type RuntimeServices = AppServices & InternalServices;

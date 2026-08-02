@@ -9,15 +9,15 @@ export interface RequestServiceContext extends ServiceContext {
 }
 
 /**
- * A {@link RequestServiceContext} narrowed to only the named services,
- * mirroring {@link ServiceContextWith} for request-scoped code that wants an
- * honest signature. Structurally satisfied by the full context.
+ * {@link ServiceContextWith}'s request-scoped mirror, keeping cookieStore and
+ * reqInfo.
  */
 export type RequestServiceContextWith<K extends keyof AppServices> = Omit<
   RequestServiceContext,
   'services'
 > & { readonly services: Pick<AppServices, K> };
 
+/** Mints the per-request context, carrying the public services only. */
 export function createContextFromRequest(
   request: FastifyRequest,
   services: AppServices,

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppServices } from '$runtimeServices';
+import type { RuntimeServices } from '$runtimeServices';
 
 /**
  * Owns the application's service graph and its aggregate disposal. Not a
@@ -23,7 +23,7 @@ import type { AppServices } from '$runtimeServices';
  * application.
  */
 export interface AppRuntime {
-  readonly services: AppServices;
+  readonly services: RuntimeServices;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -40,7 +40,9 @@ export function createAppRuntime(TPL_OPTIONS_PARAM): AppRuntime {
 
   TPL_SERVICE_CONSTRUCTION;
 
-  const services = TPL_SERVICES_OBJECT satisfies AppServices;
+  // One concrete object; `AppServices` and every context type is a structural
+  // view of it.
+  const services = TPL_SERVICES_OBJECT satisfies RuntimeServices;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];

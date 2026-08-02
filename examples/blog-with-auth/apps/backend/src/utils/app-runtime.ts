@@ -121,7 +121,7 @@ export function createAppRuntime(
     notificationTypes,
   });
 
-  const pubsub = createGraphqlPubSub(redis);
+  const pubsub = provide('pubsub', () => createGraphqlPubSub(redis));
 
   const notificationEvents = createNotificationEvents(pubsub);
 
@@ -169,6 +169,7 @@ export function createAppRuntime(
     emailTransport,
     notification,
     notificationOutbox,
+    pubsub,
     queue,
     redis,
     userSession,
