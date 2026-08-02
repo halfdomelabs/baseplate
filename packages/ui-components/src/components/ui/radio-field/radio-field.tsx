@@ -8,7 +8,7 @@ import { useId } from 'react';
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
-  SelectOptionProps,
+  RadioOptionProps,
 } from '#src/types/form.js';
 
 import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
@@ -18,28 +18,22 @@ import {
   FieldDescription,
   FieldError,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from '../field/field.js';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../select/select.js';
+import { RadioGroup, RadioGroupItem } from '../radio-group/radio-group.js';
 
-export interface SelectFieldProps<OptionType>
-  extends SelectOptionProps<OptionType>, FormFieldProps {
+export interface RadioFieldProps<OptionType>
+  extends RadioOptionProps<OptionType>, FormFieldProps {
   className?: string;
 }
 
-function SelectField<OptionType>({
+function RadioField<OptionType>({
   label,
   description,
   error,
   disabled,
   value,
-  placeholder,
   options,
   renderItemLabel,
   getOptionLabel = (val) => (val as { label: string }).label,
@@ -47,61 +41,60 @@ function SelectField<OptionType>({
   className,
   onChange,
   ...props
-}: SelectFieldProps<OptionType> &
+}: RadioFieldProps<OptionType> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
-  const triggerId = useId();
-  const selectedOption = options.find((o) => getOptionValue(o) === value);
+  const groupId = useId();
 
   return (
-    <Field
+    <FieldSet
       data-invalid={!!error}
       data-disabled={disabled ?? undefined}
       className={className}
     >
-      <FieldLabel htmlFor={triggerId}>{label}</FieldLabel>
-      <Select
+      {label && <FieldLegend variant="label">{label}</FieldLegend>}
+      <RadioGroup
         value={value}
-        onValueChange={(val) => onChange?.(val)}
+        onValueChange={(val) => onChange?.(val as string | null)}
         disabled={disabled}
+        aria-invalid={!!error}
         {...props}
       >
-        <SelectTrigger id={triggerId} aria-invalid={!!error}>
-          <SelectValue placeholder={placeholder}>
-            {selectedOption ? getOptionLabel(selectedOption) : null}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {options.map((option) => {
-              const val = getOptionValue(option);
-              const label = getOptionLabel(option);
-              return (
-                <SelectItem value={val} key={val}>
-                  {renderItemLabel
-                    ? renderItemLabel(option, { selected: val === value })
-                    : label}
-                </SelectItem>
-              );
-            })}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        {options.map((option, index) => {
+          const optionValue = getOptionValue(option);
+          const itemId = `${groupId}-${index}`;
+          return (
+            <Field key={itemId} orientation="horizontal">
+              <RadioGroupItem
+                value={optionValue}
+                id={itemId}
+                disabled={disabled}
+                aria-invalid={!!error}
+              />
+              <FieldLabel htmlFor={itemId} className="cursor-pointer">
+                {renderItemLabel
+                  ? renderItemLabel(option, { selected: optionValue === value })
+                  : getOptionLabel(option)}
+              </FieldLabel>
+            </Field>
+          );
+        })}
+      </RadioGroup>
       <FieldDescription>{description}</FieldDescription>
       <FieldError>{error}</FieldError>
-    </Field>
+    </FieldSet>
   );
 }
 
-interface SelectFieldControllerProps<
+interface RadioFieldControllerProps<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<SelectFieldProps<OptionType>, 'value'> {
+> extends Omit<RadioFieldProps<OptionType>, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
 
-function SelectFieldController<
+function RadioFieldController<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -109,18 +102,18 @@ function SelectFieldController<
   name,
   control,
   ...rest
-}: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
+}: RadioFieldControllerProps<OptionType, TFieldValues, TFieldName> &
   AddOptionRequiredFields<OptionType>): React.ReactElement {
   const {
     field,
     fieldState: { error },
   } = useControllerMerged({ name, control }, rest);
 
-  const restProps = rest as SelectFieldProps<OptionType> &
+  const restProps = rest as RadioFieldProps<OptionType> &
     AddOptionRequiredFields<OptionType>;
 
   return (
-    <SelectField
+    <RadioField
       error={error?.message}
       {...restProps}
       {...field}
@@ -129,4 +122,4 @@ function SelectFieldController<
   );
 }
 
-export { SelectField, SelectFieldController };
+export { RadioField, RadioFieldController };

@@ -42,7 +42,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {},
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -52,7 +52,7 @@ export const WithLabel: Story = {
     label: 'Select Date',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -63,7 +63,7 @@ export const WithDescription: Story = {
     description: 'Please select your date of birth',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -74,7 +74,7 @@ export const WithError: Story = {
     error: 'Please select a valid date',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -85,7 +85,7 @@ export const Disabled: Story = {
     disabled: true,
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>('2024-01-15');
+    const [date, setDate] = useState<string | null>('2024-01-15');
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -96,7 +96,7 @@ export const WithCustomFormat: Story = {
     dateFormat: 'MM/dd/yyyy',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -107,7 +107,7 @@ export const WithCustomPlaceholder: Story = {
     placeholder: 'Choose event date',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -122,7 +122,7 @@ export const WithCalendarProps: Story = {
     },
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>();
+    const [date, setDate] = useState<string | null>();
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
@@ -180,7 +180,7 @@ export const Preselected: Story = {
     description: 'This field has a default value',
   },
   render: (args) => {
-    const [date, setDate] = useState<string | undefined>('2024-01-15');
+    const [date, setDate] = useState<string | null>('2024-01-15');
     return <DatePickerField {...args} value={date} onChange={setDate} />;
   },
 };
