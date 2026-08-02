@@ -10,9 +10,11 @@ import {
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
+  serviceContextImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.js';
@@ -24,6 +26,16 @@ export interface NotificationsCoreNotificationModuleRenderers {
       options: Omit<
         RenderTsTemplateGroupActionInput<
           typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.mainGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  queuesGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.queuesGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -64,6 +76,8 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
     pothosImports: pothosImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     yogaPluginImports: yogaPluginImportsProvider,
   },
@@ -78,6 +92,8 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
     pothosImports,
     prismaGeneratedImports,
     prismaImports,
+    queuesImports,
+    serviceContextImports,
     typescriptFile,
     yogaPluginImports,
   }) {
@@ -94,7 +110,23 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                   errorHandlerServiceImports,
                   prismaGeneratedImports,
                   prismaImports,
+                  queuesImports,
                   yogaPluginImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          queuesGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group:
+                  NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.queuesGroup,
+                paths,
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                  queuesImports,
+                  serviceContextImports,
                 },
                 generatorPaths: paths,
                 ...options,
@@ -108,6 +140,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   pothosImports,
+                  prismaGeneratedImports,
                   prismaImports,
                 },
                 generatorPaths: paths,
@@ -122,7 +155,6 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 destination: paths.servicesEmailChannel,
                 importMapProviders: {
                   emailModuleImports,
-                  prismaImports,
                 },
                 generatorPaths: paths,
                 ...options,

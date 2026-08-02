@@ -1,6 +1,7 @@
 import { emailTemplateSpec } from '@baseplate-dev/plugin-email';
 import {
   appCompilerSpec,
+  authModelsSpec,
   backendAppEntryType,
   createPluginModule,
   pluginAppCompiler,
@@ -37,11 +38,17 @@ export default createPluginModule({
       pluginAppCompiler({
         pluginKey,
         appType: backendAppEntryType,
-        compile: ({ projectDefinition, appCompiler }) => {
+        compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
           const notifications = PluginUtils.configByKeyOrThrow(
             projectDefinition,
             pluginKey,
           ) as NotificationsPluginDefinition;
+
+          // Delivery reads recipient addresses directly, so the module needs
+          // the app's user model — its name is configurable.
+          const userModelName = definitionContainer.pluginStore
+            .use(authModelsSpec)
+            .getAuthModelsOrThrow(projectDefinition).user;
 
           // The email channel is generated only when the email plugin is
           // enabled — otherwise it would import a module that doesn't exist.
@@ -54,6 +61,7 @@ export default createPluginModule({
             {
               notificationModule: notificationModuleGenerator({
                 includeEmailChannel,
+                userModelName,
               }),
             },
           );

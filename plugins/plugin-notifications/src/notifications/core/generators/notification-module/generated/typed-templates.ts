@@ -4,9 +4,11 @@ import {
   pothosImportsProvider,
   prismaGeneratedImportsProvider,
   prismaImportsProvider,
+  serviceContextImportsProvider,
   yogaPluginImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { emailModuleImportsProvider } from '@baseplate-dev/plugin-email';
+import { queuesImportsProvider } from '@baseplate-dev/plugin-queue';
 import path from 'node:path';
 
 const servicesGenericType = createTsTemplateFile({
@@ -24,30 +26,12 @@ const servicesGenericType = createTsTemplateFile({
   variables: {},
 });
 
-const servicesInAppChannel = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: { prismaImports: prismaImportsProvider },
-  name: 'services-in-app-channel',
-  referencedGeneratorTemplates: {
-    servicesNotificationChannel: {},
-    servicesNotificationEvents: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/in-app-channel.ts',
-    ),
-  },
-  variables: {},
-});
-
 const servicesNotificationChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: {},
   name: 'services-notification-channel',
-  referencedGeneratorTemplates: { servicesNotificationContent: {} },
+  referencedGeneratorTemplates: { servicesNotificationRenderer: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -87,6 +71,29 @@ const servicesNotificationEvents = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const servicesNotificationOutbox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
+  name: 'services-notification-outbox',
+  referencedGeneratorTemplates: {
+    queuesNotificationDelivery: {},
+    servicesNotificationChannel: {},
+    servicesNotificationRenderer: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/notification-outbox.ts',
+    ),
+  },
+  variables: { TPL_USER_DELEGATE: {} },
 });
 
 const servicesNotificationRegistry = createTsTemplateFile({
@@ -148,6 +155,7 @@ const servicesNotificationService = createTsTemplateFile({
     servicesNotificationChannel: {},
     servicesNotificationContent: {},
     servicesNotificationEvents: {},
+    servicesNotificationOutbox: {},
     servicesNotificationRegistry: {},
     servicesNotificationRenderer: {},
   },
@@ -162,13 +170,95 @@ const servicesNotificationService = createTsTemplateFile({
 
 export const mainGroup = {
   servicesGenericType,
-  servicesInAppChannel,
   servicesNotificationChannel,
   servicesNotificationContent,
   servicesNotificationEvents,
+  servicesNotificationOutbox,
   servicesNotificationRegistry,
   servicesNotificationRenderer,
   servicesNotificationService,
+};
+
+const queuesNotificationDelivery = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-notification-delivery',
+  projectExports: {
+    NotificationDeliveryJobData: { isTypeOnly: true },
+    notificationDeliveryQueue: { isTypeOnly: false },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-delivery.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesNotificationDeliveryWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: {
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'queues-notification-delivery-worker',
+  projectExports: { notificationDeliveryWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { queuesNotificationDelivery: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-delivery.worker.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesNotificationOutboxSweep = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-notification-outbox-sweep',
+  projectExports: { notificationOutboxSweepQueue: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-outbox-sweep.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesNotificationOutboxSweepWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'queues-notification-outbox-sweep-worker',
+  projectExports: { notificationOutboxSweepWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: {
+    queuesNotificationDelivery: {},
+    queuesNotificationOutboxSweep: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-outbox-sweep.worker.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const queuesGroup = {
+  queuesNotificationDelivery,
+  queuesNotificationDeliveryWorker,
+  queuesNotificationOutboxSweep,
+  queuesNotificationOutboxSweepWorker,
 };
 
 const schemaNotificationContentField = createTsTemplateFile({
@@ -209,6 +299,7 @@ const schemaNotificationFeedQueries = createTsTemplateFile({
   group: 'schema',
   importMapProviders: {
     pothosImports: pothosImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-feed-queries',
@@ -262,12 +353,12 @@ export const schemaGroup = {
 
 const servicesEmailChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    emailModuleImports: emailModuleImportsProvider,
-    prismaImports: prismaImportsProvider,
-  },
+  importMapProviders: { emailModuleImports: emailModuleImportsProvider },
   name: 'services-email-channel',
-  referencedGeneratorTemplates: { servicesNotificationChannel: {} },
+  referencedGeneratorTemplates: {
+    servicesNotificationChannel: {},
+    servicesNotificationRenderer: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -279,6 +370,7 @@ const servicesEmailChannel = createTsTemplateFile({
 
 export const NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES = {
   mainGroup,
+  queuesGroup,
   schemaGroup,
   servicesEmailChannel,
 };

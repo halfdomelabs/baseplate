@@ -77,6 +77,16 @@ export type BlogUserNote = Prisma.BlogUserNoteModel
  */
 export type Notification = Prisma.NotificationModel
 /**
+ * Model NotificationDelivery
+ * 
+ */
+export type NotificationDelivery = Prisma.NotificationDeliveryModel
+/**
+ * Model NotificationRequest
+ * 
+ */
+export type NotificationRequest = Prisma.NotificationRequestModel
+/**
  * Model RateLimiterFlexible
  * 
  */

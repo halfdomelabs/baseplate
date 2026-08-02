@@ -1718,6 +1718,9 @@ importers:
       '@baseplate-dev/plugin-email':
         specifier: workspace:*
         version: link:../plugin-email
+      '@baseplate-dev/plugin-queue':
+        specifier: workspace:*
+        version: link:../plugin-queue
       '@baseplate-dev/project-builder-lib':
         specifier: workspace:*
         version: link:../../packages/project-builder-lib

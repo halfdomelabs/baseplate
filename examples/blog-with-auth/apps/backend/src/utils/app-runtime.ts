@@ -8,8 +8,8 @@ import {
 import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapter.js';
 import { rootModule } from '../modules/index.js';
 import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
-import { createInAppChannel } from '../modules/notifications/services/in-app-channel.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
+import { createNotificationOutbox } from '../modules/notifications/services/notification-outbox.js';
 import { createNotificationRenderer } from '../modules/notifications/services/notification-renderer.js';
 import { createNotificationService } from '../modules/notifications/services/notification.service.js';
 import { createGraphqlPubSub } from '../plugins/graphql/pubsub.js';
@@ -117,6 +117,10 @@ export function createAppRuntime(
     createEmailTransport(postmarkEmailAdapter),
   );
 
+  const notificationRenderer = provide('notificationRenderer', () =>
+    createNotificationRenderer({ notificationTypes }),
+  );
+
   const pubsub = provide('pubsub', () => createGraphqlPubSub(redis));
 
   const notificationEvents = provide('notificationEvents', () =>
@@ -137,14 +141,20 @@ export function createAppRuntime(
 
   const email = provide('email', () => createEmailService({ queue }));
 
+  const notificationOutbox = provide('notificationOutbox', () =>
+    createNotificationOutbox({
+      channels: {
+        email: createEmailChannel({ email, renderer: notificationRenderer }),
+      },
+      queue,
+    }),
+  );
+
   const notification = provide('notification', () =>
     createNotificationService({
       events: notificationEvents,
-      renderer: createNotificationRenderer({ notificationTypes }),
-      channels: {
-        email: createEmailChannel({ email }),
-        inApp: createInAppChannel({ events: notificationEvents }),
-      },
+      renderer: notificationRenderer,
+      outbox: notificationOutbox,
     }),
   );
 
@@ -159,6 +169,8 @@ export function createAppRuntime(
     emailTransport,
     notification,
     notificationEvents,
+    notificationOutbox,
+    notificationRenderer,
     pubsub,
     queue,
     redis,

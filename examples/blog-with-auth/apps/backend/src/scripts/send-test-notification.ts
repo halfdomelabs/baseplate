@@ -30,14 +30,14 @@ async function main(): Promise<void> {
     );
   }
 
-  const notification = await withScriptContext((ctx) =>
+  const { requestId } = await withScriptContext((ctx) =>
     ctx.services.notification.notifyText(recipient.id, text, {
       actionUrl: '/admin/accounts/users',
     }),
   );
 
   console.info(
-    `Sent notification ${notification.id} to ${recipient.email} (${recipient.id})`,
+    `Queued notification ${requestId} for ${recipient.email} (${recipient.id})`,
   );
 }
 

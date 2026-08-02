@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { NotificationChannelKey } from '$servicesNotificationChannel';
+import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
 import type {
   NotificationContent,
   NotificationParams,
@@ -41,8 +41,8 @@ export interface NotificationTypeDefinition<
   version: number;
   /** Validates stored params before render; failure falls back to the snapshot. */
   paramsSchema: z.ZodType<P>;
-  /** Eligible delivery channels, checked against the static channel dictionary. */
-  channels: readonly NotificationChannelKey[];
+  /** Routing targets for this type. */
+  channels: readonly NotificationRoutingTarget[];
   /**
    * Render content from a batch of events, in `ctx.locale`.
    *
@@ -55,9 +55,6 @@ export interface NotificationTypeDefinition<
   ): NotificationContent;
 }
 
-/**
- * Declares a notification type.
- */
 export function defineNotificationType<P extends NotificationParams>(
   definition: NotificationTypeDefinition<P>,
 ): NotificationTypeDefinition<P> {

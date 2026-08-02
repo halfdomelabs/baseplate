@@ -1,0 +1,22 @@
+{
+  "notification-delivery.queue.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-delivery"
+  },
+  "notification-delivery.worker.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-delivery-worker"
+  },
+  "notification-outbox-sweep.queue.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-outbox-sweep"
+  },
+  "notification-outbox-sweep.worker.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-outbox-sweep-worker"
+  }
+}
