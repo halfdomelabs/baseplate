@@ -92,6 +92,12 @@ jobs:
         working-directory: examples/${{ matrix.example }}
         run: pnpm install --frozen-lockfile
 
+      # GraphQL/Prisma output is gitignored but is the only importer of some
+      # dependencies, so it must exist before scanning for unused ones.
+      - name: Generate codegen output in example project
+        working-directory: examples/${{ matrix.example }}
+        run: pnpm turbo run gql:generate prisma:generate
+
       - name: Verify no unused dependencies in example
         run: pnpm check:example-deps --example ${{ matrix.example }}
 

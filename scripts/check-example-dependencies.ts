@@ -19,7 +19,7 @@
 import type { Results } from 'knip/session';
 
 import { createOptions } from 'knip/session';
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { glob, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -77,6 +77,52 @@ async function listExamples(): Promise<string[]> {
 }
 
 /**
+ * Fails unless an example's gitignored codegen output is present.
+ *
+ * GraphQL and Prisma output is the only importer of some dependencies, so
+ * scanning a fresh checkout reports them as surplus. Without this guard the
+ * check reports phantom entries instead of saying what is missing.
+ *
+ * @param example Directory name under `examples/`.
+ * @throws If a workspace declares a codegen script but has no output.
+ */
+async function assertCodegenHasRun(example: string): Promise<void> {
+  const exampleDir = path.join(EXAMPLES_DIR, example);
+  const codegenOutputs = [
+    { script: 'gql:generate', dir: 'src/gql' },
+    { script: 'prisma:generate', dir: 'src/generated/prisma' },
+  ];
+
+  const missing: string[] = [];
+  for await (const workspace of glob('{apps,libs}/*/package.json', {
+    cwd: exampleDir,
+  })) {
+    const { scripts = {} } = JSON.parse(
+      await readFile(path.join(exampleDir, workspace), 'utf8'),
+    ) as { scripts?: Record<string, string> };
+    const workspaceDir = path.dirname(workspace);
+
+    for (const { script, dir } of codegenOutputs) {
+      if (!(script in scripts)) continue;
+      const outputDir = path.join(exampleDir, workspaceDir, dir);
+      const entries = await readdir(outputDir).catch(() => []);
+      // The generator commits a `.templates-info.json` marker into these
+      // directories, so an existing but otherwise empty directory still counts
+      // as missing output.
+      if (entries.some((entry) => entry.endsWith('.ts'))) continue;
+      missing.push(`  ${example}/${workspaceDir} (pnpm ${script})`);
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Codegen output is missing, so dependency usage cannot be determined:\n${missing.join('\n')}\n\n` +
+        `Generate it first:\n  pnpm run:example ${example} -- pnpm turbo run gql:generate prisma:generate`,
+    );
+  }
+}
+
+/**
  * Runs knip against one example and returns its surplus dependencies.
  *
  * Line and column are deliberately dropped: they shift whenever an unrelated
@@ -86,6 +132,8 @@ async function listExamples(): Promise<string[]> {
  * @returns `<example>/<workspace> <dependency>` entries.
  */
 async function findUnusedDependencies(example: string): Promise<string[]> {
+  await assertCodegenHasRun(example);
+
   const options = await createOptions({
     cwd: path.join(EXAMPLES_DIR, example),
     // knip reads `config` from parsed CLI args; passing it as a top-level
