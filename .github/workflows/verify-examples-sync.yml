@@ -92,6 +92,9 @@ jobs:
         working-directory: examples/${{ matrix.example }}
         run: pnpm install --frozen-lockfile
 
+      - name: Verify no unused dependencies in example
+        run: pnpm check:example-deps --example ${{ matrix.example }}
+
       - name: Run sync diff for example
         run: |
           echo "Verifying that example '${{ matrix.example }}' has no uncommitted generated code differences..."

@@ -1,0 +1,7 @@
+[
+  "todo-with-better-auth/apps/admin tailwind-merge",
+  "todo-with-better-auth/apps/web react-icons",
+  "todo-with-better-auth/apps/web sonner",
+  "todo-with-better-auth/apps/web tailwind-merge",
+  "todo-with-better-auth/libs/ui-shared @hookform/resolvers"
+]
