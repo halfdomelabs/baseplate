@@ -13,7 +13,9 @@
       },
       "pathRootRelativePath": "{src-root}/utils/query-helpers.ts",
       "projectExports": {
+        "CompoundWhere": { "isTypeOnly": true, "name": "CompoundWhere" },
         "queryHelpers": { "isTypeOnly": false, "name": "queryHelpers" },
+        "WhereClause": { "isTypeOnly": true, "name": "WhereClause" },
         "WhereResult": { "isTypeOnly": true, "name": "WhereResult" }
       },
       "sourceFile": "src/utils/query-helpers.ts",
