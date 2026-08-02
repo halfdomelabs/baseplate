@@ -41,6 +41,12 @@ export default {
       project: 'src/**/*.{ts,tsx,css}',
     },
   },
+  ignoreDependencies: [
+    // shipped alongside @testing-library/react so generated apps can write
+    // interaction tests without adding a dependency first; the scaffolded
+    // tests only need render/screen, so nothing imports it yet
+    '@testing-library/user-event',
+  ],
   // Enable parsing of CSS so `@import 'tw-animate-css'` counts as usage
   compilers: {
     css: (text) => [...text.matchAll(/(?<=@)import[^;]+/g)].join('\n'),
