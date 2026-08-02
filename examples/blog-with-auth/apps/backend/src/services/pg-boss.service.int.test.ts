@@ -574,7 +574,9 @@ describe('pg-boss service integration tests', () => {
       ]);
 
       // Still unmutated - planning must not have applied anything.
-      const rawBoss = new PgBoss({ connectionString: getConfig().DATABASE_URL });
+      const rawBoss = new PgBoss({
+        connectionString: getConfig().DATABASE_URL,
+      });
       await rawBoss.start();
       const queue = await rawBoss.getQueue(queueName);
       await rawBoss.stop();
