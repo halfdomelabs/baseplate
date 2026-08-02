@@ -38,6 +38,9 @@
     },
     {
       "path": "../plugin-email/tsconfig.build.json"
+    },
+    {
+      "path": "../plugin-queue/tsconfig.build.json"
     }
   ]
 }

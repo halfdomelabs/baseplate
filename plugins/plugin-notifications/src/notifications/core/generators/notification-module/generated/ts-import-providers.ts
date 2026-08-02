@@ -15,7 +15,12 @@ import { NOTIFICATIONS_CORE_NOTIFICATION_MODULE_PATHS } from './template-paths.j
 export const notificationModuleImportsSchema = createTsImportMapSchema({
   createNotificationEvents: {},
   createNotificationRenderer: {},
+  NotificationDeliveryJobData: { isTypeOnly: true },
+  notificationDeliveryQueue: {},
+  notificationDeliveryWorker: {},
   NotificationEvents: { isTypeOnly: true },
+  notificationOutboxSweepQueue: {},
+  notificationOutboxSweepWorker: {},
   NotificationRenderer: { isTypeOnly: true },
   RENDER_SOURCE_SELECT: {},
   RenderSource: { isTypeOnly: true },
@@ -46,7 +51,13 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
           {
             createNotificationEvents: paths.servicesNotificationEvents,
             createNotificationRenderer: paths.servicesNotificationRenderer,
+            NotificationDeliveryJobData: paths.queuesNotificationDelivery,
+            notificationDeliveryQueue: paths.queuesNotificationDelivery,
+            notificationDeliveryWorker: paths.queuesNotificationDeliveryWorker,
             NotificationEvents: paths.servicesNotificationEvents,
+            notificationOutboxSweepQueue: paths.queuesNotificationOutboxSweep,
+            notificationOutboxSweepWorker:
+              paths.queuesNotificationOutboxSweepWorker,
             NotificationRenderer: paths.servicesNotificationRenderer,
             RENDER_SOURCE_SELECT: paths.servicesNotificationRenderer,
             RenderSource: paths.servicesNotificationRenderer,

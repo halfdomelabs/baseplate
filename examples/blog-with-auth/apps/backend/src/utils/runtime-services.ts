@@ -4,6 +4,8 @@ import type { CookieUserSessionService } from '../modules/accounts/auth/services
 import type { EmailTransport } from '../modules/emails/email.types.js';
 import type { EmailService } from '../modules/emails/services/email.service.js';
 import type { NotificationEvents } from '../modules/notifications/services/notification-events.js';
+import type { NotificationOutbox } from '../modules/notifications/services/notification-outbox.js';
+import type { NotificationRenderer } from '../modules/notifications/services/notification-renderer.js';
 import type { NotificationService } from '../modules/notifications/services/notification.service.js';
 import type { PubSubPublishArgs } from '../plugins/graphql/pubsub.js';
 import type { RedisRuntime } from '../services/redis.js';
@@ -20,6 +22,8 @@ export interface AppServices {
   readonly emailTransport: EmailTransport;
   readonly notification: NotificationService;
   readonly notificationEvents: NotificationEvents;
+  readonly notificationOutbox: NotificationOutbox;
+  readonly notificationRenderer: NotificationRenderer;
   readonly pubsub: PubSub<PubSubPublishArgs>;
   readonly queue: QueueRuntime;
   readonly redis: RedisRuntime;

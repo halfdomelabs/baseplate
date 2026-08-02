@@ -24,6 +24,13 @@ import {
 } from './notification-operations';
 import { NotificationPanel } from './notification-panel';
 
+interface Props {
+  /** Optional link to a full notifications page, rendered as a footer link when set. */
+  viewAllHref?: string;
+  /** Description shown under the empty-state title. */
+  emptyDescription?: string;
+}
+
 /**
  * Header bell: unseen badge + a popover feed, kept live over SSE.
  *
@@ -34,13 +41,6 @@ import { NotificationPanel } from './notification-panel';
  * badge stay in sync across tabs. Renders nothing for an unauthenticated session
  * (the subscription requires `['user']`).
  */
-interface Props {
-  /** Optional link to a full notifications page, rendered as a footer link when set. */
-  viewAllHref?: string;
-  /** Description shown under the empty-state title. */
-  emptyDescription?: string;
-}
-
 export function NotificationBell({
   viewAllHref,
   emptyDescription,

@@ -9,11 +9,6 @@
     "instanceData": {},
     "template": "services-generic-type"
   },
-  "in-app-channel.ts": {
-    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
-    "instanceData": {},
-    "template": "services-in-app-channel"
-  },
   "notification-channel.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
@@ -28,6 +23,11 @@
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
     "template": "services-notification-events"
+  },
+  "notification-outbox.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "services-notification-outbox"
   },
   "notification-registry.ts": {
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",

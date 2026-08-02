@@ -1,6 +1,92 @@
 {
   "name": "notifications/core/notification-module",
   "templates": {
+    "queues-notification-delivery": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-delivery.queue.ts",
+      "projectExports": {
+        "NotificationDeliveryJobData": { "isTypeOnly": true },
+        "notificationDeliveryQueue": { "isTypeOnly": false }
+      },
+      "sourceFile": "module/queues/notification-delivery.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-delivery-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-delivery.worker.ts",
+      "projectExports": {
+        "notificationDeliveryWorker": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": ["queues-notification-delivery"],
+      "sourceFile": "module/queues/notification-delivery.worker.ts",
+      "variables": {}
+    },
+    "queues-notification-outbox-sweep": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.queue.ts",
+      "projectExports": {
+        "notificationOutboxSweepQueue": { "isTypeOnly": false }
+      },
+      "sourceFile": "module/queues/notification-outbox-sweep.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-outbox-sweep-worker": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "queues",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.worker.ts",
+      "projectExports": {
+        "notificationOutboxSweepWorker": { "isTypeOnly": false }
+      },
+      "referencedGeneratorTemplates": [
+        "queues-notification-delivery",
+        "queues-notification-outbox-sweep"
+      ],
+      "sourceFile": "module/queues/notification-outbox-sweep.worker.ts",
+      "variables": {}
+    },
     "schema-notification-content-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -42,6 +128,10 @@
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
         },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
@@ -91,14 +181,13 @@
         "emailModuleImportsProvider": {
           "importName": "emailModuleImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-email:src/email/core/generators/email-module/generated/ts-import-providers.ts"
-        },
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/email-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-channel"],
+      "referencedGeneratorTemplates": [
+        "services-notification-channel",
+        "services-notification-renderer"
+      ],
       "sourceFile": "module/services/email-channel.ts",
       "variables": { "TPL_NOTIFICATION_EMAIL": {} }
     },
@@ -112,31 +201,13 @@
       "sourceFile": "module/services/generic-type.ts",
       "variables": {}
     },
-    "services-in-app-channel": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {
-        "prismaImportsProvider": {
-          "importName": "prismaImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/services/in-app-channel.ts",
-      "referencedGeneratorTemplates": [
-        "services-notification-channel",
-        "services-notification-events"
-      ],
-      "sourceFile": "module/services/in-app-channel.ts",
-      "variables": {}
-    },
     "services-notification-channel": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
-      "referencedGeneratorTemplates": ["services-notification-content"],
+      "referencedGeneratorTemplates": ["services-notification-renderer"],
       "sourceFile": "module/services/notification-channel.ts",
       "variables": { "TPL_CHANNEL_ENTRIES": {} }
     },
@@ -166,6 +237,33 @@
       },
       "sourceFile": "module/services/notification-events.ts",
       "variables": {}
+    },
+    "services-notification-outbox": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/notification-outbox.ts",
+      "referencedGeneratorTemplates": [
+        "queues-notification-delivery",
+        "services-notification-channel",
+        "services-notification-renderer"
+      ],
+      "sourceFile": "module/services/notification-outbox.ts",
+      "variables": { "TPL_USER_DELEGATE": {} }
     },
     "services-notification-registry": {
       "type": "ts",
@@ -241,6 +339,7 @@
         "services-notification-channel",
         "services-notification-content",
         "services-notification-events",
+        "services-notification-outbox",
         "services-notification-registry",
         "services-notification-renderer"
       ],
