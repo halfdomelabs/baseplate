@@ -125,6 +125,7 @@ export function buildInitialApps(
         allowedRoles: [],
         sections: [],
       },
+      libraryRefs: [],
     });
   }
 

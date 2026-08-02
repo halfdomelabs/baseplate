@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 
+import { Widget } from '@prisma-crud/ui-shared';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
@@ -11,6 +12,7 @@ function HomePage(): ReactElement {
     <div className="flex flex-col gap-4">
       <h1>Hello World</h1>
       <p>This is the home page of a generated app.</p>
+      <Widget label="Imported from ui-shared" />
     </div>
   );
 }

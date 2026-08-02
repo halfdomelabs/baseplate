@@ -1,0 +1,21 @@
+Index: src/routes/index.tsx
+===================================================================
+--- src/routes/index.tsx
++++ src/routes/index.tsx
+@@ -1,6 +1,7 @@
+ import type { ReactElement } from 'react';
+ 
++import { Widget } from '@prisma-crud/ui-shared';
+ import { createFileRoute } from '@tanstack/react-router';
+ 
+ export const Route = createFileRoute('/')({
+   component: HomePage,
+@@ -10,7 +11,8 @@
+   return (
+     <div className="flex flex-col gap-4">
+       <h1>Hello World</h1>
+       <p>This is the home page of a generated app.</p>
++      <Widget label="Imported from ui-shared" />
+     </div>
+   );
+ }

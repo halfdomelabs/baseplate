@@ -2,6 +2,7 @@ import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
@@ -239,6 +240,27 @@ export default defineConfig(
   },
 
   /* TPL_TAILWIND_CONFIG:COMMENT:START */
+
+  // Tailwind CSS Correctness
+  eslintPluginBetterTailwindcss.configs['correctness'],
+  {
+    settings: {
+      'better-tailwindcss': {
+        entryPoint: './src/styles.css',
+      },
+    },
+  },
+  {
+    rules: {
+      'better-tailwindcss/no-unknown-classes': [
+        'error',
+        {
+          detectComponentClasses: true,
+          ignore: ['toaster'],
+        },
+      ],
+    },
+  },
 
   /* TPL_TAILWIND_CONFIG:COMMENT:END */
 

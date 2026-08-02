@@ -8,6 +8,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: {},
       prod: {},
+      peer: {},
     });
   });
 
@@ -17,6 +18,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: {},
       prod: { express: '^4.18.2' },
+      peer: {},
     });
   });
 
@@ -26,6 +28,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: { typescript: '^5.0.0' },
       prod: {},
+      peer: {},
     });
   });
 
@@ -36,6 +39,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: {},
       prod: { express: '4.18.2' },
+      peer: {},
     });
   });
 
@@ -56,6 +60,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: {},
       prod: { typescript: '^5.0.0' },
+      peer: {},
     });
   });
 
@@ -68,6 +73,7 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: { typescript: '^5.0.0' },
       prod: { express: '^4.18.2' },
+      peer: {},
     });
   });
 
@@ -84,6 +90,49 @@ describe('NodePackageDependenciesContainer', () => {
     expect(container.getValue()).toEqual({
       dev: { typescript: '^5.0.0', eslint: '^8.0.0' },
       prod: { express: '4.18.2', cors: '^2.8.5' },
+      peer: {},
     });
+  });
+
+  it('should add a peer dependency', () => {
+    const container = new NodePackageDependenciesContainer();
+    container.addPeerPackages({ react: '^19.0.0' });
+    expect(container.getValue()).toEqual({
+      dev: {},
+      prod: {},
+      peer: { react: '^19.0.0' },
+    });
+  });
+
+  it('should allow a package to be both a peer and a dev dependency at once', () => {
+    const container = new NodePackageDependenciesContainer();
+    container.addPackages({
+      peer: { react: '^19.0.0' },
+      dev: { react: '^19.0.0' },
+    });
+    expect(container.getValue()).toEqual({
+      dev: { react: '^19.0.0' },
+      prod: {},
+      peer: { react: '^19.0.0' },
+    });
+  });
+
+  it('should merge compatible versions when adding same peer dependency', () => {
+    const container = new NodePackageDependenciesContainer();
+    container.addPeerPackages({ react: '^19.0.0' });
+    container.addPeerPackages({ react: '19.0.0' });
+    expect(container.getValue()).toEqual({
+      dev: {},
+      prod: {},
+      peer: { react: '19.0.0' },
+    });
+  });
+
+  it('should throw error when adding incompatible peer dependency versions', () => {
+    const container = new NodePackageDependenciesContainer();
+    container.addPeerPackages({ react: '^19.0.0' });
+    expect(() => {
+      container.addPeerPackages({ react: '^18.0.0' });
+    }).toThrow('Could not merge incompatible versions for dependency "react"');
   });
 });

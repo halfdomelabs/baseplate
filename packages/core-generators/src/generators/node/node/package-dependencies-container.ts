@@ -15,9 +15,16 @@ interface NodePackageDependencyInfo {
   source: string | undefined;
 }
 
+interface NodePackagePeerInfo {
+  name: string;
+  version: string;
+  source: string | undefined;
+}
+
 export interface NodePackageDependencies {
   dev: Record<string, string>;
   prod: Record<string, string>;
+  peer: Record<string, string>;
 }
 
 /**
@@ -25,11 +32,48 @@ export interface NodePackageDependencies {
  */
 export class NodePackageDependenciesContainer implements FieldContainer<NodePackageDependencies> {
   private readonly _value: Map<string, NodePackageDependencyInfo>;
+  /**
+   * Peer dependencies are tracked in a separate map from dev/prod since a
+   * package (e.g. `react`) is commonly both a peer dependency (for consumers)
+   * and a dev dependency (needed locally to build/test) at once - something
+   * the single dev/prod map can't represent since it allows only one type per
+   * package name.
+   */
+  private readonly _peerValue: Map<string, NodePackagePeerInfo>;
   protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 
   constructor(options?: FieldContainerOptions) {
     this._value = new Map<string, NodePackageDependencyInfo>();
+    this._peerValue = new Map<string, NodePackagePeerInfo>();
     this.getDynamicSource = options?.getDynamicSource;
+  }
+
+  /**
+   * Resolves the version to use when merging a new version in for an existing
+   * entry, keeping whichever of the two semver ranges is narrower/more specific.
+   * @param name - The name of the dependency (used in the error message)
+   * @param oldVersion - The existing version
+   * @param newVersion - The version being merged in
+   */
+  private resolveMergedVersion(
+    name: string,
+    oldVersion: string,
+    newVersion: string,
+  ): string {
+    if (
+      newVersion === oldVersion ||
+      semver.subset(oldVersion, newVersion) // Proposed version is broader or equal
+    ) {
+      return oldVersion; // Keep the existing, more specific or equal version
+    }
+    if (semver.subset(newVersion, oldVersion)) {
+      // Proposed version is narrower
+      return newVersion; // Use the new, more specific version
+    }
+    // Versions are incompatible ranges or values
+    throw new Error(
+      `Could not merge incompatible versions for dependency "${name}": existing "${oldVersion}"`,
+    );
   }
 
   /**
@@ -42,24 +86,11 @@ export class NodePackageDependenciesContainer implements FieldContainer<NodePack
     const existingEntry = this._value.get(name);
 
     if (existingEntry) {
-      const oldVersion = existingEntry.version;
-      let newVersion: string | undefined;
-
-      // Check for semantic version compatibility
-      if (
-        version === oldVersion ||
-        semver.subset(oldVersion, version) // Proposed version is broader or equal
-      ) {
-        newVersion = oldVersion; // Keep the existing, more specific or equal version
-      } else if (semver.subset(version, oldVersion)) {
-        // Proposed version is narrower
-        newVersion = version; // Use the new, more specific version
-      } else {
-        // Versions are incompatible ranges or values
-        throw new Error(
-          `Could not merge incompatible versions for dependency "${name}": existing "${oldVersion}"`,
-        );
-      }
+      const newVersion = this.resolveMergedVersion(
+        name,
+        existingEntry.version,
+        version,
+      );
 
       // Determine the final type: 'normal' takes precedence over 'dev'
       const finalType =
@@ -103,9 +134,30 @@ export class NodePackageDependenciesContainer implements FieldContainer<NodePack
   }
 
   /**
+   * Add peer dependencies to the container. Peer entries are tracked
+   * independently of dev/prod, so a package can be both a peer dependency
+   * and a dev/prod dependency at the same time.
+   * @param packages - The dependencies to add
+   */
+  addPeerPackages(packages: Record<string, string>): void {
+    for (const [name, version] of Object.entries(packages)) {
+      const existingEntry = this._peerValue.get(name);
+      const newVersion = existingEntry
+        ? this.resolveMergedVersion(name, existingEntry.version, version)
+        : version;
+
+      this._peerValue.set(name, {
+        name,
+        version: newVersion,
+        source: this.getDynamicSource?.(),
+      });
+    }
+  }
+
+  /**
    * Add multiple dependencies to the container
    * @param packages - The dependencies to add
-   * @param type - The type of the dependencies (dev or prod)
+   * @param type - The type of the dependencies (dev, prod, or peer)
    */
   addPackages(packages: Partial<NodePackageDependencies>): void {
     for (const [name, version] of Object.entries(packages.prod ?? {})) {
@@ -114,6 +166,7 @@ export class NodePackageDependenciesContainer implements FieldContainer<NodePack
     for (const [name, version] of Object.entries(packages.dev ?? {})) {
       this.add(name, version, 'dev');
     }
+    this.addPeerPackages(packages.peer ?? {});
   }
 
   getValue(): NodePackageDependencies {
@@ -130,6 +183,12 @@ export class NodePackageDependenciesContainer implements FieldContainer<NodePack
     return {
       dev: getPackageType('dev'),
       prod: getPackageType('prod'),
+      peer: Object.fromEntries(
+        [...this._peerValue.entries()].map(([name, info]) => [
+          name,
+          info.version,
+        ]),
+      ),
     };
   }
 }
