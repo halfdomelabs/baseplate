@@ -191,9 +191,11 @@
           }
         ]
       },
+      "componentsLibraryRef": "ui-shared",
       "description": "admin",
       "devPort": 6030,
       "id": "app:NmEolDU3Iggt",
+      "libraryRefs": ["ui-shared"],
       "name": "admin",
       "title": "Admin Page",
       "type": "web"
@@ -207,9 +209,10 @@
       "type": "backend"
     },
     {
+      "componentsLibraryRef": "ui-shared",
       "description": "An app for cool todoers",
       "devPort": 6031,
-      "id": "app:yYeMVhgQG01I",
+      "id": "app:WA8qvNe8_QRA",
       "libraryRefs": ["ui-shared"],
       "name": "web",
       "title": "Todoer App",

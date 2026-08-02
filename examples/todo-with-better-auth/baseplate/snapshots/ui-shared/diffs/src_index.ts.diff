@@ -2,7 +2,9 @@ Index: src/index.ts
 ===================================================================
 --- src/index.ts
 +++ src/index.ts
-@@ -1,2 +1,1 @@
--// Export your library modules here
--export const placeholder = 'placeholder';
-+export * from './widget.js';
+@@ -257,4 +257,5 @@
+ } from './types/form.js';
+ export type { IconElement } from './types/icon.js';
+ export { cn } from './utils/cn.js';
+ export { mergeRefs } from './utils/merge-refs.js';
++export { Widget } from './widget.js';

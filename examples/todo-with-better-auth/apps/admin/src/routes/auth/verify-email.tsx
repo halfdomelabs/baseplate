@@ -1,14 +1,14 @@
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
-
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@src/components/ui/card';
+} from '@prisma-crud/ui-shared';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { authClient } from '@src/services/auth-client';
 import { logError } from '@src/services/error-logger';
 

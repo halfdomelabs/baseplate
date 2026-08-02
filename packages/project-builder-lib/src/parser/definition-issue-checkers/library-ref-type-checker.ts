@@ -7,8 +7,8 @@ import { createEntityIssue } from '#src/parser/definition-issue-utils.js';
 /**
  * Checks that web apps only reference libraries of type `react-library`.
  *
- * `libraryRefs` accepts any library entity, but only a react-library package
- * can be imported by a web app's generated code.
+ * `libraryRefs` and `componentsLibraryRef` accept any library entity, but
+ * only a react-library package can be imported by a web app's generated code.
  */
 export function checkLibraryRefType(
   container: ProjectDefinitionContainer,
@@ -31,6 +31,20 @@ export function checkLibraryRefType(
           severity: 'error',
         }),
       );
+    }
+
+    if (app.componentsLibraryRef) {
+      const library = libraries.find(
+        (lib) => lib.id === app.componentsLibraryRef,
+      );
+      if (library && library.type !== 'react-library') {
+        issues.push(
+          createEntityIssue(container, app.id, ['componentsLibraryRef'], {
+            message: `App '${app.name}' references library '${library.name}' as its components library, which is not a React library`,
+            severity: 'error',
+          }),
+        );
+      }
     }
   }
 

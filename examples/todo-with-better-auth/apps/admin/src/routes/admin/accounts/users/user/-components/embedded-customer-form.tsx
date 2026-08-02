@@ -1,13 +1,12 @@
 import type { ReactElement } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, InputFieldController } from '@prisma-crud/ui-shared';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import type { EmbeddedObjectFormProps } from '@src/components/admin/embedded-object-input';
 
-import { Button } from '@src/components/ui/button';
-import { InputFieldController } from '@src/components/ui/input-field';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 import type { EmbeddedCustomerFormData } from '../-schemas/user-schema';

@@ -1,6 +1,6 @@
 {
   "files": {
-    "added": [{ "path": "src/components/ui/loader.unit.test.tsx" }],
+    "added": [{ "path": "src/components/ui/error-boundary.unit.test.tsx" }],
     "deleted": [],
     "modified": [
       {

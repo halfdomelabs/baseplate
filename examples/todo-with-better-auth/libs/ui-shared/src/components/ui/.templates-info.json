@@ -1,0 +1,247 @@
+{
+  "alert.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "alert"
+  },
+  "autocomplete.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "autocomplete"
+  },
+  "badge.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "badge"
+  },
+  "breadcrumb.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "breadcrumb"
+  },
+  "button.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "button"
+  },
+  "calendar.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "calendar"
+  },
+  "card.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "card"
+  },
+  "checkbox-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "checkbox-field"
+  },
+  "checkbox.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "checkbox"
+  },
+  "circular-progress.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "circular-progress"
+  },
+  "collapsible.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "collapsible"
+  },
+  "combobox-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "combobox-field"
+  },
+  "combobox.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "combobox"
+  },
+  "confirm-dialog.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "confirm-dialog"
+  },
+  "date-picker-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "date-picker-field"
+  },
+  "date-time-picker-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "date-time-picker-field"
+  },
+  "dialog.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "dialog"
+  },
+  "dropdown.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "dropdown"
+  },
+  "empty.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "empty"
+  },
+  "error-display.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "error-display"
+  },
+  "errorable-loader.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "errorable-loader"
+  },
+  "field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "field"
+  },
+  "input-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "input-field"
+  },
+  "input-group.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "input-group"
+  },
+  "input.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "input"
+  },
+  "item.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "item"
+  },
+  "label.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "label"
+  },
+  "loader.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "loader"
+  },
+  "multi-combobox-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "multi-combobox-field"
+  },
+  "navigation-menu.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "navigation-menu"
+  },
+  "not-found-card.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "not-found-card"
+  },
+  "popover.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "popover"
+  },
+  "radio-group.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "radio-group"
+  },
+  "scroll-area.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "scroll-area"
+  },
+  "select-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "select-field"
+  },
+  "select.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "select"
+  },
+  "separator.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "separator"
+  },
+  "sheet.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "sheet"
+  },
+  "sidebar.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "sidebar"
+  },
+  "skeleton.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "skeleton"
+  },
+  "slider.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "slider"
+  },
+  "spinner.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "spinner"
+  },
+  "switch-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "switch-field"
+  },
+  "switch.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "switch-component"
+  },
+  "table.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "table"
+  },
+  "textarea-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "textarea-field"
+  },
+  "textarea.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "textarea"
+  },
+  "toaster.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "toaster"
+  },
+  "tooltip.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "tooltip"
+  }
+}

@@ -1,9 +1,13 @@
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Card,
+  Loader,
+} from '@prisma-crud/ui-shared';
 import { useEffect } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Loader } from '../components/ui/loader';
 import { useLogOut } from '../hooks/use-log-out';
 import { authClient } from '../services/auth-client';
 import { logError } from '../services/error-logger';

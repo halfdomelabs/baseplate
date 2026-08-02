@@ -1,10 +1,3 @@
-import { Link } from '@tanstack/react-router';
-import { BsCardChecklist } from 'react-icons/bs';
-import { FaUser } from 'react-icons/fa';
-import { MdHome, MdLogout } from 'react-icons/md';
-
-import { useLogOut } from '@src/hooks/use-log-out';
-
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +8,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '../ui/sidebar';
+} from '@prisma-crud/ui-shared';
+import { Link } from '@tanstack/react-router';
+import { BsCardChecklist } from 'react-icons/bs';
+import { FaUser } from 'react-icons/fa';
+import { MdHome, MdLogout } from 'react-icons/md';
+
+import { useLogOut } from '@src/hooks/use-log-out';
 
 export function AppSidebar(): React.ReactElement {
   const logOut = useLogOut();
