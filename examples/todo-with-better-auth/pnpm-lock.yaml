@@ -304,8 +304,8 @@ importers:
         specifier: 10.3.1
         version: 10.3.1
       postmark:
-        specifier: 4.0.7
-        version: 4.0.7(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
+        specifier: 5.1.0
+        version: 5.1.0
       stripe:
         specifier: 22.4.0
         version: 22.4.0(@types/node@24.13.3)
@@ -5713,8 +5713,9 @@ packages:
     resolution: {integrity: sha512-Jtc2612XINuBjIl/QTWsV5UvE8UHuNblcO3vVADSrKsrc6RqGX6lOW1cEo3CM2v0XG4Nat8nI+YM7/f26VxXLw==}
     engines: {node: '>=12'}
 
-  postmark@4.0.7:
-    resolution: {integrity: sha512-DjNniUl1XNCGUKhCR98ePd5gv16rlUAVKKaU9TUqnE3hDSqfT9XDulu1idjagQmdyGscqnRtXk/puAEiYMeevg==}
+  postmark@5.1.0:
+    resolution: {integrity: sha512-8lj2Fu94pL3fzx9Sy599opqpK4Z/0/1xCHZS8tbGBnqSS5rAcXtcHQ+TI0Jc4VwlBWma1Ug0Qm98FEe+v94BIQ==}
+    engines: {node: '>=18.0.0'}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -12584,12 +12585,7 @@ snapshots:
 
   postgres@3.4.7: {}
 
-  postmark@4.0.7(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2):
-    dependencies:
-      axios: 1.18.1(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
-    transitivePeerDependencies:
-      - debug
-      - supports-color
+  postmark@5.1.0: {}
 
   prelude-ls@1.2.1: {}
 

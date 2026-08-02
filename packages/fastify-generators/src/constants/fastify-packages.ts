@@ -71,12 +71,6 @@ export const FASTIFY_PACKAGES = {
   // Auth
   '@node-rs/argon2': '2.0.2',
 
-  // Postmark
-  postmark: '5.1.0',
-
   // Stripe
   stripe: '22.4.0',
-
-  // BullMQ
-  bullmq: '6.0.5',
 } as const;
