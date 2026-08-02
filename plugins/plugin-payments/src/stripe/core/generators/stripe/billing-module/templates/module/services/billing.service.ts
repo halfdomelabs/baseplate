@@ -14,9 +14,8 @@ import { Prisma } from '%prismaGeneratedImports';
 import { prisma } from '%prismaImports';
 
 /** Maps Stripe subscription status strings to our BillingSubscriptionStatus enum. */
-const STRIPE_STATUS_MAP: Record<
-  Stripe.Subscription.Status,
-  BillingSubscriptionStatus
+const STRIPE_STATUS_MAP: Partial<
+  Record<Stripe.Subscription.Status, BillingSubscriptionStatus>
 > = {
   active: 'ACTIVE',
   trialing: 'TRIALING',
@@ -108,6 +107,21 @@ export class MissingSubscriptionItemError extends Error {
       `No subscription items found for Stripe subscription: ${subscriptionId}`,
     );
     this.name = 'MissingSubscriptionItemError';
+  }
+}
+
+/**
+ * Stripe reported a subscription status this integration does not model.
+ *
+ * `Stripe.Subscription.Status` is an open union, so the API may introduce
+ * statuses newer than {@link STRIPE_STATUS_MAP}.
+ */
+export class UnrecognizedSubscriptionStatusError extends Error {
+  constructor(subscriptionId: string, status: string) {
+    super(
+      `Unrecognized status "${status}" for Stripe subscription: ${subscriptionId}`,
+    );
+    this.name = 'UnrecognizedSubscriptionStatusError';
   }
 }
 
@@ -278,6 +292,12 @@ export function createBillingService({
     stripeSubscription: Stripe.Subscription,
   ): Promise<void> {
     const status = STRIPE_STATUS_MAP[stripeSubscription.status];
+    if (!status) {
+      throw new UnrecognizedSubscriptionStatusError(
+        stripeSubscription.id,
+        stripeSubscription.status,
+      );
+    }
 
     const customerProviderId =
       typeof stripeSubscription.customer === 'string'

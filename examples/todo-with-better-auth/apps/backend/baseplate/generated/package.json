@@ -55,7 +55,7 @@
     "@sentry/profiling-node": "10.63.0",
     "axios": "1.18.1",
     "better-auth": "1.6.23",
-    "bullmq": "5.61.2",
+    "bullmq": "6.0.5",
     "es-toolkit": "1.44.0",
     "fastify": "5.8.5",
     "fastify-plugin": "6.0.0",

@@ -41,9 +41,10 @@ async function main(): Promise<void> {
     createContext: () => createSystemServiceContext(appRuntime.services),
   });
 
-  logger.info('Queue worker process started successfully', {
-    event: 'queue-worker-process-started',
-  });
+  logger.info(
+    { event: 'queue-worker-process-started' },
+    'Queue worker process started successfully',
+  );
   logger.info('Workers are now processing jobs. Press Ctrl+C to stop.');
 }
 
@@ -55,9 +56,7 @@ function shutdown(): void {
 
   (runtime?.dispose() ?? Promise.resolve())
     .then(() => {
-      logger.info('Workers stopped successfully', {
-        event: 'workers-stopped',
-      });
+      logger.info({ event: 'workers-stopped' }, 'Workers stopped successfully');
       process.exit(0);
     })
     .catch((error: unknown) => {
