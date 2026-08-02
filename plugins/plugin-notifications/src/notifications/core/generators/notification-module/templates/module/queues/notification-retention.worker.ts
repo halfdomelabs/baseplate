@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { ServiceContextWith } from '%serviceContextImports';
+import type { SystemServiceContextWith } from '%serviceContextImports';
 
 import { notificationRetentionQueue } from '$queuesNotificationRetention';
 import { bindQueueHandler } from '%queuesImports';
@@ -36,7 +36,10 @@ const REQUEST_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 export const notificationRetentionWorker = bindQueueHandler(
   notificationRetentionQueue,
   {
-    handler: async (_job, ctx: ServiceContextWith<'notificationOutbox'>) => {
+    handler: async (
+      _job,
+      ctx: SystemServiceContextWith<'notificationOutbox'>,
+    ) => {
       const outbox = ctx.services.notificationOutbox;
 
       const deletedCount = await outbox.deleteExpiredNotifications({

@@ -80,10 +80,9 @@ export const fastifyRedisGenerator = createGenerator({
         paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.services.set(
-          'redis',
-          TsCodeUtils.typeImportFragment('RedisRuntime', paths.redis),
-        );
+        appRuntimeConfig.services.set('redis', {
+          type: TsCodeUtils.typeImportFragment('RedisRuntime', paths.redis),
+        });
         // FIRST so it is torn down only after slices that opened connections
         // through it have released theirs - disposal runs in reverse
         // construction order, and not every such slice declares an edge here.

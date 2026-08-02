@@ -184,19 +184,22 @@ export const serviceContextGenerator = createGenerator({
                            arg.testDefault ? '?' : ''
                          }: ${arg.type}`,
                      ),
-                     TsCodeUtils.template`services?: Partial<${appRuntimeImports.AppServices.typeFragment()}>`,
+                     TsCodeUtils.template`services?: Partial<${appRuntimeImports.RuntimeServices.typeFragment()}>`,
                    ],
                    '; ',
                  )}
                 } = {}`;
 
-            // The cast is only needed when `AppServices` has fields `Partial`
-            // would otherwise widen - with none, `Partial<AppServices>` is
-            // already `AppServices` and the cast is flagged as unnecessary.
+            // Keyed over `RuntimeServices`, not `AppServices`: a worker test
+            // supplies the internal service its handler declares.
+            //
+            // The cast is only needed when there are fields `Partial` would
+            // otherwise widen - with none, `Partial<RuntimeServices>` is already
+            // `RuntimeServices` and the cast is flagged as unnecessary.
             const suppliedServices =
               services.size === 0
                 ? TsCodeUtils.template`services ?? {}`
-                : TsCodeUtils.template`(services ?? {}) as ${appRuntimeImports.AppServices.typeFragment()}`;
+                : TsCodeUtils.template`(services ?? {}) as ${appRuntimeImports.RuntimeServices.typeFragment()}`;
 
             await builder.apply(
               renderers.testHelper.render({

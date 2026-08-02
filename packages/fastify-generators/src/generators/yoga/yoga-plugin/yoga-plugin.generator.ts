@@ -277,10 +277,13 @@ export const yogaPluginGenerator = createGenerator({
               paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
             },
             run({ appRuntimeConfig, paths }) {
-              appRuntimeConfig.services.set(
-                'pubsub',
-                TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
-              );
+              // Internal: nothing reads it off a context - the notification
+              // service takes it at construction - but it owns two redis
+              // connections, so it stays a service to keep an override path.
+              appRuntimeConfig.services.set('pubsub', {
+                internal: true,
+                type: TsCodeUtils.template`${TsCodeUtils.typeImportFragment('PubSub', 'graphql-yoga')}<${TsCodeUtils.typeImportFragment('PubSubPublishArgs', paths.pubsub)}>`,
+              });
               appRuntimeConfig.construction.set('pubsub', {
                 dependencies: ['redis'],
                 fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createGraphqlPubSub', paths.pubsub)}(redis)`,

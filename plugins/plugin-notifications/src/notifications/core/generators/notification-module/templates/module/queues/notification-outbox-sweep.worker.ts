@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { ServiceContextWith } from '%serviceContextImports';
+import type { SystemServiceContextWith } from '%serviceContextImports';
 
 import { DELIVERY_EXPIRE_AFTER_MS } from '$queuesNotificationDelivery';
 import { notificationOutboxSweepQueue } from '$queuesNotificationOutboxSweep';
@@ -29,7 +29,10 @@ const SWEEP_BATCH_SIZE = 100;
 export const notificationOutboxSweepWorker = bindQueueHandler(
   notificationOutboxSweepQueue,
   {
-    handler: async (_job, ctx: ServiceContextWith<'notificationOutbox'>) => {
+    handler: async (
+      _job,
+      ctx: SystemServiceContextWith<'notificationOutbox'>,
+    ) => {
       const outbox = ctx.services.notificationOutbox;
       const sweptCount = await outbox.sweepStaleRequests({
         staleBefore: new Date(Date.now() - STALE_AFTER_MS),

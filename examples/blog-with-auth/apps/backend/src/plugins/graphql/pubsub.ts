@@ -10,8 +10,12 @@ import type { RedisRuntime } from '@src/services/redis.js';
  *
  * Channels are registered by features/plugins via the yoga plugin's
  * `publishArgs` config. Each entry is `channelName: [payload: PayloadType]` (or
- * `[topicId, payload]` for dynamic topics); publish to it from your mutations
- * and subscribe from a `builder.subscriptionField`.
+ * `[topicId, payload]` for dynamic topics).
+ *
+ * The emitter is an internal service, so a feature owning a channel takes it at
+ * construction and exposes publish/subscribe as methods - keeping topic keys
+ * (e.g. the authenticated user id) inside the service that owns them rather
+ * than built at each resolver.
  *
  * The base index signature satisfies graphql-yoga's `PubSubPublishArgsByKey`
  * constraint; registered channels are intersected in for per-channel typing.

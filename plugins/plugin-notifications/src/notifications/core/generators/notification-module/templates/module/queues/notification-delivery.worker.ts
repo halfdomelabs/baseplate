@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { ServiceContextWith } from '%serviceContextImports';
+import type { SystemServiceContextWith } from '%serviceContextImports';
 
 import {
   DELIVERY_EXPIRE_AFTER_MS,
@@ -18,7 +18,7 @@ const DELIVERY_ATTEMPTS = 3;
 export const notificationDeliveryWorker = bindQueueHandler(
   notificationDeliveryQueue,
   {
-    handler: async (job, ctx: ServiceContextWith<'notificationOutbox'>) =>
+    handler: async (job, ctx: SystemServiceContextWith<'notificationOutbox'>) =>
       ctx.services.notificationOutbox.deliverChunk({
         ...job.data,
         // Nothing will retry after this, so the worker records the outcome

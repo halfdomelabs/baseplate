@@ -54,10 +54,9 @@ export const bullmqGenerator = createGenerator({
         paths: GENERATED_TEMPLATES.paths.provider,
       },
       run({ appRuntimeConfig, queuesImports, paths }) {
-        appRuntimeConfig.services.set(
-          'queue',
-          queuesImports.QueueRuntime.typeFragment(),
-        );
+        appRuntimeConfig.services.set('queue', {
+          type: queuesImports.QueueRuntime.typeFragment(),
+        });
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         appRuntimeConfig.construction.set('queue', {
           dependencies: ['redis'],
