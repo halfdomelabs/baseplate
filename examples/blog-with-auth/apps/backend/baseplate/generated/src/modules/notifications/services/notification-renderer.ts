@@ -34,10 +34,10 @@ export const RENDER_SOURCE_SELECT = {
   actorId: true,
   entityType: true,
   entityId: true,
-} satisfies Prisma.NotificationFeedItemSelect;
+} satisfies Prisma.NotificationSelect;
 
 /** Row shape `renderContent` accepts (feed/notify rows are supersets). */
-export type RenderSource = Prisma.NotificationFeedItemGetPayload<{
+export type RenderSource = Prisma.NotificationGetPayload<{
   select: typeof RENDER_SOURCE_SELECT;
 }>;
 

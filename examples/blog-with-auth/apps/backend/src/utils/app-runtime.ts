@@ -8,8 +8,8 @@ import {
 import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapter.js';
 import { rootModule } from '../modules/index.js';
 import { createEmailChannel } from '../modules/notifications/services/email-channel.js';
-import { createInAppChannel } from '../modules/notifications/services/in-app-channel.js';
 import { createNotificationEvents } from '../modules/notifications/services/notification-events.js';
+import { createNotificationOutbox } from '../modules/notifications/services/notification-outbox.js';
 import { createNotificationRenderer } from '../modules/notifications/services/notification-renderer.js';
 import { createNotificationService } from '../modules/notifications/services/notification.service.js';
 import { createGraphqlPubSub } from '../plugins/graphql/pubsub.js';
@@ -137,18 +137,23 @@ export function createAppRuntime(
 
   const email = provide('email', () => createEmailService({ queue }));
 
-  const notification = provide('notification', () =>
-    createNotificationService({
-      events: notificationEvents,
-      renderer: createNotificationRenderer({ notificationTypes }),
+  const notificationOutbox = provide('notificationOutbox', () =>
+    createNotificationOutbox({
       channels: {
         email: createEmailChannel({
           email,
           renderer: createNotificationRenderer({ notificationTypes }),
         }),
-        inApp: createInAppChannel({ events: notificationEvents }),
       },
       queue,
+    }),
+  );
+
+  const notification = provide('notification', () =>
+    createNotificationService({
+      events: notificationEvents,
+      renderer: createNotificationRenderer({ notificationTypes }),
+      outbox: notificationOutbox,
     }),
   );
 
@@ -163,6 +168,7 @@ export function createAppRuntime(
     emailTransport,
     notification,
     notificationEvents,
+    notificationOutbox,
     pubsub,
     queue,
     redis,

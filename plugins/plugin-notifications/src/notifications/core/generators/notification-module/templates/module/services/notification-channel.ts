@@ -7,13 +7,7 @@ export interface ChannelDelivery {
   recipientId: string;
   /** Today always one; a future digest can deliver several as one call. */
   notifications: RenderSource[];
-  /** Unseen count after this delivery, computed once for the whole chunk. */
-  unseenCount: number;
-  /**
-   * Contact details read at delivery time, so an address changed since enqueue
-   * is respected. Passed in because the user model is app-configurable —
-   * channels cannot query it themselves.
-   */
+  /** Contact details, resolved by the service. */
   recipient: { email: string | null };
   actor: { name: string | null } | null;
 }
@@ -24,13 +18,16 @@ export interface NotificationChannel {
   deliver(delivery: ChannelDelivery): void | Promise<void>;
 }
 
-/**
- * The installed delivery channels. Keys are spelled out so an unknown channel
- * is a compile error, not a runtime miss. Assembled in the composition root.
- */
+/** The installed delivery channels, assembled in the composition root. */
 export interface NotificationChannels {
   TPL_CHANNEL_ENTRIES;
 }
 
 /** A valid channel key. */
 export type NotificationChannelKey = keyof NotificationChannels;
+
+/**
+ * Where a notification type may be routed. `'inApp'` is a flag on the row plus
+ * an inline publish, and has no {@link NotificationChannel} implementation.
+ */
+export type NotificationRoutingTarget = NotificationChannelKey | 'inApp';

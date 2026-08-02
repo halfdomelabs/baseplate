@@ -1,7 +1,7 @@
 import { builder } from '@src/plugins/graphql/builder.js';
 import { prisma } from '@src/services/prisma.js';
 
-import { notificationFeedItemObjectType } from './notification-feed-item.object-type.js';
+import { notificationObjectType } from './notification.object-type.js';
 
 /**
  * Mark a notification read (and therefore seen). Returns the updated notification
@@ -15,7 +15,7 @@ builder.mutationField('markNotificationRead', (t) =>
     payload: {
       changed: t.payload.field({ type: 'Boolean' }),
       notification: t.payload.field({
-        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationFeedItemObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
+        type: /* TPL_NOTIFICATION_OBJECT_TYPE:START */ notificationObjectType /* TPL_NOTIFICATION_OBJECT_TYPE:END */,
         nullable: true,
       }),
       unseenCount: t.payload.field({ type: 'Int' }),
@@ -24,7 +24,7 @@ builder.mutationField('markNotificationRead', (t) =>
       const userId = context.auth.userIdOrThrow();
       const { changed, unseenCount } =
         await context.services.notification.markAsRead(userId, input.id);
-      const notification = await prisma.notificationFeedItem.findFirst({
+      const notification = await prisma.notification.findFirst({
         where: { id: input.id, recipientId: userId },
       });
       return { changed, notification, unseenCount };
@@ -58,7 +58,14 @@ builder.mutationField('markAllNotificationsRead', (t) =>
   }),
 );
 
-/** Delete a notification. `deletedId` is null when the id didn't exist. */
+/**
+ * Clear a notification from the feed. `deletedId` is null when the id didn't
+ * exist or was already cleared.
+ *
+ * The row is soft-deleted, so any email it owes still goes out — clearing the
+ * in-app copy is not a cancellation. The mutation keeps its name because that
+ * is what the action is from the client's side.
+ */
 builder.mutationField('deleteNotification', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
@@ -69,7 +76,7 @@ builder.mutationField('deleteNotification', (t) =>
     },
     resolve: async (_root, { input }, context) => {
       const { changed, unseenCount } =
-        await context.services.notification.delete(
+        await context.services.notification.dismiss(
           context.auth.userIdOrThrow(),
           input.id,
         );

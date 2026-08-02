@@ -2,11 +2,7 @@
 
 import { defineQueue } from '%queuesImports';
 
-/**
- * Drives the outbox sweep. Separate from the delivery queue because repeatable
- * scheduling and deduplication are fixed at queue creation and are mutually
- * exclusive.
- */
+/** Drives the outbox sweep on a schedule. */
 export const notificationOutboxSweepQueue = defineQueue<undefined>(
   'notification-outbox-sweep',
 );

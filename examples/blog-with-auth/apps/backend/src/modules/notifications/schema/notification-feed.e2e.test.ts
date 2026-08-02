@@ -73,12 +73,18 @@ async function fetchFeed(
   return body.data.notificationFeed;
 }
 
-async function createNotification(recipientId: string): Promise<string> {
-  const row = await prisma.notificationFeedItem.create({
+async function createNotification(
+  recipientId: string,
+  overrides: { inApp?: boolean; dismissedAt?: Date } = {},
+): Promise<string> {
+  const row = await prisma.notification.create({
     data: {
       type: 'generic',
       templateVersion: 1,
       recipientId,
+      // Rows exist for every channel; only in-app ones reach the feed.
+      inApp: overrides.inApp ?? true,
+      dismissedAt: overrides.dismissedAt ?? null,
       params: { text: 'hi' },
       segments: [{ type: 'text', value: 'hi' }],
       fallbackText: 'hi',
@@ -93,7 +99,7 @@ describe('notificationFeed', () => {
   let fastify: FastifyInstance;
 
   beforeEach(async () => {
-    await prisma.notificationFeedItem.deleteMany();
+    await prisma.notification.deleteMany();
     await prisma.user.deleteMany();
     const user = await prisma.user.create({
       data: { email: 'feed@example.com' },
@@ -151,5 +157,20 @@ describe('notificationFeed', () => {
 
     expect(feed.totalCount).toBe(1);
     expect(feed.edges.map((e) => e.node.id)).toEqual([mine]);
+  });
+
+  it('hides rows that are not in-app or have been dismissed', async () => {
+    // Rows are written for every channel, so the feed is a filter over the
+    // table. `totalCount` is asserted alongside the edges because it is a
+    // separate query — a filter applied to one and not the other would show a
+    // count the page can never reach.
+    const visible = await createNotification(userId);
+    await createNotification(userId, { inApp: false });
+    await createNotification(userId, { dismissedAt: new Date() });
+
+    const feed = await fetchFeed(fastify, { first: 10 });
+
+    expect(feed.totalCount).toBe(1);
+    expect(feed.edges.map((e) => e.node.id)).toEqual([visible]);
   });
 });

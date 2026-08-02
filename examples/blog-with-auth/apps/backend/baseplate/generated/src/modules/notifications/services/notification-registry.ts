@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { NotificationChannelKey } from './notification-channel.js';
+import type { NotificationRoutingTarget } from './notification-channel.js';
 import type {
   NotificationContent,
   NotificationParams,
@@ -40,8 +40,8 @@ export interface NotificationTypeDefinition<
   version: number;
   /** Validates stored params before render; failure falls back to the snapshot. */
   paramsSchema: z.ZodType<P>;
-  /** Eligible delivery channels, checked against the static channel dictionary. */
-  channels: readonly NotificationChannelKey[];
+  /** Routing targets for this type. */
+  channels: readonly NotificationRoutingTarget[];
   /**
    * Render content from a batch of events, in `ctx.locale`.
    *

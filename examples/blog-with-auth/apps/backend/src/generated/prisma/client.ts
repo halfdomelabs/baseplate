@@ -72,15 +72,15 @@ export type BlogUser = Prisma.BlogUserModel
  */
 export type BlogUserNote = Prisma.BlogUserNoteModel
 /**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
  * Model NotificationDelivery
  * 
  */
 export type NotificationDelivery = Prisma.NotificationDeliveryModel
-/**
- * Model NotificationFeedItem
- * 
- */
-export type NotificationFeedItem = Prisma.NotificationFeedItemModel
 /**
  * Model NotificationRequest
  * 

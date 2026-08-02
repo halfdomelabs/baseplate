@@ -92,68 +92,72 @@ model BlogUserNote {
   @@map("blog_user_note")
 }
 
-model NotificationDelivery {
-  id           String              @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  requestId    String              @map("request_id") @db.Uuid
-  channel      String
-  chunkIndex   Int                 @default(0) @map("chunk_index")
-  recipientIds Json                @map("recipient_ids")
-  status       String              @default("pending")
-  attempts     Int                 @default(0)
-  lastError    String?             @map("last_error")
-  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt    DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  request      NotificationRequest @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+model Notification {
+  id              String                 @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  type            String
+  templateVersion Int                    @default(1) @map("template_version")
+  recipientId     String                 @map("recipient_id") @db.Uuid
+  requestId       String?                @map("request_id") @db.Uuid
+  inApp           Boolean                @default(false) @map("in_app")
+  segments        Json
+  fallbackText    String                 @map("fallback_text")
+  params          Json?
+  actorKind       String                 @default("none") @map("actor_kind")
+  actorId         String?                @map("actor_id") @db.Uuid
+  actorLabel      String?                @map("actor_label")
+  systemActorKey  String?                @map("system_actor_key")
+  entityType      String?                @map("entity_type")
+  entityId        String?                @map("entity_id")
+  actionUrl       String?                @map("action_url")
+  seenAt          DateTime?              @map("seen_at") @db.Timestamptz(3)
+  readAt          DateTime?              @map("read_at") @db.Timestamptz(3)
+  dismissedAt     DateTime?              @map("dismissed_at") @db.Timestamptz(3)
+  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  actor           User?                  @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  deliveries      NotificationDelivery[]
+  recipient       User                   @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
-  @@unique([requestId, channel, chunkIndex])
+  @@unique([requestId, recipientId])
+  @@index([recipientId, inApp, seenAt])
+  @@index([recipientId, inApp, id])
+  @@map("notification")
+}
+
+model NotificationDelivery {
+  id             String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  requestId      String       @map("request_id") @db.Uuid
+  channel        String
+  status         String       @default("pending")
+  attempts       Int          @default(0)
+  lastError      String?      @map("last_error")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  notificationId String       @map("notification_id") @db.Uuid
+  deliveredAt    DateTime?    @map("delivered_at") @db.Timestamptz(3)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([notificationId, channel])
   @@index([status, createdAt])
   @@map("notification_delivery")
 }
 
-model NotificationFeedItem {
-  id              String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  type            String
-  templateVersion Int       @default(1) @map("template_version")
-  recipientId     String    @map("recipient_id") @db.Uuid
-  requestId       String?   @map("request_id") @db.Uuid
-  segments        Json
-  fallbackText    String    @map("fallback_text")
-  params          Json?
-  actorKind       String    @default("none") @map("actor_kind")
-  actorId         String?   @map("actor_id") @db.Uuid
-  actorLabel      String?   @map("actor_label")
-  systemActorKey  String?   @map("system_actor_key")
-  entityType      String?   @map("entity_type")
-  entityId        String?   @map("entity_id")
-  actionUrl       String?   @map("action_url")
-  seenAt          DateTime? @map("seen_at") @db.Timestamptz(3)
-  readAt          DateTime? @map("read_at") @db.Timestamptz(3)
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  actor           User?     @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
-  recipient       User      @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
-
-  @@unique([requestId, recipientId])
-  @@index([recipientId, readAt])
-  @@index([recipientId, id])
-  @@map("notification_feed_item")
-}
-
 model NotificationRequest {
-  id              String                 @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  id              String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
   type            String
-  templateVersion Int                    @default(1) @map("template_version")
+  templateVersion Int      @default(1) @map("template_version")
   params          Json?
-  idempotencyKey  String?                @unique @map("idempotency_key")
-  actorKind       String                 @default("none") @map("actor_kind")
-  actorId         String?                @map("actor_id") @db.Uuid
-  entityType      String?                @map("entity_type")
-  entityId        String?                @map("entity_id")
-  createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  idempotencyKey  String?  @unique @map("idempotency_key")
+  actorKind       String   @default("none") @map("actor_kind")
+  actorId         String?  @map("actor_id") @db.Uuid
+  entityType      String?  @map("entity_type")
+  entityId        String?  @map("entity_id")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   segments        Json
-  fallbackText    String                 @map("fallback_text")
-  actionUrl       String?                @map("action_url")
-  deliveries      NotificationDelivery[]
+  fallbackText    String   @map("fallback_text")
+  actionUrl       String?  @map("action_url")
+  fanoutStatus    String   @default("pending") @map("fanout_status")
 
+  @@index([fanoutStatus, createdAt])
   @@map("notification_request")
 }
 
@@ -166,20 +170,20 @@ model RateLimiterFlexible {
 }
 
 model User {
-  id                 String                 @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  email              String?                @unique
+  id                 String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  email              String?            @unique
   phone              String?
-  updatedAt          DateTime               @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt          DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
   name               String?
-  emailVerified      Boolean                @default(false) @map("email_verified")
+  emailVerified      Boolean            @default(false) @map("email_verified")
   accounts           UserAccount[]
-  actorNotifications NotificationFeedItem[] @relation("actorNotifications")
+  actorNotifications Notification[]     @relation("actorNotifications")
   authVerifications  AuthVerification[]
   blogPosts          BlogPost[]
   blogs              Blog[]
   blogUsers          BlogUser[]
-  notifications      NotificationFeedItem[] @relation("notifications")
+  notifications      Notification[]     @relation("notifications")
   roles              UserRole[]
   sessions           UserSession[]
 

@@ -7,11 +7,13 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
 /**
  * Builds the partial project definition contributed by the notifications plugin.
  *
- * Three models, three lifetimes. `NotificationFeedItem` is the DURABLE in-app
- * row — content plus seen/read state — holding its own copy of everything it
- * renders from, so it survives its request being pruned.
- * `NotificationRequest` is TRANSIENT dispatch state (the worker's render
- * source), and `NotificationDelivery` tracks one job and dies with it.
+ * `Notification` is the DURABLE per-recipient record, written for every channel
+ * — not just in-app. `inApp` is a routing outcome stamped at fan-out, so the
+ * feed is a filter over this table rather than a table of its own; the row also
+ * gives a future digest somewhere to accumulate aggregation state, which an
+ * in-app-only table could not do for an email-only type.
+ * `NotificationRequest` is TRANSIENT dispatch state, and `NotificationDelivery`
+ * is per-recipient, per-channel delivery state.
  *
  * Render-at-read content model: `params` (render inputs) are the source of truth,
  * re-rendered per request; frozen `segments` + `fallbackText` are the fallback
@@ -27,7 +29,7 @@ export function createNotificationsPartialDefinition(
     features: FeatureUtils.createPartialFeatures(notificationsFeatureName),
     models: [
       {
-        name: NOTIFICATION_MODELS.notificationFeedItem,
+        name: NOTIFICATION_MODELS.notification,
         featureRef: notificationsFeatureName,
         model: {
           fields: [
@@ -59,6 +61,15 @@ export function createNotificationsPartialDefinition(
               name: 'requestId',
               type: 'uuid',
               isOptional: true,
+            },
+            // Routing outcome stamped at fan-out (type config + user prefs):
+            // whether this row appears in the feed. Rows are written for every
+            // channel, so an email-only notification is `false` here and is
+            // filtered out of the feed and the badge.
+            {
+              name: 'inApp',
+              type: 'boolean',
+              options: { default: 'false' },
             },
 
             // Frozen fallback snapshot (see header): the feed renders from
@@ -135,6 +146,15 @@ export function createNotificationsPartialDefinition(
               type: 'dateTime',
               isOptional: true,
             },
+            // Soft delete: the user cleared it from the feed. The row survives
+            // so its deliveries keep their parent — dismissing an in-app copy
+            // does not cancel the email. Retention hard-deletes it later, once
+            // every delivery is terminal.
+            {
+              name: 'dismissedAt',
+              type: 'dateTime',
+              isOptional: true,
+            },
             {
               name: 'createdAt',
               type: 'dateTime',
@@ -143,13 +163,28 @@ export function createNotificationsPartialDefinition(
           ],
           primaryKeyFieldRefs: ['id'],
           // The two hot access paths: the feed (recipient + newest-first) and
-          // the unread count (recipient + unread). Without these both seq-scan.
+          // the badge count (recipient + unseen). Both lead with `inApp`, since
+          // every query filters on it — a partial index WHERE inApp would be
+          // ideal but the schema layer has no `where`, so the column sits in
+          // the key instead and email-only rows cost size, not scans.
           // The feed sorts by `id` alone — a uuidv7 is both time-ordered and
           // unique, so it is a total order on its own, which is what cursor
           // pagination needs.
           indexes: [
-            { fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'id' }] },
-            { fields: [{ fieldRef: 'recipientId' }, { fieldRef: 'readAt' }] },
+            {
+              fields: [
+                { fieldRef: 'recipientId' },
+                { fieldRef: 'inApp' },
+                { fieldRef: 'id' },
+              ],
+            },
+            {
+              fields: [
+                { fieldRef: 'recipientId' },
+                { fieldRef: 'inApp' },
+                { fieldRef: 'seenAt' },
+              ],
+            },
           ],
           // Idempotency layer 2, and the delivery worker's read path. UNIQUE
           // rather than a plain index: it is what makes `createMany`'s
@@ -229,7 +264,7 @@ export function createNotificationsPartialDefinition(
               type: 'json',
               isOptional: true,
             },
-            // The frozen fallback snapshot, same as NotificationFeedItem.segments.
+            // The frozen fallback snapshot, same as Notification.segments.
             {
               name: 'segments',
               type: 'json',
@@ -271,6 +306,15 @@ export function createNotificationsPartialDefinition(
               type: 'string',
               isOptional: true,
             },
+            // pending | done. Flipped once every row and delivery job for this
+            // request has been handed off. The one thing the sweeper watches:
+            // a request still pending past the retry window had its hand-off
+            // interrupted, and re-running it fills the gaps.
+            {
+              name: 'fanoutStatus',
+              type: 'string',
+              options: { default: 'pending' },
+            },
             {
               name: 'createdAt',
               type: 'dateTime',
@@ -280,6 +324,12 @@ export function createNotificationsPartialDefinition(
           primaryKeyFieldRefs: ['id'],
           // Idempotency layer 1: the upsert target.
           uniqueConstraints: [{ fields: [{ fieldRef: 'idempotencyKey' }] }],
+          // The sweeper's scan.
+          indexes: [
+            {
+              fields: [{ fieldRef: 'fanoutStatus' }, { fieldRef: 'createdAt' }],
+            },
+          ],
         },
       },
       {
@@ -292,6 +342,13 @@ export function createNotificationsPartialDefinition(
               type: 'uuid',
               options: { defaultGeneration: 'uuidv7' },
             },
+            // The recipient's row this delivery serves.
+            {
+              name: 'notificationId',
+              type: 'uuid',
+            },
+            // Denormalized from the notification so a request's deliveries can
+            // be found without a join.
             {
               name: 'requestId',
               type: 'uuid',
@@ -300,29 +357,16 @@ export function createNotificationsPartialDefinition(
               name: 'channel',
               type: 'string',
             },
-            // Which slice of the fan-out this row tracks. One row per (channel,
-            // chunk) job, not per channel, so each chunk's delivery state is
-            // tracked and swept independently.
-            {
-              name: 'chunkIndex',
-              type: 'int',
-              options: { default: '0' },
-            },
-            // The recipients this chunk covers, so the sweeper can re-enqueue
-            // exactly the original job rather than re-reading and re-chunking
-            // the entire request.
-            {
-              name: 'recipientIds',
-              type: 'json',
-            },
-            // pending | enqueued | delivered | failed. A plain string with a
-            // default rather than an enum: internal state, and an enum ref
-            // would surface this infrastructure model in the enum catalog.
+            // pending | delivered | failed | skipped. A ledger the queue never
+            // reads: it records what happened, for digests, support questions
+            // and retention. A plain string rather than an enum, which would
+            // surface this infrastructure model in the enum catalog.
             {
               name: 'status',
               type: 'string',
               options: { default: 'pending' },
             },
+            // Bookkeeping only — the queue owns the retry limit.
             {
               name: 'attempts',
               type: 'int',
@@ -331,6 +375,12 @@ export function createNotificationsPartialDefinition(
             {
               name: 'lastError',
               type: 'string',
+              isOptional: true,
+            },
+            // Distinct from `updatedAt`, which also moves on a failed attempt.
+            {
+              name: 'deliveredAt',
+              type: 'dateTime',
               isOptional: true,
             },
             {
@@ -345,27 +395,26 @@ export function createNotificationsPartialDefinition(
             },
           ],
           primaryKeyFieldRefs: ['id'],
-          // One row per enqueued job, so a concurrent replay collides here
-          // instead of double-enqueuing, and each chunk's state is tracked
-          // independently.
+          // One row per recipient per channel, so a concurrent replay collides
+          // here instead of double-enqueuing, and one bounced address fails its
+          // own row rather than a whole chunk.
           uniqueConstraints: [
             {
-              fields: [
-                { fieldRef: 'requestId' },
-                { fieldRef: 'channel' },
-                { fieldRef: 'chunkIndex' },
-              ],
+              fields: [{ fieldRef: 'notificationId' }, { fieldRef: 'channel' }],
             },
           ],
           // The sweeper's scan: stale rows still `pending`.
           indexes: [
             { fields: [{ fieldRef: 'status' }, { fieldRef: 'createdAt' }] },
           ],
+          // Only the notification is a relation. `requestId` stays a plain
+          // denormalized column: the request is transient, so a FK would tie a
+          // durable row's lifetime to it.
           relations: [
             {
-              name: 'request',
-              references: [{ localRef: 'requestId', foreignRef: 'id' }],
-              modelRef: NOTIFICATION_MODELS.notificationRequest,
+              name: 'notification',
+              references: [{ localRef: 'notificationId', foreignRef: 'id' }],
+              modelRef: NOTIFICATION_MODELS.notification,
               foreignRelationName: 'deliveries',
               onDelete: 'Cascade',
               onUpdate: 'Restrict',

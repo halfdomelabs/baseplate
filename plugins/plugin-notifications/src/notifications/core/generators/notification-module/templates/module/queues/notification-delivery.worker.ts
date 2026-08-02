@@ -2,8 +2,14 @@
 
 import type { ServiceContextWith } from '%serviceContextImports';
 
-import { notificationDeliveryQueue } from '$queuesNotificationDelivery';
+import {
+  DELIVERY_EXPIRE_AFTER_MS,
+  notificationDeliveryQueue,
+} from '$queuesNotificationDelivery';
 import { bindQueueHandler } from '%queuesImports';
+
+/** Retry budget for a delivery job; the worker settles leftovers on the last. */
+const DELIVERY_ATTEMPTS = 3;
 
 /**
  * Delivers one chunk of one channel's fan-out. The work lives on the
@@ -12,14 +18,18 @@ import { bindQueueHandler } from '%queuesImports';
 export const notificationDeliveryWorker = bindQueueHandler(
   notificationDeliveryQueue,
   {
-    handler: async (job, ctx: ServiceContextWith<'notification'>) =>
-      ctx.services.notification.deliverChunk(job.data),
+    handler: async (job, ctx: ServiceContextWith<'notificationOutbox'>) =>
+      ctx.services.notificationOutbox.deliverChunk({
+        ...job.data,
+        // Nothing will retry after this, so the worker records the outcome
+        // instead of leaving rows pending forever.
+        isFinalAttempt: job.attemptNumber >= DELIVERY_ATTEMPTS,
+        expireBefore: new Date(Date.now() - DELIVERY_EXPIRE_AFTER_MS),
+      }),
     options: {
-      // Drops a duplicate enqueue while the job is pending or active.
-      deduplication: true,
       defaultJobOptions: {
-        // Capped low: `maxDelaySeconds` is best-effort, so attempts bound the curve.
-        attempts: 5,
+        // `maxDelaySeconds` is best-effort, so attempts bound the curve.
+        attempts: DELIVERY_ATTEMPTS,
         backoff: {
           type: 'exponential',
           delaySeconds: 10,

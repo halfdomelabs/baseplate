@@ -680,6 +680,221 @@
     },
     {
       "featureRef": "notifications",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            { "ref": "id" },
+            { "ref": "type" },
+            { "ref": "entityType" },
+            { "ref": "entityId" },
+            { "ref": "seenAt" },
+            { "ref": "readAt" },
+            { "ref": "createdAt" }
+          ],
+          "localRelations": [{ "ref": "actor" }]
+        }
+      },
+      "id": "model:cvkgEFKeYPRP",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:wYhgAJSgXPZE",
+            "isOptional": false,
+            "name": "id",
+            "options": { "defaultGeneration": "uuidv7" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:EGERCD1_NPr0",
+            "isOptional": false,
+            "name": "type",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5GzDKWmkJ8iB",
+            "isOptional": false,
+            "name": "templateVersion",
+            "options": { "default": "1" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:IrjJTma3AkMr",
+            "isOptional": false,
+            "name": "recipientId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:O6ng6hjKfXbH",
+            "isOptional": true,
+            "name": "requestId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:tQhFu9rMDHak",
+            "isOptional": false,
+            "name": "inApp",
+            "options": { "default": "false" },
+            "type": "boolean"
+          },
+          {
+            "id": "model-scalar-field:AgKCMj6lv0P0",
+            "isOptional": false,
+            "name": "segments",
+            "options": {},
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:HVd1HOdwIm6z",
+            "isOptional": false,
+            "name": "fallbackText",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:pvklBj1i7oLL",
+            "isOptional": true,
+            "name": "params",
+            "options": {},
+            "type": "json"
+          },
+          {
+            "id": "model-scalar-field:UFM0kwRqZ154",
+            "isOptional": false,
+            "name": "actorKind",
+            "options": { "default": "none" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:pozZTuC2zy4h",
+            "isOptional": true,
+            "name": "actorId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:Uc1SBv9l_cON",
+            "isOptional": true,
+            "name": "actorLabel",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:NLIPFdYc2_sa",
+            "isOptional": true,
+            "name": "systemActorKey",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:EEWngWghmVqq",
+            "isOptional": true,
+            "name": "entityType",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:AbKysuvpNbzV",
+            "isOptional": true,
+            "name": "entityId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:7NEEPFkucCLe",
+            "isOptional": true,
+            "name": "actionUrl",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:kNtg8f3YNfMI",
+            "isOptional": true,
+            "name": "seenAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:Xp19DCiSf6FO",
+            "isOptional": true,
+            "name": "readAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:lPJtt2cEk3j1",
+            "isOptional": true,
+            "name": "dismissedAt",
+            "options": {},
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:z9x4MFHWgf6P",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "inApp" },
+              { "fieldRef": "id" }
+            ],
+            "id": "model-index:LOfHRrzcbTPc"
+          },
+          {
+            "fields": [
+              { "fieldRef": "recipientId" },
+              { "fieldRef": "inApp" },
+              { "fieldRef": "seenAt" }
+            ],
+            "id": "model-index:s2i28pu9v3vh"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:c0eYKlssrTn5",
+            "foreignRelationName": "notifications",
+            "id": "model-local-relation:YUhr8Gv2ICwA",
+            "modelRef": "User",
+            "name": "recipient",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:apiU1BBs1JBx",
+            "foreignRelationName": "actorNotifications",
+            "id": "model-local-relation:FBTJYfdrMUPR",
+            "modelRef": "User",
+            "name": "actor",
+            "onDelete": "SetNull",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [
+              { "fieldRef": "requestId" },
+              { "fieldRef": "recipientId" }
+            ],
+            "id": "model-unique-constraint:2EbwsuGcULVN"
+          }
+        ]
+      },
+      "name": "Notification",
+      "service": { "transformers": [] }
+    },
+    {
+      "featureRef": "notifications",
       "id": "model:vuDnCqRQ4IxW",
       "model": {
         "fields": [
@@ -703,20 +918,6 @@
             "name": "channel",
             "options": { "default": "" },
             "type": "string"
-          },
-          {
-            "id": "model-scalar-field:vfBrz1i2Eez3",
-            "isOptional": false,
-            "name": "chunkIndex",
-            "options": { "default": "0" },
-            "type": "int"
-          },
-          {
-            "id": "model-scalar-field:ld2SRs6FAFUY",
-            "isOptional": false,
-            "name": "recipientIds",
-            "options": {},
-            "type": "json"
           },
           {
             "id": "model-scalar-field:QltxRt33KLfR",
@@ -752,6 +953,20 @@
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:Hu3a3EEgUzDa",
+            "isOptional": false,
+            "name": "notificationId",
+            "options": { "defaultGeneration": "none" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:FwkXtPrxlw2h",
+            "isOptional": true,
+            "name": "deliveredAt",
+            "options": {},
+            "type": "dateTime"
           }
         ],
         "indexes": [
@@ -763,221 +978,27 @@
         "primaryKeyFieldRefs": ["id"],
         "relations": [
           {
-            "foreignId": "model-foreign-relation:JNdwNLBarRHC",
+            "foreignId": "model-foreign-relation:qLeSqIUv_yP1",
             "foreignRelationName": "deliveries",
-            "id": "model-local-relation:_zpwQQtN2hvC",
-            "modelRef": "NotificationRequest",
-            "name": "request",
+            "id": "model-local-relation:pnynzOkYpued",
+            "modelRef": "Notification",
+            "name": "notification",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreignRef": "id", "localRef": "requestId" }]
+            "references": [{ "foreignRef": "id", "localRef": "notificationId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [
-              { "fieldRef": "requestId" },
-              { "fieldRef": "channel" },
-              { "fieldRef": "chunkIndex" }
+              { "fieldRef": "notificationId" },
+              { "fieldRef": "channel" }
             ],
-            "id": "model-unique-constraint:y0585wXjzgO2"
+            "id": "model-unique-constraint:StmCMZD0UQBh"
           }
         ]
       },
       "name": "NotificationDelivery",
-      "service": { "transformers": [] }
-    },
-    {
-      "featureRef": "notifications",
-      "graphql": {
-        "objectType": {
-          "enabled": true,
-          "fields": [
-            { "ref": "id" },
-            { "ref": "type" },
-            { "ref": "entityType" },
-            { "ref": "entityId" },
-            { "ref": "seenAt" },
-            { "ref": "readAt" },
-            { "ref": "createdAt" }
-          ],
-          "localRelations": [{ "ref": "actor" }]
-        }
-      },
-      "id": "model:gEHJbrmEfvCY",
-      "model": {
-        "fields": [
-          {
-            "id": "model-scalar-field:aeGHvtVQakxJ",
-            "isOptional": false,
-            "name": "id",
-            "options": { "defaultGeneration": "uuidv7" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:4Bsed8ytMBrE",
-            "isOptional": false,
-            "name": "type",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:am6qdQNKpQaE",
-            "isOptional": false,
-            "name": "templateVersion",
-            "options": { "default": "1" },
-            "type": "int"
-          },
-          {
-            "id": "model-scalar-field:uH4anfflJNfv",
-            "isOptional": false,
-            "name": "recipientId",
-            "options": { "defaultGeneration": "none" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:vwBzRfK2K6z9",
-            "isOptional": true,
-            "name": "requestId",
-            "options": { "defaultGeneration": "none" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:sG4rdseRdLhj",
-            "isOptional": false,
-            "name": "segments",
-            "options": {},
-            "type": "json"
-          },
-          {
-            "id": "model-scalar-field:5JSTb49aiipJ",
-            "isOptional": false,
-            "name": "fallbackText",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:OG3Y8FOKPhnq",
-            "isOptional": true,
-            "name": "params",
-            "options": {},
-            "type": "json"
-          },
-          {
-            "id": "model-scalar-field:RbmKyjCGAkWX",
-            "isOptional": false,
-            "name": "actorKind",
-            "options": { "default": "none" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:c5PAZ7vvkxWT",
-            "isOptional": true,
-            "name": "actorId",
-            "options": { "defaultGeneration": "none" },
-            "type": "uuid"
-          },
-          {
-            "id": "model-scalar-field:HD7j3BN14Ftq",
-            "isOptional": true,
-            "name": "actorLabel",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:b9xf8sJTaPK5",
-            "isOptional": true,
-            "name": "systemActorKey",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:FZMJcULPjBFg",
-            "isOptional": true,
-            "name": "entityType",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:PEeEGn9z5t0W",
-            "isOptional": true,
-            "name": "entityId",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:kfl9N5Bnz5qh",
-            "isOptional": true,
-            "name": "actionUrl",
-            "options": { "default": "" },
-            "type": "string"
-          },
-          {
-            "id": "model-scalar-field:wcG5KTxy_F_Q",
-            "isOptional": true,
-            "name": "seenAt",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:Bgp4OT__oFTw",
-            "isOptional": true,
-            "name": "readAt",
-            "options": {},
-            "type": "dateTime"
-          },
-          {
-            "id": "model-scalar-field:SdFMZqm5FZYQ",
-            "isOptional": false,
-            "name": "createdAt",
-            "options": { "defaultToNow": true },
-            "type": "dateTime"
-          }
-        ],
-        "indexes": [
-          {
-            "fields": [{ "fieldRef": "recipientId" }, { "fieldRef": "id" }],
-            "id": "model-index:SPi5yWYG7lbO"
-          },
-          {
-            "fields": [{ "fieldRef": "recipientId" }, { "fieldRef": "readAt" }],
-            "id": "model-index:TjvmAd9VbHS7"
-          }
-        ],
-        "primaryKeyFieldRefs": ["id"],
-        "relations": [
-          {
-            "foreignId": "model-foreign-relation:5bLRlSOniYrj",
-            "foreignRelationName": "notifications",
-            "id": "model-local-relation:hZfVlVEm6jtG",
-            "modelRef": "User",
-            "name": "recipient",
-            "onDelete": "Cascade",
-            "onUpdate": "Restrict",
-            "references": [{ "foreignRef": "id", "localRef": "recipientId" }]
-          },
-          {
-            "foreignId": "model-foreign-relation:GJjfeZ7KaYWy",
-            "foreignRelationName": "actorNotifications",
-            "id": "model-local-relation:JRpXuoeWvsNR",
-            "modelRef": "User",
-            "name": "actor",
-            "onDelete": "SetNull",
-            "onUpdate": "Restrict",
-            "references": [{ "foreignRef": "id", "localRef": "actorId" }]
-          }
-        ],
-        "uniqueConstraints": [
-          {
-            "fields": [
-              { "fieldRef": "requestId" },
-              { "fieldRef": "recipientId" }
-            ],
-            "id": "model-unique-constraint:3S2OgAFyFjVZ"
-          }
-        ]
-      },
-      "name": "NotificationFeedItem",
       "service": { "transformers": [] }
     },
     {
@@ -1075,6 +1096,22 @@
             "name": "actionUrl",
             "options": { "default": "" },
             "type": "string"
+          },
+          {
+            "id": "model-scalar-field:syW_IDebLE_G",
+            "isOptional": false,
+            "name": "fanoutStatus",
+            "options": { "default": "pending" },
+            "type": "string"
+          }
+        ],
+        "indexes": [
+          {
+            "fields": [
+              { "fieldRef": "fanoutStatus" },
+              { "fieldRef": "createdAt" }
+            ],
+            "id": "model-index:xORdaZkIz0Is"
           }
         ],
         "primaryKeyFieldRefs": ["id"],

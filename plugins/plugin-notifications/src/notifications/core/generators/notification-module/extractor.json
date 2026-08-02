@@ -63,6 +63,10 @@
       "fileOptions": { "kind": "singleton" },
       "group": "queues",
       "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
         "queuesImportsProvider": {
           "importName": "queuesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
@@ -76,7 +80,10 @@
       "projectExports": {
         "notificationOutboxSweepWorker": { "isTypeOnly": false }
       },
-      "referencedGeneratorTemplates": ["queues-notification-outbox-sweep"],
+      "referencedGeneratorTemplates": [
+        "queues-notification-delivery",
+        "queues-notification-outbox-sweep"
+      ],
       "sourceFile": "module/queues/notification-outbox-sweep.worker.ts",
       "variables": {}
     },
@@ -121,6 +128,10 @@
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        },
+        "prismaGeneratedImportsProvider": {
+          "importName": "prismaGeneratedImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/_providers/prisma-generated-imports.ts"
         },
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
@@ -190,19 +201,6 @@
       "sourceFile": "module/services/generic-type.ts",
       "variables": {}
     },
-    "services-in-app-channel": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/services/in-app-channel.ts",
-      "referencedGeneratorTemplates": [
-        "services-notification-channel",
-        "services-notification-events"
-      ],
-      "sourceFile": "module/services/in-app-channel.ts",
-      "variables": {}
-    },
     "services-notification-channel": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -239,6 +237,33 @@
       },
       "sourceFile": "module/services/notification-events.ts",
       "variables": {}
+    },
+    "services-notification-outbox": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/notification-outbox.ts",
+      "referencedGeneratorTemplates": [
+        "queues-notification-delivery",
+        "services-notification-channel",
+        "services-notification-renderer"
+      ],
+      "sourceFile": "module/services/notification-outbox.ts",
+      "variables": { "TPL_USER_DELEGATE": {} }
     },
     "services-notification-registry": {
       "type": "ts",
@@ -306,24 +331,20 @@
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
-        },
-        "queuesImportsProvider": {
-          "importName": "queuesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/services/notification.service.ts",
       "referencedGeneratorTemplates": [
-        "queues-notification-delivery",
         "services-generic-type",
         "services-notification-channel",
         "services-notification-content",
         "services-notification-events",
+        "services-notification-outbox",
         "services-notification-registry",
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/notification.service.ts",
-      "variables": { "TPL_USER_DELEGATE": {} }
+      "variables": {}
     }
   }
 }

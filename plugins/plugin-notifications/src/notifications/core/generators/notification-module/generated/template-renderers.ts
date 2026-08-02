@@ -124,6 +124,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                   NOTIFICATIONS_CORE_NOTIFICATION_MODULE_TEMPLATES.queuesGroup,
                 paths,
                 importMapProviders: {
+                  errorHandlerServiceImports,
                   queuesImports,
                   serviceContextImports,
                 },
@@ -139,6 +140,7 @@ const notificationsCoreNotificationModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   pothosImports,
+                  prismaGeneratedImports,
                   prismaImports,
                 },
                 generatorPaths: paths,

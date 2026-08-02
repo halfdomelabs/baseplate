@@ -1,19 +1,18 @@
+import { chunk } from 'es-toolkit';
+
 import type { Prisma } from '@src/generated/prisma/client.js';
-import type { QueueService } from '@src/types/queue.types.js';
 
 import { logError } from '@src/services/error-logger.js';
 import { prisma } from '@src/services/prisma.js';
 
-import type {
-  NotificationChannelKey,
-  NotificationChannels,
-} from './notification-channel.js';
+import type { NotificationChannelKey } from './notification-channel.js';
 import type {
   NotificationParams,
   RenderContext,
   RenderedContent,
 } from './notification-content.js';
 import type { NotificationEvents } from './notification-events.js';
+import type { NotificationOutbox } from './notification-outbox.js';
 import type {
   NotificationEvent,
   NotificationTypeDefinition,
@@ -23,74 +22,40 @@ import type {
   RenderSource,
 } from './notification-renderer.js';
 
-import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 
-/** Recipients per delivery job, so a large fan-out is many bounded jobs. */
-const DELIVERY_CHUNK_SIZE = 100;
+/**
+ * Rows per insert. Bounds every statement in the fan-out, so a large audience
+ * is many bounded writes rather than one that grows without limit.
+ */
+const WRITE_CHUNK_SIZE = 500;
+
+/** Recipients per badge-publish batch. */
+const PUBLISH_CHUNK_SIZE = 100;
 
 /**
- * Render inputs held on the dispatch request, including the frozen snapshot —
- * so delivery has the same retired-renderer fallback the feed has.
+ * Every batch runs inside one interactive transaction, so this timeout — not
+ * the batch size — is what caps the audience. Prisma's 5s default would fail a
+ * merely large fan-out. Past a few thousand recipients use a fan-out worker
+ * rather than raising this: a long transaction holds a pooled connection.
  */
-const REQUEST_RENDER_SOURCE_SELECT = {
-  type: true,
-  templateVersion: true,
-  params: true,
-  segments: true,
-  fallbackText: true,
-  actionUrl: true,
-  actorId: true,
-  entityType: true,
-  entityId: true,
-} satisfies Prisma.NotificationRequestSelect;
+const FANOUT_TRANSACTION_OPTIONS = { timeout: 30_000 };
 
-/** Contact details for a chunk's recipients, keyed by id. */
-async function resolveRecipients(
-  recipientIds: string[],
-): Promise<Map<string, { email: string | null }>> {
-  const users =
-    await /* TPL_USER_DELEGATE:START */ prisma.user /* TPL_USER_DELEGATE:END */
-      .findMany({
-        where: { id: { in: recipientIds } },
-        select: { id: true, email: true },
-      });
-  return new Map(users.map((user) => [user.id, { email: user.email }]));
-}
-
-/** The actor's presentation fields, read live so a rename is reflected. */
-async function resolveActor(
-  actorId: string,
-): Promise<{ name: string | null } | null> {
-  return /* TPL_USER_DELEGATE:START */ prisma.user /* TPL_USER_DELEGATE:END */
-    .findUnique({
-      where: { id: actorId },
-      select: { name: true },
-    });
-}
-
-/**
- * Unseen counts for a whole chunk in one query. Zero-count groups are omitted,
- * so a recipient with nothing unseen is absent and reads as 0.
- */
+/** Unseen counts for a chunk. A recipient with none is absent from the map. */
 async function countUnseenFor(
   recipientIds: string[],
 ): Promise<Map<string, number>> {
-  const groups = await prisma.notificationFeedItem.groupBy({
+  const groups = await prisma.notification.groupBy({
     by: ['recipientId'],
-    where: { recipientId: { in: recipientIds }, seenAt: null },
+    where: {
+      recipientId: { in: recipientIds },
+      inApp: true,
+      dismissedAt: null,
+      seenAt: null,
+    },
     _count: { _all: true },
   });
   return new Map(groups.map((group) => [group.recipientId, group._count._all]));
-}
-
-/** Splits recipients into the slices each delivery job covers. */
-function chunkRecipients(recipientIds: string[]): string[][] {
-  const chunks: string[][] = [];
-  for (let i = 0; i < recipientIds.length; i += DELIVERY_CHUNK_SIZE) {
-    chunks.push(recipientIds.slice(i, i + DELIVERY_CHUNK_SIZE));
-  }
-  return chunks;
 }
 
 /** Actor columns from the input (human actors; live name/avatar via the relation). */
@@ -134,36 +99,8 @@ export interface NotifyResult {
 
 /** Result of a fan-out. */
 export interface NotifyManyResult extends NotifyResult {
-  /** Feed rows written. Zero on a replay, or when in-app is not installed. */
+  /** Rows written, across all channels. Zero on a replay. */
   createdCount: number;
-}
-
-/** One chunk of one channel's fan-out, as handed to the delivery worker. */
-export interface DeliverChunkInput {
-  requestId: string;
-  channel: string;
-  /** Which slice of the fan-out — identifies the delivery row to settle. */
-  chunkIndex: number;
-  recipientIds: string[];
-}
-
-export interface DeliverChunkResult {
-  /** Recipients delivered to. */
-  delivered: number;
-  /** Recipients in the chunk with no matching row (deleted since enqueue). */
-  skipped: number;
-}
-
-/** Bounds one outbox sweep. */
-export interface SweepStaleDeliveriesInput {
-  /**
-   * Only deliveries created before this are considered. Must be older than the
-   * delivery queue's retry window, so a job that is merely retrying is not
-   * mistaken for one that was lost.
-   */
-  staleBefore: Date;
-  /** Deliveries re-driven per run. */
-  limit: number;
 }
 
 /** Options for the `notifyText` one-off sugar. */
@@ -195,27 +132,27 @@ export interface NotificationService {
    * Trigger a notification. Takes the definition itself, so `params` are
    * checked against the renderer that will consume them.
    *
-   * Returns the dispatch handle, not a row: what the caller triggered is a
-   * notification, and which rows that produces depends on the installed
-   * channels (with in-app off there is no feed row at all).
+   * Returns the dispatch handle rather than a row: a notification is one
+   * request that may materialize a row per recipient across several channels.
    */
   notify<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
     input: NotifyInput<P>,
   ): Promise<NotifyResult>;
   /**
-   * Trigger one notification for many recipients: a single outbox request plus
-   * the inbox rows, with delivery handed to the queue in chunks, so caller
-   * latency is flat regardless of audience size.
+   * Trigger one notification for many recipients: a single request plus a row
+   * per recipient, with outbound delivery handed to the queue in chunks.
+   *
+   * Fan-out is inline: the whole audience lands in one transaction, in bounded
+   * batches. The batches bound each statement, not the transaction, so caller
+   * latency and {@link FANOUT_TRANSACTION_OPTIONS} are what cap the audience —
+   * past a few thousand recipients this wants a fan-out worker. The idempotency
+   * key and `@@unique(requestId, recipientId)` already make that rerun-safe.
    */
   notifyMany<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
     input: NotifyManyInput<P>,
   ): Promise<NotifyManyResult>;
-  /** Deliver one chunk of one channel's fan-out. Called by the delivery worker. */
-  deliverChunk(input: DeliverChunkInput): Promise<DeliverChunkResult>;
-  /** Re-drive deliveries stuck `pending`. Called by the sweep worker. */
-  sweepStaleDeliveries(input: SweepStaleDeliveriesInput): Promise<number>;
   /**
    * Send a plain-text notification without defining a type, via the built-in
    * `generic` type. For one-off notifications ("Your export is ready").
@@ -250,15 +187,23 @@ export interface NotificationService {
   markAllAsSeen(userId: string): Promise<MarkNotificationsResult>;
   /** Mark all of a user's notifications read (and therefore seen). */
   markAllAsRead(userId: string): Promise<MarkNotificationsResult>;
-  /** Delete a notification. `changed` is false if it didn't exist. */
-  delete(userId: string, notificationId: string): Promise<UnseenCountResult>;
+  /**
+   * Soft-delete from the feed. Does not cancel pending deliveries. `changed`
+   * is false if it didn't exist or was already dismissed.
+   */
+  dismiss(userId: string, notificationId: string): Promise<UnseenCountResult>;
   /** Subscribe to real-time unseen-count changes for a user. */
   subscribeToChanges(userId: string): AsyncIterable<{ count: number }>;
 }
 
 async function getUnseenCount(userId: string): Promise<number> {
-  return prisma.notificationFeedItem.count({
-    where: { recipientId: userId, seenAt: null },
+  return prisma.notification.count({
+    where: {
+      recipientId: userId,
+      inApp: true,
+      dismissedAt: null,
+      seenAt: null,
+    },
   });
 }
 
@@ -270,26 +215,25 @@ async function getUnseenCount(userId: string): Promise<number> {
 export function createNotificationService(deps: {
   events: NotificationEvents;
   renderer: NotificationRenderer;
-  channels: NotificationChannels;
-  queue: QueueService;
+  outbox: NotificationOutbox;
 }): NotificationService {
-  const { events, renderer, channels, queue } = deps;
-
-  /** Narrows untrusted job data (`DeliverChunkInput.channel`) to an installed key. */
-  function isChannelKey(channel: string): channel is NotificationChannelKey {
-    return channel in channels;
-  }
+  const { events, renderer, outbox } = deps;
 
   /**
-   * The type's channels narrowed to those installed. The preference seam:
-   * per-user opt-outs slot in here (default-allow today), so client input can
-   * never widen the set.
+   * How a type reaches one recipient, split by mechanism: in-app is a flag on
+   * the row plus an inline publish, outbound channels are queued jobs.
+   *
+   * The preference seam: per-user opt-outs slot in here (default-allow today),
+   * so client input can never widen the set.
    */
-  function resolveEffectiveChannels(
+  function resolveRouting(
     _recipientId: string,
     type: NotificationTypeDefinition,
-  ): NotificationChannelKey[] {
-    return type.channels.filter(isChannelKey);
+  ): { inApp: boolean; outbound: NotificationChannelKey[] } {
+    return {
+      inApp: type.channels.includes('inApp'),
+      outbound: outbox.installedChannels(type.channels),
+    };
   }
 
   /** Recompute, broadcast the change, and return the unseen count for a user. */
@@ -300,67 +244,22 @@ export function createNotificationService(deps: {
   }
 
   /**
-   * Hand every `pending` delivery of a request to the queue and mark it
-   * `enqueued`.
+   * Broadcast new badge counts for a fan-out's in-app recipients.
    *
-   * Runs after the transaction commits, since the queue cannot join it. A
-   * failed enqueue leaves the row `pending` for the sweeper rather than
-   * rolling back a notification that was really written.
+   * Never throws: a failed publish costs a stale badge, not a lost row.
    */
-  async function enqueuePendingDeliveries(requestId: string): Promise<number> {
-    const pending = await prisma.notificationDelivery.findMany({
-      where: { requestId, status: 'pending' },
-      select: {
-        id: true,
-        channel: true,
-        chunkIndex: true,
-        recipientIds: true,
-      },
-    });
-
-    let enqueued = 0;
-    for (const delivery of pending) {
-      // Claim atomically: only one concurrent sweep sees a row change.
-      const { count } = await prisma.notificationDelivery.updateMany({
-        where: { id: delivery.id, status: 'pending' },
-        data: { status: 'enqueued' },
-      });
-      if (count === 0) continue;
-
-      try {
-        await queue.enqueue(
-          notificationDeliveryQueue,
-          {
-            requestId,
-            channel: delivery.channel,
-            chunkIndex: delivery.chunkIndex,
-            recipientIds: delivery.recipientIds as string[],
-          },
-          {
-            // Drops a duplicate enqueue while the job is pending or active.
-            singletonKey: `${requestId}:${delivery.channel}:${delivery.chunkIndex}`,
-          },
-        );
-        enqueued += 1;
-      } catch (error) {
-        // Release the claim so the sweeper retries it.
-        logError(error, {
-          source: 'notification-delivery-enqueue',
-          channel: delivery.channel,
-          requestId,
-        });
-        await prisma.notificationDelivery.update({
-          where: { id: delivery.id },
-          data: {
-            status: 'pending',
-            attempts: { increment: 1 },
-            lastError: error instanceof Error ? error.message : String(error),
-          },
-        });
+  async function publishUnseenCounts(recipientIds: string[]): Promise<void> {
+    if (recipientIds.length === 0) return;
+    try {
+      for (const batch of chunk(recipientIds, PUBLISH_CHUNK_SIZE)) {
+        const counts = await countUnseenFor(batch);
+        for (const recipientId of batch) {
+          events.publishUnseenCount(recipientId, counts.get(recipientId) ?? 0);
+        }
       }
+    } catch (error) {
+      logError(error, { source: 'notification-unseen-publish' });
     }
-
-    return enqueued;
   }
 
   async function notifyMany<P extends NotificationParams>(
@@ -381,12 +280,17 @@ export function createNotificationService(deps: {
 
     // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
-    const effectiveChannels = recipientIds.flatMap((recipientId) =>
-      resolveEffectiveChannels(recipientId, type),
+    // Per recipient, not unioned across them: once preferences land, two people
+    // can resolve to different channels for the same notification.
+    const routingByRecipient = new Map(
+      recipientIds.map((recipientId) => [
+        recipientId,
+        resolveRouting(recipientId, type),
+      ]),
     );
-    const channelKeys = [...new Set(effectiveChannels)];
 
-    const requestData = {
+    // Copied onto every row, so the request and its rows cannot disagree.
+    const contentColumns = {
       type: type.key,
       templateVersion: type.version,
       params: params as Prisma.InputJsonValue,
@@ -398,58 +302,96 @@ export function createNotificationService(deps: {
       entityId: input.entityId ?? null,
     };
 
-    // The request, its inbox rows, and what delivery is owed land together.
-    const { requestId, createdCount } = await prisma.$transaction(
-      async (tx) => {
+    // The request, every recipient's row, and every delivery to make land
+    // together.
+    const { requestId, createdCount, inAppRecipientIds } =
+      await prisma.$transaction(async (tx) => {
         const request = input.idempotencyKey
           ? await tx.notificationRequest.upsert({
               where: { idempotencyKey: input.idempotencyKey },
               // A replay resolves to the existing request and writes no rows.
               update: {},
-              create: { ...requestData, idempotencyKey: input.idempotencyKey },
+              create: {
+                ...contentColumns,
+                idempotencyKey: input.idempotencyKey,
+              },
             })
-          : await tx.notificationRequest.create({ data: requestData });
+          : await tx.notificationRequest.create({ data: contentColumns });
 
-        // Only when in-app is an effective channel: with it off, there is
-        // nothing to show in the feed.
-        const { count } = channelKeys.includes('inApp')
-          ? await tx.notificationFeedItem.createMany({
-              data: recipientIds.map((recipientId) => ({
-                requestId: request.id,
-                type: type.key,
-                templateVersion: type.version,
-                recipientId,
-                params: params as Prisma.InputJsonValue,
-                segments: frozen.segments,
-                fallbackText: frozen.fallbackText,
-                actionUrl: frozen.actionUrl,
-                ...actorColumns(input.actorId),
-                entityType: input.entityType ?? null,
-                entityId: input.entityId ?? null,
-              })),
-              // A concurrent replay must short-circuit, not raise P2002.
-              skipDuplicates: true,
-            })
-          : { count: 0 };
+        // One row per recipient regardless of channel — an email-only
+        // notification still gets one, with `inApp: false`. Chunked so no
+        // single statement grows with the audience.
+        let count = 0;
+        for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
+          const created = await tx.notification.createMany({
+            data: batch.map((recipientId) => ({
+              ...contentColumns,
+              requestId: request.id,
+              recipientId,
+              inApp: routingByRecipient.get(recipientId)?.inApp ?? false,
+            })),
+            // A concurrent replay must short-circuit, not raise P2002.
+            skipDuplicates: true,
+          });
+          count += created.count;
+        }
 
-        // One row per (channel, chunk) so each job settles independently.
-        await tx.notificationDelivery.createMany({
-          data: channelKeys.flatMap((channel) =>
-            chunkRecipients(recipientIds).map((chunk, chunkIndex) => ({
+        // Read back, not derived from the write: `createManyAndReturn` omits
+        // rows it skipped, so a replay would return none of the ids needed.
+        const rows: {
+          id: string;
+          recipientId: string;
+          inApp: boolean;
+        }[] = [];
+        for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
+          rows.push(
+            ...(await tx.notification.findMany({
+              where: { requestId: request.id, recipientId: { in: batch } },
+              select: { id: true, recipientId: true, inApp: true },
+            })),
+          );
+        }
+
+        // One row per (recipient, outbound channel), so one bounced address
+        // fails its own row instead of a whole chunk.
+        const deliveryData = rows.flatMap((row) =>
+          (routingByRecipient.get(row.recipientId)?.outbound ?? []).map(
+            (channel) => ({
+              notificationId: row.id,
               requestId: request.id,
               channel,
-              chunkIndex,
-              recipientIds: chunk,
-            })),
+            }),
           ),
-          skipDuplicates: true,
-        });
+        );
+        for (const batch of chunk(deliveryData, WRITE_CHUNK_SIZE)) {
+          await tx.notificationDelivery.createMany({
+            data: batch,
+            skipDuplicates: true,
+          });
+        }
 
-        return { requestId: request.id, createdCount: count };
-      },
-    );
+        return {
+          requestId: request.id,
+          createdCount: count,
+          inAppRecipientIds: rows
+            .filter((row) => row.inApp)
+            .map((row) => row.recipientId),
+        };
+      }, FANOUT_TRANSACTION_OPTIONS);
 
-    await enqueuePendingDeliveries(requestId);
+    // In-app is published inline, not queued: it is a flag on a row plus a
+    // pubsub message, so making it wait on a worker would delay the badge for
+    // no durability gain — the row is already committed.
+    await publishUnseenCounts(inAppRecipientIds);
+
+    try {
+      await outbox.completeFanout(requestId);
+    } catch (error) {
+      // The notification is committed and the request stays `pending`, so the
+      // sweeper finishes the hand-off. Failing the caller would imply nothing
+      // was written.
+      logError(error, { source: 'notification-fanout', requestId });
+    }
 
     return { requestId, createdCount };
   }
@@ -461,100 +403,6 @@ export function createNotificationService(deps: {
   ): Promise<NotifyResult> {
     const { recipientId, ...rest } = input;
     return notifyMany(type, { ...rest, recipientIds: [recipientId] });
-  }
-
-  /**
-   * Delivers one chunk of one channel's fan-out; see
-   * {@link NotificationService.deliverChunk}.
-   *
-   * Rows are re-read here rather than carried in the job payload: `createMany`
-   * returns no ids, and re-reading also picks up the CURRENT params and
-   * contact details, which is what lets a copy fix reach an email that has not
-   * gone out yet.
-   */
-  async function deliverChunk(
-    input: DeliverChunkInput,
-  ): Promise<DeliverChunkResult> {
-    const { requestId, channel, chunkIndex, recipientIds } = input;
-
-    if (!isChannelKey(channel)) {
-      // Permanent, not transient: retrying cannot install a channel.
-      await prisma.notificationDelivery.updateMany({
-        where: { requestId, channel, chunkIndex },
-        data: {
-          status: 'failed',
-          lastError: `No installed channel "${channel}"`,
-        },
-      });
-      return { delivered: 0, skipped: recipientIds.length };
-    }
-    const channelImpl = channels[channel];
-
-    // Rendered from the REQUEST, not the feed rows: feed rows belong to the
-    // in-app channel alone, and every channel needs a render source.
-    const request = await prisma.notificationRequest.findUnique({
-      where: { id: requestId },
-      select: REQUEST_RENDER_SOURCE_SELECT,
-    });
-    if (!request) {
-      await prisma.notificationDelivery.updateMany({
-        where: { requestId, channel, chunkIndex },
-        data: { status: 'failed', lastError: 'Request no longer exists' },
-      });
-      return { delivered: 0, skipped: recipientIds.length };
-    }
-
-    const [recipients, actor] = await Promise.all([
-      resolveRecipients(recipientIds),
-      request.actorId ? resolveActor(request.actorId) : Promise.resolve(null),
-    ]);
-
-    const source: RenderSource = { ...request, id: requestId };
-    const unseenCounts = await countUnseenFor(recipientIds);
-
-    let delivered = 0;
-    for (const recipientId of recipientIds) {
-      const recipient = recipients.get(recipientId);
-      if (!recipient) continue;
-      await channelImpl.deliver({
-        recipientId,
-        notifications: [source],
-        unseenCount: unseenCounts.get(recipientId) ?? 0,
-        recipient,
-        actor,
-      });
-      delivered += 1;
-    }
-
-    // Load-bearing: stops the sweeper re-enqueuing a chunk that already went
-    // out. Scoped to this chunk so siblings aren't marked delivered too.
-    await prisma.notificationDelivery.updateMany({
-      where: { requestId, channel, chunkIndex },
-      data: { status: 'delivered' },
-    });
-
-    return { delivered, skipped: recipientIds.length - delivered };
-  }
-
-  async function sweepStaleDeliveries(
-    input: SweepStaleDeliveriesInput,
-  ): Promise<number> {
-    const stale = await prisma.notificationDelivery.findMany({
-      where: { status: 'pending', createdAt: { lt: input.staleBefore } },
-      select: { requestId: true },
-      distinct: ['requestId'],
-      take: input.limit,
-    });
-
-    // The claim in `enqueuePendingDeliveries` skips anything no longer
-    // `pending` — a completed job has released its key, so dedupe alone would
-    // let a second copy through.
-    let sweptCount = 0;
-    for (const { requestId } of stale) {
-      sweptCount += await enqueuePendingDeliveries(requestId);
-    }
-
-    return sweptCount;
   }
 
   function notifyText(
@@ -569,75 +417,92 @@ export function createNotificationService(deps: {
     });
   }
 
+  /**
+   * Returns the unseen count, broadcasting it first when `changed` — a no-op
+   * mutation must not push a redundant update to every subscriber.
+   */
+  async function publishUnseenCountIfChanged(
+    userId: string,
+    changed: boolean,
+  ): Promise<number> {
+    return changed ? publishUnseenCount(userId) : getUnseenCount(userId);
+  }
+
   async function markAsRead(
     userId: string,
     notificationId: string,
   ): Promise<UnseenCountResult> {
     const now = new Date();
-    const { count } = await prisma.notificationFeedItem.updateMany({
-      where: { id: notificationId, recipientId: userId, readAt: null },
-      data: { readAt: now },
-    });
-    // Read implies seen: clear an unseen row's badge state in the same stroke.
-    await prisma.notificationFeedItem.updateMany({
-      where: { id: notificationId, recipientId: userId, seenAt: null },
-      data: { seenAt: now },
-    });
-    return {
-      changed: count > 0,
-      unseenCount: await publishUnseenCount(userId),
-    };
+    // Read implies seen, so both writes land together or not at all.
+    const [read] = await prisma.$transaction([
+      prisma.notification.updateMany({
+        where: { id: notificationId, recipientId: userId, readAt: null },
+        data: { readAt: now },
+      }),
+      prisma.notification.updateMany({
+        where: { id: notificationId, recipientId: userId, seenAt: null },
+        data: { seenAt: now },
+      }),
+    ]);
+    const changed = read.count > 0;
+    const unseenCount = await publishUnseenCountIfChanged(userId, changed);
+    return { changed, unseenCount };
   }
 
   async function markAllAsSeen(
     userId: string,
   ): Promise<MarkNotificationsResult> {
-    const { count } = await prisma.notificationFeedItem.updateMany({
-      where: { recipientId: userId, seenAt: null },
+    const { count } = await prisma.notification.updateMany({
+      where: {
+        recipientId: userId,
+        inApp: true,
+        dismissedAt: null,
+        seenAt: null,
+      },
       data: { seenAt: new Date() },
     });
-    return {
-      changedCount: count,
-      unseenCount:
-        count > 0
-          ? await publishUnseenCount(userId)
-          : await getUnseenCount(userId),
-    };
+    const unseenCount = await publishUnseenCountIfChanged(userId, count > 0);
+    return { changedCount: count, unseenCount };
   }
 
   async function markAllAsRead(
     userId: string,
   ): Promise<MarkNotificationsResult> {
     const now = new Date();
-    const { count } = await prisma.notificationFeedItem.updateMany({
-      where: { recipientId: userId, readAt: null },
-      data: { readAt: now },
-    });
-    // Read implies seen.
-    await prisma.notificationFeedItem.updateMany({
-      where: { recipientId: userId, seenAt: null },
-      data: { seenAt: now },
-    });
-    return {
-      changedCount: count,
-      unseenCount: await publishUnseenCount(userId),
+    const feedScope = {
+      recipientId: userId,
+      inApp: true,
+      dismissedAt: null,
     };
+    // Read implies seen.
+    const [read] = await prisma.$transaction([
+      prisma.notification.updateMany({
+        where: { ...feedScope, readAt: null },
+        data: { readAt: now },
+      }),
+      prisma.notification.updateMany({
+        where: { ...feedScope, seenAt: null },
+        data: { seenAt: now },
+      }),
+    ]);
+    const unseenCount = await publishUnseenCountIfChanged(
+      userId,
+      read.count > 0,
+    );
+    return { changedCount: read.count, unseenCount };
   }
 
-  async function deleteNotification(
+  async function dismiss(
     userId: string,
     notificationId: string,
   ): Promise<UnseenCountResult> {
-    const { count } = await prisma.notificationFeedItem.deleteMany({
-      where: { id: notificationId, recipientId: userId },
+    const { count } = await prisma.notification.updateMany({
+      where: { id: notificationId, recipientId: userId, dismissedAt: null },
+      data: { dismissedAt: new Date() },
     });
-    return {
-      changed: count > 0,
-      unseenCount:
-        count > 0
-          ? await publishUnseenCount(userId)
-          : await getUnseenCount(userId),
-    };
+    const changed = count > 0;
+    const unseenCount = await publishUnseenCountIfChanged(userId, changed);
+    return { changed, unseenCount };
   }
 
   function subscribeToChanges(userId: string): AsyncIterable<{
@@ -649,15 +514,13 @@ export function createNotificationService(deps: {
   return {
     notify,
     notifyMany,
-    deliverChunk,
-    sweepStaleDeliveries,
     notifyText,
     renderContent: (row, ctx) => renderer.renderContent(row, ctx),
     getUnseenCount,
     markAsRead,
     markAllAsSeen,
     markAllAsRead,
-    delete: deleteNotification,
+    dismiss,
     subscribeToChanges,
   };
 }

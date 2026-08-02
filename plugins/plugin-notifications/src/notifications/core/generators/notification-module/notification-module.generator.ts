@@ -1,11 +1,17 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
+import {
+  createNodePackagesTask,
+  extractPackageVersions,
+  tsCodeFragment,
+  TsCodeUtils,
+} from '@baseplate-dev/core-generators';
 import {
   appModuleConfigProvider,
   appModuleFieldTypesProvider,
   appModuleProvider,
   appRuntimeConfigProvider,
+  FASTIFY_PACKAGES,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
   prismaOutputProvider,
@@ -27,16 +33,19 @@ const descriptorSchema = z.object({
 });
 
 /**
- * The installed delivery channels, in registry order. The single source both the
- * generated `NotificationChannels` interface (the compile-time channel-key union)
- * and the composition-root registry render from — so a channel a type lists but
- * the app doesn't install is a compile error, not a runtime miss, and the two
- * renders can't drift.
+ * The installed OUTBOUND delivery channels, in registry order. The single source
+ * both the generated `NotificationChannels` interface (the compile-time
+ * channel-key union) and the composition-root registry render from — so a
+ * channel a type lists but the app doesn't install is a compile error, not a
+ * runtime miss, and the two renders can't drift.
+ *
+ * In-app is absent by design: it is a routing flag on the row plus a pubsub
+ * publish, not a queued delivery, so it has no channel implementation.
  */
 export function installedChannelKeys(
   includeEmailChannel: boolean,
 ): readonly string[] {
-  return ['inApp', ...(includeEmailChannel ? ['email'] : [])];
+  return includeEmailChannel ? ['email'] : [];
 }
 
 /**
@@ -51,6 +60,11 @@ export const notificationModuleGenerator = createGenerator({
   buildTasks: ({ includeEmailChannel, userModelName }) => ({
     paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.task,
     renderers: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.renderers.task,
+    // The service chunks and groups delivery work with es-toolkit; declared
+    // here rather than relied on from another generator's contribution.
+    nodePackages: createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['es-toolkit']),
+    }),
     appRuntimeConfig: createGeneratorTask({
       dependencies: {
         appRuntimeConfig: appRuntimeConfigProvider,
@@ -71,6 +85,13 @@ export const notificationModuleGenerator = createGenerator({
             paths.servicesNotificationEvents,
           ),
         );
+        appRuntimeConfig.services.set(
+          'notificationOutbox',
+          TsCodeUtils.typeImportFragment(
+            'NotificationOutbox',
+            paths.servicesNotificationOutbox,
+          ),
+        );
         appRuntimeConfig.flattenedModuleFields.set(
           'notificationTypes',
           'notificationTypes',
@@ -85,7 +106,6 @@ export const notificationModuleGenerator = createGenerator({
         const rendererFragment = TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes })`;
 
         const channelFactories: Record<string, TsCodeFragment> = {
-          inApp: TsCodeUtils.template`${TsCodeUtils.importFragment('createInAppChannel', paths.servicesInAppChannel)}({ events: notificationEvents })`,
           // Takes the renderer: the email channel renders at DELIVERY time, so
           // a copy fix reaches any email that has not gone out yet.
           email: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailChannel', paths.servicesEmailChannel)}({ email, renderer: ${rendererFragment} })`,
@@ -97,29 +117,31 @@ export const notificationModuleGenerator = createGenerator({
           ]),
         );
 
-        // Its own entry rather than inlined: both `notifications` and the
-        // in-app channel read the same emitter, and inlining would construct
-        // two.
+        // Its own entry rather than inlined: the service and the GraphQL
+        // subscription resolvers read the same emitter, and inlining would
+        // construct two.
         appRuntimeConfig.construction.set('notificationEvents', {
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
+        });
+        // Its own service so the workers are handed it directly: feature code
+        // gets `notification`, workers get the outbox.
+        appRuntimeConfig.construction.set('notificationOutbox', {
+          dependencies: ['queue', ...(includeEmailChannel ? ['email'] : [])],
+          fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationOutbox', paths.servicesNotificationOutbox)}({
+              channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
+              queue,
+            })`,
         });
         // The renderer is constructed inline rather than as its own entry:
         // only the service and its channels consume it, and it holds no
         // resource to dispose.
         appRuntimeConfig.construction.set('notification', {
-          dependencies: [
-            'notificationEvents',
-            // The outbox hands delivery to the queue, so the service cannot be
-            // constructed before it.
-            'queue',
-            ...(includeEmailChannel ? ['email'] : []),
-          ],
+          dependencies: ['notificationEvents', 'notificationOutbox'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationService', paths.servicesNotificationService)}({
               events: notificationEvents,
               renderer: ${rendererFragment},
-              channels: ${TsCodeUtils.mergeFragmentsAsObject(channelEntries)},
-              queue,
+              outbox: notificationOutbox,
             })`,
         });
       },
@@ -158,9 +180,7 @@ export const notificationModuleGenerator = createGenerator({
         yogaPluginConfig: yogaPluginConfigProvider,
         notificationObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(
-            `prisma-object-type:${NOTIFICATION_MODELS.notificationFeedItem}`,
-          ),
+          .reference(`prisma-object-type:${NOTIFICATION_MODELS.notification}`),
         // Delivery resolves recipient addresses itself, so it needs the app's
         // user delegate — the model name is configurable.
         prismaOutput: prismaOutputProvider,
@@ -189,9 +209,9 @@ export const notificationModuleGenerator = createGenerator({
           pothosSchema.registerSchemaFile(renderedPath);
         }
 
-        // Bind both workers so the app's queue runtime starts them. The
-        // delivery worker drains the outbox; the sweep worker re-drives
-        // deliveries whose enqueue failed after the transaction committed.
+        // Bind both workers so the app's queue runtime starts them: delivery
+        // sends, and the sweep re-runs interrupted fan-outs then audits for
+        // deliveries whose jobs were lost.
         for (const worker of [
           [
             'notificationDeliveryWorker',
@@ -254,7 +274,9 @@ export const notificationModuleGenerator = createGenerator({
                   servicesNotificationChannel: {
                     TPL_CHANNEL_ENTRIES: tsCodeFragment(channelEntries),
                   },
-                  servicesNotificationService: {
+                  // Delivery reads recipient and actor details, so the user
+                  // delegate belongs to the outbox, not the service.
+                  servicesNotificationOutbox: {
                     TPL_USER_DELEGATE:
                       prismaOutput.getPrismaModelFragment(userModelName),
                   },

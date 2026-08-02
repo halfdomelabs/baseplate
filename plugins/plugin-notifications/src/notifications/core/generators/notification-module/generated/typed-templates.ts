@@ -26,24 +26,6 @@ const servicesGenericType = createTsTemplateFile({
   variables: {},
 });
 
-const servicesInAppChannel = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'services-in-app-channel',
-  referencedGeneratorTemplates: {
-    servicesNotificationChannel: {},
-    servicesNotificationEvents: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/services/in-app-channel.ts',
-    ),
-  },
-  variables: {},
-});
-
 const servicesNotificationChannel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -89,6 +71,29 @@ const servicesNotificationEvents = createTsTemplateFile({
     ),
   },
   variables: {},
+});
+
+const servicesNotificationOutbox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
+    queuesImports: queuesImportsProvider,
+  },
+  name: 'services-notification-outbox',
+  referencedGeneratorTemplates: {
+    queuesNotificationDelivery: {},
+    servicesNotificationChannel: {},
+    servicesNotificationRenderer: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/notification-outbox.ts',
+    ),
+  },
+  variables: { TPL_USER_DELEGATE: {} },
 });
 
 const servicesNotificationRegistry = createTsTemplateFile({
@@ -143,15 +148,14 @@ const servicesNotificationService = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
-    queuesImports: queuesImportsProvider,
   },
   name: 'services-notification-service',
   referencedGeneratorTemplates: {
-    queuesNotificationDelivery: {},
     servicesGenericType: {},
     servicesNotificationChannel: {},
     servicesNotificationContent: {},
     servicesNotificationEvents: {},
+    servicesNotificationOutbox: {},
     servicesNotificationRegistry: {},
     servicesNotificationRenderer: {},
   },
@@ -161,15 +165,15 @@ const servicesNotificationService = createTsTemplateFile({
       '../templates/module/services/notification.service.ts',
     ),
   },
-  variables: { TPL_USER_DELEGATE: {} },
+  variables: {},
 });
 
 export const mainGroup = {
   servicesGenericType,
-  servicesInAppChannel,
   servicesNotificationChannel,
   servicesNotificationContent,
   servicesNotificationEvents,
+  servicesNotificationOutbox,
   servicesNotificationRegistry,
   servicesNotificationRenderer,
   servicesNotificationService,
@@ -231,12 +235,16 @@ const queuesNotificationOutboxSweepWorker = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'queues',
   importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     queuesImports: queuesImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'queues-notification-outbox-sweep-worker',
   projectExports: { notificationOutboxSweepWorker: { isTypeOnly: false } },
-  referencedGeneratorTemplates: { queuesNotificationOutboxSweep: {} },
+  referencedGeneratorTemplates: {
+    queuesNotificationDelivery: {},
+    queuesNotificationOutboxSweep: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -291,6 +299,7 @@ const schemaNotificationFeedQueries = createTsTemplateFile({
   group: 'schema',
   importMapProviders: {
     pothosImports: pothosImportsProvider,
+    prismaGeneratedImports: prismaGeneratedImportsProvider,
     prismaImports: prismaImportsProvider,
   },
   name: 'schema-notification-feed-queries',
