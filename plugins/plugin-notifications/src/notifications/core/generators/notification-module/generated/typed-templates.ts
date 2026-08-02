@@ -254,11 +254,47 @@ const queuesNotificationOutboxSweepWorker = createTsTemplateFile({
   variables: {},
 });
 
+const queuesNotificationRetention = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: { queuesImports: queuesImportsProvider },
+  name: 'queues-notification-retention',
+  projectExports: { notificationRetentionQueue: { isTypeOnly: false } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-retention.queue.ts',
+    ),
+  },
+  variables: {},
+});
+
+const queuesNotificationRetentionWorker = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'queues',
+  importMapProviders: {
+    queuesImports: queuesImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'queues-notification-retention-worker',
+  projectExports: { notificationRetentionWorker: { isTypeOnly: false } },
+  referencedGeneratorTemplates: { queuesNotificationRetention: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/queues/notification-retention.worker.ts',
+    ),
+  },
+  variables: {},
+});
+
 export const queuesGroup = {
   queuesNotificationDelivery,
   queuesNotificationDeliveryWorker,
   queuesNotificationOutboxSweep,
   queuesNotificationOutboxSweepWorker,
+  queuesNotificationRetention,
+  queuesNotificationRetentionWorker,
 };
 
 const schemaNotificationContentField = createTsTemplateFile({

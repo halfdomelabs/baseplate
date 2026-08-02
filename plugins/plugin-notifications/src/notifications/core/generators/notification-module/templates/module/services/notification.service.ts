@@ -33,6 +33,12 @@ const WRITE_CHUNK_SIZE = 500;
 const PUBLISH_CHUNK_SIZE = 100;
 
 /**
+ * How long a notification is kept before the retention worker deletes it.
+ * One global window; there is no per-type override.
+ */
+const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+
+/**
  * Every batch runs inside one interactive transaction, so this timeout — not
  * the batch size — is what caps the audience. Prisma's 5s default would fail a
  * merely large fan-out. Past a few thousand recipients use a fan-out worker
@@ -278,6 +284,11 @@ export function createNotificationService(deps: {
     const frozen = renderer.renderForWrite(type, event);
     const routing = resolveRouting(type);
 
+    // Stamped per row rather than onto `contentColumns`: retention is a
+    // property of the durable recipient row, and `NotificationRequest` has no
+    // such column — it is disposable once its deliveries settle.
+    const expiresAt = new Date(Date.now() + RETENTION_MS);
+
     // Copied onto every row, so the request and its rows cannot disagree.
     const contentColumns = {
       type: type.key,
@@ -318,6 +329,7 @@ export function createNotificationService(deps: {
               requestId: request.id,
               recipientId,
               inApp: routing.inApp,
+              expiresAt,
             })),
             // A concurrent replay must short-circuit, not raise P2002.
             skipDuplicates: true,

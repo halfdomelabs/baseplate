@@ -224,9 +224,10 @@ export const notificationModuleGenerator = createGenerator({
           pothosSchema.registerSchemaFile(renderedPath);
         }
 
-        // Bind both workers so the app's queue runtime starts them: delivery
-        // sends, and the sweep re-runs interrupted fan-outs then audits for
-        // deliveries whose jobs were lost.
+        // Bind every worker so the app's queue runtime starts them: delivery
+        // sends, the sweep re-runs interrupted fan-outs then audits for
+        // deliveries whose jobs were lost, and retention collects rows past
+        // their horizon.
         appModule.moduleFields.set(
           'queues',
           'notificationDeliveryWorker',
@@ -241,6 +242,14 @@ export const notificationModuleGenerator = createGenerator({
           TsCodeUtils.importFragment(
             'notificationOutboxSweepWorker',
             paths.queuesNotificationOutboxSweepWorker,
+          ),
+        );
+        appModule.moduleFields.set(
+          'queues',
+          'notificationRetentionWorker',
+          TsCodeUtils.importFragment(
+            'notificationRetentionWorker',
+            paths.queuesNotificationRetentionWorker,
           ),
         );
 

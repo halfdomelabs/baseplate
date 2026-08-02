@@ -65,6 +65,26 @@ export interface ExpireStaleDeliveriesInput {
   expireBefore: Date;
 }
 
+/** Bounds one retention pass. */
+export interface DeleteExpiredNotificationsInput {
+  /** Rows whose `expiresAt` is before this are eligible for deletion. */
+  expiredBefore: Date;
+  /** Rows per statement. */
+  batchSize: number;
+  /** Ceiling on one pass, so a large backlog is drained over several runs. */
+  maxDeletions: number;
+}
+
+/** Bounds one request-cleanup pass. */
+export interface DeleteCompletedRequestsInput {
+  /** Requests created before this are eligible, once their work is done. */
+  createdBefore: Date;
+  /** Rows per statement. */
+  batchSize: number;
+  /** Ceiling on one pass. */
+  maxDeletions: number;
+}
+
 /**
  * The queue-facing half of notifications. Feature code calls `notify` on the
  * service; only workers call these.
@@ -94,11 +114,30 @@ export interface NotificationOutbox {
   /**
    * Abandon deliveries too old to be worth sending, marking them `skipped`.
    *
-   * Not deleted: the row records what was owed, and a give-up is a different
-   * fact from never having tried. Expected to match nothing, so a non-zero
-   * result means jobs were lost.
+   * Not deleted: the row records that the send was due, and a give-up is a
+   * different fact from never having tried. Expected to match nothing, so a
+   * non-zero result means jobs were lost.
    */
   expireStaleDeliveries(input: ExpireStaleDeliveriesInput): Promise<number>;
+  /**
+   * Hard-delete notifications past their retention horizon, in bounded batches.
+   *
+   * Only rows whose deliveries have all settled are removed: a row is the
+   * parent of its deliveries, so dropping one with a delivery still `pending`
+   * would cancel a send that was never made. A row held back this way is
+   * retried next pass.
+   */
+  deleteExpiredNotifications(
+    input: DeleteExpiredNotificationsInput,
+  ): Promise<number>;
+  /**
+   * Drop finished requests, in bounded batches.
+   *
+   * The request is transient dispatch state and is deliberately FK-less, so
+   * nothing cascades it away when its notifications are collected — without
+   * this it would accumulate one row per `notifyMany` forever.
+   */
+  deleteCompletedRequests(input: DeleteCompletedRequestsInput): Promise<number>;
 }
 
 /**
@@ -156,6 +195,103 @@ async function expireStaleDeliveries(
     data: { status: 'skipped', lastError: 'stale' },
   });
   return count;
+}
+
+async function deleteExpiredNotifications(
+  input: DeleteExpiredNotificationsInput,
+): Promise<number> {
+  const { expiredBefore, batchSize, maxDeletions } = input;
+
+  let deleted = 0;
+  while (deleted < maxDeletions) {
+    // Ids first, then delete by primary key: an unbounded `deleteMany` over
+    // the horizon would lock a range that grows with the backlog, and the
+    // first run on an existing project is the largest one.
+    const rows = await prisma.notification.findMany({
+      where: {
+        expiresAt: { not: null, lt: expiredBefore },
+        // A row with a delivery still `pending` is not collectable — see the
+        // doc comment.
+        deliveries: { none: { status: 'pending' } },
+      },
+      select: { id: true },
+      take: Math.min(batchSize, maxDeletions - deleted),
+    });
+    if (rows.length === 0) break;
+
+    const { count } = await prisma.notification.deleteMany({
+      where: { id: { in: rows.map((row) => row.id) } },
+    });
+    deleted += count;
+
+    // A short pass means the horizon is drained; anything newly expiring can
+    // wait for the next run.
+    if (rows.length < batchSize) break;
+  }
+
+  return deleted;
+}
+
+async function deleteCompletedRequests(
+  input: DeleteCompletedRequestsInput,
+): Promise<number> {
+  const { createdBefore, batchSize, maxDeletions } = input;
+
+  let deleted = 0;
+  let examined = 0;
+  // Paged by id rather than by re-reading from the start: a row held back for
+  // an unsettled delivery stays in the result set, so without a cursor a batch
+  // of held-back rows would be read forever.
+  let cursor: string | undefined;
+  while (deleted < maxDeletions && examined < maxDeletions) {
+    const rows = await prisma.notificationRequest.findMany({
+      where: {
+        createdAt: { lt: createdBefore },
+        // Not `pending`: the sweeper still has work to re-run for it.
+        fanoutStatus: 'done',
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
+      select: { id: true },
+      orderBy: { id: 'asc' },
+      take: Math.min(batchSize, maxDeletions - deleted),
+    });
+    if (rows.length === 0) break;
+    examined += rows.length;
+    cursor = rows.at(-1)?.id;
+
+    // `requestId` is FK-less, so there is no relation to filter on and nothing
+    // would stop a request going while a delivery still needs it — the worker
+    // reads the request to deliver. Checked as a separate query instead.
+    const withPendingDeliveries = new Set(
+      (
+        await prisma.notificationDelivery.findMany({
+          where: {
+            requestId: { in: rows.map((row) => row.id) },
+            status: 'pending',
+          },
+          select: { requestId: true },
+          distinct: ['requestId'],
+        })
+      ).map((delivery) => delivery.requestId),
+    );
+
+    const collectable = rows
+      .map((row) => row.id)
+      .filter((id) => !withPendingDeliveries.has(id));
+
+    if (collectable.length > 0) {
+      const { count } = await prisma.notificationRequest.deleteMany({
+        where: { id: { in: collectable } },
+      });
+      deleted += count;
+    }
+
+    // Counted on rows examined, not rows deleted: a batch entirely held back
+    // would otherwise re-read the same ids forever.
+    if (rows.length < batchSize) break;
+  }
+
+  return deleted;
 }
 
 /** Creates the {@link NotificationOutbox}. */
@@ -389,5 +525,7 @@ export function createNotificationOutbox(deps: {
     deliverChunk,
     sweepStaleRequests,
     expireStaleDeliveries,
+    deleteExpiredNotifications,
+    deleteCompletedRequests,
   };
 }
