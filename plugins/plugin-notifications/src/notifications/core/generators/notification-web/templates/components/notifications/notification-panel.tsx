@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type { notificationItemFragment } from '$notificationOperations';
+import type { ApolloCache } from '@apollo/client/cache';
 import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
@@ -91,6 +92,8 @@ function SegmentView({ segment }: { segment: Segment }): ReactElement | null {
 interface Props {
   /** Masked feed items (already newest-first from the server). */
   items: NotificationItem[];
+  /** Unread rows across the whole feed, not just the loaded page. */
+  unreadCount: number;
   loading: boolean;
   /** Optional link to a full notifications page, rendered as a footer link when set. */
   viewAllHref?: string;
@@ -100,19 +103,40 @@ interface Props {
   onNavigate?: () => void;
 }
 
+/** Writes the counts a read mutation returns onto the root query fields. */
+function writeCounts(
+  cache: ApolloCache,
+  payload: { unseenCount: number; unreadCount: number },
+): void {
+  cache.modify({
+    fields: {
+      unseenNotificationCount: () => payload.unseenCount,
+      unreadNotificationCount: () => payload.unreadCount,
+    },
+  });
+}
+
 /** The dropdown body: the feed list + mark-read affordances. */
 export function NotificationPanel({
   items,
+  unreadCount,
   loading,
   viewAllHref,
   emptyDescription = 'You have no new notifications.',
   onNavigate,
 }: Props): ReactElement {
   const navigate = useNavigate();
-  const [markRead] = useMutation(markNotificationReadMutation);
-  const [markAllRead] = useMutation(markAllNotificationsReadMutation);
+  const [markRead] = useMutation(markNotificationReadMutation, {
+    update: (cache, { data }) => {
+      if (data) writeCounts(cache, data.markNotificationRead);
+    },
+  });
+  const [markAllRead] = useMutation(markAllNotificationsReadMutation, {
+    update: (cache, { data }) => {
+      if (data) writeCounts(cache, data.markAllNotificationsRead);
+    },
+  });
 
-  const unreadCount = items.filter((item) => item.readAt === null).length;
   const hasUnread = unreadCount > 0;
 
   return (

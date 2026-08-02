@@ -65,18 +65,13 @@ export function NotificationBell({
     onData: ({ data: { data: subData } }) => {
       // Instant badge from the pushed count...
       if (subData) {
-        client.cache.updateQuery(
-          {
-            query: notificationFeedQuery,
-            variables: { first: FEED_PAGE_SIZE },
-          },
-          (existing) =>
-            existing
-              ? {
-                  ...existing,
-                  unseenNotificationCount: subData.notificationsChanged,
-                }
-              : existing,
+        client.cache.updateQuery({ query: notificationFeedQuery }, (existing) =>
+          existing
+            ? {
+                ...existing,
+                unseenNotificationCount: subData.notificationsChanged,
+              }
+            : existing,
         );
       }
       // ...then refetch for the authoritative newest-first list.
@@ -87,6 +82,7 @@ export function NotificationBell({
   if (!isAuthenticated) return null;
 
   const unseenCount = data?.unseenNotificationCount ?? 0;
+  const unreadCount = data?.unreadNotificationCount ?? 0;
   const items = (data?.notificationFeed.edges ?? []).map((edge) =>
     readFragment(notificationItemFragment, edge.node),
   );
@@ -120,6 +116,7 @@ export function NotificationBell({
       <PopoverContent align="end" className="w-80 p-0">
         <NotificationPanel
           items={items}
+          unreadCount={unreadCount}
           loading={loading}
           viewAllHref={viewAllHref}
           emptyDescription={emptyDescription}

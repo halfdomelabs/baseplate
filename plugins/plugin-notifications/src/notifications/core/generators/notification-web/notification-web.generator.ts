@@ -1,8 +1,12 @@
 import {
+  tsCodeFragment,
   tsImportBuilder,
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
-import { adminLayoutHeaderActionContainerProvider } from '@baseplate-dev/react-generators';
+import {
+  adminLayoutHeaderActionContainerProvider,
+  reactApolloConfigProvider,
+} from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -29,8 +33,28 @@ export const notificationWebGenerator = createGenerator({
         paths: NOTIFICATIONS_CORE_NOTIFICATION_WEB_GENERATED.paths.provider,
         adminLayoutHeaderActionContainer:
           adminLayoutHeaderActionContainerProvider.dependency().optional(),
+        reactApolloConfig: reactApolloConfigProvider,
       },
-      run({ renderers, paths, adminLayoutHeaderActionContainer }) {
+      run({
+        renderers,
+        paths,
+        adminLayoutHeaderActionContainer,
+        reactApolloConfig,
+      }) {
+        // Cursor-paginate the feed so a "view all" surface can page with
+        // `after` without clobbering the cached page. `keyArgs` is left at its
+        // default of `false` since the feed takes no filtering arguments.
+        reactApolloConfig.typePolicies.set(
+          'Query',
+          'notificationFeed',
+          tsCodeFragment(
+            'relayStylePagination()',
+            tsImportBuilder(['relayStylePagination']).from(
+              '@apollo/client/utilities',
+            ),
+          ),
+        );
+
         adminLayoutHeaderActionContainer?.addAction({
           name: 'notification-bell',
           order: 0,

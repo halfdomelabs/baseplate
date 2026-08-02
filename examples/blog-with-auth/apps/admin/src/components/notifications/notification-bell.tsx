@@ -62,10 +62,7 @@ export function NotificationBell({
       // Instant badge from the pushed count...
       if (subData) {
         client.cache.updateQuery(
-          {
-            query: notificationFeedQuery,
-            variables: { first: FEED_PAGE_SIZE },
-          },
+          { query: notificationFeedQuery },
           (existing) =>
             existing
               ? {
@@ -83,6 +80,7 @@ export function NotificationBell({
   if (!isAuthenticated) return null;
 
   const unseenCount = data?.unseenNotificationCount ?? 0;
+  const unreadCount = data?.unreadNotificationCount ?? 0;
   const items = (data?.notificationFeed.edges ?? []).map((edge) =>
     readFragment(notificationItemFragment, edge.node),
   );
@@ -116,6 +114,7 @@ export function NotificationBell({
       <PopoverContent align="end" className="w-80 p-0">
         <NotificationPanel
           items={items}
+          unreadCount={unreadCount}
           loading={loading}
           viewAllHref={viewAllHref}
           emptyDescription={emptyDescription}
