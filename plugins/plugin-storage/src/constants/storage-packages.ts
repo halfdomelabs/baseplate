@@ -9,5 +9,4 @@ export const STORAGE_PACKAGES = {
   '@types/mime-types': '2.1.1',
 
   'react-dropzone': '14.3.8',
-  'react-circular-progressbar': '2.2.0',
 };

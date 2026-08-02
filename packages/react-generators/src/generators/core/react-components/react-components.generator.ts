@@ -49,6 +49,9 @@ export const reactComponentsGenerator = createGenerator({
         'sonner',
         'react-day-picker',
         'date-fns',
+        // consumed by the `cn` helper this generator renders; in import mode the
+        // helper lives in the component library, which declares its own copy
+        'tailwind-merge',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,

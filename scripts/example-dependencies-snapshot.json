@@ -1,0 +1,4 @@
+{
+  "todo-with-better-auth/apps/web react-icons": "Declared for every app by core/react-components-import because admin templates (sidebar, dialogs) import react-icons directly; that generator cannot tell admin from web. Removing it needs the declaration moved to the generators emitting those imports.",
+  "todo-with-better-auth/apps/web sonner": "Declared for every app by core/react-components-import because admin templates import toast from sonner directly (see admin-crud-delete-action); that generator cannot tell admin from web. Removing it needs the declaration moved to the generators emitting those imports."
+}
