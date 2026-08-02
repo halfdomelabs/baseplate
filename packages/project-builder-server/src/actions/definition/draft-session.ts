@@ -29,7 +29,7 @@ const draftSessionMetadataSchema = z.object({
 /**
  * Metadata for a draft session, stored separately from the large definition payload.
  */
-export type DraftSessionMetadata = z.infer<typeof draftSessionMetadataSchema>;
+type DraftSessionMetadata = z.infer<typeof draftSessionMetadataSchema>;
 
 /**
  * A draft session holds staged entity changes before they are committed

@@ -233,7 +233,7 @@ export const oxlintConfigBase = {
       'error',
       {
         case: 'kebabCase',
-        ignore: String.raw`^(-[a-z0-9\-\.]+|\$[a-zA-Z0-9\.]+)$`,
+        ignore: [String.raw`^(-[a-z0-9\-\.]+|\$[a-zA-Z0-9\.]+)$`],
       },
     ],
     'unicorn/new-for-builtins': 'error',

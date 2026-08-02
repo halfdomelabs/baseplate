@@ -130,14 +130,21 @@ export const emailModuleGenerator = createGenerator({
             'No email adapter registered. Enable an email implementation plugin (e.g., Postmark).',
           );
         }
-        appRuntimeConfig.services.set(
-          'email',
-          TsCodeUtils.typeImportFragment('EmailService', paths.emailService),
-        );
-        appRuntimeConfig.services.set(
-          'emailTransport',
-          TsCodeUtils.typeImportFragment('EmailTransport', paths.emailTypes),
-        );
+        appRuntimeConfig.services.set('email', {
+          type: TsCodeUtils.typeImportFragment(
+            'EmailService',
+            paths.emailService,
+          ),
+        });
+        // Internal: only the send worker names it, and keeping it off request
+        // contexts is what makes bypassing the queue a compile error.
+        appRuntimeConfig.services.set('emailTransport', {
+          internal: true,
+          type: TsCodeUtils.typeImportFragment(
+            'EmailTransport',
+            paths.emailTypes,
+          ),
+        });
         appRuntimeConfig.construction.set('email', {
           dependencies: ['queue'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createEmailService', paths.emailService)}({ queue })`,

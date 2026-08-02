@@ -22,7 +22,7 @@ export interface TransformerFragmentContext {
  * Definition for a transformer instance attached to a field.
  * Only present on transform fields (file, nested), not scalars.
  */
-export interface TransformerDefinition {
+interface TransformerDefinition {
   /** Code fragment for the transformer instance (e.g., fileTransformer({...})) */
   fragment: TsCodeFragment;
   /**

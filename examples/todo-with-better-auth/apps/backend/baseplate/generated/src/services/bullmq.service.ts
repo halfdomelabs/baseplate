@@ -13,7 +13,7 @@ import type {
   RepeatableConfig,
   ScheduledJob,
 } from '../types/queue.types.js';
-import type { ServiceContext } from '../utils/service-context.js';
+import type { SystemServiceContext } from '../utils/service-context.js';
 import type { RedisRuntime } from './redis.js';
 
 import { DEFAULT_QUEUE_CONCURRENCY } from '../types/queue.types.js';
@@ -305,7 +305,7 @@ export function createQueueRuntime(
   }
 
   async function startWorkers(options: {
-    createContext: () => ServiceContext;
+    createContext: () => SystemServiceContext;
   }): Promise<void> {
     const startedWorkers: BullMQWorker[] = [];
 

@@ -12,7 +12,7 @@ import type {
   RepeatableConfig,
   ScheduledJob,
 } from '%queuesImports';
-import type { ServiceContext } from '%serviceContextImports';
+import type { SystemServiceContext } from '%serviceContextImports';
 import type { JobInsert, JobWithMetadata, SendOptions } from 'pg-boss';
 
 import { getConfig } from '%configServiceImports';
@@ -523,7 +523,7 @@ export function createQueueRuntime(
   }
 
   async function startWorkers(workerOptions: {
-    createContext: () => ServiceContext;
+    createContext: () => SystemServiceContext;
   }): Promise<void> {
     await ensureStarted();
 

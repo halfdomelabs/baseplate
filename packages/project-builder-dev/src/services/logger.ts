@@ -1,6 +1,8 @@
+import type { LoggerOptions } from 'pino';
+
 import { pino } from 'pino';
 
-const DEFAULT_LOGGER_OPTIONS: pino.LoggerOptions = {
+const DEFAULT_LOGGER_OPTIONS: LoggerOptions = {
   transport: {
     target: 'pino-pretty',
     options: {

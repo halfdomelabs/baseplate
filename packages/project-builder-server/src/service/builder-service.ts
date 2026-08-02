@@ -498,7 +498,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       cwd: this.directory,
       detached: true,
     });
-    result.unref();
+    result.nodeChildProcess.unref();
   }
 
   private async removeConflictFile(

@@ -33,7 +33,7 @@ export function addSyncFileCommand(program: Command): void {
           context,
         );
       } catch (error) {
-        logger.error('Failed to sync files:', error);
+        logger.error(error, 'Failed to sync files');
         throw error;
       }
     });

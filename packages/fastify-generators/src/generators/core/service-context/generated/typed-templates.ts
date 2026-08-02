@@ -13,6 +13,8 @@ const serviceContext = createTsTemplateFile({
     ExecutionContext: { isTypeOnly: true },
     ServiceContext: { isTypeOnly: true },
     ServiceContextWith: { isTypeOnly: true },
+    SystemServiceContext: { isTypeOnly: true },
+    SystemServiceContextWith: { isTypeOnly: true },
     withScriptContext: {},
   },
   source: {

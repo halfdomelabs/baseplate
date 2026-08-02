@@ -1,18 +1,20 @@
 // @ts-nocheck
 
-import type { ServiceContext } from '$serviceContext';
-import type { AppServices } from '%appRuntimeImports';
+import type { SystemServiceContext } from '$serviceContext';
+import type { RuntimeServices } from '%appRuntimeImports';
 
 import { createServiceContext } from '$serviceContext';
 
 /**
- * A `ServiceContext` for tests. Reaching for a service that was not supplied
+ * A service context for tests. Reaching for a service that was not supplied
  * throws naming it, rather than reading as `undefined`.
  *
  * @param options The auth context to run as, and the services to supply.
- * @returns A {@link ServiceContext} delivering the supplied services.
+ * @returns A {@link SystemServiceContext} delivering the supplied services.
  */
-export function createTestServiceContext(TPL_CREATE_TEST_ARGS): ServiceContext {
+export function createTestServiceContext(
+  TPL_CREATE_TEST_ARGS,
+): SystemServiceContext {
   // Symbol keys fall through so inspection and test-runner diffing don't throw.
   const suppliedServices = new Proxy(TPL_SUPPLIED_SERVICES, {
     get(target, key): unknown {
@@ -21,7 +23,7 @@ export function createTestServiceContext(TPL_CREATE_TEST_ARGS): ServiceContext {
           `${key} was not supplied to createTestServiceContext. Pass it via the \`services\` option.`,
         );
       }
-      return target[key as keyof AppServices];
+      return target[key as keyof RuntimeServices];
     },
   });
 

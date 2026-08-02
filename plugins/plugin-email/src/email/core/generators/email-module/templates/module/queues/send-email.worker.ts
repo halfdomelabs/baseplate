@@ -1,13 +1,13 @@
 // @ts-nocheck
 
-import type { ServiceContextWith } from '%serviceContextImports';
+import type { SystemServiceContextWith } from '%serviceContextImports';
 
 import { sendEmailQueue } from '$sendEmailQueue';
 import { logger } from '%loggerServiceImports';
 import { bindQueueHandler } from '%queuesImports';
 
 export const sendEmailWorker = bindQueueHandler(sendEmailQueue, {
-  handler: async (job, ctx: ServiceContextWith<'emailTransport'>) => {
+  handler: async (job, ctx: SystemServiceContextWith<'emailTransport'>) => {
     const messageId = await ctx.services.emailTransport.deliver(
       job.data.message,
     );
