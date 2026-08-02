@@ -47,7 +47,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {},
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -59,7 +59,7 @@ export const WithLabel: Story = {
     label: 'Meeting Date & Time',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -72,7 +72,7 @@ export const WithDescription: Story = {
     description: 'Select the date and time for your appointment',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -85,7 +85,7 @@ export const WithError: Story = {
     error: 'Please select a valid date and time',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -98,7 +98,7 @@ export const Disabled: Story = {
     disabled: true,
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>(
+    const [dateTime, setDateTime] = useState<string | null>(
       '2024-01-15T14:30:00.000Z',
     );
     return (
@@ -114,7 +114,7 @@ export const WithSeconds: Story = {
     dateTimeFormat: 'PPP pp:ss',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -127,7 +127,7 @@ export const WithCustomFormat: Story = {
     dateTimeFormat: 'MM/dd/yyyy HH:mm',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -140,7 +140,7 @@ export const WithCustomPlaceholder: Story = {
     placeholder: 'When does the event start?',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -157,7 +157,7 @@ export const WithCalendarProps: Story = {
     },
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>();
+    const [dateTime, setDateTime] = useState<string | null>();
     return (
       <DateTimePickerField {...args} value={dateTime} onChange={setDateTime} />
     );
@@ -170,7 +170,7 @@ export const Preselected: Story = {
     description: 'This field has a default value',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>(
+    const [dateTime, setDateTime] = useState<string | null>(
       '2024-01-15T14:30:00.000Z',
     );
     return (
@@ -253,8 +253,8 @@ export const WithFormValidation: Story = {
 export const MultipleFields: Story = {
   args: {},
   render: () => {
-    const [startTime, setStartTime] = useState<string | undefined>();
-    const [endTime, setEndTime] = useState<string | undefined>();
+    const [startTime, setStartTime] = useState<string | null>();
+    const [endTime, setEndTime] = useState<string | null>();
 
     const calculateDuration = (start: string, end: string): number => {
       const startDate = parseISO(start);
@@ -301,7 +301,7 @@ export const TimeOnlyMode: Story = {
     description: 'Pre-set to today, focus on time selection',
   },
   render: (args) => {
-    const [dateTime, setDateTime] = useState<string | undefined>(() => {
+    const [dateTime, setDateTime] = useState<string | null>(() => {
       const today = new Date();
       today.setHours(9, 0, 0, 0); // 9:00 AM
       return today.toISOString();

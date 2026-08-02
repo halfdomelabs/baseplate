@@ -113,7 +113,14 @@ function SelectFieldController<
   const restProps = rest as SelectFieldProps<OptionType> &
     AddOptionRequiredFields<OptionType>;
 
-  return <SelectField error={error?.message} {...restProps} {...field} />;
+  return (
+    <SelectField
+      error={error?.message}
+      {...restProps}
+      {...field}
+      value={field.value ?? null}
+    />
+  );
 }
 
 export { SelectField, SelectFieldController };

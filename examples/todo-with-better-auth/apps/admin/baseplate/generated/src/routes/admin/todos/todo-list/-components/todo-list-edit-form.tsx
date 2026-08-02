@@ -9,6 +9,7 @@ import {
   ComboboxFieldController,
   DateTimePickerFieldController,
   InputFieldController,
+  NumberFieldController,
   SelectFieldController,
 } from '@prisma-crud/ui-shared';
 import { Link } from '@tanstack/react-router';
@@ -154,11 +155,10 @@ export function TodoListEditForm(
               control={control}
               name="createdAt"
             />
-            <InputFieldController
+            <NumberFieldController
               label="Position"
               control={control}
               name="position"
-              registerOptions={{ valueAsNumber: true }}
             />
             {/* TPL_INPUTS:END */}
           </CardContent>

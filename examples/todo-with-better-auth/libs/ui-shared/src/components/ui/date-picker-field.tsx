@@ -19,8 +19,8 @@ export interface DatePickerFieldProps extends FormFieldProps {
   className?: string;
   wrapperClassName?: string;
   placeholder?: string;
-  onChange?: (value: string | undefined) => void;
-  value?: string | undefined;
+  onChange?: (value: string | null) => void;
+  value?: string | null;
   dateFormat?: string;
   calendarProps?: Omit<
     React.ComponentProps<typeof Calendar>,
@@ -60,7 +60,7 @@ function DatePickerField({
       onChange?.(dateString);
       setOpen(false);
     } else {
-      onChange?.(undefined);
+      onChange?.(null);
     }
   };
 
@@ -145,7 +145,14 @@ function DatePickerFieldController<
     ref,
   );
 
-  return <DatePickerField error={error?.message} {...rest} {...fieldProps} />;
+  return (
+    <DatePickerField
+      error={error?.message}
+      {...rest}
+      {...fieldProps}
+      value={fieldProps.value ?? null}
+    />
+  );
 }
 
 export { DatePickerField, DatePickerFieldController };

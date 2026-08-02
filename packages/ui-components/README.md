@@ -43,6 +43,8 @@ All form components are available in both standalone and React Hook Form integra
 - **Input/Input Field** - Text inputs with validation
 - **Textarea/Textarea Field** - Multi-line text areas
 - **Select/Select Field** - Dropdown selections with search
+- **Radio Group/Radio Field** - Single choice from visible options
+- **Number Field** - Numeric input with steppers
 - **Checkbox/Checkbox Field** - Boolean inputs
 - **Switch/Switch Field** - Toggle switches
 - **Combobox/Combobox Field** - Searchable select with custom options
@@ -52,6 +54,42 @@ All form components are available in both standalone and React Hook Form integra
 - **Date Time Picker Field** - Combined date and time selection
 - **Form Item** - Form field wrapper with label/error display
 - **Form Action Bar** - Consistent form action buttons
+
+#### Empty-Value Convention
+
+A controlled field controller (one built on `useControllerMerged`) must never pass
+`undefined` as `value` to its presentational component. At the controller boundary it
+normalizes to the empty representation of its type:
+
+| Value type                                   | Empty value | Example                        |
+| -------------------------------------------- | ----------- | ------------------------------ |
+| Nullable scalar (string, enum, number, date) | `null`      | `value={field.value ?? null}`  |
+| List                                         | `[]`        | `value={field.value ?? []}`    |
+| Boolean                                      | `false`     | `value={field.value ?? false}` |
+
+Two reasons this matters:
+
+1. **Clearing a field must persist.** Server mutations spread their input directly into
+   the ORM, where an omitted key means "leave this column alone" and an explicit `null`
+   means "set it to NULL". `JSON.stringify` drops `undefined` keys, so a controller that
+   emits `undefined` turns a user clearing a field into a silent no-op.
+2. **Base UI primitives switch to uncontrolled when `value` is `undefined`.** React Hook
+   Form yields `undefined` for any field without a default, so normalizing at the
+   controller is what keeps the input controlled from first render.
+
+**Exception — uncontrolled text inputs.** `InputFieldController` and
+`TextareaFieldController` use `register()` and emit `''` when cleared. This is a scope
+decision, not a technical limit: `register(name, { setValueAs })` could map `''` to
+`null` without making the input controlled, but it must be gated on nullability
+(required string fields need `''` so `z.string().min(1)` reports "must contain at least
+1 character" rather than a type error). Mapping empty strings to `null` for optional
+string fields is tracked as follow-up work.
+
+**Writing your own field controller.** Do not hand-edit files in `components/ui/` of a
+generated app — Baseplate regenerates that directory and your changes will be
+overwritten. Put custom controllers in a sibling directory (for example
+`components/fields/`) and follow the convention above so they behave consistently with
+the generated ones.
 
 ### Layout Components
 

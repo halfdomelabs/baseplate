@@ -66,6 +66,7 @@ packages/ui-components/src/components/ui/<component-name>/
    import { useConfirmDialog } from '#src/hooks/use-confirm-dialog.js';
    ```
 9. **New npm dependencies**: If the component requires a new package not already in `packages/ui-components/package.json`, add it with `pnpm --filter @baseplate-dev/ui-components add <package>`.
+10. **Empty values in field controllers**: A `*FieldController` built on `useControllerMerged` must normalize `value` to the empty representation of its type — `null` for nullable scalars, `[]` for lists, `false` for booleans — never leaving it `undefined`, e.g. `value={field.value ?? null}`. See the Empty-Value Convention section in `packages/ui-components/README.md`.
 
 ### Story file pattern
 

@@ -151,7 +151,12 @@ function MultiComboboxFieldController<
     AddOptionRequiredFields<OptionType>;
 
   return (
-    <MultiComboboxField error={error?.message} {...restProps} {...field} />
+    <MultiComboboxField
+      error={error?.message}
+      {...restProps}
+      {...field}
+      value={field.value ?? []}
+    />
   );
 }
 
