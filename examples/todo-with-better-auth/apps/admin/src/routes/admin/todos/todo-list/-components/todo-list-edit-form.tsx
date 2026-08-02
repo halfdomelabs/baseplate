@@ -146,7 +146,7 @@ export function TodoListEditForm(
               label="Cover Photo"
               category="TODO_LIST_COVER_PHOTO"
               allowedMimeTypes={['image/jpeg', 'image/png', 'image/webp']}
-              allowedFileExtensions={['jpeg', 'png', 'webp']}
+              allowedFileExtensions={['jpg', 'png', 'webp']}
               control={control}
               name="coverPhoto"
             />

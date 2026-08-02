@@ -92,7 +92,7 @@ export const bullmqGenerator = createGenerator({
         });
 
         node.packages.addProdPackages({
-          bullmq: '5.61.2',
+          bullmq: '6.0.5',
         });
       },
     }),
