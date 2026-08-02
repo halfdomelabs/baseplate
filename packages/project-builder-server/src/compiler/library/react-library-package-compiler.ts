@@ -20,6 +20,7 @@ import {
   reactComponentsLibraryGenerator,
   reactLibraryGenerator,
   reactTailwindGenerator,
+  reactVitestGenerator,
 } from '@baseplate-dev/react-generators';
 
 class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition> {
@@ -48,6 +49,7 @@ class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition>
           includePlaceholderIndexFile: !isComponentsSource,
         }),
         vitest: vitestGenerator({ includeTestHelpers: false }),
+        reactVitest: reactVitestGenerator({}),
         reactLibrary: reactLibraryGenerator({}),
         reactTailwind: reactTailwindGenerator({
           includeViteIntegration: false,

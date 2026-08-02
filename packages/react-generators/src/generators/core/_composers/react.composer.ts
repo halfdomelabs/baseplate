@@ -3,6 +3,7 @@ import type {
   InferDescriptorFromGenerator,
 } from '@baseplate-dev/sync';
 
+import { reactVitestGenerator } from '../../vitest/react-vitest/index.js';
 import { reactAppGenerator } from '../react-app/index.js';
 import { reactComponentsGenerator } from '../react-components/index.js';
 import { reactConfigGenerator } from '../react-config/index.js';
@@ -36,6 +37,7 @@ export function composeReactGenerators(
       reactError: reactErrorGenerator({}),
       reactUtils: reactUtilsGenerator({}),
       reactErrorBoundary: reactErrorBoundaryGenerator({}),
+      reactVitest: reactVitestGenerator({}),
       ...descriptor.children,
     },
   });

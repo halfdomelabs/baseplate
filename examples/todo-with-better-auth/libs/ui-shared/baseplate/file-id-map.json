@@ -68,5 +68,6 @@
   "@baseplate-dev/react-generators#core/react-components-library:types-icon": "src/types/icon.ts",
   "@baseplate-dev/react-generators#core/react-components-library:use-confirm-dialog": "src/hooks/use-confirm-dialog.ts",
   "@baseplate-dev/react-generators#core/react-components-library:use-mobile": "src/hooks/use-mobile.ts",
-  "@baseplate-dev/react-generators#core/react-tailwind:styles-css": "src/styles.css"
+  "@baseplate-dev/react-generators#core/react-tailwind:styles-css": "src/styles.css",
+  "@baseplate-dev/react-generators#vitest/react-vitest:setup": "src/tests/setup.ts"
 }
