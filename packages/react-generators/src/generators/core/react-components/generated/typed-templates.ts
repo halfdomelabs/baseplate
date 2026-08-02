@@ -54,12 +54,7 @@ const badge = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'badge',
-  projectExports: {
-    Badge: {},
-    badgeVariants: {},
-    BadgeWithIcon: {},
-    BadgeWithIconProps: { isTypeOnly: true },
-  },
+  projectExports: { Badge: {}, badgeVariants: {} },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
@@ -99,7 +94,7 @@ const button = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'button',
-  projectExports: { Button: {}, LinkButton: {} },
+  projectExports: { Button: {} },
   referencedGeneratorTemplates: { cn: {}, stylesButton: {} },
   source: {
     path: path.join(
@@ -151,7 +146,7 @@ const checkbox = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'checkbox',
-  projectExports: { Checkbox: {}, CheckedInput: {} },
+  projectExports: { Checkbox: {} },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
@@ -280,11 +275,7 @@ const datePickerField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'date-picker-field',
-  projectExports: {
-    DatePickerField: {},
-    DatePickerFieldController: {},
-    ReactDatePickerInput: {},
-  },
+  projectExports: { DatePickerField: {}, DatePickerFieldController: {} },
   referencedGeneratorTemplates: {
     button: {},
     calendar: {},
@@ -348,7 +339,6 @@ const dialog = createTsTemplateFile({
     DialogTitle: {},
     DialogTrigger: {},
     DialogWidth: { isTypeOnly: true },
-    Modal: {},
   },
   referencedGeneratorTemplates: { button: {}, cn: {} },
   source: {
@@ -481,7 +471,7 @@ const input = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'input',
-  projectExports: { Input: {}, TextInput: {} },
+  projectExports: { Input: {} },
   referencedGeneratorTemplates: { cn: {}, stylesInput: {} },
   source: {
     path: path.join(
@@ -635,7 +625,6 @@ const navigationMenu = createTsTemplateFile({
     NavigationMenuList: {},
     NavigationMenuTrigger: {},
     navigationMenuTriggerStyle: {},
-    NavigationMenuViewport: {},
   },
   referencedGeneratorTemplates: { cn: {} },
   source: {
@@ -663,22 +652,67 @@ const notFoundCard = createTsTemplateFile({
   variables: {},
 });
 
+const numberField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'number-field',
+  projectExports: {
+    NumberField: { isTypeOnly: false },
+    NumberFieldController: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    cn: {},
+    field: {},
+    hooksUseControllerMerged: {},
+    stylesButton: {},
+    stylesInput: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/number-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const popover = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
   name: 'popover',
-  projectExports: {
-    Popover: {},
-    PopoverAnchor: {},
-    PopoverContent: {},
-    PopoverTrigger: {},
-  },
+  projectExports: { Popover: {}, PopoverContent: {}, PopoverTrigger: {} },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/popover.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const radioField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'radio-field',
+  projectExports: {
+    RadioField: { isTypeOnly: false },
+    RadioFieldController: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    field: {},
+    hooksUseControllerMerged: {},
+    radioGroup: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/radio-field.tsx',
     ),
   },
   variables: {},
@@ -720,7 +754,7 @@ const select = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'select',
-  projectExports: { ReactSelectInput: {}, Select: {}, SelectInput: {} },
+  projectExports: { Select: {} },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
@@ -958,7 +992,7 @@ const textarea = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'textarea',
-  projectExports: { Textarea: {}, TextAreaInput: {} },
+  projectExports: { Textarea: {} },
   referencedGeneratorTemplates: { cn: {} },
   source: {
     path: path.join(
@@ -1054,7 +1088,9 @@ export const componentsGroup = {
   multiComboboxField,
   navigationMenu,
   notFoundCard,
+  numberField,
   popover,
+  radioField,
   radioGroup,
   scrollArea,
   select,
@@ -1210,6 +1246,7 @@ const typesForm = createTsTemplateFile({
     AddOptionRequiredFields: { isTypeOnly: true },
     FormFieldProps: { isTypeOnly: true },
     MultiSelectOptionProps: { isTypeOnly: true },
+    RadioOptionProps: { isTypeOnly: true },
     SelectOptionProps: { isTypeOnly: true },
   },
   source: {

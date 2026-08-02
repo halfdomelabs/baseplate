@@ -1,15 +1,18 @@
+import type { FormFieldProps } from '@prisma-crud/ui-shared';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
+import {
+  cn,
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@prisma-crud/ui-shared';
 import { useController } from 'react-hook-form';
-
-import type { FormFieldProps } from '@src/types/form';
-
-import { cn } from '@src/utils/cn';
 
 import type { FileInputProps, FileUploadInput } from './file-input';
 
-import { Field, FieldDescription, FieldError, FieldLabel } from './field';
 import { FileInput } from './file-input';
 
 interface FileInputFieldProps

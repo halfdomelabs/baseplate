@@ -1,0 +1,12 @@
+{
+  "cn.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "cn"
+  },
+  "merge-refs.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components-library",
+    "instanceData": {},
+    "template": "merge-refs"
+  }
+}

@@ -41,7 +41,10 @@ export const adminCrudTextInputGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
       },
       run({ adminCrudInputContainer, reactComponentsImports }) {
-        const inputType = INPUT_TYPE_MAP[type];
+        const inputType =
+          type === 'text' && isNumber
+            ? 'NumberFieldController'
+            : INPUT_TYPE_MAP[type];
         adminCrudInputContainer.addInput({
           order,
           content: tsCodeFragment(
@@ -49,7 +52,6 @@ export const adminCrudTextInputGenerator = createGenerator({
           label="${label}"
           control={control}
           name="${modelField}"
-          ${isNumber ? 'registerOptions={{ valueAsNumber: true }}' : ''}
         />`,
             reactComponentsImports[inputType].declaration(),
           ),

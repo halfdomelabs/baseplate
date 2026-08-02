@@ -2,6 +2,22 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  useConfirmDialog,
+} from '@prisma-crud/ui-shared';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import {
@@ -15,24 +31,7 @@ import { toast } from 'sonner';
 
 import type { FragmentType } from '@src/gql';
 
-import { Alert, AlertTitle } from '@src/components/ui/alert';
-import { Button } from '@src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@src/components/ui/dropdown';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@src/components/ui/table';
 import { graphql, readFragment } from '@src/gql';
-import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 import type { passwordResetDialogUserFragment } from './password-reset-dialog';

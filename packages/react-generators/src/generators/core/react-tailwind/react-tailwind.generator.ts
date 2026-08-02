@@ -111,7 +111,7 @@ export const reactTailwindGenerator = createGenerator({
       },
       run({ paths }) {
         const globalStyles: string[] = [];
-        const sourceGlobs: string[] = [];
+        const sourceGlobs = new Set<string>();
 
         if (globalBodyClasses) {
           globalStyles.push(`body {
@@ -126,7 +126,7 @@ export const reactTailwindGenerator = createGenerator({
                 globalStyles.push(style);
               },
               addSourceGlob: (path) => {
-                sourceGlobs.push(path);
+                sourceGlobs.add(path);
               },
             },
           },
@@ -145,9 +145,9 @@ export const reactTailwindGenerator = createGenerator({
                     TPL_LIGHT_COLORS: lightColorsCss ?? '',
                     TPL_DARK_COLORS: darkColorsCss ?? '',
                     TPL_SOURCE_DIRECTIVES:
-                      sourceGlobs.length > 0 ||
+                      sourceGlobs.size > 0 ||
                       !builder.metadataOptions.includeTemplateMetadata
-                        ? sourceGlobs
+                        ? [...sourceGlobs]
                             .toSorted()
                             .map((path) => `@source '${path}';`)
                             .join('\n')

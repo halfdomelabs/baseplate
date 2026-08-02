@@ -95,7 +95,14 @@ function CheckboxFieldController<
     fieldState: { error },
   } = useControllerMerged({ name, control }, rest);
 
-  return <CheckboxField error={error?.message} {...rest} {...field} />;
+  return (
+    <CheckboxField
+      error={error?.message}
+      {...rest}
+      {...field}
+      value={field.value ?? false}
+    />
+  );
 }
 
 export { CheckboxField, CheckboxFieldController };

@@ -29,6 +29,7 @@ const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
       globalSetupFiles: t.array<string>(),
       setupFiles: t.array<string>(),
       maxWorkers: t.number(),
+      environment: t.scalar<'jsdom' | 'happy-dom'>(),
     }),
     {
       prefix: 'vitest',
@@ -62,7 +63,12 @@ export const vitestGenerator = createGenerator({
       },
       run({
         eslintConfig,
-        vitestConfigValues: { globalSetupFiles, setupFiles, maxWorkers },
+        vitestConfigValues: {
+          globalSetupFiles,
+          setupFiles,
+          maxWorkers,
+          environment,
+        },
         renderers,
       }) {
         eslintConfig.enableVitest.set(true);
@@ -85,6 +91,8 @@ export const vitestGenerator = createGenerator({
                 "loadEnv('development', process.cwd(), '')",
                 tsImportBuilder(['loadEnv']).from('vite'),
               ),
+              environment:
+                environment === undefined ? undefined : quot(environment),
               // TEST_MODE=unit runs have no DB involvement and keep full parallelism.
               maxWorkers:
                 maxWorkers === undefined

@@ -1,13 +1,15 @@
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
 import { createQueryPreloader, useApolloClient } from '@apollo/client/react';
+import {
+  Button,
+  ErrorDisplay,
+  Loader,
+  NotFoundCard,
+} from '@prisma-crud/ui-shared';
 import { createRouter, Link, RouterProvider } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { Button } from '../components/ui/button';
-import { ErrorDisplay } from '../components/ui/error-display';
-import { Loader } from '../components/ui/loader';
-import { NotFoundCard } from '../components/ui/not-found-card';
 import { useLogOut } from '../hooks/use-log-out';
 import { useSession } from '../hooks/use-session';
 import { routeTree } from '../route-tree.gen';
