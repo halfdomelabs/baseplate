@@ -164,6 +164,14 @@ export function createNotificationsPartialDefinition(
               type: 'dateTime',
               options: { defaultToNow: true },
             },
+            // Retention horizon, stamped at fan-out. Optional so rows written
+            // before this column keep the old never-expire behaviour rather
+            // than being reaped en masse on the first sweep after upgrade.
+            {
+              name: 'expiresAt',
+              type: 'dateTime',
+              isOptional: true,
+            },
           ],
           primaryKeyFieldRefs: ['id'],
           // The two hot access paths: the feed (recipient + newest-first) and
@@ -188,6 +196,11 @@ export function createNotificationsPartialDefinition(
                 { fieldRef: 'inApp' },
                 { fieldRef: 'seenAt' },
               ],
+            },
+            // Retention sweep: scans by horizon across all recipients, so it
+            // leads with `expiresAt` rather than reusing the feed indexes.
+            {
+              fields: [{ fieldRef: 'expiresAt' }],
             },
           ],
           // Idempotency layer 2, and the delivery worker's read path. UNIQUE

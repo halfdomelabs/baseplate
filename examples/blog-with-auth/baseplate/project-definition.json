@@ -837,6 +837,13 @@
             "name": "createdAt",
             "options": { "defaultToNow": true },
             "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:Idrt8gLdEwPm",
+            "isOptional": true,
+            "name": "expiresAt",
+            "options": {},
+            "type": "dateTime"
           }
         ],
         "indexes": [
@@ -855,6 +862,10 @@
               { "fieldRef": "seenAt" }
             ],
             "id": "model-index:s2i28pu9v3vh"
+          },
+          {
+            "fields": [{ "fieldRef": "expiresAt" }],
+            "id": "model-index:kpZb4WiynoAp"
           }
         ],
         "primaryKeyFieldRefs": ["id"],

@@ -3,7 +3,9 @@
   "templates": {
     "queues-notification-delivery": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "queues",
       "importMapProviders": {
         "queuesImportsProvider": {
@@ -13,15 +15,21 @@
       },
       "pathRootRelativePath": "{module-root}/queues/notification-delivery.queue.ts",
       "projectExports": {
-        "NotificationDeliveryJobData": { "isTypeOnly": true },
-        "notificationDeliveryQueue": { "isTypeOnly": false }
+        "NotificationDeliveryJobData": {
+          "isTypeOnly": true
+        },
+        "notificationDeliveryQueue": {
+          "isTypeOnly": false
+        }
       },
       "sourceFile": "module/queues/notification-delivery.queue.ts",
       "variables": {}
     },
     "queues-notification-delivery-worker": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "queues",
       "importMapProviders": {
         "queuesImportsProvider": {
@@ -35,7 +43,9 @@
       },
       "pathRootRelativePath": "{module-root}/queues/notification-delivery.worker.ts",
       "projectExports": {
-        "notificationDeliveryWorker": { "isTypeOnly": false }
+        "notificationDeliveryWorker": {
+          "isTypeOnly": false
+        }
       },
       "referencedGeneratorTemplates": ["queues-notification-delivery"],
       "sourceFile": "module/queues/notification-delivery.worker.ts",
@@ -43,7 +53,9 @@
     },
     "queues-notification-outbox-sweep": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "queues",
       "importMapProviders": {
         "queuesImportsProvider": {
@@ -53,14 +65,18 @@
       },
       "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.queue.ts",
       "projectExports": {
-        "notificationOutboxSweepQueue": { "isTypeOnly": false }
+        "notificationOutboxSweepQueue": {
+          "isTypeOnly": false
+        }
       },
       "sourceFile": "module/queues/notification-outbox-sweep.queue.ts",
       "variables": {}
     },
     "queues-notification-outbox-sweep-worker": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "queues",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
@@ -78,7 +94,9 @@
       },
       "pathRootRelativePath": "{module-root}/queues/notification-outbox-sweep.worker.ts",
       "projectExports": {
-        "notificationOutboxSweepWorker": { "isTypeOnly": false }
+        "notificationOutboxSweepWorker": {
+          "isTypeOnly": false
+        }
       },
       "referencedGeneratorTemplates": [
         "queues-notification-delivery",
@@ -87,9 +105,58 @@
       "sourceFile": "module/queues/notification-outbox-sweep.worker.ts",
       "variables": {}
     },
+    "queues-notification-retention": {
+      "type": "ts",
+      "fileOptions": {
+        "kind": "singleton"
+      },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-retention.queue.ts",
+      "projectExports": {
+        "notificationRetentionQueue": {
+          "isTypeOnly": false
+        }
+      },
+      "sourceFile": "module/queues/notification-retention.queue.ts",
+      "variables": {}
+    },
+    "queues-notification-retention-worker": {
+      "type": "ts",
+      "fileOptions": {
+        "kind": "singleton"
+      },
+      "group": "queues",
+      "importMapProviders": {
+        "queuesImportsProvider": {
+          "importName": "queuesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-queue:src/queue/core/generators/queues/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/queues/notification-retention.worker.ts",
+      "projectExports": {
+        "notificationRetentionWorker": {
+          "isTypeOnly": false
+        }
+      },
+      "referencedGeneratorTemplates": ["queues-notification-retention"],
+      "sourceFile": "module/queues/notification-retention.worker.ts",
+      "variables": {}
+    },
     "schema-notification-content-field": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -103,11 +170,15 @@
         "services-notification-renderer"
       ],
       "sourceFile": "module/schema/notification-content.field.ts",
-      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+      "variables": {
+        "TPL_NOTIFICATION_OBJECT_TYPE": {}
+      }
     },
     "schema-notification-content-object-types": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -122,7 +193,9 @@
     },
     "schema-notification-feed-queries": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -144,7 +217,9 @@
     },
     "schema-notification-mutations": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -158,11 +233,15 @@
       },
       "pathRootRelativePath": "{module-root}/schema/notification.mutations.ts",
       "sourceFile": "module/schema/notification.mutations.ts",
-      "variables": { "TPL_NOTIFICATION_OBJECT_TYPE": {} }
+      "variables": {
+        "TPL_NOTIFICATION_OBJECT_TYPE": {}
+      }
     },
     "schema-notification-subscriptions": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "schema",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -176,7 +255,9 @@
     },
     "services-email-channel": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "importMapProviders": {
         "emailModuleImportsProvider": {
           "importName": "emailModuleImportsProvider",
@@ -189,11 +270,15 @@
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/email-channel.ts",
-      "variables": { "TPL_NOTIFICATION_EMAIL": {} }
+      "variables": {
+        "TPL_NOTIFICATION_EMAIL": {}
+      }
     },
     "services-generic-type": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/generic-type.ts",
@@ -203,17 +288,23 @@
     },
     "services-notification-channel": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-channel.ts",
       "referencedGeneratorTemplates": ["services-notification-renderer"],
       "sourceFile": "module/services/notification-channel.ts",
-      "variables": { "TPL_CHANNEL_ENTRIES": {} }
+      "variables": {
+        "TPL_CHANNEL_ENTRIES": {}
+      }
     },
     "services-notification-content": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-content.ts",
@@ -222,7 +313,9 @@
     },
     "services-notification-events": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "yogaPluginImportsProvider": {
@@ -233,14 +326,18 @@
       "pathRootRelativePath": "{module-root}/services/notification-events.ts",
       "projectExports": {
         "createNotificationEvents": {},
-        "NotificationEvents": { "isTypeOnly": true }
+        "NotificationEvents": {
+          "isTypeOnly": true
+        }
       },
       "sourceFile": "module/services/notification-events.ts",
       "variables": {}
     },
     "services-notification-outbox": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
@@ -263,11 +360,15 @@
         "services-notification-renderer"
       ],
       "sourceFile": "module/services/notification-outbox.ts",
-      "variables": { "TPL_USER_DELEGATE": {} }
+      "variables": {
+        "TPL_USER_DELEGATE": {}
+      }
     },
     "services-notification-registry": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/notification-registry.ts",
@@ -280,7 +381,9 @@
     },
     "services-notification-renderer": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
@@ -306,7 +409,10 @@
           "isTypeOnly": false,
           "name": "RENDER_SOURCE_SELECT"
         },
-        "RenderSource": { "isTypeOnly": true, "name": "RenderSource" }
+        "RenderSource": {
+          "isTypeOnly": true,
+          "name": "RenderSource"
+        }
       },
       "referencedGeneratorTemplates": [
         "services-notification-content",
@@ -317,7 +423,9 @@
     },
     "services-notification-service": {
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "group": "main",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
