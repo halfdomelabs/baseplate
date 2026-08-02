@@ -138,7 +138,7 @@ export function validateWhereComplexity(
     if (nested.length === 0) {
       return true;
     }
-    if (depth + 1 > maxDepth) {
+    if (depth >= maxDepth) {
       return false;
     }
     clauseCount += nested.length;
@@ -148,5 +148,5 @@ export function validateWhereComplexity(
     return nested.every((clause) => walk(clause, depth + 1));
   }
 
-  return walk(where, 1);
+  return walk(where, 0);
 }
