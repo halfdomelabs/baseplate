@@ -51,7 +51,9 @@ export const FASTIFY_PACKAGES = {
   '@types/node': `^24.0.0`,
 
   // Redis
-  ioredis: '6.0.0',
+  // Held at 5.x: @graphql-yoga/redis-event-target peers ioredis ^5.0.6 and has
+  // no release supporting 6.x.
+  ioredis: '5.11.1',
 
   // Sentry
   '@sentry/core': '10.63.0',

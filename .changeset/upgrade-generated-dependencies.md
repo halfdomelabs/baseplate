@@ -10,4 +10,4 @@
 '@baseplate-dev/plugin-storage': patch
 ---
 
-Generated projects now use current versions of their runtime dependencies (including Redis, queue, Stripe, logging, and file upload packages) and type against the Node version they declare. File uploads no longer reject legacy JPEG extensions such as `.jfif`, allowed-extension hints show `.jpg` instead of `.jpeg`, and an unrecognized Stripe subscription status now fails the webhook instead of being silently written.
+Generated projects now use current versions of their runtime dependencies, including major upgrades to bullmq, Stripe, pino, mime-types, react-dropzone and react-day-picker, so a synced project needs a fresh install and may need changes where it calls those libraries directly. File uploads also accept legacy JPEG extensions such as `.jfif` that were previously rejected, and an unrecognized Stripe subscription status now fails the webhook instead of writing a bad value.
