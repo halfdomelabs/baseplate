@@ -8,7 +8,7 @@ import { createMockLogger } from '@src/tests/helpers/logger.test-helper.js';
 import { createTestServiceContext } from '@src/tests/helpers/service-context.test-helper.js';
 import { bindQueueHandler, defineQueue } from '@src/types/queue.types.js';
 
-import { config } from './config.js';
+import { getConfig } from './config.js';
 import { logger as mockedLogger } from './logger.js';
 import { createQueueRuntime } from './pg-boss.service.js';
 
@@ -55,7 +55,7 @@ async function seedStandardPolicyQueue(
   queueName: string,
   jobCount: number,
 ): Promise<void> {
-  const boss = new PgBoss({ connectionString: config.DATABASE_URL });
+  const boss = new PgBoss({ connectionString: getConfig().DATABASE_URL });
   boss.on('error', () => {
     // Swallowed - only used to seed state before the runtime under test
     // takes over the connection.
@@ -574,7 +574,9 @@ describe('pg-boss service integration tests', () => {
       ]);
 
       // Still unmutated - planning must not have applied anything.
-      const rawBoss = new PgBoss({ connectionString: config.DATABASE_URL });
+      const rawBoss = new PgBoss({
+        connectionString: getConfig().DATABASE_URL,
+      });
       await rawBoss.start();
       const queue = await rawBoss.getQueue(queueName);
       await rawBoss.stop();

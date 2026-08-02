@@ -2,18 +2,22 @@
 
 import type { FastifyError } from 'fastify';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
 import * as Sentry from '@sentry/node';
 import { omit } from 'es-toolkit';
-
-const SENTRY_ENABLED = !!config.SENTRY_DSN;
 
 // Sensitive headers that should not be logged to Sentry with the request
 const EXCLUDED_HEADERS = ['cookie', 'authorization'];
 
 export function isSentryEnabled(): boolean {
-  return SENTRY_ENABLED;
+  // An error logger must never throw: in a process without backend env,
+  // treat Sentry as disabled rather than propagating the config parse error.
+  try {
+    return !!getConfig().SENTRY_DSN;
+  } catch {
+    return false;
+  }
 }
 
 export function shouldLogToSentry(error: unknown): boolean {
@@ -60,7 +64,7 @@ export function logErrorToSentry(
   error: unknown,
   additionalContext?: Record<string, unknown>,
 ): string | undefined {
-  if (!SENTRY_ENABLED) {
+  if (!isSentryEnabled()) {
     return;
   }
   const sentryId = Sentry.captureException(

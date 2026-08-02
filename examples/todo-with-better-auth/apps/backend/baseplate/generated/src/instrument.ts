@@ -3,19 +3,20 @@ import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import os from 'node:os';
 
-import { config } from './services/config.js';
+import { getConfig } from './services/config.js';
 
-const SENTRY_ENABLED = !!config.SENTRY_DSN;
+// Entrypoint loaded via --import, so reading config at module scope is safe here.
+const { SENTRY_DSN, APP_ENVIRONMENT } = getConfig();
 
 const IGNORED_TRANSACTION_NAMES = new Set(['GET /healthz']);
 
 const SENTRY_TRACES_SAMPLE_RATE = 1;
 
 // Ensure to call this before importing any other modules!
-if (SENTRY_ENABLED) {
+if (SENTRY_DSN) {
   Sentry.init({
-    dsn: config.SENTRY_DSN,
-    environment: config.APP_ENVIRONMENT,
+    dsn: SENTRY_DSN,
+    environment: APP_ENVIRONMENT,
     serverName: os.hostname(),
     integrations: /* TPL_INTEGRATIONS:START */ [
       nodeProfilingIntegration(),

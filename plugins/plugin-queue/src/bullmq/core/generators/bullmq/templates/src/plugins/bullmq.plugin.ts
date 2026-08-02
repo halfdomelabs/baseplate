@@ -3,7 +3,7 @@
 import type { AppServices } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createSystemServiceContext } from '%serviceContextImports';
@@ -18,7 +18,7 @@ const bullMQPluginCallback: FastifyPluginCallback<{
   // Not narrowed to `queue`: job handlers run with a full service context.
   services: AppServices;
 }> = (fastify, { services }, done) => {
-  if (config.ENABLE_EMBEDDED_WORKERS) {
+  if (getConfig().ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
       'Embedded workers mode enabled - starting workers in application process',

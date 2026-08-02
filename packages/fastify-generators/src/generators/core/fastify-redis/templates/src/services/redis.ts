@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { Redis } from 'ioredis';
 
 /**
@@ -35,10 +35,11 @@ export function createRedisRuntime(): RedisRuntime {
   function createConnection({
     usePrefix = true,
   }: { usePrefix?: boolean } = {}): Redis {
-    const client = new Redis(config.REDIS_URL, {
+    const { REDIS_URL, REDIS_KEY_PREFIX } = getConfig();
+    const client = new Redis(REDIS_URL, {
       lazyConnect: true,
       maxRetriesPerRequest: null,
-      keyPrefix: usePrefix ? config.REDIS_KEY_PREFIX : undefined,
+      keyPrefix: usePrefix ? REDIS_KEY_PREFIX : undefined,
     });
     connections.push(client);
     return client;

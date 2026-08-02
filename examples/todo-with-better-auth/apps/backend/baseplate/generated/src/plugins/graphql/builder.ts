@@ -10,7 +10,7 @@ import type PrismaTypes from '@src/generated/prisma/pothos-prisma-types.js';
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
 import { getDatamodel } from '@src/generated/prisma/pothos-prisma-types.js';
-import { config } from '@src/services/config.js';
+import { isDevelopment } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 
 import { pothosAuthorizeByRolesPlugin } from './FieldAuthorizePlugin/index.js';
@@ -60,7 +60,7 @@ export const builder = new SchemaBuilder<{
       dmmf: getDatamodel(),
       exposeDescriptions: false,
       filterConnectionTotalCount: true,
-      onUnusedQuery: config.APP_ENVIRONMENT === 'dev' ? 'warn' : null,
+      onUnusedQuery: isDevelopment() ? 'warn' : null,
     },
     relay: {
       clientMutationId: 'omit',

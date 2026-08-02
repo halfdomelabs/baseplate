@@ -87,7 +87,7 @@ export const pothosPrismaGenerator = createGenerator({
                 dmmf: ${pothosPrismaImports.getDatamodel.fragment()}(),
                 exposeDescriptions: false,
                 filterConnectionTotalCount: true,
-                onUnusedQuery: ${configServiceImports.config.fragment()}.APP_ENVIRONMENT === 'dev' ? 'warn' : null,
+                onUnusedQuery: ${configServiceImports.isDevelopment.fragment()}() ? 'warn' : null,
               }`,
             );
             await builder.apply(renderers.pothosPrismaTypes.render({}));

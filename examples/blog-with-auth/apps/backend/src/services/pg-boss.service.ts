@@ -17,7 +17,7 @@ import type {
 import type { ServiceContext } from '../utils/service-context.js';
 
 import { DEFAULT_QUEUE_CONCURRENCY } from '../types/queue.types.js';
-import { config } from './config.js';
+import { getConfig } from './config.js';
 import { logError } from './error-logger.js';
 import { logger } from './logger.js';
 
@@ -216,7 +216,7 @@ export function createQueueRuntime(
   );
 
   const boss = new PgBoss({
-    connectionString: config.DATABASE_URL,
+    connectionString: getConfig().DATABASE_URL,
     useListenNotify: options.useListenNotify ?? !options.disableMaintenance,
     ...(options.disableMaintenance && {
       supervise: false,

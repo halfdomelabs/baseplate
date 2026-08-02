@@ -2,7 +2,7 @@
 
 import { buildServer } from '$server';
 import { createAppRuntime } from '%appRuntimeImports';
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { logger } from '%loggerServiceImports';
 
 async function startServer(): Promise<void> {
@@ -17,8 +17,8 @@ async function startServer(): Promise<void> {
 
   try {
     await fastify.listen({
-      port: config.SERVER_PORT,
-      host: config.SERVER_HOST,
+      port: getConfig().SERVER_PORT,
+      host: getConfig().SERVER_HOST,
     });
   } catch (err: unknown) {
     // fastify.close() triggers the onClose hook, which disposes the runtime.

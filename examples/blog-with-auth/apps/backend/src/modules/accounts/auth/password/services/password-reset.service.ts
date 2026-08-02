@@ -6,7 +6,7 @@ import z from 'zod';
 
 import type { RequestServiceContextWith } from '@src/utils/request-service-context.js';
 
-import { config } from '@src/services/config.js';
+import { getConfig } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 import { memoizeRateLimiter } from '@src/services/rate-limiter.service.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
@@ -110,7 +110,7 @@ export async function requestPasswordReset({
     });
 
     // Construct reset URL using configured domain
-    const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
+    const resetLink = `${getConfig().AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
     await services.email.send(

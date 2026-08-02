@@ -13,7 +13,8 @@ import {
 import { CORE_CONFIG_SERVICE_PATHS } from './template-paths.js';
 
 export const configServiceImportsSchema = createTsImportMapSchema({
-  config: {},
+  getConfig: {},
+  isDevelopment: {},
 });
 
 export type ConfigServiceImportsProvider = TsImportMapProviderFromSchema<
@@ -36,7 +37,8 @@ const coreConfigServiceImportsTask = createGeneratorTask({
     return {
       providers: {
         configServiceImports: createTsImportMap(configServiceImportsSchema, {
-          config: paths.config,
+          getConfig: paths.config,
+          isDevelopment: paths.config,
         }),
       },
     };

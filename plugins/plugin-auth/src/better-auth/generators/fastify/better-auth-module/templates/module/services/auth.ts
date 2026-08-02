@@ -4,11 +4,15 @@ import type { AuthRole } from '%authRolesImports';
 import type { EmailService } from '%emailModuleImports';
 
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { prisma } from '%prismaImports';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { customSession } from 'better-auth/plugins';
+
+// Read at module scope: this module already requires backend env at import
+// via the Prisma client.
+const config = getConfig();
 
 /**
  * Returns the cookie prefix for Better Auth.

@@ -47,7 +47,7 @@ export const pgBossGenerator = createGenerator({
         });
         fastifyServerConfig.runtimeConstructionOptions.set(
           tsCodeFragment(
-            '{ backgroundServices: config.ENABLE_EMBEDDED_WORKERS }',
+            '{ backgroundServices: getConfig().ENABLE_EMBEDDED_WORKERS }',
           ),
         );
       },

@@ -1,10 +1,8 @@
 import fp from 'fastify-plugin';
 
-import { config } from '../services/config.js';
+import { isDevelopment } from '../services/config.js';
 import { logError } from '../services/error-logger.js';
 import { HttpError, NotFoundError } from '../utils/http-errors.js';
-
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 /**
  * Type guard to check if an error has statusCode and code properties.
@@ -78,7 +76,7 @@ export const errorHandlerPlugin = fp((fastify, opts, done) => {
         code: 'INTERNAL_SERVER_ERROR',
         statusCode: 500,
         reqId: request.id,
-        originalError: IS_DEVELOPMENT ? errorDetails : undefined,
+        originalError: isDevelopment() ? errorDetails : undefined,
       });
     }
   });
