@@ -4,7 +4,7 @@ import fastifyPlugin from 'fastify-plugin';
 
 import type { RuntimeServices } from '../utils/runtime-services.js';
 
-import { config } from '../services/config.js';
+import { getConfig } from '../services/config.js';
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
 import { createSystemServiceContext } from '../utils/service-context.js';
@@ -17,7 +17,7 @@ import { createSystemServiceContext } from '../utils/service-context.js';
 const pgBossPluginCallback: FastifyPluginCallback<{
   services: RuntimeServices;
 }> = (fastify, { services }, done) => {
-  if (config.ENABLE_EMBEDDED_WORKERS) {
+  if (getConfig().ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
       'Embedded workers mode enabled - starting workers in application process',

@@ -6,6 +6,8 @@ export interface NotificationsCoreNotificationModulePaths {
   queuesNotificationDeliveryWorker: string;
   queuesNotificationOutboxSweep: string;
   queuesNotificationOutboxSweepWorker: string;
+  queuesNotificationRetention: string;
+  queuesNotificationRetentionWorker: string;
   schemaNotificationContentField: string;
   schemaNotificationContentObjectTypes: string;
   schemaNotificationFeedQueries: string;
@@ -43,6 +45,8 @@ const notificationsCoreNotificationModulePathsTask = createGeneratorTask({
           queuesNotificationDeliveryWorker: `${moduleRoot}/queues/notification-delivery.worker.ts`,
           queuesNotificationOutboxSweep: `${moduleRoot}/queues/notification-outbox-sweep.queue.ts`,
           queuesNotificationOutboxSweepWorker: `${moduleRoot}/queues/notification-outbox-sweep.worker.ts`,
+          queuesNotificationRetention: `${moduleRoot}/queues/notification-retention.queue.ts`,
+          queuesNotificationRetentionWorker: `${moduleRoot}/queues/notification-retention.worker.ts`,
           schemaNotificationContentField: `${moduleRoot}/schema/notification-content.field.ts`,
           schemaNotificationContentObjectTypes: `${moduleRoot}/schema/notification-content.object-types.ts`,
           schemaNotificationFeedQueries: `${moduleRoot}/schema/notification-feed.queries.ts`,

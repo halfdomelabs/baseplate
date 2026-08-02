@@ -10,7 +10,7 @@ import type {
 import type { QueueService } from '%queuesImports';
 
 import { sendEmailQueue } from '$sendEmailQueue';
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 
 function normalizeEmailAddresses(addresses: string | string[]): string[] {
   return Array.isArray(addresses) ? addresses : [addresses];
@@ -20,7 +20,7 @@ function buildTransformedMessage(
   options: EmailRawOptions,
 ): TransformedEmailMessage {
   return {
-    from: options.from ?? config.EMAIL_DEFAULT_FROM,
+    from: options.from ?? getConfig().EMAIL_DEFAULT_FROM,
     to: normalizeEmailAddresses(options.to),
     cc: options.cc ? normalizeEmailAddresses(options.cc) : undefined,
     bcc: options.bcc ? normalizeEmailAddresses(options.bcc) : undefined,

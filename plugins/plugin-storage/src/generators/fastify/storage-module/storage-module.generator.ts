@@ -277,10 +277,10 @@ export const storageModuleGenerator = createGenerator({
 
             for (const adapter of s3Adapters) {
               const adapterOptions = TsCodeUtils.mergeFragmentsAsObject({
-                bucket: `config.${adapter.bucketConfigVar}`,
-                region: `config.AWS_DEFAULT_REGION`,
+                bucket: `getConfig().${adapter.bucketConfigVar}`,
+                region: `getConfig().AWS_DEFAULT_REGION`,
                 publicUrl: adapter.hostedUrlConfigVar
-                  ? `config.${adapter.hostedUrlConfigVar}`
+                  ? `getConfig().${adapter.hostedUrlConfigVar}`
                   : undefined,
               });
 
@@ -288,7 +288,7 @@ export const storageModuleGenerator = createGenerator({
                 adapter.name,
                 TsCodeUtils.templateWithImports([
                   storageModuleImports.createS3Adapter.declaration(),
-                  configServiceImports.config.declaration(),
+                  configServiceImports.getConfig.declaration(),
                 ])`createS3Adapter(${adapterOptions})`,
               );
             }

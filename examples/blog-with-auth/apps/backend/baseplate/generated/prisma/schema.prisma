@@ -113,11 +113,13 @@ model Notification {
   readAt          DateTime?              @map("read_at") @db.Timestamptz(3)
   dismissedAt     DateTime?              @map("dismissed_at") @db.Timestamptz(3)
   createdAt       DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt       DateTime?              @map("expires_at") @db.Timestamptz(3)
   actor           User?                  @relation("actorNotifications", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Restrict)
   deliveries      NotificationDelivery[]
   recipient       User                   @relation("notifications", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 
   @@unique([requestId, recipientId])
+  @@index([expiresAt])
   @@index([recipientId, inApp, seenAt])
   @@index([recipientId, inApp, id])
   @@map("notification")

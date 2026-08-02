@@ -634,4 +634,263 @@ describe('notification outbox', () => {
     expect(deliveries).toHaveLength(1);
     expect(deliveries[0]?.status).toBe('pending');
   });
+
+  describe('retention', () => {
+    /** Backdates a row's horizon so a retention pass considers it expired. */
+    async function expire(
+      notificationId: string,
+      expiresAt: Date | null,
+    ): Promise<void> {
+      await prisma.notification.update({
+        where: { id: notificationId },
+        data: { expiresAt },
+      });
+    }
+
+    const PAST = new Date('2020-01-01T00:00:00Z');
+
+    it('deletes rows past their horizon and leaves fresh ones', async () => {
+      const a = await createUser(0);
+      const service = createService({
+        queue: createFakeQueue(),
+        channel: createRecordingChannel(),
+      });
+      const stale = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, {
+        recipientIds: [a],
+        params: { text: 'old' },
+      });
+      const fresh = await service.notifyMany(GENERIC_NOTIFICATION_TYPE, {
+        recipientIds: [a],
+        params: { text: 'new' },
+      });
+      const staleRow = await prisma.notification.findFirstOrThrow({
+        where: { requestId: stale.requestId },
+      });
+      await expire(staleRow.id, PAST);
+
+      const deleted = await service.outbox.deleteExpiredNotifications({
+        expiredBefore: new Date(),
+        batchSize: 100,
+        maxDeletions: 1000,
+      });
+
+      expect(deleted).toBe(1);
+      const remaining = await prisma.notification.findMany({
+        select: { requestId: true },
+      });
+      expect(remaining.map((row) => row.requestId)).toEqual([fresh.requestId]);
+    });
+
+    it('keeps a row whose delivery has not settled', async () => {
+      // The row is the delivery's parent, so collecting it would cascade and
+      // cancel a send that was never made — the same invariant that makes
+      // dismiss a soft delete.
+      const a = await createUser(0);
+      const service = createService({
+        queue: createFakeQueue({ failing: true }),
+        channel: createRecordingChannel(),
+      });
+      const { requestId } = await service.notifyMany(
+        { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
+        { recipientIds: [a], params: { text: 'hello' } },
+      );
+      const row = await prisma.notification.findFirstOrThrow({
+        where: { requestId },
+      });
+      await expire(row.id, PAST);
+
+      const deleted = await service.outbox.deleteExpiredNotifications({
+        expiredBefore: new Date(),
+        batchSize: 100,
+        maxDeletions: 1000,
+      });
+
+      expect(deleted).toBe(0);
+      expect(await prisma.notification.count({ where: { requestId } })).toBe(1);
+
+      // Once the delivery settles, the row becomes collectable.
+      await prisma.notificationDelivery.updateMany({
+        where: { requestId },
+        data: { status: 'delivered' },
+      });
+      expect(
+        await service.outbox.deleteExpiredNotifications({
+          expiredBefore: new Date(),
+          batchSize: 100,
+          maxDeletions: 1000,
+        }),
+      ).toBe(1);
+    });
+
+    it('never collects a row with no horizon', async () => {
+      // Rows written before retention shipped have a null `expiresAt`; they
+      // must keep the old never-expire behaviour rather than being reaped on
+      // the first pass after upgrade.
+      const a = await createUser(0);
+      const service = createService({
+        queue: createFakeQueue(),
+        channel: createRecordingChannel(),
+      });
+      const { requestId } = await service.notifyMany(
+        GENERIC_NOTIFICATION_TYPE,
+        { recipientIds: [a], params: { text: 'legacy' } },
+      );
+      const row = await prisma.notification.findFirstOrThrow({
+        where: { requestId },
+      });
+      await expire(row.id, null);
+
+      const deleted = await service.outbox.deleteExpiredNotifications({
+        expiredBefore: new Date(),
+        batchSize: 100,
+        maxDeletions: 1000,
+      });
+
+      expect(deleted).toBe(0);
+      expect(await prisma.notification.count({ where: { requestId } })).toBe(1);
+    });
+
+    it('collects finished requests, which nothing cascades away', async () => {
+      // `requestId` is FK-less, so deleting the notifications leaves the
+      // request behind — one row per `notifyMany` forever without this.
+      const a = await createUser(0);
+      const service = createService({
+        queue: createFakeQueue(),
+        channel: createRecordingChannel(),
+      });
+      const { requestId } = await service.notifyMany(
+        GENERIC_NOTIFICATION_TYPE,
+        { recipientIds: [a], params: { text: 'hello' } },
+      );
+      await prisma.notification.deleteMany({ where: { requestId } });
+
+      const deleted = await service.outbox.deleteCompletedRequests({
+        createdBefore: new Date(Date.now() + 1000),
+        batchSize: 100,
+        maxDeletions: 1000,
+      });
+
+      expect(deleted).toBe(1);
+      expect(await prisma.notificationRequest.count()).toBe(0);
+    });
+
+    it('keeps a request whose delivery is still pending', async () => {
+      const a = await createUser(0);
+      const service = createService({
+        queue: createFakeQueue({ failing: true }),
+        channel: createRecordingChannel(),
+      });
+      const { requestId } = await service.notifyMany(
+        { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
+        { recipientIds: [a], params: { text: 'hello' } },
+      );
+      // The enqueue failed, so the fan-out is still pending; settle it to
+      // isolate the delivery check from the `fanoutStatus` one.
+      await prisma.notificationRequest.updateMany({
+        where: { id: requestId },
+        data: { fanoutStatus: 'done' },
+      });
+
+      expect(
+        await service.outbox.deleteCompletedRequests({
+          createdBefore: new Date(Date.now() + 1000),
+          batchSize: 100,
+          maxDeletions: 1000,
+        }),
+      ).toBe(0);
+
+      await prisma.notificationDelivery.updateMany({
+        where: { requestId },
+        data: { status: 'delivered' },
+      });
+
+      expect(
+        await service.outbox.deleteCompletedRequests({
+          createdBefore: new Date(Date.now() + 1000),
+          batchSize: 100,
+          maxDeletions: 1000,
+        }),
+      ).toBe(1);
+    });
+
+    it('stops requests at maxDeletions, not the next batch boundary', async () => {
+      // The cap has to bound the `take` too: a full batch on the last
+      // iteration would overshoot the documented ceiling.
+      const recipientIds = await createUsers(10);
+      const service = createService({
+        queue: createFakeQueue(),
+        channel: createRecordingChannel(),
+      });
+      for (const recipientId of recipientIds) {
+        await service.notifyMany(GENERIC_NOTIFICATION_TYPE, {
+          recipientIds: [recipientId],
+          params: { text: 'hello' },
+        });
+      }
+
+      const deleted = await service.outbox.deleteCompletedRequests({
+        createdBefore: new Date(Date.now() + 1000),
+        batchSize: 4,
+        maxDeletions: 6,
+      });
+
+      expect(deleted).toBe(6);
+      expect(await prisma.notificationRequest.count()).toBe(4);
+    });
+
+    it('makes progress when a whole batch is held back', async () => {
+      // Held-back rows stay in the result set, so a cursorless loop would
+      // re-read the same batch forever.
+      const recipientIds = await createUsers(4);
+      const service = createService({
+        queue: createFakeQueue({ failing: true }),
+        channel: createRecordingChannel(),
+      });
+      for (const recipientId of recipientIds) {
+        await service.notifyMany(
+          { ...GENERIC_NOTIFICATION_TYPE, channels: ['inApp', 'email'] },
+          { recipientIds: [recipientId], params: { text: 'hello' } },
+        );
+      }
+      await prisma.notificationRequest.updateMany({
+        data: { fanoutStatus: 'done' },
+      });
+
+      // Every request still has a pending delivery, so none are collectable —
+      // this must terminate rather than spin.
+      const deleted = await service.outbox.deleteCompletedRequests({
+        createdBefore: new Date(Date.now() + 1000),
+        batchSize: 2,
+        maxDeletions: 1000,
+      });
+
+      expect(deleted).toBe(0);
+      expect(await prisma.notificationRequest.count()).toBe(4);
+    });
+
+    it('stops at maxDeletions, leaving the rest for the next pass', async () => {
+      const recipientIds = await createUsers(10);
+      const service = createService({
+        queue: createFakeQueue(),
+        channel: createRecordingChannel(),
+      });
+      const { requestId } = await service.notifyMany(
+        GENERIC_NOTIFICATION_TYPE,
+        { recipientIds, params: { text: 'hello' } },
+      );
+      await prisma.notification.updateMany({
+        where: { requestId },
+        data: { expiresAt: PAST },
+      });
+
+      const deleted = await service.outbox.deleteExpiredNotifications({
+        expiredBefore: new Date(),
+        batchSize: 3,
+        maxDeletions: 4,
+      });
+
+      expect(deleted).toBe(4);
+      expect(await prisma.notification.count({ where: { requestId } })).toBe(6);
+    });
+  });
 });

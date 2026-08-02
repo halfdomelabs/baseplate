@@ -5,7 +5,7 @@ import type { FastifyPluginCallback } from 'fastify';
 import type { Stripe } from 'stripe';
 
 import { createStripeEventHandlers } from '$serviceEventHandlers';
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import fp from 'fastify-plugin';
@@ -27,7 +27,7 @@ async function getStripeEvent(
     return await stripe.webhooks.constructEventAsync(
       rawBody,
       signature,
-      config.STRIPE_ENDPOINT_SECRET,
+      getConfig().STRIPE_ENDPOINT_SECRET,
     );
   } catch (err) {
     logError(err);

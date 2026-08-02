@@ -297,7 +297,7 @@ async function writeSchemaToFile(): Promise<void> {
   }
 }
 
-if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
+if (isDevelopment() && process.env.NODE_ENV !== 'test') {
   writeSchemaToFile().catch((err: unknown) => {
     logger.error(err);
   });

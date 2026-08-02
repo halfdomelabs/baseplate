@@ -116,7 +116,7 @@ export const fastifyStripeGenerator = createGenerator({
           ),
         });
         appRuntimeConfig.construction.set('stripe', {
-          fragment: TsCodeUtils.template`new ${tsCodeFragment('Stripe', tsImportBuilder().default('Stripe').from('stripe'))}(${configServiceImports.config.fragment()}.STRIPE_SECRET_KEY)`,
+          fragment: TsCodeUtils.template`new ${tsCodeFragment('Stripe', tsImportBuilder().default('Stripe').from('stripe'))}(${configServiceImports.getConfig.fragment()}().STRIPE_SECRET_KEY)`,
         });
       },
     }),

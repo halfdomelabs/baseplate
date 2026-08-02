@@ -10,10 +10,10 @@ import type { AppServices } from '@src/utils/runtime-services.js';
 import { stripeWebhookPlugin } from '@src/plugins/stripe-webhook.js';
 
 vi.mock('@src/services/config.js', () => ({
-  config: {
+  getConfig: () => ({
     STRIPE_SECRET_KEY: 'sk_test_fake',
     STRIPE_ENDPOINT_SECRET: 'whsec_test_fake',
-  },
+  }),
 }));
 vi.mock('@src/services/logger.js', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },

@@ -18,5 +18,15 @@
     "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
     "instanceData": {},
     "template": "queues-notification-outbox-sweep-worker"
+  },
+  "notification-retention.queue.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-retention"
+  },
+  "notification-retention.worker.ts": {
+    "generator": "@baseplate-dev/plugin-notifications#notifications/core/notification-module",
+    "instanceData": {},
+    "template": "queues-notification-retention-worker"
   }
 }

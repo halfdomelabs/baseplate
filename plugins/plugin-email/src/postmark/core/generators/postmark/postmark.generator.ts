@@ -46,7 +46,7 @@ export const postmarkGenerator = createGenerator({
     // Add postmark package dependency
     node: createProviderTask(nodeProvider, (node) => {
       node.packages.addProdPackages({
-        postmark: '4.0.7',
+        postmark: '5.1.0',
       });
     }),
     // Register the postmark adapter with the email module

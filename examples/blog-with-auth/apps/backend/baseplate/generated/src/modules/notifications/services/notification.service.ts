@@ -14,6 +14,7 @@ import type {
 import type { NotificationEvents } from './notification-events.js';
 import type { NotificationOutbox } from './notification-outbox.js';
 import type {
+  NotificationActor,
   NotificationEvent,
   NotificationTypeDefinition,
 } from './notification-registry.js';
@@ -32,6 +33,12 @@ const WRITE_CHUNK_SIZE = 500;
 
 /** Recipients per badge-publish batch. */
 const PUBLISH_CHUNK_SIZE = 100;
+
+/**
+ * How long a notification is kept before the retention worker deletes it.
+ * One global window; there is no per-type override.
+ */
+const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
 
 /**
  * Every batch runs inside one interactive transaction, so this timeout — not
@@ -58,13 +65,17 @@ async function countUnseenFor(
   return new Map(groups.map((group) => [group.recipientId, group._count._all]));
 }
 
-/** Actor columns from the input (human actors; live name/avatar via the relation). */
-function actorColumns(actorId: string | undefined): {
+/**
+ * Actor identity shared by the request and its rows. The `actorLabel` snapshot
+ * lives only on {@link Notification}, so it is stamped per row rather than
+ * added here.
+ */
+function actorColumns(input: { actorId?: string }): {
   actorKind: string;
   actorId: string | null;
 } {
-  return actorId
-    ? { actorKind: 'user', actorId }
+  return input.actorId
+    ? { actorKind: 'user', actorId: input.actorId }
     : { actorKind: 'none', actorId: null };
 }
 
@@ -73,6 +84,12 @@ export interface NotifyInput<P extends NotificationParams> {
   recipientId: string;
   params: P;
   actorId?: string;
+  /**
+   * Display name snapshotted onto the row, surviving a rename or deletion of
+   * the actor. Also how a non-user actor is named, until system actors get a
+   * locale-aware key lookup.
+   */
+  actorLabel?: string;
   /** Polymorphic subject reference (no FK). */
   entityType?: string;
   entityId?: string;
@@ -107,6 +124,7 @@ export interface NotifyManyResult extends NotifyResult {
 export interface NotifyTextOptions {
   actionUrl?: string;
   actorId?: string;
+  actorLabel?: string;
 }
 
 /** Result of a mutation that can change the unseen (badge) count. */
@@ -167,7 +185,11 @@ export interface NotificationService {
    * {@link NotificationRenderer}; see its docs for the version-pinning and
    * fallback rules.
    */
-  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
+  renderContent(
+    row: RenderSource,
+    ctx?: RenderContext,
+    actor?: NotificationActor,
+  ): RenderedContent;
   /**
    * Count of UNSEEN notifications — the bell badge. Seen (opening the panel)
    * clears the badge; read (clicking one) clears its highlight. `readAt`
@@ -268,9 +290,10 @@ export function createNotificationService(deps: {
     const params = type.paramsSchema.parse(input.params);
     const recipientIds = [...new Set(input.recipientIds)];
 
+    // Same chain as the read path, so a row and its frozen snapshot agree.
     const event: NotificationEvent<P> = {
       params,
-      actorId: input.actorId,
+      actor: input.actorLabel ? { label: input.actorLabel } : undefined,
       entityType: input.entityType,
       entityId: input.entityId,
     };
@@ -278,6 +301,15 @@ export function createNotificationService(deps: {
     // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
     const routing = resolveRouting(type);
+
+    // Stamped per row rather than onto `contentColumns`: retention is a
+    // property of the durable recipient row, and `NotificationRequest` has no
+    // such column — it is disposable once its deliveries settle.
+    const expiresAt = new Date(Date.now() + RETENTION_MS);
+
+    // Likewise row-only: the actor snapshot exists to survive the live user
+    // row, which only the durable notification outlives.
+    const actorSnapshot = { actorLabel: input.actorLabel ?? null };
 
     // Copied onto every row, so the request and its rows cannot disagree.
     const contentColumns = {
@@ -287,7 +319,7 @@ export function createNotificationService(deps: {
       segments: frozen.segments,
       fallbackText: frozen.fallbackText,
       actionUrl: frozen.actionUrl,
-      ...actorColumns(input.actorId),
+      ...actorColumns(input),
       entityType: input.entityType ?? null,
       entityId: input.entityId ?? null,
     };
@@ -316,9 +348,11 @@ export function createNotificationService(deps: {
           const created = await tx.notification.createMany({
             data: batch.map((recipientId) => ({
               ...contentColumns,
+              ...actorSnapshot,
               requestId: request.id,
               recipientId,
               inApp: routing.inApp,
+              expiresAt,
             })),
             // A concurrent replay must short-circuit, not raise P2002.
             skipDuplicates: true,
@@ -401,6 +435,7 @@ export function createNotificationService(deps: {
       recipientId,
       params: { text, actionUrl: options.actionUrl },
       actorId: options.actorId,
+      actorLabel: options.actorLabel,
     });
   }
 
@@ -502,7 +537,7 @@ export function createNotificationService(deps: {
     notify,
     notifyMany,
     notifyText,
-    renderContent: (row, ctx) => renderer.renderContent(row, ctx),
+    renderContent: (row, ctx, actor) => renderer.renderContent(row, ctx, actor),
     getUnseenCount,
     markAsRead,
     markAllAsSeen,

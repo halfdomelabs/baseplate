@@ -216,20 +216,3 @@ export async function acquireWorkerDatabase(
 
   return replaceDatabase(databaseUrl, databaseName);
 }
-
-/**
- * Drops a specific database.
- *
- * @param databaseUrl Maintenance database URL.
- * @param databaseName Database to drop; defaults to this worker's database.
- */
-export async function destroyTestDatabase(
-  databaseUrl: string,
-  databaseName: string = getWorkerDatabaseName(getTestWorkerId()),
-): Promise<void> {
-  await withMaintenanceClient(databaseUrl, async (client) => {
-    await client.$executeRawUnsafe(
-      `DROP DATABASE IF EXISTS ${quoteIdentifier(databaseName)} WITH (FORCE)`,
-    );
-  });
-}

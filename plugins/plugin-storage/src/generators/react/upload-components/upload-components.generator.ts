@@ -20,8 +20,6 @@ export const uploadComponentsGenerator = createGenerator({
       prod: {
         axios: CORE_PACKAGES.axios,
         'react-dropzone': STORAGE_PACKAGES['react-dropzone'],
-        'react-circular-progressbar':
-          STORAGE_PACKAGES['react-circular-progressbar'],
       },
     }),
     paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.task,

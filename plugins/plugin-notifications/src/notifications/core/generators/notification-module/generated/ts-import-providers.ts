@@ -22,6 +22,8 @@ export const notificationModuleImportsSchema = createTsImportMapSchema({
   notificationOutboxSweepQueue: {},
   notificationOutboxSweepWorker: {},
   NotificationRenderer: { isTypeOnly: true },
+  notificationRetentionQueue: {},
+  notificationRetentionWorker: {},
   RENDER_SOURCE_SELECT: {},
   RenderSource: { isTypeOnly: true },
 });
@@ -59,6 +61,9 @@ const notificationsCoreNotificationModuleImportsTask = createGeneratorTask({
             notificationOutboxSweepWorker:
               paths.queuesNotificationOutboxSweepWorker,
             NotificationRenderer: paths.servicesNotificationRenderer,
+            notificationRetentionQueue: paths.queuesNotificationRetention,
+            notificationRetentionWorker:
+              paths.queuesNotificationRetentionWorker,
             RENDER_SOURCE_SELECT: paths.servicesNotificationRenderer,
             RenderSource: paths.servicesNotificationRenderer,
           },

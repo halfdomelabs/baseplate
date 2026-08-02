@@ -62,7 +62,7 @@ builder.mutationField('markAllNotificationsRead', (t) =>
  * Clear a notification from the feed. `deletedId` is null when the id didn't
  * exist or was already cleared.
  *
- * The row is soft-deleted, so any email it owes still goes out.
+ * The row is soft-deleted, so an email still pending for it goes out.
  */
 builder.mutationField('deleteNotification', (t) =>
   t.fieldWithInputPayload({

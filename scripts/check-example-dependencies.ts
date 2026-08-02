@@ -1,0 +1,254 @@
+#!/usr/bin/env node
+/* eslint-disable import-x/no-extraneous-dependencies */
+
+/**
+ * Detects dependencies Baseplate declares in generated example apps that
+ * nothing in the generated code imports.
+ *
+ * This lives in the monorepo rather than inside each example because the
+ * generator owns the examples' `package.json` — tooling added there is wiped by
+ * the next `sync-examples`. The fix for a finding is likewise always a
+ * generator change, never an edit to the example.
+ *
+ * Usage:
+ *   pnpm check:example-deps                   # verify every example
+ *   pnpm check:example-deps --write           # re-record the snapshot
+ *   pnpm check:example-deps --example <name>  # verify one example (CI matrix)
+ */
+
+import type { Results } from 'knip/session';
+
+import { createOptions } from 'knip/session';
+import { glob, readdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// knip's `types` entry only declares config types, so `main` — its documented
+// programmatic entry point — has no published signature. `createSession` is the
+// typed alternative but is watch-mode only and throws outside a watch run.
+const { main } = (await import('knip')) as unknown as {
+  main: (
+    options: Awaited<ReturnType<typeof createOptions>>,
+  ) => Promise<Results>;
+};
+
+const REPO_ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+);
+const EXAMPLES_DIR = path.join(REPO_ROOT, 'examples');
+const KNIP_CONFIG_PATH = path.join(
+  REPO_ROOT,
+  'scripts/knip-examples.config.js',
+);
+const SNAPSHOT_PATH = path.join(
+  REPO_ROOT,
+  'scripts/example-dependencies-snapshot.json',
+);
+
+/** Placeholder reason recorded for entries `--write` has not seen before. */
+const UNREVIEWED_REASON = 'TODO: explain why this dependency is unused.';
+
+/**
+ * Orders entries deterministically.
+ *
+ * `compareStrings` from `@baseplate-dev/utils` is the repo convention, but this
+ * script runs standalone via `--experimental-strip-types` and does not resolve
+ * workspace packages.
+ */
+function compareEntries(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+/**
+ * Lists the example projects to scan.
+ *
+ * Discovered from disk rather than hardcoded so a newly added example is
+ * covered without editing this script.
+ *
+ * @returns Directory names under `examples/`, sorted.
+ */
+async function listExamples(): Promise<string[]> {
+  const entries = await readdir(EXAMPLES_DIR, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .toSorted(compareEntries);
+}
+
+/**
+ * Fails unless an example's gitignored codegen output is present.
+ *
+ * GraphQL and Prisma output is the only importer of some dependencies, so
+ * scanning a fresh checkout reports them as surplus. Without this guard the
+ * check reports phantom entries instead of saying what is missing.
+ *
+ * @param example Directory name under `examples/`.
+ * @throws If a workspace declares a codegen script but has no output.
+ */
+async function assertCodegenHasRun(example: string): Promise<void> {
+  const exampleDir = path.join(EXAMPLES_DIR, example);
+  const codegenOutputs = [
+    { script: 'gql:generate', dir: 'src/gql' },
+    { script: 'prisma:generate', dir: 'src/generated/prisma' },
+  ];
+
+  const missing: string[] = [];
+  for await (const workspace of glob('{apps,libs}/*/package.json', {
+    cwd: exampleDir,
+  })) {
+    const { scripts = {} } = JSON.parse(
+      await readFile(path.join(exampleDir, workspace), 'utf8'),
+    ) as { scripts?: Record<string, string> };
+    const workspaceDir = path.dirname(workspace);
+
+    for (const { script, dir } of codegenOutputs) {
+      if (!(script in scripts)) continue;
+      const outputDir = path.join(exampleDir, workspaceDir, dir);
+      const entries = await readdir(outputDir).catch(() => []);
+      // The generator commits a `.templates-info.json` marker into these
+      // directories, so an existing but otherwise empty directory still counts
+      // as missing output.
+      if (entries.some((entry) => entry.endsWith('.ts'))) continue;
+      missing.push(`  ${example}/${workspaceDir} (pnpm ${script})`);
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Codegen output is missing, so dependency usage cannot be determined:\n${missing.join('\n')}\n\n` +
+        `Generate it first:\n  pnpm run:example ${example} -- pnpm turbo run gql:generate prisma:generate`,
+    );
+  }
+}
+
+/**
+ * Runs knip against one example and returns its surplus dependencies.
+ *
+ * Line and column are deliberately dropped: they shift whenever an unrelated
+ * dependency is added, which would churn the snapshot without changing meaning.
+ *
+ * @param example Directory name under `examples/`.
+ * @returns `<example>/<workspace> <dependency>` entries.
+ */
+async function findUnusedDependencies(example: string): Promise<string[]> {
+  await assertCodegenHasRun(example);
+
+  const options = await createOptions({
+    cwd: path.join(EXAMPLES_DIR, example),
+    // knip reads `config` from parsed CLI args; passing it as a top-level
+    // option is silently ignored and the config would not be applied.
+    args: { config: KNIP_CONFIG_PATH, dependencies: true },
+    isShowProgress: false,
+  });
+
+  const { issues } = await main(options);
+
+  return [issues.dependencies, issues.devDependencies].flatMap((group) =>
+    Object.entries(group).flatMap(([file, found]) =>
+      Object.keys(found).map(
+        (name) => `${example}/${path.dirname(file)} ${name}`,
+      ),
+    ),
+  );
+}
+
+/**
+ * Verifies (or re-records) the unused-dependency snapshot.
+ *
+ * @throws If arguments are invalid or the snapshot no longer matches.
+ */
+async function checkExampleDependencies(): Promise<void> {
+  const args = process.argv.slice(2);
+  const exampleIndex = args.indexOf('--example');
+  const only = exampleIndex === -1 ? undefined : args[exampleIndex + 1];
+  const isWrite = args.includes('--write');
+
+  if (exampleIndex !== -1 && !only) {
+    throw new Error('--example requires an example name.');
+  }
+  if (only && isWrite) {
+    throw new Error('--write records every example; it cannot be scoped.');
+  }
+
+  const examples = await listExamples();
+  if (only && !examples.includes(only)) {
+    throw new Error(
+      `Unknown example "${only}". Available: ${examples.join(', ')}`,
+    );
+  }
+
+  const scanned = only ? [only] : examples;
+  const perExample = await Promise.all(
+    scanned.map((example) => findUnusedDependencies(example)),
+  );
+  const found = perExample.flat().toSorted(compareEntries);
+
+  const parsed: unknown = JSON.parse(await readFile(SNAPSHOT_PATH, 'utf8'));
+  if (Array.isArray(parsed) || typeof parsed !== 'object' || parsed === null) {
+    throw new Error(
+      'Snapshot must be an object of "<example>/<workspace> <dependency>": "<reason>".\n' +
+        'An older array-format snapshot can be re-recorded with: pnpm check:example-deps --write',
+    );
+  }
+  const snapshot = parsed as Record<string, string>;
+
+  if (isWrite) {
+    // Carry forward existing reasons so re-recording never silently drops the
+    // rationale for an entry that is still present.
+    const recorded = Object.fromEntries(
+      found.map((entry) => [entry, snapshot[entry] ?? UNREVIEWED_REASON]),
+    );
+    await writeFile(SNAPSHOT_PATH, `${JSON.stringify(recorded, null, 2)}\n`);
+    console.info(`Recorded ${found.length} unused example dependencies.`);
+    return;
+  }
+
+  // When scoped to one example, only that example's entries are comparable.
+  const expected = Object.keys(snapshot)
+    .filter((entry) => !only || entry.startsWith(`${only}/`))
+    .toSorted(compareEntries);
+
+  const added = found.filter((entry) => !expected.includes(entry));
+  const removed = expected.filter((entry) => !found.includes(entry));
+
+  if (added.length === 0 && removed.length === 0) {
+    // `--write` fills new entries with a placeholder; fail until a human
+    // replaces it, so re-recording cannot silently accept a regression.
+    const unreviewed = expected.filter(
+      (entry) => snapshot[entry] === UNREVIEWED_REASON,
+    );
+    if (unreviewed.length > 0) {
+      throw new Error(
+        `Example dependencies are recorded without a reason.\n${unreviewed
+          .map((entry) => `  ? ${entry}`)
+          .join(
+            '\n',
+          )}\n\nReplace the placeholder in ${path.relative(REPO_ROOT, SNAPSHOT_PATH)} with why the\n` +
+          `dependency is unused, or remove it from the generator that declares it.`,
+      );
+    }
+
+    console.info(`Example dependencies match snapshot (${found.length}).`);
+    return;
+  }
+
+  const changes = [
+    ...added.map((entry) => `  + ${entry}`),
+    ...removed.map((entry) => `  - ${entry} (was: ${snapshot[entry]})`),
+  ].join('\n');
+
+  throw new Error(
+    `Example dependencies changed.\n${changes}\n\n` +
+      'A new entry means a generator declares a dependency nothing imports;\n' +
+      'remove it from the generator rather than from the example.\n' +
+      'If the dependency genuinely cannot be seen as imported (loaded by\n' +
+      'string, build-only), add it to the snapshot with a reason explaining\n' +
+      'why. Re-record every entry with --write only when re-baselining.',
+  );
+}
+
+await checkExampleDependencies().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+});

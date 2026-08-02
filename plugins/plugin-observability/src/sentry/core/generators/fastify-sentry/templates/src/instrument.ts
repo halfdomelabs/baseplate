@@ -1,21 +1,22 @@
 // @ts-nocheck
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { SEMANTIC_ATTRIBUTE_SENTRY_OP } from '@sentry/core';
 import * as Sentry from '@sentry/node';
 import os from 'node:os';
 
-const SENTRY_ENABLED = !!config.SENTRY_DSN;
+// Entrypoint loaded via --import, so reading config at module scope is safe here.
+const { SENTRY_DSN, APP_ENVIRONMENT } = getConfig();
 
 const IGNORED_TRANSACTION_NAMES = new Set(['GET /healthz']);
 
 const SENTRY_TRACES_SAMPLE_RATE = 1;
 
 // Ensure to call this before importing any other modules!
-if (SENTRY_ENABLED) {
+if (SENTRY_DSN) {
   Sentry.init({
-    dsn: config.SENTRY_DSN,
-    environment: config.APP_ENVIRONMENT,
+    dsn: SENTRY_DSN,
+    environment: APP_ENVIRONMENT,
     serverName: os.hostname(),
     integrations: TPL_INTEGRATIONS,
 

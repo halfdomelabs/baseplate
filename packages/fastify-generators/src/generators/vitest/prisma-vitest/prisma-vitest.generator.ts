@@ -65,10 +65,7 @@ export const prismaVitestGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     nodePackages: createNodePackagesTask({
-      dev: extractPackageVersions(FASTIFY_PACKAGES, [
-        'vitest-mock-extended',
-        'pg-connection-string',
-      ]),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['vitest-mock-extended']),
     }),
     paths: VITEST_PRISMA_VITEST_GENERATED.paths.task,
     imports: VITEST_PRISMA_VITEST_GENERATED.imports.task,

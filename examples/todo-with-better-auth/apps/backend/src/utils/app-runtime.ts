@@ -13,7 +13,7 @@ import { postmarkEmailAdapter } from '../modules/emails/services/postmark.adapte
 import { rootModule } from '../modules/index.js';
 import { createStorageService } from '../modules/storage/services/storage.service.js';
 import { createQueueRuntime } from '../services/bullmq.service.js';
-import { config } from '../services/config.js';
+import { getConfig } from '../services/config.js';
 import { createRedisRuntime } from '../services/redis.js';
 import { flattenAppModule } from './app-modules.js';
 
@@ -122,7 +122,10 @@ export function createAppRuntime(
     createStorageService(storageCategories),
   );
 
-  const stripe = provide('stripe', () => new Stripe(config.STRIPE_SECRET_KEY));
+  const stripe = provide(
+    'stripe',
+    () => new Stripe(getConfig().STRIPE_SECRET_KEY),
+  );
 
   const billing = provide('billing', () => createBillingService({ stripe }));
 

@@ -13,7 +13,6 @@ const dbTestHelper = createTsTemplateFile({
   projectExports: {
     acquireWorkerDatabase: {},
     createTemplateDatabase: {},
-    destroyTestDatabase: {},
     dropStaleTestDatabases: {},
     getTestPrisma: {},
     getTestWorkerId: {},

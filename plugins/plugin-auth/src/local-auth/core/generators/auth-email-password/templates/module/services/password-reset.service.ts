@@ -12,7 +12,7 @@ import {
   createAuthVerification,
   validateAuthVerification,
 } from '%authModuleImports';
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import {
   BadRequestError,
   handleZodRequestValidationError,
@@ -108,7 +108,7 @@ export async function requestPasswordReset({
     });
 
     // Construct reset URL using configured domain
-    const resetLink = `${config.AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
+    const resetLink = `${getConfig().AUTH_FRONTEND_URL}/auth/reset-password?token=${encodeURIComponent(token)}`;
 
     // Send email asynchronously (queue-based)
     await services.email.send(TPL_PASSWORD_RESET_EMAIL, {

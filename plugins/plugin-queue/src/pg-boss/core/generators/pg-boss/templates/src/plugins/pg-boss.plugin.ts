@@ -3,7 +3,7 @@
 import type { RuntimeServices } from '%appRuntimeImports';
 import type { FastifyPluginCallback } from 'fastify';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createSystemServiceContext } from '%serviceContextImports';
@@ -17,7 +17,7 @@ import fastifyPlugin from 'fastify-plugin';
 const pgBossPluginCallback: FastifyPluginCallback<{
   services: RuntimeServices;
 }> = (fastify, { services }, done) => {
-  if (config.ENABLE_EMBEDDED_WORKERS) {
+  if (getConfig().ENABLE_EMBEDDED_WORKERS) {
     logger.info(
       { event: 'embedded-workers-enabled' },
       'Embedded workers mode enabled - starting workers in application process',

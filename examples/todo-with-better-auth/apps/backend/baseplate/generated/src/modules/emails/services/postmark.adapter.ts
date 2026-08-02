@@ -1,6 +1,6 @@
 import { Models, ServerClient } from 'postmark';
 
-import { config } from '@src/services/config.js';
+import { getConfig } from '@src/services/config.js';
 
 import type { EmailAdapter } from '../email.types.js';
 
@@ -10,7 +10,7 @@ let postmarkClient: ServerClient | undefined;
  * Gets the Postmark client, creating it lazily on first use.
  */
 function getPostmarkClient(): ServerClient {
-  postmarkClient ??= new ServerClient(config.POSTMARK_SERVER_TOKEN);
+  postmarkClient ??= new ServerClient(getConfig().POSTMARK_SERVER_TOKEN);
   return postmarkClient;
 }
 
