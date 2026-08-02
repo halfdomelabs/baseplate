@@ -2,11 +2,11 @@ export const FASTIFY_PACKAGES = {
   // Fastify
   fastify: '5.8.5',
   '@fastify/helmet': '13.0.2',
-  'fastify-plugin': '5.1.0',
-  nanoid: '5.1.6',
+  'fastify-plugin': '6.0.0',
+  nanoid: '6.0.0',
 
-  pino: '9.5.0',
-  'pino-pretty': '13.0.0',
+  pino: '10.3.1',
+  'pino-pretty': '13.1.3',
 
   graphql: '16.14.0',
   '@envelop/core': '5.3.0',
@@ -42,16 +42,16 @@ export const FASTIFY_PACKAGES = {
   'es-toolkit': '1.44.0',
 
   // Environment
-  'cross-env': '7.0.3',
+  'cross-env': '10.1.0',
   concurrently: '10.0.4',
 
   // Compilation
   'tsc-alias': '1.8.10',
   tsx: '4.23.1',
-  '@types/node': `^22.0.0`,
+  '@types/node': `^24.0.0`,
 
   // Redis
-  ioredis: '5.8.1',
+  ioredis: '6.0.0',
 
   // Sentry
   '@sentry/core': '10.63.0',
@@ -70,11 +70,11 @@ export const FASTIFY_PACKAGES = {
   '@node-rs/argon2': '2.0.2',
 
   // Postmark
-  postmark: '4.0.7',
+  postmark: '5.1.0',
 
   // Stripe
-  stripe: '20.4.1',
+  stripe: '22.4.0',
 
   // BullMQ
-  bullmq: '5.61.2',
+  bullmq: '6.0.5',
 } as const;

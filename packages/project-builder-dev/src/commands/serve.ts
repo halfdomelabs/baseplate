@@ -5,7 +5,7 @@ import type { Logger } from 'pino';
 import { getUserConfig } from '@baseplate-dev/project-builder-server/user-config';
 import { getPackageVersion } from '@baseplate-dev/utils/node';
 import path from 'node:path';
-import { packageDirectory } from 'pkg-dir';
+import { packageDirectory } from 'package-directory';
 
 import { logger } from '#src/services/logger.js';
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';

@@ -17,7 +17,20 @@ const PREFERRED_EXTENSIONS: Record<string, string> = {
 };
 
 /**
- * Maps MIME types to one familiar extension each (e.g. `image/jpeg` → `jpeg`),
+ * Legacy MIME types that name the same format as a canonical type, so an
+ * extension resolving to one must not be treated as conflicting with the other
+ * (e.g. `.jfif` resolves to `image/pjpeg`, which is just JPEG).
+ */
+const MIME_TYPE_ALIASES: Record<string, string> = {
+  'image/pjpeg': 'image/jpeg',
+};
+
+function canonicalizeMimeType(mimeType: string): string {
+  return MIME_TYPE_ALIASES[mimeType] ?? mimeType;
+}
+
+/**
+ * Maps MIME types to one familiar extension each (e.g. `image/jpeg` → `jpg`),
  * for presenting a category's allowed types to the user. Unknown types are
  * dropped. Returns a sorted, de-duplicated list.
  */
@@ -116,8 +129,16 @@ export function validateFileExtensionWithMimeType(
   const expectedExtensions = mime.extensions[mimeType];
   if (!expectedExtensions) return;
 
-  // An unrecognized extension is a database gap, not a conflict (e.g. `.jfif`).
-  if (!mime.lookup(extension)) return;
+  // An unrecognized extension is a database gap, not a conflict.
+  const extensionMimeType = mime.lookup(extension);
+  if (!extensionMimeType) return;
+
+  // Legacy aliases (e.g. `.jfif` resolves to `image/pjpeg`) name the same format
+  // as their canonical type, so they are not conflicts.
+  if (
+    canonicalizeMimeType(extensionMimeType) === canonicalizeMimeType(mimeType)
+  )
+    return;
 
   if (!expectedExtensions.includes(extension)) {
     throw new InvalidMimeTypeError(

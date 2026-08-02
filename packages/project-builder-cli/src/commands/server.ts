@@ -10,7 +10,7 @@ import {
   getPackageVersion,
 } from '@baseplate-dev/utils/node';
 import path from 'node:path';
-import { packageDirectory } from 'pkg-dir';
+import { packageDirectory } from 'package-directory';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';

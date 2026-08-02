@@ -52,12 +52,12 @@ describe('getExtensionsForMimeTypes', () => {
   it('resolves MIME types to their canonical extensions', () => {
     expect(
       getExtensionsForMimeTypes(['image/jpeg', 'image/png', 'image/webp']),
-    ).toEqual(['jpeg', 'png', 'webp']);
+    ).toEqual(['jpg', 'png', 'webp']);
   });
 
   it('uses a single canonical extension per type', () => {
     // image/jpeg permits jpe/jpg/jpeg, but only the canonical one is shown.
-    expect(getExtensionsForMimeTypes(['image/jpeg'])).toEqual(['jpeg']);
+    expect(getExtensionsForMimeTypes(['image/jpeg'])).toEqual(['jpg']);
   });
 
   it('prefers the familiar extension over an obscure canonical one', () => {

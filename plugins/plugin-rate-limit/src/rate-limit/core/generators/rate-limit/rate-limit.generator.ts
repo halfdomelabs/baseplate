@@ -24,7 +24,7 @@ export const rateLimitGenerator = createGenerator({
     // Add rate-limiter-flexible package dependency
     node: createProviderTask(nodeProvider, (node) => {
       node.packages.addProdPackages({
-        'rate-limiter-flexible': '9.1.0',
+        'rate-limiter-flexible': '11.2.0',
       });
     }),
     main: createGeneratorTask({
