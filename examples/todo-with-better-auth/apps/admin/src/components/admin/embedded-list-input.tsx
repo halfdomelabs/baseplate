@@ -1,18 +1,19 @@
 import type { ReactElement } from 'react';
 import type { DefaultValues } from 'react-hook-form';
 
-import { nanoid } from 'nanoid';
-import { useMemo, useState } from 'react';
-
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { Button } from '../ui/button';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from '@prisma-crud/ui-shared';
+import { nanoid } from 'nanoid';
+import { useMemo, useState } from 'react';
 
 export interface EmbeddedListTableProps<T> {
   items: (T & { id: string })[];

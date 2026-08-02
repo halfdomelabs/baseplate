@@ -17,6 +17,7 @@ import {
   reactLibraryDefinitionSchemaEntry,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  reactComponentsLibraryGenerator,
   reactLibraryGenerator,
   reactTailwindGenerator,
 } from '@baseplate-dev/react-generators';
@@ -32,13 +33,20 @@ class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition>
     const packageName = this.getPackageName();
     const packageDirectory = this.getPackageDirectory();
 
+    const isComponentsSource = projectDefinition.apps.some(
+      (app) =>
+        app.type === 'web' && app.componentsLibraryRef === packageConfig.id,
+    );
+
     const rootBundle = composeNodeGenerator({
       name: `${generalSettings.name}-${packageConfig.name}`,
       packageName,
       description: `React library package for ${generalSettings.name}`,
       version: '1.0.0',
       children: {
-        library: nodeLibraryGenerator({ includePlaceholderIndexFile: true }),
+        library: nodeLibraryGenerator({
+          includePlaceholderIndexFile: !isComponentsSource,
+        }),
         vitest: vitestGenerator({ includeTestHelpers: false }),
         reactLibrary: reactLibraryGenerator({}),
         reactTailwind: reactTailwindGenerator({
@@ -50,6 +58,9 @@ class ReactLibraryPackageCompiler extends LibraryCompiler<BaseLibraryDefinition>
             themeConfig.colors.dark,
           ),
         }),
+        ...(isComponentsSource
+          ? { reactComponentsLibrary: reactComponentsLibraryGenerator({}) }
+          : {}),
       },
     });
 

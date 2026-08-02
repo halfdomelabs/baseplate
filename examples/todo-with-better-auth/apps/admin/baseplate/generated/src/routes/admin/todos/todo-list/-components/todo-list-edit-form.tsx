@@ -1,19 +1,23 @@
 import type { ReactElement } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardFooter,
+  ComboboxFieldController,
+  DateTimePickerFieldController,
+  InputFieldController,
+  NumberFieldController,
+  SelectFieldController,
+} from '@prisma-crud/ui-shared';
 import { Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
 import type { FragmentType } from '@src/gql';
 
-import { Button } from '@src/components/ui/button';
-import { Card, CardContent, CardFooter } from '@src/components/ui/card';
-import { ComboboxFieldController } from '@src/components/ui/combobox-field';
-import { DateTimePickerFieldController } from '@src/components/ui/date-time-picker-field';
 import { FileInputFieldController } from '@src/components/ui/file-input-field';
-import { InputFieldController } from '@src/components/ui/input-field';
-import { NumberFieldController } from '@src/components/ui/number-field';
-import { SelectFieldController } from '@src/components/ui/select-field';
 import { graphql, readFragment } from '@src/gql';
 
 import type { TodoListFormData } from '../-schemas/todo-list-schema';

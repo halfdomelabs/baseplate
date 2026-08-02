@@ -1,16 +1,15 @@
 import type { ReactElement } from 'react';
 import type { DefaultValues } from 'react-hook-form';
 
-import { useState } from 'react';
-
-import { Button } from '../ui/button';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from '@prisma-crud/ui-shared';
+import { useState } from 'react';
 
 export interface EmbeddedObjectFormProps<T> {
   initialData?: DefaultValues<Exclude<T, null | undefined>>;

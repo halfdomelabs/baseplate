@@ -6,11 +6,11 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { Field, FieldError, FieldLabel } from '@prisma-crud/ui-shared';
 import { useController } from 'react-hook-form';
 
 import type { EmbeddedObjectInputProps } from './embedded-object-input';
 
-import { Field, FieldError, FieldLabel } from '../ui/field';
 import { EmbeddedObjectInput } from './embedded-object-input';
 
 export interface EmbeddedObjectFieldProps<

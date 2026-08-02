@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 
-import { ConfirmDialog } from '../components/ui/confirm-dialog';
+import { ConfirmDialog, Toaster } from '@prisma-crud/ui-shared';
+
 import { ErrorBoundary } from '../components/ui/error-boundary';
-import { Toaster } from '../components/ui/toaster';
 import { AppApolloProvider } from './app-apollo-provider';
 import { AuthLoadedGate } from './auth-loaded-gate';
 import { AppRoutes } from './router';

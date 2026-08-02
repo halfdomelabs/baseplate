@@ -1,10 +1,5 @@
 import type React from 'react';
 
-import { Link, useRouterState } from '@tanstack/react-router';
-import { Fragment, useEffect, useState } from 'react';
-
-import { logError } from '@src/services/error-logger';
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +7,11 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '../ui/breadcrumb';
+} from '@prisma-crud/ui-shared';
+import { Link, useRouterState } from '@tanstack/react-router';
+import { Fragment, useEffect, useState } from 'react';
+
+import { logError } from '@src/services/error-logger';
 
 function BreadcrumbLabel({
   label,

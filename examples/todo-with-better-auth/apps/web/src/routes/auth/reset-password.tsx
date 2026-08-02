@@ -1,18 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, Link, redirect } from '@tanstack/react-router';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Button } from '@src/components/ui/button';
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@src/components/ui/card';
-import { InputFieldController } from '@src/components/ui/input-field';
+  InputFieldController,
+} from '@prisma-crud/ui-shared';
+import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 import { authClient } from '@src/services/auth-client';
 import { logError } from '@src/services/error-logger';
 

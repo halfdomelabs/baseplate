@@ -27,6 +27,7 @@ import {
   composeReactGenerators,
   reactApolloGenerator,
   reactComponentsGenerator,
+  reactComponentsImportGenerator,
   reactLibraryImportsGenerator,
   reactRouterGenerator,
   reactRoutesGenerator,
@@ -113,6 +114,29 @@ function buildAdminRoutes(
 }
 
 /**
+ * Resolve a library reference into the package name and Tailwind source glob
+ * needed to import it from `appConfig`'s app.
+ */
+function buildLibraryImport(
+  builder: AppEntryBuilder<WebAppConfig>,
+  libraryRef: string,
+): { packageName: string; relativeSourceGlob: string } {
+  const { projectDefinition, appConfig } = builder;
+  const library = LibraryUtils.byId(projectDefinition, libraryRef);
+  return {
+    packageName: buildPackageName(
+      projectDefinition.settings.general,
+      library.name,
+    ),
+    relativeSourceGlob: LibraryUtils.getLibraryRelativeSourcePath(
+      library,
+      appConfig,
+      projectDefinition.settings.monorepo,
+    ),
+  };
+}
+
+/**
  * Build React application generator bundle
  *
  * Combines React Router, Apollo Client, Tailwind, Sentry, and admin panel
@@ -131,20 +155,13 @@ function buildReact(
     backendApp,
   );
 
-  const importedLibraries = appConfig.libraryRefs.map((id) => {
-    const library = LibraryUtils.byId(projectDefinition, id);
-    return {
-      packageName: buildPackageName(
-        projectDefinition.settings.general,
-        library.name,
-      ),
-      relativeSourceGlob: LibraryUtils.getLibraryRelativeSourcePath(
-        library,
-        appConfig,
-        projectDefinition.settings.monorepo,
-      ),
-    };
-  });
+  const importedLibraries = appConfig.libraryRefs.map((id) =>
+    buildLibraryImport(builder, id),
+  );
+
+  const componentsLibrary = appConfig.componentsLibraryRef
+    ? buildLibraryImport(builder, appConfig.componentsLibraryRef)
+    : undefined;
 
   const rootFeatures = appCompiler.getRootChildren();
   const adminRoutes = buildAdminRoutes(builder);
@@ -166,7 +183,9 @@ function buildReact(
           children: routerChildren,
           renderPlaceholderIndex: !adminRoutes,
         }),
-        reactComponents: reactComponentsGenerator({}),
+        reactComponents: componentsLibrary
+          ? reactComponentsImportGenerator(componentsLibrary)
+          : reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({
           lightColorsCss: generateCssBlockFromThemeColors(
             themeConfig.colors.light,
