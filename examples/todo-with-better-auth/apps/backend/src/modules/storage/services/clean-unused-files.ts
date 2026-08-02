@@ -23,8 +23,9 @@ const CLEAN_JOB_LIMIT = 100;
  * upload is confirmed.
  *
  * Deletion is performed in two phases per adapter: storage objects are deleted
- * first, then DB records. If storage deletion fails, the error is logged and
- * DB records are preserved so they can be retried on the next run.
+ * first, then DB records. If storage deletion fails — entirely or for
+ * individual files — the errors are logged and the DB records of the failed
+ * files are preserved so they can be retried on the next run.
  *
  * @param ctx - The service context, providing access to storage adapters
  * @returns The number of DB file records successfully cleaned up
@@ -73,6 +74,7 @@ export async function cleanUnusedFiles(
         },
       ],
     },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     take: CLEAN_JOB_LIMIT,
   });
 
@@ -92,20 +94,43 @@ export async function cleanUnusedFiles(
     try {
       const adapter = ctx.services.storage.getAdapterOrThrow(adapterName);
       // Phase 1: Delete from storage
+      let filesToDelete = files;
       if (adapter.deleteFiles) {
-        await adapter.deleteFiles(files.map((f) => f.storagePath));
+        const { succeeded, failed } = await adapter.deleteFiles(
+          files.map((f) => f.storagePath),
+        );
+        if (failed.length > 0) {
+          // Aggregate into a single error to avoid flooding the error tracker
+          // when the storage backend is degraded (up to CLEAN_JOB_LIMIT files)
+          logError(
+            new AggregateError(
+              failed.map((f) => f.error),
+              `Failed to delete ${failed.length} of ${files.length} files from storage adapter "${adapterName}"`,
+            ),
+            {
+              adapterName,
+              failureCount: failed.length,
+              failedPaths: failed.slice(0, 10).map((f) => f.path),
+            },
+          );
+        }
+        // Keep DB records of failed deletions so they are retried on the next run
+        const succeededPaths = new Set(succeeded);
+        filesToDelete = files.filter((f) => succeededPaths.has(f.storagePath));
       } else {
         logger.info(
           `Adapter "${adapterName}" does not support bulk file deletion, only cleaning database records`,
         );
       }
 
-      // Phase 2: Delete DB records (only reached if storage deletion succeeded)
-      const ids = files.map((f) => f.id);
-      await prisma.file.deleteMany({ where: { id: { in: ids } } });
-      totalDeleted += ids.length;
+      // Phase 2: Delete DB records whose storage objects no longer exist
+      if (filesToDelete.length > 0) {
+        const ids = filesToDelete.map((f) => f.id);
+        await prisma.file.deleteMany({ where: { id: { in: ids } } });
+        totalDeleted += ids.length;
+      }
       logger.info(
-        `Successfully cleaned ${ids.length} files from adapter "${adapterName}"`,
+        `Successfully cleaned ${filesToDelete.length} of ${files.length} files from adapter "${adapterName}"`,
       );
     } catch (err) {
       logError(err, { adapterName, fileCount: files.length });

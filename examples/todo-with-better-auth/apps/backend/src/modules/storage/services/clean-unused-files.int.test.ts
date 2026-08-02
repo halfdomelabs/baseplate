@@ -50,9 +50,11 @@ const defaultFileCategories: FileCategory[] = [
   },
 ];
 
-const deleteFilesMock = vi
-  .fn()
-  .mockResolvedValue({ succeeded: [], failed: [] });
+// Defaults to full success, echoing back the requested paths per the adapter
+// contract — only paths reported as succeeded have their DB records deleted.
+const deleteFilesMock = vi.fn<NonNullable<StorageAdapter['deleteFiles']>>(
+  (paths) => Promise.resolve({ succeeded: paths, failed: [] }),
+);
 
 const uploadsAdapter: StorageAdapter = {
   uploadFile: vi.fn(),
@@ -70,6 +72,10 @@ const urlAdapter: StorageAdapter = {
 };
 
 let fileCategoriesOverride: FileCategory[] | undefined;
+
+// Ensures unique storage paths even when files are created within the same
+// millisecond — the partial-failure tests match failures by exact path.
+let fileCounter = 0;
 
 /** Builds a fake `ServiceContextWith<'storage'>` backed by test-controlled adapters/categories. */
 function createTestContext(): ServiceContextWith<'storage'> {
@@ -123,7 +129,7 @@ async function createFileWithAge({
       size: 1024,
       category,
       adapter,
-      storagePath: `/test/path-${Date.now()}.jpg`,
+      storagePath: `/test/path-${Date.now()}-${fileCounter++}.jpg`,
       pendingUpload,
       createdAt,
     },
@@ -323,6 +329,61 @@ describe('cleanUnusedFiles integration tests', () => {
 
       // Second run should delete remaining 50
       expect(await cleanUnusedFiles(createTestContext())).toBe(50);
+      expect(await countFiles()).toBe(0);
+    });
+  });
+
+  describe('partial storage deletion failures', () => {
+    it('should preserve DB records for files whose storage deletion failed', async () => {
+      const succeededFileId = await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+      });
+      const failedFileId = await createFileWithAge({
+        daysOld: 2,
+        pendingUpload: true,
+      });
+      const failedFile = await prisma.file.findUniqueOrThrow({
+        where: { id: failedFileId },
+      });
+
+      deleteFilesMock.mockImplementationOnce((paths: string[]) =>
+        Promise.resolve({
+          succeeded: paths.filter((p) => p !== failedFile.storagePath),
+          failed: paths
+            .filter((p) => p === failedFile.storagePath)
+            .map((path) => ({ path, error: new Error('storage unavailable') })),
+        }),
+      );
+
+      const deletedCount = await cleanUnusedFiles(createTestContext());
+
+      expect(deletedCount).toBe(1);
+      const remaining = await prisma.file.findMany();
+      expect(remaining.map((f) => f.id)).toEqual([failedFileId]);
+      expect(
+        await prisma.file.findUnique({ where: { id: succeededFileId } }),
+      ).toBeNull();
+    });
+
+    it('should preserve all DB records when every storage deletion fails and retry them on the next run', async () => {
+      await createFileWithAge({ daysOld: 2, pendingUpload: true });
+
+      deleteFilesMock.mockImplementationOnce((paths: string[]) =>
+        Promise.resolve({
+          succeeded: [],
+          failed: paths.map((path) => ({
+            path,
+            error: new Error('storage unavailable'),
+          })),
+        }),
+      );
+
+      expect(await cleanUnusedFiles(createTestContext())).toBe(0);
+      expect(await countFiles()).toBe(1);
+
+      // Next run uses the default full-success adapter and reclaims the file
+      expect(await cleanUnusedFiles(createTestContext())).toBe(1);
       expect(await countFiles()).toBe(0);
     });
   });

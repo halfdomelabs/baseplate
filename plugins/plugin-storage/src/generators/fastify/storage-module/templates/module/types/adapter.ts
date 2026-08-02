@@ -103,6 +103,11 @@ export interface StorageAdapter {
   /**
    * Delete multiple files from storage
    *
+   * Every input path must appear unmodified in exactly one of `succeeded` or
+   * `failed` — callers match the returned paths verbatim against the input to
+   * decide which records to clean up (deleting a non-existent file counts as
+   * succeeded).
+   *
    * @param paths - Array of storage paths to delete
    * @returns Results indicating which deletions succeeded/failed
    *
