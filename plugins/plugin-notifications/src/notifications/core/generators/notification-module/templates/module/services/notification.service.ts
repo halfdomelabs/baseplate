@@ -9,6 +9,7 @@ import type {
 import type { NotificationEvents } from '$servicesNotificationEvents';
 import type { NotificationOutbox } from '$servicesNotificationOutbox';
 import type {
+  NotificationActor,
   NotificationEvent,
   NotificationTypeDefinition,
 } from '$servicesNotificationRegistry';
@@ -63,13 +64,17 @@ async function countUnseenFor(
   return new Map(groups.map((group) => [group.recipientId, group._count._all]));
 }
 
-/** Actor columns from the input (human actors; live name/avatar via the relation). */
-function actorColumns(actorId: string | undefined): {
+/**
+ * Actor identity shared by the request and its rows. The `actorLabel` snapshot
+ * lives only on {@link Notification}, so it is stamped per row rather than
+ * added here.
+ */
+function actorColumns(input: { actorId?: string }): {
   actorKind: string;
   actorId: string | null;
 } {
-  return actorId
-    ? { actorKind: 'user', actorId }
+  return input.actorId
+    ? { actorKind: 'user', actorId: input.actorId }
     : { actorKind: 'none', actorId: null };
 }
 
@@ -78,6 +83,12 @@ export interface NotifyInput<P extends NotificationParams> {
   recipientId: string;
   params: P;
   actorId?: string;
+  /**
+   * Display name snapshotted onto the row, surviving a rename or deletion of
+   * the actor. Also how a non-user actor is named, until system actors get a
+   * locale-aware key lookup.
+   */
+  actorLabel?: string;
   /** Polymorphic subject reference (no FK). */
   entityType?: string;
   entityId?: string;
@@ -112,6 +123,7 @@ export interface NotifyManyResult extends NotifyResult {
 export interface NotifyTextOptions {
   actionUrl?: string;
   actorId?: string;
+  actorLabel?: string;
 }
 
 /** Result of a mutation that can change the unseen (badge) count. */
@@ -172,7 +184,11 @@ export interface NotificationService {
    * {@link NotificationRenderer}; see its docs for the version-pinning and
    * fallback rules.
    */
-  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
+  renderContent(
+    row: RenderSource,
+    ctx?: RenderContext,
+    actor?: NotificationActor,
+  ): RenderedContent;
   /**
    * Count of UNSEEN notifications — the bell badge. Seen (opening the panel)
    * clears the badge; read (clicking one) clears its highlight. `readAt`
@@ -273,9 +289,10 @@ export function createNotificationService(deps: {
     const params = type.paramsSchema.parse(input.params);
     const recipientIds = [...new Set(input.recipientIds)];
 
+    // Same chain as the read path, so a row and its frozen snapshot agree.
     const event: NotificationEvent<P> = {
       params,
-      actorId: input.actorId,
+      actor: input.actorLabel ? { label: input.actorLabel } : undefined,
       entityType: input.entityType,
       entityId: input.entityId,
     };
@@ -289,6 +306,10 @@ export function createNotificationService(deps: {
     // such column — it is disposable once its deliveries settle.
     const expiresAt = new Date(Date.now() + RETENTION_MS);
 
+    // Likewise row-only: the actor snapshot exists to survive the live user
+    // row, which only the durable notification outlives.
+    const actorSnapshot = { actorLabel: input.actorLabel ?? null };
+
     // Copied onto every row, so the request and its rows cannot disagree.
     const contentColumns = {
       type: type.key,
@@ -297,7 +318,7 @@ export function createNotificationService(deps: {
       segments: frozen.segments,
       fallbackText: frozen.fallbackText,
       actionUrl: frozen.actionUrl,
-      ...actorColumns(input.actorId),
+      ...actorColumns(input),
       entityType: input.entityType ?? null,
       entityId: input.entityId ?? null,
     };
@@ -326,6 +347,7 @@ export function createNotificationService(deps: {
           const created = await tx.notification.createMany({
             data: batch.map((recipientId) => ({
               ...contentColumns,
+              ...actorSnapshot,
               requestId: request.id,
               recipientId,
               inApp: routing.inApp,
@@ -412,6 +434,7 @@ export function createNotificationService(deps: {
       recipientId,
       params: { text, actionUrl: options.actionUrl },
       actorId: options.actorId,
+      actorLabel: options.actorLabel,
     });
   }
 
@@ -513,7 +536,7 @@ export function createNotificationService(deps: {
     notify,
     notifyMany,
     notifyText,
-    renderContent: (row, ctx) => renderer.renderContent(row, ctx),
+    renderContent: (row, ctx, actor) => renderer.renderContent(row, ctx, actor),
     getUnseenCount,
     markAsRead,
     markAllAsSeen,

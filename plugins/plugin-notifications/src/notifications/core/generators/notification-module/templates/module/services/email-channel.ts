@@ -18,12 +18,20 @@ export function createEmailChannel(deps: {
     deliver: async ({ notification, recipient, actor }) => {
       if (!recipient.email) return;
 
-      const content = renderer.renderContent(notification);
+      // Live name where the actor still exists, else the row's snapshot — a
+      // rename between notify and delivery therefore reaches mail before it
+      // reaches the frozen feed copy.
+      const actorName = actor?.name ?? notification.actorLabel ?? undefined;
+      const content = renderer.renderContent(
+        notification,
+        undefined,
+        actorName ? { label: actorName } : undefined,
+      );
 
       await email.send(TPL_NOTIFICATION_EMAIL, {
         to: recipient.email,
         data: {
-          actorName: actor?.name ?? undefined,
+          actorName,
           segments: content.segments,
           body: content.fallbackText,
           actionUrl: content.actionUrl ?? undefined,

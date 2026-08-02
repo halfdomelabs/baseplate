@@ -48,6 +48,7 @@ function makeRow(
     fallbackText: 'FROZEN v1',
     actionUrl: '/frozen',
     actorId: null,
+    actorLabel: null,
     entityType: null,
     entityId: null,
   };
@@ -59,9 +60,10 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.live',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `${event.params.name} commented` }),
+        render: (event) => ({ body: `${event.params.name} commented` }),
       }),
     ]);
 
@@ -80,16 +82,18 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.versioned',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v1: ${event.params.name}` }),
+        render: (event) => ({ body: `v1: ${event.params.name}` }),
       }),
       defineNotificationType({
         key: 'test.versioned',
         version: 2,
+        category: 'test',
         paramsSchema: z.object({ name: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: `v2: ${event.params.name}` }),
+        render: (event) => ({ body: `v2: ${event.params.name}` }),
       }),
     ]);
 
@@ -105,9 +109,10 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.atomic',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({ postId: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({
+        render: (event) => ({
           body: 'commented on your post',
           actionUrl: `/posts/${event.params.postId}`,
         }),
@@ -133,9 +138,10 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.drift',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({ title: z.string() }),
         channels: ['inApp'],
-        render: ([event]) => ({ body: event.params.title }),
+        render: (event) => ({ body: event.params.title }),
       }),
     ]);
 
@@ -153,6 +159,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.unsafe-url',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -174,6 +181,7 @@ describe('renderContent (versioned render-at-read)', () => {
       defineNotificationType({
         key: 'test.unsafe-segment',
         version: 1,
+        category: 'test',
         paramsSchema: z.object({}),
         channels: ['inApp'],
         render: () => ({
@@ -188,11 +196,69 @@ describe('renderContent (versioned render-at-read)', () => {
   });
 });
 
+describe('renderContent (actor identity)', () => {
+  /** A type whose copy is entirely the actor label, so tests read the chain. */
+  const actorEcho = defineNotificationType({
+    key: 'test.actor',
+    version: 1,
+    category: 'test',
+    paramsSchema: z.object({}),
+    channels: ['inApp'],
+    render: (event) => ({ body: event.actor?.label ?? 'someone' }),
+  });
+
+  function renderActor(row: RenderSource, actor?: { label: string }): string {
+    return rendererWith([actorEcho]).renderContent(row, undefined, actor)
+      .fallbackText;
+  }
+
+  it('prefers a caller-resolved actor over the row snapshot', () => {
+    const row = { ...makeRow('test.actor', 1, {}), actorLabel: 'Old Name' };
+
+    expect(renderActor(row, { label: 'New Name' })).toBe('New Name');
+  });
+
+  it('falls back to the actorLabel snapshot when no actor is passed', () => {
+    const row = { ...makeRow('test.actor', 1, {}), actorLabel: 'Snapshot' };
+
+    expect(renderActor(row)).toBe('Snapshot');
+  });
+
+  it('leaves the actor undefined when the row has no snapshot', () => {
+    expect(renderActor(makeRow('test.actor', 1, {}))).toBe('someone');
+  });
+});
+
+describe('renderSingle (arity dispatch)', () => {
+  it('hands an aggregatable type a one-event batch', () => {
+    const renderContent = renderWith([
+      defineNotificationType({
+        key: 'test.aggregatable',
+        version: 1,
+        category: 'test',
+        paramsSchema: z.object({ name: z.string() }),
+        channels: ['inApp'],
+        aggregate: { groupBy: ['entityType', 'entityId'] },
+        render: (events) => ({
+          body: `${events[0].params.name} +${events.length - 1}`,
+        }),
+      }),
+    ]);
+
+    const content = renderContent(
+      makeRow('test.aggregatable', 1, { name: 'Alice' }),
+    );
+
+    expect(content.fallbackText).toBe('Alice +0');
+  });
+});
+
 describe('createNotificationRenderer (registry construction invariant)', () => {
   it('throws at construction when a (key, version) pair is registered twice', () => {
     const first = defineNotificationType({
       key: 'test.dup',
       version: 1,
+      category: 'test',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'first' }),
@@ -200,6 +266,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
     const second = defineNotificationType({
       key: 'test.dup',
       version: 1,
+      category: 'test',
       paramsSchema: z.object({}),
       channels: ['inApp'],
       render: () => ({ body: 'second' }),
@@ -218,6 +285,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 1,
+          category: 'test',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v1' }),
@@ -225,6 +293,7 @@ describe('createNotificationRenderer (registry construction invariant)', () => {
         defineNotificationType({
           key: 'test.multiversion',
           version: 2,
+          category: 'test',
           paramsSchema: z.object({}),
           channels: ['inApp'],
           render: () => ({ body: 'v2' }),
