@@ -7,6 +7,7 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { compareStrings } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -18,30 +19,6 @@ import { reactComponentsImportsProvider } from '../react-components/generated/ts
 const descriptorSchema = z.object({});
 
 const BARREL_DESTINATION = 'src/index.ts';
-
-const PRINT_WIDTH = 80;
-
-/**
- * Renders a single `export { ... } from '...';` statement, matching
- * Prettier's bracket-expansion rule (one symbol per line, trailing comma)
- * once the single-line form would exceed the print width — so the generated
- * barrel round-trips through `prettier:write` without reformatting.
- */
-function renderExportStatement(
-  names: string[],
-  moduleSpecifier: string,
-  { isTypeOnly }: { isTypeOnly: boolean },
-): string {
-  const keyword = isTypeOnly ? 'export type' : 'export';
-  const singleLine = `${keyword} { ${names.join(', ')} } from '${moduleSpecifier}';`;
-  // Prettier never breaks braces around a single specifier — doing so
-  // wouldn't shorten the line since the module path dominates its length.
-  if (names.length === 1 || singleLine.length <= PRINT_WIDTH) {
-    return singleLine;
-  }
-  const indentedNames = names.map((name) => `  ${name},`).join('\n');
-  return `${keyword} {\n${indentedNames}\n} from '${moduleSpecifier}';`;
-}
 
 /**
  * Generator that renders the `react-components` template set (Button, Dialog,
@@ -132,31 +109,30 @@ export const reactComponentsLibraryGenerator = createGenerator({
               symbolsByModule.set(relativeSpecifier, symbols);
             }
 
+            // Emitted as single-line statements; Prettier reformats the
+            // rendered file, breaking any that exceed the print width.
             const barrelContents = [...symbolsByModule.entries()]
-              .toSorted(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-              .map(([moduleSpecifier, symbols]) => {
-                const typeExports = symbols.filter((s) => s.isTypeOnly);
-                const valueExports = symbols.filter((s) => !s.isTypeOnly);
-                const lines: string[] = [];
-                if (valueExports.length > 0) {
-                  lines.push(
-                    renderExportStatement(
-                      valueExports.map((s) => s.name),
-                      moduleSpecifier,
-                      { isTypeOnly: false },
-                    ),
-                  );
-                }
-                if (typeExports.length > 0) {
-                  lines.push(
-                    renderExportStatement(
-                      typeExports.map((s) => s.name),
-                      moduleSpecifier,
-                      { isTypeOnly: true },
-                    ),
-                  );
-                }
-                return lines.join('\n');
+              .toSorted(([a], [b]) => compareStrings(a, b))
+              .flatMap(([moduleSpecifier, symbols]) => {
+                const renderExport = (
+                  names: string[],
+                  keyword: 'export' | 'export type',
+                ): string[] =>
+                  names.length > 0
+                    ? [
+                        `${keyword} { ${names.join(', ')} } from '${moduleSpecifier}';`,
+                      ]
+                    : [];
+                return [
+                  ...renderExport(
+                    symbols.filter((s) => !s.isTypeOnly).map((s) => s.name),
+                    'export',
+                  ),
+                  ...renderExport(
+                    symbols.filter((s) => s.isTypeOnly).map((s) => s.name),
+                    'export type',
+                  ),
+                ];
               })
               .join('\n');
 
