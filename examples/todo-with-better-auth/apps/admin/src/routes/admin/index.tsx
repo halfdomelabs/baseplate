@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
 import { useQuery } from '@apollo/client/react';
+import { ErrorableLoader } from '@prisma-crud/ui-shared';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { graphql } from '@src/gql';
 
 export const Route = createFileRoute(

@@ -2,7 +2,7 @@
 
 @import 'tw-animate-css';
 
-/* SOURCE_DIRECTIVES */
+@source '../../../libs/ui-shared/src';
 
 /**
  * Colors configuration

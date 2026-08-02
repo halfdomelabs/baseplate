@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
+import { Loader } from '@prisma-crud/ui-shared';
 import { Suspense } from 'react';
 
 import { ErrorBoundary } from './error-boundary';
-import { Loader } from './loader';
 
 interface AsyncBoundaryProps {
   /** Content that may suspend or throw */

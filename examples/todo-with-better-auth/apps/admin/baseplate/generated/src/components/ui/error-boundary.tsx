@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 
+import { Button, ErrorDisplay } from '@prisma-crud/ui-shared';
 import { useContext } from 'react';
 import {
   ErrorBoundaryContext,
@@ -7,9 +8,6 @@ import {
 } from 'react-error-boundary';
 
 import { logError } from '@src/services/error-logger';
-
-import { Button } from './button';
-import { ErrorDisplay } from './error-display';
 
 interface ErrorBoundaryProps {
   children?: React.ReactNode;

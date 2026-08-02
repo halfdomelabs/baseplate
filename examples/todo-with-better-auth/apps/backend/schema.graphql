@@ -570,7 +570,7 @@ type User {
   id: ID!
   name: String!
   roles: [UserRole!]!
-  todoLists(skip: Int, take: Int): [TodoList!]!
+  todoLists(orderBy: [TodoListOrderByInput!], skip: Int, take: Int): [TodoList!]!
   updatedAt: DateTime!
   userProfile: UserProfile
 }

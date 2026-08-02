@@ -2,30 +2,29 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
-import { Link } from '@tanstack/react-router';
-import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
-import { toast } from 'sonner';
-
-import type { FragmentType } from '@src/gql';
-
-import { Alert, AlertTitle } from '@src/components/ui/alert';
-import { Button } from '@src/components/ui/button';
 import {
+  Alert,
+  AlertTitle,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@src/components/ui/dropdown';
-import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@src/components/ui/table';
+  useConfirmDialog,
+} from '@prisma-crud/ui-shared';
+import { Link } from '@tanstack/react-router';
+import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
+import { toast } from 'sonner';
+
+import type { FragmentType } from '@src/gql';
+
 import { graphql, readFragment } from '@src/gql';
-import { useConfirmDialog } from '@src/hooks/use-confirm-dialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 /* HOISTED:delete-action-mutation:START */

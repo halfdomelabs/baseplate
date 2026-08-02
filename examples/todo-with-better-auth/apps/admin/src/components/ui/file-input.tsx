@@ -2,6 +2,12 @@ import type { ResultOf } from '@graphql-typed-document-node/core';
 import type { ReactElement } from 'react';
 
 import { useMutation } from '@apollo/client/react';
+import {
+  Button,
+  CircularProgress,
+  cn,
+  FieldError,
+} from '@prisma-crud/ui-shared';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
@@ -15,11 +21,6 @@ import { useUpload } from '@src/hooks/use-upload';
 import { formatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 import { getApolloErrorData } from '@src/utils/apollo-error';
-import { cn } from '@src/utils/cn';
-
-import { Button } from './button';
-import { CircularProgress } from './circular-progress';
-import { FieldError } from './field';
 
 function formatFileSize(bytes: number): string {
   if (bytes >= 1024 * 1024) return `${Math.round(bytes / (1024 * 1024))} MB`;

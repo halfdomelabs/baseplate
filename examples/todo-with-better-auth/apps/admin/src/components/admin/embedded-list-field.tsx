@@ -6,11 +6,11 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { Field, FieldError, FieldLabel } from '@prisma-crud/ui-shared';
 import { useController } from 'react-hook-form';
 
 import type { EmbeddedListInputProps } from './embedded-list-input';
 
-import { Field, FieldError, FieldLabel } from '../ui/field';
 import { EmbeddedListInput } from './embedded-list-input';
 
 export interface EmbeddedListFieldProps<

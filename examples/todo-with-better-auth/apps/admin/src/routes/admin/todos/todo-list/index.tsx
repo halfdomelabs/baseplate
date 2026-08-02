@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react';
 
 import { useReadQuery } from '@apollo/client/react';
+import { Button } from '@prisma-crud/ui-shared';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
-import { Button } from '@src/components/ui/button';
 import { graphql } from '@src/gql';
 
 import { TodoListTable } from './-components/todo-list-table';
