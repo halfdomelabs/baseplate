@@ -164,10 +164,20 @@
     "instanceData": {},
     "template": "not-found-card"
   },
+  "number-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "number-field"
+  },
   "popover.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",
     "instanceData": {},
     "template": "popover"
+  },
+  "radio-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "radio-field"
   },
   "radio-group.tsx": {
     "generator": "@baseplate-dev/react-generators#core/react-components",

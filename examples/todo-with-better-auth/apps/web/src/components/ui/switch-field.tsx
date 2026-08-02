@@ -95,7 +95,14 @@ function SwitchFieldController<
     fieldState: { error },
   } = useControllerMerged({ control, name }, rest, rest.ref);
 
-  return <SwitchField error={error?.message} {...rest} {...field} />;
+  return (
+    <SwitchField
+      error={error?.message}
+      {...rest}
+      {...field}
+      value={field.value ?? false}
+    />
+  );
 }
 
 export { SwitchField, SwitchFieldController };

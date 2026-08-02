@@ -633,6 +633,30 @@
       "sourceFile": "components/ui/not-found-card.tsx",
       "variables": {}
     },
+    "number-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/number-field.tsx",
+      "projectExports": {
+        "NumberField": { "isTypeOnly": false, "name": "NumberField" },
+        "NumberFieldController": {
+          "isTypeOnly": false,
+          "name": "NumberFieldController"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "cn",
+        "field",
+        "hooks-use-controller-merged",
+        "styles-button",
+        "styles-input",
+        "types-form"
+      ],
+      "sourceFile": "components/ui/number-field.tsx",
+      "variables": {}
+    },
     "popover": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -648,6 +672,28 @@
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/popover.tsx",
+      "variables": {}
+    },
+    "radio-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/radio-field.tsx",
+      "projectExports": {
+        "RadioField": { "isTypeOnly": false, "name": "RadioField" },
+        "RadioFieldController": {
+          "isTypeOnly": false,
+          "name": "RadioFieldController"
+        }
+      },
+      "referencedGeneratorTemplates": [
+        "field",
+        "hooks-use-controller-merged",
+        "radio-group",
+        "types-form"
+      ],
+      "sourceFile": "components/ui/radio-field.tsx",
       "variables": {}
     },
     "radio-group": {
@@ -949,10 +995,17 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/types/form.ts",
       "projectExports": {
-        "AddOptionRequiredFields": { "isTypeOnly": true },
-        "FormFieldProps": { "isTypeOnly": true },
-        "MultiSelectOptionProps": { "isTypeOnly": true },
-        "SelectOptionProps": { "isTypeOnly": true }
+        "AddOptionRequiredFields": {
+          "isTypeOnly": true,
+          "name": "AddOptionRequiredFields"
+        },
+        "FormFieldProps": { "isTypeOnly": true, "name": "FormFieldProps" },
+        "MultiSelectOptionProps": {
+          "isTypeOnly": true,
+          "name": "MultiSelectOptionProps"
+        },
+        "RadioOptionProps": { "isTypeOnly": true, "name": "RadioOptionProps" },
+        "SelectOptionProps": { "isTypeOnly": true, "name": "SelectOptionProps" }
       },
       "sourceFile": "src/types/form.ts",
       "variables": {}

@@ -12,6 +12,7 @@ import { ComboboxFieldController } from '@src/components/ui/combobox-field';
 import { DateTimePickerFieldController } from '@src/components/ui/date-time-picker-field';
 import { FileInputFieldController } from '@src/components/ui/file-input-field';
 import { InputFieldController } from '@src/components/ui/input-field';
+import { NumberFieldController } from '@src/components/ui/number-field';
 import { SelectFieldController } from '@src/components/ui/select-field';
 import { graphql, readFragment } from '@src/gql';
 
@@ -150,11 +151,10 @@ export function TodoListEditForm(
               control={control}
               name="createdAt"
             />
-            <InputFieldController
+            <NumberFieldController
               label="Position"
               control={control}
               name="position"
-              registerOptions={{ valueAsNumber: true }}
             />
             {/* TPL_INPUTS:END */}
           </CardContent>

@@ -20,8 +20,8 @@ export interface DateTimePickerFieldProps extends FormFieldProps {
   className?: string;
   wrapperClassName?: string;
   placeholder?: string;
-  onChange?: (value: string | undefined) => void;
-  value?: string | undefined;
+  onChange?: (value: string | null) => void;
+  value?: string | null;
   dateTimeFormat?: string;
   showSeconds?: boolean;
   calendarProps?: Omit<
@@ -58,7 +58,7 @@ function DateTimePickerField({
 
   const handleDateSelect = (date: Date | undefined): void => {
     if (!date) {
-      onChange?.(undefined);
+      onChange?.(null);
       return;
     }
 
@@ -223,7 +223,12 @@ function DateTimePickerFieldController<
   );
 
   return (
-    <DateTimePickerField error={error?.message} {...rest} {...fieldProps} />
+    <DateTimePickerField
+      error={error?.message}
+      {...rest}
+      {...fieldProps}
+      value={fieldProps.value ?? null}
+    />
   );
 }
 
