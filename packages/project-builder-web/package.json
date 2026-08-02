@@ -78,7 +78,7 @@
     "@types/react-dom": "catalog:",
     "anser": "^2.3.5",
     "clsx": "^2.1.1",
-    "culori": "^4.0.2",
+    "culori": "^4.0.1",
     "es-toolkit": "^1.44.0",
     "immer": "~11.1.15",
     "inflection": "^3.0.2",

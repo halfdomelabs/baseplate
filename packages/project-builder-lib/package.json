@@ -54,7 +54,7 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "acorn": "^8.18.0",
-    "culori": "^4.0.2",
+    "culori": "^4.0.1",
     "es-toolkit": "^1.44.0",
     "globby": "^16.2.2",
     "immer": "~11.1.15",
