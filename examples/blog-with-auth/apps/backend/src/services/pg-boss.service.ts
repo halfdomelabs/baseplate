@@ -14,7 +14,7 @@ import type {
   RepeatableConfig,
   ScheduledJob,
 } from '../types/queue.types.js';
-import type { ServiceContext } from '../utils/service-context.js';
+import type { SystemServiceContext } from '../utils/service-context.js';
 
 import { DEFAULT_QUEUE_CONCURRENCY } from '../types/queue.types.js';
 import { config } from './config.js';
@@ -523,7 +523,7 @@ export function createQueueRuntime(
   }
 
   async function startWorkers(workerOptions: {
-    createContext: () => ServiceContext;
+    createContext: () => SystemServiceContext;
   }): Promise<void> {
     await ensureStarted();
 

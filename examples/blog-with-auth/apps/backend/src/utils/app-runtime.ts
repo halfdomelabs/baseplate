@@ -1,4 +1,4 @@
-import type { AppServices } from './runtime-services.js';
+import type { RuntimeServices } from './runtime-services.js';
 
 import { CookieUserSessionService } from '../modules/accounts/auth/services/user-session.service.js';
 import {
@@ -38,7 +38,7 @@ import { flattenAppModule } from './app-modules.js';
  * application.
  */
 export interface AppRuntime {
-  readonly services: AppServices;
+  readonly services: RuntimeServices;
   /**
    * Disposes every constructed service in reverse construction order.
    * Idempotent. Attempts every disposer even if one fails, then throws an
@@ -63,7 +63,7 @@ export function createAppRuntime(
      * construction is skipped entirely and downstream construction consumes the
      * override. Overrides are borrowed: the runtime never disposes them.
      */
-    overrides?: Partial<AppServices>;
+    overrides?: Partial<RuntimeServices>;
   } = {} /* TPL_OPTIONS_PARAM:END */,
 ): AppRuntime {
   const disposers: { name: string; dispose: () => Promise<void> }[] = [];
@@ -85,11 +85,11 @@ export function createAppRuntime(
    * @param dispose Releases a constructed object, if it holds resources.
    * @returns The override or the newly constructed object.
    */
-  function provide<K extends keyof AppServices>(
+  function provide<K extends keyof RuntimeServices>(
     key: K,
-    create: () => AppServices[K],
-    dispose?: (value: AppServices[K]) => Promise<void>,
-  ): AppServices[K] {
+    create: () => RuntimeServices[K],
+    dispose?: (value: RuntimeServices[K]) => Promise<void>,
+  ): RuntimeServices[K] {
     const overridden = overrides[key];
     if (overridden !== undefined) {
       return overridden;
@@ -117,15 +117,13 @@ export function createAppRuntime(
     createEmailTransport(postmarkEmailAdapter),
   );
 
-  const notificationRenderer = provide('notificationRenderer', () =>
-    createNotificationRenderer({ notificationTypes }),
-  );
+  const notificationRenderer = createNotificationRenderer({
+    notificationTypes,
+  });
 
-  const pubsub = provide('pubsub', () => createGraphqlPubSub(redis));
+  const pubsub = createGraphqlPubSub(redis);
 
-  const notificationEvents = provide('notificationEvents', () =>
-    createNotificationEvents(pubsub),
-  );
+  const notificationEvents = createNotificationEvents(pubsub);
 
   const queue = provide(
     'queue',
@@ -164,18 +162,17 @@ export function createAppRuntime(
   );
   /* TPL_SERVICE_CONSTRUCTION:END */
 
+  // One concrete object; `AppServices` and every context type is a structural
+  // view of it.
   const services = /* TPL_SERVICES_OBJECT:START */ {
     email,
     emailTransport,
     notification,
-    notificationEvents,
     notificationOutbox,
-    notificationRenderer,
-    pubsub,
     queue,
     redis,
     userSession,
-  } /* TPL_SERVICES_OBJECT:END */ satisfies AppServices;
+  } /* TPL_SERVICES_OBJECT:END */ satisfies RuntimeServices;
 
   async function disposeOnce(): Promise<void> {
     const errors: unknown[] = [];

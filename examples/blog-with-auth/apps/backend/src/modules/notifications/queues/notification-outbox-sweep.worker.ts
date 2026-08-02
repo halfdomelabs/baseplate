@@ -1,4 +1,4 @@
-import type { ServiceContextWith } from '@src/utils/service-context.js';
+import type { SystemServiceContextWith } from '@src/utils/service-context.js';
 
 import { logError } from '@src/services/error-logger.js';
 import { bindQueueHandler } from '@src/types/queue.types.js';
@@ -28,7 +28,10 @@ const SWEEP_BATCH_SIZE = 100;
 export const notificationOutboxSweepWorker = bindQueueHandler(
   notificationOutboxSweepQueue,
   {
-    handler: async (_job, ctx: ServiceContextWith<'notificationOutbox'>) => {
+    handler: async (
+      _job,
+      ctx: SystemServiceContextWith<'notificationOutbox'>,
+    ) => {
       const outbox = ctx.services.notificationOutbox;
       const sweptCount = await outbox.sweepStaleRequests({
         staleBefore: new Date(Date.now() - STALE_AFTER_MS),
