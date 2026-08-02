@@ -4,10 +4,9 @@ import type { AuthUserSessionInfo } from '@src/modules/accounts/auth/types/auth-
 import type {
   GetResult,
   ModelPropName,
-  WhereInput,
   WhereUniqueInput,
 } from '../data-operations/prisma-types.js';
-import type { WhereResult } from '../query-helpers.js';
+import type { WhereClause, WhereResult } from '../query-helpers.js';
 import type { ServiceContext } from '../service-context.js';
 
 type PayloadOf<M extends ModelPropName> =
@@ -71,7 +70,7 @@ export type ModelDelegate<M extends ModelPropName> = PrismaClient[M];
 export type Exists<TModelName extends ModelPropName> = (
   ctx: ServiceContext,
   ids: Record<string, string | number>,
-  where: NonNullable<WhereInput<TModelName>>,
+  where: WhereClause<TModelName>,
 ) => Promise<boolean>;
 
 export interface DelegationTarget<
@@ -299,8 +298,8 @@ export interface ActionMembers<TModelName extends ModelPropName> {
    */
   where: (
     ctx: ServiceContext,
-    callerWhere?: WhereInput<TModelName>,
-  ) => WhereInput<TModelName>;
+    callerWhere?: WhereClause<TModelName>,
+  ) => WhereClause<TModelName>;
   /**
    * The grant composed into a unique selector for ATOMIC authorized
    * `update`/`delete`: one query, returns the row, no TOCTOU. No match
