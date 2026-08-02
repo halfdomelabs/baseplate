@@ -3,6 +3,8 @@
   "display": "Vite React Base Config",
   "extends": "@tsconfig/vite-react/tsconfig.json",
   "compilerOptions": {
+    // @tsconfig/vite-react 8 no longer sets strict; keep it enabled here
+    "strict": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["node"],
     "noUncheckedIndexedAccess": true

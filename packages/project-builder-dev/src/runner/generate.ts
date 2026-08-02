@@ -40,7 +40,7 @@ export async function generateProject(
       userConfig: {},
     });
   } catch (error) {
-    logger.error('Project sync failed:', error);
+    logger.error(error, 'Project sync failed');
     throw error;
   }
 }

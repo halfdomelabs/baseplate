@@ -70,19 +70,19 @@
     "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
   },
   "dependencies": {
-    "@changesets/cli": "2.29.6"
+    "@changesets/cli": "2.31.1"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
     "@changesets/changelog-github": "0.5.1",
-    "@playwright/cli": "^0.1.13",
+    "@playwright/cli": "^0.1.17",
     "@types/node": "catalog:",
-    "check-dependency-version-consistency": "5.0.0",
+    "check-dependency-version-consistency": "6.0.0",
     "es-toolkit": "^1.44.0",
     "eslint": "catalog:",
     "husky": "9.1.7",
-    "knip": "5.79.0",
-    "lint-staged": "16.1.0",
+    "knip": "6.31.0",
+    "lint-staged": "17.3.0",
     "oxfmt": "0.52.0",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "0.23.0",
@@ -90,7 +90,7 @@
     "turbo": "2.9.15",
     "typescript": "catalog:",
     "vitest": "catalog:",
-    "workspace-meta": "0.1.4"
+    "workspace-meta": "0.1.5"
   },
   "packageManager": "pnpm@11.18.0",
   "engines": {
