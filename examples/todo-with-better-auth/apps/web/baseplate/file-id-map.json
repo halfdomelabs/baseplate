@@ -108,5 +108,6 @@
   "@baseplate-dev/react-generators#core/react:main": "src/main.tsx",
   "@baseplate-dev/react-generators#core/react:readme": "README.md",
   "@baseplate-dev/react-generators#core/react:vite-config": "vite.config.ts",
-  "@baseplate-dev/react-generators#core/react:vite-env": "src/vite-env.d.ts"
+  "@baseplate-dev/react-generators#core/react:vite-env": "src/vite-env.d.ts",
+  "@baseplate-dev/react-generators#vitest/react-vitest:setup": "src/tests/setup.ts"
 }

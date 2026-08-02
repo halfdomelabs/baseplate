@@ -8,7 +8,9 @@ export default defineConfig(
       clearMocks: true,
       dir: 'src',
       env: loadEnv('development', process.cwd(), ''),
+      environment: 'jsdom',
       passWithNoTests: true,
+      setupFiles: ['src/tests/setup.ts'],
     },
   } /* TPL_CONFIG:END */,
 );

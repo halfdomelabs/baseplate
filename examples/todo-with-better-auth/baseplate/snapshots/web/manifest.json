@@ -1,6 +1,6 @@
 {
   "files": {
-    "added": [],
+    "added": [{ "path": "src/components/ui/loader.unit.test.tsx" }],
     "deleted": [],
     "modified": [
       {

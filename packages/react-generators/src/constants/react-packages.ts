@@ -56,4 +56,10 @@ export const REACT_PACKAGES = {
 
   // Sentry
   '@sentry/react': '10.63.0',
+
+  // Testing
+  '@testing-library/jest-dom': '7.0.0',
+  '@testing-library/react': '16.3.2',
+  '@testing-library/user-event': '14.6.1',
+  jsdom: '30.0.1',
 } as const;
