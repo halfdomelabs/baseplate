@@ -18,7 +18,11 @@ risks first, then explain the smallest reasonable correction.
    - Target: current `HEAD` **plus** staged, unstaged, and related untracked files.
 3. Enumerate the surface before deep review: changed-file status, diff stat, commits in scope when
    useful, and untracked files that appear related.
-4. Exclude pre-existing problems unless the diff introduces, worsens, or exposes them.
+4. **Ignore everything under `baseplate/generated/**`** (e.g. `examples/_/baseplate/generated/`,
+`examples/_/apps/\*/baseplate/generated/`). These are sync bookkeeping artifacts, not authored or
+reviewable code. Exclude them from the diff surface up front — `git diff <base> -- . ':(exclude)**/baseplate/generated/**'`
+   — so diff stats and file counts reflect real changes. Never report findings against them.
+5. Exclude pre-existing problems unless the diff introduces, worsens, or exposes them.
 
 Do not mutate code during a review unless the user separately asks for fixes.
 
@@ -36,11 +40,27 @@ only what the changed area needs:
 
 ### 1. Correctness and Data Integrity
 
-Trace changed behavior end to end. For generator changes, trace through to the **generated output**:
-a generator bug ships to every downstream project. Check invalid inputs, null/empty states, error
-paths, ordering/determinism of generated output (stable sorts via `compareStrings`), and partial
-failure during sync. Confirm schema changes flow through the project-definition → compiler →
-generator pipeline consistently.
+Trace changed behavior end to end. Check invalid inputs, null/empty states, error paths,
+ordering/determinism of generated output (stable sorts via `compareStrings`), and partial failure
+during sync. Confirm schema changes flow through the project-definition → compiler → generator
+pipeline consistently.
+
+**When generators or templates changed, review in this order — generated code first, generator
+second:**
+
+1. **Read the generated output as a downstream user would.** Start with the example diffs under
+   `examples/**` (excluding `baseplate/generated/**`) and the template sources under
+   `generators/**/generated/**`. Judge that code on its own merits: is it correct, idiomatic, well
+   typed, free of dead code and authoring commentary, and something you would accept in a
+   hand-written project? A generator bug ships to every downstream project, so a flaw here outranks
+   anything in the generator itself.
+2. **Then read the generator that produced it.** With the concrete output in hand, evaluate how the
+   generator is set up — task/provider wiring, template choice versus string composition,
+   determinism, and whether the generator's structure explains the flaws found in step 1. Trace each
+   output flaw back to its cause and report the fix at the generator/template level, not as a
+   hand-edit to the output.
+
+Do not review the generator first and infer the output from it; read what actually ships.
 
 ### 2. Generator and Template Hygiene
 
