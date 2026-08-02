@@ -3,11 +3,13 @@ import type { Prisma } from '@src/generated/prisma/client.js';
 import { logError } from '@src/services/error-logger.js';
 
 import type {
+  NotificationContent,
   NotificationParams,
   RenderContext,
   RenderedContent,
 } from './notification-content.js';
 import type {
+  NotificationActor,
   NotificationEvent,
   NotificationTypeDefinition,
 } from './notification-registry.js';
@@ -18,6 +20,7 @@ import {
   segmentsToText,
   toSegments,
 } from './notification-content.js';
+import { renderSingle } from './notification-registry.js';
 
 /** Default render locale until i18n lands. */
 export const DEFAULT_LOCALE = 'en';
@@ -32,6 +35,7 @@ export const RENDER_SOURCE_SELECT = {
   fallbackText: true,
   actionUrl: true,
   actorId: true,
+  actorLabel: true,
   entityType: true,
   entityId: true,
 } satisfies Prisma.NotificationSelect;
@@ -62,7 +66,7 @@ function registryKey(key: string, version: number): string {
 
 /** Project a renderer's output into the served content (one render, all fields). */
 export function toRenderedContent(
-  content: ReturnType<NotificationTypeDefinition['render']>,
+  content: NotificationContent,
 ): RenderedContent {
   const segments = toSegments(content.body);
   const actionUrl =
@@ -90,8 +94,16 @@ export interface NotificationRenderer {
    * version, so history can't be silently rewritten. Falls back to the frozen
    * snapshot (and logs) when the pinned renderer is gone or params no longer
    * satisfy it.
+   *
+   * `actor` overrides the row's `actorLabel` snapshot with live identity, for
+   * callers that already resolved it (the delivery path). Omit it on the read
+   * path, which has only the row.
    */
-  renderContent(row: RenderSource, ctx?: RenderContext): RenderedContent;
+  renderContent(
+    row: RenderSource,
+    ctx?: RenderContext,
+    actor?: NotificationActor,
+  ): RenderedContent;
   /**
    * Render content for a not-yet-persisted event, in the default locale. The
    * frozen snapshot `notify` stores as read-time recovery content.
@@ -100,6 +112,12 @@ export interface NotificationRenderer {
     type: NotificationTypeDefinition<P>,
     event: NotificationEvent<P>,
   ): RenderedContent;
+  /**
+   * A row's category, resolved from the registry rather than the row — the
+   * category is a property of the type, so it is never stored per row. Null
+   * when the pinned renderer is gone.
+   */
+  getCategory(type: string, templateVersion: number): string | null;
 }
 
 /**
@@ -126,6 +144,7 @@ export function createNotificationRenderer(deps: {
   function renderContent(
     row: RenderSource,
     ctx?: RenderContext,
+    actor?: NotificationActor,
   ): RenderedContent {
     const type = registry.get(registryKey(row.type, row.templateVersion));
     if (!type) {
@@ -149,16 +168,18 @@ export function createNotificationRenderer(deps: {
       return frozenContent(row);
     }
 
+    // Live identity where the caller resolved it, else the write-time snapshot
+    // — which is also what names an actor whose user row is gone.
     const event: NotificationEvent = {
       params: params.data,
-      actorId: row.actorId ?? undefined,
+      actor: actor ?? (row.actorLabel ? { label: row.actorLabel } : undefined),
       entityType: row.entityType ?? undefined,
       entityId: row.entityId ?? undefined,
     };
 
     try {
       return toRenderedContent(
-        type.render([event], ctx ?? { locale: DEFAULT_LOCALE }),
+        renderSingle(type, event, ctx ?? { locale: DEFAULT_LOCALE }),
       );
     } catch (error) {
       logError(error, {
@@ -175,8 +196,14 @@ export function createNotificationRenderer(deps: {
     type: NotificationTypeDefinition<P>,
     event: NotificationEvent<P>,
   ): RenderedContent {
-    return toRenderedContent(type.render([event], { locale: DEFAULT_LOCALE }));
+    return toRenderedContent(
+      renderSingle(type, event, { locale: DEFAULT_LOCALE }),
+    );
   }
 
-  return { renderContent, renderForWrite };
+  function getCategory(type: string, templateVersion: number): string | null {
+    return registry.get(registryKey(type, templateVersion))?.category ?? null;
+  }
+
+  return { renderContent, renderForWrite, getCategory };
 }

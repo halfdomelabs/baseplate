@@ -12,9 +12,10 @@ const genericParamsSchema = z.object({
 export const GENERIC_NOTIFICATION_TYPE = defineNotificationType({
   key: 'generic',
   version: 1,
+  category: 'general',
   paramsSchema: genericParamsSchema,
   channels: ['inApp'],
-  render: ([event]) => ({
+  render: (event) => ({
     body: event.params.text,
     actionUrl: event.params.actionUrl,
   }),
