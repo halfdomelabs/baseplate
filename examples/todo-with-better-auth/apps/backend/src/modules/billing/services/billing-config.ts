@@ -1,4 +1,4 @@
-import { config } from '@src/services/config.js';
+import { getConfig } from '@src/services/config.js';
 
 import type { AuthRole } from '../../accounts/auth/constants/auth-roles.constants.js';
 
@@ -41,6 +41,6 @@ export type PlanKey = keyof typeof SUBSCRIPTION_PLANS;
  */
 export function getPriceId(planKey: PlanKey): string {
   const plan = SUBSCRIPTION_PLANS[planKey];
-  const env = config.APP_ENVIRONMENT === 'prod' ? 'prod' : 'stage';
+  const env = getConfig().APP_ENVIRONMENT === 'prod' ? 'prod' : 'stage';
   return plan.priceIds[env];
 }

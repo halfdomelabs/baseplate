@@ -3,7 +3,7 @@
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import type { GraphQLErrorOptions } from 'graphql';
 
-import { config } from '%configServiceImports';
+import { isDevelopment } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { requestContext } from '@fastify/request-context';
@@ -12,8 +12,6 @@ import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 
 TPL_SIDE_EFFECT_IMPORTS;
-
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 const schema = TPL_SCHEMA;
 
@@ -27,9 +25,9 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
     logging: logger,
     context: ({ req }) => req.serviceContext,
     schema,
-    graphiql: IS_DEVELOPMENT,
+    graphiql: isDevelopment(),
     maskedErrors: {
-      isDev: IS_DEVELOPMENT,
+      isDev: isDevelopment(),
       maskError: (error, message, isDev) => {
         if (!(error instanceof GraphQLError)) {
           return new GraphQLError(message);

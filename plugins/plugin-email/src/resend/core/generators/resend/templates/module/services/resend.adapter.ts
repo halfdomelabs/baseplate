@@ -2,7 +2,7 @@
 
 import type { EmailAdapter } from '%emailModuleImports';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { Resend } from 'resend';
 
 let resendClient: Resend | undefined;
@@ -11,7 +11,7 @@ let resendClient: Resend | undefined;
  * Gets the Resend client, creating it lazily on first use.
  */
 function getResendClient(): Resend {
-  resendClient ??= new Resend(config.RESEND_API_KEY);
+  resendClient ??= new Resend(getConfig().RESEND_API_KEY);
   return resendClient;
 }
 

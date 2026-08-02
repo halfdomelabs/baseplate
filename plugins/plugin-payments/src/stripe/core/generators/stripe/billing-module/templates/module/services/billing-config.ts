@@ -2,7 +2,7 @@
 
 import type { AuthRole } from '%authRolesImports';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 
 /** Defines the shape of a subscription plan. */
 interface SubscriptionPlan {
@@ -38,6 +38,6 @@ export type PlanKey = keyof typeof SUBSCRIPTION_PLANS;
  */
 export function getPriceId(planKey: PlanKey): string {
   const plan = SUBSCRIPTION_PLANS[planKey];
-  const env = config.APP_ENVIRONMENT === 'prod' ? 'prod' : 'stage';
+  const env = getConfig().APP_ENVIRONMENT === 'prod' ? 'prod' : 'stage';
   return plan.priceIds[env];
 }

@@ -15,7 +15,7 @@ import type {
 import type { ServiceContext } from '%serviceContextImports';
 import type { JobInsert, JobWithMetadata, SendOptions } from 'pg-boss';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
@@ -216,7 +216,7 @@ export function createQueueRuntime(
   );
 
   const boss = new PgBoss({
-    connectionString: config.DATABASE_URL,
+    connectionString: getConfig().DATABASE_URL,
     useListenNotify: options.useListenNotify ?? !options.disableMaintenance,
     ...(options.disableMaintenance && {
       supervise: false,

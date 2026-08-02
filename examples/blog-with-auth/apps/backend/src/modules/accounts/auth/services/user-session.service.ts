@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto';
 
 import type { RequestServiceContext } from '@src/utils/request-service-context.js';
 
-import { config } from '@src/services/config.js';
+import { getConfig, isDevelopment } from '@src/services/config.js';
 import { prisma } from '@src/services/prisma.js';
 import { ForbiddenError } from '@src/utils/http-errors.js';
 
@@ -32,13 +32,15 @@ interface SessionCookieValue {
   token: string;
 }
 
-const COOKIE_OPTIONS: CookieSerializeOptions = {
-  httpOnly: true,
-  sameSite: 'lax',
-  secure: config.APP_ENVIRONMENT !== 'dev',
-  maxAge: USER_SESSION_DURATION_SEC,
-  path: '/',
-};
+function getCookieOptions(): CookieSerializeOptions {
+  return {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: !isDevelopment(),
+    maxAge: USER_SESSION_DURATION_SEC,
+    path: '/',
+  };
+}
 
 /**
  * Validates the expiry of a user session and determines if it needs to be renewed.
@@ -132,9 +134,9 @@ export class CookieUserSessionService implements UserSessionService {
     ];
 
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
-    const cookieValue = signObject({ token }, config.AUTH_SECRET);
+    const cookieValue = signObject({ token }, getConfig().AUTH_SECRET);
 
-    context.cookieStore.set(cookieName, cookieValue, COOKIE_OPTIONS);
+    context.cookieStore.set(cookieName, cookieValue, getCookieOptions());
 
     return { userId, expiresAt, roles };
   }
@@ -155,7 +157,7 @@ export class CookieUserSessionService implements UserSessionService {
       });
 
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
-    context.cookieStore.clear(cookieName, COOKIE_OPTIONS);
+    context.cookieStore.clear(cookieName, getCookieOptions());
   }
 
   /**
@@ -184,7 +186,7 @@ export class CookieUserSessionService implements UserSessionService {
       (req.method !== 'GET' ||
         req.headers.upgrade?.toLowerCase() === 'websocket') &&
       req.method !== 'HEAD' &&
-      !verifyRequestOrigin(req, [req.host, ...config.ALLOWED_ORIGINS])
+      !verifyRequestOrigin(req, [req.host, ...getConfig().ALLOWED_ORIGINS])
     ) {
       throw new ForbiddenError('Invalid Origin header');
     }
@@ -192,7 +194,7 @@ export class CookieUserSessionService implements UserSessionService {
       // Unsign the session cookie
       const sessionCookieResult = unsignObject(
         sessionCookieValue,
-        config.AUTH_SECRET,
+        getConfig().AUTH_SECRET,
       ) as SessionCookieValue | undefined;
       if (!sessionCookieResult) throw new InvalidSessionError();
 
@@ -225,8 +227,8 @@ export class CookieUserSessionService implements UserSessionService {
               expiresAt: sessionExpiryResult.newExpiry,
             },
           });
-        const newSignedCookie = signObject({ token }, config.AUTH_SECRET);
-        reply.setCookie(cookieName, newSignedCookie, COOKIE_OPTIONS);
+        const newSignedCookie = signObject({ token }, getConfig().AUTH_SECRET);
+        reply.setCookie(cookieName, newSignedCookie, getCookieOptions());
       }
 
       const { user } = userSession;
@@ -245,7 +247,7 @@ export class CookieUserSessionService implements UserSessionService {
     } catch (err) {
       // clear the cookie if it's invalid
       if (err instanceof InvalidSessionError && reply) {
-        reply.clearCookie(cookieName, COOKIE_OPTIONS);
+        reply.clearCookie(cookieName, getCookieOptions());
       }
       throw err;
     }

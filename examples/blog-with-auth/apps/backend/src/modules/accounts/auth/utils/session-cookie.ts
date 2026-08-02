@@ -1,6 +1,6 @@
 import type { FastifyRequest } from 'fastify';
 
-import { config } from '@src/services/config.js';
+import { getConfig, isDevelopment } from '@src/services/config.js';
 
 const COOKIE_NAME = 'user-session';
 
@@ -15,9 +15,10 @@ const COOKIE_NAME = 'user-session';
 export function getUserSessionCookieName(
   headers: FastifyRequest['headers'],
 ): string {
-  if (config.APP_ENVIRONMENT !== 'dev') {
+  if (!isDevelopment()) {
     return `__Host-${COOKIE_NAME}`;
   }
+  const { SERVER_PORT } = getConfig();
   // in development, localhost does not support the __Host prefix and should be scoped to port
   // use origin/referer header to determine hostname because dev reverse proxies use origin/referer to signal the original host
   const { origin, referer } = headers;
@@ -25,16 +26,15 @@ export function getUserSessionCookieName(
   let port;
   try {
     if (!originalHost) {
-      port = config.SERVER_PORT;
+      port = SERVER_PORT;
     } else {
       const url = new URL(originalHost);
       const parsedPort = Number.parseInt(url.port, 10);
       // Validate port is in valid range (1-65535)
-      port =
-        parsedPort > 0 && parsedPort < 65_536 ? parsedPort : config.SERVER_PORT;
+      port = parsedPort > 0 && parsedPort < 65_536 ? parsedPort : SERVER_PORT;
     }
   } catch {
-    port = config.SERVER_PORT;
+    port = SERVER_PORT;
   }
   return `${COOKIE_NAME}-${port}`;
 }

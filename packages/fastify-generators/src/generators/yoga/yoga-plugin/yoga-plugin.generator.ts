@@ -48,7 +48,7 @@ const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
       tsImportBuilder(['useGraphLogger']).from('./use-graph-logger.ts'),
     ),
     useDisableIntrospection: tsCodeFragment(
-      'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
+      'useDisableIntrospection({ disableIf: () => !isDevelopment() })',
       tsImportBuilder(['useDisableIntrospection']).from(
         '@envelop/disable-introspection',
       ),

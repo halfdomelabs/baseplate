@@ -1,4 +1,4 @@
-import { config } from '@src/services/config.js';
+import { getConfig } from '@src/services/config.js';
 
 import type { StorageAdapter } from '../types/adapter.js';
 import type { FileCategory } from '../types/file-category.js';
@@ -8,9 +8,9 @@ import { createUrlAdapter } from '../adapters/url.js';
 
 const STORAGE_ADAPTERS = /* TPL_ADAPTERS:START */ {
   uploads: createS3Adapter({
-    bucket: config.AWS_UPLOADS_BUCKET,
-    publicUrl: config.AWS_UPLOADS_URL,
-    region: config.AWS_DEFAULT_REGION,
+    bucket: getConfig().AWS_UPLOADS_BUCKET,
+    publicUrl: getConfig().AWS_UPLOADS_URL,
+    region: getConfig().AWS_DEFAULT_REGION,
   }),
   url: createUrlAdapter(),
 }; /* TPL_ADAPTERS:END */

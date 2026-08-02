@@ -8,7 +8,7 @@ import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 import fs from 'node:fs/promises';
 
-import { config } from '@src/services/config.js';
+import { isDevelopment } from '@src/services/config.js';
 import { logger } from '@src/services/logger.js';
 import { HttpError } from '@src/utils/http-errors.js';
 
@@ -19,8 +19,6 @@ import { useSentry } from './use-sentry.js';
 /* TPL_SIDE_EFFECT_IMPORTS:START */
 import '@src/modules/index.js';
 /* TPL_SIDE_EFFECT_IMPORTS:END */
-
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 const schema = /* TPL_SCHEMA:START */ builder.toSchema(); /* TPL_SCHEMA:END */
 
@@ -42,7 +40,7 @@ async function writeSchemaToFile(): Promise<void> {
   }
 }
 
-if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
+if (isDevelopment() && process.env.NODE_ENV !== 'test') {
   writeSchemaToFile().catch((err: unknown) => {
     logger.error(err);
   });
@@ -57,9 +55,9 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
     logging: logger,
     context: ({ req }) => req.serviceContext,
     schema,
-    graphiql: IS_DEVELOPMENT,
+    graphiql: isDevelopment(),
     maskedErrors: {
-      isDev: IS_DEVELOPMENT,
+      isDev: isDevelopment(),
       maskError: (error, message, isDev) => {
         if (!(error instanceof GraphQLError)) {
           return new GraphQLError(message);
@@ -111,7 +109,7 @@ export const graphqlPlugin = fp((fastify, opts, done) => {
       },
     },
     plugins: /* TPL_ENVELOP_PLUGINS:START */ [
-      useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT }),
+      useDisableIntrospection({ disableIf: () => !isDevelopment() }),
       useGraphLogger(),
       useSentry(),
     ] /* TPL_ENVELOP_PLUGINS:END */,

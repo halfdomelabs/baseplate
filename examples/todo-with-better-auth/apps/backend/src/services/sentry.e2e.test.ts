@@ -22,10 +22,10 @@ vi.mock('@src/services/config', async (importOriginal) => {
   const actual = await importOriginal<typeof configModule>();
   return {
     ...actual,
-    config: {
-      ...actual.config,
+    getConfig: (): ReturnType<typeof configModule.getConfig> => ({
+      ...actual.getConfig(),
       SENTRY_DSN: 'mock-dsn',
-    },
+    }),
   };
 });
 

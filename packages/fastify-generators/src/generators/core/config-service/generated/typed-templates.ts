@@ -5,7 +5,7 @@ const config = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'config',
-  projectExports: { config: {} },
+  projectExports: { getConfig: {}, isDevelopment: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/services/config.ts'),
   },

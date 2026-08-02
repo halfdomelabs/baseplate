@@ -15,7 +15,7 @@ import type { ServiceContext } from '%serviceContextImports';
 import type { Job, JobsOptions } from 'bullmq';
 import type { Redis } from 'ioredis';
 
-import { config } from '%configServiceImports';
+import { getConfig } from '%configServiceImports';
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { DEFAULT_QUEUE_CONCURRENCY } from '%queuesImports';
@@ -203,7 +203,7 @@ export function createQueueRuntime(
     if (!bullQueue) {
       bullQueue = new BullMQQueueBase(name, {
         connection: getRedisClient(),
-        prefix: config.REDIS_KEY_PREFIX,
+        prefix: getConfig().REDIS_KEY_PREFIX,
         defaultJobOptions: mapEnqueueOptions(
           binding.options?.defaultJobOptions,
         ),
@@ -367,7 +367,7 @@ export function createQueueRuntime(
         },
         {
           connection: getRedisClient(),
-          prefix: config.REDIS_KEY_PREFIX,
+          prefix: getConfig().REDIS_KEY_PREFIX,
           concurrency:
             binding.options?.concurrency ?? DEFAULT_QUEUE_CONCURRENCY,
         },
