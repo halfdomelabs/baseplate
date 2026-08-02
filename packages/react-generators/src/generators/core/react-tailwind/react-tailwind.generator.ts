@@ -57,9 +57,6 @@ export const reactTailwindGenerator = createGenerator({
     includeViteIntegration = true,
   }) => ({
     nodePackages: createNodePackagesTask({
-      prod: includeViteIntegration
-        ? extractPackageVersions(REACT_PACKAGES, ['tailwind-merge'])
-        : {},
       dev: extractPackageVersions(REACT_PACKAGES, [
         ...(includeViteIntegration ? (['@tailwindcss/vite'] as const) : []),
         'tailwindcss',

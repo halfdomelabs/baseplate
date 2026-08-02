@@ -1,7 +1,4 @@
 {
-  "todo-with-better-auth/apps/admin tailwind-merge": "TODO: only libs/ui-shared imports tailwind-merge (via its cn helper); the admin app declares it without importing it. Drop it from the app generator when a shared component library is in use.",
-  "todo-with-better-auth/apps/web react-icons": "TODO: only libs/ui-shared imports react-icons; the web app declares it without importing it. Drop it from the app generator when a shared component library is in use.",
-  "todo-with-better-auth/apps/web sonner": "TODO: only libs/ui-shared imports sonner (the web app renders its re-exported Toaster); the web app declares it without importing it. Drop it from the app generator when a shared component library is in use.",
-  "todo-with-better-auth/apps/web tailwind-merge": "TODO: only libs/ui-shared imports tailwind-merge (via its cn helper); the web app declares it without importing it. Drop it from the app generator when a shared component library is in use.",
-  "todo-with-better-auth/libs/ui-shared @hookform/resolvers": "TODO: ui-shared declares @hookform/resolvers but only the apps import it; its own field components use react-hook-form directly. Drop it from the shared-library generator."
+  "todo-with-better-auth/apps/web react-icons": "Declared for every app by core/react-components-import because admin templates (sidebar, dialogs) import react-icons directly; that generator cannot tell admin from web. Removing it needs the declaration moved to the generators emitting those imports.",
+  "todo-with-better-auth/apps/web sonner": "Declared for every app by core/react-components-import because admin templates import toast from sonner directly (see admin-crud-delete-action); that generator cannot tell admin from web. Removing it needs the declaration moved to the generators emitting those imports."
 }
