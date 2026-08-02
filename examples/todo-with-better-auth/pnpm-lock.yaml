@@ -59,9 +59,6 @@ importers:
       react:
         specifier: 19.1.0
         version: 19.1.0
-      react-circular-progressbar:
-        specifier: 2.2.0
-        version: 2.2.0(react@19.1.0)
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
@@ -349,9 +346,6 @@ importers:
       globals:
         specifier: 17.3.0
         version: 17.3.0
-      pg-connection-string:
-        specifier: 2.6.4
-        version: 2.6.4
       pino-pretty:
         specifier: 13.0.0
         version: 13.0.0
@@ -5414,9 +5408,6 @@ packages:
   pg-connection-string@2.14.0:
     resolution: {integrity: sha512-XwWDGcLRGCXAR8F/AM5bG7Q+A3Wm2s6QeEjlOKZLlH3UYcguiqCWKyWXVag5TLTIjR7oOJUY8kcADaZgWPyLeg==}
 
-  pg-connection-string@2.6.4:
-    resolution: {integrity: sha512-v+Z7W/0EO707aNMaAEfiGnGL9sxxumwLl2fJvCQtMn9Fxsg+lPpPkdcyBSv/KFgpGdYkMfn+EI1Or2EHjpgLCA==}
-
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
@@ -5657,11 +5648,6 @@ packages:
 
   rc9@3.0.1:
     resolution: {integrity: sha512-gMDyleLWVE+i6Sgtc0QbbY6pEKqYs97NGi6isHQPqYlLemPoO8dxQ3uGi0f4NiP98c+jMW6cG1Kx9dDwfvqARQ==}
-
-  react-circular-progressbar@2.2.0:
-    resolution: {integrity: sha512-cgyqEHOzB0nWMZjKfWN3MfSa1LV3OatcDjPz68lchXQUEiBD5O1WsAtoVK4/DSL0B4USR//cTdok4zCBkq8X5g==}
-    peerDependencies:
-      react: '>=0.14.0'
 
   react-day-picker@9.7.0:
     resolution: {integrity: sha512-urlK4C9XJZVpQ81tmVgd2O7lZ0VQldZeHzNejbwLWZSkzHH498KnArT0EHNfKBOWwKc935iMLGZdxXPRISzUxQ==}
@@ -12024,8 +12010,6 @@ snapshots:
 
   pg-connection-string@2.14.0: {}
 
-  pg-connection-string@2.6.4: {}
-
   pg-int8@1.0.1: {}
 
   pg-pool@3.14.0(pg@8.16.3):
@@ -12255,10 +12239,6 @@ snapshots:
     dependencies:
       defu: 6.1.7
       destr: 2.0.5
-
-  react-circular-progressbar@2.2.0(react@19.1.0):
-    dependencies:
-      react: 19.1.0
 
   react-day-picker@9.7.0(react@19.1.0):
     dependencies:

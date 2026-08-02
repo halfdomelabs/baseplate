@@ -15,7 +15,6 @@ import { VITEST_PRISMA_VITEST_PATHS } from './template-paths.js';
 export const prismaVitestImportsSchema = createTsImportMapSchema({
   acquireWorkerDatabase: {},
   createTemplateDatabase: {},
-  destroyTestDatabase: {},
   dropStaleTestDatabases: {},
   getTestPrisma: {},
   getTestWorkerId: {},
@@ -46,7 +45,6 @@ const vitestPrismaVitestImportsTask = createGeneratorTask({
         prismaVitestImports: createTsImportMap(prismaVitestImportsSchema, {
           acquireWorkerDatabase: paths.dbTestHelper,
           createTemplateDatabase: paths.dbTestHelper,
-          destroyTestDatabase: paths.dbTestHelper,
           dropStaleTestDatabases: paths.dbTestHelper,
           getTestPrisma: paths.dbTestHelper,
           getTestWorkerId: paths.dbTestHelper,

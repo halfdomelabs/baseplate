@@ -65,7 +65,6 @@ export const FASTIFY_PACKAGES = {
 
   // Testing
   'vitest-mock-extended': '3.1.1',
-  'pg-connection-string': '2.6.4',
 
   // Auth
   '@node-rs/argon2': '2.0.2',
