@@ -13,7 +13,9 @@ import {
 import { PRISMA_PRISMA_QUERY_FILTER_UTILS_PATHS } from './template-paths.js';
 
 export const prismaQueryFilterUtilsImportsSchema = createTsImportMapSchema({
+  CompoundWhere: { isTypeOnly: true },
   queryHelpers: {},
+  WhereClause: { isTypeOnly: true },
   WhereResult: { isTypeOnly: true },
 });
 
@@ -39,7 +41,9 @@ const prismaPrismaQueryFilterUtilsImportsTask = createGeneratorTask({
         prismaQueryFilterUtilsImports: createTsImportMap(
           prismaQueryFilterUtilsImportsSchema,
           {
+            CompoundWhere: paths.utilsQueryHelpers,
             queryHelpers: paths.utilsQueryHelpers,
+            WhereClause: paths.utilsQueryHelpers,
             WhereResult: paths.utilsQueryHelpers,
           },
         ),

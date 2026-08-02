@@ -43,7 +43,9 @@
   "@baseplate-dev/react-generators#core/react-components-library:multi-combobox-field": "src/components/ui/multi-combobox-field.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:navigation-menu": "src/components/ui/navigation-menu.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:not-found-card": "src/components/ui/not-found-card.tsx",
+  "@baseplate-dev/react-generators#core/react-components-library:number-field": "src/components/ui/number-field.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:popover": "src/components/ui/popover.tsx",
+  "@baseplate-dev/react-generators#core/react-components-library:radio-field": "src/components/ui/radio-field.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:radio-group": "src/components/ui/radio-group.tsx",
   "@baseplate-dev/react-generators#core/react-components-library:react-components-library-index-file": "src/index.ts",
   "@baseplate-dev/react-generators#core/react-components-library:scroll-area": "src/components/ui/scroll-area.tsx",
@@ -68,5 +70,6 @@
   "@baseplate-dev/react-generators#core/react-components-library:types-icon": "src/types/icon.ts",
   "@baseplate-dev/react-generators#core/react-components-library:use-confirm-dialog": "src/hooks/use-confirm-dialog.ts",
   "@baseplate-dev/react-generators#core/react-components-library:use-mobile": "src/hooks/use-mobile.ts",
-  "@baseplate-dev/react-generators#core/react-tailwind:styles-css": "src/styles.css"
+  "@baseplate-dev/react-generators#core/react-tailwind:styles-css": "src/styles.css",
+  "@baseplate-dev/react-generators#vitest/react-vitest:setup": "src/tests/setup.ts"
 }

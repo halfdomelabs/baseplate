@@ -28,6 +28,20 @@ export interface MultiSelectOptionProps<OptionType> {
   placeholder?: string;
 }
 
+/**
+ * Options for a radio group. Unlike a select, each option must have a non-null
+ * value: "no selection" is expressed by leaving the group unchecked, so a
+ * `null`-valued option would be indistinguishable from an empty field.
+ */
+export interface RadioOptionProps<OptionType> {
+  options: OptionType[];
+  onChange?: (value: string | null) => void;
+  value?: string | null;
+  renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+  getOptionLabel?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringExtractor<OptionType>;
+}
+
 export interface SelectOptionProps<OptionType> {
   options: OptionType[];
   onChange?: (value: string | null) => void;

@@ -72,10 +72,7 @@ export interface NotificationContent {
   actionUrl?: string;
 }
 
-/**
- * Content as served to clients: every field comes from a SINGLE render, so a
- * notification can never mix output from two renderer versions.
- */
+/** Content as served to clients. */
 export interface RenderedContent {
   segments: NotificationSegment[];
   fallbackText: string;

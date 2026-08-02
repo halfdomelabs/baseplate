@@ -90,7 +90,9 @@
   "@baseplate-dev/react-generators#core/react-components:multi-combobox-field": "src/components/ui/multi-combobox-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:navigation-menu": "src/components/ui/navigation-menu.tsx",
   "@baseplate-dev/react-generators#core/react-components:not-found-card": "src/components/ui/not-found-card.tsx",
+  "@baseplate-dev/react-generators#core/react-components:number-field": "src/components/ui/number-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:popover": "src/components/ui/popover.tsx",
+  "@baseplate-dev/react-generators#core/react-components:radio-field": "src/components/ui/radio-field.tsx",
   "@baseplate-dev/react-generators#core/react-components:radio-group": "src/components/ui/radio-group.tsx",
   "@baseplate-dev/react-generators#core/react-components:scroll-area": "src/components/ui/scroll-area.tsx",
   "@baseplate-dev/react-generators#core/react-components:select": "src/components/ui/select.tsx",
@@ -133,5 +135,6 @@
   "@baseplate-dev/react-generators#core/react:main": "src/main.tsx",
   "@baseplate-dev/react-generators#core/react:readme": "README.md",
   "@baseplate-dev/react-generators#core/react:vite-config": "vite.config.ts",
-  "@baseplate-dev/react-generators#core/react:vite-env": "src/vite-env.d.ts"
+  "@baseplate-dev/react-generators#core/react:vite-env": "src/vite-env.d.ts",
+  "@baseplate-dev/react-generators#vitest/react-vitest:setup": "src/tests/setup.ts"
 }

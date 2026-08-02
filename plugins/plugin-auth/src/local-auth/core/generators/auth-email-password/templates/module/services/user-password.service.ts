@@ -169,8 +169,8 @@ export async function authenticateUserWithEmailAndPassword({
   const emailIpKey = `${email}_${clientIp}`;
 
   // Check IP-based rate limit (slow brute force protection)
-  const ipResult = await getLoginIpLimiter().consume(clientIp);
-  if (!ipResult.allowed) {
+  const ipResult = await getLoginIpLimiter().get(clientIp);
+  if (ipResult && !ipResult.allowed) {
     throw new TooManyRequestsError(
       'Too many login attempts. Please try again later or reset your password.',
       'login-ip-rate-limited',
@@ -204,7 +204,10 @@ export async function authenticateUserWithEmailAndPassword({
   const isValid = await verifyPasswordHash(userAccount?.password, password);
   if (!isValid || !userAccount) {
     // Track failed attempt
-    await getLoginConsecutiveFailsLimiter().consume(emailIpKey);
+    await Promise.all([
+      getLoginIpLimiter().consume(clientIp),
+      getLoginConsecutiveFailsLimiter().consume(emailIpKey),
+    ]);
     throw new BadRequestError(
       'Invalid email or password',
       'invalid-credentials',

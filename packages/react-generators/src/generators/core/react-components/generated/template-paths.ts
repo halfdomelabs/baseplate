@@ -39,7 +39,9 @@ export interface CoreReactComponentsPaths {
   multiComboboxField: string;
   navigationMenu: string;
   notFoundCard: string;
+  numberField: string;
   popover: string;
+  radioField: string;
   radioGroup: string;
   scrollArea: string;
   select: string;
@@ -117,7 +119,9 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           multiComboboxField: `${componentsRoot}/ui/multi-combobox-field.tsx`,
           navigationMenu: `${componentsRoot}/ui/navigation-menu.tsx`,
           notFoundCard: `${componentsRoot}/ui/not-found-card.tsx`,
+          numberField: `${componentsRoot}/ui/number-field.tsx`,
           popover: `${componentsRoot}/ui/popover.tsx`,
+          radioField: `${componentsRoot}/ui/radio-field.tsx`,
           radioGroup: `${componentsRoot}/ui/radio-group.tsx`,
           scrollArea: `${componentsRoot}/ui/scroll-area.tsx`,
           select: `${componentsRoot}/ui/select.tsx`,

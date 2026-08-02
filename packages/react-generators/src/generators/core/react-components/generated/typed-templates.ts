@@ -652,6 +652,32 @@ const notFoundCard = createTsTemplateFile({
   variables: {},
 });
 
+const numberField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'number-field',
+  projectExports: {
+    NumberField: { isTypeOnly: false },
+    NumberFieldController: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    cn: {},
+    field: {},
+    hooksUseControllerMerged: {},
+    stylesButton: {},
+    stylesInput: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/number-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const popover = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -663,6 +689,30 @@ const popover = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/popover.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const radioField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'radio-field',
+  projectExports: {
+    RadioField: { isTypeOnly: false },
+    RadioFieldController: { isTypeOnly: false },
+  },
+  referencedGeneratorTemplates: {
+    field: {},
+    hooksUseControllerMerged: {},
+    radioGroup: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/radio-field.tsx',
     ),
   },
   variables: {},
@@ -1038,7 +1088,9 @@ export const componentsGroup = {
   multiComboboxField,
   navigationMenu,
   notFoundCard,
+  numberField,
   popover,
+  radioField,
   radioGroup,
   scrollArea,
   select,
@@ -1194,6 +1246,7 @@ const typesForm = createTsTemplateFile({
     AddOptionRequiredFields: { isTypeOnly: true },
     FormFieldProps: { isTypeOnly: true },
     MultiSelectOptionProps: { isTypeOnly: true },
+    RadioOptionProps: { isTypeOnly: true },
     SelectOptionProps: { isTypeOnly: true },
   },
   source: {

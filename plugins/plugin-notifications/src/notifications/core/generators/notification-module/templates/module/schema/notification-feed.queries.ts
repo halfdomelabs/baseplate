@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { Prisma } from '%prismaGeneratedImports';
+
 import { builder } from '%pothosImports';
 import { prisma } from '%prismaImports';
 
@@ -8,6 +10,15 @@ const MAX_PAGE_SIZE = 100;
 
 /** Page size when the caller supplies neither `first` nor `last`. */
 const DEFAULT_PAGE_SIZE = 20;
+
+/**
+ * What the feed shows: this user's in-app rows that are still present. Rows
+ * exist for every channel, so `inApp` is what separates a feed entry from an
+ * email-only one.
+ */
+function feedFilter(recipientId: string): Prisma.NotificationWhereInput {
+  return { recipientId, inApp: true, dismissedAt: null };
+}
 
 /**
  * The current user's notification feed, newest first, scoped to the session.
@@ -27,12 +38,12 @@ builder.queryField('notificationFeed', (t) =>
       authorize: ['user'],
       totalCount: (_root, _args, context) =>
         prisma.notification.count({
-          where: { recipientId: context.auth.userIdOrThrow() },
+          where: feedFilter(context.auth.userIdOrThrow()),
         }),
       resolve: (query, _root, _args, context) =>
         prisma.notification.findMany({
           ...query,
-          where: { recipientId: context.auth.userIdOrThrow() },
+          where: feedFilter(context.auth.userIdOrThrow()),
           orderBy: { id: 'desc' },
         }),
     },

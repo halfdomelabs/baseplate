@@ -1,0 +1,13 @@
+{
+  "name": "vitest/react-vitest",
+  "templates": {
+    "setup": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/setup.ts",
+      "sourceFile": "src/tests/setup.ts",
+      "variables": {}
+    }
+  }
+}

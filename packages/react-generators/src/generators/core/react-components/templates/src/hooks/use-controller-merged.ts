@@ -22,6 +22,10 @@ interface UseControllerMergedOptions<TValue, TRef> {
  * A hook to wrap useController from react-hook-form that allows
  * passing in properties and refs that will be merged with the
  * controller's properties and ref.
+ *
+ * `field.value` is typed as possibly `undefined` because react-hook-form yields
+ * `undefined` for any field without a default value. Field controllers must
+ * normalize it before rendering — see the Empty-Value Convention in the README.
  */
 export function useControllerMerged<
   TValue,
@@ -39,7 +43,7 @@ export function useControllerMerged<
   > & {
     ref: ForwardedRef<TRef> | undefined;
     onChange: (value: TValue) => void;
-    value: TValue;
+    value: TValue | undefined;
     onBlur: React.FocusEventHandler<TRef>;
   };
 } {

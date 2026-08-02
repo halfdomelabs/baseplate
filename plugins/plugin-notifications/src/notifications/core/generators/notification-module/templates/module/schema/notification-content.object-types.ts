@@ -41,10 +41,6 @@ const notificationSegment = builder.unionType('NotificationSegment', {
       : 'NotificationLinkSegment',
 });
 
-/**
- * A notification's content, rendered atomically: every field comes from the same
- * renderer invocation, so content can never mix two renderer versions.
- */
 export const notificationContentType = builder
   .objectRef<RenderedContent>('NotificationContent')
   .implement({

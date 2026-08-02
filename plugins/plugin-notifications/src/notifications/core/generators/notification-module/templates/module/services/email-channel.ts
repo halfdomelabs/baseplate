@@ -1,43 +1,32 @@
 // @ts-nocheck
 
 import type { NotificationChannel } from '$servicesNotificationChannel';
+import type { NotificationRenderer } from '$servicesNotificationRenderer';
 import type { EmailService } from '%emailModuleImports';
 
-import { prisma } from '%prismaImports';
-
 /**
- * The email channel: renders the already-resolved content into the default
- * notification email and enqueues it via the email service. Delivery-time
- * rendering (not read-time) — the channel receives the frozen `RenderedContent`
- * produced when the notification was created, and `email.send` renders the
- * React component before the message is queued.
- *
- * The recipient's address is read through the plugin-owned `recipient` relation.
- * A recipient with no email (the field is nullable) is skipped, not an error.
+ * The email channel: renders at delivery time — not from a frozen snapshot —
+ * so a copy fix reaches mail that has not gone out yet, and sends one message
+ * per recipient. A recipient with no email is skipped.
  */
 export function createEmailChannel(deps: {
   email: EmailService;
+  renderer: NotificationRenderer;
 }): NotificationChannel {
-  const { email } = deps;
+  const { email, renderer } = deps;
   return {
-    deliver: async (notification) => {
-      const row = await prisma.notification.findUnique({
-        where: { id: notification.notificationId },
-        select: {
-          recipient: { select: { email: true } },
-          actor: { select: { name: true } },
-        },
-      });
-      const to = row?.recipient.email;
-      if (!to) return;
+    deliver: async ({ notification, recipient, actor }) => {
+      if (!recipient.email) return;
+
+      const content = renderer.renderContent(notification);
 
       await email.send(TPL_NOTIFICATION_EMAIL, {
-        to,
+        to: recipient.email,
         data: {
-          actorName: row.actor?.name ?? undefined,
-          segments: notification.segments,
-          body: notification.fallbackText,
-          actionUrl: notification.actionUrl ?? undefined,
+          actorName: actor?.name ?? undefined,
+          segments: content.segments,
+          body: content.fallbackText,
+          actionUrl: content.actionUrl ?? undefined,
         },
       });
     },

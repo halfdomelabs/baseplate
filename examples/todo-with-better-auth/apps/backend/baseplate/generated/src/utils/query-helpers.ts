@@ -3,14 +3,26 @@ import type {
   WhereInput,
 } from './data-operations/prisma-types.js';
 
+/** An `AND`/`OR`/`NOT` wrapper around other where clauses. */
+export interface CompoundWhere<TModelName extends ModelPropName> {
+  AND?: WhereClause<TModelName>[];
+  OR?: WhereClause<TModelName>[];
+  NOT?: WhereClause<TModelName>[];
+}
+
+/** A Prisma where clause: a model's own where input, or a compound of them. */
+export type WhereClause<TModelName extends ModelPropName> =
+  | NonNullable<WhereInput<TModelName>>
+  | CompoundWhere<TModelName>;
+
 /**
- * Result of combining where clauses — either a Prisma where input or a boolean.
+ * Result of combining where clauses — either a Prisma where clause or a boolean.
  * - `true` means "match everything" (no filter needed)
  * - `false` means "match nothing"
- * - `WhereInput` is a Prisma where clause
+ * - `WhereClause` is a Prisma where clause
  */
 export type WhereResult<TModelName extends ModelPropName> =
-  | NonNullable<WhereInput<TModelName>>
+  | WhereClause<TModelName>
   | boolean;
 
 /**
@@ -38,7 +50,7 @@ export const queryHelpers = {
     if (clauses.includes(true)) return true;
 
     const filtered = clauses.filter(
-      (c): c is NonNullable<WhereInput<TModelName>> => c !== false,
+      (c): c is WhereClause<TModelName> => c !== false,
     );
 
     const firstClause = filtered[0];
@@ -62,7 +74,7 @@ export const queryHelpers = {
     if (clauses.includes(false)) return false;
 
     const filtered = clauses.filter(
-      (c): c is NonNullable<WhereInput<TModelName>> => c !== true,
+      (c): c is WhereClause<TModelName> => c !== true,
     );
 
     const firstClause = filtered[0];

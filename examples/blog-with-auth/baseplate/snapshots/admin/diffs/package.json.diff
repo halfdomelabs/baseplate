@@ -2,11 +2,11 @@ Index: package.json
 ===================================================================
 --- package.json
 +++ package.json
-@@ -81,8 +81,9 @@
-     "eslint-plugin-react": "7.37.5",
+@@ -86,8 +86,9 @@
      "eslint-plugin-react-hooks": "7.0.1",
      "eslint-plugin-unicorn": "62.0.0",
      "globals": "17.3.0",
+     "jsdom": "30.0.1",
 +    "msw": "2.12.4",
      "prettier": "3.8.1",
      "prettier-plugin-packagejson": "3.0.0",

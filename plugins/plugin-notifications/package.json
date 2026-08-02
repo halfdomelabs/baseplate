@@ -50,6 +50,7 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/plugin-email": "workspace:*",
+    "@baseplate-dev/plugin-queue": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",

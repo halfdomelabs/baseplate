@@ -1,10 +1,9 @@
 import type {
   GetResult,
   ModelPropName,
-  WhereInput,
   WhereUniqueInput,
 } from '../data-operations/prisma-types.js';
-import type { WhereResult } from '../query-helpers.js';
+import type { WhereClause, WhereResult } from '../query-helpers.js';
 import type { ServiceContext } from '../service-context.js';
 import type {
   ActionGrant,
@@ -256,9 +255,7 @@ export function createModelPolicy<
   const authored = config.roles(builder);
 
   const delegate = config.delegate as unknown as {
-    count: (args: {
-      where: NonNullable<WhereInput<TModelName>>;
-    }) => Promise<number>;
+    count: (args: { where: WhereClause<TModelName> }) => Promise<number>;
   };
   function assertIdValue(
     field: string,
@@ -637,11 +634,11 @@ export function createModelPolicy<
     ctx: ServiceContext,
     roleNames: readonly string[],
     globalRoles: readonly string[],
-    callerWhere?: WhereInput<TModelName>,
-  ): WhereInput<TModelName> | undefined {
+    callerWhere?: WhereClause<TModelName>,
+  ): WhereClause<TModelName> | undefined {
     // Auth filter: `undefined` = the grant imposes no restriction (a global role
     // matched, or a role is unconditionally true). Distinct from the caller's.
-    const authWhere = ((): WhereInput<TModelName> | undefined => {
+    const authWhere = ((): WhereClause<TModelName> | undefined => {
       if (hasGlobalRole(ctx, globalRoles)) return undefined;
       const combined = queryHelpers.or(roleNames.map((r) => roleWhere(ctx, r)));
       if (combined === true) return undefined;
@@ -676,7 +673,7 @@ export function createModelPolicy<
         // clobbering it would drop that guard. Prisma's `AND` is `X | X[]`, so
         // normalize to an array before appending the auth filter.
         const { AND: existingAnd, ...rest } = unique as {
-          AND?: WhereInput<TModelName> | WhereInput<TModelName>[];
+          AND?: WhereClause<TModelName> | WhereClause<TModelName>[];
         } & Record<string, unknown>;
         const priorAnd = Array.isArray(existingAnd)
           ? existingAnd

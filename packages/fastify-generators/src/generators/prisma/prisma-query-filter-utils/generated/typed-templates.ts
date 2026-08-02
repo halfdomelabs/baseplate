@@ -9,7 +9,9 @@ const utilsQueryHelpers = createTsTemplateFile({
   importMapProviders: { dataUtilsImports: dataUtilsImportsProvider },
   name: 'utils-query-helpers',
   projectExports: {
+    CompoundWhere: { isTypeOnly: true },
     queryHelpers: { isTypeOnly: false },
+    WhereClause: { isTypeOnly: true },
     WhereResult: { isTypeOnly: true },
   },
   source: {

@@ -58,7 +58,12 @@ builder.mutationField('markAllNotificationsRead', (t) =>
   }),
 );
 
-/** Delete a notification. `deletedId` is null when the id didn't exist. */
+/**
+ * Clear a notification from the feed. `deletedId` is null when the id didn't
+ * exist or was already cleared.
+ *
+ * The row is soft-deleted, so any email it owes still goes out.
+ */
 builder.mutationField('deleteNotification', (t) =>
   t.fieldWithInputPayload({
     authorize: ['user'],
@@ -69,7 +74,7 @@ builder.mutationField('deleteNotification', (t) =>
     },
     resolve: async (_root, { input }, context) => {
       const { changed, unseenCount } =
-        await context.services.notification.delete(
+        await context.services.notification.dismiss(
           context.auth.userIdOrThrow(),
           input.id,
         );

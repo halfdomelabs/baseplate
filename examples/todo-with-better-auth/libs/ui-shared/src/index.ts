@@ -162,10 +162,18 @@ export {
 } from './components/ui/navigation-menu.js';
 export { NotFoundCard } from './components/ui/not-found-card.js';
 export {
+  NumberField,
+  NumberFieldController,
+} from './components/ui/number-field.js';
+export {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from './components/ui/popover.js';
+export {
+  RadioField,
+  RadioFieldController,
+} from './components/ui/radio-field.js';
 export { ScrollArea } from './components/ui/scroll-area.js';
 export {
   SelectField,
@@ -253,6 +261,7 @@ export type {
   AddOptionRequiredFields,
   FormFieldProps,
   MultiSelectOptionProps,
+  RadioOptionProps,
   SelectOptionProps,
 } from './types/form.js';
 export type { IconElement } from './types/icon.js';

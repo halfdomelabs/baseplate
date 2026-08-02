@@ -1,16 +1,13 @@
 // @ts-nocheck
 
-import type {
-  NotificationChannelKey,
-  NotificationChannels,
-  ResolvedNotification,
-} from '$servicesNotificationChannel';
+import type { NotificationChannelKey } from '$servicesNotificationChannel';
 import type {
   NotificationParams,
   RenderContext,
   RenderedContent,
 } from '$servicesNotificationContent';
 import type { NotificationEvents } from '$servicesNotificationEvents';
+import type { NotificationOutbox } from '$servicesNotificationOutbox';
 import type {
   NotificationEvent,
   NotificationTypeDefinition,
@@ -19,11 +16,46 @@ import type {
   NotificationRenderer,
   RenderSource,
 } from '$servicesNotificationRenderer';
-import type { Notification, Prisma } from '%prismaGeneratedImports';
+import type { Prisma } from '%prismaGeneratedImports';
 
 import { GENERIC_NOTIFICATION_TYPE } from '$servicesGenericType';
 import { logError } from '%errorHandlerServiceImports';
 import { prisma } from '%prismaImports';
+import { chunk } from 'es-toolkit';
+
+/**
+ * Rows per insert. Bounds every statement in the fan-out, so a large audience
+ * is many bounded writes rather than one that grows without limit.
+ */
+const WRITE_CHUNK_SIZE = 500;
+
+/** Recipients per badge-publish batch. */
+const PUBLISH_CHUNK_SIZE = 100;
+
+/**
+ * Every batch runs inside one interactive transaction, so this timeout — not
+ * the batch size — is what caps the audience. Prisma's 5s default would fail a
+ * merely large fan-out. Past a few thousand recipients use a fan-out worker
+ * rather than raising this: a long transaction holds a pooled connection.
+ */
+const FANOUT_TRANSACTION_OPTIONS = { timeout: 30_000 };
+
+/** Unseen counts for a chunk. A recipient with none is absent from the map. */
+async function countUnseenFor(
+  recipientIds: string[],
+): Promise<Map<string, number>> {
+  const groups = await prisma.notification.groupBy({
+    by: ['recipientId'],
+    where: {
+      recipientId: { in: recipientIds },
+      inApp: true,
+      dismissedAt: null,
+      seenAt: null,
+    },
+    _count: { _all: true },
+  });
+  return new Map(groups.map((group) => [group.recipientId, group._count._all]));
+}
 
 /** Actor columns from the input (human actors; live name/avatar via the relation). */
 function actorColumns(actorId: string | undefined): {
@@ -43,6 +75,31 @@ export interface NotifyInput<P extends NotificationParams> {
   /** Polymorphic subject reference (no FK). */
   entityType?: string;
   entityId?: string;
+  /**
+   * Opt-in dedupe key, stable for the triggering fact (`comment:${id}`). When
+   * omitted every call is a distinct request, so two legitimately identical
+   * notifications are never collapsed.
+   */
+  idempotencyKey?: string;
+}
+
+/** Input to notify many recipients from a single fan-out. */
+export interface NotifyManyInput<P extends NotificationParams> extends Omit<
+  NotifyInput<P>,
+  'recipientId'
+> {
+  recipientIds: string[];
+}
+
+/** The dispatch a notify call created; the worker resolves it into deliveries. */
+export interface NotifyResult {
+  requestId: string;
+}
+
+/** Result of a fan-out. */
+export interface NotifyManyResult extends NotifyResult {
+  /** Rows written, across all channels. Zero on a replay. */
+  createdCount: number;
 }
 
 /** Options for the `notifyText` one-off sugar. */
@@ -73,11 +130,28 @@ export interface NotificationService {
   /**
    * Trigger a notification. Takes the definition itself, so `params` are
    * checked against the renderer that will consume them.
+   *
+   * Returns the dispatch handle rather than a row: a notification is one
+   * request that may materialize a row per recipient across several channels.
    */
   notify<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
     input: NotifyInput<P>,
-  ): Promise<Notification>;
+  ): Promise<NotifyResult>;
+  /**
+   * Trigger one notification for many recipients: a single request plus a row
+   * per recipient, with outbound delivery handed to the queue in chunks.
+   *
+   * Fan-out is inline: the whole audience lands in one transaction, in bounded
+   * batches. The batches bound each statement, not the transaction, so caller
+   * latency and {@link FANOUT_TRANSACTION_OPTIONS} are what cap the audience —
+   * past a few thousand recipients this wants a fan-out worker. The idempotency
+   * key and `@@unique(requestId, recipientId)` already make that rerun-safe.
+   */
+  notifyMany<P extends NotificationParams>(
+    type: NotificationTypeDefinition<P>,
+    input: NotifyManyInput<P>,
+  ): Promise<NotifyManyResult>;
   /**
    * Send a plain-text notification without defining a type, via the built-in
    * `generic` type. For one-off notifications ("Your export is ready").
@@ -86,7 +160,7 @@ export interface NotificationService {
     recipientId: string,
     text: string,
     options?: NotifyTextOptions,
-  ): Promise<Notification>;
+  ): Promise<NotifyResult>;
   /**
    * Render a row's content at read time. Delegates to the injected
    * {@link NotificationRenderer}; see its docs for the version-pinning and
@@ -112,16 +186,23 @@ export interface NotificationService {
   markAllAsSeen(userId: string): Promise<MarkNotificationsResult>;
   /** Mark all of a user's notifications read (and therefore seen). */
   markAllAsRead(userId: string): Promise<MarkNotificationsResult>;
-  /** Delete a notification. `changed` is false if it didn't exist. */
-  delete(userId: string, notificationId: string): Promise<UnseenCountResult>;
+  /**
+   * Soft-delete from the feed. Does not cancel pending deliveries. `changed`
+   * is false if it didn't exist or was already dismissed.
+   */
+  dismiss(userId: string, notificationId: string): Promise<UnseenCountResult>;
   /** Subscribe to real-time unseen-count changes for a user. */
   subscribeToChanges(userId: string): AsyncIterable<{ count: number }>;
 }
 
-/** Counts unseen notifications; see {@link NotificationService.getUnseenCount}. */
 async function getUnseenCount(userId: string): Promise<number> {
   return prisma.notification.count({
-    where: { recipientId: userId, seenAt: null },
+    where: {
+      recipientId: userId,
+      inApp: true,
+      dismissedAt: null,
+      seenAt: null,
+    },
   });
 }
 
@@ -133,28 +214,22 @@ async function getUnseenCount(userId: string): Promise<number> {
 export function createNotificationService(deps: {
   events: NotificationEvents;
   renderer: NotificationRenderer;
-  channels: NotificationChannels;
+  outbox: NotificationOutbox;
 }): NotificationService {
-  const { events, renderer, channels } = deps;
+  const { events, renderer, outbox } = deps;
 
-  /** Deliver to each of the type's channels; a channel that throws is logged, not rethrown. */
-  async function dispatchToChannels(
-    channelKeys: readonly NotificationChannelKey[],
-    resolved: ResolvedNotification,
-  ): Promise<void> {
-    const deliveries = channelKeys.map((channelKey) =>
-      channels[channelKey].deliver(resolved),
-    );
-    const results = await Promise.allSettled(deliveries);
-    for (const [i, result] of results.entries()) {
-      if (result.status === 'rejected') {
-        logError(result.reason, {
-          source: 'notification-channel',
-          channel: channelKeys[i],
-          notificationId: resolved.notificationId,
-        });
-      }
-    }
+  /**
+   * How a type is delivered, split by mechanism: in-app is a flag on the row
+   * plus an inline publish, outbound channels are queued jobs.
+   */
+  function resolveRouting(type: NotificationTypeDefinition): {
+    inApp: boolean;
+    outbound: NotificationChannelKey[];
+  } {
+    return {
+      inApp: type.channels.includes('inApp'),
+      outbound: outbox.installedChannels(type.channels),
+    };
   }
 
   /** Recompute, broadcast the change, and return the unseen count for a user. */
@@ -164,14 +239,33 @@ export function createNotificationService(deps: {
     return count;
   }
 
-  async function notify<P extends NotificationParams>(
+  /**
+   * Broadcast new badge counts for a fan-out's in-app recipients.
+   *
+   * Never throws: a failed publish costs a stale badge, not a lost row.
+   */
+  async function publishUnseenCounts(recipientIds: string[]): Promise<void> {
+    if (recipientIds.length === 0) return;
+    try {
+      for (const batch of chunk(recipientIds, PUBLISH_CHUNK_SIZE)) {
+        const counts = await countUnseenFor(batch);
+        for (const recipientId of batch) {
+          events.publishUnseenCount(recipientId, counts.get(recipientId) ?? 0);
+        }
+      }
+    } catch (error) {
+      logError(error, { source: 'notification-unseen-publish' });
+    }
+  }
+
+  async function notifyMany<P extends NotificationParams>(
     type: NotificationTypeDefinition<P>,
-    input: NotifyInput<P>,
-  ): Promise<Notification> {
-    // Fail fast at WRITE: params that don't satisfy the schema would
-    // otherwise persist a row that silently falls back to frozen content on
-    // every read.
+    input: NotifyManyInput<P>,
+  ): Promise<NotifyManyResult> {
+    // Fail fast: invalid params would persist rows that fall back to the
+    // frozen snapshot on every read.
     const params = type.paramsSchema.parse(input.params);
+    const recipientIds = [...new Set(input.recipientIds)];
 
     const event: NotificationEvent<P> = {
       params,
@@ -182,39 +276,126 @@ export function createNotificationService(deps: {
 
     // Freeze a default-locale snapshot as the read-time recovery content.
     const frozen = renderer.renderForWrite(type, event);
+    const routing = resolveRouting(type);
 
-    const row = await prisma.notification.create({
-      data: {
-        type: type.key,
-        templateVersion: type.version,
-        recipientId: input.recipientId,
-        // Render source, replayed at read time.
-        params: params as Prisma.InputJsonValue,
-        // Recovery content for a retired renderer / param drift.
-        segments: frozen.segments,
-        fallbackText: frozen.fallbackText,
-        actionUrl: frozen.actionUrl,
-        ...actorColumns(input.actorId),
-        entityType: input.entityType ?? null,
-        entityId: input.entityId ?? null,
-      },
-    });
+    // Copied onto every row, so the request and its rows cannot disagree.
+    const contentColumns = {
+      type: type.key,
+      templateVersion: type.version,
+      params: params as Prisma.InputJsonValue,
+      segments: frozen.segments,
+      fallbackText: frozen.fallbackText,
+      actionUrl: frozen.actionUrl,
+      ...actorColumns(input.actorId),
+      entityType: input.entityType ?? null,
+      entityId: input.entityId ?? null,
+    };
 
-    await dispatchToChannels(type.channels, {
-      ...frozen,
-      notificationId: row.id,
-      type: row.type,
-      recipientId: input.recipientId,
-    });
+    // The request, every recipient's row, and every delivery to make land
+    // together.
+    const { requestId, createdCount, inAppRecipientIds } =
+      await prisma.$transaction(async (tx) => {
+        const request = input.idempotencyKey
+          ? await tx.notificationRequest.upsert({
+              where: { idempotencyKey: input.idempotencyKey },
+              // A replay resolves to the existing request and writes no rows.
+              update: {},
+              create: {
+                ...contentColumns,
+                idempotencyKey: input.idempotencyKey,
+              },
+            })
+          : await tx.notificationRequest.create({ data: contentColumns });
 
-    return row;
+        // One row per recipient regardless of channel — an email-only
+        // notification still gets one, with `inApp: false`. Chunked so no
+        // single statement grows with the audience.
+        let count = 0;
+        for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
+          const created = await tx.notification.createMany({
+            data: batch.map((recipientId) => ({
+              ...contentColumns,
+              requestId: request.id,
+              recipientId,
+              inApp: routing.inApp,
+            })),
+            // A concurrent replay must short-circuit, not raise P2002.
+            skipDuplicates: true,
+          });
+          count += created.count;
+        }
+
+        // Read back, not derived from the write: `createManyAndReturn` omits
+        // rows it skipped, so a replay would return none of the ids needed.
+        const rows: {
+          id: string;
+          recipientId: string;
+          inApp: boolean;
+        }[] = [];
+        for (const batch of chunk(recipientIds, WRITE_CHUNK_SIZE)) {
+          rows.push(
+            ...(await tx.notification.findMany({
+              where: { requestId: request.id, recipientId: { in: batch } },
+              select: { id: true, recipientId: true, inApp: true },
+            })),
+          );
+        }
+
+        // One row per (recipient, outbound channel), so one bounced address
+        // fails its own row instead of a whole chunk.
+        const deliveryData = rows.flatMap((row) =>
+          routing.outbound.map((channel) => ({
+            notificationId: row.id,
+            requestId: request.id,
+            channel,
+          })),
+        );
+        for (const batch of chunk(deliveryData, WRITE_CHUNK_SIZE)) {
+          await tx.notificationDelivery.createMany({
+            data: batch,
+            skipDuplicates: true,
+          });
+        }
+
+        return {
+          requestId: request.id,
+          createdCount: count,
+          inAppRecipientIds: rows
+            .filter((row) => row.inApp)
+            .map((row) => row.recipientId),
+        };
+      }, FANOUT_TRANSACTION_OPTIONS);
+
+    // In-app is published inline rather than queued: the row is already
+    // committed, so the badge only needs the pubsub message.
+    await publishUnseenCounts(inAppRecipientIds);
+
+    try {
+      await outbox.completeFanout(requestId);
+    } catch (error) {
+      // The notification is committed and the request stays `pending`, so the
+      // sweeper finishes the hand-off. Failing the caller would imply nothing
+      // was written.
+      logError(error, { source: 'notification-fanout', requestId });
+    }
+
+    return { requestId, createdCount };
+  }
+
+  /** Single-recipient sugar over {@link notifyMany}. */
+  async function notify<P extends NotificationParams>(
+    type: NotificationTypeDefinition<P>,
+    input: NotifyInput<P>,
+  ): Promise<NotifyResult> {
+    const { recipientId, ...rest } = input;
+    return notifyMany(type, { ...rest, recipientIds: [recipientId] });
   }
 
   function notifyText(
     recipientId: string,
     text: string,
     options: NotifyTextOptions = {},
-  ): Promise<Notification> {
+  ): Promise<NotifyResult> {
     return notify(GENERIC_NOTIFICATION_TYPE, {
       recipientId,
       params: { text, actionUrl: options.actionUrl },
@@ -222,75 +403,92 @@ export function createNotificationService(deps: {
     });
   }
 
+  /**
+   * Returns the unseen count, broadcasting it first when `changed` — a no-op
+   * mutation must not push a redundant update to every subscriber.
+   */
+  async function publishUnseenCountIfChanged(
+    userId: string,
+    changed: boolean,
+  ): Promise<number> {
+    return changed ? publishUnseenCount(userId) : getUnseenCount(userId);
+  }
+
   async function markAsRead(
     userId: string,
     notificationId: string,
   ): Promise<UnseenCountResult> {
     const now = new Date();
-    const { count } = await prisma.notification.updateMany({
-      where: { id: notificationId, recipientId: userId, readAt: null },
-      data: { readAt: now },
-    });
-    // Read implies seen: clear an unseen row's badge state in the same stroke.
-    await prisma.notification.updateMany({
-      where: { id: notificationId, recipientId: userId, seenAt: null },
-      data: { seenAt: now },
-    });
-    return {
-      changed: count > 0,
-      unseenCount: await publishUnseenCount(userId),
-    };
+    // Read implies seen, so both writes land together or not at all.
+    const [read] = await prisma.$transaction([
+      prisma.notification.updateMany({
+        where: { id: notificationId, recipientId: userId, readAt: null },
+        data: { readAt: now },
+      }),
+      prisma.notification.updateMany({
+        where: { id: notificationId, recipientId: userId, seenAt: null },
+        data: { seenAt: now },
+      }),
+    ]);
+    const changed = read.count > 0;
+    const unseenCount = await publishUnseenCountIfChanged(userId, changed);
+    return { changed, unseenCount };
   }
 
   async function markAllAsSeen(
     userId: string,
   ): Promise<MarkNotificationsResult> {
     const { count } = await prisma.notification.updateMany({
-      where: { recipientId: userId, seenAt: null },
+      where: {
+        recipientId: userId,
+        inApp: true,
+        dismissedAt: null,
+        seenAt: null,
+      },
       data: { seenAt: new Date() },
     });
-    return {
-      changedCount: count,
-      unseenCount:
-        count > 0
-          ? await publishUnseenCount(userId)
-          : await getUnseenCount(userId),
-    };
+    const unseenCount = await publishUnseenCountIfChanged(userId, count > 0);
+    return { changedCount: count, unseenCount };
   }
 
   async function markAllAsRead(
     userId: string,
   ): Promise<MarkNotificationsResult> {
     const now = new Date();
-    const { count } = await prisma.notification.updateMany({
-      where: { recipientId: userId, readAt: null },
-      data: { readAt: now },
-    });
-    // Read implies seen.
-    await prisma.notification.updateMany({
-      where: { recipientId: userId, seenAt: null },
-      data: { seenAt: now },
-    });
-    return {
-      changedCount: count,
-      unseenCount: await publishUnseenCount(userId),
+    const feedScope = {
+      recipientId: userId,
+      inApp: true,
+      dismissedAt: null,
     };
+    // Read implies seen.
+    const [read] = await prisma.$transaction([
+      prisma.notification.updateMany({
+        where: { ...feedScope, readAt: null },
+        data: { readAt: now },
+      }),
+      prisma.notification.updateMany({
+        where: { ...feedScope, seenAt: null },
+        data: { seenAt: now },
+      }),
+    ]);
+    const unseenCount = await publishUnseenCountIfChanged(
+      userId,
+      read.count > 0,
+    );
+    return { changedCount: read.count, unseenCount };
   }
 
-  async function deleteNotification(
+  async function dismiss(
     userId: string,
     notificationId: string,
   ): Promise<UnseenCountResult> {
-    const { count } = await prisma.notification.deleteMany({
-      where: { id: notificationId, recipientId: userId },
+    const { count } = await prisma.notification.updateMany({
+      where: { id: notificationId, recipientId: userId, dismissedAt: null },
+      data: { dismissedAt: new Date() },
     });
-    return {
-      changed: count > 0,
-      unseenCount:
-        count > 0
-          ? await publishUnseenCount(userId)
-          : await getUnseenCount(userId),
-    };
+    const changed = count > 0;
+    const unseenCount = await publishUnseenCountIfChanged(userId, changed);
+    return { changed, unseenCount };
   }
 
   function subscribeToChanges(userId: string): AsyncIterable<{
@@ -301,13 +499,14 @@ export function createNotificationService(deps: {
 
   return {
     notify,
+    notifyMany,
     notifyText,
     renderContent: (row, ctx) => renderer.renderContent(row, ctx),
     getUnseenCount,
     markAsRead,
     markAllAsSeen,
     markAllAsRead,
-    delete: deleteNotification,
+    dismiss,
     subscribeToChanges,
   };
 }
