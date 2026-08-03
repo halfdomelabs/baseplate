@@ -543,9 +543,7 @@
 
     return applyDataPipeOutput(
       [rolesOutput, customerOutput, userProfileOutput, imagesOutput],
-      prisma.user.create({
-        /* manually built data object */
-      }),
+      prisma.user.create({/* manually built data object */}),
     );
   }
   ```

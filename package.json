@@ -9,11 +9,11 @@
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
-    "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run prettier:write test --affected --continue --output-logs=errors-only && pnpm run check:common",
+    "check": "pnpm oxfmt:fix && pnpm oxlint:fix --type-check && turbo run test --affected --continue --output-logs=errors-only && pnpm run check:common",
     "check:common": "pnpm run knip && pnpm metadata:sync && pnpm versions:fix && echo 'Successfully completed checks!'",
     "check:example-deps": "node --experimental-strip-types ./scripts/check-example-dependencies.ts",
     "check:examples": "pnpm start diff-examples --fail-on-differences && pnpm run:examples -- pnpm check && pnpm run check:example-deps",
-    "check:full": "pnpm oxfmt:fix && turbo run lint prettier:write typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
+    "check:full": "pnpm oxfmt:fix && turbo run lint typecheck test --affected --continue --output-logs=errors-only && pnpm run check:common && pnpm turbo run packages:dedupe",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-dev --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
     "knip": "knip",
@@ -33,11 +33,6 @@
     "oxlint:fix": "oxlint --fix",
     "packages:dedupe": "pnpm dedupe",
     "prepare": "[ -w .git/hooks ] && husky || true",
-    "prettier:check": "turbo run prettier:check prettier:root:check --continue",
-    "prettier:check:affected": "turbo run prettier:check prettier:root:check --affected --continue",
-    "prettier:root:check": "prettier --ignore-path .root.prettierignore --check .",
-    "prettier:root:write": "prettier --ignore-path .root.prettierignore --write --list-different .",
-    "prettier:write": "turbo run prettier:write prettier:root:write",
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-dev project:generate",
     "release": "pnpm build && node ./scripts/check-npm-registry.ts && pnpm changeset publish",
     "run:all": "bash scripts/run-all.sh",
@@ -65,10 +60,6 @@
     "watch": "turbo run watch:tsc:root watch --concurrency 20",
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "node scripts/format-and-lint.ts --no-eslint",
-    "*.{json,md,mdx,css,scss,yaml,yml,html}": "prettier --write --list-different"
-  },
   "dependencies": {
     "@changesets/cli": "2.31.1"
   },
@@ -83,7 +74,7 @@
     "husky": "9.1.7",
     "knip": "6.31.0",
     "lint-staged": "17.3.0",
-    "oxfmt": "0.52.0",
+    "oxfmt": "0.61.0",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "0.23.0",
     "prettier": "catalog:",
@@ -92,12 +83,15 @@
     "vitest": "catalog:",
     "workspace-meta": "0.1.5"
   },
-  "packageManager": "pnpm@11.18.0",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,jsonc,md,mdx,css,scss,yaml,yml,html}": "node scripts/format-and-lint.ts --no-eslint"
+  },
   "engines": {
     "node": "^24.0.0",
     "pnpm": "^11.18.0"
   },
   "volta": {
     "node": "24.18.0"
-  }
+  },
+  "packageManager": "pnpm@11.18.0"
 }

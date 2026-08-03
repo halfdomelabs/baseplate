@@ -44,8 +44,8 @@ catalogs:
       specifier: 1.76.0
       version: 1.76.0
     prettier:
-      specifier: ^3.8.1
-      version: 3.8.1
+      specifier: ^3.9.6
+      version: 3.9.6
     react:
       specifier: ^19.2.8
       version: 19.2.8
@@ -116,8 +116,8 @@ importers:
         specifier: 17.3.0
         version: 17.3.0
       oxfmt:
-        specifier: 0.52.0
-        version: 0.52.0
+        specifier: 0.61.0
+        version: 0.61.0
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
@@ -126,7 +126,7 @@ importers:
         version: 0.23.0
       prettier:
         specifier: 'catalog:'
-        version: 3.8.1
+        version: 3.9.6
       turbo:
         specifier: 2.10.8
         version: 2.10.8
@@ -165,7 +165,7 @@ importers:
         version: 9.4.1
       prettier:
         specifier: 'catalog:'
-        version: 3.8.1
+        version: 3.9.6
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
@@ -220,10 +220,10 @@ importers:
         version: 7.3.1
       prettier:
         specifier: 'catalog:'
-        version: 3.8.1
+        version: 3.9.6
       prettier-plugin-packagejson:
         specifier: ^3.0.2
-        version: 3.0.2(prettier@3.8.1)
+        version: 3.0.2(prettier@3.9.6)
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
@@ -316,9 +316,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tsx:
         specifier: 'catalog:'
         version: 4.23.1
@@ -374,9 +371,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -438,9 +432,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tsx:
         specifier: 'catalog:'
         version: 4.23.1
@@ -494,7 +485,7 @@ importers:
         version: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
       prettier:
         specifier: 'catalog:'
-        version: 3.8.1
+        version: 3.9.6
     devDependencies:
       '@baseplate-dev/tools':
         specifier: workspace:*
@@ -560,9 +551,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tsx:
         specifier: 'catalog:'
         version: 4.23.1
@@ -633,9 +621,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -775,9 +760,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tsx:
         specifier: 'catalog:'
         version: 4.23.1
@@ -806,9 +788,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -981,9 +960,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1019,7 +995,7 @@ importers:
         version: 3.0.2
       prettier-plugin-tailwindcss:
         specifier: ^0.7.2
-        version: 0.7.2(prettier@3.8.1)
+        version: 0.7.2(prettier@3.9.6)
       zod:
         specifier: 'catalog:'
         version: 4.3.6
@@ -1042,9 +1018,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1089,7 +1062,7 @@ importers:
         version: 7.3.1
       prettier:
         specifier: 'catalog:'
-        version: 3.8.1
+        version: 3.9.6
       yaml:
         specifier: ^2.8.3
         version: 2.9.0
@@ -1181,12 +1154,6 @@ importers:
       globals:
         specifier: ^17.8.0
         version: 17.8.0
-      prettier-plugin-packagejson:
-        specifier: ^3.0.2
-        version: 3.0.2(prettier@3.8.1)
-      prettier-plugin-tailwindcss:
-        specifier: ^0.7.2
-        version: 0.7.2(prettier@3.8.1)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1206,9 +1173,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1342,12 +1306,9 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       storybook:
         specifier: 10.5.5
-        version: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+        version: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1403,9 +1364,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -1482,9 +1440,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1591,9 +1546,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1691,9 +1643,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1794,9 +1743,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1885,9 +1831,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -1979,9 +1922,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -2070,9 +2010,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -2158,9 +2095,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -2264,9 +2198,6 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.76.0(oxlint-tsgolint@0.23.0)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -3950,124 +3881,124 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@oxfmt/binding-android-arm-eabi@0.52.0':
-    resolution: {integrity: sha512-17EMSJnQ9g+upVHrAUYDMfH5lvRKQ9Nvg8WtEoH72oDr1VpWz+7/o3tD97U1EToen2YAQ/68JmtDYkQUi20dfQ==}
+  '@oxfmt/binding-android-arm-eabi@0.61.0':
+    resolution: {integrity: sha512-BaS+1OVvg9sr+Xav0+KdWedQRcAzrdoEcwMZeqoc2F6ieC1s/t5eM35YQoRPQ7vAqkZ+p3tbQb1r9I9mrV5oGA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [android]
 
-  '@oxfmt/binding-android-arm64@0.52.0':
-    resolution: {integrity: sha512-A2G1IdwGEW2lLJkIxcvuirRH1CzSl/e0NX11zTlW1gvxJThfwbI/BEoaKrTNpm7M2FchvIf6guvIQU7d5iz+OQ==}
+  '@oxfmt/binding-android-arm64@0.61.0':
+    resolution: {integrity: sha512-of8atAV0M1egGcVOMbgZCvc10sFOP3ayQBNQV5h5G3fNq8gACdEswfFk9bzGrdbM23rtg0Coxi7np7oPLcueNw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [android]
 
-  '@oxfmt/binding-darwin-arm64@0.52.0':
-    resolution: {integrity: sha512-f9+bLvOYxy7NttCLFTvQ7afmqDOWY4wIP9xdvfj5trQ1qj6f2UFAGwZESlfsMjvJNTyRpXfIlOanCI9FOvoeQA==}
+  '@oxfmt/binding-darwin-arm64@0.61.0':
+    resolution: {integrity: sha512-7l8+5ov4BGwtAcmpzvEik/TG3bciwyw/S3e6j5GKH7pcQqcgCVxD3AuJeP6upto+SOTBKQ4wrrdbMt0gq8fHSQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxfmt/binding-darwin-x64@0.52.0':
-    resolution: {integrity: sha512-YSTB9sJ5nnQd/Q0ddHkgof0ZCHPAnWZT1IW2SJ8omz7CP7KluJhO1fNHrpqdxCtpztJwSs4hY1uAee35wKxxaw==}
+  '@oxfmt/binding-darwin-x64@0.61.0':
+    resolution: {integrity: sha512-Fnz4dDDXBb7udk+DmwelNjxbD6yptyxwCqwCH2ebo4RVLxVsRfFsn/AHJC49KIltPrVokamGv4SSOsiV50DTxQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
 
-  '@oxfmt/binding-freebsd-x64@0.52.0':
-    resolution: {integrity: sha512-NIrRNTTPCs4UbmVs0bxLSCDlLCtIRMJIXklNKaXa5Oj2/K1UIMBvgE8+uPVo01Io3N9HF0+GAX+aAHjUgZS7vA==}
+  '@oxfmt/binding-freebsd-x64@0.61.0':
+    resolution: {integrity: sha512-mddOebKNCP+AucmzfNsk3jgbr681qAUvgMqi865GW5gWLJ/AnzXbvjQRrny0e++NAN8aphav/aRSrfFxNsNjpA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [freebsd]
 
-  '@oxfmt/binding-linux-arm-gnueabihf@0.52.0':
-    resolution: {integrity: sha512-JXUCde8mn3GpgQouz2PXUokgy/uT1QrRJBL2s983VWcSQp62wTFYiNXgTKdeo1Jgbr0IgUnKKvzIk/YBlj/nVQ==}
+  '@oxfmt/binding-linux-arm-gnueabihf@0.61.0':
+    resolution: {integrity: sha512-svx59iYL+DbaZGZUIoice4W0CjRXGExnbz7Re+awIb60rVxBS2KrU7Hnlx+nZYanLGLpjneUEgo/VFEKkSZAyQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
 
-  '@oxfmt/binding-linux-arm-musleabihf@0.52.0':
-    resolution: {integrity: sha512-psbUXaRZ+V8DaXz10Qf7LSHtdtdKAmC8fxXgeU608jjzrmWK4quamZMOpl6sf+dikoFHA85uE93Q0BqxrCdQrQ==}
+  '@oxfmt/binding-linux-arm-musleabihf@0.61.0':
+    resolution: {integrity: sha512-BYK9MPJPCf6d+fLKMTruThmEyCtHzQ1zLcsrTlUVkmnoXIaHAbfpeLYQwX1tkjs7W11dyzoi6HFvKcdnvX1zNg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
 
-  '@oxfmt/binding-linux-arm64-gnu@0.52.0':
-    resolution: {integrity: sha512-Jw7MgWUU9lcLCcy82updISP3EthTlfvAwR6gWNxPzqly7+fLvOi2gHQE9xXQjpqaVLm/8P+gOzlv9ODuoVlaaw==}
+  '@oxfmt/binding-linux-arm64-gnu@0.61.0':
+    resolution: {integrity: sha512-QUaCNLq2/EC6G5ljOuFanl9Lgw6ZWp4co7rs4+KOMUzbGfA4Lq58FHRjjF9sVIG+93XSbo343MxFATrOU1qctA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@oxfmt/binding-linux-arm64-musl@0.52.0':
-    resolution: {integrity: sha512-wZg6bLjDvh2KibyI3QFUYo8GTXneIFsd0JvehtvJiUmQ8WRPERgxd/VM4ctWb86U5FT1FkqgS8/wZKVB+AZScg==}
+  '@oxfmt/binding-linux-arm64-musl@0.61.0':
+    resolution: {integrity: sha512-S6uvJ6MXnRXl+zTs0CARNDvkE+cymj0EVWEKKsyKnlLlqTyQJBjw5s4D2pSIOZc+S46cy4STefzcr/sm0VzVPA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@oxfmt/binding-linux-ppc64-gnu@0.52.0':
-    resolution: {integrity: sha512-IngE8uxhNvxcMrLjZNDo9xNLY7rEK33AKnaMd2B46he1e/mz2CfcW6If/U1wUjdRZddm1QzQaciqZkuMkdh1FA==}
+  '@oxfmt/binding-linux-ppc64-gnu@0.61.0':
+    resolution: {integrity: sha512-6VDlRcytvZG6UlSIdAFKDLbppo9tvPxrWzle6vHldYFMeuDPQEfMKrkwezp7FaBq1wik9ra554ZZeRPsyIkFpg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
     libc: [glibc]
 
-  '@oxfmt/binding-linux-riscv64-gnu@0.52.0':
-    resolution: {integrity: sha512-H3+DdFMv/efN3Efmhsv18jDrpiWWqKG7wsfAlQBqAt6z/E2Bx+TwEj2Nowe51CPOWB8/mFBC2dAMSgVFLvvowA==}
+  '@oxfmt/binding-linux-riscv64-gnu@0.61.0':
+    resolution: {integrity: sha512-KkBTYbzExpbmn15XjKPLu2fRV2PVlq+KWt+brad5rwIa03vdYoaDRWiS7raHII/dCTR6Ro4UpYUCH4t6lif4WQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [riscv64]
     os: [linux]
     libc: [glibc]
 
-  '@oxfmt/binding-linux-riscv64-musl@0.52.0':
-    resolution: {integrity: sha512-zji+1kb7lJKohSDjzC1IsS+K/cKRs1hdVf0ZH0VbdbiakmtLvN9twBoXo/k8VdjFax7kfo+DyPxS7vv52br1aw==}
+  '@oxfmt/binding-linux-riscv64-musl@0.61.0':
+    resolution: {integrity: sha512-69tzIq7sJLVB9dxYYtvMzcSSsnZHSO+U2U19O2RqDqgj6+Q4O7HjSXdaszbcgqzhsUwzSH7z5kWvk8nmf6BHTg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [riscv64]
     os: [linux]
     libc: [musl]
 
-  '@oxfmt/binding-linux-s390x-gnu@0.52.0':
-    resolution: {integrity: sha512-hcLBYedpCy7ToUvvBidWk7+11Yhg1oAZ4+6hKPic/mQI6NaqXJSXMps5nFlwUuX2ewhtLZZDPg63TI042qGKBg==}
+  '@oxfmt/binding-linux-s390x-gnu@0.61.0':
+    resolution: {integrity: sha512-Oqi/N0OvtOVXsPKAOOhKgGH3msRYF8BLJaNBbWiupRiKoKVyc8JRKPCfarkQJC+RgP9U8raUKLe+bNwd0HUMiA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
-  '@oxfmt/binding-linux-x64-gnu@0.52.0':
-    resolution: {integrity: sha512-IDO2loXK2OtTOhSPchU9MW25mWL2QCDGdJbjN8MXKZVS80qXe5gMTwQWu/gMJ3juoBHbkuUZNB2N1LHzNT7DoA==}
+  '@oxfmt/binding-linux-x64-gnu@0.61.0':
+    resolution: {integrity: sha512-3TKwv/ed4uwJSemAA8P9XcoqETpjQI4waquF9UilhA9Mn/dhr1PdUEXWlL74mtc6ZNfmKPA9+NEJm01nRF8CVA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@oxfmt/binding-linux-x64-musl@0.52.0':
-    resolution: {integrity: sha512-mAV2Hjn0SatJ+KoAzKUC3eJhdJ8wv+3m1KyuS0dTsbF0c5weq+QrCt/DRZZM+uj/XiKzCDEUKYsBF30e2qkcyw==}
+  '@oxfmt/binding-linux-x64-musl@0.61.0':
+    resolution: {integrity: sha512-uFso4u4nLkVSlMCpgjyvWV60Gt7GvDQHnk1mmRxHIkZTMB0ljpUKwCD9FYGgN9H97x2wYl0UwEjgRZaPIuhEhw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@oxfmt/binding-openharmony-arm64@0.52.0':
-    resolution: {integrity: sha512-vd4npaUIwChxp7XzkqmepBWTT9YMcSe/NBApVGPC30/lLyOVaV3dvma1SKo03t8O73BPRAG7EyJzGlN5cJM5hQ==}
+  '@oxfmt/binding-openharmony-arm64@0.61.0':
+    resolution: {integrity: sha512-keGLkzeOvkMpNmPp4hffXWpfoSsY6e1K8++KXD4mSSfxdvM8q9QUDsYY689TB1k6Co832DZn1MnaaVx6cIBMWQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [openharmony]
 
-  '@oxfmt/binding-win32-arm64-msvc@0.52.0':
-    resolution: {integrity: sha512-k2sz6gWQdMfh5HPpIS+Bw/0UEV/kaK2xuqJRrWL233sEHx9WLlsmvlPFM4HUNThkYbSN0U0vPW7LVKZWDS8hPQ==}
+  '@oxfmt/binding-win32-arm64-msvc@0.61.0':
+    resolution: {integrity: sha512-VzsAISkFxmNhJ5LBDEL9VuH6tJsVJMtqYit2LyIUf/HLnsCe4Pg9SMOjjVQzGWt0bnpyfJ94CrqTqcpNZzK+ug==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [win32]
 
-  '@oxfmt/binding-win32-ia32-msvc@0.52.0':
-    resolution: {integrity: sha512-rhke69GTcArodLHpjMTfNnvjTEBryDeZcUCKK/VjXDMtfTULl6QRh0ymX5/hbCUv2WjYm9h/QbW++q2vE15gWQ==}
+  '@oxfmt/binding-win32-ia32-msvc@0.61.0':
+    resolution: {integrity: sha512-xv4t7yzwJoYaLB6Zv28B3W+j7brEjsyv50rLTAQgmxJzddce9fAMCxed8dSAkbWES0zz2J29nYK5FaTuD2YBHg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ia32]
     os: [win32]
 
-  '@oxfmt/binding-win32-x64-msvc@0.52.0':
-    resolution: {integrity: sha512-q5xL7oeXkZdEtNZWBdvehJcmt+GRu9l2bK40yJs1jJXlqq+r0Hygb1rTjq+FM2o/2xyt4cufH6KRplHp3Jjsvw==}
+  '@oxfmt/binding-win32-x64-msvc@0.61.0':
+    resolution: {integrity: sha512-6EZXFkqOwxdDYjIn3TSNnPk3ST5E5GiYd4FiM6UF/mCL/LZSfr6D6UygTfW3R1PCQP2quCKpCEGRlij8E3VYbg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
@@ -7559,8 +7490,8 @@ packages:
   oxc-resolver@5.2.0:
     resolution: {integrity: sha512-ce0rdG5Y0s1jhcvh2Zc6sD+fTw/WA4pUKWrPmjbniZjC/m6pPob2I2Pkz8T0YzdWsbAC98E00Bc7KNB1B6Tolg==}
 
-  oxfmt@0.52.0:
-    resolution: {integrity: sha512-nJlYM35F64zTDMecCNhoHNkf+D/eHv7xcjj9XDSj+bFAVtN93m7v8DQMdHd6nDG6Akf/kEYYHmDUBs2Dz27Sug==}
+  oxfmt@0.61.0:
+    resolution: {integrity: sha512-DxdHBEMYpcEnHoUHjjOigUqV2TYKsvxLwUPXnVYBjgFdqrcQ/91OtwubtZ2PUodCs3sStI8R5Qw3fKNGK4e8wQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -7842,11 +7773,6 @@ packages:
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
-    hasBin: true
-
-  prettier@3.8.1:
-    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
-    engines: {node: '>=14'}
     hasBin: true
 
   prettier@3.9.6:
@@ -10919,61 +10845,61 @@ snapshots:
   '@oxc-resolver/binding-win32-x64-msvc@5.2.0':
     optional: true
 
-  '@oxfmt/binding-android-arm-eabi@0.52.0':
+  '@oxfmt/binding-android-arm-eabi@0.61.0':
     optional: true
 
-  '@oxfmt/binding-android-arm64@0.52.0':
+  '@oxfmt/binding-android-arm64@0.61.0':
     optional: true
 
-  '@oxfmt/binding-darwin-arm64@0.52.0':
+  '@oxfmt/binding-darwin-arm64@0.61.0':
     optional: true
 
-  '@oxfmt/binding-darwin-x64@0.52.0':
+  '@oxfmt/binding-darwin-x64@0.61.0':
     optional: true
 
-  '@oxfmt/binding-freebsd-x64@0.52.0':
+  '@oxfmt/binding-freebsd-x64@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-arm-gnueabihf@0.52.0':
+  '@oxfmt/binding-linux-arm-gnueabihf@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-arm-musleabihf@0.52.0':
+  '@oxfmt/binding-linux-arm-musleabihf@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-arm64-gnu@0.52.0':
+  '@oxfmt/binding-linux-arm64-gnu@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-arm64-musl@0.52.0':
+  '@oxfmt/binding-linux-arm64-musl@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-ppc64-gnu@0.52.0':
+  '@oxfmt/binding-linux-ppc64-gnu@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-riscv64-gnu@0.52.0':
+  '@oxfmt/binding-linux-riscv64-gnu@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-riscv64-musl@0.52.0':
+  '@oxfmt/binding-linux-riscv64-musl@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-s390x-gnu@0.52.0':
+  '@oxfmt/binding-linux-s390x-gnu@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-x64-gnu@0.52.0':
+  '@oxfmt/binding-linux-x64-gnu@0.61.0':
     optional: true
 
-  '@oxfmt/binding-linux-x64-musl@0.52.0':
+  '@oxfmt/binding-linux-x64-musl@0.61.0':
     optional: true
 
-  '@oxfmt/binding-openharmony-arm64@0.52.0':
+  '@oxfmt/binding-openharmony-arm64@0.61.0':
     optional: true
 
-  '@oxfmt/binding-win32-arm64-msvc@0.52.0':
+  '@oxfmt/binding-win32-arm64-msvc@0.61.0':
     optional: true
 
-  '@oxfmt/binding-win32-ia32-msvc@0.52.0':
+  '@oxfmt/binding-win32-ia32-msvc@0.61.0':
     optional: true
 
-  '@oxfmt/binding-win32-x64-msvc@0.52.0':
+  '@oxfmt/binding-win32-x64-msvc@0.61.0':
     optional: true
 
   '@oxlint-tsgolint/darwin-arm64@0.23.0':
@@ -11215,7 +11141,7 @@ snapshots:
       '@storybook/react-dom-shim': 10.5.5(@types/react-dom@19.2.4)(@types/react@19.2.18)(react-dom@19.2.8)(react@19.2.8)(storybook@10.5.5)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       ts-dedent: 2.2.0
     optionalDependencies:
       '@types/react': 19.2.18
@@ -11229,20 +11155,20 @@ snapshots:
   '@storybook/addon-links@10.5.5(@types/react@19.2.18)(react@19.2.8)(storybook@10.5.5)':
     dependencies:
       '@storybook/global': 5.0.0
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
       react: 19.2.8
 
   '@storybook/addon-themes@10.5.5(storybook@10.5.5)':
     dependencies:
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       ts-dedent: 2.2.0
 
   '@storybook/builder-vite@10.5.5(esbuild@0.28.1)(storybook@10.5.5)(vite@8.2.0)':
     dependencies:
       '@storybook/csf-plugin': 10.5.5(esbuild@0.28.1)(storybook@10.5.5)(vite@8.2.0)
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       ts-dedent: 2.2.0
       vite: 8.2.0(@types/node@24.12.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
     transitivePeerDependencies:
@@ -11252,7 +11178,7 @@ snapshots:
 
   '@storybook/csf-plugin@10.5.5(esbuild@0.28.1)(storybook@10.5.5)(vite@8.2.0)':
     dependencies:
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       unplugin: 2.3.11
     optionalDependencies:
       esbuild: 0.28.1
@@ -11268,7 +11194,7 @@ snapshots:
     dependencies:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
       '@types/react-dom': 19.2.4(@types/react@19.2.18)
@@ -11285,7 +11211,7 @@ snapshots:
       react-docgen: 8.0.2(supports-color@10.2.2)
       react-dom: 19.2.8(react@19.2.8)
       resolve: 1.22.12
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       tsconfig-paths: 4.2.0
       vite: 8.2.0(@types/node@24.12.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)(yaml@2.9.0)
     optionalDependencies:
@@ -11306,7 +11232,7 @@ snapshots:
       react-docgen: 8.0.2(supports-color@10.2.2)
       react-docgen-typescript: 2.4.0(typescript@6.0.3)
       react-dom: 19.2.8(react@19.2.8)
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
     optionalDependencies:
       '@types/react': 19.2.18
       '@types/react-dom': 19.2.4(@types/react@19.2.18)
@@ -13079,7 +13005,7 @@ snapshots:
       '@typescript-eslint/types': 8.65.0
       '@typescript-eslint/utils': 8.65.0(eslint@9.39.5)(supports-color@10.2.2)(typescript@6.0.3)
       eslint: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
-      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8)
+      storybook: 10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -14572,29 +14498,29 @@ snapshots:
       '@oxc-resolver/binding-win32-arm64-msvc': 5.2.0
       '@oxc-resolver/binding-win32-x64-msvc': 5.2.0
 
-  oxfmt@0.52.0:
+  oxfmt@0.61.0:
     dependencies:
       tinypool: 2.1.0
     optionalDependencies:
-      '@oxfmt/binding-android-arm-eabi': 0.52.0
-      '@oxfmt/binding-android-arm64': 0.52.0
-      '@oxfmt/binding-darwin-arm64': 0.52.0
-      '@oxfmt/binding-darwin-x64': 0.52.0
-      '@oxfmt/binding-freebsd-x64': 0.52.0
-      '@oxfmt/binding-linux-arm-gnueabihf': 0.52.0
-      '@oxfmt/binding-linux-arm-musleabihf': 0.52.0
-      '@oxfmt/binding-linux-arm64-gnu': 0.52.0
-      '@oxfmt/binding-linux-arm64-musl': 0.52.0
-      '@oxfmt/binding-linux-ppc64-gnu': 0.52.0
-      '@oxfmt/binding-linux-riscv64-gnu': 0.52.0
-      '@oxfmt/binding-linux-riscv64-musl': 0.52.0
-      '@oxfmt/binding-linux-s390x-gnu': 0.52.0
-      '@oxfmt/binding-linux-x64-gnu': 0.52.0
-      '@oxfmt/binding-linux-x64-musl': 0.52.0
-      '@oxfmt/binding-openharmony-arm64': 0.52.0
-      '@oxfmt/binding-win32-arm64-msvc': 0.52.0
-      '@oxfmt/binding-win32-ia32-msvc': 0.52.0
-      '@oxfmt/binding-win32-x64-msvc': 0.52.0
+      '@oxfmt/binding-android-arm-eabi': 0.61.0
+      '@oxfmt/binding-android-arm64': 0.61.0
+      '@oxfmt/binding-darwin-arm64': 0.61.0
+      '@oxfmt/binding-darwin-x64': 0.61.0
+      '@oxfmt/binding-freebsd-x64': 0.61.0
+      '@oxfmt/binding-linux-arm-gnueabihf': 0.61.0
+      '@oxfmt/binding-linux-arm-musleabihf': 0.61.0
+      '@oxfmt/binding-linux-arm64-gnu': 0.61.0
+      '@oxfmt/binding-linux-arm64-musl': 0.61.0
+      '@oxfmt/binding-linux-ppc64-gnu': 0.61.0
+      '@oxfmt/binding-linux-riscv64-gnu': 0.61.0
+      '@oxfmt/binding-linux-riscv64-musl': 0.61.0
+      '@oxfmt/binding-linux-s390x-gnu': 0.61.0
+      '@oxfmt/binding-linux-x64-gnu': 0.61.0
+      '@oxfmt/binding-linux-x64-musl': 0.61.0
+      '@oxfmt/binding-openharmony-arm64': 0.61.0
+      '@oxfmt/binding-win32-arm64-msvc': 0.61.0
+      '@oxfmt/binding-win32-ia32-msvc': 0.61.0
+      '@oxfmt/binding-win32-x64-msvc': 0.61.0
 
   oxlint-tsgolint@0.23.0:
     optionalDependencies:
@@ -14813,19 +14739,17 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-packagejson@3.0.2(prettier@3.8.1):
+  prettier-plugin-packagejson@3.0.2(prettier@3.9.6):
     dependencies:
       sort-package-json: 3.6.0
     optionalDependencies:
-      prettier: 3.8.1
+      prettier: 3.9.6
 
-  prettier-plugin-tailwindcss@0.7.2(prettier@3.8.1):
+  prettier-plugin-tailwindcss@0.7.2(prettier@3.9.6):
     dependencies:
-      prettier: 3.8.1
+      prettier: 3.9.6
 
   prettier@2.8.8: {}
-
-  prettier@3.8.1: {}
 
   prettier@3.9.6: {}
 
@@ -15419,7 +15343,7 @@ snapshots:
 
   stdin-discarder@0.3.2: {}
 
-  storybook@10.5.5(@types/react@19.2.18)(prettier@3.8.1)(react@19.2.8):
+  storybook@10.5.5(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8):
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/icons': 2.1.0(react@19.2.8)
@@ -15440,7 +15364,7 @@ snapshots:
       ws: 8.21.1
     optionalDependencies:
       '@types/react': 19.2.18
-      prettier: 3.8.1
+      prettier: 3.9.6
     transitivePeerDependencies:
       - bufferutil
       - react

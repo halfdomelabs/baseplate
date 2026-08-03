@@ -13,33 +13,12 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/tools"
-  },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "sideEffects": false,
-  "type": "module",
-  "exports": {
-    "./eslint-configs/typescript": "./eslint-configs/typescript.js",
-    "./eslint-configs/prettier": "./eslint-configs/prettier.js",
-    "./eslint-configs/react": "./eslint-configs/react.js",
-    "./eslint-configs/storybook": "./eslint-configs/storybook.js",
-    "./eslint-node": "./eslint.config.node.js",
-    "./eslint-react": "./eslint.config.react.js",
-    "./oxlint-config-base": "./oxlint.config.base.js",
-    "./prettier-node": "./prettier.config.node.js",
-    "./prettier-react": "./prettier.config.react.js",
-    "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
-    "./tsconfig.node.lib.json": "./tsconfig.node.lib.json",
-    "./tsconfig.node.script.json": "./tsconfig.node.script.json",
-    "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
-    "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
-    "./vitest-node": "./vitest.config.node.js",
-    "./vitest-react": "./vitest.config.react.js",
-    "./src-subpath-import-plugin": "./src-subpath-import-plugin.js"
   },
   "files": [
     "eslint-configs/**/*.js",
@@ -49,10 +28,33 @@
     "vitest.*.js",
     "src-subpath-import-plugin.js"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./eslint-configs/typescript": "./eslint-configs/typescript.js",
+    "./eslint-configs/prettier": "./eslint-configs/prettier.js",
+    "./eslint-configs/react": "./eslint-configs/react.js",
+    "./eslint-configs/storybook": "./eslint-configs/storybook.js",
+    "./eslint-node": "./eslint.config.node.js",
+    "./eslint-react": "./eslint.config.react.js",
+    "./oxlint-config-base": "./oxlint.config.base.js",
+    "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
+    "./tsconfig.node.lib.json": "./tsconfig.node.lib.json",
+    "./tsconfig.node.script.json": "./tsconfig.node.script.json",
+    "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
+    "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
+    "./vitest-node": "./vitest.config.node.js",
+    "./vitest-react": "./vitest.config.react.js",
+    "./src-subpath-import-plugin": "./src-subpath-import-plugin.js",
+    "./oxfmt-config-base": "./oxfmt.config.base.js",
+    "./oxfmt-config-react": "./oxfmt.config.react.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -73,15 +75,12 @@
     "eslint-plugin-unicorn": "^62.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.8.0",
-    "prettier-plugin-packagejson": "^3.0.2",
-    "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript-eslint": "catalog:"
   },
   "devDependencies": {
     "@types/eslint-plugin-jsx-a11y": "6.10.1",
     "eslint": "catalog:",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   },
@@ -96,9 +95,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

@@ -10,18 +10,16 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-test"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
   "type": "module",
   "scripts": {
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "test:gen": "baseplate-dev test gen",
     "test-project:generate": "baseplate-dev test-project generate",
     "test-project:run-env": "baseplate-dev test-project run-env",
@@ -35,7 +33,6 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {

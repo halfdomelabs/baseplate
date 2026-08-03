@@ -9,56 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteRouteImport } from './routes/settings/route'
-import { Route as PluginsRouteRouteImport } from './routes/plugins/route'
-import { Route as PackagesRouteRouteImport } from './routes/packages/route'
-import { Route as DataRouteRouteImport } from './routes/data/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as PluginsIndexRouteImport } from './routes/plugins/index'
-import { Route as PackagesIndexRouteImport } from './routes/packages/index'
+import { Route as DataRouteRouteImport } from './routes/data/route'
+import { Route as PackagesRouteRouteImport } from './routes/packages/route'
+import { Route as PluginsRouteRouteImport } from './routes/plugins/route'
+import { Route as SettingsRouteRouteImport } from './routes/settings/route'
 import { Route as DataIndexRouteImport } from './routes/data/index'
-import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
-import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
-import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
-import { Route as SettingsInfrastructureRouteImport } from './routes/settings/infrastructure'
-import { Route as SettingsHierarchyRouteImport } from './routes/settings/hierarchy'
-import { Route as DataModelsRouteRouteImport } from './routes/data/models/route'
 import { Route as DataEnumsRouteRouteImport } from './routes/data/enums/route'
-import { Route as DataModelsIndexRouteImport } from './routes/data/models/index'
+import { Route as DataModelsRouteRouteImport } from './routes/data/models/route'
+import { Route as PackagesIndexRouteImport } from './routes/packages/index'
+import { Route as PluginsIndexRouteImport } from './routes/plugins/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsHierarchyRouteImport } from './routes/settings/hierarchy'
+import { Route as SettingsInfrastructureRouteImport } from './routes/settings/infrastructure'
+import { Route as SettingsMonorepoRouteImport } from './routes/settings/monorepo'
+import { Route as SettingsTemplateExtractorRouteImport } from './routes/settings/template-extractor'
+import { Route as SettingsThemeBuilderRouteImport } from './routes/settings/theme-builder'
 import { Route as DataEnumsIndexRouteImport } from './routes/data/enums/index'
-import { Route as PluginsEditKeyRouteImport } from './routes/plugins/edit.$key'
-import { Route as PackagesLibsKeyRouteRouteImport } from './routes/packages/libs.$key/route'
+import { Route as DataModelsIndexRouteImport } from './routes/data/models/index'
 import { Route as PackagesAppsKeyRouteRouteImport } from './routes/packages/apps.$key/route'
-import { Route as PackagesLibsKeyIndexRouteImport } from './routes/packages/libs.$key/index'
+import { Route as PackagesLibsKeyRouteRouteImport } from './routes/packages/libs.$key/route'
+import { Route as PluginsEditKeyRouteImport } from './routes/plugins/edit.$key'
+import { Route as DataEnumsEditKeyRouteRouteImport } from './routes/data/enums/edit.$key/route'
+import { Route as DataModelsEditKeyRouteRouteImport } from './routes/data/models/edit.$key/route'
 import { Route as PackagesAppsKeyIndexRouteImport } from './routes/packages/apps.$key/index'
+import { Route as PackagesAppsKeyAdminSectionsRouteRouteImport } from './routes/packages/apps.$key/admin-sections/route'
 import { Route as PackagesAppsKeyBackendRouteImport } from './routes/packages/apps.$key/backend'
 import { Route as PackagesAppsKeyWebRouteRouteImport } from './routes/packages/apps.$key/web/route'
-import { Route as PackagesAppsKeyAdminSectionsRouteRouteImport } from './routes/packages/apps.$key/admin-sections/route'
-import { Route as DataModelsEditKeyRouteRouteImport } from './routes/data/models/edit.$key/route'
-import { Route as DataEnumsEditKeyRouteRouteImport } from './routes/data/enums/edit.$key/route'
-import { Route as PackagesAppsKeyWebIndexRouteImport } from './routes/packages/apps.$key/web/index'
-import { Route as DataModelsEditKeyIndexRouteImport } from './routes/data/models/edit.$key/index'
+import { Route as PackagesLibsKeyIndexRouteImport } from './routes/packages/libs.$key/index'
 import { Route as DataEnumsEditKeyIndexRouteImport } from './routes/data/enums/edit.$key/index'
-import { Route as PackagesAppsKeyWebAdminRouteImport } from './routes/packages/apps.$key/web/admin'
-import { Route as PackagesAppsKeyAdminSectionsSectionKeyRouteImport } from './routes/packages/apps.$key/admin-sections/$sectionKey'
-import { Route as DataModelsEditKeyServiceRouteImport } from './routes/data/models/edit.$key/service'
-import { Route as DataModelsEditKeyGraphqlRouteImport } from './routes/data/models/edit.$key/graphql'
+import { Route as DataModelsEditKeyIndexRouteImport } from './routes/data/models/edit.$key/index'
 import { Route as DataModelsEditKeyAuthorizationRouteImport } from './routes/data/models/edit.$key/authorization'
+import { Route as DataModelsEditKeyGraphqlRouteImport } from './routes/data/models/edit.$key/graphql'
+import { Route as DataModelsEditKeyServiceRouteImport } from './routes/data/models/edit.$key/service'
+import { Route as PackagesAppsKeyAdminSectionsSectionKeyRouteImport } from './routes/packages/apps.$key/admin-sections/$sectionKey'
+import { Route as PackagesAppsKeyWebIndexRouteImport } from './routes/packages/apps.$key/web/index'
+import { Route as PackagesAppsKeyWebAdminRouteImport } from './routes/packages/apps.$key/web/admin'
 
-const SettingsRouteRoute = SettingsRouteRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PluginsRouteRoute = PluginsRouteRouteImport.update({
-  id: '/plugins',
-  path: '/plugins',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PackagesRouteRoute = PackagesRouteRouteImport.update({
-  id: '/packages',
-  path: '/packages',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataRouteRoute = DataRouteRouteImport.update({
@@ -66,34 +56,64 @@ const DataRouteRoute = DataRouteRouteImport.update({
   path: '/data',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PackagesRouteRoute = PackagesRouteRouteImport.update({
+  id: '/packages',
+  path: '/packages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SettingsRouteRoute,
+const PluginsRouteRoute = PluginsRouteRouteImport.update({
+  id: '/plugins',
+  path: '/plugins',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const PluginsIndexRoute = PluginsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PluginsRouteRoute,
-} as any)
-const PackagesIndexRoute = PackagesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PackagesRouteRoute,
+const SettingsRouteRoute = SettingsRouteRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DataIndexRoute = DataIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DataRouteRoute,
 } as any)
-const SettingsThemeBuilderRoute = SettingsThemeBuilderRouteImport.update({
-  id: '/theme-builder',
-  path: '/theme-builder',
+const DataEnumsRouteRoute = DataEnumsRouteRouteImport.update({
+  id: '/enums',
+  path: '/enums',
+  getParentRoute: () => DataRouteRoute,
+} as any)
+const DataModelsRouteRoute = DataModelsRouteRouteImport.update({
+  id: '/models',
+  path: '/models',
+  getParentRoute: () => DataRouteRoute,
+} as any)
+const PackagesIndexRoute = PackagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PackagesRouteRoute,
+} as any)
+const PluginsIndexRoute = PluginsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PluginsRouteRoute,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsHierarchyRoute = SettingsHierarchyRouteImport.update({
+  id: '/hierarchy',
+  path: '/hierarchy',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsInfrastructureRoute = SettingsInfrastructureRouteImport.update({
+  id: '/infrastructure',
+  path: '/infrastructure',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+const SettingsMonorepoRoute = SettingsMonorepoRouteImport.update({
+  id: '/monorepo',
+  path: '/monorepo',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 const SettingsTemplateExtractorRoute =
@@ -102,66 +122,57 @@ const SettingsTemplateExtractorRoute =
     path: '/template-extractor',
     getParentRoute: () => SettingsRouteRoute,
   } as any)
-const SettingsMonorepoRoute = SettingsMonorepoRouteImport.update({
-  id: '/monorepo',
-  path: '/monorepo',
+const SettingsThemeBuilderRoute = SettingsThemeBuilderRouteImport.update({
+  id: '/theme-builder',
+  path: '/theme-builder',
   getParentRoute: () => SettingsRouteRoute,
-} as any)
-const SettingsInfrastructureRoute = SettingsInfrastructureRouteImport.update({
-  id: '/infrastructure',
-  path: '/infrastructure',
-  getParentRoute: () => SettingsRouteRoute,
-} as any)
-const SettingsHierarchyRoute = SettingsHierarchyRouteImport.update({
-  id: '/hierarchy',
-  path: '/hierarchy',
-  getParentRoute: () => SettingsRouteRoute,
-} as any)
-const DataModelsRouteRoute = DataModelsRouteRouteImport.update({
-  id: '/models',
-  path: '/models',
-  getParentRoute: () => DataRouteRoute,
-} as any)
-const DataEnumsRouteRoute = DataEnumsRouteRouteImport.update({
-  id: '/enums',
-  path: '/enums',
-  getParentRoute: () => DataRouteRoute,
-} as any)
-const DataModelsIndexRoute = DataModelsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DataModelsRouteRoute,
 } as any)
 const DataEnumsIndexRoute = DataEnumsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DataEnumsRouteRoute,
 } as any)
-const PluginsEditKeyRoute = PluginsEditKeyRouteImport.update({
-  id: '/edit/$key',
-  path: '/edit/$key',
-  getParentRoute: () => PluginsRouteRoute,
-} as any)
-const PackagesLibsKeyRouteRoute = PackagesLibsKeyRouteRouteImport.update({
-  id: '/libs/$key',
-  path: '/libs/$key',
-  getParentRoute: () => PackagesRouteRoute,
+const DataModelsIndexRoute = DataModelsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DataModelsRouteRoute,
 } as any)
 const PackagesAppsKeyRouteRoute = PackagesAppsKeyRouteRouteImport.update({
   id: '/apps/$key',
   path: '/apps/$key',
   getParentRoute: () => PackagesRouteRoute,
 } as any)
-const PackagesLibsKeyIndexRoute = PackagesLibsKeyIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PackagesLibsKeyRouteRoute,
+const PackagesLibsKeyRouteRoute = PackagesLibsKeyRouteRouteImport.update({
+  id: '/libs/$key',
+  path: '/libs/$key',
+  getParentRoute: () => PackagesRouteRoute,
+} as any)
+const PluginsEditKeyRoute = PluginsEditKeyRouteImport.update({
+  id: '/edit/$key',
+  path: '/edit/$key',
+  getParentRoute: () => PluginsRouteRoute,
+} as any)
+const DataEnumsEditKeyRouteRoute = DataEnumsEditKeyRouteRouteImport.update({
+  id: '/edit/$key',
+  path: '/edit/$key',
+  getParentRoute: () => DataEnumsRouteRoute,
+} as any)
+const DataModelsEditKeyRouteRoute = DataModelsEditKeyRouteRouteImport.update({
+  id: '/edit/$key',
+  path: '/edit/$key',
+  getParentRoute: () => DataModelsRouteRoute,
 } as any)
 const PackagesAppsKeyIndexRoute = PackagesAppsKeyIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PackagesAppsKeyRouteRoute,
 } as any)
+const PackagesAppsKeyAdminSectionsRouteRoute =
+  PackagesAppsKeyAdminSectionsRouteRouteImport.update({
+    id: '/admin-sections',
+    path: '/admin-sections',
+    getParentRoute: () => PackagesAppsKeyRouteRoute,
+  } as any)
 const PackagesAppsKeyBackendRoute = PackagesAppsKeyBackendRouteImport.update({
   id: '/backend',
   path: '/backend',
@@ -172,52 +183,25 @@ const PackagesAppsKeyWebRouteRoute = PackagesAppsKeyWebRouteRouteImport.update({
   path: '/web',
   getParentRoute: () => PackagesAppsKeyRouteRoute,
 } as any)
-const PackagesAppsKeyAdminSectionsRouteRoute =
-  PackagesAppsKeyAdminSectionsRouteRouteImport.update({
-    id: '/admin-sections',
-    path: '/admin-sections',
-    getParentRoute: () => PackagesAppsKeyRouteRoute,
-  } as any)
-const DataModelsEditKeyRouteRoute = DataModelsEditKeyRouteRouteImport.update({
-  id: '/edit/$key',
-  path: '/edit/$key',
-  getParentRoute: () => DataModelsRouteRoute,
-} as any)
-const DataEnumsEditKeyRouteRoute = DataEnumsEditKeyRouteRouteImport.update({
-  id: '/edit/$key',
-  path: '/edit/$key',
-  getParentRoute: () => DataEnumsRouteRoute,
-} as any)
-const PackagesAppsKeyWebIndexRoute = PackagesAppsKeyWebIndexRouteImport.update({
+const PackagesLibsKeyIndexRoute = PackagesLibsKeyIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
-} as any)
-const DataModelsEditKeyIndexRoute = DataModelsEditKeyIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DataModelsEditKeyRouteRoute,
+  getParentRoute: () => PackagesLibsKeyRouteRoute,
 } as any)
 const DataEnumsEditKeyIndexRoute = DataEnumsEditKeyIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DataEnumsEditKeyRouteRoute,
 } as any)
-const PackagesAppsKeyWebAdminRoute = PackagesAppsKeyWebAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
+const DataModelsEditKeyIndexRoute = DataModelsEditKeyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DataModelsEditKeyRouteRoute,
 } as any)
-const PackagesAppsKeyAdminSectionsSectionKeyRoute =
-  PackagesAppsKeyAdminSectionsSectionKeyRouteImport.update({
-    id: '/$sectionKey',
-    path: '/$sectionKey',
-    getParentRoute: () => PackagesAppsKeyAdminSectionsRouteRoute,
-  } as any)
-const DataModelsEditKeyServiceRoute =
-  DataModelsEditKeyServiceRouteImport.update({
-    id: '/service',
-    path: '/service',
+const DataModelsEditKeyAuthorizationRoute =
+  DataModelsEditKeyAuthorizationRouteImport.update({
+    id: '/authorization',
+    path: '/authorization',
     getParentRoute: () => DataModelsEditKeyRouteRoute,
   } as any)
 const DataModelsEditKeyGraphqlRoute =
@@ -226,12 +210,28 @@ const DataModelsEditKeyGraphqlRoute =
     path: '/graphql',
     getParentRoute: () => DataModelsEditKeyRouteRoute,
   } as any)
-const DataModelsEditKeyAuthorizationRoute =
-  DataModelsEditKeyAuthorizationRouteImport.update({
-    id: '/authorization',
-    path: '/authorization',
+const DataModelsEditKeyServiceRoute =
+  DataModelsEditKeyServiceRouteImport.update({
+    id: '/service',
+    path: '/service',
     getParentRoute: () => DataModelsEditKeyRouteRoute,
   } as any)
+const PackagesAppsKeyAdminSectionsSectionKeyRoute =
+  PackagesAppsKeyAdminSectionsSectionKeyRouteImport.update({
+    id: '/$sectionKey',
+    path: '/$sectionKey',
+    getParentRoute: () => PackagesAppsKeyAdminSectionsRouteRoute,
+  } as any)
+const PackagesAppsKeyWebIndexRoute = PackagesAppsKeyWebIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
+} as any)
+const PackagesAppsKeyWebAdminRoute = PackagesAppsKeyWebAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => PackagesAppsKeyWebRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -453,25 +453,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plugins': {
-      id: '/plugins'
-      path: '/plugins'
-      fullPath: '/plugins'
-      preLoaderRoute: typeof PluginsRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages': {
-      id: '/packages'
-      path: '/packages'
-      fullPath: '/packages'
-      preLoaderRoute: typeof PackagesRouteRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data': {
@@ -481,81 +467,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/packages': {
+      id: '/packages'
+      path: '/packages'
+      fullPath: '/packages'
+      preLoaderRoute: typeof PackagesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/': {
-      id: '/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof SettingsRouteRoute
+    '/plugins': {
+      id: '/plugins'
+      path: '/plugins'
+      fullPath: '/plugins'
+      preLoaderRoute: typeof PluginsRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/plugins/': {
-      id: '/plugins/'
-      path: '/'
-      fullPath: '/plugins/'
-      preLoaderRoute: typeof PluginsIndexRouteImport
-      parentRoute: typeof PluginsRouteRoute
-    }
-    '/packages/': {
-      id: '/packages/'
-      path: '/'
-      fullPath: '/packages/'
-      preLoaderRoute: typeof PackagesIndexRouteImport
-      parentRoute: typeof PackagesRouteRoute
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/data/': {
       id: '/data/'
       path: '/'
       fullPath: '/data/'
       preLoaderRoute: typeof DataIndexRouteImport
-      parentRoute: typeof DataRouteRoute
-    }
-    '/settings/theme-builder': {
-      id: '/settings/theme-builder'
-      path: '/theme-builder'
-      fullPath: '/settings/theme-builder'
-      preLoaderRoute: typeof SettingsThemeBuilderRouteImport
-      parentRoute: typeof SettingsRouteRoute
-    }
-    '/settings/template-extractor': {
-      id: '/settings/template-extractor'
-      path: '/template-extractor'
-      fullPath: '/settings/template-extractor'
-      preLoaderRoute: typeof SettingsTemplateExtractorRouteImport
-      parentRoute: typeof SettingsRouteRoute
-    }
-    '/settings/monorepo': {
-      id: '/settings/monorepo'
-      path: '/monorepo'
-      fullPath: '/settings/monorepo'
-      preLoaderRoute: typeof SettingsMonorepoRouteImport
-      parentRoute: typeof SettingsRouteRoute
-    }
-    '/settings/infrastructure': {
-      id: '/settings/infrastructure'
-      path: '/infrastructure'
-      fullPath: '/settings/infrastructure'
-      preLoaderRoute: typeof SettingsInfrastructureRouteImport
-      parentRoute: typeof SettingsRouteRoute
-    }
-    '/settings/hierarchy': {
-      id: '/settings/hierarchy'
-      path: '/hierarchy'
-      fullPath: '/settings/hierarchy'
-      preLoaderRoute: typeof SettingsHierarchyRouteImport
-      parentRoute: typeof SettingsRouteRoute
-    }
-    '/data/models': {
-      id: '/data/models'
-      path: '/models'
-      fullPath: '/data/models'
-      preLoaderRoute: typeof DataModelsRouteRouteImport
       parentRoute: typeof DataRouteRoute
     }
     '/data/enums': {
@@ -565,12 +502,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsRouteRouteImport
       parentRoute: typeof DataRouteRoute
     }
-    '/data/models/': {
-      id: '/data/models/'
+    '/data/models': {
+      id: '/data/models'
+      path: '/models'
+      fullPath: '/data/models'
+      preLoaderRoute: typeof DataModelsRouteRouteImport
+      parentRoute: typeof DataRouteRoute
+    }
+    '/packages/': {
+      id: '/packages/'
       path: '/'
-      fullPath: '/data/models/'
-      preLoaderRoute: typeof DataModelsIndexRouteImport
-      parentRoute: typeof DataModelsRouteRoute
+      fullPath: '/packages/'
+      preLoaderRoute: typeof PackagesIndexRouteImport
+      parentRoute: typeof PackagesRouteRoute
+    }
+    '/plugins/': {
+      id: '/plugins/'
+      path: '/'
+      fullPath: '/plugins/'
+      preLoaderRoute: typeof PluginsIndexRouteImport
+      parentRoute: typeof PluginsRouteRoute
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/hierarchy': {
+      id: '/settings/hierarchy'
+      path: '/hierarchy'
+      fullPath: '/settings/hierarchy'
+      preLoaderRoute: typeof SettingsHierarchyRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/infrastructure': {
+      id: '/settings/infrastructure'
+      path: '/infrastructure'
+      fullPath: '/settings/infrastructure'
+      preLoaderRoute: typeof SettingsInfrastructureRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/monorepo': {
+      id: '/settings/monorepo'
+      path: '/monorepo'
+      fullPath: '/settings/monorepo'
+      preLoaderRoute: typeof SettingsMonorepoRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/template-extractor': {
+      id: '/settings/template-extractor'
+      path: '/template-extractor'
+      fullPath: '/settings/template-extractor'
+      preLoaderRoute: typeof SettingsTemplateExtractorRouteImport
+      parentRoute: typeof SettingsRouteRoute
+    }
+    '/settings/theme-builder': {
+      id: '/settings/theme-builder'
+      path: '/theme-builder'
+      fullPath: '/settings/theme-builder'
+      preLoaderRoute: typeof SettingsThemeBuilderRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
     '/data/enums/': {
       id: '/data/enums/'
@@ -579,19 +572,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsIndexRouteImport
       parentRoute: typeof DataEnumsRouteRoute
     }
-    '/plugins/edit/$key': {
-      id: '/plugins/edit/$key'
-      path: '/edit/$key'
-      fullPath: '/plugins/edit/$key'
-      preLoaderRoute: typeof PluginsEditKeyRouteImport
-      parentRoute: typeof PluginsRouteRoute
-    }
-    '/packages/libs/$key': {
-      id: '/packages/libs/$key'
-      path: '/libs/$key'
-      fullPath: '/packages/libs/$key'
-      preLoaderRoute: typeof PackagesLibsKeyRouteRouteImport
-      parentRoute: typeof PackagesRouteRoute
+    '/data/models/': {
+      id: '/data/models/'
+      path: '/'
+      fullPath: '/data/models/'
+      preLoaderRoute: typeof DataModelsIndexRouteImport
+      parentRoute: typeof DataModelsRouteRoute
     }
     '/packages/apps/$key': {
       id: '/packages/apps/$key'
@@ -600,18 +586,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackagesAppsKeyRouteRouteImport
       parentRoute: typeof PackagesRouteRoute
     }
-    '/packages/libs/$key/': {
-      id: '/packages/libs/$key/'
-      path: '/'
-      fullPath: '/packages/libs/$key/'
-      preLoaderRoute: typeof PackagesLibsKeyIndexRouteImport
-      parentRoute: typeof PackagesLibsKeyRouteRoute
+    '/packages/libs/$key': {
+      id: '/packages/libs/$key'
+      path: '/libs/$key'
+      fullPath: '/packages/libs/$key'
+      preLoaderRoute: typeof PackagesLibsKeyRouteRouteImport
+      parentRoute: typeof PackagesRouteRoute
+    }
+    '/plugins/edit/$key': {
+      id: '/plugins/edit/$key'
+      path: '/edit/$key'
+      fullPath: '/plugins/edit/$key'
+      preLoaderRoute: typeof PluginsEditKeyRouteImport
+      parentRoute: typeof PluginsRouteRoute
+    }
+    '/data/enums/edit/$key': {
+      id: '/data/enums/edit/$key'
+      path: '/edit/$key'
+      fullPath: '/data/enums/edit/$key'
+      preLoaderRoute: typeof DataEnumsEditKeyRouteRouteImport
+      parentRoute: typeof DataEnumsRouteRoute
+    }
+    '/data/models/edit/$key': {
+      id: '/data/models/edit/$key'
+      path: '/edit/$key'
+      fullPath: '/data/models/edit/$key'
+      preLoaderRoute: typeof DataModelsEditKeyRouteRouteImport
+      parentRoute: typeof DataModelsRouteRoute
     }
     '/packages/apps/$key/': {
       id: '/packages/apps/$key/'
       path: '/'
       fullPath: '/packages/apps/$key/'
       preLoaderRoute: typeof PackagesAppsKeyIndexRouteImport
+      parentRoute: typeof PackagesAppsKeyRouteRoute
+    }
+    '/packages/apps/$key/admin-sections': {
+      id: '/packages/apps/$key/admin-sections'
+      path: '/admin-sections'
+      fullPath: '/packages/apps/$key/admin-sections'
+      preLoaderRoute: typeof PackagesAppsKeyAdminSectionsRouteRouteImport
       parentRoute: typeof PackagesAppsKeyRouteRoute
     }
     '/packages/apps/$key/backend': {
@@ -628,40 +642,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackagesAppsKeyWebRouteRouteImport
       parentRoute: typeof PackagesAppsKeyRouteRoute
     }
-    '/packages/apps/$key/admin-sections': {
-      id: '/packages/apps/$key/admin-sections'
-      path: '/admin-sections'
-      fullPath: '/packages/apps/$key/admin-sections'
-      preLoaderRoute: typeof PackagesAppsKeyAdminSectionsRouteRouteImport
-      parentRoute: typeof PackagesAppsKeyRouteRoute
-    }
-    '/data/models/edit/$key': {
-      id: '/data/models/edit/$key'
-      path: '/edit/$key'
-      fullPath: '/data/models/edit/$key'
-      preLoaderRoute: typeof DataModelsEditKeyRouteRouteImport
-      parentRoute: typeof DataModelsRouteRoute
-    }
-    '/data/enums/edit/$key': {
-      id: '/data/enums/edit/$key'
-      path: '/edit/$key'
-      fullPath: '/data/enums/edit/$key'
-      preLoaderRoute: typeof DataEnumsEditKeyRouteRouteImport
-      parentRoute: typeof DataEnumsRouteRoute
-    }
-    '/packages/apps/$key/web/': {
-      id: '/packages/apps/$key/web/'
+    '/packages/libs/$key/': {
+      id: '/packages/libs/$key/'
       path: '/'
-      fullPath: '/packages/apps/$key/web/'
-      preLoaderRoute: typeof PackagesAppsKeyWebIndexRouteImport
-      parentRoute: typeof PackagesAppsKeyWebRouteRoute
-    }
-    '/data/models/edit/$key/': {
-      id: '/data/models/edit/$key/'
-      path: '/'
-      fullPath: '/data/models/edit/$key/'
-      preLoaderRoute: typeof DataModelsEditKeyIndexRouteImport
-      parentRoute: typeof DataModelsEditKeyRouteRoute
+      fullPath: '/packages/libs/$key/'
+      preLoaderRoute: typeof PackagesLibsKeyIndexRouteImport
+      parentRoute: typeof PackagesLibsKeyRouteRoute
     }
     '/data/enums/edit/$key/': {
       id: '/data/enums/edit/$key/'
@@ -670,25 +656,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsEditKeyIndexRouteImport
       parentRoute: typeof DataEnumsEditKeyRouteRoute
     }
-    '/packages/apps/$key/web/admin': {
-      id: '/packages/apps/$key/web/admin'
-      path: '/admin'
-      fullPath: '/packages/apps/$key/web/admin'
-      preLoaderRoute: typeof PackagesAppsKeyWebAdminRouteImport
-      parentRoute: typeof PackagesAppsKeyWebRouteRoute
+    '/data/models/edit/$key/': {
+      id: '/data/models/edit/$key/'
+      path: '/'
+      fullPath: '/data/models/edit/$key/'
+      preLoaderRoute: typeof DataModelsEditKeyIndexRouteImport
+      parentRoute: typeof DataModelsEditKeyRouteRoute
     }
-    '/packages/apps/$key/admin-sections/$sectionKey': {
-      id: '/packages/apps/$key/admin-sections/$sectionKey'
-      path: '/$sectionKey'
-      fullPath: '/packages/apps/$key/admin-sections/$sectionKey'
-      preLoaderRoute: typeof PackagesAppsKeyAdminSectionsSectionKeyRouteImport
-      parentRoute: typeof PackagesAppsKeyAdminSectionsRouteRoute
-    }
-    '/data/models/edit/$key/service': {
-      id: '/data/models/edit/$key/service'
-      path: '/service'
-      fullPath: '/data/models/edit/$key/service'
-      preLoaderRoute: typeof DataModelsEditKeyServiceRouteImport
+    '/data/models/edit/$key/authorization': {
+      id: '/data/models/edit/$key/authorization'
+      path: '/authorization'
+      fullPath: '/data/models/edit/$key/authorization'
+      preLoaderRoute: typeof DataModelsEditKeyAuthorizationRouteImport
       parentRoute: typeof DataModelsEditKeyRouteRoute
     }
     '/data/models/edit/$key/graphql': {
@@ -698,12 +677,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataModelsEditKeyGraphqlRouteImport
       parentRoute: typeof DataModelsEditKeyRouteRoute
     }
-    '/data/models/edit/$key/authorization': {
-      id: '/data/models/edit/$key/authorization'
-      path: '/authorization'
-      fullPath: '/data/models/edit/$key/authorization'
-      preLoaderRoute: typeof DataModelsEditKeyAuthorizationRouteImport
+    '/data/models/edit/$key/service': {
+      id: '/data/models/edit/$key/service'
+      path: '/service'
+      fullPath: '/data/models/edit/$key/service'
+      preLoaderRoute: typeof DataModelsEditKeyServiceRouteImport
       parentRoute: typeof DataModelsEditKeyRouteRoute
+    }
+    '/packages/apps/$key/admin-sections/$sectionKey': {
+      id: '/packages/apps/$key/admin-sections/$sectionKey'
+      path: '/$sectionKey'
+      fullPath: '/packages/apps/$key/admin-sections/$sectionKey'
+      preLoaderRoute: typeof PackagesAppsKeyAdminSectionsSectionKeyRouteImport
+      parentRoute: typeof PackagesAppsKeyAdminSectionsRouteRoute
+    }
+    '/packages/apps/$key/web/': {
+      id: '/packages/apps/$key/web/'
+      path: '/'
+      fullPath: '/packages/apps/$key/web/'
+      preLoaderRoute: typeof PackagesAppsKeyWebIndexRouteImport
+      parentRoute: typeof PackagesAppsKeyWebRouteRoute
+    }
+    '/packages/apps/$key/web/admin': {
+      id: '/packages/apps/$key/web/admin'
+      path: '/admin'
+      fullPath: '/packages/apps/$key/web/admin'
+      preLoaderRoute: typeof PackagesAppsKeyWebAdminRouteImport
+      parentRoute: typeof PackagesAppsKeyWebRouteRoute
     }
   }
 }

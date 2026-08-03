@@ -106,6 +106,9 @@ export default {
       ignoreDependencies: [
         // we load the plugins dynamically from the package.json
         '@baseplate-dev/plugin-*',
+        // bundled alongside eslint so generated projects can resolve a
+        // formatter, even though nothing here imports it directly
+        'prettier',
       ],
     },
     'packages/ui-components': {

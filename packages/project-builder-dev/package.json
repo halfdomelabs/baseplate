@@ -12,14 +12,27 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-dev"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
+  "bin": {
+    "baseplate-dev": "./bin/baseplate-dev.js"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "dist/**/*",
+    "!dist/**/*.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
+  ],
   "type": "module",
+  "main": "dist/index.js",
   "imports": {
     "#src/*": {
       "development": "./src/*",
@@ -36,19 +49,10 @@
       "default": "./dist/e2e-runner/index.js"
     }
   },
-  "main": "dist/index.js",
-  "bin": {
-    "baseplate-dev": "./bin/baseplate-dev.js"
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
-  "files": [
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md",
-    "dist/**/*",
-    "!dist/**/*.map",
-    "!dist/**/*.tsbuildinfo",
-    "bin/**/*"
-  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
@@ -56,8 +60,6 @@
     "dev:dev-server": "pnpm dev dev-server",
     "dev:serve": "pnpm dev serve",
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "project:generate": "pnpm start sync",
     "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env -C development ./src/cli.ts",
     "templates:extract": "pnpm start templates extract",
@@ -85,7 +87,6 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   },
@@ -94,9 +95,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

@@ -17,16 +17,14 @@ import type {
  * ```
  */
 export type AuthorizeRoleRule<RootType> =
-  | GlobalRoleCheck
-  | InstanceRoleCheck<RootType>;
+  GlobalRoleCheck | InstanceRoleCheck<RootType>;
 
 /**
  * Authorization option - can be a single rule or array of rules.
  * If multiple rules are provided, access is granted if ANY rule returns true.
  */
 export type AuthorizeRoleRuleOption<RootType> =
-  | AuthorizeRoleRule<RootType>
-  | AuthorizeRoleRule<RootType>[];
+  AuthorizeRoleRule<RootType> | AuthorizeRoleRule<RootType>[];
 
 export interface AuthorizeRolePluginOptions {
   requireOnRootFields?: boolean;

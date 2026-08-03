@@ -20,7 +20,7 @@ export const CORE_PACKAGES = {
   tailwindcss: '4.3.3',
 
   // Formatting
-  prettier: '3.8.1',
+  prettier: '3.9.6',
   'prettier-plugin-packagejson': '3.0.2',
 
   // Testing
