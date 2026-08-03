@@ -116,9 +116,7 @@ export class RootPackageCompiler extends PackageCompiler {
       })),
       {
         name: 'typecheck',
-        ...(prebuildTaskNames.length > 0
-          ? { dependsOn: prebuildTaskNames }
-          : {}),
+        dependsOn: ['^build', ...prebuildTaskNames],
       },
       {
         name: 'lint',

@@ -28,7 +28,7 @@
       "outputs": ["src/generated/prisma/**"]
     },
     "test": { "dependsOn": ["^build", "prisma:generate", "gql:generate"] },
-    "typecheck": { "dependsOn": ["prisma:generate", "gql:generate"] },
+    "typecheck": { "dependsOn": ["^build", "prisma:generate", "gql:generate"] },
     "watch": { "cache": false, "persistent": true }
   }
 }
