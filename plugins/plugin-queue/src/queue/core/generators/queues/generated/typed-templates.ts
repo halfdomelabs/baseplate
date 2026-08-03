@@ -17,6 +17,8 @@ const queueTypes = createTsTemplateFile({
     DEFAULT_QUEUE_CONCURRENCY: {},
     defineQueue: {},
     EnqueueOptions: { isTypeOnly: true },
+    hasFinalAttemptFailureHandler: {},
+    QueueFinalAttemptFailureHandler: { isTypeOnly: true },
     QueueHandlerBinding: { isTypeOnly: true },
     QueueHandlerBindingConfig: { isTypeOnly: true },
     QueueHandlerBindingInput: { isTypeOnly: true },

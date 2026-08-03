@@ -51,6 +51,24 @@ const FAST_POLL = { notifyPollingIntervalSeconds: 0.5 };
 // Mirrors the state of an existing deployment created before repeatable
 // queues required an exclusive policy: a bound repeatable queue whose
 // underlying pg-boss queue still has the old `standard` policy.
+/**
+ * Reads a job's terminal state straight from pg-boss, to tell an exhausted job
+ * the hook recorded (`completed`) from one that fell through to `failed`.
+ */
+async function getJobState(
+  queueName: string,
+  jobId: string,
+): Promise<string | undefined> {
+  const boss = new PgBoss({ connectionString: getConfig().DATABASE_URL });
+  boss.on('error', () => {
+    // Swallowed - only used to inspect state after the runtime under test ran.
+  });
+  await boss.start();
+  const [job] = await boss.findJobs(queueName, { id: jobId });
+  await boss.stop();
+  return job?.state;
+}
+
 async function seedStandardPolicyQueue(
   queueName: string,
   jobCount: number,
@@ -477,6 +495,150 @@ describe('pg-boss service integration tests', () => {
           .filter((attempt) => attempt.index === 1)
           .map((attempt) => attempt.attemptNumber),
       ).toEqual([1, 2]);
+    }, 15_000);
+  });
+
+  describe('onFinalAttemptFailure', () => {
+    it('should run the hook on the last attempt and complete the job', async () => {
+      const queueName = 'test-final-attempt-queue';
+      const deferred = createDeferred();
+      const attemptNumbers: number[] = [];
+      const hookCalls: { data: unknown; error: unknown }[] = [];
+
+      const token = defineQueue<{ value: string }>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          attemptNumbers.push(job.attemptNumber);
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: (jobData, error) => {
+          hookCalls.push({ data: jobData, error });
+          deferred.resolve(undefined);
+        },
+        options: {
+          defaultJobOptions: {
+            attempts: 2,
+            backoff: { type: 'fixed', delaySeconds: 1 },
+          },
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const jobId = await runtime.enqueue(token, { value: 'test' });
+      assert(jobId);
+      await deferred.promise;
+
+      // Fires once, on the attempt no retry follows - not on the way there.
+      expect(attemptNumbers).toEqual([1, 2]);
+      expect(hookCalls).toHaveLength(1);
+      expect(hookCalls[0]?.data).toEqual({ value: 'test' });
+      expect((hookCalls[0]?.error as Error).message).toBe('always fails');
+
+      // Recorded, so the job completes rather than sitting in `failed` as an
+      // anomaly for someone to investigate.
+      await expect(getJobState(queueName, jobId)).resolves.toBe('completed');
+    }, 15_000);
+
+    it('should honour a per-job attempts override', async () => {
+      const queueName = 'test-final-attempt-override-queue';
+      const deferred = createDeferred();
+      const hookAttemptNumbers: number[] = [];
+      let lastAttemptNumber = 0;
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: (job) => {
+          lastAttemptNumber = job.attemptNumber;
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: () => {
+          hookAttemptNumbers.push(lastAttemptNumber);
+          deferred.resolve(undefined);
+        },
+        options: {
+          defaultJobOptions: {
+            attempts: 2,
+            backoff: { type: 'fixed', delaySeconds: 1 },
+          },
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      // The budget the job actually carries, not the queue's declared 2 - so
+      // the hook has to read the job rather than the binding.
+      await runtime.enqueue(token, {}, { attempts: 3 });
+      await deferred.promise;
+
+      expect(hookAttemptNumbers).toEqual([3]);
+    }, 20_000);
+
+    it('should not run the hook when the queue declares no attempts', async () => {
+      const queueName = 'test-final-attempt-ungated-queue';
+      const deferred = createDeferred();
+      let hookCalls = 0;
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          deferred.resolve(undefined);
+          throw new Error('always fails');
+        },
+        onFinalAttemptFailure: () => {
+          hookCalls += 1;
+        },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const jobId = await runtime.enqueue(token, {});
+      assert(jobId);
+      await deferred.promise;
+
+      // Without a declared budget there is no attempt to pin "final" to, so
+      // the failure takes its normal course.
+      expect(hookCalls).toBe(0);
+      // Unreachable rather than silently inert: the misconfiguration is said
+      // out loud at startup.
+      const warning = logger.warn.mock.calls.find(
+        ([context]) =>
+          (context as { queueName?: string } | undefined)?.queueName ===
+          queueName,
+      );
+      expect(warning?.[1]).toContain('onFinalAttemptFailure');
+    }, 10_000);
+
+    it('should fail the job when the hook itself throws', async () => {
+      const queueName = 'test-final-attempt-hook-throws-queue';
+      const deferred = createDeferred();
+
+      const token = defineQueue<Record<string, never>>(queueName);
+      const binding = bindQueueHandler(token, {
+        handler: () => {
+          throw new Error('delivery failed');
+        },
+        onFinalAttemptFailure: () => {
+          deferred.resolve(undefined);
+          throw new Error('database unreachable');
+        },
+        options: { defaultJobOptions: { attempts: 1 } },
+      });
+
+      runtime = createQueueRuntime([binding], FAST_POLL);
+      await runtime.startWorkers({ createContext: createTestServiceContext });
+
+      const jobId = await runtime.enqueue(token, {});
+      assert(jobId);
+      await deferred.promise;
+      // Let the adapter settle the job after the hook rejected.
+      await sleep(1000);
+
+      // A hook that cannot record is a real anomaly, so the job fails.
+      await expect(getJobState(queueName, jobId)).resolves.toBe('failed');
     }, 15_000);
   });
 

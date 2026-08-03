@@ -434,7 +434,6 @@ describe('notification outbox', () => {
       requestId: first.requestId ?? '',
       channel: 'email',
       notificationIds: [row.id],
-      isFinalAttempt: false,
     });
 
     const deliveries = await prisma.notificationDelivery.findMany({
@@ -664,7 +663,6 @@ describe('notification outbox', () => {
       requestId,
       channel: 'email',
       notificationIds,
-      isFinalAttempt: false,
     });
 
     expect(result.delivered).toBe(2);
@@ -719,7 +717,6 @@ describe('notification outbox', () => {
         requestId,
         channel: 'email',
         notificationIds,
-        isFinalAttempt: false,
       }),
     ).rejects.toThrow('smtp rejected');
     expect(attempted).toHaveLength(2);
@@ -743,15 +740,15 @@ describe('notification outbox', () => {
       requestId,
       channel: 'email',
       notificationIds,
-      isFinalAttempt: false,
     });
     expect(attempted).toHaveLength(1);
     expect(retry.delivered).toBe(1);
   });
 
-  it('records a failure as terminal on the queue’s final attempt', async () => {
-    // Exhaustion is the queue's call, not the table's: while retries remain
-    // the row stays pending, and only the last attempt writes it off.
+  it('records a failure as terminal once the queue has spent its retries', async () => {
+    // Exhaustion is the queue's call, not the table's: delivery always leaves
+    // an erroring row pending, and the delivery queue's onFinalAttemptFailure
+    // writes it off once no attempt remains.
     const a = await createUser(0);
     const channel: NotificationChannel = {
       deliver: () => {
@@ -770,35 +767,89 @@ describe('notification outbox', () => {
       })
     ).map((row) => row.id);
 
+    // Every attempt rethrows, so the queue keeps retrying and the row keeps
+    // its breadcrumbs.
+    for (const expectedAttempts of [1, 2]) {
+      await expect(
+        service.outbox.deliverChunk({
+          requestId,
+          channel: 'email',
+          notificationIds,
+        }),
+      ).rejects.toThrow('smtp rejected');
+      const [duringRetries] = await prisma.notificationDelivery.findMany({
+        where: { requestId },
+      });
+      expect(duringRetries?.status).toBe('pending');
+      expect(duringRetries?.attempts).toBe(expectedAttempts);
+    }
+
+    // What the hook does when the queue is out of retries — nothing else would
+    // ever settle this row.
+    const count = await service.outbox.failExhaustedDeliveries({
+      requestId,
+      channel: 'email',
+      notificationIds,
+    });
+
+    expect(count).toBe(1);
+    const [settled] = await prisma.notificationDelivery.findMany({
+      where: { requestId },
+    });
+    expect(settled?.status).toBe('failed');
+    // The per-row reason survives being written off.
+    expect(settled?.lastError).toBe('smtp rejected');
+    expect(settled?.attempts).toBe(2);
+  });
+
+  it('leaves already-settled rows alone when retries run out', async () => {
+    // The hook fires for the whole chunk, so a row delivered on an earlier
+    // attempt must not be flipped to failed by a later exhaustion.
+    const a = await createUser(0);
+    const b = await createUser(1);
+    const attempted: string[] = [];
+    const channel: NotificationChannel = {
+      deliver: ({ recipientId }) => {
+        attempted.push(recipientId);
+        if (attempted.length === 2) throw new Error('smtp rejected');
+        return Promise.resolve();
+      },
+    };
+    const service = createService({ queue: createFakeQueue(), channel });
+    const { requestId } = await service.notifyMany(EMAIL_ONLY_TYPE, {
+      recipientIds: [a, b],
+      params: { text: 'hello' },
+    });
+    const notificationIds = (
+      await prisma.notification.findMany({
+        where: { requestId },
+        select: { id: true },
+      })
+    ).map((row) => row.id);
+
     await expect(
       service.outbox.deliverChunk({
         requestId,
         channel: 'email',
         notificationIds,
-        isFinalAttempt: false,
       }),
     ).rejects.toThrow('smtp rejected');
-    const [duringRetries] = await prisma.notificationDelivery.findMany({
-      where: { requestId },
-    });
-    expect(duringRetries?.status).toBe('pending');
 
-    // The queue is out of retries, so the outcome is recorded rather than
-    // rethrown — nothing else would ever settle this row.
-    const result = await service.outbox.deliverChunk({
+    const count = await service.outbox.failExhaustedDeliveries({
       requestId,
       channel: 'email',
       notificationIds,
-      isFinalAttempt: true,
     });
 
-    expect(result.errored).toBe(1);
-    const [settled] = await prisma.notificationDelivery.findMany({
+    // Only the row still pending is written off.
+    expect(count).toBe(1);
+    const deliveries = await prisma.notificationDelivery.findMany({
       where: { requestId },
     });
-    expect(settled?.status).toBe('failed');
-    expect(settled?.lastError).toBe('smtp rejected');
-    expect(settled?.attempts).toBe(2);
+    expect(deliveries.map((d) => d.status).toSorted()).toEqual([
+      'delivered',
+      'failed',
+    ]);
   });
 
   it('skips a delivery too old to be worth sending', async () => {
@@ -820,7 +871,6 @@ describe('notification outbox', () => {
       requestId,
       channel: 'email',
       notificationIds,
-      isFinalAttempt: false,
       expireBefore: new Date(Date.now() + 1000),
     });
 
