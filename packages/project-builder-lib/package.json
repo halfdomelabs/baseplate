@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
+    "@baseplate-dev/ui-components": "workspace:*",
     "@types/culori": "^2.1.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

@@ -575,9 +575,6 @@ importers:
       '@baseplate-dev/sync':
         specifier: workspace:*
         version: link:../sync
-      '@baseplate-dev/ui-components':
-        specifier: workspace:*
-        version: link:../ui-components
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../utils
@@ -615,6 +612,9 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
+      '@baseplate-dev/ui-components':
+        specifier: workspace:*
+        version: link:../ui-components
       '@types/culori':
         specifier: ^2.1.1
         version: 2.1.1
