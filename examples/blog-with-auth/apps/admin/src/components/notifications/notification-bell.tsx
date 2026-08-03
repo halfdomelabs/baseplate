@@ -61,16 +61,12 @@ export function NotificationBell({
     onData: ({ data: { data: subData } }) => {
       // Instant badge from the pushed count...
       if (subData) {
-        client.cache.updateQuery(
-          { query: notificationFeedQuery },
-          (existing) =>
-            existing
-              ? {
-                  ...existing,
-                  unseenNotificationCount: subData.notificationsChanged,
-                }
-              : existing,
-        );
+        const unseenNotificationCount = subData.notificationsChanged;
+        const query = { query: notificationFeedQuery };
+        client.cache.updateQuery(query, (existing) => {
+          if (!existing) return existing;
+          return { ...existing, unseenNotificationCount };
+        });
       }
       // ...then refetch for the authoritative newest-first list.
       void refetch();
