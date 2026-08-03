@@ -12,21 +12,13 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
+  "author": "Half Dome Labs LLC",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-cli"
   },
-  "license": "MPL-2.0",
-  "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": {
-      "development": "./src/*",
-      "default": "./dist/*"
-    }
-  },
-  "main": "dist/index.js",
   "bin": {
     "baseplate": "./bin/baseplate.js"
   },
@@ -39,13 +31,23 @@
     "!dist/**/*.tsbuildinfo",
     "bin/**/*"
   ],
+  "type": "module",
+  "main": "dist/index.js",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** --env-file-if-exists=../../.env --env-file-if-exists=.env -C development ./src/cli.ts",
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "start": "tsx --tsconfig ./tsconfig.app.json --env-file-if-exists=../../.env --env-file-if-exists=.env -C development ./src/cli.ts",
     "test": "vitest",
     "test:e2e": "playwright test",
@@ -71,7 +73,6 @@
     "fastify": "^5.11.0",
     "memfs": "4.64.0",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -81,9 +82,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

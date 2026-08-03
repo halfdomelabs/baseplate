@@ -34,12 +34,6 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"]
     },
-    "prettier:check": {
-      "outputLogs": "errors-only"
-    },
-    "prettier:write": {
-      "outputLogs": "errors-only"
-    },
     "typecheck": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"]
@@ -55,12 +49,6 @@
     "//#watch:tsc:root": {
       "persistent": true,
       "cache": false
-    },
-    "//#prettier:root:check": {
-      "outputLogs": "errors-only"
-    },
-    "//#prettier:root:write": {
-      "outputLogs": "errors-only"
     },
     "//#typecheck:root": {
       "outputLogs": "errors-only"

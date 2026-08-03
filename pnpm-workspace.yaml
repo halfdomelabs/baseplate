@@ -17,7 +17,7 @@ catalog:
   eslint: ^9.39.5
   nodemon: 3.1.14
   oxlint: 1.76.0
-  prettier: ^3.8.1
+  prettier: ^3.9.6
   react: ^19.2.8
   react-dom: ^19.2.8
   tailwindcss: 4.3.3
@@ -45,10 +45,6 @@ minimumReleaseAge: 1440
 publishBranch: main
 
 saveWorkspaceProtocol: rolling
-
-publicHoistPattern:
-  - prettier-plugin-packagejson
-  - prettier-plugin-tailwindcss
 
 dedupePeers: true
 

@@ -11,17 +11,9 @@
     "typescript"
   ],
   "homepage": "https://www.baseplate.dev",
-  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
-  "type": "module",
-  "imports": {
-    "#src/*": "./dist/*"
-  },
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "main": "dist/index.js",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "files": [
     "README.md",
     "LICENSE",
@@ -30,6 +22,18 @@
     "!dist/**/*.map",
     "!dist/**/*.tsbuildinfo"
   ],
+  "type": "module",
+  "main": "dist/index.js",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
@@ -37,8 +41,6 @@
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
     "lint": "oxlint && eslint .",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w -l .",
     "test": "vitest --passWithNoTests",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
@@ -76,7 +78,6 @@
     "eslint": "catalog:",
     "nodemon": "catalog:",
     "oxlint": "catalog:",
-    "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
@@ -87,9 +88,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
   }
 }

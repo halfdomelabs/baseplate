@@ -116,6 +116,6 @@ export function AppRoutes(): React.ReactElement {
     /* TPL_ROUTER_PROVIDER:START */ <RouterProvider
       router={router}
       context={routerContext}
-    /> /* TPL_ROUTER_PROVIDER:END */
-  );
+    />
+  ); /* TPL_ROUTER_PROVIDER:END */
 }
