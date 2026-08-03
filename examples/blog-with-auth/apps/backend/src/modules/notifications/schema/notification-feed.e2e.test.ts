@@ -73,6 +73,8 @@ async function fetchFeed(
   return body.data.notificationFeed;
 }
 
+let notificationSeq = 0;
+
 async function createNotification(
   recipientId: string,
   overrides: { inApp?: boolean; dismissedAt?: Date } = {},
@@ -82,6 +84,9 @@ async function createNotification(
       type: 'generic',
       templateVersion: 1,
       recipientId,
+      // Distinct per row: these are unrelated facts, so none should collapse
+      // into another under `@@unique([recipientId, key])`.
+      key: `test:${(notificationSeq += 1)}`,
       // Rows exist for every channel; only in-app ones reach the feed.
       inApp: overrides.inApp ?? true,
       dismissedAt: overrides.dismissedAt ?? null,

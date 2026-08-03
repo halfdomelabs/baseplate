@@ -40,6 +40,7 @@ export const FASTIFY_PACKAGES = {
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
   'es-toolkit': '1.50.0',
+  uuid: '14.0.1',
 
   // Environment
   'cross-env': '10.1.0',

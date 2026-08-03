@@ -54,45 +54,12 @@ interface NotificationTypeBase<P extends NotificationParams> {
   channels: readonly NotificationRoutingTarget[];
 }
 
-/**
- * The default shape: one event in, one render out.
- *
- * Takes the event itself rather than a one-element array, so a renderer cannot
- * be written to destructure a batch it never opted into receiving.
- */
+/** The default shape: one event in, one render out. */
 export interface SingleNotificationType<
   P extends NotificationParams = NotificationParams,
 > extends NotificationTypeBase<P> {
   aggregate?: undefined;
   render(event: NotificationEvent<P>, ctx: RenderContext): NotificationContent;
-}
-
-/**
- * The batched shape: opts into aggregation and receives every event in the
- * group ("Alice, Bob and 1 other commented").
- *
- * `aggregate` and the array-taking `render` are declared together so the two
- * cannot disagree — only a type that declared a grouping key can be batched.
- */
-export interface AggregatableNotificationType<
-  P extends NotificationParams = NotificationParams,
-> extends NotificationTypeBase<P> {
-  /**
-   * Which of the event's identity fields collapse into one group, e.g.
-   * `['entityType', 'entityId']` for "N people liked this post".
-   *
-   * Field names rather than a `(event) => string` callback: a callback over
-   * `NotificationEvent<P>` puts `P` in a parameter position, which makes the
-   * definition contravariant in `P` and stops `NotificationTypeDefinition<P>`
-   * assigning to the erased form the registry stores.
-   */
-  aggregate: {
-    groupBy: readonly ('entityType' | 'entityId')[];
-  };
-  render(
-    events: [NotificationEvent<P>, ...NotificationEvent<P>[]],
-    ctx: RenderContext,
-  ): NotificationContent;
 }
 
 /**
@@ -104,50 +71,55 @@ export interface AggregatableNotificationType<
  * rows keep rendering with the renderer that produced them, while translation
  * and wording fixes *within* a version still apply retroactively.
  *
- * Arity is part of the contract: a type either renders one event or declares
- * itself aggregatable and renders a batch. A single-event renderer therefore
- * cannot silently receive five and render only the first.
- *
  * `render` MUST be pure and synchronous (it runs per row per request).
+ *
+ * There is no aggregatable variant. Collapsing is a property of the CALL, not
+ * the type: passing a `key` to `notify` opts that notification into
+ * replace-in-place, the outbound debounce, and retractability. The same type
+ * can therefore be used both ways — one row per like-thread, one row per
+ * @mention — without declaring anything up front.
+ *
+ * Write copy **state-phrased** ("Alice, Bob and 3 others liked your post")
+ * rather than delta-phrased ("3 new likes"): a keyed row holds current state,
+ * and `render` sees only that state, never what changed since last time.
  */
-export type NotificationTypeDefinition<
+export interface NotificationTypeDefinition<
   P extends NotificationParams = NotificationParams,
-> = SingleNotificationType<P> | AggregatableNotificationType<P>;
-
-/** Narrows a definition to the batchable shape (the digest engine's gate). */
-export function isAggregatable<P extends NotificationParams>(
-  type: NotificationTypeDefinition<P>,
-): type is AggregatableNotificationType<P> {
-  return type.aggregate !== undefined;
+> extends NotificationTypeBase<P> {
+  render(event: NotificationEvent<P>, ctx: RenderContext): NotificationContent;
 }
 
 /**
- * Render a single event, whichever shape the type declared.
+ * Marks keys generated for callers who supplied none. The write path mints them
+ * and the outbox reads them back to decide whether to debounce, so both sides
+ * import these rather than repeating the prefix.
+ */
+const GENERATED_KEY_PREFIX = 'request:';
+
+/** The `key` stored for a notification whose caller supplied none. */
+export function generatedKey(requestId: string): string {
+  return `${GENERATED_KEY_PREFIX}${requestId}`;
+}
+
+/** Whether a row's `key` was minted for it rather than supplied by its caller. */
+export function isGeneratedKey(key: string): boolean {
+  return key.startsWith(GENERATED_KEY_PREFIX);
+}
+
+/**
+ * Render one row's event.
  *
- * The one place the union is collapsed, so callers with exactly one event do
- * not each re-derive which signature to call.
+ * A plain call now that arity is fixed — kept as the single seam every render
+ * goes through, and the place a future arity change would land.
  */
 export function renderSingle<P extends NotificationParams>(
   type: NotificationTypeDefinition<P>,
   event: NotificationEvent<P>,
   ctx: RenderContext,
 ): NotificationContent {
-  return isAggregatable(type)
-    ? type.render([event], ctx)
-    : type.render(event, ctx);
+  return type.render(event, ctx);
 }
 
-/**
- * Overloaded per shape, not taking the union directly: a union parameter leaves
- * `render`'s argument without a contextual type, so `events`/`event` would
- * infer as `any`.
- */
-export function defineNotificationType<P extends NotificationParams>(
-  definition: AggregatableNotificationType<P>,
-): AggregatableNotificationType<P>;
-export function defineNotificationType<P extends NotificationParams>(
-  definition: SingleNotificationType<P>,
-): SingleNotificationType<P>;
 export function defineNotificationType<P extends NotificationParams>(
   definition: NotificationTypeDefinition<P>,
 ): NotificationTypeDefinition<P> {

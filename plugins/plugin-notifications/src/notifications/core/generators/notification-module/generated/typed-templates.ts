@@ -105,6 +105,7 @@ const servicesNotificationOutbox = createTsTemplateFile({
   referencedGeneratorTemplates: {
     queuesNotificationDelivery: {},
     servicesNotificationChannel: {},
+    servicesNotificationRegistry: {},
     servicesNotificationRenderer: {},
   },
   source: {

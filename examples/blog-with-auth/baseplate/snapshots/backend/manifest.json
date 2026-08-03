@@ -8,6 +8,9 @@
       { "path": "src/modules/accounts/auth/utils/cookie-signer.unit.test.ts" },
       { "path": "src/modules/blogs/authorizers/policy.unit.test.ts" },
       { "path": "src/modules/blogs/notifications/blog-notification-types.ts" },
+      { "path": "src/modules/blogs/schema/blog-post-like.mutations.ts" },
+      { "path": "src/modules/blogs/services/blog-post-like.int.test.ts" },
+      { "path": "src/modules/blogs/services/blog-post-like.service.ts" },
       {
         "path": "src/modules/notifications/schema/notification-feed.e2e.test.ts"
       },
@@ -25,7 +28,12 @@
       { "path": "src/utils/app-runtime.unit.test.ts" }
     ],
     "deleted": [],
-    "modified": []
+    "modified": [
+      {
+        "diffFile": "src_modules_blogs_index.ts.diff",
+        "path": "src/modules/blogs/index.ts"
+      }
+    ]
   },
   "version": "1"
 }

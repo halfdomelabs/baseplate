@@ -62,6 +62,11 @@ export type Blog = Prisma.BlogModel
  */
 export type BlogPost = Prisma.BlogPostModel
 /**
+ * Model BlogPostLike
+ * 
+ */
+export type BlogPostLike = Prisma.BlogPostLikeModel
+/**
  * Model BlogUser
  * 
  */

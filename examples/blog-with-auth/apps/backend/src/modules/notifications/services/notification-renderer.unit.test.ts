@@ -229,27 +229,39 @@ describe('renderContent (actor identity)', () => {
   });
 });
 
-describe('renderSingle (arity dispatch)', () => {
-  it('hands an aggregatable type a one-event batch', () => {
-    const renderContent = renderWith([
-      defineNotificationType({
-        key: 'test.aggregatable',
-        version: 1,
-        category: 'general',
-        paramsSchema: z.object({ name: z.string() }),
-        channels: ['inApp'],
-        aggregate: { groupBy: ['entityType', 'entityId'] },
-        render: (events) => ({
-          body: `${events[0].params.name} +${events.length - 1}`,
-        }),
-      }),
-    ]);
+describe('renderSingle (aggregate state)', () => {
+  // A keyed row stores the caller's recomputed aggregate, so `render` reads a
+  // count out of `params` rather than being handed a batch of events. The same
+  // renderer therefore covers one actor and many.
+  const likesType = defineNotificationType({
+    key: 'test.likes',
+    version: 1,
+    category: 'general',
+    paramsSchema: z.object({ sample: z.array(z.string()), count: z.number() }),
+    channels: ['inApp'],
+    render: (event) => {
+      const [first] = event.params.sample;
+      const others = event.params.count - 1;
+      return {
+        body: others > 0 ? `${first} and ${others} others` : `${first}`,
+      };
+    },
+  });
 
-    const content = renderContent(
-      makeRow('test.aggregatable', 1, { name: 'Alice' }),
+  it('renders a single-event group from its stored state', () => {
+    const content = renderWith([likesType])(
+      makeRow('test.likes', 1, { sample: ['Alice'], count: 1 }),
     );
 
-    expect(content.fallbackText).toBe('Alice +0');
+    expect(content.fallbackText).toBe('Alice');
+  });
+
+  it('renders a collapsed group from the same renderer', () => {
+    const content = renderWith([likesType])(
+      makeRow('test.likes', 1, { sample: ['Alice', 'Bob'], count: 4 }),
+    );
+
+    expect(content.fallbackText).toBe('Alice and 3 others');
   });
 });
 
