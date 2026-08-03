@@ -8,6 +8,7 @@ import type { ReactElement } from 'react';
 import {
   markAllNotificationsReadMutation,
   markNotificationReadMutation,
+  notificationFeedQuery,
 } from '$notificationOperations';
 import {
   Badge,
@@ -132,9 +133,7 @@ export function NotificationPanel({
     },
   });
   const [markAllRead] = useMutation(markAllNotificationsReadMutation, {
-    update: (cache, { data }) => {
-      if (data) writeCounts(cache, data.markAllNotificationsRead);
-    },
+    refetchQueries: [notificationFeedQuery],
   });
 
   const hasUnread = unreadCount > 0;

@@ -17,6 +17,7 @@ import { Spinner } from '../ui/spinner';
 import {
   markAllNotificationsReadMutation,
   markNotificationReadMutation,
+  notificationFeedQuery,
 } from './notification-operations';
 
 type NotificationItem = ResultOf<typeof notificationItemFragment>;
@@ -129,9 +130,7 @@ export function NotificationPanel({
     },
   });
   const [markAllRead] = useMutation(markAllNotificationsReadMutation, {
-    update: (cache, { data }) => {
-      if (data) writeCounts(cache, data.markAllNotificationsRead);
-    },
+    refetchQueries: [notificationFeedQuery],
   });
 
   const hasUnread = unreadCount > 0;

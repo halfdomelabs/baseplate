@@ -199,7 +199,7 @@ export interface NotificationService {
   getUnseenCount(userId: string): Promise<number>;
   /**
    * Count of UNREAD notifications — the panel header. Unlike the unseen count,
-   * opening the panel does not clear this; only reading a row does.
+   * opening the panel does not clear this; reading or dismissing a row does.
    */
   getUnreadCount(userId: string): Promise<number>;
   /**

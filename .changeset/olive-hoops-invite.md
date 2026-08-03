@@ -3,4 +3,4 @@
 '@baseplate-dev/plugin-notifications': patch
 ---
 
-The Apollo cache now accepts type policies contributed by generators, and the notification feed uses one so a "view all" surface can page through it without discarding the cached page. The notification panel's unread count now comes from a new `unreadNotificationCount` field instead of counting only the rows it had loaded.
+The notification feed can now load further pages without discarding the ones already loaded, and the notification panel shows the unread count for the whole feed rather than just the rows on screen.
