@@ -2,4 +2,4 @@
 '@baseplate-dev/tools': patch
 ---
 
-Removed the `./prettier-node` and `./prettier-react` config exports; the monorepo now formats itself with oxfmt.
+Replaced the `./prettier-node` and `./prettier-react` config exports with `./oxfmt-config-base` and `./oxfmt-config-react`, and the shared ESLint config now recognises `oxfmt.config.ts` as a root-level config file.
