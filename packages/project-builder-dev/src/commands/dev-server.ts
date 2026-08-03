@@ -18,9 +18,7 @@ export function addDevServerCommand(program: Command): void {
         ? path.resolve(options.currentDir)
         : process.cwd();
 
-      logger.info('Starting Baseplate development server...', {
-        cwd,
-      });
+      logger.info({ cwd }, 'Starting Baseplate development server...');
 
       const context = await createServiceActionContext();
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AppServices } from '%appRuntimeImports';
+import type { AppServices, RuntimeServices } from '%appRuntimeImports';
 
 import { createAppRuntime } from '%appRuntimeImports';
 
@@ -13,25 +13,43 @@ export interface ExecutionContext {
   TPL_CONTEXT_INTERFACE;
 }
 
+/** Carries the public services only - the default view for feature code. */
 export interface ServiceContext extends ExecutionContext {
   readonly services: AppServices;
 }
 
 /**
- * A {@link ServiceContext} narrowed to only the named services, for
- * hand-written code that wants an honest signature. Structurally satisfied
- * by the full context, so callers don't need to construct anything special.
- * This is the generated default for dependency declaration - prefer it over
- * accepting the full {@link ServiceContext} where the set of services used
- * is known.
+ * A {@link ServiceContext} narrowed to the named services - the default way to
+ * declare dependencies. Machinery naming an internal key declares
+ * {@link SystemServiceContextWith} instead.
  */
 export type ServiceContextWith<K extends keyof AppServices> =
   ExecutionContext & { readonly services: Pick<AppServices, K> };
 
-export function createServiceContext(
+/**
+ * A context delivering every constructed service, minted by machinery: worker
+ * invocation, scripts, wiring.
+ */
+export type SystemServiceContext = ExecutionContext & {
+  readonly services: RuntimeServices;
+};
+
+/**
+ * A {@link SystemServiceContext} narrowed to the named services, where `K` may
+ * include internal keys. Declare it only when naming one; the tier follows the
+ * keys consumed, not the caller.
+ */
+export type SystemServiceContextWith<K extends keyof RuntimeServices> =
+  ExecutionContext & { readonly services: Pick<RuntimeServices, K> };
+
+/**
+ * Builds a context around the services it is given, returning the tier the
+ * caller passed in.
+ */
+export function createServiceContext<TServices extends AppServices>(
   TPL_CREATE_CONTEXT_ARGS,
-  services: AppServices,
-): ServiceContext {
+  services: TServices,
+): ExecutionContext & { readonly services: TServices } {
   return TPL_CONTEXT_OBJECT;
 }
 
@@ -40,8 +58,8 @@ export function createServiceContext(
  * services.
  */
 export function createSystemServiceContext(
-  services: AppServices,
-): ServiceContext {
+  services: RuntimeServices,
+): SystemServiceContext {
   return createServiceContext(TPL_SYSTEM_CONTEXT_OBJECT, services);
 }
 
@@ -52,7 +70,7 @@ export function createSystemServiceContext(
  * scripts, because construction performs no I/O.
  */
 export async function withScriptContext<T>(
-  fn: (context: ServiceContext) => Promise<T>,
+  fn: (context: SystemServiceContext) => Promise<T>,
 ): Promise<T> {
   const runtime = createAppRuntime();
   try {

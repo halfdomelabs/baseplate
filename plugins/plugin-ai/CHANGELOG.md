@@ -1,5 +1,16 @@
 # @baseplate-dev/plugin-ai
 
+## 0.6.16
+
+### Patch Changes
+
+- Updated dependencies [[`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552)]:
+  - @baseplate-dev/core-generators@0.6.16
+  - @baseplate-dev/ui-components@0.6.16
+  - @baseplate-dev/project-builder-lib@0.6.16
+  - @baseplate-dev/sync@0.6.16
+  - @baseplate-dev/utils@0.6.16
+
 ## 0.6.15
 
 ### Patch Changes

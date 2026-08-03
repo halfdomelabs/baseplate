@@ -49,7 +49,7 @@
       "pathRootRelativePath": "{src-root}/services/apollo/cache.ts",
       "projectExports": { "createApolloCache": {} },
       "sourceFile": "src/services/apollo/cache.ts",
-      "variables": {}
+      "variables": { "TPL_TYPE_POLICIES": {} }
     },
     "codegen": {
       "type": "ts",

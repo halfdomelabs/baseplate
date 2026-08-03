@@ -59,10 +59,9 @@ export const pgBossGenerator = createGenerator({
         paths: GENERATED_TEMPLATES.paths.provider,
       },
       run({ appRuntimeConfig, queuesImports, paths }) {
-        appRuntimeConfig.services.set(
-          'queue',
-          queuesImports.QueueRuntime.typeFragment(),
-        );
+        appRuntimeConfig.services.set('queue', {
+          type: queuesImports.QueueRuntime.typeFragment(),
+        });
         appRuntimeConfig.flattenedModuleFields.set('queues', 'queueBindings');
         // `supervise`/`schedule` are constructor options and any enqueue calls
         // `boss.start()`, so the loops need gating at construction rather than

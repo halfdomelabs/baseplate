@@ -161,15 +161,14 @@ export const authModuleGenerator = createGenerator({
         paths: GENERATED_TEMPLATES.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.services.set(
-          'userSession',
-          tsCodeFragment(
+        appRuntimeConfig.services.set('userSession', {
+          type: tsCodeFragment(
             'CookieUserSessionService',
             tsTypeImportBuilder(['CookieUserSessionService']).from(
               paths.userSessionService,
             ),
           ),
-        );
+        });
         appRuntimeConfig.construction.set('userSession', {
           fragment: TsCodeUtils.template`new ${TsCodeUtils.importFragment('CookieUserSessionService', paths.userSessionService)}()`,
         });

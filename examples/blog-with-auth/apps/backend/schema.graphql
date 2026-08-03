@@ -186,6 +186,7 @@ type LoginWithEmailPasswordPayload {
 """Payload type for markAllNotificationsRead mutation"""
 type MarkAllNotificationsReadPayload {
   changedCount: Int!
+  unreadCount: Int!
   unseenCount: Int!
 }
 
@@ -204,6 +205,7 @@ input MarkNotificationReadInput {
 type MarkNotificationReadPayload {
   changed: Boolean!
   notification: Notification
+  unreadCount: Int!
   unseenCount: Int!
 }
 
@@ -331,6 +333,7 @@ type Query {
   currentUserSession: UserSessionPayload
   notificationFeed(after: String, before: String, first: Int, last: Int): NotificationFeedConnection!
   notificationPreferences: [NotificationCategoryPreference!]!
+  unreadNotificationCount: Int!
   unseenNotificationCount: Int!
   user(id: Uuid!): User!
   users(skip: Int, take: Int): [User!]!

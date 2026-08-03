@@ -11,7 +11,7 @@ import type {
   RepeatableConfig,
   ScheduledJob,
 } from '%queuesImports';
-import type { ServiceContext } from '%serviceContextImports';
+import type { SystemServiceContext } from '%serviceContextImports';
 import type { Job, JobsOptions } from 'bullmq';
 import type { Redis } from 'ioredis';
 
@@ -305,7 +305,7 @@ export function createQueueRuntime(
   }
 
   async function startWorkers(options: {
-    createContext: () => ServiceContext;
+    createContext: () => SystemServiceContext;
   }): Promise<void> {
     const startedWorkers: BullMQWorker[] = [];
 

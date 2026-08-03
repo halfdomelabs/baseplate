@@ -1,5 +1,23 @@
 # @baseplate-dev/project-builder-server
 
+## 0.6.16
+
+### Patch Changes
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Adds a `diff-examples` command that reports which example projects are out of sync with the generators.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Generated web apps and React library packages now ship a working component test environment (jsdom plus Testing Library), so you can write React component tests without any tooling setup.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - You can now create `react-library` packages for sharing JSX components and hooks across a monorepo, with Tailwind and lint/prettier tooling configured for you. Pick libraries to import from a web app's settings page and the app sources its shared UI components from them instead of generating a local copy.
+
+- Updated dependencies [[`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552)]:
+  - @baseplate-dev/react-generators@0.6.16
+  - @baseplate-dev/core-generators@0.6.16
+  - @baseplate-dev/fastify-generators@0.6.16
+  - @baseplate-dev/project-builder-lib@0.6.16
+  - @baseplate-dev/sync@0.6.16
+  - @baseplate-dev/utils@0.6.16
+
 ## 0.6.15
 
 ### Patch Changes

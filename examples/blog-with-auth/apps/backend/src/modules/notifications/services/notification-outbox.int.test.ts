@@ -219,6 +219,29 @@ describe('notification outbox', () => {
     expect(publishUnseenCount).toHaveBeenCalledWith(a, 1);
   });
 
+  it('leaves nothing unread after marking all read, including rows outside the feed', async () => {
+    // markAllNotificationsRead reports a hardcoded unreadCount of 0, which
+    // holds only while markAllAsRead's scope matches getUnreadCount's filter.
+    const a = await createUser(0);
+    const service = createService({
+      queue: createFakeQueue(),
+      channel: createRecordingChannel(),
+    });
+    await service.notifyMany(GENERIC_NOTIFICATION_TYPE, {
+      recipientIds: [a],
+      params: { text: 'hello' },
+    });
+    await service.notifyMany(EMAIL_ONLY_TYPE, {
+      recipientIds: [a],
+      params: { text: 'hello' },
+    });
+
+    const { changedCount } = await service.markAllAsRead(a);
+
+    expect(changedCount).toBe(1);
+    expect(await service.getUnreadCount(a)).toBe(0);
+  });
+
   it('writes a row and a delivery for an email-only type, hidden from the feed', async () => {
     const a = await createUser(0);
     const queue = createFakeQueue();

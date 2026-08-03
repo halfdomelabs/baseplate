@@ -58,7 +58,7 @@ export async function safeKillProcessGroup(
   }
 
   const timeoutRef = setTimeout(() => {
-    if (subprocess.killed) return;
+    if (subprocess.nodeChildProcess.killed) return;
     killProcessGroup(subprocess, { signal: 'SIGKILL' }).catch(
       (err: unknown) => {
         console.error(`Unable to kill process group`, err);
@@ -66,7 +66,7 @@ export async function safeKillProcessGroup(
     );
   }, timeout);
 
-  subprocess.on('exit', () => {
+  subprocess.nodeChildProcess.on('exit', () => {
     clearTimeout(timeoutRef);
   });
 

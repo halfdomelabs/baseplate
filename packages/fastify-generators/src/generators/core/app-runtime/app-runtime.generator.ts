@@ -12,6 +12,7 @@ import {
   toposort,
   ToposortCyclicalDependencyError,
 } from '@baseplate-dev/utils';
+import { partition } from 'es-toolkit';
 import { z } from 'zod';
 
 // Imported from the generated import-provider module rather than the package
@@ -48,6 +49,16 @@ export interface AppRuntimeConstructionEntry {
   /** Expression producing the object, e.g. `createRedisRuntime()`. */
   fragment: TsCodeFragment;
   /**
+   * Emits a plain `const` instead of a `provide(...)` call, for a collaborator
+   * that exists only to build another service - nothing consumes it through a
+   * context, so it has no services key and cannot be overridden.
+   *
+   * Reserve this for cheap, I/O-free objects. Anything owning a connection or
+   * other resource must stay a service so tests can supply their own, which is
+   * what `validateConstructionTypes` otherwise guarantees.
+   */
+  bare?: boolean;
+  /**
    * Expression releasing a CONSTRUCTED object, taking it as its only
    * parameter, e.g. `(redis) => redis.dispose()`. Omit if the slice owns no
    * resource. Never runs for an overridden object.
@@ -55,6 +66,20 @@ export interface AppRuntimeConstructionEntry {
   disposeFragment?: TsCodeFragment;
   dependencies?: string[];
   orderPriority?: 'FIRST' | 'EARLY' | 'MIDDLE' | 'END';
+}
+
+/**
+ * A slice's service declaration: the field's type, plus which stratum it belongs
+ * to.
+ *
+ * `internal` keeps the field off `AppServices` and puts it on
+ * `InternalServices`, so it reaches machinery that names the key in
+ * `SystemServiceContextWith` but is absent from every request-scoped context.
+ * Construction and overridability are identical either way.
+ */
+export interface AppRuntimeServiceEntry {
+  type: TsCodeFragment;
+  internal?: boolean;
 }
 
 const CONSTRUCTION_ORDER_PRIORITY_MAP = {
@@ -175,7 +200,8 @@ export function validateConstructionBindings({
 
 /**
  * Verifies every constructed object is declared on `services`, so all of them
- * can be supplied via `overrides` instead of constructed.
+ * can be supplied via `overrides` instead of constructed. Either stratum
+ * satisfies this - internal services are overridable exactly like public ones.
  *
  * @throws If a construction entry has no services type, which would leave it
  * silently constructing for real in tests.
@@ -184,15 +210,28 @@ export function validateConstructionTypes({
   services,
   construction,
 }: {
-  services: ReadonlyMap<string, TsCodeFragment>;
+  services: ReadonlyMap<string, AppRuntimeServiceEntry>;
   construction: ReadonlyMap<string, AppRuntimeConstructionEntry>;
 }): void {
-  const untyped = [...construction.keys()]
-    .filter((key) => !services.has(key))
+  const untyped = [...construction.entries()]
+    .filter(([key, entry]) => !entry.bare && !services.has(key))
+    .map(([key]) => key)
     .toSorted(compareStrings);
   if (untyped.length > 0) {
     throw new Error(
-      `App runtime slice ${untyped.map((key) => quot(key)).join(', ')} registers a construction entry but no services type, so it cannot be overridden in tests and would silently construct for real. Register its type with services.set(...).`,
+      `App runtime slice ${untyped.map((key) => quot(key)).join(', ')} registers a construction entry but no services type, so it cannot be overridden in tests and would silently construct for real. Register its type with services.set(...), or mark the entry \`bare\` if nothing consumes it through a context.`,
+    );
+  }
+
+  // The reverse mistake: `bare` skips `provide`, so a services type would name a
+  // field the runtime never puts on the bag.
+  const typedButBare = [...construction.entries()]
+    .filter(([key, entry]) => entry.bare && services.has(key))
+    .map(([key]) => key)
+    .toSorted(compareStrings);
+  if (typedButBare.length > 0) {
+    throw new Error(
+      `App runtime slice ${typedButBare.map((key) => quot(key)).join(', ')} registers a \`bare\` construction entry and a services type, but a bare entry never reaches the services bag. Drop the services.set(...) or the \`bare\` flag.`,
     );
   }
 }
@@ -200,11 +239,14 @@ export function validateConstructionTypes({
 /**
  * A slice registers itself against these keyed maps, all keyed by the same
  * field name:
- * - `services`: the field's TYPE, rendered into `AppServices`. Every
- *   application-scoped dependency belongs here, including lifecycle-bearing
- *   ones like `queues` and `redis` - `AppRuntime` owns the graph and its
- *   disposal rather than acting as a second registry, and consumers narrow
- *   with `ServiceContextWith<K>` to declare what they actually use.
+ * - `services`: the field's TYPE, rendered into `AppServices` or, when the entry
+ *   sets `internal`, into `InternalServices`. Every application-scoped
+ *   dependency belongs here, including lifecycle-bearing ones like `queues` and
+ *   `redis` - `AppRuntime` owns the graph and its disposal rather than acting as
+ *   a second registry, and consumers narrow with `ServiceContextWith<K>` to
+ *   declare what they actually use. A service reaches this map only once
+ *   something consumes it through a context; anything used purely to build
+ *   another service is injected at that service's construction site instead.
  * - `construction`: how to build the field, topologically sorted so every
  *   entry named in a slice's `dependencies` is constructed before it (e.g.
  *   `betterAuth` declares `dependencies: ['emails']`). Slices the graph leaves
@@ -235,7 +277,7 @@ export function validateConstructionTypes({
 const [setupTask, appRuntimeConfigProvider, appRuntimeConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
-      services: t.map<string, TsCodeFragment>(),
+      services: t.map<string, AppRuntimeServiceEntry>(),
       construction: t.map<string, AppRuntimeConstructionEntry>(),
       flattenedModuleFields: t.map<string, string>(),
       usesBackgroundServices: t.scalar<boolean>(),
@@ -295,18 +337,31 @@ export const appRuntimeGenerator = createGenerator({
             // `Readonly<>` at each use site, so `Pick<AppServices, K>` carries
             // it through - a modifier survives Pick, a wrapper would have to be
             // reapplied everywhere.
-            const servicesInterface =
-              services.size === 0
-                ? 'placeholder?: never'
+            const renderServicesFields = (
+              entries: [string, AppRuntimeServiceEntry][],
+            ): string | TsCodeFragment =>
+              entries.length === 0
+                ? // Both interfaces are always emitted, so an empty stratum
+                  // needs a member: `{}` would trip no-empty-object-type in the
+                  // generated project's stricter config.
+                  'placeholder?: never'
                 : TsCodeUtils.mergeFragmentsPresorted(
-                    [...services.entries()]
+                    entries
                       .toSorted(([a], [b]) => compareStrings(a, b))
                       .map(
-                        ([key, type]) =>
+                        ([key, { type }]) =>
                           TsCodeUtils.template`readonly ${key}: ${type};`,
                       ),
                     '\n',
                   );
+
+            const [internalServices, publicServices] = partition(
+              [...services.entries()],
+              ([, entry]) => entry.internal ?? false,
+            );
+            const servicesInterface = renderServicesFields(publicServices);
+            const internalServicesInterface =
+              renderServicesFields(internalServices);
 
             // The destructure below binds these before any slice runs, so a
             // slice may name one as a dependency without a construction entry
@@ -336,18 +391,23 @@ export const appRuntimeGenerator = createGenerator({
                       )} } = ${appModuleSetupImports.flattenAppModule.fragment()}(${appModuleImports.getModuleFragment()});`,
                   ];
 
-            // Each object is built through `provide`, so an override skips its
+            // Each service is built through `provide`, so an override skips its
             // construction and is never disposed. The disposer is an argument
             // rather than a statement inside the fragment, which is what keeps
-            // borrowed overrides from registering one.
+            // borrowed overrides from registering one. A `bare` entry is a plain
+            // const: nothing consumes it through a context, so there is no key
+            // to override and no disposer to skip.
             const constructionStatements = TsCodeUtils.mergeFragmentsPresorted(
               [
                 ...flattenedModuleFragments,
-                ...orderedConstruction.map(([key, entry]) =>
-                  entry.disposeFragment
+                ...orderedConstruction.map(([key, entry]) => {
+                  if (entry.bare) {
+                    return TsCodeUtils.template`const ${key} = ${entry.fragment};`;
+                  }
+                  return entry.disposeFragment
                     ? TsCodeUtils.template`const ${key} = provide(${quot(key)}, () => ${entry.fragment}, ${entry.disposeFragment});`
-                    : TsCodeUtils.template`const ${key} = provide(${quot(key)}, () => ${entry.fragment});`,
-                ),
+                    : TsCodeUtils.template`const ${key} = provide(${quot(key)}, () => ${entry.fragment});`;
+                }),
               ],
               '\n\n',
             );
@@ -391,7 +451,7 @@ export const appRuntimeGenerator = createGenerator({
                  * construction is skipped entirely and downstream construction consumes the
                  * override. Overrides are borrowed: the runtime never disposes them.
                  */
-                overrides?: Partial<AppServices>;`;
+                overrides?: Partial<RuntimeServices>;`;
 
             const optionsParam =
               (backgroundServicesOption ?? overridesOption)
@@ -428,11 +488,11 @@ export const appRuntimeGenerator = createGenerator({
                * @param dispose Releases a constructed object, if it holds resources.
                * @returns The override or the newly constructed object.
                */
-              function provide<K extends keyof AppServices>(
+              function provide<K extends keyof RuntimeServices>(
                 key: K,
-                create: () => AppServices[K],
-                dispose?: (value: AppServices[K]) => Promise<void>,
-              ): AppServices[K] {
+                create: () => RuntimeServices[K],
+                dispose?: (value: RuntimeServices[K]) => Promise<void>,
+              ): RuntimeServices[K] {
                 const overridden = overrides[key];
                 if (overridden !== undefined) {
                   return overridden;
@@ -447,7 +507,10 @@ export const appRuntimeGenerator = createGenerator({
 
             await builder.apply(
               renderers.runtimeServices.render({
-                variables: { TPL_SERVICES_FIELDS: servicesInterface },
+                variables: {
+                  TPL_SERVICES_FIELDS: servicesInterface,
+                  TPL_INTERNAL_SERVICES_FIELDS: internalServicesInterface,
+                },
               }),
             );
             await builder.apply(

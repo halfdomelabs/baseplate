@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/fastify-generators",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "description": "Fastify generators for Baseplate",
   "keywords": [
     "backend",
@@ -54,7 +54,7 @@
     "change-case": "^5.4.4",
     "es-toolkit": "^1.44.0",
     "indent-string": "^5.0.0",
-    "inflection": "^3.0.0",
+    "inflection": "^3.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {

@@ -16,6 +16,8 @@ export const appRuntimeImportsSchema = createTsImportMapSchema({
   AppRuntime: { isTypeOnly: true },
   AppServices: { isTypeOnly: true },
   createAppRuntime: {},
+  InternalServices: { isTypeOnly: true },
+  RuntimeServices: { isTypeOnly: true },
 });
 
 export type AppRuntimeImportsProvider = TsImportMapProviderFromSchema<
@@ -39,6 +41,8 @@ const coreAppRuntimeImportsTask = createGeneratorTask({
           AppRuntime: paths.appRuntime,
           AppServices: paths.runtimeServices,
           createAppRuntime: paths.appRuntime,
+          InternalServices: paths.runtimeServices,
+          RuntimeServices: paths.runtimeServices,
         }),
       },
     };

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/react-generators",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "description": "React Generators for Baseplate",
   "keywords": [
     "baseplate",
@@ -50,7 +50,7 @@
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
     "es-toolkit": "^1.44.0",
-    "inflection": "^3.0.0",
+    "inflection": "^3.0.2",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "zod": "catalog:"
   },

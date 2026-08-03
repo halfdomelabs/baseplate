@@ -1,5 +1,30 @@
 # @baseplate-dev/plugin-notifications
 
+## 0.6.16
+
+### Patch Changes
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Notification types now require a `category` and render a single event by default, opting into batched rendering explicitly via `aggregate` — so a single-event renderer can no longer be handed a batch and silently render only the first. Renderers also receive the actor, snapshotted onto the row at notify time so it survives a rename or deletion.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - The notification feed is now cursor-paginated via a `notificationFeed` connection, so rows are no longer skipped or repeated when a notification arrives between page fetches.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Notifications and their dispatch requests are now deleted after a retention window instead of accumulating forever, so the feed, badge count, and mark-all-as-read no longer degrade as a project ages. Rows still owing a delivery are kept until it settles.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Backend services are now split into a public `AppServices` tier reachable from request contexts and an `InternalServices` tier that only workers and scripts can reach, so a resolver naming an internal service is a compile error. The email transport and the notification outbox are now internal, so request-scoped code can no longer reach them to bypass their queues.
+
+- [#994](https://github.com/halfdomelabs/baseplate/pull/994) [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552) Thanks [@kingston](https://github.com/kingston)! - Notifications are now delivered durably — deliveries survive a crash, retry with backoff, and go to many recipients at once via `notifyMany` — with emails rendered at send time so copy fixes reach mail that has not gone out, and clearing one from the feed no longer cancels its email. **Breaking:** the queue plugin is now required, `notify`/`notifyText` return `{ requestId }` instead of the created row, and custom channels receive the recipient and actor details from the service rather than querying for them.
+
+- Updated dependencies [[`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552), [`261d933`](https://github.com/halfdomelabs/baseplate/commit/261d9331ec09c4b60ee17057cbd57feb36827552)]:
+  - @baseplate-dev/react-generators@0.6.16
+  - @baseplate-dev/core-generators@0.6.16
+  - @baseplate-dev/fastify-generators@0.6.16
+  - @baseplate-dev/plugin-email@0.6.16
+  - @baseplate-dev/plugin-queue@0.6.16
+  - @baseplate-dev/ui-components@0.6.16
+  - @baseplate-dev/project-builder-lib@0.6.16
+  - @baseplate-dev/sync@0.6.16
+  - @baseplate-dev/utils@0.6.16
+
 ## 0.6.15
 
 ### Patch Changes

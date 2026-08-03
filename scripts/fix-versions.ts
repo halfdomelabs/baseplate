@@ -97,6 +97,32 @@ if (major !== undefined && major > 1) {
   );
 }
 
+// changesets 2.x escalates a package to `major` when a peerDependency it declares
+// gets a `minor` bump, and the `fixed` group then drags every package to that major
+// (0.6.15 -> 1.0.0). Fixed upstream by changesets#2090, unreleased as of 3.0.0-next.
+// This has shipped an unintended 1.0 before, so require an explicit opt-in.
+// Runs after `changeset version`, which has already consumed the .changeset/*.md
+// files and rewritten every package.json — hence the `git restore .` below.
+const previousMajor = Number(
+  process.env.npm_package_version?.split('.')[0] ?? Number.NaN,
+);
+const escalatedMajor =
+  major !== undefined &&
+  major > 0 &&
+  (Number.isNaN(previousMajor) || major > previousMajor);
+
+if (escalatedMajor && !process.env.BASEPLATE_ALLOW_MAJOR_RELEASE) {
+  throw new Error(
+    `fix-versions: refusing to release ${currentVersion} — this bump escalates to a new major.\n` +
+      `  A 'minor' changeset in the fixed @baseplate-dev/* group bumps the whole group's major.\n` +
+      `  \`changeset version\` has already rewritten this working tree, so recover with:\n` +
+      `    1. git restore .   (restores the consumed .changeset/*.md files and versions)\n` +
+      `    2. downgrade the 'minor' changesets in .changeset/ to 'patch'\n` +
+      `    3. re-run the release\n` +
+      `  To genuinely release a new major, re-run with BASEPLATE_ALLOW_MAJOR_RELEASE=1.`,
+  );
+}
+
 let bumped = 0;
 
 for (const relPath of packageJsonPaths) {

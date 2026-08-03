@@ -25,14 +25,18 @@ const runtimeServices = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'runtime-services',
-  projectExports: { AppServices: { isTypeOnly: true } },
+  projectExports: {
+    AppServices: { isTypeOnly: true },
+    InternalServices: { isTypeOnly: true },
+    RuntimeServices: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,
       '../templates/src/utils/runtime-services.ts',
     ),
   },
-  variables: { TPL_SERVICES_FIELDS: {} },
+  variables: { TPL_INTERNAL_SERVICES_FIELDS: {}, TPL_SERVICES_FIELDS: {} },
 });
 
 export const CORE_APP_RUNTIME_TEMPLATES = { appRuntime, runtimeServices };

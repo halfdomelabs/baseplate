@@ -82,34 +82,22 @@ export const notificationModuleGenerator = createGenerator({
         paths: NOTIFICATIONS_CORE_NOTIFICATION_MODULE_GENERATED.paths.provider,
       },
       run({ appRuntimeConfig, paths }) {
-        appRuntimeConfig.services.set(
-          'notification',
-          TsCodeUtils.typeImportFragment(
+        appRuntimeConfig.services.set('notification', {
+          type: TsCodeUtils.typeImportFragment(
             'NotificationService',
             paths.servicesNotificationService,
           ),
-        );
-        appRuntimeConfig.services.set(
-          'notificationEvents',
-          TsCodeUtils.typeImportFragment(
-            'NotificationEvents',
-            paths.servicesNotificationEvents,
-          ),
-        );
-        appRuntimeConfig.services.set(
-          'notificationRenderer',
-          TsCodeUtils.typeImportFragment(
-            'NotificationRenderer',
-            paths.servicesNotificationRenderer,
-          ),
-        );
-        appRuntimeConfig.services.set(
-          'notificationOutbox',
-          TsCodeUtils.typeImportFragment(
+        });
+        // Internal: the delivery and sweep workers name it in
+        // `SystemServiceContextWith`, but feature code goes through
+        // `notification`.
+        appRuntimeConfig.services.set('notificationOutbox', {
+          internal: true,
+          type: TsCodeUtils.typeImportFragment(
             'NotificationOutbox',
             paths.servicesNotificationOutbox,
           ),
-        );
+        });
         appRuntimeConfig.flattenedModuleFields.set(
           'notificationTypes',
           'notificationTypes',
@@ -131,17 +119,18 @@ export const notificationModuleGenerator = createGenerator({
           ]),
         );
 
-        // Its own entry rather than inlined: the service and the GraphQL
-        // subscription resolvers read the same emitter, and inlining would
-        // construct two.
+        // Bare: only the notification service consumes it, so it needs no key -
+        // but it stays its own const because inlining would construct two.
         appRuntimeConfig.construction.set('notificationEvents', {
+          bare: true,
           dependencies: ['pubsub'],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationEvents', paths.servicesNotificationEvents)}(pubsub)`,
         });
-        // Its own entry for the same reason: the service renders at read time
-        // and the email channel at delivery time, and both must resolve a type
-        // through the same registry.
+        // Bare for the same reason, with two consumers rather than one: the
+        // service renders at read time and the email channel at delivery time,
+        // and both must resolve a type through the same registry.
         appRuntimeConfig.construction.set('notificationRenderer', {
+          bare: true,
           dependencies: [],
           fragment: TsCodeUtils.template`${TsCodeUtils.importFragment('createNotificationRenderer', paths.servicesNotificationRenderer)}({ notificationTypes })`,
         });
