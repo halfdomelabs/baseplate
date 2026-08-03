@@ -49,7 +49,7 @@
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "es-toolkit": "^1.44.0",
+    "es-toolkit": "^1.50.0",
     "inflection": "^3.0.2",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "zod": "catalog:"

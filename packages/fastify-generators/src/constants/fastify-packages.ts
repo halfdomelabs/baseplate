@@ -1,7 +1,7 @@
 export const FASTIFY_PACKAGES = {
   // Fastify
-  fastify: '5.8.5',
-  '@fastify/helmet': '13.0.2',
+  fastify: '5.11.0',
+  '@fastify/helmet': '13.1.0',
   'fastify-plugin': '6.0.0',
   nanoid: '6.0.0',
 
@@ -39,7 +39,7 @@ export const FASTIFY_PACKAGES = {
   ms: '2.1.3',
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
-  'es-toolkit': '1.44.0',
+  'es-toolkit': '1.50.0',
 
   // Environment
   'cross-env': '10.1.0',
