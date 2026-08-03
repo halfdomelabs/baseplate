@@ -197,6 +197,11 @@ export interface NotificationService {
    */
   getUnseenCount(userId: string): Promise<number>;
   /**
+   * Count of UNREAD notifications — the panel header. Unlike the unseen count,
+   * opening the panel does not clear this; reading or dismissing a row does.
+   */
+  getUnreadCount(userId: string): Promise<number>;
+  /**
    * Mark a notification read. Reading also marks it seen (a read row is never
    * unseen), so the badge can't count something already opened.
    */
@@ -224,6 +229,17 @@ async function getUnseenCount(userId: string): Promise<number> {
       inApp: true,
       dismissedAt: null,
       seenAt: null,
+    },
+  });
+}
+
+async function getUnreadCount(userId: string): Promise<number> {
+  return prisma.notification.count({
+    where: {
+      recipientId: userId,
+      inApp: true,
+      dismissedAt: null,
+      readAt: null,
     },
   });
 }
@@ -538,6 +554,7 @@ export function createNotificationService(deps: {
     notifyText,
     renderContent: (row, ctx, actor) => renderer.renderContent(row, ctx, actor),
     getUnseenCount,
+    getUnreadCount,
     markAsRead,
     markAllAsSeen,
     markAllAsRead,

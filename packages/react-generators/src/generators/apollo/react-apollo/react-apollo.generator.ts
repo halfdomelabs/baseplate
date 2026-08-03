@@ -25,7 +25,12 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
-import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
+import {
+  mapValuesOfMap,
+  notEmpty,
+  quot,
+  toposortLocal,
+} from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -145,6 +150,11 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
     (t) => ({
       createApolloClientArguments: t.namedArray<ApolloCreateArgument>(),
       apolloLinks: t.namedArray<ApolloLink>(),
+      /**
+       * Field policies for the Apollo cache, keyed by type name then field name,
+       * e.g. `set('Query', 'notificationFeed', relayStylePagination())`.
+       */
+      typePolicies: t.mapOfMaps<string, string, TsCodeFragment>(),
     }),
     {
       prefix: 'react-apollo',
@@ -304,7 +314,11 @@ const preloadQuery = useMemo(
       },
       run({
         reactConfigImports,
-        reactApolloConfigValues: { createApolloClientArguments, apolloLinks },
+        reactApolloConfigValues: {
+          createApolloClientArguments,
+          apolloLinks,
+          typePolicies,
+        },
         renderers,
         paths,
       }) {
@@ -444,6 +458,17 @@ const preloadQuery = useMemo(
                     TPL_MEMO_DEPENDENCIES: createApolloClientArguments
                       .map((arg) => arg.name)
                       .join(', '),
+                  },
+                  cache: {
+                    TPL_TYPE_POLICIES: TsCodeUtils.mergeFragmentsAsObject(
+                      mapValuesOfMap(typePolicies, (fields) =>
+                        TsCodeUtils.mergeFragmentsAsObject({
+                          fields: TsCodeUtils.mergeFragmentsAsObject(
+                            Object.fromEntries(fields),
+                          ),
+                        }),
+                      ),
+                    ),
                   },
                   codegen: {
                     TPL_BACKEND_SCHEMA_PATH: quot(schemaLocation),

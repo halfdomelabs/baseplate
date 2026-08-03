@@ -1,6 +1,6 @@
 import { graphql } from '@src/gql';
 
-/** How many feed rows the widget loads; shared by the query + cache writes. */
+/** How many feed rows the widget loads per page. */
 export const FEED_PAGE_SIZE = 20;
 
 /** Fields the widget renders for a single notification, incl. rendered content. */
@@ -33,7 +33,8 @@ export const notificationItemFragment = graphql(`
 `);
 
 /**
- * The feed + unseen badge count, loaded when the panel opens.
+ * The feed + the unseen (badge) and unread (header) counts, loaded when the
+ * panel opens.
  *
  * A cursor connection: the feed is a live list, so offset paging would skip or
  * repeat rows when a notification arrives between fetches. The widget reads
@@ -54,6 +55,7 @@ export const notificationFeedQuery = graphql(`
       }
     }
     unseenNotificationCount
+    unreadNotificationCount
   }
 `);
 
@@ -72,6 +74,7 @@ export const markNotificationReadMutation = graphql(`
     markNotificationRead(input: $input) {
       changed
       unseenCount
+      unreadCount
       notification {
         id
         readAt
@@ -86,6 +89,7 @@ export const markAllNotificationsReadMutation = graphql(`
     markAllNotificationsRead {
       changedCount
       unseenCount
+      unreadCount
     }
   }
 `);

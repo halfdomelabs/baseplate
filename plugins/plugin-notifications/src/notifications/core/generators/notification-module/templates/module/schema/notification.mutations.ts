@@ -19,15 +19,19 @@ builder.mutationField('markNotificationRead', (t) =>
         nullable: true,
       }),
       unseenCount: t.payload.field({ type: 'Int' }),
+      unreadCount: t.payload.field({ type: 'Int' }),
     },
     resolve: async (_root, { input }, context) => {
       const userId = context.auth.userIdOrThrow();
       const { changed, unseenCount } =
         await context.services.notification.markAsRead(userId, input.id);
-      const notification = await prisma.notification.findFirst({
-        where: { id: input.id, recipientId: userId },
-      });
-      return { changed, notification, unseenCount };
+      const [notification, unreadCount] = await Promise.all([
+        prisma.notification.findFirst({
+          where: { id: input.id, recipientId: userId },
+        }),
+        context.services.notification.getUnreadCount(userId),
+      ]);
+      return { changed, notification, unseenCount, unreadCount };
     },
   }),
 );
@@ -52,9 +56,15 @@ builder.mutationField('markAllNotificationsRead', (t) =>
     payload: {
       changedCount: t.payload.field({ type: 'Int' }),
       unseenCount: t.payload.field({ type: 'Int' }),
+      unreadCount: t.payload.field({ type: 'Int' }),
     },
-    resolve: async (_root, _args, context) =>
-      context.services.notification.markAllAsRead(context.auth.userIdOrThrow()),
+    resolve: async (_root, _args, context) => {
+      const result = await context.services.notification.markAllAsRead(
+        context.auth.userIdOrThrow(),
+      );
+      // Everything in the feed is now read.
+      return { ...result, unreadCount: 0 };
+    },
   }),
 );
 

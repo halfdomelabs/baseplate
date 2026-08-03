@@ -62,3 +62,14 @@ builder.queryField('unseenNotificationCount', (t) =>
       ),
   }),
 );
+
+/** Count of the current user's unread notifications (the panel header). */
+builder.queryField('unreadNotificationCount', (t) =>
+  t.int({
+    authorize: ['user'],
+    resolve: (_root, _args, context) =>
+      context.services.notification.getUnreadCount(
+        context.auth.userIdOrThrow(),
+      ),
+  }),
+);

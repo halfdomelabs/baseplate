@@ -48,7 +48,7 @@ const cache = createTsTemplateFile({
       '../templates/src/services/apollo/cache.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_TYPE_POLICIES: {} },
 });
 
 const codegen = createTsTemplateFile({
