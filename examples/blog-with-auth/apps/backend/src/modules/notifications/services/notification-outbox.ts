@@ -12,7 +12,7 @@ import type {
 } from './notification-channel.js';
 
 import { notificationDeliveryQueue } from '../queues/notification-delivery.queue.js';
-import { isCallerKey } from './notification-registry.js';
+import { isGeneratedKey } from './notification-registry.js';
 import { RENDER_SOURCE_SELECT } from './notification-renderer.js';
 
 /** Rows per delivery job. */
@@ -349,8 +349,9 @@ export function createNotificationOutbox(deps: {
     });
 
     // The delay belongs to the job, so one job cannot hold both kinds.
-    const [debounced, immediate] = partition(pending, (delivery) =>
-      isCallerKey(delivery.notification.key),
+    const [debounced, immediate] = partition(
+      pending,
+      (delivery) => !isGeneratedKey(delivery.notification.key),
     );
 
     let enqueued = 0;

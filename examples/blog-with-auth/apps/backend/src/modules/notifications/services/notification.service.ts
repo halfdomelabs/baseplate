@@ -1,4 +1,5 @@
 import { chunk, isEqual } from 'es-toolkit';
+import { v7 as uuidv7 } from 'uuid';
 
 import { Prisma } from '@src/generated/prisma/client.js';
 import { logError } from '@src/services/error-logger.js';
@@ -34,7 +35,7 @@ import {
 } from '../constants/notification-categories.js';
 import { GENERIC_NOTIFICATION_TYPE } from './generic-type.js';
 import { ROUTING_TARGETS } from './notification-channel.js';
-import { generatedKey, isCallerKey } from './notification-registry.js';
+import { generatedKey } from './notification-registry.js';
 
 /**
  * Rows per insert. Bounds every statement in the fan-out, so a large audience
@@ -721,6 +722,7 @@ export function createNotificationService(deps: {
               // and cannot be retracted. Scoped by request id so two fan-outs
               // of the same type never collide on it.
               key: generatedKey(request.id),
+              feedOrderId: uuidv7(),
               inApp: effectiveChannels.get(recipientId)?.inApp ?? false,
               expiresAt,
             })),
@@ -878,13 +880,8 @@ export function createNotificationService(deps: {
 
         const expiresAt = new Date(Date.now() + RETENTION_MS);
         const actorSnapshot = { actorLabel: input.actorLabel ?? null };
-        // Asked of the database, which owns the column's `uuidv7()` default:
-        // generating one here would make inserts and updates disagree about
-        // where the value comes from. Node has no uuidv7 of its own yet.
-        const [generated] = await tx.$queryRaw<
-          [{ feedOrderId: string }]
-        >`SELECT uuidv7() AS "feedOrderId"`;
-        const { feedOrderId } = generated;
+        // Swap for node:crypto once it ships uuidv7.
+        const feedOrderId = uuidv7();
 
         const row = existing
           ? await tx.notification.update({
@@ -972,14 +969,6 @@ export function createNotificationService(deps: {
     input: NotifyInput<P>,
   ): Promise<NotifyResult> {
     if (input.key !== undefined) {
-      // The generated-key prefix is reserved: a caller's key that carried it
-      // would replace and retract like a keyed row, but the outbox would read
-      // it as generated and skip the debounce.
-      if (!isCallerKey(input.key)) {
-        throw new BadRequestError(
-          `Notification key "${input.key}" uses a reserved prefix.`,
-        );
-      }
       const keyed = { ...input, key: input.key };
       try {
         return await notifyKeyed(type, keyed);

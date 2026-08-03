@@ -101,12 +101,9 @@ export function generatedKey(requestId: string): string {
   return `${GENERATED_KEY_PREFIX}${requestId}`;
 }
 
-/**
- * Whether a row's `key` came from its caller. Only those rows can be replaced,
- * debounced, or retracted.
- */
-export function isCallerKey(key: string): boolean {
-  return !key.startsWith(GENERATED_KEY_PREFIX);
+/** Whether a row's `key` was minted for it rather than supplied by its caller. */
+export function isGeneratedKey(key: string): boolean {
+  return key.startsWith(GENERATED_KEY_PREFIX);
 }
 
 /**

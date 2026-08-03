@@ -63,6 +63,7 @@
     "pino": "10.3.1",
     "postmark": "5.1.0",
     "rate-limiter-flexible": "11.2.0",
+    "uuid": "14.0.1",
     "zod": "4.3.6"
   },
   "devDependencies": {
