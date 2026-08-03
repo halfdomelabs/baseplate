@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-rate-limit",
-  "version": "1.0.8",
+  "version": "0.6.15",
   "description": "Contains the rate limiting plugin for Baseplate",
   "keywords": [
     "baseplate",

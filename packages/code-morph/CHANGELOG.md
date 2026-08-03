@@ -1,14 +1,5 @@
 # @baseplate-dev/code-morph
 
-## 1.0.8
-
-### Patch Changes
-
-- [#990](https://github.com/halfdomelabs/baseplate/pull/990) [`cc8dff2`](https://github.com/halfdomelabs/baseplate/commit/cc8dff2511ee87947b84401d2d9f37ba9cfa263b) Thanks [@kingston](https://github.com/kingston)! - CLI commands now error on unexpected extra arguments instead of silently ignoring them.
-
-- Updated dependencies []:
-  - @baseplate-dev/utils@1.0.0
-
 ## 0.6.15
 
 ### Patch Changes
