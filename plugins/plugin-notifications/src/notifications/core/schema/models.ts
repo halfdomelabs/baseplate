@@ -13,7 +13,8 @@ import { NOTIFICATION_MODELS } from '#src/notifications/constants/model-names.js
  * gives a future digest somewhere to accumulate aggregation state, which an
  * in-app-only table could not do for an email-only type.
  * `NotificationRequest` is TRANSIENT dispatch state, and `NotificationDelivery`
- * is per-recipient, per-channel delivery state.
+ * is per-recipient, per-channel delivery state. `NotificationPreference` holds
+ * sparse per-user overrides on the Builder-declared category defaults.
  *
  * Render-at-read content model: `params` (render inputs) are the source of truth,
  * re-rendered per request; frozen `segments` + `fallbackText` are the fallback
@@ -433,6 +434,96 @@ export function createNotificationsPartialDefinition(
               references: [{ localRef: 'notificationId', foreignRef: 'id' }],
               modelRef: NOTIFICATION_MODELS.notification,
               foreignRelationName: 'deliveries',
+              onDelete: 'Cascade',
+              onUpdate: 'Restrict',
+            },
+          ],
+        },
+      },
+      // --- Preferences ---
+      // Sparse overrides on the Builder-declared category defaults: a row exists
+      // only where a user has actually chosen. Absence means "use the default",
+      // so shipping a new category needs no backfill.
+      {
+        name: NOTIFICATION_MODELS.notificationPreference,
+        featureRef: notificationsFeatureName,
+        model: {
+          fields: [
+            {
+              name: 'id',
+              type: 'uuid',
+              options: { defaultGeneration: 'uuidv7' },
+            },
+            {
+              name: 'userId',
+              type: 'uuid',
+            },
+            // category | type. A plain string rather than an enum, which would
+            // surface this infrastructure model in the enum catalog. Entity-level
+            // muting would add a third value here rather than a new table.
+            {
+              name: 'scopeKind',
+              type: 'string',
+            },
+            // A category key or a notification type key, depending on
+            // `scopeKind` — never a Builder entity id. Keeping keys puts the
+            // generated const, the runtime lookup and this column on one
+            // identifier; renaming a category is a data migration for these rows
+            // as well as a compile error at every `defineNotificationType` site.
+            {
+              name: 'scopeKey',
+              type: 'string',
+            },
+            // A routing target (`'inApp'` or an installed channel key), NOT a
+            // `NotificationChannelKey`: `'inApp'` has no channel implementation
+            // and `installedChannels` deliberately drops it, but a user must
+            // still be able to silence the feed.
+            {
+              name: 'channel',
+              type: 'string',
+            },
+            // Boolean for now. Digests (per-user/type windows) are the natural
+            // next value here — `mode: 'off' | 'immediate' | 'digest'` — so that
+            // work should upgrade this column rather than add a parallel table.
+            {
+              name: 'enabled',
+              type: 'boolean',
+            },
+            {
+              name: 'createdAt',
+              type: 'dateTime',
+              options: { defaultToNow: true },
+            },
+            {
+              name: 'updatedAt',
+              type: 'dateTime',
+              options: { defaultToNow: true, updatedAt: true },
+            },
+          ],
+          primaryKeyFieldRefs: ['id'],
+          // One row per scope per channel, so a settings save can upsert rather
+          // than read-modify-write.
+          uniqueConstraints: [
+            {
+              fields: [
+                { fieldRef: 'userId' },
+                { fieldRef: 'scopeKind' },
+                { fieldRef: 'scopeKey' },
+                { fieldRef: 'channel' },
+              ],
+            },
+          ],
+          // The resolver's read: every row for a fan-out's recipients whose
+          // scope is the type's category or the type itself.
+          indexes: [
+            { fields: [{ fieldRef: 'userId' }, { fieldRef: 'scopeKey' }] },
+          ],
+          relations: [
+            {
+              name: 'user',
+              references: [{ localRef: 'userId', foreignRef: 'id' }],
+              modelRef: userModelName,
+              foreignRelationName: 'notificationPreferences',
               onDelete: 'Cascade',
               onUpdate: 'Restrict',
             },

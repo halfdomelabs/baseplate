@@ -82,6 +82,11 @@ export type Notification = Prisma.NotificationModel
  */
 export type NotificationDelivery = Prisma.NotificationDeliveryModel
 /**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel
+/**
  * Model NotificationRequest
  * 
  */

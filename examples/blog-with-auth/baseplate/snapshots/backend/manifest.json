@@ -7,11 +7,15 @@
       },
       { "path": "src/modules/accounts/auth/utils/cookie-signer.unit.test.ts" },
       { "path": "src/modules/blogs/authorizers/policy.unit.test.ts" },
+      { "path": "src/modules/blogs/notifications/blog-notification-types.ts" },
       {
         "path": "src/modules/notifications/schema/notification-feed.e2e.test.ts"
       },
       {
         "path": "src/modules/notifications/services/notification-outbox.int.test.ts"
+      },
+      {
+        "path": "src/modules/notifications/services/notification-preferences.int.test.ts"
       },
       {
         "path": "src/modules/notifications/services/notification-renderer.unit.test.ts"

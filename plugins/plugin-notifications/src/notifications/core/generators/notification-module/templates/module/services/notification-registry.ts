@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { NotificationCategoryKey } from '$constantsNotificationCategories';
 import type { NotificationRoutingTarget } from '$servicesNotificationChannel';
 import type {
   NotificationContent,
@@ -43,8 +44,11 @@ interface NotificationTypeBase<P extends NotificationParams> {
    * Declared on the type, not stored per row: it is a static property of
    * `post.commented`, so a per-row copy would drift. Read time derives it from
    * the registry.
+   *
+   * Narrowed to the declared categories so removing one from the project
+   * definition breaks the build here rather than orphaning preference rows.
    */
-  category: string;
+  category: NotificationCategoryKey;
   /** Validates stored params before render; failure falls back to the snapshot. */
   paramsSchema: z.ZodType<P>;
   /** Routing targets for this type. */

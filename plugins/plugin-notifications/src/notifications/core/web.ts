@@ -13,6 +13,7 @@ import {
 import { NotificationsDefinitionEditor } from './components/notifications-definition-editor.js';
 import { NotificationsWebAppSettingsForm } from './components/notifications-web-app-settings-form.js';
 import { createNotificationsPartialDefinition } from './schema/models.js';
+import { buildDefaultNotificationCategory } from './schema/plugin-definition.js';
 
 import '../../styles.css';
 
@@ -49,6 +50,7 @@ export default createPluginModule({
       return {
         config: {
           notificationsFeatureRef,
+          categories: [buildDefaultNotificationCategory()],
         },
         partialDef: createNotificationsPartialDefinition(
           NOTIFICATIONS_FEATURE_NAME,
