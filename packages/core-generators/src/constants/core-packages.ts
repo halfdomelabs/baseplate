@@ -16,20 +16,20 @@ export const CORE_PACKAGES = {
   'eslint-plugin-react-hooks': '7.0.1',
   'eslint-plugin-unicorn': '62.0.0',
   'typescript-eslint': '8.65.0',
-  globals: '17.3.0',
-  tailwindcss: '4.3.1',
+  globals: '17.8.0',
+  tailwindcss: '4.3.3',
 
   // Formatting
   prettier: '3.8.1',
-  'prettier-plugin-packagejson': '3.0.0',
+  'prettier-plugin-packagejson': '3.0.2',
 
   // Testing
-  vite: '8.1.0',
-  vitest: '4.1.7',
+  vite: '8.2.0',
+  vitest: '4.1.10',
 
   // Utils
   axios: '1.18.1',
 
   // Monorepo
-  turbo: '2.9.15',
+  turbo: '2.10.8',
 } as const;

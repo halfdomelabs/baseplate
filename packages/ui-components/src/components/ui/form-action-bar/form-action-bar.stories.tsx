@@ -130,7 +130,7 @@ export const InteractiveForm: Story = {
       formData.name !== originalData.name ||
       formData.email !== originalData.email;
 
-    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    const handleSubmit = async (e: React.SubmitEvent): Promise<void> => {
       e.preventDefault();
       setIsSubmitting(true);
       // Simulate API call

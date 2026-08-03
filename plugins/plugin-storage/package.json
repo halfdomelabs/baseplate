@@ -57,7 +57,7 @@
     "@baseplate-dev/utils": "workspace:*",
     "@hookform/lenses": "^0.8.1",
     "@hookform/resolvers": "^5.2.2",
-    "es-toolkit": "^1.44.0",
+    "es-toolkit": "^1.50.0",
     "mime-types": "^3.0.2",
     "react": "catalog:",
     "react-dom": "catalog:",

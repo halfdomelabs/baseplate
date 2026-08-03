@@ -2,7 +2,7 @@ Index: src/index.ts
 ===================================================================
 --- src/index.ts
 +++ src/index.ts
-@@ -257,4 +257,5 @@
+@@ -266,4 +266,5 @@
  } from './types/form.js';
  export type { IconElement } from './types/icon.js';
  export { cn } from './utils/cn.js';
